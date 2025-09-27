@@ -11,9 +11,11 @@ import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
+import { FeatureFlags } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { BucketDeploymentSingletonFunction } from '../../custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated';
+import * as cxapi from '../../cx-api';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 
 // tag key has a limit of 128 characters
@@ -154,7 +156,7 @@ export interface BucketDeploymentProps {
    * If you are deploying large files, you will need to increase this number
    * accordingly.
    *
-   * @default 128
+   * @default 512
    */
   readonly memoryLimit?: number;
 
@@ -380,7 +382,7 @@ export class BucketDeployment extends Construct {
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
       role: props.role,
-      memorySize: props.memoryLimit,
+      memorySize: props.memoryLimit ?? (FeatureFlags.of(this).isEnabled(cxapi.S3_DEPLOYMENT_USE_512MB_MEMORY) ? 512 : undefined),
       ephemeralStorageSize: props.ephemeralStorageSize,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
@@ -596,12 +598,13 @@ export class BucketDeployment extends Construct {
     // if the user specifes a custom memory limit, we define another singleton handler
     // with this configuration. otherwise, it won't be possible to use multiple
     // configurations since we have a singleton.
-    if (memoryLimit) {
-      if (cdk.Token.isUnresolved(memoryLimit)) {
+    const effectiveMemoryLimit = memoryLimit ?? 512;
+    if (effectiveMemoryLimit !== 512) {
+      if (cdk.Token.isUnresolved(effectiveMemoryLimit)) {
         throw new ValidationError("Can't use tokens when specifying 'memoryLimit' since we use it to identify the singleton custom resource handler.", this);
       }
 
-      uuid += `-${memoryLimit.toString()}MiB`;
+      uuid += `-${effectiveMemoryLimit.toString()}MiB`;
     }
 
     // if the user specifies a custom ephemeral storage size, we define another singleton handler
