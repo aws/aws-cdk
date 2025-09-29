@@ -221,7 +221,7 @@ the `containerStartupHealthCheckTimeout` property. This is useful when your mode
 to initialize and you want to avoid premature health check failures:
 
 ```typescript
-import * as cdk from 'aws-cdk-lib';
+import * as cdkCore from 'aws-cdk-lib';
 import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 
 declare const model: sagemaker.Model;
@@ -231,7 +231,7 @@ const endpointConfig = new sagemaker.EndpointConfig(this, 'EndpointConfig', {
     {
       model: model,
       variantName: 'my-variant',
-      containerStartupHealthCheckTimeout: cdk.Duration.minutes(5), // 5 minutes timeout
+      containerStartupHealthCheckTimeout: cdkCore.Duration.minutes(5), // 5 minutes timeout
     },
   ]
 });
