@@ -66,12 +66,12 @@
     "@aws-cdk/service-spec-types" "^0.0.158"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/aws-service-spec@^0.1.98":
-  version "0.1.98"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.98.tgz#cc8224815c5bab18167bd2f11eb85ea559b2a91d"
-  integrity sha512-oif2Gxp6Tb9FoT4iw1M/DPULshqK/DL7Bbo/3ss7uTHm5DDsI48tXU4ooEiiFNwLkMAp1Bp+76iG0wkgNqWwmw==
+"@aws-cdk/aws-service-spec@^0.1.100":
+  version "0.1.100"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.100.tgz#9dd4410653c8f41cfd108305b009c7d50fa32c81"
+  integrity sha512-BnlbWvvZDiGVcCkJuZMQdATHN7Npssqe74JxgTnoiqzIREGPaDRAl+Ls6XGH3n30ZWAREkRtqJ9NExm3SJky9Q==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.164"
+    "@aws-cdk/service-spec-types" "^0.0.166"
     "@cdklabs/tskb" "^0.0.3"
 
 "@aws-cdk/cloud-assembly-schema@^48.6.0":
@@ -152,10 +152,10 @@
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/service-spec-types@^0.0.164":
-  version "0.0.164"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.164.tgz#9c19b41234a1dd7fa5b0000c0ea61480058cdc15"
-  integrity sha512-Uy28KdwlotnGAH89PsIMH5bUEF8jb2W4FTaHrO8yRu70PgrnqH6j/xVWlyrp1JRd05CorZUhV9SWTdbCdzMU6Q==
+"@aws-cdk/service-spec-types@^0.0.166":
+  version "0.0.166"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.166.tgz#998caca5deae0e0e6044e51a82acb438693609a0"
+  integrity sha512-7oVeOIkucTrlC7NsVGyyxKPkWs2lODpXH02aGaYP4o1orafKZ9oD3FLugEmNnjlUUIkSvMt60vbq+YvDoABf8g==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
@@ -2515,10 +2515,10 @@
   resolved "https://registry.npmjs.org/@cdklabs/tskb/-/tskb-0.0.3.tgz#4b79846d9381eb1252ba85d5d20b7cd7d99b6ecb"
   integrity sha512-JR+MuD4awAXvutu7HArephXfZm09GPTaSAQUqNcJB5+ZENRm4kV+L6vJL6Tn1xHjCcHksO+HAqj3gYtm5K94vA==
 
-"@cdklabs/typewriter@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.npmjs.org/@cdklabs/typewriter/-/typewriter-0.0.5.tgz#edbec5c2e6dd45c803154d7e521ca38746a08d89"
-  integrity sha512-gLp7s9bhHOIN9SN6jhdVi3cLp0YisMkvn4Ct3KeqySR7H1Q5nytKvV0NWUC1FrdNsPoKvulUFIGtqbwCFZt9NQ==
+"@cdklabs/typewriter@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.npmjs.org/@cdklabs/typewriter/-/typewriter-0.0.6.tgz#4f70afd8e70761785f09bfbee9b4678ffd6413a1"
+  integrity sha512-uOKGbxFG+J1ig2Cdn24d8wlELcS2MF6Z0Fsfawx+MiYLnRZJ3kgSZExui+QSm7PyXARW5rcpB+ZGh2maGNQbKw==
 
 "@colors/colors@1.6.0", "@colors/colors@^1.6.0":
   version "1.6.0"
