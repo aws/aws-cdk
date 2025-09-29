@@ -66,12 +66,12 @@
     "@aws-cdk/service-spec-types" "^0.0.158"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/aws-service-spec@^0.1.95":
-  version "0.1.95"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.95.tgz#f41c70c99906975cf2f9eb9de0c09780a896d917"
-  integrity sha512-3Iaz/XBg2Bg8uycpcosSEUHUUdaxdgKHOUxylLiX9DpD6GCE5Ken+xfmvB73lFT5oba3Zo9E3xbTlThCy61WWg==
+"@aws-cdk/aws-service-spec@^0.1.99":
+  version "0.1.99"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.99.tgz#4240270196b3099416245a9fdd2992b8d08d2cca"
+  integrity sha512-8NAVqXZLdfgQoPwsctmbnSI8pttr8LsrmjRxXgPu8dR9dYXxkdrMyyUltMFlkpxglWg6wlxJ1CXH6I9uWhsLuQ==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.161"
+    "@aws-cdk/service-spec-types" "^0.0.165"
     "@cdklabs/tskb" "^0.0.3"
 
 "@aws-cdk/cloud-assembly-schema@^48.6.0":
@@ -122,12 +122,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v33/-/lambda-layer-kubectl-v33-2.0.0.tgz#0c521ad987bb3ac597a4b4ebeece8fd2721ca000"
   integrity sha512-osA3wkwWK2OfpymTcCZKhgaKSca9PQSr+7xi+UevKFRHtMdxHgygC345hdDpCtZlMmX9pKjtFpRUxeRrbGHMEw==
 
-"@aws-cdk/service-spec-importers@^0.0.84":
-  version "0.0.84"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.84.tgz#f261345c5bccfac0c2ff3d854c5247d677b6091a"
-  integrity sha512-iVuiU2nCnlDnJETWscboiTqdu/PWQrTQuNA3M0TA4YdidJd5tlG2El/m9eF3OHe+8RLSixZsG7xKbtMzwjqaOg==
+"@aws-cdk/service-spec-importers@^0.0.86":
+  version "0.0.86"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.86.tgz#229ee83b894d4f463edd8896ce0c187821aeaa6a"
+  integrity sha512-3p0MO62FAVF2U+S2VjKRGFQRjZtzk9Z5EWOnYRxtt4NlhxEDeYgPXBDTwPAuWVkQM2XVaDUcLv5G/kXgEKCUVQ==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.160"
+    "@aws-cdk/service-spec-types" "^0.0.163"
     "@cdklabs/tskb" "^0.0.3"
     ajv "^6"
     canonicalize "^2.1.0"
@@ -145,17 +145,17 @@
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/service-spec-types@^0.0.160":
-  version "0.0.160"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.160.tgz#3c37e324418db15a4820f957b95d282244b1743c"
-  integrity sha512-uTSZyc6yBbX7SYSvnPi0EkvGGqUbo2Xc2O2urtNTviv2v9vRROMJNxvWc8QIobDYe+KEP3QcgbZTHKxI0apuKQ==
+"@aws-cdk/service-spec-types@^0.0.163":
+  version "0.0.163"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.163.tgz#ba07b771c479211900675e149d0c1a465dee1099"
+  integrity sha512-IheocTkQUn9bxe7SsEYk1G0Tb7vlNELNSan3VxHjvgKijUWden14xQJivovooV2sfjFRiAnOPjnUbGTttrHSrw==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/service-spec-types@^0.0.161":
-  version "0.0.161"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.161.tgz#bf0f42b44156a5c0d58ab27c8050a4baa1956dfb"
-  integrity sha512-GT1QaeEP3AKnwEerB3wGQ15OM5QPX8xVkjF/wq71RkX4rnqeMX4h4OSZFZUV/8gW2j2c74LHwPIJ15xSTBt54w==
+"@aws-cdk/service-spec-types@^0.0.165":
+  version "0.0.165"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.165.tgz#3afb97c63e5c11d71ac577f7d9cf5dac08c61fff"
+  integrity sha512-sSZRamu7OF674koINbbgwrh27RPfQfeti3EphwaQBVaBOA8JY0FhifDZ3Ehw+jFARiJAMSNP++XYDbNbdXee8A==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
@@ -2515,10 +2515,10 @@
   resolved "https://registry.npmjs.org/@cdklabs/tskb/-/tskb-0.0.3.tgz#4b79846d9381eb1252ba85d5d20b7cd7d99b6ecb"
   integrity sha512-JR+MuD4awAXvutu7HArephXfZm09GPTaSAQUqNcJB5+ZENRm4kV+L6vJL6Tn1xHjCcHksO+HAqj3gYtm5K94vA==
 
-"@cdklabs/typewriter@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.npmjs.org/@cdklabs/typewriter/-/typewriter-0.0.5.tgz#edbec5c2e6dd45c803154d7e521ca38746a08d89"
-  integrity sha512-gLp7s9bhHOIN9SN6jhdVi3cLp0YisMkvn4Ct3KeqySR7H1Q5nytKvV0NWUC1FrdNsPoKvulUFIGtqbwCFZt9NQ==
+"@cdklabs/typewriter@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.npmjs.org/@cdklabs/typewriter/-/typewriter-0.0.6.tgz#4f70afd8e70761785f09bfbee9b4678ffd6413a1"
+  integrity sha512-uOKGbxFG+J1ig2Cdn24d8wlELcS2MF6Z0Fsfawx+MiYLnRZJ3kgSZExui+QSm7PyXARW5rcpB+ZGh2maGNQbKw==
 
 "@colors/colors@1.6.0", "@colors/colors@^1.6.0":
   version "1.6.0"
