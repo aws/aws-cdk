@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "1a1a5806c7ba6c308e1a83f863e2d6f1f82a6daeb20286116d4a8b049faf1506": {
       "displayName": "codespecified/Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "d3385904a1c68f6c0c3650a31873a0606e6a89f240729679fb45d632c92b9fbc": {
+    "91d4a659a0ca8a491d9f0a7dd5e3d2d459fcdbe5e11c17de2aefe50e377728ef": {
       "displayName": "cdk-integ-lambda-nodejs-codespecified Template",
       "source": {
         "path": "cdk-integ-lambda-nodejs-codespecified.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-a0763c16": {
+        "current_account-current_region-41486bc2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d3385904a1c68f6c0c3650a31873a0606e6a89f240729679fb45d632c92b9fbc.json",
+          "objectKey": "91d4a659a0ca8a491d9f0a7dd5e3d2d459fcdbe5e11c17de2aefe50e377728ef.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
