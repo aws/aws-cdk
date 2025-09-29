@@ -810,7 +810,10 @@ added the ellipsis so a user would know there was more to r...`,
             {
               'EventType': 'viewer-request',
               'FunctionARN': {
-                'Ref': 'TestFunction22AD90FC',
+                'Fn::GetAtt': [
+                  'TestFunction22AD90FC',
+                  'FunctionARN',
+                ],
               },
             },
           ],

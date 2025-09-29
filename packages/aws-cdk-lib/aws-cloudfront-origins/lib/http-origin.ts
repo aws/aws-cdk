@@ -55,6 +55,15 @@ export interface HttpOriginProps extends cloudfront.OriginProps {
    * @default Duration.seconds(5)
    */
   readonly keepaliveTimeout?: cdk.Duration;
+
+  /**
+   * Specifies which IP protocol CloudFront uses when connecting to your origin.
+   *
+   * If your origin uses both IPv4 and IPv6 protocols, you can choose dualstack to help optimize reliability.
+   *
+   * @default undefined - AWS Cloudfront default is IPv4
+   */
+  readonly ipAddressType?: cloudfront.OriginIpAddressType;
 }
 
 /**
@@ -77,6 +86,7 @@ export class HttpOrigin extends cloudfront.OriginBase {
       httpsPort: this.props.httpsPort,
       originReadTimeout: this.props.readTimeout?.toSeconds(),
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
+      ipAddressType: this.props.ipAddressType,
     };
   }
 }
