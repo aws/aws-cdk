@@ -17,6 +17,7 @@ import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Runtime } from '../../../agentcore/runtime/runtime';
+import { RuntimeEndpoint } from '../../../agentcore/runtime/runtime-endpoint';
 import { AgentRuntimeArtifact } from '../../../agentcore/runtime/runtime-artifact';
 import {
   NetworkMode,
@@ -48,7 +49,7 @@ describe('Runtime default tests', () => {
     const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
 
     runtime = new Runtime(stack, 'test-runtime', {
-      agentRuntimeName: 'test_runtime',
+      runtimeName: 'test_runtime',
       description: 'A test runtime for agent execution',
       agentRuntimeArtifact: agentRuntimeArtifact,
     });
@@ -136,7 +137,7 @@ describe('Runtime with custom execution role tests', () => {
     const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
 
     runtime = new Runtime(stack, 'test-runtime', {
-      agentRuntimeName: 'test_runtime_custom_role',
+      runtimeName: 'test_runtime_custom_role',
       description: 'A test runtime with custom execution role',
       executionRole: customRole,
       agentRuntimeArtifact: agentRuntimeArtifact,
@@ -209,7 +210,7 @@ describe('Runtime with environment variables tests', () => {
     const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
 
     runtime = new Runtime(stack, 'test-runtime', {
-      agentRuntimeName: 'test_runtime_env',
+      runtimeName: 'test_runtime_env',
       description: 'A test runtime with environment variables',
       agentRuntimeArtifact: agentRuntimeArtifact,
       environmentVariables: {
@@ -269,7 +270,7 @@ describe('Runtime with authorizer configuration tests', () => {
     const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
 
     runtime = new Runtime(stack, 'test-runtime', {
-      agentRuntimeName: 'test_runtime_auth',
+      runtimeName: 'test_runtime_auth',
       description: 'A test runtime with authorizer configuration',
       agentRuntimeArtifact: agentRuntimeArtifact,
       authorizerConfiguration: {
@@ -355,7 +356,7 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
     const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
 
     runtime = new Runtime(stack, 'test-runtime', {
-      agentRuntimeName: 'test_runtime_cognito',
+      runtimeName: 'test_runtime_cognito',
       description: 'A test runtime with Cognito authorizer configuration',
       agentRuntimeArtifact: agentRuntimeArtifact,
       authorizerConfiguration: {
@@ -429,7 +430,7 @@ describe('Runtime with MCP protocol tests', () => {
     const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
 
     runtime = new Runtime(stack, 'test-runtime', {
-      agentRuntimeName: 'test_runtime_mcp',
+      runtimeName: 'test_runtime_mcp',
       description: 'A test runtime with MCP protocol',
       agentRuntimeArtifact: agentRuntimeArtifact,
       protocolConfiguration: ProtocolType.MCP,
@@ -481,7 +482,7 @@ describe('Runtime name validation tests', () => {
   test('Should throw error for name with hyphen', () => {
     expect(() => {
       new Runtime(stack, 'test-runtime', {
-        agentRuntimeName: 'test-runtime',
+        runtimeName: 'test-runtime',
         agentRuntimeArtifact: agentRuntimeArtifact,
       });
     }).toThrow('Runtime name must start with a letter and contain only letters, numbers, and underscores');
@@ -490,7 +491,7 @@ describe('Runtime name validation tests', () => {
   test('Should throw error for empty name', () => {
     expect(() => {
       new Runtime(stack, 'empty-name', {
-        agentRuntimeName: '',
+        runtimeName: '',
         agentRuntimeArtifact: agentRuntimeArtifact,
       });
     }).toThrow(/The field Runtime name is 0 characters long but must be at least 1 characters/);
@@ -499,7 +500,7 @@ describe('Runtime name validation tests', () => {
   test('Should throw error for name with spaces', () => {
     expect(() => {
       new Runtime(stack, 'name-with-spaces', {
-        agentRuntimeName: 'test runtime',
+        runtimeName: 'test runtime',
         agentRuntimeArtifact: agentRuntimeArtifact,
       });
     }).toThrow('Runtime name must start with a letter and contain only letters, numbers, and underscores');
@@ -508,7 +509,7 @@ describe('Runtime name validation tests', () => {
   test('Should throw error for name with special characters', () => {
     expect(() => {
       new Runtime(stack, 'name-with-special-chars', {
-        agentRuntimeName: 'test@runtime',
+        runtimeName: 'test@runtime',
         agentRuntimeArtifact: agentRuntimeArtifact,
       });
     }).toThrow('Runtime name must start with a letter and contain only letters, numbers, and underscores');
@@ -518,7 +519,7 @@ describe('Runtime name validation tests', () => {
     const longName = 'a'.repeat(49);
     expect(() => {
       new Runtime(stack, 'long-name', {
-        agentRuntimeName: longName,
+        runtimeName: longName,
         agentRuntimeArtifact: agentRuntimeArtifact,
       });
     }).toThrow(/The field Runtime name is 49 characters long but must be less than or equal to 48 characters/);
@@ -527,7 +528,7 @@ describe('Runtime name validation tests', () => {
   test('Should accept valid name with underscores', () => {
     expect(() => {
       new Runtime(stack, 'valid-name', {
-        agentRuntimeName: 'test_runtime_123',
+        runtimeName: 'test_runtime_123',
         agentRuntimeArtifact: agentRuntimeArtifact,
       });
     }).not.toThrow();
@@ -536,7 +537,7 @@ describe('Runtime name validation tests', () => {
   test('Should accept valid name with only letters and numbers', () => {
     expect(() => {
       new Runtime(stack, 'valid-name-2', {
-        agentRuntimeName: 'testRuntime123',
+        runtimeName: 'testRuntime123',
         agentRuntimeArtifact: agentRuntimeArtifact,
       });
     }).not.toThrow();
@@ -572,7 +573,7 @@ describe('Runtime environment variables validation tests', () => {
 
     expect(() => {
       new Runtime(stack, 'too-many-env-vars', {
-        agentRuntimeName: 'test_runtime',
+        runtimeName: 'test_runtime',
         agentRuntimeArtifact: agentRuntimeArtifact,
         environmentVariables: envVars,
       });
@@ -582,7 +583,7 @@ describe('Runtime environment variables validation tests', () => {
   test('Should throw error for invalid environment variable key format', () => {
     expect(() => {
       new Runtime(stack, 'invalid-env-key', {
-        agentRuntimeName: 'test_runtime',
+        runtimeName: 'test_runtime',
         agentRuntimeArtifact: agentRuntimeArtifact,
         environmentVariables: {
           '123_INVALID': 'value', // Starts with number
@@ -595,20 +596,20 @@ describe('Runtime environment variables validation tests', () => {
     const longKey = 'a'.repeat(101);
     expect(() => {
       new Runtime(stack, 'long-env-key', {
-        agentRuntimeName: 'test_runtime',
+        runtimeName: 'test_runtime',
         agentRuntimeArtifact: agentRuntimeArtifact,
         environmentVariables: {
           [longKey]: 'value',
         },
       });
-    }).toThrow(/Environment variable key .* must be between 1 and 100 characters long/);
+    }).toThrow(/is 101 characters long but must be less than or equal to 100 characters/);
   });
 
   test('Should throw error for environment variable value too long', () => {
     const longValue = 'a'.repeat(2049);
     expect(() => {
       new Runtime(stack, 'long-env-value', {
-        agentRuntimeName: 'test_runtime',
+        runtimeName: 'test_runtime',
         agentRuntimeArtifact: agentRuntimeArtifact,
         environmentVariables: {
           TEST_KEY: longValue,
@@ -620,7 +621,7 @@ describe('Runtime environment variables validation tests', () => {
   test('Should accept valid environment variables', () => {
     expect(() => {
       new Runtime(stack, 'valid-env-vars', {
-        agentRuntimeName: 'test_runtime',
+        runtimeName: 'test_runtime',
         agentRuntimeArtifact: agentRuntimeArtifact,
         environmentVariables: {
           API_KEY: 'test-api-key',
@@ -657,7 +658,7 @@ describe('Runtime with instance-based auth configuration tests', () => {
 
   test('Should create runtime with default IAM auth when no auth specified', () => {
     runtime = new Runtime(stack, 'test-runtime', {
-      agentRuntimeName: 'test_runtime',
+      runtimeName: 'test_runtime',
       agentRuntimeArtifact: agentRuntimeArtifact,
       // No authorizerConfiguration - should default to IAM
     });
@@ -677,7 +678,7 @@ describe('Runtime with instance-based auth configuration tests', () => {
 
   test('Should configure Cognito auth using instance method', () => {
     runtime = new Runtime(stack, 'test-runtime', {
-      agentRuntimeName: 'test_runtime',
+      runtimeName: 'test_runtime',
       agentRuntimeArtifact: agentRuntimeArtifact,
     });
 
@@ -694,7 +695,7 @@ describe('Runtime with instance-based auth configuration tests', () => {
 
   test('Should configure JWT auth using instance method', () => {
     runtime = new Runtime(stack, 'test-runtime', {
-      agentRuntimeName: 'test_runtime',
+      runtimeName: 'test_runtime',
       agentRuntimeArtifact: agentRuntimeArtifact,
     });
 
@@ -716,7 +717,7 @@ describe('Runtime with instance-based auth configuration tests', () => {
 
   test('Should allow multiple auth reconfigurations (last one wins)', () => {
     runtime = new Runtime(stack, 'test-runtime', {
-      agentRuntimeName: 'test_runtime',
+      runtimeName: 'test_runtime',
       agentRuntimeArtifact: agentRuntimeArtifact,
     });
 
@@ -738,7 +739,7 @@ describe('Runtime with instance-based auth configuration tests', () => {
   test('Should work with runtime that has auth in constructor and then reconfigured', () => {
     // Create with Cognito auth in constructor (using direct configuration object)
     runtime = new Runtime(stack, 'test-runtime', {
-      agentRuntimeName: 'test_runtime',
+      runtimeName: 'test_runtime',
       agentRuntimeArtifact: agentRuntimeArtifact,
       authorizerConfiguration: {
         mode: AuthenticationMode.COGNITO,
@@ -792,7 +793,7 @@ describe('Runtime with local asset tests', () => {
     );
 
     runtime = new Runtime(stack, 'test-runtime-local', {
-      agentRuntimeName: 'test_runtime_local',
+      runtimeName: 'test_runtime_local',
       description: 'A test runtime with local asset for agent execution',
       agentRuntimeArtifact: agentRuntimeArtifact,
       networkConfiguration: {
@@ -881,5 +882,416 @@ describe('Runtime with local asset tests', () => {
         ],
       },
     });
+  });
+});
+
+describe('Runtime static methods tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+  });
+
+  test('Should import runtime from attributes', () => {
+    const role = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+    });
+
+    const imported = Runtime.fromAgentRuntimeAttributes(stack, 'ImportedRuntime', {
+      agentRuntimeArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id',
+      agentRuntimeId: 'test-runtime-id',
+      agentRuntimeName: 'test-runtime',
+      role: role,
+      agentRuntimeVersion: '1',
+      description: 'Imported runtime',
+    });
+
+    expect(imported.agentRuntimeArn).toBe('arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id');
+    expect(imported.agentRuntimeId).toBe('test-runtime-id');
+    expect(imported.agentRuntimeName).toBe('test-runtime');
+    expect(imported.role).toBe(role);
+    expect(imported.agentRuntimeVersion).toBe('1');
+    // description is optional and may not exist on the interface
+    expect(imported.agentStatus).toBeUndefined();
+    expect(imported.createdAt).toBeUndefined();
+    expect(imported.lastUpdatedAt).toBeUndefined();
+  });
+});
+
+describe('Runtime with OAuth authorizer tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let repository: ecr.Repository;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should create runtime with OAuth authorizer configuration', () => {
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime_oauth',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      authorizerConfiguration: {
+        mode: AuthenticationMode.OAUTH,
+        oauthAuthorizer: {
+          provider: 'custom',
+          discoveryUrl: 'https://oauth.example.com/.well-known/openid-configuration',
+          clientId: 'oauth-client-123',
+          scopes: ['read', 'write'],
+        },
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    // Should have runtime resource
+    template.resourceCountIs('AWS::BedrockAgentCore::Runtime', 1);
+
+    // Verify the runtime was created
+    expect(runtime.agentRuntimeName).toBe('test_runtime_oauth');
+  });
+});
+
+describe('Runtime with JWT authorizer without mode tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let repository: ecr.Repository;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should create runtime with JWT authorizer when no mode specified', () => {
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime_jwt',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      authorizerConfiguration: {
+        customJWTAuthorizer: {
+          discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
+          allowedClients: ['client1'],
+        },
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    // Should have runtime resource
+    template.resourceCountIs('AWS::BedrockAgentCore::Runtime', 1);
+
+    // Verify the runtime was created
+    expect(runtime.agentRuntimeName).toBe('test_runtime_jwt');
+  });
+});
+
+describe('Runtime addEndpoint tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let repository: ecr.Repository;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should add endpoint to runtime', () => {
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    const endpoint = runtime.addEndpoint('test_endpoint', {
+      description: 'Test endpoint',
+      version: '2',
+    });
+
+    expect(endpoint).toBeInstanceOf(RuntimeEndpoint);
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    // Should have both runtime and endpoint resources
+    template.resourceCountIs('AWS::BedrockAgentCore::Runtime', 1);
+    template.resourceCountIs('AWS::BedrockAgentCore::RuntimeEndpoint', 1);
+  });
+
+  test('Should add endpoint with default version', () => {
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    const endpoint = runtime.addEndpoint('test_endpoint');
+
+    expect(endpoint).toBeInstanceOf(RuntimeEndpoint);
+  });
+});
+
+describe('Runtime with tags tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let repository: ecr.Repository;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should create runtime with valid tags', () => {
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      tags: {
+        'Environment': 'Production',
+        'Team': 'Platform',
+        'Cost-Center': '12345',
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+    expect(runtime.agentRuntimeName).toBe('test_runtime');
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      AgentRuntimeName: 'test_runtime',
+      Tags: {
+        'Environment': 'Production',
+        'Team': 'Platform',
+        'Cost-Center': '12345',
+      },
+    });
+  });
+
+  test('Should throw error for null tag value', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        tags: {
+          TestKey: null as any,
+        },
+      });
+    }).toThrow('Tag value for key "TestKey" cannot be null or undefined');
+  });
+
+  test('Should throw error for undefined tag value', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        tags: {
+          TestKey: undefined as any,
+        },
+      });
+    }).toThrow('Tag value for key "TestKey" cannot be null or undefined');
+  });
+});
+
+describe('Runtime role validation tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let repository: ecr.Repository;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should validate invalid role ARN format', () => {
+    const invalidRole = {
+      roleArn: 'invalid-arn-format',
+      roleName: 'test-role',
+      assumeRoleAction: 'sts:AssumeRole',
+      grantPrincipal: {} as iam.IPrincipal,
+      principalAccount: '123456789012',
+      applyRemovalPolicy: () => {},
+      node: {} as any,
+      stack: stack,
+      env: { account: '123456789012', region: 'us-east-1' },
+    } as unknown as iam.IRole;
+
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        executionRole: invalidRole,
+      });
+    }).toThrow(/Invalid IAM role ARN format/);
+  });
+
+  test('Should validate role ARN with invalid service', () => {
+    const invalidRole = {
+      roleArn: 'arn:aws:s3:::bucket/key',
+      roleName: 'test-role',
+      assumeRoleAction: 'sts:AssumeRole',
+      grantPrincipal: {} as iam.IPrincipal,
+      principalAccount: '123456789012',
+      applyRemovalPolicy: () => {},
+      node: {} as any,
+      stack: stack,
+      env: { account: '123456789012', region: 'us-east-1' },
+    } as unknown as iam.IRole;
+
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        executionRole: invalidRole,
+      });
+    }).toThrow(/Invalid IAM role ARN format/);
+  });
+
+  test('Should validate role ARN with invalid account ID', () => {
+    const invalidRole = {
+      roleArn: 'arn:aws:iam::invalid:role/test-role',
+      roleName: 'test-role',
+      assumeRoleAction: 'sts:AssumeRole',
+      grantPrincipal: {} as iam.IPrincipal,
+      principalAccount: 'invalid',
+      applyRemovalPolicy: () => {},
+      node: {} as any,
+      stack: stack,
+      env: { account: '123456789012', region: 'us-east-1' },
+    } as unknown as iam.IRole;
+
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        executionRole: invalidRole,
+      });
+    }).toThrow(/Invalid IAM role ARN format/);
+  });
+
+  test('Should validate role ARN with missing role name', () => {
+    const invalidRole = {
+      roleArn: 'arn:aws:iam::123456789012:role/',
+      roleName: '',
+      assumeRoleAction: 'sts:AssumeRole',
+      grantPrincipal: {} as iam.IPrincipal,
+      principalAccount: '123456789012',
+      applyRemovalPolicy: () => {},
+      node: {} as any,
+      stack: stack,
+      env: { account: '123456789012', region: 'us-east-1' },
+    } as unknown as iam.IRole;
+
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        executionRole: invalidRole,
+      });
+    }).toThrow(/Invalid IAM role ARN format/);
+  });
+
+  test('Should validate role name exceeding maximum length', () => {
+    const longRoleName = 'a'.repeat(65);
+    const invalidRole = {
+      roleArn: `arn:aws:iam::123456789012:role/${longRoleName}`,
+      roleName: longRoleName,
+      assumeRoleAction: 'sts:AssumeRole',
+      grantPrincipal: {} as iam.IPrincipal,
+      principalAccount: '123456789012',
+      applyRemovalPolicy: () => {},
+      node: {} as any,
+      stack: stack,
+      env: { account: '123456789012', region: 'us-east-1' },
+    } as unknown as iam.IRole;
+
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        executionRole: invalidRole,
+      });
+    }).toThrow(/Role name exceeds maximum length of 64 characters/);
+  });
+
+  test('Should validate role ARN with invalid resource type', () => {
+    const invalidRole = {
+      roleArn: 'arn:aws:iam::123456789012:user/test-user',
+      roleName: 'test-user',
+      assumeRoleAction: 'sts:AssumeRole',
+      grantPrincipal: {} as iam.IPrincipal,
+      principalAccount: '123456789012',
+      applyRemovalPolicy: () => {},
+      node: {} as any,
+      stack: stack,
+      env: { account: '123456789012', region: 'us-east-1' },
+    } as unknown as iam.IRole;
+
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        executionRole: invalidRole,
+      });
+    }).toThrow(/Invalid IAM role ARN format/);
   });
 });

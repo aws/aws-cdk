@@ -13,7 +13,6 @@
 
 import { Duration, Stack, Annotations, Token, Arn, ArnFormat, Lazy } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -45,7 +44,7 @@ export interface RuntimeProps {
    * Must start with a letter and can be up to 48 characters long
    * Pattern: ^[a-zA-Z][a-zA-Z0-9_]{0,47}$
    */
-  readonly agentRuntimeName: string;
+  readonly runtimeName: string;
 
   /**
    * The artifact configuration for the agent runtime
@@ -118,14 +117,6 @@ export interface AddEndpointOptions {
   readonly version?: string;
 }
 
-/**
- * Network configuration update options
- */
-export interface NetworkConfigurationUpdate {
-  readonly securityGroups?: ec2.ISecurityGroup[];
-  readonly subnets?: ec2.SubnetSelection;
-}
-
 /******************************************************************************
  *                                Class
  *****************************************************************************/
@@ -179,11 +170,17 @@ export class Runtime extends RuntimeBase {
   public readonly role: iam.IRole;
   public readonly agentRuntimeVersion?: string;
   public readonly agentStatus?: string;
+  /**
+   * Optional description for the agent runtime
+   */
   public readonly description?: string;
   public readonly createdAt?: string;
   public readonly lastUpdatedAt?: string;
   public readonly grantPrincipal: iam.IPrincipal;
   private readonly runtimeResource: bedrockagentcore.CfnRuntime;
+  /**
+   * The artifact configuration for the agent runtime
+   */
   public readonly agentRuntimeArtifact: AgentRuntimeArtifact;
   private readonly networkConfiguration: NetworkConfiguration;
   private readonly protocolConfiguration: ProtocolType;
@@ -195,7 +192,7 @@ export class Runtime extends RuntimeBase {
     // CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.agentRuntimeName = props.agentRuntimeName;
+    this.agentRuntimeName = props.runtimeName;
     this.validateRuntimeName();
 
     this.description = props.description;

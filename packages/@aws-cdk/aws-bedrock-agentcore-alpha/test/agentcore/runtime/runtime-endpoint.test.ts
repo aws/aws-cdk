@@ -11,6 +11,7 @@
  *  and limitations under the License.
  */
 
+import * as cdk from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { RuntimeEndpoint } from '../../../agentcore/runtime/runtime-endpoint';
@@ -155,7 +156,7 @@ describe('RuntimeEndpoint tests', () => {
           agentRuntimeId: 'test_runtime_id',
           agentRuntimeVersion: '123456',
         });
-      }).toThrow(/Agent runtime version must be between 1 and 5 characters long/);
+      }).toThrow(/is 6 characters long but must be less than or equal to 5 characters/);
     });
 
     test('Should accept valid endpoint name with underscores', () => {
@@ -191,7 +192,7 @@ describe('RuntimeEndpoint tests', () => {
             [longKey]: 'value',
           },
         });
-      }).toThrow(/Tag key .* must be between 1 and 256 characters long/);
+      }).toThrow(/is 257 characters long but must be less than or equal to 256 characters/);
     });
 
     test('Should throw error for tag value too long', () => {
@@ -205,7 +206,7 @@ describe('RuntimeEndpoint tests', () => {
             TestKey: longValue,
           },
         });
-      }).toThrow(/Tag value .* must be between 0 and 256 characters long/);
+      }).toThrow(/is 257 characters long but must be less than or equal to 256 characters/);
     });
 
     test('Should throw error for invalid tag key characters', () => {
@@ -232,6 +233,122 @@ describe('RuntimeEndpoint tests', () => {
             'Project:Name': 'BedrockAgentCore',
             'aws:tag': 'value',
             'Key_with-special.chars': 'value@123',
+          },
+        });
+      }).not.toThrow();
+    });
+  });
+
+  describe('RuntimeEndpoint static methods tests', () => {
+    test('Should import endpoint from attributes', () => {
+      const imported = RuntimeEndpoint.fromAgentRuntimeEndpointAttributes(stack, 'ImportedEndpoint', {
+        agentRuntimeEndpointArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:endpoint/test-endpoint-id',
+        endpointName: 'test-endpoint',
+        agentRuntimeArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id',
+        description: 'Imported endpoint',
+      });
+
+      expect(imported.agentRuntimeEndpointArn).toBe('arn:aws:bedrock-agentcore:us-east-1:123456789012:endpoint/test-endpoint-id');
+      expect(imported.endpointName).toBe('test-endpoint');
+      expect(imported.agentRuntimeArn).toBe('arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id');
+      expect(imported.description).toBe('Imported endpoint');
+      expect(imported.status).toBeUndefined();
+      expect(imported.targetVersion).toBeUndefined();
+      expect(imported.createdAt).toBeUndefined();
+    });
+  });
+
+  describe('RuntimeEndpoint updateRuntimeVersion tests', () => {
+    test('Should update runtime version', () => {
+      const endpoint = new RuntimeEndpoint(stack, 'TestEndpoint', {
+        endpointName: 'test_endpoint',
+        agentRuntimeId: 'test_runtime_id',
+        agentRuntimeVersion: '1',
+      });
+
+      endpoint.updateRuntimeVersion('2');
+
+      // The version should be updated
+      expect((endpoint as any).agentRuntimeVersion).toBe('2');
+    });
+  });
+
+  describe('RuntimeEndpoint with empty tag values', () => {
+    test('Should accept empty tag value', () => {
+      expect(() => {
+        new RuntimeEndpoint(stack, 'TestEndpoint', {
+          endpointName: 'test_endpoint',
+          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeVersion: '1',
+          tags: {
+            EmptyTag: '',
+          },
+        });
+      }).not.toThrow();
+    });
+  });
+
+  describe('RuntimeEndpoint validation with tokens', () => {
+    test('Should skip validation for token-based endpoint name', () => {
+      const tokenName = cdk.Lazy.string({ produce: () => 'test_endpoint' });
+
+      expect(() => {
+        new RuntimeEndpoint(stack, 'TestEndpoint', {
+          endpointName: tokenName,
+          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeVersion: '1',
+        });
+      }).not.toThrow();
+    });
+
+    test('Should skip validation for token-based runtime ID', () => {
+      const tokenId = cdk.Lazy.string({ produce: () => 'test_runtime_id' });
+
+      expect(() => {
+        new RuntimeEndpoint(stack, 'TestEndpoint', {
+          endpointName: 'test_endpoint',
+          agentRuntimeId: tokenId,
+          agentRuntimeVersion: '1',
+        });
+      }).not.toThrow();
+    });
+
+    test('Should skip validation for token-based runtime version', () => {
+      const tokenVersion = cdk.Lazy.string({ produce: () => '1' });
+
+      expect(() => {
+        new RuntimeEndpoint(stack, 'TestEndpoint', {
+          endpointName: 'test_endpoint',
+          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeVersion: tokenVersion,
+        });
+      }).not.toThrow();
+    });
+
+    test('Should skip validation for token-based description', () => {
+      const tokenDescription = cdk.Lazy.string({ produce: () => 'Test description' });
+
+      expect(() => {
+        new RuntimeEndpoint(stack, 'TestEndpoint', {
+          endpointName: 'test_endpoint',
+          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeVersion: '1',
+          description: tokenDescription,
+        });
+      }).not.toThrow();
+    });
+
+    test('Should skip validation for token-based tag keys and values', () => {
+      const tokenKey = cdk.Lazy.string({ produce: () => 'TestKey' });
+      const tokenValue = cdk.Lazy.string({ produce: () => 'TestValue' });
+
+      expect(() => {
+        new RuntimeEndpoint(stack, 'TestEndpoint', {
+          endpointName: 'test_endpoint',
+          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeVersion: '1',
+          tags: {
+            [tokenKey]: tokenValue,
           },
         });
       }).not.toThrow();

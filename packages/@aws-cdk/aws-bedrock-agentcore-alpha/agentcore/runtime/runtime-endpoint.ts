@@ -112,9 +112,21 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
   public readonly targetVersion?: string;
   public readonly createdAt?: string;
   public readonly description?: string;
+  /**
+   * The unique identifier of the runtime endpoint
+   */
   public readonly endpointId: string;
+  /**
+   * The ID of the agent runtime associated with this endpoint
+   */
   public readonly agentRuntimeId: string;
+  /**
+   * The version of the agent runtime used by this endpoint
+   */
   public readonly agentRuntimeVersion: string;
+  /**
+   * When this endpoint was last updated
+   */
   public readonly lastUpdatedAt?: string;
 
   private readonly endpointResource: bedrockagentcore.CfnRuntimeEndpoint;

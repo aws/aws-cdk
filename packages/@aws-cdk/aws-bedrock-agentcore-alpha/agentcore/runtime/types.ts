@@ -41,34 +41,14 @@ export enum ProtocolType {
 }
 
 /**
- * Agent runtime status
- */
-export enum AgentStatus {
-  CREATING = 'CREATING',
-  CREATE_FAILED = 'CREATE_FAILED',
-  UPDATING = 'UPDATING',
-  UPDATE_FAILED = 'UPDATE_FAILED',
-  READY = 'READY',
-  DELETING = 'DELETING',
-}
-
-/******************************************************************************
- *                           Network Configuration
- *****************************************************************************/
-
-/**
  * Network configuration for Agent Runtime
  */
 export interface NetworkConfiguration {
   /**
-   * The network mode for the agent runtime
+   * Network mode for the runtime
    */
   readonly networkMode: NetworkMode;
 }
-
-/******************************************************************************
- *                         Authorizer Configuration
- *****************************************************************************/
 
 /**
  * Authentication mode for Agent Runtime
@@ -111,16 +91,19 @@ export interface AuthorizerConfigurationRuntime {
 
   /**
    * Custom JWT authorizer configuration
+   * @default - No custom JWT authorizer
    */
   readonly customJWTAuthorizer?: CustomJWTAuthorizerConfigurationRuntime;
 
   /**
    * Cognito authorizer configuration (required when mode is COGNITO)
+   * @default - No Cognito authorizer
    */
   readonly cognitoAuthorizer?: CognitoAuthorizerConfiguration;
 
   /**
    * OAuth authorizer configuration (required when mode is OAUTH)
+   * @default - No OAuth authorizer
    */
   readonly oauthAuthorizer?: OAuthAuthorizerConfiguration;
 }
@@ -137,11 +120,13 @@ export interface CustomJWTAuthorizerConfigurationRuntime {
 
   /**
    * List of allowed audiences
+   * @default - No audience validation
    */
   readonly allowedAudience?: string[];
 
   /**
    * List of allowed clients
+   * @default - No client validation
    */
   readonly allowedClients?: string[];
 }
@@ -190,6 +175,7 @@ export interface OAuthAuthorizerConfiguration {
 
   /**
    * Allowed OAuth scopes
+   * @default - No scope restrictions
    */
   readonly scopes?: string[];
 }

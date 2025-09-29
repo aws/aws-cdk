@@ -5,29 +5,23 @@
 /// !cdk-integ aws-cdk-bedrock-agentcore-runtime
 
 import * as cdk from 'aws-cdk-lib';
-import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as agentcore from '../../../agentcore';
+import * as path from 'path';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-bedrock-agentcore-runtime');
 
-// Create ECR repository for runtime artifact
-const repository = new ecr.Repository(stack, 'RuntimeRepository', {
-  repositoryName: 'agentcore-runtime-integ',
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
-});
-
-// Create runtime artifact from ECR
-const runtimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(
-  repository,
-  'latest',
+// Create runtime artifact from local asset
+// This will automatically build the Docker image and push it to ECR
+const runtimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
+  path.join(__dirname, 'testArtifact'),
 );
 
 // Create a basic runtime
 const basicRuntime = new agentcore.Runtime(stack, 'BasicRuntime', {
-  agentRuntimeName: 'basic_runtime',
+  runtimeName: 'basic_runtime',
   description: 'Basic runtime for integration testing',
   agentRuntimeArtifact: runtimeArtifact,
   protocolConfiguration: agentcore.ProtocolType.HTTP,
@@ -38,7 +32,7 @@ const basicRuntime = new agentcore.Runtime(stack, 'BasicRuntime', {
 
 // Create runtime with environment variables
 const runtimeWithEnv = new agentcore.Runtime(stack, 'RuntimeWithEnv', {
-  agentRuntimeName: 'runtime_with_env',
+  runtimeName: 'runtime_with_env',
   description: 'Runtime with environment variables',
   agentRuntimeArtifact: runtimeArtifact,
   environmentVariables: {
@@ -50,7 +44,7 @@ const runtimeWithEnv = new agentcore.Runtime(stack, 'RuntimeWithEnv', {
 
 // Create runtime with JWT authentication
 new agentcore.Runtime(stack, 'RuntimeWithAuth', {
-  agentRuntimeName: 'runtime_with_auth',
+  runtimeName: 'runtime_with_auth',
   description: 'Runtime with JWT authentication',
   agentRuntimeArtifact: runtimeArtifact,
   authorizerConfiguration: {
@@ -70,7 +64,7 @@ const customRole = new iam.Role(stack, 'CustomExecutionRole', {
 });
 
 new agentcore.Runtime(stack, 'RuntimeWithCustomRole', {
-  agentRuntimeName: 'runtime_custom_role',
+  runtimeName: 'runtime_custom_role',
   description: 'Runtime with custom execution role',
   agentRuntimeArtifact: runtimeArtifact,
   executionRole: customRole,

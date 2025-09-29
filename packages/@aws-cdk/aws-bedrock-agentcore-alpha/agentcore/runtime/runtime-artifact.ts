@@ -27,6 +27,10 @@ export interface AgentRuntimeArtifactConfig {
   readonly containerUri: string;
 }
 
+/**
+ * Abstract base class for agent runtime artifacts.
+ * Provides methods to reference container images from ECR repositories or local assets.
+ */
 export abstract class AgentRuntimeArtifact {
   /**
    * Reference an image in an ECR repository
