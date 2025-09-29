@@ -160,6 +160,11 @@ test('Magic CodePipeline variables passed to synth envvars must be rendered in t
 });
 
 test('CodeBuild: environment variables specified in multiple places are correctly merged', () => {
+  const vpc = new ec2.Vpc(pipelineStack, 'Vpc');
+  const securityGroup = new ec2.SecurityGroup(pipelineStack, 'SecurityGroup', {
+    vpc,
+  });
+
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk-1', {
     synth: new CodeBuildStep('Synth', {
       env: {
@@ -177,6 +182,10 @@ test('CodeBuild: environment variables specified in multiple places are correctl
           INNER_VAR: { value: 'InnerValue' },
         },
         privileged: true,
+        dockerServer: {
+          computeType: cbuild.DockerServerComputeType.SMALL,
+          securityGroups: [securityGroup],
+        },
       },
     }),
   });
@@ -218,6 +227,12 @@ test('CodeBuild: environment variables specified in multiple places are correctl
           Value: 'SomeValue',
         },
       ]),
+      DockerServer: {
+        ComputeType: 'BUILD_GENERAL1_SMALL',
+        SecurityGroupIds: [{
+          'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'],
+        }],
+      },
     }),
     Source: {
       BuildSpec: Match.serializedJson(Match.objectLike({

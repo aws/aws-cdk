@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "183c52f2f5b34a4f411a4ed8cf99c0ecaae34e5303f8886d0f131e3dbdd623ca": {
+      "displayName": "aws-cdk-docdb-cluster-serverless Template",
+      "source": {
+        "path": "aws-cdk-docdb-cluster-serverless.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-e099cbb1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "183c52f2f5b34a4f411a4ed8cf99c0ecaae34e5303f8886d0f131e3dbdd623ca.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
