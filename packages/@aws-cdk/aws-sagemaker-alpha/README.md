@@ -223,6 +223,8 @@ to initialize and you want to avoid premature health check failures:
 ```typescript
 import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 
+declare const model: sagemaker.Model;
+
 const endpointConfig = new sagemaker.EndpointConfig(this, 'EndpointConfig', {
   instanceProductionVariants: [
     {
@@ -244,7 +246,6 @@ Amazon SageMaker Serverless Inference is a purpose-built inference option that m
 To create a serverless endpoint configuration, use the `serverlessProductionVariant` property:
 
 ```typescript
-import * as cdk from 'aws-cdk-lib';
 import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 
 declare const model: sagemaker.Model;

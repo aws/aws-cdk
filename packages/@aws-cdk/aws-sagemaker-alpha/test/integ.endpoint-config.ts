@@ -5,44 +5,7 @@ import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import * as sagemaker from '../lib';
 
 /*
-<<<<<<< HEAD
  * Stack verification is performed using API assertions below.
-=======
- * Stack verification steps:
- * aws sagemaker describe-endpoint-config --endpoint-config-name <endpoint config name>
- *
- * The above command will result in the following output.
- *
- *   {
- *     "EndpointConfigName": "EndpointConfig...",
- *     "EndpointConfigArn": "arn:aws:sagemaker:...",
- *     "ProductionVariants": [
- *         {
- *             "VariantName": "firstVariant",
- *             "ModelName": "ModelWithArtifactAndVpcModel...",
- *             "InitialInstanceCount": 1,
- *             "InstanceType": "ml.m5.large",
- *             "InitialVariantWeight": 1.0,
- *             "ContainerStartupHealthCheckTimeoutInSeconds": 300
- *         },
- *         {
- *             "VariantName": "secondVariant",
- *             "ModelName": "ModelWithArtifactAndVpcModel...",
- *             "InitialInstanceCount": 1,
- *             "InstanceType": "ml.t2.medium",
- *             "InitialVariantWeight": 1.0
- *         },
- *         {
- *             "VariantName": "thirdVariant",
- *             "ModelName": "ModelWithoutArtifactAndVpcModel...",
- *             "InitialInstanceCount": 1,
- *             "InstanceType": "ml.t2.medium",
- *             "InitialVariantWeight": 2.0
- *         }
- *     ],
- *     "CreationTime": "..."
- *   }
->>>>>>> 2502a3ca73 (feat(sagemaker): add containerStartupHealthCheckTimeout integration test implement)
  */
 
 const app = new cdk.App();

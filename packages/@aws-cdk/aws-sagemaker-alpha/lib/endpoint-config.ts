@@ -527,7 +527,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       },
     }];
   }
-  
+
   /**
    * Validate the container startup health check timeout.
    */
