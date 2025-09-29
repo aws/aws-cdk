@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.217.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.216.0-alpha.0...v2.217.0-alpha.0) (2025-09-25)
+
+## [2.216.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.215.0-alpha.0...v2.216.0-alpha.0) (2025-09-22)
+
+## [2.215.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.214.0-alpha.0...v2.215.0-alpha.0) (2025-09-15)
+
+
+### Bug Fixes
+
+* **bedrock-alpha:** added missing validation when prompt uses default variant ([#35366](https://github.com/aws/aws-cdk/issues/35366)) ([cbd271e](https://github.com/aws/aws-cdk/commit/cbd271e36b68adbbaa1c87f95e7b99eaf3817264))
+
 ## [2.214.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.213.0-alpha.0...v2.214.0-alpha.0) (2025-09-02)
 
 

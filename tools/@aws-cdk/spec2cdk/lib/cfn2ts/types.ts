@@ -8,6 +8,13 @@ export interface CodeGeneratorOptions {
    * @default '@aws-cdk/core'
    */
   readonly coreImport?: string;
+
+  /**
+   * Automatically generate service suffixes
+   *
+   * @default false
+   */
+  readonly autoGenerateSuffixes?: boolean;
 }
 
 export interface AugmentationsGeneratorOptions {
@@ -36,12 +43,21 @@ export interface GenerateAllOptions extends CodeGeneratorOptions, AugmentationsG
 }
 
 /**
+ * A data structure holding information about a single scope in a generated module.
+ */
+export interface ModuleMapScope {
+  readonly namespace: string;
+  readonly suffix?: string;
+  readonly deprecated?: string;
+}
+
+/**
  * A data structure holding information about a generated module.
  */
 export interface ModuleMapEntry {
   name: string;
   definition?: pkglint.ModuleDefinition;
-  scopes: string[];
+  scopes: ModuleMapScope[];
   resources: Record<string, string>;
   files: string[];
 }

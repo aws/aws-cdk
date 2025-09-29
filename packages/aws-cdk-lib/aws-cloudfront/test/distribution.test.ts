@@ -1303,7 +1303,7 @@ test('render distribution behavior with realtime log config', () => {
       DistributionConfig: {
         DefaultCacheBehavior: {
           RealtimeLogConfigArn: {
-            'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+            Ref: 'RealtimeConfigB6004E8E',
           },
         },
       },
@@ -1349,14 +1349,14 @@ test('render distribution behavior with realtime log config - multiple behaviors
       DistributionConfig: {
         DefaultCacheBehavior: {
           RealtimeLogConfigArn: {
-            'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+            Ref: 'RealtimeConfigB6004E8E',
           },
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
         },
         CacheBehaviors: [{
           PathPattern: '/api/*',
           RealtimeLogConfigArn: {
-            'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+            Ref: 'RealtimeConfigB6004E8E',
           },
           TargetOriginId: 'StackMyDistOrigin20B96F3AD',
         }],

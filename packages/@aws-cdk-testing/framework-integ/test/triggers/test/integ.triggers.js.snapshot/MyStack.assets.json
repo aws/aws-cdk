@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "9c26b6db098782e57b9743bd698ea29ced24bca7524cd71f6f395a318d921897": {
       "displayName": "MyStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider Code",
@@ -29,16 +29,16 @@
         }
       }
     },
-    "7e806852e71037088a115997532623001652c8779f67b78069588b2e8b0243f2": {
+    "28908c92c725ebe4ef31eb552a60c2e1708c31f7e6d0f5604bce0cacb9258993": {
       "displayName": "MyStack Template",
       "source": {
         "path": "MyStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-1753639c": {
+        "current_account-current_region-c6b5c319": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7e806852e71037088a115997532623001652c8779f67b78069588b2e8b0243f2.json",
+          "objectKey": "28908c92c725ebe4ef31eb552a60c2e1708c31f7e6d0f5604bce0cacb9258993.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

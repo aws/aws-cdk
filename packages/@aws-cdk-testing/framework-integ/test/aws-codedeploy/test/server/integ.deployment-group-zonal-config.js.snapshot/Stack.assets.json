@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "Stack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "d72ab47740632f84dcb74463ecd9739f6bcbbd393c017440a9a26900bb4d82c2": {
+    "1ba7ef2a1ef3c8d299bb905b1d1ce575a75e323138c9e9a1a4a9f1b223fc7f97": {
       "displayName": "Stack Template",
       "source": {
         "path": "Stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-ce4098db": {
+        "current_account-current_region-3608fd28": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d72ab47740632f84dcb74463ecd9739f6bcbbd393c017440a9a26900bb4d82c2.json",
+          "objectKey": "1ba7ef2a1ef3c8d299bb905b1d1ce575a75e323138c9e9a1a4a9f1b223fc7f97.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

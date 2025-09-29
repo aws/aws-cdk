@@ -125,7 +125,7 @@ export async function main(argv: string[]) {
       if (!service.includes('::')) {
         throw new EvalError(`Each service must be in the form <Partition>::<Service>, e.g. AWS::S3. Got: ${service}`);
       }
-      moduleMap[service.toLocaleLowerCase().split('::').join('-')] = { services: [service] };
+      moduleMap[service.toLocaleLowerCase().split('::').join('-')] = { services: [{ namespace: service }] };
     }
     await generate(moduleMap, generatorOptions);
     return;
@@ -139,6 +139,7 @@ function stringOr(pat: unknown, def: string) {
     return def;
   }
   if (typeof pat !== 'string') {
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
     throw new Error(`Expected string, got: ${JSON.stringify(pat)}`);
   }
   return pat;

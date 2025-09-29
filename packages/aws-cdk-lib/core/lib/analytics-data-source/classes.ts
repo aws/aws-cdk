@@ -336,16 +336,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'isPubliclyAccessible': 'boolean',
       'healthCheck': '*',
-      'kmsKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'kmsKey': '*',
       'ipAddressType': 'IpAddressType',
       'observabilityConfiguration': {
         'observabilityConfigurationName': '*',
@@ -539,28 +530,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'owner': '*',
       'repositoryName': '*',
       'accessToken': '*',
-      'contentsBucket': {
-        'bucketArn': '*',
-        'bucketName': '*',
-        'bucketWebsiteUrl': '*',
-        'bucketWebsiteDomainName': '*',
-        'bucketDomainName': '*',
-        'bucketDualStackDomainName': '*',
-        'bucketRegionalDomainName': '*',
-        'isWebsite': 'boolean',
-        'encryptionKey': {
-          'keyArn': '*',
-          'keyId': '*',
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        },
-        'policy': '*',
-        'replicationRoleArn': '*'
-      },
+      'contentsBucket': '*',
       'contentsKey': '*',
       'contentsS3Version': '*',
       'enableIssues': 'boolean',
@@ -1819,42 +1789,15 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'securityConfigurationName': '*',
       'cloudWatchEncryption': {
         'mode': 'CloudWatchEncryptionMode',
-        'kmsKey': {
-          'keyArn': '*',
-          'keyId': '*',
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        }
+        'kmsKey': '*'
       },
       'jobBookmarksEncryption': {
         'mode': 'JobBookmarksEncryptionMode',
-        'kmsKey': {
-          'keyArn': '*',
-          'keyId': '*',
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        }
+        'kmsKey': '*'
       },
       's3Encryption': {
         'mode': 'S3EncryptionMode',
-        'kmsKey': {
-          'keyArn': '*',
-          'keyId': '*',
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        }
+        'kmsKey': '*'
       }
     },
     'Table': {}
@@ -1949,28 +1892,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'playbackKeyPairName': '*'
     },
     'RecordingConfiguration': {
-      'bucket': {
-        'bucketArn': '*',
-        'bucketName': '*',
-        'bucketWebsiteUrl': '*',
-        'bucketWebsiteDomainName': '*',
-        'bucketDomainName': '*',
-        'bucketDualStackDomainName': '*',
-        'bucketRegionalDomainName': '*',
-        'isWebsite': 'boolean',
-        'encryptionKey': {
-          'keyArn': '*',
-          'keyId': '*',
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        },
-        'policy': '*',
-        'replicationRoleArn': '*'
-      },
+      'bucket': '*',
       'recordingConfigurationName': '*',
       'recordingReconnectWindow': '*',
       'renditionConfiguration': '*',
@@ -2335,26 +2257,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'filesystem': '*',
       'allowPublicSubnet': 'boolean',
-      'environmentEncryption': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'codeSigningConfig': {
-        'codeSigningConfigArn': '*',
-        'codeSigningConfigId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'environmentEncryption': '*',
+      'codeSigningConfig': '*',
       'architectures': '*',
       'architecture': '*',
       'runtimeManagementMode': '*',
@@ -2610,26 +2514,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'filesystem': '*',
       'allowPublicSubnet': 'boolean',
-      'environmentEncryption': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'codeSigningConfig': {
-        'codeSigningConfigArn': '*',
-        'codeSigningConfigId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'environmentEncryption': '*',
+      'codeSigningConfig': '*',
       'architectures': '*',
       'architecture': '*',
       'runtimeManagementMode': '*',
@@ -2707,16 +2593,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'GeofenceCollection': {
       'geofenceCollectionName': '*',
       'description': '*',
-      'kmsKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'kmsKey': '*',
       'grant': [
         {
           'grantPrincipal': {
@@ -2816,16 +2693,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'trackerName': '*',
       'description': '*',
       'eventBridgeEnabled': 'boolean',
-      'kmsKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'kmsKey': '*',
       'kmsKeyEnableGeospatialQueries': 'boolean',
       'positionFiltering': 'PositionFiltering',
       'geofenceCollections': {
@@ -2946,16 +2814,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'ebsStorageInfo': {
         'volumeSize': '*',
-        'encryptionKey': {
-          'keyArn': '*',
-          'keyId': '*',
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        }
+        'encryptionKey': '*'
       },
       'storageMode': 'StorageMode',
       'configurationInfo': {
@@ -3057,16 +2916,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'engineVersion': '*',
       'backupRetention': '*',
       'preferredBackupWindow': '*',
-      'kmsKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'kmsKey': '*',
       'storageEncrypted': 'boolean',
       'instances': '*',
       'dbClusterName': '*',
@@ -3366,16 +3216,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'clusterType': 'ClusterType',
       'port': '*',
       'encrypted': 'boolean',
-      'encryptionKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'encryptionKey': '*',
       'preferredMaintenanceWindow': '*',
       'vpc': {
         'vpcId': '*',
@@ -3775,28 +3616,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
   },
   '@aws-cdk.aws-s3objectlambda-alpha': {
     'AccessPoint': {
-      'bucket': {
-        'bucketArn': '*',
-        'bucketName': '*',
-        'bucketWebsiteUrl': '*',
-        'bucketWebsiteDomainName': '*',
-        'bucketDomainName': '*',
-        'bucketDualStackDomainName': '*',
-        'bucketRegionalDomainName': '*',
-        'isWebsite': 'boolean',
-        'encryptionKey': {
-          'keyArn': '*',
-          'keyId': '*',
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        },
-        'policy': '*',
-        'replicationRoleArn': '*'
-      },
+      'bucket': '*',
       'handler': {
         'functionName': '*',
         'functionArn': '*',
@@ -3963,16 +3783,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
   '@aws-cdk.aws-sagemaker-alpha': {
     'EndpointConfig': {
       'endpointConfigName': '*',
-      'encryptionKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'encryptionKey': '*',
       'instanceProductionVariants': {
         'acceleratorType': '*',
         'initialInstanceCount': '*',
@@ -4551,16 +4362,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'coreDnsComputeType': 'CoreDnsComputeType',
       'endpointAccess': '*',
       'prune': 'boolean',
-      'secretsEncryptionKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'secretsEncryptionKey': '*',
       'ipFamily': 'IpFamily',
       'serviceIpv4Cidr': '*',
       'albController': {
@@ -5114,16 +4916,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'coreDnsComputeType': 'CoreDnsComputeType',
       'endpointAccess': '*',
       'prune': 'boolean',
-      'secretsEncryptionKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'secretsEncryptionKey': '*',
       'ipFamily': 'IpFamily',
       'serviceIpv4Cidr': '*',
       'albController': {
@@ -5727,71 +5520,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       }
     },
     'BasePathMapping': {
-      'domainName': {
-        'domainName': '*',
-        'domainNameAliasDomainName': '*',
-        'domainNameAliasHostedZoneId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'restApi': {
-        'restApiId': '*',
-        'restApiName': '*',
-        'restApiRootResourceId': '*',
-        'latestDeployment': '*',
-        'deploymentStage': '*',
-        'root': {
-          'restApi': '*',
-          'resourceId': '*',
-          'path': '*',
-          'defaultIntegration': '*',
-          'defaultMethodOptions': {
-            'operationName': '*',
-            'authorizationType': 'AuthorizationType',
-            'authorizer': {
-              'authorizerId': '*',
-              'authorizationType': 'AuthorizationType'
-            },
-            'apiKeyRequired': 'boolean',
-            'methodResponses': {
-              'statusCode': '*',
-              'responseParameters': '*',
-              'responseModels': '*'
-            },
-            'requestParameters': '*',
-            'requestModels': '*',
-            'requestValidator': {
-              'requestValidatorId': '*',
-              'stack': '*',
-              'env': {
-                'account': '*',
-                'region': '*'
-              },
-              'node': '*'
-            },
-            'authorizationScopes': '*',
-            'requestValidatorOptions': {
-              'requestValidatorName': '*',
-              'validateRequestBody': 'boolean',
-              'validateRequestParameters': 'boolean'
-            }
-          },
-          'defaultCorsPreflightOptions': {
-            'statusCode': '*',
-            'allowOrigins': '*',
-            'allowHeaders': '*',
-            'allowMethods': '*',
-            'allowCredentials': 'boolean',
-            'maxAge': '*',
-            'disableCache': 'boolean',
-            'exposeHeaders': '*'
-          }
-        }
-      },
+      'domainName': '*',
+      'restApi': '*',
       'basePath': '*',
       'stage': '*',
       'attachToStage': 'boolean'
@@ -5956,60 +5686,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'basePath': '*',
       'addBasePathMapping': [
-        {
-          'restApiId': '*',
-          'restApiName': '*',
-          'restApiRootResourceId': '*',
-          'latestDeployment': '*',
-          'deploymentStage': '*',
-          'root': {
-            'restApi': '*',
-            'resourceId': '*',
-            'path': '*',
-            'defaultIntegration': '*',
-            'defaultMethodOptions': {
-              'operationName': '*',
-              'authorizationType': 'AuthorizationType',
-              'authorizer': {
-                'authorizerId': '*',
-                'authorizationType': 'AuthorizationType'
-              },
-              'apiKeyRequired': 'boolean',
-              'methodResponses': {
-                'statusCode': '*',
-                'responseParameters': '*',
-                'responseModels': '*'
-              },
-              'requestParameters': '*',
-              'requestModels': '*',
-              'requestValidator': {
-                'requestValidatorId': '*',
-                'stack': '*',
-                'env': {
-                  'account': '*',
-                  'region': '*'
-                },
-                'node': '*'
-              },
-              'authorizationScopes': '*',
-              'requestValidatorOptions': {
-                'requestValidatorName': '*',
-                'validateRequestBody': 'boolean',
-                'validateRequestParameters': 'boolean'
-              }
-            },
-            'defaultCorsPreflightOptions': {
-              'statusCode': '*',
-              'allowOrigins': '*',
-              'allowHeaders': '*',
-              'allowMethods': '*',
-              'allowCredentials': 'boolean',
-              'maxAge': '*',
-              'disableCache': 'boolean',
-              'exposeHeaders': '*'
-            }
-          }
-        },
+        '*',
         {
           'basePath': '*',
           'stage': '*',
@@ -6017,63 +5694,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ],
       'addApiMapping': [
-        {
-          'stageName': '*',
-          'restApi': {
-            'restApiId': '*',
-            'restApiName': '*',
-            'restApiRootResourceId': '*',
-            'latestDeployment': '*',
-            'deploymentStage': '*',
-            'root': {
-              'restApi': '*',
-              'resourceId': '*',
-              'path': '*',
-              'defaultIntegration': '*',
-              'defaultMethodOptions': {
-                'operationName': '*',
-                'authorizationType': 'AuthorizationType',
-                'authorizer': {
-                  'authorizerId': '*',
-                  'authorizationType': 'AuthorizationType'
-                },
-                'apiKeyRequired': 'boolean',
-                'methodResponses': {
-                  'statusCode': '*',
-                  'responseParameters': '*',
-                  'responseModels': '*'
-                },
-                'requestParameters': '*',
-                'requestModels': '*',
-                'requestValidator': {
-                  'requestValidatorId': '*',
-                  'stack': '*',
-                  'env': {
-                    'account': '*',
-                    'region': '*'
-                  },
-                  'node': '*'
-                },
-                'authorizationScopes': '*',
-                'requestValidatorOptions': {
-                  'requestValidatorName': '*',
-                  'validateRequestBody': 'boolean',
-                  'validateRequestParameters': 'boolean'
-                }
-              },
-              'defaultCorsPreflightOptions': {
-                'statusCode': '*',
-                'allowOrigins': '*',
-                'allowHeaders': '*',
-                'allowMethods': '*',
-                'allowCredentials': 'boolean',
-                'maxAge': '*',
-                'disableCache': 'boolean',
-                'exposeHeaders': '*'
-              }
-            }
-          }
-        },
+        '*',
         {
           'basePath': '*'
         }
@@ -6621,63 +6242,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ],
       'metric': [
         '*',
-        {
-          'stageName': '*',
-          'restApi': {
-            'restApiId': '*',
-            'restApiName': '*',
-            'restApiRootResourceId': '*',
-            'latestDeployment': '*',
-            'deploymentStage': '*',
-            'root': {
-              'restApi': '*',
-              'resourceId': '*',
-              'path': '*',
-              'defaultIntegration': '*',
-              'defaultMethodOptions': {
-                'operationName': '*',
-                'authorizationType': 'AuthorizationType',
-                'authorizer': {
-                  'authorizerId': '*',
-                  'authorizationType': 'AuthorizationType'
-                },
-                'apiKeyRequired': 'boolean',
-                'methodResponses': {
-                  'statusCode': '*',
-                  'responseParameters': '*',
-                  'responseModels': '*'
-                },
-                'requestParameters': '*',
-                'requestModels': '*',
-                'requestValidator': {
-                  'requestValidatorId': '*',
-                  'stack': '*',
-                  'env': {
-                    'account': '*',
-                    'region': '*'
-                  },
-                  'node': '*'
-                },
-                'authorizationScopes': '*',
-                'requestValidatorOptions': {
-                  'requestValidatorName': '*',
-                  'validateRequestBody': 'boolean',
-                  'validateRequestParameters': 'boolean'
-                }
-              },
-              'defaultCorsPreflightOptions': {
-                'statusCode': '*',
-                'allowOrigins': '*',
-                'allowHeaders': '*',
-                'allowMethods': '*',
-                'allowCredentials': 'boolean',
-                'maxAge': '*',
-                'disableCache': 'boolean',
-                'exposeHeaders': '*'
-              }
-            }
-          }
-        },
+        '*',
         {
           'period': '*',
           'statistic': '*',
@@ -6695,63 +6260,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ],
       'metricClientError': [
-        {
-          'stageName': '*',
-          'restApi': {
-            'restApiId': '*',
-            'restApiName': '*',
-            'restApiRootResourceId': '*',
-            'latestDeployment': '*',
-            'deploymentStage': '*',
-            'root': {
-              'restApi': '*',
-              'resourceId': '*',
-              'path': '*',
-              'defaultIntegration': '*',
-              'defaultMethodOptions': {
-                'operationName': '*',
-                'authorizationType': 'AuthorizationType',
-                'authorizer': {
-                  'authorizerId': '*',
-                  'authorizationType': 'AuthorizationType'
-                },
-                'apiKeyRequired': 'boolean',
-                'methodResponses': {
-                  'statusCode': '*',
-                  'responseParameters': '*',
-                  'responseModels': '*'
-                },
-                'requestParameters': '*',
-                'requestModels': '*',
-                'requestValidator': {
-                  'requestValidatorId': '*',
-                  'stack': '*',
-                  'env': {
-                    'account': '*',
-                    'region': '*'
-                  },
-                  'node': '*'
-                },
-                'authorizationScopes': '*',
-                'requestValidatorOptions': {
-                  'requestValidatorName': '*',
-                  'validateRequestBody': 'boolean',
-                  'validateRequestParameters': 'boolean'
-                }
-              },
-              'defaultCorsPreflightOptions': {
-                'statusCode': '*',
-                'allowOrigins': '*',
-                'allowHeaders': '*',
-                'allowMethods': '*',
-                'allowCredentials': 'boolean',
-                'maxAge': '*',
-                'disableCache': 'boolean',
-                'exposeHeaders': '*'
-              }
-            }
-          }
-        },
+        '*',
         {
           'period': '*',
           'statistic': '*',
@@ -6769,63 +6278,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ],
       'metricServerError': [
-        {
-          'stageName': '*',
-          'restApi': {
-            'restApiId': '*',
-            'restApiName': '*',
-            'restApiRootResourceId': '*',
-            'latestDeployment': '*',
-            'deploymentStage': '*',
-            'root': {
-              'restApi': '*',
-              'resourceId': '*',
-              'path': '*',
-              'defaultIntegration': '*',
-              'defaultMethodOptions': {
-                'operationName': '*',
-                'authorizationType': 'AuthorizationType',
-                'authorizer': {
-                  'authorizerId': '*',
-                  'authorizationType': 'AuthorizationType'
-                },
-                'apiKeyRequired': 'boolean',
-                'methodResponses': {
-                  'statusCode': '*',
-                  'responseParameters': '*',
-                  'responseModels': '*'
-                },
-                'requestParameters': '*',
-                'requestModels': '*',
-                'requestValidator': {
-                  'requestValidatorId': '*',
-                  'stack': '*',
-                  'env': {
-                    'account': '*',
-                    'region': '*'
-                  },
-                  'node': '*'
-                },
-                'authorizationScopes': '*',
-                'requestValidatorOptions': {
-                  'requestValidatorName': '*',
-                  'validateRequestBody': 'boolean',
-                  'validateRequestParameters': 'boolean'
-                }
-              },
-              'defaultCorsPreflightOptions': {
-                'statusCode': '*',
-                'allowOrigins': '*',
-                'allowHeaders': '*',
-                'allowMethods': '*',
-                'allowCredentials': 'boolean',
-                'maxAge': '*',
-                'disableCache': 'boolean',
-                'exposeHeaders': '*'
-              }
-            }
-          }
-        },
+        '*',
         {
           'period': '*',
           'statistic': '*',
@@ -6843,63 +6296,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ],
       'metricCacheHitCount': [
-        {
-          'stageName': '*',
-          'restApi': {
-            'restApiId': '*',
-            'restApiName': '*',
-            'restApiRootResourceId': '*',
-            'latestDeployment': '*',
-            'deploymentStage': '*',
-            'root': {
-              'restApi': '*',
-              'resourceId': '*',
-              'path': '*',
-              'defaultIntegration': '*',
-              'defaultMethodOptions': {
-                'operationName': '*',
-                'authorizationType': 'AuthorizationType',
-                'authorizer': {
-                  'authorizerId': '*',
-                  'authorizationType': 'AuthorizationType'
-                },
-                'apiKeyRequired': 'boolean',
-                'methodResponses': {
-                  'statusCode': '*',
-                  'responseParameters': '*',
-                  'responseModels': '*'
-                },
-                'requestParameters': '*',
-                'requestModels': '*',
-                'requestValidator': {
-                  'requestValidatorId': '*',
-                  'stack': '*',
-                  'env': {
-                    'account': '*',
-                    'region': '*'
-                  },
-                  'node': '*'
-                },
-                'authorizationScopes': '*',
-                'requestValidatorOptions': {
-                  'requestValidatorName': '*',
-                  'validateRequestBody': 'boolean',
-                  'validateRequestParameters': 'boolean'
-                }
-              },
-              'defaultCorsPreflightOptions': {
-                'statusCode': '*',
-                'allowOrigins': '*',
-                'allowHeaders': '*',
-                'allowMethods': '*',
-                'allowCredentials': 'boolean',
-                'maxAge': '*',
-                'disableCache': 'boolean',
-                'exposeHeaders': '*'
-              }
-            }
-          }
-        },
+        '*',
         {
           'period': '*',
           'statistic': '*',
@@ -6917,63 +6314,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ],
       'metricCacheMissCount': [
-        {
-          'stageName': '*',
-          'restApi': {
-            'restApiId': '*',
-            'restApiName': '*',
-            'restApiRootResourceId': '*',
-            'latestDeployment': '*',
-            'deploymentStage': '*',
-            'root': {
-              'restApi': '*',
-              'resourceId': '*',
-              'path': '*',
-              'defaultIntegration': '*',
-              'defaultMethodOptions': {
-                'operationName': '*',
-                'authorizationType': 'AuthorizationType',
-                'authorizer': {
-                  'authorizerId': '*',
-                  'authorizationType': 'AuthorizationType'
-                },
-                'apiKeyRequired': 'boolean',
-                'methodResponses': {
-                  'statusCode': '*',
-                  'responseParameters': '*',
-                  'responseModels': '*'
-                },
-                'requestParameters': '*',
-                'requestModels': '*',
-                'requestValidator': {
-                  'requestValidatorId': '*',
-                  'stack': '*',
-                  'env': {
-                    'account': '*',
-                    'region': '*'
-                  },
-                  'node': '*'
-                },
-                'authorizationScopes': '*',
-                'requestValidatorOptions': {
-                  'requestValidatorName': '*',
-                  'validateRequestBody': 'boolean',
-                  'validateRequestParameters': 'boolean'
-                }
-              },
-              'defaultCorsPreflightOptions': {
-                'statusCode': '*',
-                'allowOrigins': '*',
-                'allowHeaders': '*',
-                'allowMethods': '*',
-                'allowCredentials': 'boolean',
-                'maxAge': '*',
-                'disableCache': 'boolean',
-                'exposeHeaders': '*'
-              }
-            }
-          }
-        },
+        '*',
         {
           'period': '*',
           'statistic': '*',
@@ -6991,63 +6332,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ],
       'metricCount': [
-        {
-          'stageName': '*',
-          'restApi': {
-            'restApiId': '*',
-            'restApiName': '*',
-            'restApiRootResourceId': '*',
-            'latestDeployment': '*',
-            'deploymentStage': '*',
-            'root': {
-              'restApi': '*',
-              'resourceId': '*',
-              'path': '*',
-              'defaultIntegration': '*',
-              'defaultMethodOptions': {
-                'operationName': '*',
-                'authorizationType': 'AuthorizationType',
-                'authorizer': {
-                  'authorizerId': '*',
-                  'authorizationType': 'AuthorizationType'
-                },
-                'apiKeyRequired': 'boolean',
-                'methodResponses': {
-                  'statusCode': '*',
-                  'responseParameters': '*',
-                  'responseModels': '*'
-                },
-                'requestParameters': '*',
-                'requestModels': '*',
-                'requestValidator': {
-                  'requestValidatorId': '*',
-                  'stack': '*',
-                  'env': {
-                    'account': '*',
-                    'region': '*'
-                  },
-                  'node': '*'
-                },
-                'authorizationScopes': '*',
-                'requestValidatorOptions': {
-                  'requestValidatorName': '*',
-                  'validateRequestBody': 'boolean',
-                  'validateRequestParameters': 'boolean'
-                }
-              },
-              'defaultCorsPreflightOptions': {
-                'statusCode': '*',
-                'allowOrigins': '*',
-                'allowHeaders': '*',
-                'allowMethods': '*',
-                'allowCredentials': 'boolean',
-                'maxAge': '*',
-                'disableCache': 'boolean',
-                'exposeHeaders': '*'
-              }
-            }
-          }
-        },
+        '*',
         {
           'period': '*',
           'statistic': '*',
@@ -7065,63 +6350,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ],
       'metricIntegrationLatency': [
-        {
-          'stageName': '*',
-          'restApi': {
-            'restApiId': '*',
-            'restApiName': '*',
-            'restApiRootResourceId': '*',
-            'latestDeployment': '*',
-            'deploymentStage': '*',
-            'root': {
-              'restApi': '*',
-              'resourceId': '*',
-              'path': '*',
-              'defaultIntegration': '*',
-              'defaultMethodOptions': {
-                'operationName': '*',
-                'authorizationType': 'AuthorizationType',
-                'authorizer': {
-                  'authorizerId': '*',
-                  'authorizationType': 'AuthorizationType'
-                },
-                'apiKeyRequired': 'boolean',
-                'methodResponses': {
-                  'statusCode': '*',
-                  'responseParameters': '*',
-                  'responseModels': '*'
-                },
-                'requestParameters': '*',
-                'requestModels': '*',
-                'requestValidator': {
-                  'requestValidatorId': '*',
-                  'stack': '*',
-                  'env': {
-                    'account': '*',
-                    'region': '*'
-                  },
-                  'node': '*'
-                },
-                'authorizationScopes': '*',
-                'requestValidatorOptions': {
-                  'requestValidatorName': '*',
-                  'validateRequestBody': 'boolean',
-                  'validateRequestParameters': 'boolean'
-                }
-              },
-              'defaultCorsPreflightOptions': {
-                'statusCode': '*',
-                'allowOrigins': '*',
-                'allowHeaders': '*',
-                'allowMethods': '*',
-                'allowCredentials': 'boolean',
-                'maxAge': '*',
-                'disableCache': 'boolean',
-                'exposeHeaders': '*'
-              }
-            }
-          }
-        },
+        '*',
         {
           'period': '*',
           'statistic': '*',
@@ -7139,63 +6368,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ],
       'metricLatency': [
-        {
-          'stageName': '*',
-          'restApi': {
-            'restApiId': '*',
-            'restApiName': '*',
-            'restApiRootResourceId': '*',
-            'latestDeployment': '*',
-            'deploymentStage': '*',
-            'root': {
-              'restApi': '*',
-              'resourceId': '*',
-              'path': '*',
-              'defaultIntegration': '*',
-              'defaultMethodOptions': {
-                'operationName': '*',
-                'authorizationType': 'AuthorizationType',
-                'authorizer': {
-                  'authorizerId': '*',
-                  'authorizationType': 'AuthorizationType'
-                },
-                'apiKeyRequired': 'boolean',
-                'methodResponses': {
-                  'statusCode': '*',
-                  'responseParameters': '*',
-                  'responseModels': '*'
-                },
-                'requestParameters': '*',
-                'requestModels': '*',
-                'requestValidator': {
-                  'requestValidatorId': '*',
-                  'stack': '*',
-                  'env': {
-                    'account': '*',
-                    'region': '*'
-                  },
-                  'node': '*'
-                },
-                'authorizationScopes': '*',
-                'requestValidatorOptions': {
-                  'requestValidatorName': '*',
-                  'validateRequestBody': 'boolean',
-                  'validateRequestParameters': 'boolean'
-                }
-              },
-              'defaultCorsPreflightOptions': {
-                'statusCode': '*',
-                'allowOrigins': '*',
-                'allowHeaders': '*',
-                'allowMethods': '*',
-                'allowCredentials': 'boolean',
-                'maxAge': '*',
-                'disableCache': 'boolean',
-                'exposeHeaders': '*'
-              }
-            }
-          }
-        },
+        '*',
         {
           'period': '*',
           'statistic': '*',
@@ -8813,23 +7986,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'logConfig': {
         'excludeVerboseContent': 'boolean',
         'fieldLogLevel': 'AppSyncFieldLogLevel',
-        'role': {
-          'roleArn': '*',
-          'roleName': '*',
-          'assumeRoleAction': '*',
-          'policyFragment': '*',
-          'principalAccount': '*',
-          'grantPrincipal': {
-            'assumeRoleAction': '*',
-            'principalAccount': '*'
-          },
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        },
+        'role': '*',
         'retention': 'RetentionDays'
       },
       'ownerContact': '*',
@@ -8916,23 +8073,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'logConfig': {
         'excludeVerboseContent': 'boolean',
         'fieldLogLevel': 'FieldLogLevel',
-        'role': {
-          'roleArn': '*',
-          'roleName': '*',
-          'assumeRoleAction': '*',
-          'policyFragment': '*',
-          'principalAccount': '*',
-          'grantPrincipal': {
-            'assumeRoleAction': '*',
-            'principalAccount': '*'
-          },
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        },
+        'role': '*',
         'retention': 'RetentionDays'
       },
       'definition': '*',
@@ -9455,16 +8596,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'BackupVault': {
       'backupVaultName': '*',
       'accessPolicy': '*',
-      'encryptionKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'encryptionKey': '*',
       'notificationTopic': {
         'topicArn': '*',
         'topicName': '*',
@@ -9526,7 +8658,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'readonlyRootFilesystem': 'boolean',
         'secrets': '*',
         'user': '*',
-        'volumes': '*'
+        'volumes': '*',
+        'enableExecuteCommand': 'boolean'
       },
       'propagateTags': 'boolean',
       'jobDefinitionName': '*',
@@ -9649,18 +8782,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'node': '*'
       },
       'minvCpus': '*',
-      'placementGroup': {
-        'placementGroupName': '*',
-        'partitions': '*',
-        'spreadLevel': 'PlacementGroupSpreadLevel',
-        'strategy': 'PlacementGroupStrategy',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'placementGroup': '*',
       'maxvCpus': '*',
       'replaceComputeEnvironment': 'boolean',
       'spot': 'boolean',
@@ -9860,18 +8982,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'node': '*'
       },
       'minvCpus': '*',
-      'placementGroup': {
-        'placementGroupName': '*',
-        'partitions': '*',
-        'spreadLevel': 'PlacementGroupSpreadLevel',
-        'strategy': 'PlacementGroupStrategy',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'placementGroup': '*',
       'maxvCpus': '*',
       'replaceComputeEnvironment': 'boolean',
       'spot': 'boolean',
@@ -10084,7 +9195,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'readonlyRootFilesystem': 'boolean',
             'secrets': '*',
             'user': '*',
-            'volumes': '*'
+            'volumes': '*',
+            'enableExecuteCommand': 'boolean'
           }
         }
       ]
@@ -10284,33 +9396,15 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'origin': '*',
         'allowedMethods': '*',
         'cachedMethods': '*',
-        'cachePolicy': {
-          'cachePolicyId': '*'
-        },
+        'cachePolicy': '*',
         'compress': 'boolean',
-        'originRequestPolicy': {
-          'originRequestPolicyId': '*'
-        },
-        'realtimeLogConfig': {
-          'realtimeLogConfigName': '*',
-          'realtimeLogConfigArn': '*',
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        },
-        'responseHeadersPolicy': {
-          'responseHeadersPolicyId': '*'
-        },
+        'originRequestPolicy': '*',
+        'realtimeLogConfig': '*',
+        'responseHeadersPolicy': '*',
         'smoothStreaming': 'boolean',
         'viewerProtocolPolicy': 'ViewerProtocolPolicy',
         'functionAssociations': {
-          'function': {
-            'functionName': '*',
-            'functionArn': '*'
-          },
+          'function': '*',
           'eventType': 'FunctionEventType'
         },
         'edgeLambdas': {
@@ -10328,7 +9422,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
                 'grantPrincipal': {
                   'assumeRoleAction': '*',
                   'principalAccount': '*'
-                }
+                },
+                'stack': '*',
+                'env': {
+                  'account': '*',
+                  'region': '*'
+                },
+                'node': '*'
               },
               'isBoundToVpc': 'boolean',
               'architecture': '*',
@@ -10344,9 +9444,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'eventType': 'LambdaEdgeEventType',
           'includeBody': 'boolean'
         },
-        'trustedKeyGroups': {
-          'keyGroupId': '*'
-        },
+        'trustedKeyGroups': '*',
         'enableGrpc': 'boolean'
       },
       'additionalBehaviors': '*',
@@ -10664,33 +9762,15 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         {
           'allowedMethods': '*',
           'cachedMethods': '*',
-          'cachePolicy': {
-            'cachePolicyId': '*'
-          },
+          'cachePolicy': '*',
           'compress': 'boolean',
-          'originRequestPolicy': {
-            'originRequestPolicyId': '*'
-          },
-          'realtimeLogConfig': {
-            'realtimeLogConfigName': '*',
-            'realtimeLogConfigArn': '*',
-            'stack': '*',
-            'env': {
-              'account': '*',
-              'region': '*'
-            },
-            'node': '*'
-          },
-          'responseHeadersPolicy': {
-            'responseHeadersPolicyId': '*'
-          },
+          'originRequestPolicy': '*',
+          'realtimeLogConfig': '*',
+          'responseHeadersPolicy': '*',
           'smoothStreaming': 'boolean',
           'viewerProtocolPolicy': 'ViewerProtocolPolicy',
           'functionAssociations': {
-            'function': {
-              'functionName': '*',
-              'functionArn': '*'
-            },
+            'function': '*',
             'eventType': 'FunctionEventType'
           },
           'edgeLambdas': {
@@ -10708,7 +9788,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
                   'grantPrincipal': {
                     'assumeRoleAction': '*',
                     'principalAccount': '*'
-                  }
+                  },
+                  'stack': '*',
+                  'env': {
+                    'account': '*',
+                    'region': '*'
+                  },
+                  'node': '*'
                 },
                 'isBoundToVpc': 'boolean',
                 'architecture': '*',
@@ -10724,9 +9810,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'eventType': 'LambdaEdgeEventType',
             'includeBody': 'boolean'
           },
-          'trustedKeyGroups': {
-            'keyGroupId': '*'
-          },
+          'trustedKeyGroups': '*',
           'enableGrpc': 'boolean'
         }
       ],
@@ -10758,31 +9842,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'comment': '*',
       'code': '*',
       'runtime': '*',
-      'keyValueStore': {
-        'keyValueStoreArn': '*',
-        'keyValueStoreId': '*',
-        'keyValueStoreStatus': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'keyValueStore': '*',
       'autoPublish': 'boolean'
     },
     'KeyGroup': {
       'keyGroupName': '*',
       'comment': '*',
-      'items': {
-        'publicKeyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      }
+      'items': '*'
     },
     'KeyValueStore': {},
     'S3OriginAccessControl': {
@@ -10975,10 +10041,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'includeBody': 'boolean'
           },
           'functionAssociations': {
-            'function': {
-              'functionName': '*',
-              'functionArn': '*'
-            },
+            'function': '*',
             'eventType': 'FunctionEventType'
           },
           'viewerProtocolPolicy': 'ViewerProtocolPolicy'
@@ -11047,16 +10110,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
-      'kmsKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'kmsKey': '*',
       'encryptionKey': {
         'keyArn': '*',
         'keyId': '*',
@@ -11168,28 +10222,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ],
       'addS3EventSelector': [
         {
-          'bucket': {
-            'bucketArn': '*',
-            'bucketName': '*',
-            'bucketWebsiteUrl': '*',
-            'bucketWebsiteDomainName': '*',
-            'bucketDomainName': '*',
-            'bucketDualStackDomainName': '*',
-            'bucketRegionalDomainName': '*',
-            'isWebsite': 'boolean',
-            'encryptionKey': {
-              'keyArn': '*',
-              'keyId': '*',
-              'stack': '*',
-              'env': {
-                'account': '*',
-                'region': '*'
-              },
-              'node': '*'
-            },
-            'policy': '*',
-            'replicationRoleArn': '*'
-          },
+          'bucket': '*',
           'objectPrefix': '*'
         },
         {
@@ -11402,6 +10435,16 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           }
         },
         'computeType': 'ComputeType',
+        'dockerServer': {
+          'computeType': 'DockerServerComputeType',
+          'securityGroups': {
+            'securityGroupId': '*',
+            'allowAllOutbound': 'boolean',
+            'canInlineRule': 'boolean',
+            'uniqueId': '*',
+            'connections': '*'
+          }
+        },
         'fleet': {
           'fleetArn': '*',
           'fleetName': '*',
@@ -11628,16 +10671,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'repositoryName': '*',
       'description': '*',
       'code': '*',
-      'kmsKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'kmsKey': '*',
       'notify': [
         '*',
         {
@@ -12075,23 +11109,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'application': '*',
         'applicationId': '*',
         'externalId': '*',
-        'role': {
-          'roleArn': '*',
-          'roleName': '*',
-          'assumeRoleAction': '*',
-          'policyFragment': '*',
-          'principalAccount': '*',
-          'grantPrincipal': {
-            'assumeRoleAction': '*',
-            'principalAccount': '*'
-          },
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        },
+        'role': '*',
         'shareUserData': 'boolean'
       }
     },
@@ -12158,23 +11176,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'description': '*',
       'groupName': '*',
       'precedence': '*',
-      'role': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      }
+      'role': '*'
     },
     'UserPoolResourceServer': {
       'userPool': {
@@ -12209,23 +11211,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'emailBody': '*',
         'smsMessage': '*'
       },
-      'smsRole': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'smsRole': '*',
       'smsRoleExternalId': '*',
       'snsRegion': '*',
       'enableSmsRole': 'boolean',
@@ -12324,16 +11310,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'challengeRequiredOnNewDevice': 'boolean',
         'deviceOnlyRememberedOnUserPrompt': 'boolean'
       },
-      'customSenderKmsKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'customSenderKmsKey': '*',
       'advancedSecurityMode': 'AdvancedSecurityMode',
       'featurePlan': 'FeaturePlan',
       'standardThreatProtectionMode': 'StandardThreatProtectionMode',
@@ -12462,19 +11439,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'consumerSecret': '*'
         },
         'userPools': '*',
-        'openIdConnectProviders': {
-          'openIdConnectProviderArn': '*',
-          'openIdConnectProviderIssuer': '*',
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        },
-        'samlProviders': {
-          'samlProviderArn': '*'
-        },
+        'openIdConnectProviders': '*',
+        'samlProviders': '*',
         'customProvider': '*'
       },
       'addUserPoolAuthentication': [
@@ -12493,40 +11459,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
-      'authenticatedRole': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'unauthenticatedRole': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'authenticatedRole': '*',
+      'unauthenticatedRole': '*',
       'roleMappings': {
         'providerUrl': '*',
         'mappingKey': '*',
@@ -12569,23 +11503,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'CloudFormationStackDriftDetectionCheck': {
       'ownStackOnly': 'boolean',
-      'role': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'role': '*',
       'configRuleName': '*',
       'description': '*',
       'inputParameters': '*',
@@ -13354,28 +12272,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ]
     },
     'ClientVpnAuthorizationRule': {
-      'clientVpnEndpoint': {
-        'endpointId': '*',
-        'targetNetworksAssociated': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*',
-        'connections': '*'
-      },
-      'clientVpnEndoint': {
-        'endpointId': '*',
-        'targetNetworksAssociated': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*',
-        'connections': '*'
-      },
+      'clientVpnEndpoint': '*',
+      'clientVpnEndoint': '*',
       'cidr': '*',
       'groupId': '*',
       'description': '*'
@@ -13666,18 +12564,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'ebsOptimized': 'boolean',
       'disableApiTermination': 'boolean',
       'instanceInitiatedShutdownBehavior': 'InstanceInitiatedShutdownBehavior',
-      'placementGroup': {
-        'placementGroupName': '*',
-        'partitions': '*',
-        'spreadLevel': 'PlacementGroupSpreadLevel',
-        'strategy': 'PlacementGroupStrategy',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'placementGroup': '*',
       'enclaveEnabled': 'boolean',
       'hibernationEnabled': 'boolean',
       'ipv6AddressCount': '*',
@@ -13814,18 +12701,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'node': '*'
         }
       },
-      'placementGroup': {
-        'placementGroupName': '*',
-        'partitions': '*',
-        'spreadLevel': 'PlacementGroupSpreadLevel',
-        'strategy': 'PlacementGroupStrategy',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'placementGroup': '*',
       'addSecurityGroup': [
         {
           'securityGroupId': '*',
@@ -13935,15 +12811,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'SubnetNetworkAclAssociation': {
       'subnetNetworkAclAssociationName': '*',
-      'networkAcl': {
-        'networkAclId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'networkAcl': '*',
       'subnet': {
         'availabilityZone': '*',
         'subnetId': '*',
@@ -14477,16 +13345,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'Repository': {
       'repositoryName': '*',
       'encryption': '*',
-      'encryptionKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'encryptionKey': '*',
       'lifecycleRules': {
         'rulePriority': '*',
         'description': '*',
@@ -14702,7 +13561,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'region': '*'
           },
           'node': '*'
-        }
+        },
+        'kmsKey': '*'
       },
       'addDefaultCapacityProviderStrategy': [
         {
@@ -15174,16 +14034,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'encrypted': 'boolean',
       'fileSystemName': '*',
-      'kmsKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'kmsKey': '*',
       'lifecyclePolicy': 'LifecyclePolicy',
       'outOfInfrequentAccessPolicy': 'OutOfInfrequentAccessPolicy',
       'transitionToArchivePolicy': 'LifecyclePolicy',
@@ -15491,16 +14342,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'prune': 'boolean',
       'placeClusterHandlerInVpc': 'boolean',
-      'secretsEncryptionKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'secretsEncryptionKey': '*',
       'ipFamily': 'IpFamily',
       'serviceIpv4Cidr': '*',
       'albController': {
@@ -16084,16 +14926,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'prune': 'boolean',
       'placeClusterHandlerInVpc': 'boolean',
-      'secretsEncryptionKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'secretsEncryptionKey': '*',
       'ipFamily': 'IpFamily',
       'serviceIpv4Cidr': '*',
       'albController': {
@@ -16493,16 +15326,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'version': '*',
       'encryptionAtRest': {
         'enabled': 'boolean',
-        'kmsKey': {
-          'keyArn': '*',
-          'keyId': '*',
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        }
+        'kmsKey': '*'
       },
       'logging': {
         'slowSearchLogEnabled': 'boolean',
@@ -16729,23 +15553,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
-      'role': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'role': '*',
       'description': '*',
       'ruleName': '*',
       'eventPattern': {
@@ -16794,23 +15602,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
-      'role': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'role': '*',
       'description': '*',
       'ruleName': '*',
       'eventPattern': {
@@ -16883,16 +15675,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'vpnGatewayId': '*'
       },
       'backupId': '*',
-      'kmsKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'kmsKey': '*',
       'securityGroup': {
         'securityGroupId': '*',
         'allowAllOutbound': 'boolean',
@@ -17178,46 +15961,14 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
-      'groups': {
-        'groupName': '*',
-        'groupArn': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'groups': '*',
       'statements': '*',
       'document': '*',
       'addStatements': [
         '*'
       ],
       'attachToUser': [
-        {
-          'userName': '*',
-          'userArn': '*',
-          'assumeRoleAction': '*',
-          'policyFragment': '*',
-          'principalAccount': '*',
-          'grantPrincipal': {
-            'assumeRoleAction': '*',
-            'principalAccount': '*'
-          },
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        }
+        '*'
       ],
       'attachToRole': [
         {
@@ -17239,23 +15990,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ],
       'attachToGroup': [
-        {
-          'groupName': '*',
-          'groupArn': '*',
-          'assumeRoleAction': '*',
-          'policyFragment': '*',
-          'principalAccount': '*',
-          'grantPrincipal': {
-            'assumeRoleAction': '*',
-            'principalAccount': '*'
-          },
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        }
+        '*'
       ]
     },
     'OidcProviderNative': {
@@ -18199,26 +16934,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'filesystem': '*',
       'allowPublicSubnet': 'boolean',
-      'environmentEncryption': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'codeSigningConfig': {
-        'codeSigningConfigArn': '*',
-        'codeSigningConfigId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'environmentEncryption': '*',
+      'codeSigningConfig': '*',
       'architectures': '*',
       'architecture': '*',
       'runtimeManagementMode': '*',
@@ -18523,26 +17240,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'filesystem': '*',
       'allowPublicSubnet': 'boolean',
-      'environmentEncryption': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'codeSigningConfig': {
-        'codeSigningConfigArn': '*',
-        'codeSigningConfigId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'environmentEncryption': '*',
+      'codeSigningConfig': '*',
       'architectures': '*',
       'architecture': '*',
       'runtimeManagementMode': '*',
@@ -18887,26 +17586,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'filesystem': '*',
       'allowPublicSubnet': 'boolean',
-      'environmentEncryption': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'codeSigningConfig': {
-        'codeSigningConfigArn': '*',
-        'codeSigningConfigId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'environmentEncryption': '*',
+      'codeSigningConfig': '*',
       'architectures': '*',
       'architecture': '*',
       'runtimeManagementMode': '*',
@@ -19237,26 +17918,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'filesystem': '*',
       'allowPublicSubnet': 'boolean',
-      'environmentEncryption': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'codeSigningConfig': {
-        'codeSigningConfigArn': '*',
-        'codeSigningConfigId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'environmentEncryption': '*',
+      'codeSigningConfig': '*',
       'architectures': '*',
       'architecture': '*',
       'runtimeManagementMode': '*',
@@ -19286,23 +17949,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
   'aws-cdk-lib.aws-logs': {
     'CrossAccountDestination': {
       'destinationName': '*',
-      'role': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'role': '*',
       'targetArn': '*',
       'addToPolicy': [
         '*'
@@ -19322,16 +17969,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ]
     },
     'LogGroup': {
-      'encryptionKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'encryptionKey': '*',
       'logGroupName': '*',
       'dataProtectionPolicy': '*',
       'fieldIndexPolicies': '*',
@@ -19446,23 +18084,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'advancedOptions': '*',
       'cognitoDashboardsAuth': {
         'identityPoolId': '*',
-        'role': {
-          'roleArn': '*',
-          'roleName': '*',
-          'assumeRoleAction': '*',
-          'policyFragment': '*',
-          'principalAccount': '*',
-          'grantPrincipal': {
-            'assumeRoleAction': '*',
-            'principalAccount': '*'
-          },
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        },
+        'role': '*',
         'userPoolId': '*'
       },
       'domainName': '*',
@@ -19497,16 +18119,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'version': '*',
       'encryptionAtRest': {
         'enabled': 'boolean',
-        'kmsKey': {
-          'keyArn': '*',
-          'keyId': '*',
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        }
+        'kmsKey': '*'
       },
       'logging': {
         'slowSearchLogEnabled': 'boolean',
@@ -19698,23 +18311,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'caCertificate': '*',
       'applyImmediately': 'boolean',
       'monitoringInterval': '*',
-      'monitoringRole': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'monitoringRole': '*',
       'removalPolicy': 'RemovalPolicy',
       'subnetGroup': {
         'subnetGroupName': '*',
@@ -20060,16 +18657,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'iamAuthentication': 'boolean',
       'storageEncrypted': 'boolean',
-      'storageEncryptionKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'storageEncryptionKey': '*',
       'storageType': 'DBClusterStorageType',
       'copyTagsToSnapshot': 'boolean',
       'networkType': 'NetworkType',
@@ -20395,16 +18983,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'iamAuthentication': 'boolean',
       'storageEncrypted': 'boolean',
-      'storageEncryptionKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'storageEncryptionKey': '*',
       'storageType': 'DBClusterStorageType',
       'copyTagsToSnapshot': 'boolean',
       'networkType': 'NetworkType',
@@ -20497,16 +19076,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'credentials': '*',
       'characterSetName': '*',
       'storageEncrypted': 'boolean',
-      'storageEncryptionKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'storageEncryptionKey': '*',
       'engine': {
         'singleUserRotationApplication': '*',
         'supportsReadReplicaBackups': 'boolean',
@@ -20641,35 +19211,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'copyTagsToSnapshot': 'boolean',
       'deleteAutomatedBackups': 'boolean',
       'monitoringInterval': '*',
-      'monitoringRole': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'monitoringRole': '*',
       'enablePerformanceInsights': 'boolean',
       'performanceInsightRetention': 'PerformanceInsightRetention',
-      'performanceInsightEncryptionKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'performanceInsightEncryptionKey': '*',
       'databaseInsightsMode': 'DatabaseInsightsMode',
       'cloudwatchLogsExports': '*',
       'cloudwatchLogsRetention': 'RetentionDays',
@@ -20696,23 +19241,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'removalPolicy': 'RemovalPolicy',
       'maxAllocatedStorage': '*',
       'domain': '*',
-      'domainRole': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'domainRole': '*',
       'subnetGroup': {
         'subnetGroupName': '*',
         'stack': '*',
@@ -20944,35 +19473,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'copyTagsToSnapshot': 'boolean',
       'deleteAutomatedBackups': 'boolean',
       'monitoringInterval': '*',
-      'monitoringRole': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'monitoringRole': '*',
       'enablePerformanceInsights': 'boolean',
       'performanceInsightRetention': 'PerformanceInsightRetention',
-      'performanceInsightEncryptionKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'performanceInsightEncryptionKey': '*',
       'databaseInsightsMode': 'DatabaseInsightsMode',
       'cloudwatchLogsExports': '*',
       'cloudwatchLogsRetention': 'RetentionDays',
@@ -20999,23 +19503,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'removalPolicy': 'RemovalPolicy',
       'maxAllocatedStorage': '*',
       'domain': '*',
-      'domainRole': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'domainRole': '*',
       'subnetGroup': {
         'subnetGroupName': '*',
         'stack': '*',
@@ -21139,16 +19627,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'connections': '*'
       },
       'storageEncrypted': 'boolean',
-      'storageEncryptionKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'storageEncryptionKey': '*',
       'allocatedStorage': '*',
       'multiAz': 'boolean',
       'availabilityZone': '*',
@@ -21265,35 +19744,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'copyTagsToSnapshot': 'boolean',
       'deleteAutomatedBackups': 'boolean',
       'monitoringInterval': '*',
-      'monitoringRole': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'monitoringRole': '*',
       'enablePerformanceInsights': 'boolean',
       'performanceInsightRetention': 'PerformanceInsightRetention',
-      'performanceInsightEncryptionKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'performanceInsightEncryptionKey': '*',
       'databaseInsightsMode': 'DatabaseInsightsMode',
       'cloudwatchLogsExports': '*',
       'cloudwatchLogsRetention': 'RetentionDays',
@@ -21320,23 +19774,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'removalPolicy': 'RemovalPolicy',
       'maxAllocatedStorage': '*',
       'domain': '*',
-      'domainRole': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'domainRole': '*',
       'subnetGroup': {
         'subnetGroupName': '*',
         'stack': '*',
@@ -21543,6 +19981,79 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         '*'
       ]
     },
+    'DatabaseProxyEndpoint': {
+      'dbProxy': {
+        'dbProxyName': '*',
+        'dbProxyArn': '*',
+        'endpoint': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'dbProxyEndpointName': '*',
+      'vpc': {
+        'vpcId': '*',
+        'vpcArn': '*',
+        'vpcCidrBlock': '*',
+        'publicSubnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          },
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        },
+        'availabilityZones': '*',
+        'vpnGatewayId': '*'
+      },
+      'securityGroups': {
+        'securityGroupId': '*',
+        'allowAllOutbound': 'boolean',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*',
+        'canInlineRule': 'boolean',
+        'uniqueId': '*',
+        'connections': '*'
+      },
+      'vpcSubnets': {
+        'subnetType': 'SubnetType',
+        'availabilityZones': '*',
+        'subnetGroupName': '*',
+        'subnetName': '*',
+        'onePerAz': 'boolean',
+        'subnetFilters': '*',
+        'subnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          },
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        }
+      },
+      'targetRole': 'ProxyEndpointTargetRole'
+    },
     'DatabaseProxy': {
       'proxyTarget': '*',
       'dbProxyName': '*',
@@ -21647,6 +20158,50 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'vpnGatewayId': '*'
       },
       'clientPasswordAuthType': 'ClientPasswordAuthType',
+      'addEndpoint': [
+        '*',
+        {
+          'dbProxyEndpointName': '*',
+          'vpc': {
+            'vpcId': '*',
+            'vpcArn': '*',
+            'vpcCidrBlock': '*',
+            'publicSubnets': {
+              'availabilityZone': '*',
+              'subnetId': '*',
+              'internetConnectivityEstablished': '*',
+              'ipv4CidrBlock': '*',
+              'routeTable': {
+                'routeTableId': '*'
+              },
+              'stack': '*',
+              'env': {
+                'account': '*',
+                'region': '*'
+              },
+              'node': '*'
+            },
+            'availabilityZones': '*',
+            'vpnGatewayId': '*'
+          },
+          'securityGroups': {
+            'securityGroupId': '*',
+            'allowAllOutbound': 'boolean',
+            'canInlineRule': 'boolean',
+            'uniqueId': '*',
+            'connections': '*'
+          },
+          'vpcSubnets': {
+            'subnetType': 'SubnetType',
+            'availabilityZones': '*',
+            'subnetGroupName': '*',
+            'subnetName': '*',
+            'onePerAz': 'boolean',
+            'subnetFilters': '*'
+          },
+          'targetRole': 'ProxyEndpointTargetRole'
+        }
+      ],
       'asSecretAttachmentTarget': [],
       'grantConnect': [
         {
@@ -22657,6 +21212,75 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'cidrRoutingConfig': '*'
     },
+    'SvcbRecord': {
+      'values': '*',
+      'zone': {
+        'hostedZoneId': '*',
+        'zoneName': '*',
+        'hostedZoneArn': '*',
+        'hostedZoneNameServers': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'geoLocation': '*',
+      'recordName': '*',
+      'ttl': '*',
+      'comment': '*',
+      'deleteExisting': 'boolean',
+      'weight': '*',
+      'region': '*',
+      'multiValueAnswer': 'boolean',
+      'setIdentifier': '*',
+      'healthCheck': {
+        'healthCheckId': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'cidrRoutingConfig': '*'
+    },
+    'HttpsRecord': {
+      'values': '*',
+      'target': '*',
+      'zone': {
+        'hostedZoneId': '*',
+        'zoneName': '*',
+        'hostedZoneArn': '*',
+        'hostedZoneNameServers': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'geoLocation': '*',
+      'recordName': '*',
+      'ttl': '*',
+      'comment': '*',
+      'deleteExisting': 'boolean',
+      'weight': '*',
+      'region': '*',
+      'multiValueAnswer': 'boolean',
+      'setIdentifier': '*',
+      'healthCheck': {
+        'healthCheckId': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'cidrRoutingConfig': '*'
+    },
     'ZoneDelegationRecord': {
       'nameServers': '*',
       'zone': {
@@ -23168,16 +21792,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ],
       'addReplicaRegion': [
         '*',
-        {
-          'keyArn': '*',
-          'keyId': '*',
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        }
+        '*'
       ]
     },
     'SecretTargetAttachment': {
@@ -23726,23 +22341,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'fifo': 'boolean',
       'loggingConfigs': {
         'protocol': 'LoggingProtocol',
-        'failureFeedbackRole': {
-          'roleArn': '*',
-          'roleName': '*',
-          'assumeRoleAction': '*',
-          'policyFragment': '*',
-          'principalAccount': '*',
-          'grantPrincipal': {
-            'assumeRoleAction': '*',
-            'principalAccount': '*'
-          },
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        },
+        'failureFeedbackRole': '*',
+        'successFeedbackRole': '*',
         'successFeedbackSampleRate': '*'
       },
       'messageRetentionPeriodInDays': '*',
@@ -23753,23 +22353,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'addLoggingConfig': [
         {
           'protocol': 'LoggingProtocol',
-          'failureFeedbackRole': {
-            'roleArn': '*',
-            'roleName': '*',
-            'assumeRoleAction': '*',
-            'policyFragment': '*',
-            'principalAccount': '*',
-            'grantPrincipal': {
-              'assumeRoleAction': '*',
-              'principalAccount': '*'
-            },
-            'stack': '*',
-            'env': {
-              'account': '*',
-              'region': '*'
-            },
-            'node': '*'
-          },
+          'failureFeedbackRole': '*',
+          'successFeedbackRole': '*',
           'successFeedbackSampleRate': '*'
         }
       ]
@@ -24267,6 +22852,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'dryRunAndUpdate': 'boolean',
       'resourcesToReplicateTags': 'ResourceToReplicateTags',
+      'browserConfigs': 'BrowserType',
       'metricDuration': [
         {
           'period': '*',
@@ -24544,26 +23130,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'filesystem': '*',
       'allowPublicSubnet': 'boolean',
-      'environmentEncryption': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'codeSigningConfig': {
-        'codeSigningConfigArn': '*',
-        'codeSigningConfigId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'environmentEncryption': '*',
+      'codeSigningConfig': '*',
       'architectures': '*',
       'architecture': '*',
       'runtimeManagementMode': '*',
@@ -26199,50 +24767,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'node': '*'
         }
       },
-      'securityGroups': {
-        'securityGroupId': '*',
-        'allowAllOutbound': 'boolean',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*',
-        'canInlineRule': 'boolean',
-        'uniqueId': '*',
-        'connections': '*'
-      },
+      'securityGroups': '*',
       'addSubnets': [
-        {
-          'availabilityZone': '*',
-          'subnetId': '*',
-          'internetConnectivityEstablished': '*',
-          'ipv4CidrBlock': '*',
-          'routeTable': {
-            'routeTableId': '*'
-          },
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        }
+        '*'
       ],
       'addSecurityGroups': [
-        {
-          'securityGroupId': '*',
-          'allowAllOutbound': 'boolean',
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*',
-          'canInlineRule': 'boolean',
-          'uniqueId': '*',
-          'connections': '*'
-        }
+        '*'
       ]
     },
     'ApiKey': {
@@ -26687,26 +25217,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'filesystem': '*',
       'allowPublicSubnet': 'boolean',
-      'environmentEncryption': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
-      'codeSigningConfig': {
-        'codeSigningConfigArn': '*',
-        'codeSigningConfigId': '*',
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'environmentEncryption': '*',
+      'codeSigningConfig': '*',
       'architectures': '*',
       'architecture': '*',
       'runtimeManagementMode': '*',
@@ -28263,16 +26775,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'idleTimeout': '*',
           'tls': {
             'awsPcaAuthorityArn': '*',
-            'kmsKey': {
-              'keyArn': '*',
-              'keyId': '*',
-              'stack': '*',
-              'env': {
-                'account': '*',
-                'region': '*'
-              },
-              'node': '*'
-            },
+            'kmsKey': '*',
             'role': {
               'roleArn': '*',
               'roleName': '*',
@@ -28282,7 +26785,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
               'grantPrincipal': {
                 'assumeRoleAction': '*',
                 'principalAccount': '*'
-              }
+              },
+              'stack': '*',
+              'env': {
+                'account': '*',
+                'region': '*'
+              },
+              'node': '*'
             }
           }
         },
@@ -28518,16 +27027,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'idleTimeout': '*',
           'tls': {
             'awsPcaAuthorityArn': '*',
-            'kmsKey': {
-              'keyArn': '*',
-              'keyId': '*',
-              'stack': '*',
-              'env': {
-                'account': '*',
-                'region': '*'
-              },
-              'node': '*'
-            },
+            'kmsKey': '*',
             'role': {
               'roleArn': '*',
               'roleName': '*',
@@ -28537,7 +27037,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
               'grantPrincipal': {
                 'assumeRoleAction': '*',
                 'principalAccount': '*'
-              }
+              },
+              'stack': '*',
+              'env': {
+                'account': '*',
+                'region': '*'
+              },
+              'node': '*'
             }
           }
         },
@@ -28882,16 +27388,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'idleTimeout': '*',
           'tls': {
             'awsPcaAuthorityArn': '*',
-            'kmsKey': {
-              'keyArn': '*',
-              'keyId': '*',
-              'stack': '*',
-              'env': {
-                'account': '*',
-                'region': '*'
-              },
-              'node': '*'
-            },
+            'kmsKey': '*',
             'role': {
               'roleArn': '*',
               'roleName': '*',
@@ -28901,7 +27398,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
               'grantPrincipal': {
                 'assumeRoleAction': '*',
                 'principalAccount': '*'
-              }
+              },
+              'stack': '*',
+              'env': {
+                'account': '*',
+                'region': '*'
+              },
+              'node': '*'
             }
           }
         },
@@ -29884,56 +28387,14 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'revocationContents': {
         'revocationType': 'RevocationType',
-        'bucket': {
-          'bucketArn': '*',
-          'bucketName': '*',
-          'bucketWebsiteUrl': '*',
-          'bucketWebsiteDomainName': '*',
-          'bucketDomainName': '*',
-          'bucketDualStackDomainName': '*',
-          'bucketRegionalDomainName': '*',
-          'isWebsite': 'boolean',
-          'encryptionKey': {
-            'keyArn': '*',
-            'keyId': '*',
-            'stack': '*',
-            'env': {
-              'account': '*',
-              'region': '*'
-            },
-            'node': '*'
-          },
-          'policy': '*',
-          'replicationRoleArn': '*'
-        },
+        'bucket': '*',
         'key': '*',
         'version': '*'
       }
     },
     'TrustStore': {
       'trustStoreName': '*',
-      'bucket': {
-        'bucketArn': '*',
-        'bucketName': '*',
-        'bucketWebsiteUrl': '*',
-        'bucketWebsiteDomainName': '*',
-        'bucketDomainName': '*',
-        'bucketDualStackDomainName': '*',
-        'bucketRegionalDomainName': '*',
-        'isWebsite': 'boolean',
-        'encryptionKey': {
-          'keyArn': '*',
-          'keyId': '*',
-          'stack': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          },
-          'node': '*'
-        },
-        'policy': '*',
-        'replicationRoleArn': '*'
-      },
+      'bucket': '*',
       'key': '*',
       'version': '*'
     },

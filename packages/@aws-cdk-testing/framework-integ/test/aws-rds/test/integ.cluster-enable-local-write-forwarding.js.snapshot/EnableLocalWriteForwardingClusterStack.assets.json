@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "EnableLocalWriteForwardingClusterStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "3e54032da53381204674a9942e1767a14f545b2e148269443a008a1056b9ac92": {
+    "743e7ceae9b15e149cc760fef21342bd59c45ad5f70b935f040b79274d07ed99": {
       "displayName": "EnableLocalWriteForwardingClusterStack Template",
       "source": {
         "path": "EnableLocalWriteForwardingClusterStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-553ed18b": {
+        "current_account-current_region-90d5503e": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "3e54032da53381204674a9942e1767a14f545b2e148269443a008a1056b9ac92.json",
+          "objectKey": "743e7ceae9b15e149cc760fef21342bd59c45ad5f70b935f040b79274d07ed99.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

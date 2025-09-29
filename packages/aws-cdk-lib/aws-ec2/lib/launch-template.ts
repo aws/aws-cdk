@@ -1,10 +1,9 @@
 import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
-import { CfnLaunchTemplate } from './ec2.generated';
+import { CfnLaunchTemplate, ILaunchTemplateRef, IPlacementGroupRef, LaunchTemplateReference } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { IMachineImage, MachineImageConfig, OperatingSystemType } from './machine-image';
-import { IPlacementGroup } from './placement-group';
 import { launchTemplateBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup } from './security-group';
 import { UserData } from './user-data';
@@ -14,15 +13,15 @@ import {
   Annotations,
   Duration,
   Expiration,
+  FeatureFlags,
   Fn,
   IResource,
   Lazy,
   Resource,
   TagManager,
-  TagType,
   Tags,
+  TagType,
   Token,
-  FeatureFlags,
   ValidationError,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -75,7 +74,7 @@ export enum InstanceInitiatedShutdownBehavior {
 /**
  * Interface for LaunchTemplate-like objects.
  */
-export interface ILaunchTemplate extends IResource {
+export interface ILaunchTemplate extends IResource, ILaunchTemplateRef {
   /**
    * The version number of this launch template to use
    *
@@ -450,7 +449,7 @@ export interface LaunchTemplateProps {
    *
    * @default - no placement group will be used for this launch template.
    */
-  readonly placementGroup?: IPlacementGroup;
+  readonly placementGroup?: IPlacementGroupRef;
 }
 
 /**
@@ -527,6 +526,16 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       public readonly versionNumber = attrs.versionNumber ?? LaunchTemplateSpecialVersions.DEFAULT_VERSION;
       public readonly launchTemplateId? = attrs.launchTemplateId;
       public readonly launchTemplateName? = attrs.launchTemplateName;
+
+      public get launchTemplateRef(): LaunchTemplateReference {
+        if (!this.launchTemplateId) {
+          throw new ValidationError('You must set launchTemplateId in LaunchTemplate.fromLaunchTemplateAttributes() in order to use the LaunchTemplate in this API', this);
+        }
+
+        return {
+          launchTemplateId: this.launchTemplateId,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -800,7 +809,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         metadataOptions: this.renderMetadataOptions(props),
         networkInterfaces,
         placement: props.placementGroup ? {
-          groupName: props.placementGroup.placementGroupName,
+          groupName: props.placementGroup.placementGroupRef.groupName,
         } : undefined,
 
         // Fields not yet implemented:
@@ -850,6 +859,12 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     this.latestVersionNumber = resource.attrLatestVersionNumber;
     this.launchTemplateId = resource.ref;
     this.versionNumber = Token.asString(resource.getAtt('LatestVersionNumber'));
+  }
+
+  public get launchTemplateRef(): LaunchTemplateReference {
+    return {
+      launchTemplateId: this.launchTemplateId!,
+    };
   }
 
   private renderMetadataOptions(props: LaunchTemplateProps) {

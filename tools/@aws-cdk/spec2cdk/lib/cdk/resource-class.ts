@@ -2,37 +2,42 @@ import { PropertyType, Resource, SpecDatabase } from '@aws-cdk/service-spec-type
 import {
   $E,
   $T,
+  AnonymousInterfaceImplementation,
   Block,
   ClassType,
   code,
-  expr,
-  MemberVisibility,
+  DummyScope,
+  expr, Expression,
+  Initializer,
+  InterfaceType,
   IScope,
+  IsNotNullish,
+  Lambda,
+  MemberVisibility,
+  Module,
+  ObjectLiteral,
+  Stability, Statement,
   stmt,
   StructType,
   SuperInitializer,
+  ThingSymbol,
   TruthyOr,
   Type,
-  Initializer,
-  IsNotNullish,
-  AnonymousInterfaceImplementation,
-  Lambda,
-  Stability,
-  ObjectLiteral,
-  Module,
+  TypeDeclarationStatement,
+  DocsSpec,
 } from '@cdklabs/typewriter';
 import { CDK_CORE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
-import { ResourceDecider } from './resource-decider';
+import { ResourceDecider, shouldBuildReferenceInterface } from './resource-decider';
 import { TypeConverter } from './type-converter';
 import {
-  classNameFromResource,
-  cloudFormationDocLink,
   cfnParserNameFromType,
-  staticResourceTypeName,
   cfnProducerNameFromType,
-  propStructNameFromResource,
+  classNameFromResource,
+  cloudFormationDocLink, propertyNameFromCloudFormation,
+  propStructNameFromResource, referencePropertyName,
   staticRequiredTransform,
+  staticResourceTypeName,
 } from '../naming';
 import { splitDocumentation } from '../util';
 
@@ -43,21 +48,43 @@ export interface ITypeHost {
 // This convenience typewriter builder is used all over the place
 const $this = $E(expr.this_());
 
+export interface ResourceClassProps {
+  readonly suffix?: string;
+  readonly deprecated?: string;
+}
+
 export class ResourceClass extends ClassType {
   private readonly propsType: StructType;
+  private readonly refInterface?: InterfaceType;
   private readonly decider: ResourceDecider;
   private readonly converter: TypeConverter;
   private readonly module: Module;
+  private referenceStruct?: StructType;
 
   constructor(
     scope: IScope,
     private readonly db: SpecDatabase,
     private readonly resource: Resource,
-    private readonly suffix?: string,
+    private readonly props: ResourceClassProps = {},
   ) {
+    let refInterface: InterfaceType | undefined;
+    if (shouldBuildReferenceInterface(resource)) {
+      // IBucketRef { bucketRef: BucketRef }
+      refInterface = new InterfaceType(scope, {
+        export: true,
+        name: `I${resource.name}${props.suffix ?? ''}Ref`,
+        extends: [CONSTRUCTS.IConstruct],
+        docs: {
+          summary: `Indicates that this resource can be referenced as a ${resource.name}.`,
+          stability: Stability.Experimental,
+          ...maybeDeprecated(props.deprecated),
+        },
+      });
+    }
+
     super(scope, {
       export: true,
-      name: classNameFromResource(resource, suffix),
+      name: classNameFromResource(resource, props.suffix),
       docs: {
         ...splitDocumentation(resource.documentation),
         stability: Stability.External,
@@ -65,22 +92,25 @@ export class ResourceClass extends ClassType {
         see: cloudFormationDocLink({
           resourceType: resource.cloudFormationType,
         }),
+        ...maybeDeprecated(props.deprecated),
       },
       extends: CDK_CORE.CfnResource,
-      implements: [CDK_CORE.IInspectable, ...ResourceDecider.taggabilityInterfaces(resource)],
+      implements: [CDK_CORE.IInspectable, refInterface?.type, ...ResourceDecider.taggabilityInterfaces(resource)].filter(isDefined),
     });
 
+    this.refInterface = refInterface;
     this.module = Module.of(this);
 
     this.propsType = new StructType(this.scope, {
       export: true,
-      name: propStructNameFromResource(this.resource, this.suffix),
+      name: propStructNameFromResource(this.resource, this.props.suffix),
       docs: {
         summary: `Properties for defining a \`${classNameFromResource(this.resource)}\``,
         stability: Stability.External,
         see: cloudFormationDocLink({
           resourceType: this.resource.cloudFormationType,
         }),
+        ...maybeDeprecated(props.deprecated),
       },
     });
 
@@ -105,6 +135,8 @@ export class ResourceClass extends ClassType {
       cfnMapping.add(prop.cfnMapping);
     }
 
+    this.buildReferenceInterface();
+
     // Build the members of this class
     this.addProperty({
       name: staticResourceTypeName(),
@@ -118,6 +150,8 @@ export class ResourceClass extends ClassType {
     });
 
     this.makeFromCloudFormationFactory();
+    this.makeFromArnFactory();
+    this.makeFromNameFactory();
 
     if (this.resource.cloudFormationTransform) {
       this.addProperty({
@@ -151,6 +185,230 @@ export class ResourceClass extends ClassType {
     cfnMapping.makeCfnParser(this.module, this.propsType);
 
     this.makeMustRenderStructs();
+  }
+
+  /**
+   * Build the reference interface for this resource
+   */
+  private buildReferenceInterface() {
+    if (!shouldBuildReferenceInterface(this.resource)) {
+      return;
+    }
+
+    // BucketRef { bucketName, bucketArn }
+    this.referenceStruct = new StructType(this.scope, {
+      export: true,
+      name: `${this.resource.name}${this.props.suffix ?? ''}Reference`,
+      docs: {
+        summary: `A reference to a ${this.resource.name} resource.`,
+        stability: Stability.External,
+        ...maybeDeprecated(this.props.deprecated),
+      },
+    });
+
+    // Build the shared interface
+    for (const { declaration } of this.decider.referenceProps ?? []) {
+      this.referenceStruct.addProperty(declaration);
+    }
+
+    const refProperty = this.refInterface!.addProperty({
+      name: `${this.decider.camelResourceName}Ref`,
+      type: this.referenceStruct.type,
+      immutable: true,
+      docs: {
+        summary: `A reference to a ${this.resource.name} resource.`,
+      },
+    });
+
+    this.addProperty({
+      name: refProperty.name,
+      type: refProperty.type,
+      getterBody: Block.with(
+        stmt.ret(expr.object(Object.fromEntries(this.decider.referenceProps.map(({ declaration, cfnValue }) => [declaration.name, cfnValue])))),
+      ),
+      immutable: true,
+    });
+  }
+
+  private makeFromArnFactory() {
+    const arnTemplate = this.resource.arnTemplate;
+    if (!(arnTemplate && this.refInterface && this.referenceStruct)) {
+      // We don't have enough information to build this factory
+      return;
+    }
+
+    const cfnArnProperty = this.decider.findArnProperty();
+    if (cfnArnProperty == null) {
+      return;
+    }
+
+    const arnPropertyName = referencePropertyName(cfnArnProperty, this.resource.name);
+
+    // Build the reference object
+    const variables = expr.ident('variables');
+    const props = this.decider.referenceProps.map(p => p.declaration.name);
+
+    const referenceObject: Record<string, Expression> = Object.fromEntries(
+      Object.entries(propsToVars(arnTemplate, props))
+        .map(([prop, variable]) => [prop, $E(variables).prop(variable)]),
+    );
+    const hasNonArnProps = Object.keys(referenceObject).length > 0;
+
+    if (!setEqual(Object.keys(referenceObject), props.filter(p => p !== arnPropertyName))) {
+      // Not all properties could be derived from the ARN. We can't continue.
+      return;
+    }
+
+    const innerClass = mkImportClass(this.scope);
+    const refAttributeName = `${this.decider.camelResourceName}Ref`;
+
+    innerClass.addProperty({
+      name: refAttributeName,
+      type: this.referenceStruct!.type,
+    });
+
+    const init = innerClass.addInitializer({
+      docs: {
+        summary: `Create a new \`${this.resource.cloudFormationType}\`.`,
+      },
+    });
+    const _scope = mkScope(init);
+    const id = mkId(init);
+    const arn = init.addParameter({
+      name: 'arn',
+      type: Type.STRING,
+    });
+
+    if (arnPropertyName != null) {
+      referenceObject[arnPropertyName] = arn;
+    }
+
+    // Add the factory method to the outer class
+    const factory = this.addMethod({
+      name: `from${this.resource.name}Arn`,
+      static: true,
+      returnType: this.refInterface?.type,
+      docs: {
+        summary: `Creates a new ${this.refInterface?.name} from an ARN`,
+      },
+    });
+    factory.addParameter({ name: 'scope', type: CONSTRUCTS.Construct });
+    factory.addParameter({ name: 'id', type: Type.STRING });
+    factory.addParameter({ name: 'arn', type: Type.STRING });
+
+    const initBodyStatements: Statement[] = [
+      new SuperInitializer(_scope, id, expr.object({
+        environmentFromArn: arn,
+      })),
+      stmt.sep(),
+    ];
+
+    if (hasNonArnProps) {
+      initBodyStatements.push(
+        stmt.constVar(variables, CDK_CORE.helpers.TemplateString.newInstance(expr.lit(arnTemplate)).prop('parse').call(arn)),
+      );
+    }
+    initBodyStatements.push(stmt.assign($this[refAttributeName], expr.object(referenceObject)));
+
+    init.addBody(...initBodyStatements);
+
+    factory.addBody(
+      new TypeDeclarationStatement(innerClass),
+      stmt.ret(innerClass.newInstance(expr.ident('scope'), expr.ident('id'), expr.ident('arn'))),
+    );
+  }
+
+  private makeFromNameFactory() {
+    const arnTemplate = this.resource.arnTemplate;
+    if (!(arnTemplate && this.refInterface && this.referenceStruct)) {
+      // We don't have enough information to build this factory
+      return;
+    }
+
+    const propsWithoutArn = this.decider.referenceProps.filter(prop => !prop.declaration.name.endsWith('Arn'));
+    const allVariables = extractVariables(arnTemplate);
+    const onlyProperties = allVariables.filter(v => !['Partition', 'Region', 'Account'].includes(v));
+
+    if (propsWithoutArn.length !== 1 || onlyProperties.length !== 1) {
+      // Only generate the method if there is exactly one non-ARN prop in the Reference interface
+      // and only one variable in the ARN template that is not Partition, Region or Account
+      return;
+    }
+
+    const propName = propsWithoutArn[0].declaration.name;
+    const variableName = allVariables.find(v => propertyNameFromCloudFormation(v) === propName);
+    if (variableName == null) {
+      // The template doesn't contain a variable that matches the property name. We can't continue.
+      return;
+    }
+
+    const innerClass = mkImportClass(this.scope);
+
+    const refAttributeName = `${this.decider.camelResourceName}Ref`;
+    innerClass.addProperty({
+      name: refAttributeName,
+      type: this.referenceStruct!.type,
+    });
+
+    const init = innerClass.addInitializer({
+      docs: {
+        summary: `Create a new \`${this.resource.cloudFormationType}\`.`,
+      },
+    });
+    const _scope = mkScope(init);
+    const id = mkId(init);
+    const name = init.addParameter({
+      name: propName,
+      type: Type.STRING,
+    });
+
+    const stackOfScope = $T(CDK_CORE.Stack).of(_scope);
+    const interpolateArn = CDK_CORE.helpers.TemplateString.newInstance(expr.lit(arnTemplate)).prop('interpolate').call(expr.object({
+      Partition: stackOfScope.prop('partition'),
+      Region: stackOfScope.prop('region'),
+      Account: stackOfScope.prop('account'),
+      [variableName]: name,
+    }));
+
+    const refenceObject: Record<string, Expression> = {
+      [propName]: name,
+    };
+
+    const initBodyStatements: Statement[] = [];
+
+    const arnPropName = this.referenceStruct.properties.map(p => p.name).find(n => n.endsWith('Arn'));
+    const arn = expr.ident('arn');
+    if (arnPropName != null) {
+      refenceObject[arnPropName] = arn;
+      initBodyStatements.push(stmt.constVar(arn, interpolateArn));
+      initBodyStatements.push(new SuperInitializer(_scope, id, expr.object({
+        environmentFromArn: arn,
+      })));
+    } else {
+      initBodyStatements.push(new SuperInitializer(_scope, id));
+    }
+    initBodyStatements.push(stmt.sep());
+    initBodyStatements.push(stmt.assign($this[refAttributeName], expr.object(refenceObject)));
+
+    init.addBody(...initBodyStatements);
+
+    // Add the factory method to the outer class
+    const factory = this.addMethod({
+      name: `from${variableName}`,
+      static: true,
+      returnType: this.refInterface!.type,
+      docs: {
+        summary: `Creates a new ${this.refInterface!.name} from a ${propName}`,
+      },
+    });
+    factory.addParameter({ name: 'scope', type: CONSTRUCTS.Construct });
+    factory.addParameter({ name: 'id', type: Type.STRING });
+    factory.addParameter({ name: propName, type: Type.STRING });
+
+    factory.addBody(
+      new TypeDeclarationStatement(innerClass),
+      stmt.ret(innerClass.newInstance(expr.ident('scope'), expr.ident('id'), expr.ident(propName))),
+    );
   }
 
   private makeFromCloudFormationFactory() {
@@ -216,16 +474,8 @@ export class ResourceClass extends ClassType {
         summary: `Create a new \`${this.resource.cloudFormationType}\`.`,
       },
     });
-    const _scope = init.addParameter({
-      name: 'scope',
-      type: CONSTRUCTS.Construct,
-      documentation: 'Scope in which this resource is defined',
-    });
-    const id = init.addParameter({
-      name: 'id',
-      type: Type.STRING,
-      documentation: 'Construct identifier for this resource (unique in its scope)',
-    });
+    const _scope = mkScope(init);
+    const id = mkId(init);
 
     const hasRequiredProps = this.propsType.properties.some((p) => !p.optional);
     const props = init.addParameter({
@@ -388,4 +638,102 @@ export class ResourceClass extends ClassType {
       this.converter.convertTypeDefinitionType(typeDef);
     }
   }
+}
+
+/**
+ * Type guard to filter out undefined values.
+ */
+function isDefined<T>(x: T | undefined): x is T {
+  return x !== undefined;
+}
+
+/**
+ * Compute stability taking into account deprecation status.
+ */
+function stability(isDeprecated: boolean = false, defaultStability: Stability = Stability.External): Stability {
+  if (isDeprecated) {
+    return Stability.Deprecated;
+  }
+  return defaultStability;
+}
+
+/**
+ * Returns deprecation props if deprecated.
+ */
+function maybeDeprecated(deprecationNotice?: string, defaultStability: Stability = Stability.External): Pick<DocsSpec, 'deprecated' | 'stability'> {
+  if (deprecationNotice) {
+    return {
+      deprecated: deprecationNotice,
+      stability: stability(Boolean(deprecationNotice), defaultStability),
+    };
+  }
+
+  return {};
+}
+
+/**
+ * Given a template like "arn:${Partition}:ec2:${Region}:${Account}:fleet/${FleetId}",
+ * and a list of property names, like ["partition", "region", "account", "fleetId"],
+ * return a mapping from property name to variable name, like:
+ * {
+ *   partition: "Partition",
+ *   region: "Region",
+ *   account: "Account",
+ *   fleetId: "FleetId"
+ * }
+ */
+function propsToVars(template: string, props: string[]): Record<string, string> {
+  const variables = extractVariables(template);
+  const result: Record<string, string> = {};
+
+  for (let prop of props) {
+    for (let variable of variables) {
+      const cfnProperty = propertyNameFromCloudFormation(variable);
+      if (prop === cfnProperty) {
+        result[prop] = variable;
+        break;
+      }
+    }
+  }
+
+  return result;
+}
+
+function extractVariables(template: string): string[] {
+  return (template.match(/\${([^{}]+)}/g) || []).map(match => match.slice(2, -1));
+}
+
+function mkScope(init: Initializer) {
+  return init.addParameter({
+    name: 'scope',
+    type: CONSTRUCTS.Construct,
+    documentation: 'Scope in which this resource is defined',
+  });
+}
+
+function mkId(init: Initializer) {
+  return init.addParameter({
+    name: 'id',
+    type: Type.STRING,
+    documentation: 'Construct identifier for this resource (unique in its scope)',
+  });
+}
+
+/**
+ * Whether the given sets are equal
+ */
+function setEqual<A>(a: A[], b: A[]) {
+  const bSet = new Set(b);
+  return a.length === b.length && a.every(k => bSet.has(k));
+}
+
+function mkImportClass(largerScope: IScope): ClassType {
+  const scope = new DummyScope();
+  const className = 'Import';
+  const innerClass = new ClassType(scope, {
+    name: className,
+    extends: CDK_CORE.Resource,
+  });
+  largerScope.linkSymbol(new ThingSymbol(className, scope), expr.ident(className));
+  return innerClass;
 }

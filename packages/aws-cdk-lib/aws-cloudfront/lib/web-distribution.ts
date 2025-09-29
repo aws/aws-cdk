@@ -1,6 +1,15 @@
 import { Construct } from 'constructs';
-import { CfnDistribution } from './cloudfront.generated';
-import { HttpVersion, IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol } from './distribution';
+import { CfnDistribution, DistributionReference } from './cloudfront.generated';
+import {
+  HttpVersion,
+  IDistribution,
+  LambdaEdgeEventType,
+  OriginProtocolPolicy,
+  PriceClass,
+  SecurityPolicyProtocol,
+  SSLMethod,
+  ViewerProtocolPolicy,
+} from './distribution';
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
@@ -760,6 +769,9 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       public readonly domainName: string;
       public readonly distributionDomainName: string;
       public readonly distributionId: string;
+      public readonly distributionRef = {
+        distributionId: attrs.distributionId,
+      };
 
       constructor() {
         super(scope, id);
@@ -806,6 +818,8 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
    * The distribution ID for this distribution.
    */
   public readonly distributionId: string;
+
+  public readonly distributionRef: DistributionReference;
 
   /**
    * Maps our methods to the string arrays they are
@@ -1001,6 +1015,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     }
 
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig });
+    this.distributionRef = distribution.distributionRef;
     this.node.defaultChild = distribution;
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
@@ -1052,7 +1067,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     if (input.functionAssociations) {
       toReturn = Object.assign(toReturn, {
         functionAssociations: input.functionAssociations.map(association => ({
-          functionArn: association.function.functionArn,
+          functionArn: association.function.functionRef.functionArn,
           eventType: association.eventType.toString(),
         })),
       });

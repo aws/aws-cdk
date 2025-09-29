@@ -47,12 +47,20 @@ export function structNameFromTypeDefinition(def: TypeDefinition) {
   return `${def.name}Property`;
 }
 
+export function camelcasedResourceName(res: Resource, suffix?: string) {
+  return `${camelcase(res.name)}${suffix ?? ''}`;
+}
+
 export function classNameFromResource(res: Resource, suffix?: string) {
   return `Cfn${res.name}${suffix ?? ''}`;
 }
 
 export function propStructNameFromResource(res: Resource, suffix?: string) {
   return `${classNameFromResource(res, suffix)}Props`;
+}
+
+export function interfaceNameFromResource(res: Resource, suffix?: string) {
+  return `I${classNameFromResource(res, suffix)}`;
 }
 
 export function cfnProducerNameFromType(struct: TypeDeclaration) {
@@ -85,6 +93,21 @@ export function staticRequiredTransform() {
 
 export function attributePropertyName(attrName: string) {
   return propertyNameFromCloudFormation(`attr${attrName.replace(/[^a-zA-Z0-9]/g, '')}`);
+}
+
+/**
+ * Make sure the resource name is included in the property
+ */
+export function referencePropertyName(propName: string, resourceName: string) {
+  // Some primaryIdentifier components are structurally deep, like AWS::QuickSight::RefreshSchedule's
+  // 'schedule/scheduleId', or AWS::S3::StorageLens's `configuration/id`. Only return the last part.
+  propName = propName.split('/').pop() ?? propName;
+
+  if (['arn', 'id', 'name', 'url'].includes(propName.toLowerCase())) {
+    return `${camelcase(resourceName)}${propName.charAt(0).toUpperCase()}${propName.slice(1)}`;
+  }
+
+  return camelcase(propName);
 }
 
 /**

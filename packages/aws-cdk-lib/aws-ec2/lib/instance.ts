@@ -1,21 +1,32 @@
-
 import { Construct } from 'constructs';
 import { InstanceRequireImdsv2Aspect } from './aspects';
 import { CloudFormationInit } from './cfn-init';
 import { Connections, IConnectable } from './connections';
-import { CfnInstance } from './ec2.generated';
+import { CfnInstance, IInstanceRef, InstanceReference, IPlacementGroupRef } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { CpuCredits, InstanceInitiatedShutdownBehavior } from './launch-template';
 import { IMachineImage, OperatingSystemType } from './machine-image';
-import { IPlacementGroup } from './placement-group';
 import { instanceBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
 import { BlockDevice } from './volume';
 import { IVpc, Subnet, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
-import { Annotations, Aspects, Duration, FeatureFlags, Fn, IResource, Lazy, Resource, Stack, Tags, Token, ValidationError } from '../../core';
+import {
+  Annotations,
+  Aspects,
+  Duration,
+  FeatureFlags,
+  Fn,
+  IResource,
+  Lazy,
+  Resource,
+  Stack,
+  Tags,
+  Token,
+  ValidationError,
+} from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
@@ -27,7 +38,7 @@ import * as cxapi from '../../cx-api';
  */
 const NAME_TAG: string = 'Name';
 
-export interface IInstance extends IResource, IConnectable, iam.IGrantable {
+export interface IInstance extends IResource, IConnectable, iam.IGrantable, IInstanceRef {
   /**
    * The instance's ID
    *
@@ -361,7 +372,7 @@ export interface InstanceProps {
    *
    * @default - no placement group will be used for this instance.
    */
-  readonly placementGroup?: IPlacementGroup;
+  readonly placementGroup?: IPlacementGroupRef;
 
   /**
    * Whether the instance is enabled for AWS Nitro Enclaves.
@@ -609,7 +620,7 @@ export class Instance extends Resource implements IInstance {
       ebsOptimized: props.ebsOptimized,
       disableApiTermination: props.disableApiTermination,
       instanceInitiatedShutdownBehavior: props.instanceInitiatedShutdownBehavior,
-      placementGroupName: props.placementGroup?.placementGroupName,
+      placementGroupName: props.placementGroup?.placementGroupRef.groupName,
       enclaveOptions: props.enclaveEnabled !== undefined ? { enabled: props.enclaveEnabled } : undefined,
       hibernationOptions: props.hibernationEnabled !== undefined ? { configured: props.hibernationEnabled } : undefined,
       ipv6AddressCount: props.ipv6AddressCount,
@@ -683,6 +694,12 @@ export class Instance extends Resource implements IInstance {
         priority: mutatingAspectPrio32333(this),
       });
     }
+  }
+
+  public get instanceRef(): InstanceReference {
+    return {
+      instanceId: this.instanceId,
+    };
   }
 
   /**

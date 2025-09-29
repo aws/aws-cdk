@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "EnhancedMonitoringClusterStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "4a86b0e9990744a7c8c7f015d1c6359aa070f4e43b433e9721ee2ead00cdf0bc": {
+    "f232a442db8027f24a5be849b23d3746abe5bc8e495ecb6becda47d6ebd6750b": {
       "displayName": "EnhancedMonitoringClusterStack Template",
       "source": {
         "path": "EnhancedMonitoringClusterStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-91636e73": {
+        "current_account-current_region-b142b7ef": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4a86b0e9990744a7c8c7f015d1c6359aa070f4e43b433e9721ee2ead00cdf0bc.json",
+          "objectKey": "f232a442db8027f24a5be849b23d3746abe5bc8e495ecb6becda47d6ebd6750b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

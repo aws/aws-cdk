@@ -229,4 +229,22 @@ describe('lambda version', () => {
       version.addFunctionUrl();
     }).toThrow(/FunctionUrl cannot be used with a Version/);
   });
+
+  test('version\'s implementation of IFunctionRef should point to the version', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    });
+
+    // WHEN
+    const ver = new lambda.Version(stack, 'Version', {
+      lambda: fn,
+    });
+
+    // THEN
+    expect(ver.functionRef.functionArn).toEqual(ver.functionArn);
+  });
 });

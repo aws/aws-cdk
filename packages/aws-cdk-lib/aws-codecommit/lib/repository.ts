@@ -505,7 +505,7 @@ export interface RepositoryProps {
    *
    * @default - Use an AWS managed key
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 }
 
 /**
@@ -576,7 +576,7 @@ export class Repository extends RepositoryBase {
       repositoryDescription: props.description,
       triggers: Lazy.any({ produce: () => this.triggers }, { omitEmptyArray: true }),
       code: (props.code?.bind(this))?.code,
-      kmsKeyId: props.kmsKey?.keyArn,
+      kmsKeyId: props.kmsKey?.keyRef.keyArn,
     });
 
     this.repositoryName = this.getResourceNameAttribute(repository.attrName);

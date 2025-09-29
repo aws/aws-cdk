@@ -37,9 +37,11 @@ export class CdkCore extends ExternalModule {
   public readonly CfnTag = Type.fromName(this, 'CfnTag');
   public readonly TagManager = $T(Type.fromName(this, 'TagManager'));
   public readonly TagType = $T(Type.fromName(this, 'TagType'));
+  public readonly Fn = $T(Type.fromName(this, 'Fn'));
   public readonly ITaggable = Type.fromName(this, 'ITaggable');
   public readonly ITaggableV2 = Type.fromName(this, 'ITaggableV2');
   public readonly IResolvable = Type.fromName(this, 'IResolvable');
+  public readonly Stack = Type.fromName(this, 'Stack');
 
   public readonly objectToCloudFormation = makeCallableExpr(this, 'objectToCloudFormation');
   public readonly stringToCloudFormation = makeCallableExpr(this, 'stringToCloudFormation');
@@ -92,6 +94,7 @@ export class CdkInternalHelpers extends ExternalModule {
   public readonly FromCloudFormationResult = $T(Type.fromName(this, 'FromCloudFormationResult'));
   public readonly FromCloudFormation = $T(Type.fromName(this, 'FromCloudFormation'));
   public readonly FromCloudFormationPropertyObject = Type.fromName(this, 'FromCloudFormationPropertyObject');
+  public readonly TemplateString = Type.fromName(this, 'TemplateString');
 
   constructor(parent: CdkCore) {
     super(`${parent.fqn}/core/lib/helpers-internal`);

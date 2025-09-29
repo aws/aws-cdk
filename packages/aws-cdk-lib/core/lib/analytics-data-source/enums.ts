@@ -18,7 +18,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "AccessKeyStatus": [
     "Active",
-    "Inactive"
+    "Inactive",
+    "Expired"
   ],
   "AccessLevel": [
     "READ",
@@ -424,6 +425,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "aws-ecs-2",
     "aws-ecs-2-nvidia"
   ],
+  "BrowserType": [
+    "CHROME",
+    "FIREFOX"
+  ],
   "BucketAccessControl": [
     "Private",
     "PublicRead",
@@ -590,7 +595,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "MYSQL_NATIVE_PASSWORD",
     "POSTGRES_SCRAM_SHA_256",
     "POSTGRES_MD5",
-    "SQL_SERVER_AUTHENTICATION"
+    "SQL_SERVER_AUTHENTICATION",
+    "MYSQL_CACHING_SHA2_PASSWORD"
   ],
   "ClientRoutingPolicy": [
     "availability_zone_affinity",
@@ -1079,6 +1085,13 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SYNTH",
     "SELF_UPDATE",
     "ASSET_PUBLISHING"
+  ],
+  "DockerServerComputeType": [
+    "BUILD_GENERAL1_SMALL",
+    "BUILD_GENERAL1_MEDIUM",
+    "BUILD_GENERAL1_LARGE",
+    "BUILD_GENERAL1_XLARGE",
+    "BUILD_GENERAL1_2XLARGE"
   ],
   "DockerVolumeConsistency": [
     "consistent",
@@ -1613,6 +1626,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ECR_PUBLIC",
     "ECR"
   ],
+  "IncludeDetail": [
+    "FULL",
+    "NONE"
+  ],
   "IncludeExecutionData": [
     "ALL"
   ],
@@ -1736,12 +1753,18 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "r7i",
     "memory7-intel",
     "r7iz",
+    "memory8-intel-base",
+    "r8i",
+    "memory8-intel-flex",
+    "r8i-flex",
     "memory7-amd",
     "r7a",
     "memory8-graviton",
     "r8g",
     "memory8-graviton4-nvme-drive",
     "r8gd",
+    "memory8-graviton4-high-network-bandwidth",
+    "r8gn",
     "compute3",
     "c3",
     "compute4",
@@ -1822,6 +1845,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "i7i",
     "storage8-graviton",
     "i8g",
+    "storage8-graviton-storage-optimized",
+    "i8ge",
     "burstable2",
     "t2",
     "burstable3",
@@ -1908,6 +1933,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "m7gd",
     "standard8-graviton4-nvme-drive",
     "m8gd",
+    "standard8-intel",
+    "m8i",
+    "standard8-intel-flex",
+    "m8i-flex",
     "standard7-intel",
     "m7i",
     "standard7-intel-flex",
@@ -2103,7 +2132,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "STOPPED"
   ],
   "JobStateTimeLimitActionsAction": [
-    "CANCEL"
+    "CANCEL",
+    "TERMINATE"
   ],
   "JobStateTimeLimitActionsReason": [
     "CAPACITY:INSUFFICIENT_INSTANCE_CAPACITY",
@@ -2233,6 +2263,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "right",
     "hidden"
   ],
+  "Level": [
+    "INFO",
+    "ERROR",
+    "TRACE",
+    "OFF"
+  ],
   "LicenseModel": [
     "license-included",
     "bring-your-own-license",
@@ -2281,6 +2317,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "package-lock.json",
     "yarn.lock",
     "bun.lockb",
+    "bun.lock",
     "pnpm-lock.yaml"
   ],
   "LogFormat": [
@@ -2908,6 +2945,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "ProviderType": [
     "CodeStarSourceConnection"
   ],
+  "ProxyEndpointTargetRole": [
+    "READ_WRITE",
+    "READ_ONLY"
+  ],
   "PythonVersion": [
     "2",
     "3",
@@ -3135,7 +3176,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "nodejs18.x",
     "python3.9",
     "python3.10",
-    "python3.11"
+    "python3.11",
+    "python3.13",
+    "python3.13"
   ],
   "RuntimeFamily": [
     0,
@@ -3207,7 +3250,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TLSv1.1_2016",
     "TLSv1.2_2018",
     "TLSv1.2_2019",
-    "TLSv1.2_2021"
+    "TLSv1.2_2021",
+    "TLSv1.3_2025"
   ],
   "ServerSideEncryption": [
     "AES256",
@@ -3570,7 +3614,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "TagMutability": [
     "MUTABLE",
-    "IMMUTABLE"
+    "IMMUTABLE",
+    "IMMUTABLE_WITH_EXCLUSION",
+    "MUTABLE_WITH_EXCLUSION"
   ],
   "TagOperation": [
     "STRINGEQUALS",

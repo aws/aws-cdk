@@ -1,4 +1,4 @@
-import { Arn, ArnFormat, IResource, Lazy, Resource } from 'aws-cdk-lib/core';
+import { Arn, ArnFormat, IResource, Lazy, Resource, ValidationError } from 'aws-cdk-lib/core';
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
@@ -287,6 +287,7 @@ export class Prompt extends PromptBase implements IPrompt {
     // ------------------------------------------------------
     // Validation
     // ------------------------------------------------------
+    this.validatePromptDefault(props);
     this.node.addValidation({ validate: () => this.validatePromptName() });
     this.node.addValidation({ validate: () => this.validatePromptVariants() });
     this.node.addValidation({ validate: () => this.validateDescription() });
@@ -376,6 +377,16 @@ export class Prompt extends PromptBase implements IPrompt {
     }
 
     return errors;
+  }
+
+  /**
+   * Validates that if the prompt has a default, it was also added to the variants array
+   * @param props - The properties set in the constructor
+   */
+  private validatePromptDefault(props: PromptProps) {
+    if (props.defaultVariant && !props.variants?.includes(props.defaultVariant)) {
+      throw new ValidationError('The \'defaultVariant\' needs to be included in the \'variants\' array.', this);
+    }
   }
 
   /**

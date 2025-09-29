@@ -138,7 +138,7 @@ export interface StackProps {
   /**
    * SNS Topic ARNs that will receive stack events.
    *
-   * @default - no notfication arns.
+   * @default - no notification arns.
    */
   readonly notificationArns?: string[];
 
