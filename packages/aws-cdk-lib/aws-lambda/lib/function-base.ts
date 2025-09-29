@@ -541,25 +541,62 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    */
   public grantInvokeUrl(grantee: iam.IGrantable): iam.Grant {
     const identifier = `InvokeFunctionUrl${grantee.grantPrincipal}`; // calls the .toString() of the principal
-    const identifierDualAuth = identifier + '-DualAuth';
+    const identifierDualAuth = `${identifier}-DualAuth`;
 
     // Memoize the result so subsequent grantInvoke() calls are idempotent
     let grant = this._functionUrlInvocationGrants[identifier];
     if (!grant) {
-      grant = this.grant(grantee, identifier, 'lambda:InvokeFunctionUrl', [this.functionArn], {
-        functionUrlAuthType: FunctionUrlAuthType.AWS_IAM,
-      });
+      // Build conditions for function URL with AWS_IAM auth type
+      const functionUrlConditions: Record<string, Record<string, unknown>> = {
+        StringEquals: {
+          'lambda:FunctionUrlAuthType': FunctionUrlAuthType.AWS_IAM,
+        },
+      };
 
-      // return if failed
+      grant = this.grant(
+        grantee,
+        identifier,
+        'lambda:InvokeFunctionUrl',
+        [this.functionArn],
+        {
+          functionUrlAuthType: FunctionUrlAuthType.AWS_IAM,
+        },
+        functionUrlConditions,
+      );
+
+      // raise if failed
       if (!grant.success) {
-        return grant;
+        throw new ValidationError(
+          'Failed to grant Lambda function URL invoke permissions. This can happen when:\n' +
+          '- The Lambda function is imported from a different account without proper configuration\n' +
+          '- The Lambda function is using $LATEST version which cannot be modified\n' +
+          '- The function lacks permission to create new resource policies\n\n' +
+          'To fix this issue:\n' +
+          '- If importing from the same account, use `Function.fromFunctionAttributes()` with `sameEnvironment: true`\n' +
+          '- If importing from a different account with existing permissions, use `skipPermissions: true`\n' +
+          '- Ensure you are not trying to grant permissions on the $LATEST version directly',
+          this,
+        );
       }
 
+      // Build conditions for dual auth (invoked via function URL)
+      const dualAuthConditions: Record<string, Record<string, unknown>> = {
+        Bool: {
+          'lambda:InvokedViaFunctionUrl': true,
+        },
+      };
+
       // proceed to grant invokefunction for FURL Dual auth
-      grant = this.grant(grantee, identifierDualAuth, 'lambda:InvokeFunction', [this.functionArn],
+      grant = this.grant(
+        grantee,
+        identifierDualAuth,
+        'lambda:InvokeFunction',
+        [this.functionArn],
         {
           invokedViaFunctionUrl: true,
-        });
+        },
+        dualAuthConditions,
+      );
 
       this._functionUrlInvocationGrants[identifier] = grant;
     }
@@ -625,34 +662,19 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     return this.stack.splitArn(this.functionArn, ArnFormat.SLASH_RESOURCE_NAME).account === this.stack.account;
   }
 
-  /**
-   * Given permission overrides in lambda resource base policy, return equivalent condition for IAM policy statement
-   * @param permission Permission override for lambda resource base policy
-   * @returns condition for IAM policy statement, or undefined
-   */
-  private permissionToCondition(permission?: Partial<Permission>): Record<string, Record<string, unknown>>|undefined {
-    if (!permission) return undefined;
-    let condition:Record<string, Record<string, unknown>> = {};
-    // eslint-disable-next-line dot-notation
-    permission.functionUrlAuthType ? condition['StringEquals'] = { 'lambda:FunctionUrlAuthType': permission.functionUrlAuthType } : undefined;
-    // eslint-disable-next-line dot-notation
-    permission.invokedViaFunctionUrl ? condition['Bool'] = { 'lambda:InvokedViaFunctionUrl': permission.invokedViaFunctionUrl } : undefined;
-
-    return condition;
-  }
-
   private grant(
     grantee: iam.IGrantable,
     identifier:string,
     action: string,
     resourceArns: string[],
     permissionOverrides?: Partial<Permission>,
+    conditions?: Record<string, Record<string, unknown>>,
   ): iam.Grant {
     const grant = iam.Grant.addToPrincipalOrResource({
       grantee,
       actions: [action],
       resourceArns,
-      conditions: this.permissionToCondition(permissionOverrides),
+      conditions,
 
       // Fake resource-like object on which to call addToResourcePolicy(), which actually
       // calls addPermission()
