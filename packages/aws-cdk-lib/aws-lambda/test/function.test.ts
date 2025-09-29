@@ -2764,6 +2764,21 @@ describe('function', () => {
     expect(stack.resolve(version2.functionArn)).toEqual(expectedArn);
   });
 
+  test('latestVersion functionRef ARN is the version ARN, not the plain ARN', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    });
+
+    // THEN
+    expect(fn.latestVersion.functionRef.functionArn).toEqual(fn.latestVersion.functionArn);
+  });
+
   test('default function with kmsKeyArn, environmentEncryption passed as props', () => {
     // GIVEN
     const stack = new cdk.Stack();

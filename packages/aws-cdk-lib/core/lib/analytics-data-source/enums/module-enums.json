@@ -2633,6 +2633,8 @@
       "r8g",
       "memory8-graviton4-nvme-drive",
       "r8gd",
+      "memory8-graviton4-high-network-bandwidth",
+      "r8gn",
       "compute3",
       "c3",
       "compute4",
@@ -3659,7 +3661,9 @@
     ],
     "TagMutability": [
       "MUTABLE",
-      "IMMUTABLE"
+      "IMMUTABLE",
+      "IMMUTABLE_WITH_EXCLUSION",
+      "MUTABLE_WITH_EXCLUSION"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ecs-patterns/lib/base/application-load-balanced-service-base.ts": {
@@ -4273,6 +4277,18 @@
       "API_KEY",
       "BASIC",
       "OAUTH_CLIENT_CREDENTIALS"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-events/lib/event-bus.ts": {
+    "IncludeDetail": [
+      "FULL",
+      "NONE"
+    ],
+    "Level": [
+      "INFO",
+      "ERROR",
+      "TRACE",
+      "OFF"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-events/lib/input.ts": {

@@ -897,12 +897,15 @@ class LatestVersion extends FunctionBase implements IVersion {
 
   public get versionRef(): VersionReference {
     return {
-      functionArn: this.functionRef.functionArn,
+      functionArn: this.functionArn,
     };
   }
 
-  public get functionRef() {
-    return this.lambda.functionRef;
+  public get functionRef(): FunctionReference {
+    return {
+      functionArn: this.functionArn,
+      functionName: this.functionName,
+    };
   }
 
   public get functionArn() {
