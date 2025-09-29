@@ -1,0 +1,4 @@
+# Requirements for AWS STRANDS Agent with BedrockAgentCoreApp
+strands-agents==1.4.0
+strands-agents-tools==0.2.3
+bedrock-agentcore>=0.1.0

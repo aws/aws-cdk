@@ -4,31 +4,21 @@
 
 /// !cdk-integ aws-cdk-bedrock-agentcore-endpoint
 
+import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
-import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as agentcore from '../../../agentcore';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-bedrock-agentcore-endpoint');
 
-// Create a mock ECR repository for testing
-const mockRepository = ecr.Repository.fromRepositoryAttributes(
-  stack,
-  'MockRepository',
-  {
-    repositoryArn: `arn:aws:ecr:${stack.region}:${stack.account}:repository/bedrock-agentcore-endpoint-test`,
-    repositoryName: 'bedrock-agentcore-endpoint-test',
-  },
+// Use fromAsset to build and push Docker image to ECR automatically
+// This will create an ECR repository in the stack's account and push the image
+const runtimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
+  path.join(__dirname, 'testArtifact'),
 );
 
-// Create runtime artifact from mock ECR repository
-const runtimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(
-  mockRepository,
-  'v1.0.0',
-);
-
-// Create runtime first
+// Create runtime
 const runtime = new agentcore.Runtime(stack, 'TestRuntime', {
   runtimeName: 'endpoint_test_runtime',
   description: 'Runtime for endpoint integration testing',

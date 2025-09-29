@@ -619,12 +619,20 @@ export class Runtime extends RuntimeBase {
   private formatAuthorizerConfiguration(config: AuthorizerConfigurationRuntime): any {
     // if customJWTAuthorizer is provided without mode
     if (config.customJWTAuthorizer && !config.mode) {
+      const jwtConfigNoMode: any = {
+        DiscoveryUrl: config.customJWTAuthorizer.discoveryUrl,
+      };
+
+      // Only add optional properties if they have values
+      if (config.customJWTAuthorizer.allowedAudience && config.customJWTAuthorizer.allowedAudience.length > 0) {
+        jwtConfigNoMode.AllowedAudience = config.customJWTAuthorizer.allowedAudience;
+      }
+      if (config.customJWTAuthorizer.allowedClients && config.customJWTAuthorizer.allowedClients.length > 0) {
+        jwtConfigNoMode.AllowedClients = config.customJWTAuthorizer.allowedClients;
+      }
+
       return {
-        CustomJWTAuthorizer: {
-          DiscoveryUrl: config.customJWTAuthorizer.discoveryUrl,
-          AllowedAudience: config.customJWTAuthorizer.allowedAudience,
-          AllowedClients: config.customJWTAuthorizer.allowedClients,
-        },
+        CustomJWTAuthorizer: jwtConfigNoMode,
       };
     }
 
@@ -640,12 +648,20 @@ export class Runtime extends RuntimeBase {
         if (!config.customJWTAuthorizer) {
           throw new ValidationError('customJWTAuthorizer configuration is required when mode is JWT');
         }
+        const jwtAuthConfig: any = {
+          DiscoveryUrl: config.customJWTAuthorizer.discoveryUrl,
+        };
+
+        // Only add optional properties if they have values
+        if (config.customJWTAuthorizer.allowedAudience && config.customJWTAuthorizer.allowedAudience.length > 0) {
+          jwtAuthConfig.AllowedAudience = config.customJWTAuthorizer.allowedAudience;
+        }
+        if (config.customJWTAuthorizer.allowedClients && config.customJWTAuthorizer.allowedClients.length > 0) {
+          jwtAuthConfig.AllowedClients = config.customJWTAuthorizer.allowedClients;
+        }
+
         return {
-          CustomJWTAuthorizer: {
-            DiscoveryUrl: config.customJWTAuthorizer.discoveryUrl,
-            AllowedAudience: config.customJWTAuthorizer.allowedAudience,
-            AllowedClients: config.customJWTAuthorizer.allowedClients,
-          },
+          CustomJWTAuthorizer: jwtAuthConfig,
         };
 
       case AuthenticationMode.COGNITO:
@@ -661,16 +677,16 @@ export class Runtime extends RuntimeBase {
           throw new ValidationError('Invalid Cognito discovery URL format');
         }
 
-        const jwtConfig: any = {
+        const cognitoJwtConfig: any = {
           DiscoveryUrl: discoveryUrl,
         };
 
         if (config.cognitoAuthorizer.clientId) {
-          jwtConfig.AllowedClients = [config.cognitoAuthorizer.clientId];
+          cognitoJwtConfig.AllowedClients = [config.cognitoAuthorizer.clientId];
         }
 
         return {
-          CustomJWTAuthorizer: jwtConfig,
+          CustomJWTAuthorizer: cognitoJwtConfig,
         };
 
       case AuthenticationMode.OAUTH:
