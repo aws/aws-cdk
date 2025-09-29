@@ -1755,6 +1755,18 @@ export class ManagedInstancesCapacityProvider extends Construct {
   private renderInstanceRequirements(
     instanceRequirements: InstanceRequirementsConfig,
   ): CfnCapacityProvider.InstanceRequirementsRequestProperty {
+    // Validate that allowedInstanceTypes and excludedInstanceTypes are not both specified
+    if (instanceRequirements.allowedInstanceTypes && instanceRequirements.allowedInstanceTypes.length > 0 &&
+        instanceRequirements.excludedInstanceTypes && instanceRequirements.excludedInstanceTypes.length > 0) {
+      throw new ValidationError('Cannot specify both allowedInstanceTypes and excludedInstanceTypes. Use one or the other.', this);
+    }
+
+    // Validate that spotMaxPricePercentageOverLowestPrice and onDemandMaxPricePercentageOverLowestPrice are not both specified
+    if (instanceRequirements.spotMaxPricePercentageOverLowestPrice !== undefined &&
+        instanceRequirements.onDemandMaxPricePercentageOverLowestPrice !== undefined) {
+      throw new ValidationError('Cannot specify both spotMaxPricePercentageOverLowestPrice and onDemandMaxPricePercentageOverLowestPrice. Use one or the other.', this);
+    }
+
     return {
       vCpuCount: {
         min: instanceRequirements.vCpuCountMin,

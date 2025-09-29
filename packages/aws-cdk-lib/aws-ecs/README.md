@@ -1734,7 +1734,6 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICap
     
     // Instance type filtering
     allowedInstanceTypes: ['m5.*', 'c5.*'],
-    excludedInstanceTypes: ['t2.micro', 't2.small'],
     
     // Performance characteristics
     burstablePerformance: ec2.BurstablePerformance.EXCLUDED,
@@ -1756,7 +1755,6 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICap
     networkBandwidthGbpsMin: 10,
     
     // Cost optimization
-    spotMaxPricePercentageOverLowestPrice: 20,
     onDemandMaxPricePercentageOverLowestPrice: 10,
   },
 });

@@ -3131,6 +3131,86 @@ describe('cluster', () => {
       }).toThrow('Subnets are required and should be non-empty.');
     });
 
+    test('throws when both allowedInstanceTypes and excludedInstanceTypes are specified in instanceRequirements', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      // THEN
+      expect(() => {
+        new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+          infrastructureRole,
+          ec2InstanceProfile: instanceProfile,
+          subnets: vpc.privateSubnets,
+          instanceRequirements: {
+            vCpuCountMin: 2,
+            memoryMin: cdk.Size.gibibytes(4),
+            allowedInstanceTypes: ['m5.large', 'c5.xlarge'],
+            excludedInstanceTypes: ['t2.micro', 't3.nano'],
+          },
+        });
+      }).toThrow('Cannot specify both allowedInstanceTypes and excludedInstanceTypes. Use one or the other.');
+    });
+
+    test('throws when both spotMaxPricePercentageOverLowestPrice and maxSpotPriceAsPercentageOfOptimalOnDemandPrice are specified in instanceRequirements', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      // THEN
+      expect(() => {
+        new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+          infrastructureRole,
+          ec2InstanceProfile: instanceProfile,
+          subnets: vpc.privateSubnets,
+          instanceRequirements: {
+            vCpuCountMin: 2,
+            memoryMin: cdk.Size.gibibytes(4),
+            spotMaxPricePercentageOverLowestPrice: 30,
+            onDemandMaxPricePercentageOverLowestPrice: 50,
+          },
+        });
+      }).toThrow('Cannot specify both spotMaxPricePercentageOverLowestPrice and onDemandMaxPricePercentageOverLowestPrice. Use one or the other.');
+    });
+
     test('throws when capacity provider name starts with aws, ecs or fargate', () => {
       // GIVEN
       const app = new cdk.App();
@@ -3435,7 +3515,6 @@ describe('cluster', () => {
         baselineEbsBandwidthMbpsMax: 5000,
         burstablePerformance: ec2.BurstablePerformance.INCLUDED,
         cpuManufacturers: [ec2.CpuManufacturer.INTEL, ec2.CpuManufacturer.AMD],
-        excludedInstanceTypes: ['t2.micro', 't3.nano'],
         instanceGenerations: [ec2.InstanceGeneration.CURRENT],
         localStorage: ec2.LocalStorage.REQUIRED,
         localStorageTypes: [ec2.LocalStorageType.SSD],
@@ -3448,7 +3527,6 @@ describe('cluster', () => {
         networkBandwidthGbpsMax: 10,
         networkInterfaceCountMin: 1,
         networkInterfaceCountMax: 4,
-        onDemandMaxPricePercentageOverLowestPrice: 20,
         requireHibernateSupport: true,
         spotMaxPricePercentageOverLowestPrice: 30,
         totalLocalStorageGBMin: 100,
@@ -3497,7 +3575,6 @@ describe('cluster', () => {
               },
               BurstablePerformance: 'included',
               CpuManufacturers: ['intel', 'amd'],
-              ExcludedInstanceTypes: ['t2.micro', 't3.nano'],
               InstanceGenerations: ['current'],
               LocalStorage: 'required',
               LocalStorageTypes: ['ssd'],
@@ -3514,7 +3591,6 @@ describe('cluster', () => {
                 Min: 1,
                 Max: 4,
               },
-              OnDemandMaxPricePercentageOverLowestPrice: 20,
               RequireHibernateSupport: true,
               SpotMaxPricePercentageOverLowestPrice: 30,
               TotalLocalStorageGB: {
