@@ -1,0 +1,384 @@
+/**
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance
+ *  with the License. A copy of the License is located at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES
+ *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions
+ *  and limitations under the License.
+ */
+
+import { Annotations, Token, Lazy } from 'aws-cdk-lib';
+import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { RuntimeEndpointBase, IRuntimeEndpoint, RuntimeEndpointAttributes } from './runtime-endpoint-base';
+import { validateStringField, validateFieldPattern, ValidationError } from './validation-helpers';
+
+/******************************************************************************
+ *                                Props
+ *****************************************************************************/
+
+/**
+ * Properties for creating a Bedrock Agent Core Runtime Endpoint resource
+ */
+export interface RuntimeEndpointProps {
+  /**
+   * The name of the agent runtime endpoint
+   * Valid characters are a-z, A-Z, 0-9, _ (underscore)
+   * Must start with a letter and can be up to 48 characters long
+   * Pattern: ^[a-zA-Z][a-zA-Z0-9_]{0,47}$
+   */
+  readonly endpointName: string;
+
+  /**
+   * The ID of the agent runtime to associate with this endpoint
+   * This is the unique identifier of the runtime resource
+   */
+  readonly agentRuntimeId: string;
+
+  /**
+   * The version of the agent runtime to use for this endpoint
+   * @default - "1"
+   */
+  readonly agentRuntimeVersion?: string;
+
+  /**
+   * Optional description for the agent runtime endpoint
+   * @default - No description
+   */
+  readonly description?: string;
+
+  /**
+   * Tags for the agent runtime endpoint
+   * A list of key:value pairs of tags to apply to this RuntimeEndpoint resource
+   * @default {} - no tags
+   */
+  readonly tags?: { [key: string]: string };
+}
+
+/******************************************************************************
+ *                                Class
+ *****************************************************************************/
+
+/**
+ * Bedrock Agent Core Runtime Endpoint
+ * Provides a stable endpoint for invoking agent runtimes with versioning support
+ *
+ * @resource AWS::BedrockAgentCore::RuntimeEndpoint
+ * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-endpoint.html
+ */
+@propertyInjectable
+export class RuntimeEndpoint extends RuntimeEndpointBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-agentcore-alpha.RuntimeEndpoint';
+
+  /**
+   * Import an existing Agent Runtime Endpoint using attributes
+   * This allows you to reference an Agent Runtime Endpoint that was created outside of CDK
+   *
+   * @param scope The construct scope
+   * @param id The construct id
+   * @param attrs The attributes of the existing Agent Runtime Endpoint
+   * @returns An IRuntimeEndpoint instance representing the imported endpoint
+   */
+  public static fromAgentRuntimeEndpointAttributes(
+    scope: Construct,
+    id: string,
+    attrs: RuntimeEndpointAttributes,
+  ): IRuntimeEndpoint {
+    class ImportedBedrockAgentRuntimeEndpoint extends RuntimeEndpointBase {
+      public readonly agentRuntimeEndpointArn = attrs.agentRuntimeEndpointArn;
+      public readonly endpointName = attrs.endpointName;
+      public readonly agentRuntimeArn = attrs.agentRuntimeArn;
+      public readonly description = attrs.description;
+      public readonly status: string | undefined = undefined;
+      public readonly targetVersion: string | undefined = undefined;
+      public readonly createdAt: string | undefined = undefined;
+    }
+
+    return new ImportedBedrockAgentRuntimeEndpoint(scope, id);
+  }
+
+  // Properties from base interface
+  public readonly agentRuntimeEndpointArn: string;
+  public readonly endpointName: string;
+  public readonly agentRuntimeArn: string;
+  public readonly status?: string;
+  public readonly targetVersion?: string;
+  public readonly createdAt?: string;
+  public readonly description?: string;
+  public readonly endpointId: string;
+  public readonly agentRuntimeId: string;
+  public readonly agentRuntimeVersion: string;
+  public readonly lastUpdatedAt?: string;
+
+  private readonly endpointResource: bedrockagentcore.CfnRuntimeEndpoint;
+
+  constructor(scope: Construct, id: string, props: RuntimeEndpointProps) {
+    super(scope, id);
+
+    // CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    // Set and validate properties immediately
+    this.endpointName = props.endpointName;
+    this.validateEndpointName();
+
+    this.agentRuntimeId = props.agentRuntimeId;
+    this.validateAgentRuntimeId();
+
+    this.agentRuntimeVersion = props.agentRuntimeVersion ?? '1';
+    this.validateAgentRuntimeVersion();
+
+    this.description = props.description;
+    if (this.description) {
+      this.validateDescription();
+    }
+
+    if (props.tags) {
+      this.validateTags(props.tags);
+    }
+
+    const cfnProps: bedrockagentcore.CfnRuntimeEndpointProps = {
+      name: this.endpointName,
+      agentRuntimeId: Lazy.string({
+        produce: () => this.renderAgentRuntimeId(),
+      }),
+      agentRuntimeVersion: Lazy.string({
+        produce: () => this.renderAgentRuntimeVersion(),
+      }),
+      description: Lazy.string({
+        produce: () => this.renderDescription(),
+      }),
+      tags: props.tags ?? {},
+    };
+
+    this.endpointResource = new bedrockagentcore.CfnRuntimeEndpoint(this, 'Resource', cfnProps);
+
+    this.endpointId = this.endpointResource.attrId;
+    this.agentRuntimeEndpointArn = this.endpointResource.attrAgentRuntimeEndpointArn;
+    this.agentRuntimeArn = this.endpointResource.attrAgentRuntimeArn;
+    this.status = this.endpointResource.attrStatus;
+    this.targetVersion = this.endpointResource.attrLiveVersion;
+    this.createdAt = this.endpointResource.attrCreatedAt;
+    this.lastUpdatedAt = this.endpointResource.attrLastUpdatedAt;
+  }
+
+  /**
+   * Renders the agent runtime ID for CloudFormation
+   * @internal
+   */
+  private renderAgentRuntimeId(): string {
+    return this.agentRuntimeId;
+  }
+
+  /**
+   * Renders the agent runtime version for CloudFormation
+   * @internal
+   */
+  private renderAgentRuntimeVersion(): string {
+    return this.agentRuntimeVersion;
+  }
+
+  /**
+   * Renders the description for CloudFormation
+   * @internal
+   */
+  private renderDescription(): string | undefined {
+    return this.description;
+  }
+
+  /**
+   * Validates the endpoint name format
+   * Pattern: ^[a-zA-Z][a-zA-Z0-9_]{0,47}$
+   * @throws Error if validation fails
+   */
+  private validateEndpointName(): void {
+    // Skip validation if the name contains CDK tokens (unresolved values)
+    if (Token.isUnresolved(this.endpointName)) {
+      return;
+    }
+
+    // Validate length
+    const lengthErrors = validateStringField({
+      value: this.endpointName,
+      fieldName: 'Endpoint name',
+      minLength: 1,
+      maxLength: 48,
+    });
+
+    // Validate pattern
+    const patternErrors = validateFieldPattern(
+      this.endpointName,
+      'Endpoint name',
+      /^[a-zA-Z][a-zA-Z0-9_]{0,47}$/,
+      'Endpoint name must start with a letter and contain only letters, numbers, and underscores',
+    );
+
+    // Combine and throw if any errors
+    const allErrors = [...lengthErrors, ...patternErrors];
+    if (allErrors.length > 0) {
+      throw new ValidationError(allErrors.join('\n'));
+    }
+  }
+
+  /**
+   * Validates the description format
+   * Must be between 1 and 1200 characters (per CloudFormation specification)
+   * @throws Error if validation fails
+   */
+  private validateDescription(): void {
+    if (Token.isUnresolved(this.description)) {
+      return;
+    }
+
+    if (this.description) {
+      const errors = validateStringField({
+        value: this.description,
+        fieldName: 'Description',
+        minLength: 1,
+        maxLength: 1200,
+      });
+
+      if (errors.length > 0) {
+        throw new ValidationError(errors.join('\n'));
+      }
+    }
+  }
+
+  /**
+   * Validates the agent runtime ID format
+   * @throws Error if validation fails
+   */
+  private validateAgentRuntimeId(): void {
+    // Skip validation if the ID contains CDK tokens (unresolved values)
+    if (Token.isUnresolved(this.agentRuntimeId)) {
+      return;
+    }
+
+    const errors = validateStringField({
+      value: this.agentRuntimeId,
+      fieldName: 'Agent runtime ID',
+      minLength: 1,
+      maxLength: 256,
+    });
+
+    if (errors.length > 0) {
+      throw new ValidationError(errors.join('\n'));
+    }
+  }
+
+  /**
+   * Validates the agent runtime version format
+   * @throws Error if validation fails
+   */
+  private validateAgentRuntimeVersion(): void {
+    if (Token.isUnresolved(this.agentRuntimeVersion)) {
+      return;
+    }
+
+    // Validate length
+    const lengthErrors = validateStringField({
+      value: this.agentRuntimeVersion,
+      fieldName: 'Agent runtime version',
+      minLength: 1,
+      maxLength: 5,
+    });
+
+    // Validate pattern
+    const patternErrors = validateFieldPattern(
+      this.agentRuntimeVersion,
+      'Agent runtime version',
+      /^[1-9]\d{0,4}$/,
+      'Agent runtime version must be a number starting with 1-9',
+    );
+
+    // Combine and throw if any errors
+    const allErrors = [...lengthErrors, ...patternErrors];
+    if (allErrors.length > 0) {
+      throw new ValidationError(allErrors.join('\n'));
+    }
+  }
+
+  /**
+   * Validates the tags format
+   * @param tags The tags object to validate
+   * @throws Error if validation fails
+   */
+  private validateTags(tags: { [key: string]: string }): void {
+    for (const [key, value] of Object.entries(tags)) {
+      if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
+        continue;
+      }
+
+      // Validate tag key length
+      const keyLengthErrors = validateStringField({
+        value: key,
+        fieldName: `Tag key "${key}"`,
+        minLength: 1,
+        maxLength: 256,
+      });
+
+      // Validate tag key pattern
+      const keyPatternErrors = validateFieldPattern(
+        key,
+        `Tag key "${key}"`,
+        /^[a-zA-Z0-9\s._:/=+@-]*$/,
+        `Tag key "${key}" can only contain letters (a-z, A-Z), numbers (0-9), spaces, and special characters (._:/=+@-)`,
+      );
+
+      // Combine key errors and throw if any
+      const keyErrors = [...keyLengthErrors, ...keyPatternErrors];
+      if (keyErrors.length > 0) {
+        throw new ValidationError(keyErrors.join('\n'));
+      }
+
+      if (value === undefined || value === null) {
+        throw new ValidationError(`Tag value for key "${key}" cannot be null or undefined`);
+      }
+
+      // Validate tag value length
+      const valueLengthErrors = validateStringField({
+        value: value,
+        fieldName: `Tag value for key "${key}"`,
+        minLength: 0,
+        maxLength: 256,
+      });
+
+      // Validate tag value pattern
+      const valuePatternErrors = validateFieldPattern(
+        value,
+        `Tag value for key "${key}"`,
+        /^[a-zA-Z0-9\s._:/=+@-]*$/,
+        `Tag value for key "${key}" can only contain letters (a-z, A-Z), numbers (0-9), spaces, and special characters (._:/=+@-)`,
+      );
+
+      // Combine value errors and throw if any
+      const valueErrors = [...valueLengthErrors, ...valuePatternErrors];
+      if (valueErrors.length > 0) {
+        throw new ValidationError(valueErrors.join('\n'));
+      }
+    }
+  }
+
+  /**
+   * Update the runtime version for this endpoint
+   * This allows you to point the endpoint to a different version of the runtime
+   *
+   * @param newVersion The new runtime version to use
+   */
+  public updateRuntimeVersion(newVersion: string): void {
+    (this as any).agentRuntimeVersion = newVersion;
+
+    this.endpointResource.agentRuntimeVersion = newVersion;
+
+    Annotations.of(this).addInfo(
+      `Runtime endpoint '${this.endpointName}' updated to use runtime version '${newVersion}'`,
+    );
+  }
+}
