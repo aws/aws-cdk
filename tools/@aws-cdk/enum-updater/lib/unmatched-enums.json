@@ -1889,6 +1889,9 @@
     }
   },
   "synthetics": {
+    "BrowserType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts"
+    },
     "Cleanup": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts"
     },

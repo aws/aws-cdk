@@ -529,6 +529,35 @@
        ]
       },
       {
+       "Action": "iam:CreateServiceLinkedRole",
+       "Condition": {
+        "StringEquals": {
+         "iam:AWSServiceName": [
+          "elasticmapreduce.amazonaws.com",
+          "elasticmapreduce.amazonaws.com.cn"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":iam::",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":role/aws-service-role/elasticmapreduce.amazonaws.com*/AWSServiceRoleForEMRCleanup*"
+         ]
+        ]
+       },
+       "Sid": "ElasticMapReduceServiceLinkedRole"
+      },
+      {
        "Action": [
         "events:DescribeRule",
         "events:PutRule",

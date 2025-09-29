@@ -66,12 +66,12 @@
     "@aws-cdk/service-spec-types" "^0.0.158"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/aws-service-spec@^0.1.94":
-  version "0.1.94"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.94.tgz#ed662578612509131f55fa62efb095568ac30d68"
-  integrity sha512-lMGOaSyz3NHcXdVa67dFXd43f9Y4Yj9n/JxVhdNfWL2KhBTbWWb9af0sv1UZWfChLxQk+e+UqBVtBSZzNiDZ2g==
+"@aws-cdk/aws-service-spec@^0.1.100":
+  version "0.1.100"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.100.tgz#9dd4410653c8f41cfd108305b009c7d50fa32c81"
+  integrity sha512-BnlbWvvZDiGVcCkJuZMQdATHN7Npssqe74JxgTnoiqzIREGPaDRAl+Ls6XGH3n30ZWAREkRtqJ9NExm3SJky9Q==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.160"
+    "@aws-cdk/service-spec-types" "^0.0.166"
     "@cdklabs/tskb" "^0.0.3"
 
 "@aws-cdk/cloud-assembly-schema@^48.6.0":
@@ -122,12 +122,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v33/-/lambda-layer-kubectl-v33-2.0.0.tgz#0c521ad987bb3ac597a4b4ebeece8fd2721ca000"
   integrity sha512-osA3wkwWK2OfpymTcCZKhgaKSca9PQSr+7xi+UevKFRHtMdxHgygC345hdDpCtZlMmX9pKjtFpRUxeRrbGHMEw==
 
-"@aws-cdk/service-spec-importers@^0.0.84":
-  version "0.0.84"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.84.tgz#f261345c5bccfac0c2ff3d854c5247d677b6091a"
-  integrity sha512-iVuiU2nCnlDnJETWscboiTqdu/PWQrTQuNA3M0TA4YdidJd5tlG2El/m9eF3OHe+8RLSixZsG7xKbtMzwjqaOg==
+"@aws-cdk/service-spec-importers@^0.0.86":
+  version "0.0.86"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.86.tgz#229ee83b894d4f463edd8896ce0c187821aeaa6a"
+  integrity sha512-3p0MO62FAVF2U+S2VjKRGFQRjZtzk9Z5EWOnYRxtt4NlhxEDeYgPXBDTwPAuWVkQM2XVaDUcLv5G/kXgEKCUVQ==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.160"
+    "@aws-cdk/service-spec-types" "^0.0.163"
     "@cdklabs/tskb" "^0.0.3"
     ajv "^6"
     canonicalize "^2.1.0"
@@ -145,10 +145,17 @@
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/service-spec-types@^0.0.160":
-  version "0.0.160"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.160.tgz#3c37e324418db15a4820f957b95d282244b1743c"
-  integrity sha512-uTSZyc6yBbX7SYSvnPi0EkvGGqUbo2Xc2O2urtNTviv2v9vRROMJNxvWc8QIobDYe+KEP3QcgbZTHKxI0apuKQ==
+"@aws-cdk/service-spec-types@^0.0.163":
+  version "0.0.163"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.163.tgz#ba07b771c479211900675e149d0c1a465dee1099"
+  integrity sha512-IheocTkQUn9bxe7SsEYk1G0Tb7vlNELNSan3VxHjvgKijUWden14xQJivovooV2sfjFRiAnOPjnUbGTttrHSrw==
+  dependencies:
+    "@cdklabs/tskb" "^0.0.3"
+
+"@aws-cdk/service-spec-types@^0.0.166":
+  version "0.0.166"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.166.tgz#998caca5deae0e0e6044e51a82acb438693609a0"
+  integrity sha512-7oVeOIkucTrlC7NsVGyyxKPkWs2lODpXH02aGaYP4o1orafKZ9oD3FLugEmNnjlUUIkSvMt60vbq+YvDoABf8g==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
@@ -2508,10 +2515,10 @@
   resolved "https://registry.npmjs.org/@cdklabs/tskb/-/tskb-0.0.3.tgz#4b79846d9381eb1252ba85d5d20b7cd7d99b6ecb"
   integrity sha512-JR+MuD4awAXvutu7HArephXfZm09GPTaSAQUqNcJB5+ZENRm4kV+L6vJL6Tn1xHjCcHksO+HAqj3gYtm5K94vA==
 
-"@cdklabs/typewriter@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.npmjs.org/@cdklabs/typewriter/-/typewriter-0.0.5.tgz#edbec5c2e6dd45c803154d7e521ca38746a08d89"
-  integrity sha512-gLp7s9bhHOIN9SN6jhdVi3cLp0YisMkvn4Ct3KeqySR7H1Q5nytKvV0NWUC1FrdNsPoKvulUFIGtqbwCFZt9NQ==
+"@cdklabs/typewriter@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.npmjs.org/@cdklabs/typewriter/-/typewriter-0.0.6.tgz#4f70afd8e70761785f09bfbee9b4678ffd6413a1"
+  integrity sha512-uOKGbxFG+J1ig2Cdn24d8wlELcS2MF6Z0Fsfawx+MiYLnRZJ3kgSZExui+QSm7PyXARW5rcpB+ZGh2maGNQbKw==
 
 "@colors/colors@1.6.0", "@colors/colors@^1.6.0":
   version "1.6.0"
@@ -5259,15 +5266,6 @@ aws-sdk@^2.1692.0:
     uuid "8.0.0"
     xml2js "0.6.2"
 
-axios@1.11.0, axios@^1.8.3:
-  version "1.11.0"
-  resolved "https://registry.npmjs.org/axios/-/axios-1.11.0.tgz#c2ec219e35e414c025b2095e8b8280278478fdb6"
-  integrity sha512-1Lx3WLFQWm3ooKDYZD1eXmoGO9fxYQjrycfHFC8P0sCfQVXyROp0p9PFWBehewBOdCwHc+f/b8I0fMto5eSfwA==
-  dependencies:
-    follow-redirects "^1.15.6"
-    form-data "^4.0.4"
-    proxy-from-env "^1.1.0"
-
 axios@^0.27.2:
   version "0.27.2"
   resolved "https://registry.npmjs.org/axios/-/axios-0.27.2.tgz#207658cc8621606e586c85db4b41a750e756d972"
@@ -5275,6 +5273,24 @@ axios@^0.27.2:
   dependencies:
     follow-redirects "^1.14.9"
     form-data "^4.0.0"
+
+axios@^1.12.0:
+  version "1.12.2"
+  resolved "https://registry.npmjs.org/axios/-/axios-1.12.2.tgz#6c307390136cf7a2278d09cec63b136dfc6e6da7"
+  integrity sha512-vMJzPewAlRyOgxV2dU0Cuz2O8zzzx9VYtbJOaBgXFeLc4IV/Eg50n4LowmehOOR61S8ZMpc2K5Sa7g6A4jfkUw==
+  dependencies:
+    follow-redirects "^1.15.6"
+    form-data "^4.0.4"
+    proxy-from-env "^1.1.0"
+
+axios@^1.8.3:
+  version "1.11.0"
+  resolved "https://registry.npmjs.org/axios/-/axios-1.11.0.tgz#c2ec219e35e414c025b2095e8b8280278478fdb6"
+  integrity sha512-1Lx3WLFQWm3ooKDYZD1eXmoGO9fxYQjrycfHFC8P0sCfQVXyROp0p9PFWBehewBOdCwHc+f/b8I0fMto5eSfwA==
+  dependencies:
+    follow-redirects "^1.15.6"
+    form-data "^4.0.4"
+    proxy-from-env "^1.1.0"
 
 babel-jest@^29.7.0:
   version "29.7.0"
