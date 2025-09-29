@@ -19,7 +19,8 @@ import * as sagemaker from '../lib';
  *             "ModelName": "ModelWithArtifactAndVpcModel...",
  *             "InitialInstanceCount": 1,
  *             "InstanceType": "ml.m5.large",
- *             "InitialVariantWeight": 1.0
+ *             "InitialVariantWeight": 1.0,
+ *             "ContainerStartupHealthCheckTimeoutInSeconds": 300
  *         },
  *         {
  *             "VariantName": "secondVariant",
@@ -60,6 +61,7 @@ const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
       model: modelWithArtifactAndVpc,
       variantName: 'firstVariant',
       instanceType: sagemaker.InstanceType.M5_LARGE,
+      containerStartupHealthCheckTimeout: cdk.Duration.minutes(5),
     },
     {
       model: modelWithArtifactAndVpc,
