@@ -18,7 +18,11 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+<<<<<<< HEAD
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/845f10dfc92f43ee26cf434b62a60ce08042970ec17aa2dbd95fbdc3927491d2.json",
+=======
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eecc68635233db59cb6874ad35c524b936afd5f074bf3aaefadba92846fffbd1.json",
+>>>>>>> 2502a3ca73 (feat(sagemaker): add containerStartupHealthCheckTimeout integration test implement)
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1006,7 +1010,11 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
+<<<<<<< HEAD
             "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
+=======
+            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+>>>>>>> 2502a3ca73 (feat(sagemaker): add containerStartupHealthCheckTimeout integration test implement)
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -1345,6 +1353,7 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+<<<<<<< HEAD
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
             "recommendedValue": true,
@@ -1360,6 +1369,8 @@
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+=======
+>>>>>>> 2502a3ca73 (feat(sagemaker): add containerStartupHealthCheckTimeout integration test implement)
           }
         }
       }
