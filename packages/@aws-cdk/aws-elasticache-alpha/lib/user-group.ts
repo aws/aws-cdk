@@ -3,7 +3,7 @@ import { UserEngine } from './common';
 import { CfnUserGroup } from 'aws-cdk-lib/aws-elasticache';
 import { IUser } from './user-base';
 import { IResource, Resource, ArnFormat, Stack, Lazy, ValidationError, UnscopedValidationError, Names } from 'aws-cdk-lib/core';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 const ELASTICACHE_USERGROUP_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.UserGroup');
@@ -327,6 +327,7 @@ export class UserGroup extends UserGroupBase {
    *
    * @param user The user to add to the group
    */
+  @MethodMetadata()
   public addUser(user: IUser): void {
     this._users.push(user);
     this.addUserDependency(user);
