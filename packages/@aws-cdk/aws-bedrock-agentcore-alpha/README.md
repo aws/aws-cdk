@@ -98,7 +98,7 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
 
 To grant the runtime permission to invoke a Bedrock model or inference profile:
 
-```ts no-fixture
+```text
 // Note: This example uses @aws-cdk/aws-bedrock-alpha which must be installed separately
 import * as bedrock from '@aws-cdk/aws-bedrock-alpha';
 
