@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "089508bb504b5082360eee91eedbf067227b226d8d75b484e5019fa5ea1800a1": {
-      "displayName": "AttributeBasedComputeFleetIntegStack0 Template",
+    "aeb69d7bf9c07ae422396a1c7658c5146780ffc186fc0336023c8f9f959e7aae": {
+      "displayName": "CustomInstanceTypeComputeFleetIntegStack2 Template",
       "source": {
-        "path": "AttributeBasedComputeFleetIntegStack0.template.json",
+        "path": "CustomInstanceTypeComputeFleetIntegStack2.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-ae4d60f6": {
+        "current_account-current_region-2a7f0d80": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "089508bb504b5082360eee91eedbf067227b226d8d75b484e5019fa5ea1800a1.json",
+          "objectKey": "aeb69d7bf9c07ae422396a1c7658c5146780ffc186fc0336023c8f9f959e7aae.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

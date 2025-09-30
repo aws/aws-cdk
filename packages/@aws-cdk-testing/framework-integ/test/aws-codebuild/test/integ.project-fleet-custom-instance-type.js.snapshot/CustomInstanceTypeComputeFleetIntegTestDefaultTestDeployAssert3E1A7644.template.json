@@ -17,14 +17,14 @@
       [
        "{\"$ObjectLike\":{\"fleets\":{\"$ArrayWith\":[\"",
        {
-        "Fn::ImportValue": "AttributeBasedComputeFleetIntegStack3:ExportsOutputFnGetAttMyFleet1E628396Arn64216BDA"
+        "Fn::ImportValue": "CustomInstanceTypeComputeFleetIntegStack3:ExportsOutputFnGetAttMyFleet1E628396Arn64216BDA"
        },
        "\"]}}}"
       ]
      ]
     },
     "flattenResponse": "false",
-    "salt": "1758851544208"
+    "salt": "1758856366881"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -224,7 +224,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "AttributeBasedComputeFleetIntegStack0:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+         "Fn::ImportValue": "CustomInstanceTypeComputeFleetIntegStack0:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
         },
         "\""
        ]
@@ -235,7 +235,7 @@
     "outputPaths": [
      "build.id"
     ],
-    "salt": "1758851544209"
+    "salt": "1758856366882"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -277,7 +277,7 @@
     "outputPaths": [
      "builds.0.buildStatus"
     ],
-    "salt": "1758851544210"
+    "salt": "1758856366882"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -563,7 +563,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "AttributeBasedComputeFleetIntegStack1:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+         "Fn::ImportValue": "CustomInstanceTypeComputeFleetIntegStack1:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
         },
         "\""
        ]
@@ -574,7 +574,7 @@
     "outputPaths": [
      "build.id"
     ],
-    "salt": "1758851544210"
+    "salt": "1758856366883"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -616,7 +616,7 @@
     "outputPaths": [
      "builds.0.buildStatus"
     ],
-    "salt": "1758851544211"
+    "salt": "1758856366884"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -756,7 +756,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "AttributeBasedComputeFleetIntegStack2:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+         "Fn::ImportValue": "CustomInstanceTypeComputeFleetIntegStack2:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
         },
         "\""
        ]
@@ -767,7 +767,7 @@
     "outputPaths": [
      "build.id"
     ],
-    "salt": "1758851544211"
+    "salt": "1758856366884"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -809,7 +809,7 @@
     "outputPaths": [
      "builds.0.buildStatus"
     ],
-    "salt": "1758851544211"
+    "salt": "1758856366884"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -949,7 +949,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "AttributeBasedComputeFleetIntegStack3:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+         "Fn::ImportValue": "CustomInstanceTypeComputeFleetIntegStack3:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
         },
         "\""
        ]
@@ -960,7 +960,7 @@
     "outputPaths": [
      "build.id"
     ],
-    "salt": "1758851544211"
+    "salt": "1758856366884"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1002,7 +1002,7 @@
     "outputPaths": [
      "builds.0.buildStatus"
     ],
-    "salt": "1758851544211"
+    "salt": "1758856366884"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

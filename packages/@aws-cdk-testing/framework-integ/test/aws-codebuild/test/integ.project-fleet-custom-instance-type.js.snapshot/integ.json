@@ -1,0 +1,16 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "CustomInstanceTypeComputeFleetIntegTest/DefaultTest": {
+      "stacks": [
+        "CustomInstanceTypeComputeFleetIntegStack0",
+        "CustomInstanceTypeComputeFleetIntegStack1",
+        "CustomInstanceTypeComputeFleetIntegStack2",
+        "CustomInstanceTypeComputeFleetIntegStack3"
+      ],
+      "assertionStack": "CustomInstanceTypeComputeFleetIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CustomInstanceTypeComputeFleetIntegTestDefaultTestDeployAssert3E1A7644"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
