@@ -353,3 +353,66 @@ describe('attribute based compute', () => {
     }).toThrow('At least one compute configuration criteria must be specified if computeType is "ATTRIBUTE_BASED"');
   });
 });
+
+describe('overflowBehavior', () => {
+  test('can set overflow behavior to QUEUE', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      overflowBehavior: codebuild.FleetOverflowBehavior.QUEUE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      BaseCapacity: 1,
+      ComputeType: 'BUILD_GENERAL1_SMALL',
+      EnvironmentType: 'LINUX_CONTAINER',
+      OverflowBehavior: 'QUEUE',
+    });
+  });
+
+  test('can set overflow behavior to ON_DEMAND', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      overflowBehavior: codebuild.FleetOverflowBehavior.ON_DEMAND,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      BaseCapacity: 1,
+      ComputeType: 'BUILD_GENERAL1_SMALL',
+      EnvironmentType: 'LINUX_CONTAINER',
+      OverflowBehavior: 'ON_DEMAND',
+    });
+  });
+
+  test('overflow behavior is optional', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      BaseCapacity: 1,
+      ComputeType: 'BUILD_GENERAL1_SMALL',
+      EnvironmentType: 'LINUX_CONTAINER',
+    });
+  });
+});
