@@ -453,6 +453,32 @@
    }
   }
  },
+ "Outputs": {
+  "ExportsOutputRefDistributionWithIPv467452C1EFE039C9B": {
+   "Value": {
+    "Ref": "DistributionWithIPv467452C1E"
+   },
+   "Export": {
+    "Name": "FunctionUrlOriginIpAddressTypeStack:ExportsOutputRefDistributionWithIPv467452C1EFE039C9B"
+   }
+  },
+  "ExportsOutputRefDistributionWithIPv69F24DA5D6A4AB011": {
+   "Value": {
+    "Ref": "DistributionWithIPv69F24DA5D"
+   },
+   "Export": {
+    "Name": "FunctionUrlOriginIpAddressTypeStack:ExportsOutputRefDistributionWithIPv69F24DA5D6A4AB011"
+   }
+  },
+  "ExportsOutputRefDistributionWithDualstackCB18333921C95B2A": {
+   "Value": {
+    "Ref": "DistributionWithDualstackCB183339"
+   },
+   "Export": {
+    "Name": "FunctionUrlOriginIpAddressTypeStack:ExportsOutputRefDistributionWithDualstackCB18333921C95B2A"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

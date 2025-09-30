@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/edefdb15a510de87527de2fbdcfb7e52b031da2b312aebffbe29a0eb20851c51.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b7e8ed41fe2151cc77027ad5555063973c7bec83ec9b0c78cd5309b13029f31b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,13 +37,27 @@
         "/FunctionUrlOriginIpAddressTypeStack/TestFunction": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
           }
         ],
         "/FunctionUrlOriginIpAddressTypeStack/TestFunction/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
           }
         ],
         "/FunctionUrlOriginIpAddressTypeStack/TestFunction/ServiceRole/ImportServiceRole": [
@@ -67,7 +81,9 @@
         "/FunctionUrlOriginIpAddressTypeStack/TestFunction/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "logGroupName": "*"
+            }
           }
         ],
         "/FunctionUrlOriginIpAddressTypeStack/TestFunction/LogGroup/Resource": [
@@ -79,7 +95,10 @@
         "/FunctionUrlOriginIpAddressTypeStack/TestFunction/FunctionUrl": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "function": "*",
+              "authType": "AWS_IAM"
+            }
           }
         ],
         "/FunctionUrlOriginIpAddressTypeStack/TestFunction/FunctionUrl/Resource": [
@@ -91,7 +110,11 @@
         "/FunctionUrlOriginIpAddressTypeStack/DistributionWithoutIpAddressTypeProp(IPv4)": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "defaultBehavior": {
+                "origin": "*"
+              }
+            }
           }
         ],
         "/FunctionUrlOriginIpAddressTypeStack/DistributionWithoutIpAddressTypeProp(IPv4)/Origin1/FunctionUrlOriginAccessControl": [
@@ -121,7 +144,11 @@
         "/FunctionUrlOriginIpAddressTypeStack/DistributionWithIPv4": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "defaultBehavior": {
+                "origin": "*"
+              }
+            }
           }
         ],
         "/FunctionUrlOriginIpAddressTypeStack/DistributionWithIPv4/Origin1/FunctionUrlOriginAccessControl": [
@@ -151,7 +178,11 @@
         "/FunctionUrlOriginIpAddressTypeStack/DistributionWithIPv6": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "defaultBehavior": {
+                "origin": "*"
+              }
+            }
           }
         ],
         "/FunctionUrlOriginIpAddressTypeStack/DistributionWithIPv6/Origin1/FunctionUrlOriginAccessControl": [
@@ -181,7 +212,11 @@
         "/FunctionUrlOriginIpAddressTypeStack/DistributionWithDualstack": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "defaultBehavior": {
+                "origin": "*"
+              }
+            }
           }
         ],
         "/FunctionUrlOriginIpAddressTypeStack/DistributionWithDualstack/Origin1/FunctionUrlOriginAccessControl": [
@@ -206,6 +241,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DistributionWithDualstackCB183339"
+          }
+        ],
+        "/FunctionUrlOriginIpAddressTypeStack/Exports/Output{\"Ref\":\"DistributionWithIPv467452C1E\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefDistributionWithIPv467452C1EFE039C9B"
+          }
+        ],
+        "/FunctionUrlOriginIpAddressTypeStack/Exports/Output{\"Ref\":\"DistributionWithIPv69F24DA5D\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefDistributionWithIPv69F24DA5D6A4AB011"
+          }
+        ],
+        "/FunctionUrlOriginIpAddressTypeStack/Exports/Output{\"Ref\":\"DistributionWithDualstackCB183339\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefDistributionWithDualstackCB18333921C95B2A"
           }
         ],
         "/FunctionUrlOriginIpAddressTypeStack/BootstrapVersion": [
@@ -240,7 +293,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/33306370e37beda754cb7b033584b15c9d9ceabc5a95fe3b427b222efd5fcc8f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -253,9 +306,106 @@
         }
       },
       "dependencies": [
+        "FunctionUrlOriginIpAddressTypeStack",
         "FunctionUrlOriginIpAddressTypeTestDefaultTestDeployAssert2EE4695B.assets"
       ],
       "metadata": {
+        "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/AwsApiCallCloudFrontgetDistribution4614290a52593596f8d940647c7465e5/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/AwsApiCallCloudFrontgetDistribution4614290a52593596f8d940647c7465e5/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudFrontgetDistribution4614290a52593596f8d940647c7465e5"
+          }
+        ],
+        "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/AwsApiCallCloudFrontgetDistribution4614290a52593596f8d940647c7465e5/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCloudFrontgetDistribution4614290a52593596f8d940647c7465e5"
+          }
+        ],
+        "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/AwsApiCallCloudFrontgetDistributioneee3b1157e24dc02a70f0a2971ed8c70/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/AwsApiCallCloudFrontgetDistributioneee3b1157e24dc02a70f0a2971ed8c70/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudFrontgetDistributioneee3b1157e24dc02a70f0a2971ed8c70"
+          }
+        ],
+        "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/AwsApiCallCloudFrontgetDistributioneee3b1157e24dc02a70f0a2971ed8c70/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCloudFrontgetDistributioneee3b1157e24dc02a70f0a2971ed8c70"
+          }
+        ],
+        "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/AwsApiCallCloudFrontgetDistribution6c222f9b6410c728f9995017259cf3fa/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/AwsApiCallCloudFrontgetDistribution6c222f9b6410c728f9995017259cf3fa/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCloudFrontgetDistribution6c222f9b6410c728f9995017259cf3fa"
+          }
+        ],
+        "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/AwsApiCallCloudFrontgetDistribution6c222f9b6410c728f9995017259cf3fa/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCloudFrontgetDistribution6c222f9b6410c728f9995017259cf3fa"
+          }
+        ],
         "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
