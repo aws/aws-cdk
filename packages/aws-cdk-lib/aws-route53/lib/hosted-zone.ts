@@ -314,7 +314,7 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
 /**
  * Represents a Route 53 public hosted zone
  */
-export interface IPublicHostedZone extends IHostedZone { }
+export interface IPublicHostedZone extends IHostedZone {}
 
 /**
  * Create a Route53 public hosted zone.
@@ -481,7 +481,7 @@ export interface PrivateHostedZoneProps extends CommonHostedZoneProps {
 /**
  * Represents a Route 53 private hosted zone
  */
-export interface IPrivateHostedZone extends IHostedZone { }
+export interface IPrivateHostedZone extends IHostedZone {}
 
 /**
  * Create a Route53 private hosted zone for use in one or more VPCs.
