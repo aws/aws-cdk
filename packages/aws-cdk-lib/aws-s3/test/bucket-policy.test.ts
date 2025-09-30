@@ -1,3 +1,13 @@
+import test from 'node:test';
+import test from 'node:test';
+import test from 'node:test';
+import { describe } from 'node:test';
+import test from 'node:test';
+import test from 'node:test';
+import test from 'node:test';
+import test from 'node:test';
+import test from 'node:test';
+import { describe } from 'node:test';
 import { Template } from '../../assertions';
 import { AnyPrincipal, PolicyStatement } from '../../aws-iam';
 import { RemovalPolicy, Stack, App } from '../../core';
@@ -174,6 +184,43 @@ describe('bucket policy', () => {
 
       expect(bucketPolicy.bucket).not.toBeUndefined();
       expect(bucketPolicy.bucket.bucketName).toBe('hardcoded-name');
+    });
+
+    test('should synthesize without errors and create duplicate resources', () => {
+      const app = new App();
+      const testStack = new Stack(app, 'TestStack');
+      const cfnBucketPolicy = new s3.CfnBucketPolicy(testStack, 'TestBucketPolicy', {
+        policyDocument: {
+          'Statement': [
+            {
+              'Action': 's3:*',
+              'Effect': 'Deny',
+              'Principal': {
+                'AWS': '*',
+              },
+              'Resource': '*',
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+        bucket: 'test-bucket',
+      });
+
+      s3.BucketPolicy.fromCfnBucketPolicy(cfnBucketPolicy);
+
+      // This should not throw - the synthesis bug is fixed
+      expect(() => app.synth()).not.toThrow();
+
+      // Verify that two CfnBucketPolicy resources are created (expected behavior)
+      const template = Template.fromStack(testStack);
+      const bucketPolicies = template.findResources('AWS::S3::BucketPolicy');
+      expect(Object.keys(bucketPolicies)).toHaveLength(2);
+
+      // Both should have valid policy documents
+      Object.values(bucketPolicies).forEach((policy: any) => {
+        expect(policy.Properties.PolicyDocument).toBeDefined();
+        expect(policy.Properties.PolicyDocument.Statement).toBeDefined();
+      });
     });
 
     function bucketPolicyForBucketNamed(name: string): CfnBucketPolicy {
