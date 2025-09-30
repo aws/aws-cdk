@@ -4,13 +4,7 @@
    "Type": "AWS::CodeBuild::Fleet",
    "Properties": {
     "BaseCapacity": 1,
-    "ComputeConfiguration": {
-     "disk": 0,
-     "machineType": "GENERAL",
-     "memory": 0,
-     "vCpu": 0
-    },
-    "ComputeType": "ATTRIBUTE_BASED_COMPUTE",
+    "ComputeType": "BUILD_GENERAL1_SMALL",
     "EnvironmentType": "LINUX_CONTAINER"
    }
   },
@@ -182,7 +176,7 @@
     "Ref": "MyProject39F7B0AE"
    },
    "Export": {
-    "Name": "AttributeBasedComputeFleetIntegStack0:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+    "Name": "FleetIntegStack0:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
    }
   }
  },
