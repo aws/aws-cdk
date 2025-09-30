@@ -176,9 +176,11 @@ describe('bucket policy', () => {
       expect(bucketPolicy.bucket.bucketName).toBe('hardcoded-name');
     });
 
-    test('should synthesize without errors and create duplicate resources', () => {
+    test('should synthesize without errors and create expected bucket policies', () => {
       const app = new App();
       const testStack = new Stack(app, 'TestStack');
+      
+      // Create the original CfnBucketPolicy
       const cfnBucketPolicy = new s3.CfnBucketPolicy(testStack, 'TestBucketPolicy', {
         policyDocument: {
           'Statement': [
@@ -196,20 +198,29 @@ describe('bucket policy', () => {
         bucket: 'test-bucket',
       });
 
-      s3.BucketPolicy.fromCfnBucketPolicy(cfnBucketPolicy);
+      // Create BucketPolicy from CfnBucketPolicy - this creates a new L2 construct
+      const importedBucketPolicy = s3.BucketPolicy.fromCfnBucketPolicy(cfnBucketPolicy);
+      
+      // Add a statement to the imported bucket policy to trigger creation of the L2 resource
+      importedBucketPolicy.document.addStatements(new PolicyStatement({
+        actions: ['s3:GetObject'],
+        resources: ['arn:aws:s3:::test-bucket/*'],
+        principals: [new AnyPrincipal()],
+      }));
 
-      // This should not throw - the synthesis bug is fixed
-      expect(() => app.synth()).not.toThrow();
-
-      // Verify that two CfnBucketPolicy resources are created (expected behavior)
+      // Template.fromStack() synthesizes the stack - this should not throw (synthesis bug is fixed)
       const template = Template.fromStack(testStack);
       const bucketPolicies = template.findResources('AWS::S3::BucketPolicy');
+      
+      // Should have 2 bucket policies: the original CfnBucketPolicy and the new L2 BucketPolicy
       expect(Object.keys(bucketPolicies)).toHaveLength(2);
 
       // Both should have valid policy documents
       Object.values(bucketPolicies).forEach((policy: any) => {
         expect(policy.Properties.PolicyDocument).toBeDefined();
         expect(policy.Properties.PolicyDocument.Statement).toBeDefined();
+        expect(Array.isArray(policy.Properties.PolicyDocument.Statement)).toBe(true);
+        expect(policy.Properties.PolicyDocument.Statement.length).toBeGreaterThan(0);
       });
     });
 
