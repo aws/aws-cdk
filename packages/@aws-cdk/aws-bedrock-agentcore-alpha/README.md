@@ -82,24 +82,34 @@ to production by simply updating the endpoint to point to the newer version.
 Reference an image available within ECR.
 
 ```typescript
-import {
-  Runtime,
-  NetworkMode,
-} from "aws-cdk/aws-bedrock-agentcore-alpha/runtime";
-
-repository = new ecr.Repository(stack, "TestRepository", {
+const repository = new ecr.Repository(this, "TestRepository", {
   repositoryName: "test-agent-runtime",
 });
 
 // The runtime by default create ECR permission only for the repository available in the account the stack is being deployed
-const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
 
 // Create runtime using the built image
-const runtime = new Runtime(this, "MyAgentRuntime", {
-  agentRuntimeName: "myAgent",
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
   agentRuntimeArtifact: agentRuntimeArtifact,
 });
+```
 
+To grant the runtime permission to invoke a Bedrock model or inference profile:
+
+```ts no-fixture
+// Note: This example uses @aws-cdk/aws-bedrock-alpha which must be installed separately
+import * as bedrock from '@aws-cdk/aws-bedrock-alpha';
+
+// Create a cross-region inference profile for Claude 3.7 Sonnet
+const inferenceProfile = bedrock.CrossRegionInferenceProfile.fromConfig({
+  geoRegion: bedrock.CrossRegionInferenceProfileRegion.US,
+  model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_7_SONNET_V1_0
+});
+
+// Grant the runtime permission to invoke the inference profile
+inferenceProfile.grantInvoke(runtime);
 ```
 
 #### Option 2: Use a local asset
@@ -109,14 +119,12 @@ Images are built from a local Docker context directory (with a Dockerfile), uplo
 by the CDK toolkit,and can be naturally referenced in your CDK app .
 
 ```typescript
-import * as path from "path";
-
-const agentRuntimeArtifact = AgentRuntimeArtifact.fromAsset(
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
   path.join(__dirname, "path to agent dockerfile directory")
 );
 
-const runtime = new Runtime(this, "MyAgentRuntime", {
-  agentRuntimeName: "myAgent",
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
   agentRuntimeArtifact: agentRuntimeArtifact,
 });
 ```
@@ -134,14 +142,14 @@ allowing you to maintain different versions for different environments or gradua
 Amazon Bedrock AgentCore automatically manages runtime versioning. Here's how versions are created and how to manage endpoints:
 
 ```typescript
-repository = new ecr.Repository(stack, "TestRepository", {
+const repository = new ecr.Repository(this, "TestRepository", {
   repositoryName: "test-agent-runtime",
 });
 
 //Initial Deployment - Automatically creates Version 1
-const runtime = new Runtime(this, "MyAgentRuntime", {
-  agentRuntimeName: "myAgent",
-  agentRuntimeArtifact: AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0"),
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0"),
 });
 // At this point: A DEFAULT endpoint is created which points to version 1
 
@@ -151,10 +159,11 @@ const prodEndpoint = runtime.addEndpoint("production", {
   description: "Stable production endpoint - pinned to v1"
 });
 
-// When you update the runtime configuration e.g. new container image, protocol change, network settings a new version (Version 2) is automatically created
-runtime.agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, "v2.0.0");
+// When you update the runtime configuration e.g. new container image, protocol change, network settings
+// a new version (Version 2) is automatically created
+// Note: You would need to update the runtime via CloudFormation stack update or by creating a new runtime
 
-// After this update: Version 2 is created automatically
+// After update: Version 2 is created automatically
 // DEFAULT endpoint automatically updates to Version 2
 // Production endpoint remains on Version 1 (explicitly pinned)
 
@@ -165,9 +174,5 @@ const stagingEndpoint = runtime.addEndpoint("staging", {
 });
 
 // Staging endpoint: Points to Version 2 (testing)
-
-
-// After testing, update production endpoint to Version 2
-prodEndpoint.updateVersion("2");
-
+// After testing, you can update production endpoint to Version 2 using the AWS Console or APIs
 ```

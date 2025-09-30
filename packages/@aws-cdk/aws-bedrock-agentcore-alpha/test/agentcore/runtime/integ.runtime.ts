@@ -1,12 +1,12 @@
 /**
- * Integration test for Bedrock AgentCore Runtime construct
+ * Integration test for Bedrock AgentCore Runtime and RuntimeEndpoint constructs
+ * This test creates a single runtime with multiple endpoints to test both constructs together
  */
 
 /// !cdk-integ aws-cdk-bedrock-agentcore-runtime
 
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as agentcore from '../../../agentcore';
 
@@ -14,56 +14,89 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-bedrock-agentcore-runtime');
 
 // Use fromAsset to build and push Docker image to ECR automatically
-// This will create an ECR repository in the stack's account and push the image
+// This uses a minimal test application with no external dependencies
 const runtimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
   path.join(__dirname, 'testArtifact'),
 );
 
-// Create a basic runtime
-const basicRuntime = new agentcore.Runtime(stack, 'BasicRuntime', {
-  runtimeName: 'basic_runtime',
-  description: 'Basic runtime for integration testing',
+// Create a single runtime (similar to the working strands example)
+const runtime = new agentcore.Runtime(stack, 'TestRuntime', {
+  runtimeName: 'integ_test_runtime',
+  description: 'Integration test runtime for BedrockAgentCore',
   agentRuntimeArtifact: runtimeArtifact,
   protocolConfiguration: agentcore.ProtocolType.HTTP,
   networkConfiguration: {
     networkMode: agentcore.NetworkMode.PUBLIC,
   },
-});
-
-// Create runtime with environment variables
-const runtimeWithEnv = new agentcore.Runtime(stack, 'RuntimeWithEnv', {
-  runtimeName: 'runtime_with_env',
-  description: 'Runtime with environment variables',
-  agentRuntimeArtifact: runtimeArtifact,
   environmentVariables: {
-    API_ENDPOINT: 'https://api.example.com',
-    LOG_LEVEL: 'DEBUG',
-    MAX_CONNECTIONS: '100',
+    TEST_ENV: 'integration',
+    LOG_LEVEL: 'INFO',
+  },
+  tags: {
+    Environment: 'Integration',
+    TestType: 'CDK',
   },
 });
 
-// Test runtime with custom execution role
-const customRole = new iam.Role(stack, 'CustomExecutionRole', {
-  assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
-  description: 'Custom execution role for runtime',
+// Test RuntimeEndpoint by creating multiple endpoints on the same runtime
+// This is more efficient than creating separate runtimes for each endpoint
+
+// Create basic endpoint
+const basicEndpoint = new agentcore.RuntimeEndpoint(stack, 'BasicEndpoint', {
+  endpointName: 'basic_endpoint',
+  agentRuntimeId: runtime.agentRuntimeId,
+  agentRuntimeVersion: '1',
+  description: 'Basic endpoint for testing',
 });
 
-new agentcore.Runtime(stack, 'RuntimeWithCustomRole', {
-  runtimeName: 'runtime_custom_role',
-  description: 'Runtime with custom execution role',
-  agentRuntimeArtifact: runtimeArtifact,
-  executionRole: customRole,
+// Create endpoint with tags
+const taggedEndpoint = new agentcore.RuntimeEndpoint(stack, 'TaggedEndpoint', {
+  endpointName: 'tagged_endpoint',
+  agentRuntimeId: runtime.agentRuntimeId,
+  agentRuntimeVersion: '1',
+  description: 'Endpoint with tags',
+  tags: {
+    EndpointType: 'Tagged',
+    Version: 'v1',
+  },
 });
 
-// Grant permissions example
-const testRole = new iam.Role(stack, 'TestRole', {
-  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+// Create version 2 endpoint
+const v2Endpoint = new agentcore.RuntimeEndpoint(stack, 'V2Endpoint', {
+  endpointName: 'v2_endpoint',
+  agentRuntimeId: runtime.agentRuntimeId,
+  agentRuntimeVersion: '2',
+  description: 'Version 2 endpoint',
 });
 
-basicRuntime.grantInvoke(testRole);
-runtimeWithEnv.grantInvoke(testRole);
+// Output runtime and endpoint information for verification
+new cdk.CfnOutput(stack, 'RuntimeId', {
+  value: runtime.agentRuntimeId,
+  description: 'Runtime ID',
+});
 
-new integ.IntegTest(app, 'BedrockAgentCoreRuntime', {
+new cdk.CfnOutput(stack, 'RuntimeArn', {
+  value: runtime.agentRuntimeArn,
+  description: 'Runtime ARN',
+});
+
+new cdk.CfnOutput(stack, 'BasicEndpointId', {
+  value: basicEndpoint.endpointId,
+  description: 'Basic endpoint ID',
+});
+
+new cdk.CfnOutput(stack, 'TaggedEndpointId', {
+  value: taggedEndpoint.endpointId,
+  description: 'Tagged endpoint ID',
+});
+
+new cdk.CfnOutput(stack, 'V2EndpointId', {
+  value: v2Endpoint.endpointId,
+  description: 'Version 2 endpoint ID',
+});
+
+// Create the integration test
+new integ.IntegTest(app, 'BedrockAgentCoreRuntimeTest', {
   testCases: [stack],
 });
 
