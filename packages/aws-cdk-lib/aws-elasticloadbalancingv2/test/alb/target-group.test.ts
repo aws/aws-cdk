@@ -5,14 +5,14 @@ import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
-describe('tests', () => {
-  let app: cdk.App;
-  let stack: cdk.Stack;
+let app: cdk.App;
+let stack: cdk.Stack;
+beforeEach(() => {
+  app = new cdk.App();
+  stack = new cdk.Stack(app, 'Stack');
+});
 
-  beforeEach(() => {
-    app = new cdk.App();
-    stack = new cdk.Stack(app, 'Stack');
-  });
+describe('tests', () => {
   test('Empty target Group without type still requires a VPC', () => {
     // WHEN
     new elbv2.ApplicationTargetGroup(stack, 'LB', {});
