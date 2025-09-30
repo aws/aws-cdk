@@ -1,6 +1,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import { Construct } from 'constructs';
 
@@ -13,20 +13,18 @@ type StackConfiguration = {
 const configurations: Array<StackConfiguration> = [
   {
     computeConfiguration: {
-      machineType: codebuild.MachineType.GENERAL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
     },
   },
   {
     computeConfiguration: {
-      machineType: codebuild.MachineType.GENERAL,
-      vCpu: 2,
-      memory: cdk.Size.gibibytes(4),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
       disk: cdk.Size.gibibytes(10),
     },
   },
   {
     computeConfiguration: {
-      machineType: codebuild.MachineType.GENERAL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
     },
     vpcProps: {
       maxAzs: 1,
@@ -35,7 +33,7 @@ const configurations: Array<StackConfiguration> = [
   },
   {
     computeConfiguration: {
-      machineType: codebuild.MachineType.GENERAL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
     },
     vpcProps: {
       maxAzs: 1,
@@ -72,7 +70,7 @@ class FleetStack extends cdk.Stack {
 
     this.fleet = new codebuild.Fleet(this, 'MyFleet', {
       baseCapacity: 1,
-      computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED,
+      computeType: codebuild.FleetComputeType.CUSTOM_INSTANCE_TYPE,
       computeConfiguration,
       environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
       vpc,
@@ -99,12 +97,12 @@ const app = new cdk.App();
 const stacks = configurations.map(
   (config, index) => new FleetStack(
     app,
-    `AttributeBasedComputeFleetIntegStack${index}`,
+    `CustomInstanceTypeComputeFleetIntegStack${index}`,
     config,
   ),
 );
 
-const test = new integ.IntegTest(app, 'AttributeBasedComputeFleetIntegTest', {
+const test = new integ.IntegTest(app, 'CustomInstanceTypeComputeFleetIntegTest', {
   testCases: stacks,
 });
 
@@ -123,7 +121,10 @@ for (const { fleet, project } of stacks) {
     'builds.0.buildStatus',
     integ.ExpectedResult.stringLikeRegexp('SUCCEEDED'),
   ).waitForAssertions({
-    totalTimeout: cdk.Duration.minutes(5),
+    // After a custom instance type fleet is created, there can still be high
+    // latency on creating actual instances. Needs a long timeout, builds are
+    // pending until instances are initialized.
+    totalTimeout: cdk.Duration.minutes(10),
     interval: cdk.Duration.seconds(30),
   });
 }
