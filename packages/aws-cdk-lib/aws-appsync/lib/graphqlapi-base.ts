@@ -39,7 +39,7 @@ export interface DataSourceOptions {
   readonly description?: string;
 
   /**
-   * The whether to enable enhanced metrics of the data source
+   * Whether to enable enhanced metrics of the data source
    * Value will be ignored, if `enhancedMetricsConfig.dataSourceLevelMetricsBehavior` on AppSync GraphqlApi construct is set to `FULL_REQUEST_DATA_SOURCE_METRICS`
    *
    * @default - Enhance metrics are disabled
