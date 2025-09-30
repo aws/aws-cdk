@@ -1,13 +1,16 @@
 {
-  "version": "38.0.1",
+  "version": "48.0.0",
   "testCases": {
     "AttributeBasedComputeFleetIntegTest/DefaultTest": {
       "stacks": [
         "AttributeBasedComputeFleetIntegStack0",
-        "AttributeBasedComputeFleetIntegStack1"
+        "AttributeBasedComputeFleetIntegStack1",
+        "AttributeBasedComputeFleetIntegStack2",
+        "AttributeBasedComputeFleetIntegStack3"
       ],
       "assertionStack": "AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "AttributeBasedComputeFleetIntegTestDefaultTestDeployAssertDD94353E"
     }
-  }
+  },
+  "minimumCliVersion": "2.1027.0"
 }
