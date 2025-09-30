@@ -61,11 +61,23 @@ const integ = new IntegTest(app, 'FunctionUrlOriginIpAddressTypeTest', {
 // Assert that distributions are created with expected IP address type settings
 integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
   Id: distributionIPv4.distributionId,
+}).assertAtPath('Distribution.DistributionConfig.IsIPV4Enabled', ExpectedResult.exact(true));
+
+integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
+  Id: distributionIPv4.distributionId,
 }).assertAtPath('Distribution.DistributionConfig.IsIPV6Enabled', ExpectedResult.exact(false));
 
 integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
   Id: distributionIPv6.distributionId,
+}).assertAtPath('Distribution.DistributionConfig.IsIPV4Enabled', ExpectedResult.exact(false));
+
+integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
+  Id: distributionIPv6.distributionId,
 }).assertAtPath('Distribution.DistributionConfig.IsIPV6Enabled', ExpectedResult.exact(true));
+
+integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
+  Id: distributionDualstack.distributionId,
+}).assertAtPath('Distribution.DistributionConfig.IsIPV4Enabled', ExpectedResult.exact(true));
 
 integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
   Id: distributionDualstack.distributionId,
