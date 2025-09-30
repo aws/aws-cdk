@@ -716,7 +716,21 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
       }).not.toThrow();
     });
 
-    test('Should accept recording configuration without S3 location', () => {
+    test('Should accept browser without recording configuration', () => {
+      app = new App();
+      stack = new Stack(app, 'TestStack');
+
+      expect(() => {
+        new BrowserCustom(stack, 'TestBrowser', {
+          browserCustomName: 'test_browser',
+          networkConfiguration: {
+            networkMode: BrowserNetworkMode.PUBLIC,
+          },
+        });
+      }).not.toThrow();
+    });
+
+    test('Should reject recording configuration without S3 location', () => {
       app = new App();
       stack = new Stack(app, 'TestStack');
 
@@ -730,7 +744,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
             enabled: true,
           },
         });
-      }).not.toThrow();
+      }).toThrow('S3 bucket name is required when S3 location is provided for recording configuration');
     });
 
     test('Should accept S3 location without bucket name (validation not enforced)', () => {

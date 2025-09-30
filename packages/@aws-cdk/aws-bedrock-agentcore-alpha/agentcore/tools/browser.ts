@@ -13,7 +13,7 @@ import { Location } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 // Internal Libs
-import { BrowserPerms } from './perms';
+import * as perms from './perms';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from './validation-helpers';
 
 /******************************************************************************
@@ -235,23 +235,24 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
 
   /**
    * Grant read permissions on this browser to an IAM principal.
+   * This includes both read permissions on the specific browser and list permissions on all browsers.
    *
-   * @param grantee - The IAM principal to grant invoke permissions to
+   * @param grantee - The IAM principal to grant read permissions to
    * @default - Default grant configuration:
-   * - actions: ['bedrock-agentcore:GetBrowser', 'bedrock-agentcore:GetBrowserSession', 'bedrock-agentcore:ListBrowsers', 'bedrock-agentcore:ListBrowserSessions']
-   * - resourceArns: [this.browserArn]
+   * - actions: ['bedrock-agentcore:GetBrowser', 'bedrock-agentcore:GetBrowserSession'] on this.browserArn
+   * - actions: ['bedrock-agentcore:ListBrowsers', 'bedrock-agentcore:ListBrowserSessions'] on all resources (*)
    * @returns An IAM Grant object representing the granted permissions
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     const resourceSpecificGrant = this.grant(
       grantee,
-      ...BrowserPerms.READ_PERMS,
+      ...perms.BROWSER_READ_PERMS,
     );
 
     const allResourceGrant = iam.Grant.addToPrincipal({
       grantee: grantee,
       resourceArns: ['*'],
-      actions: BrowserPerms.LIST_PERMS,
+      actions: perms.BROWSER_LIST_PERMS,
     });
     // Return combined grant
     return resourceSpecificGrant.combine(allResourceGrant);
@@ -269,7 +270,7 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
   public grantUse(grantee: iam.IGrantable): iam.Grant {
     return this.grant(
       grantee,
-      ...BrowserPerms.USE_PERMS,
+      ...perms.BROWSER_USE_PERMS,
     );
   }
 
@@ -762,24 +763,24 @@ export class BrowserCustom extends BrowserCustomBase {
    */
   private _validateRecordingConfig = (recordingConfig?: RecordingConfig): string[] => {
     let errors: string[] = [];
-    if (!recordingConfig || !recordingConfig.enabled || !recordingConfig.s3Location) {
+    if (!recordingConfig) {
       return errors; // No validation needed if no S3 location is provided or recording is disabled
     }
 
     const s3Location = recordingConfig.s3Location;
 
     // Both bucket name and object key are required when S3 location is provided
-    if (!s3Location.bucketName) {
+    if (!s3Location?.bucketName) {
       errors.push('S3 bucket name is required when S3 location is provided for recording configuration');
+    } else {
+      // Validate bucket name pattern: ^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$
+      const bucketNamePattern = /^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/;
+      errors.push(...validateFieldPattern(s3Location?.bucketName, 'S3 bucket name', bucketNamePattern));
     }
 
-    if (!s3Location.objectKey) {
+    if (!s3Location?.objectKey) {
       errors.push('S3 object key (prefix) is required when S3 location is provided for recording configuration');
     }
-
-    // Validate bucket name pattern: ^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$
-    const bucketNamePattern = /^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/;
-    errors.push(...validateFieldPattern(s3Location.bucketName, 'S3 bucket name', bucketNamePattern));
 
     return errors;
   };

@@ -11,7 +11,7 @@ import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
 import { Construct } from 'constructs';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 // Internal Libs
-import { CodeInterpreterPerms } from './perms';
+import * as perms from './perms';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from './validation-helpers';
 
 /******************************************************************************
@@ -40,7 +40,7 @@ const CODE_INTERPRETER_TAG_MIN_LENGTH = 1;
  * Maximum length for code interpreter tag
  * @internal
  */
-export const CODE_INTERPRETER_TAG_MAX_LENGTH = 256;
+const CODE_INTERPRETER_TAG_MAX_LENGTH = 256;
 
 /******************************************************************************
  *                                 Enums
@@ -222,23 +222,24 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
 
   /**
    * Grant read permissions on this code interpreter to an IAM principal.
+   * This includes both read permissions on the specific code interpreter and list permissions on all code interpreters.
    *
-   * @param grantee - The IAM principal to grant invoke permissions to
+   * @param grantee - The IAM principal to grant read permissions to
    * @default - Default grant configuration:
-   * - actions: ['bedrock-agentcore:GetCodeInterpreter', 'bedrock-agentcore:GetCodeInterpreterSession', 'bedrock-agentcore:ListCodeInterpreters', 'bedrock-agentcore:ListCodeInterpreterSessions']
-   * - resourceArns: [this.codeInterpreterArn]
+   * - actions: ['bedrock-agentcore:GetCodeInterpreter', 'bedrock-agentcore:GetCodeInterpreterSession'] on this.codeInterpreterArn
+   * - actions: ['bedrock-agentcore:ListCodeInterpreters', 'bedrock-agentcore:ListCodeInterpreterSessions'] on all resources (*)
    * @returns An IAM Grant object representing the granted permissions
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     const resourceSpecificGrant = this.grant(
       grantee,
-      ...CodeInterpreterPerms.READ_PERMS,
+      ...perms.CODE_INTERPRETER_READ_PERMS,
     );
 
     const allResourceGrant = iam.Grant.addToPrincipal({
       grantee: grantee,
       resourceArns: ['*'],
-      actions: CodeInterpreterPerms.LIST_PERMS,
+      actions: perms.CODE_INTERPRETER_LIST_PERMS,
     });
     // Return combined grant
     return resourceSpecificGrant.combine(allResourceGrant);
@@ -254,11 +255,10 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
    * @returns An IAM Grant object representing the granted permissions
    */
   public grantUse(grantee: iam.IGrantable): iam.Grant {
-    const resourceSpecificGrant = this.grant(
+    return this.grant(
       grantee,
-      ...CodeInterpreterPerms.USE_PERMS,
+      ...perms.CODE_INTERPRETER_USE_PERMS,
     );
-    return resourceSpecificGrant;
   }
 
   /**
@@ -271,7 +271,7 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
    * - resourceArns: [this.codeInterpreterArn]
    */
   public grantInvoke(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...CodeInterpreterPerms.INVOKE_PERMS);
+    return this.grant(grantee, ...perms.CODE_INTERPRETER_INVOKE_PERMS);
   }
 
   // ------------------------------------------------------
