@@ -136,7 +136,7 @@ export interface EndpointConfigProps {
    *
    * @default - none
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKeyRef;
 
   /**
    * A list of instance production variants. You can always add more variants later by calling
@@ -219,7 +219,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
 
     // create the endpoint configuration resource
     const endpointConfig = new CfnEndpointConfig(this, 'EndpointConfig', {
-      kmsKeyId: (props.encryptionKey) ? props.encryptionKey.keyArn : undefined,
+      kmsKeyId: (props.encryptionKey) ? props.encryptionKey.keyRef.keyArn : undefined,
       endpointConfigName: this.physicalName,
       productionVariants: cdk.Lazy.any({ produce: () => this.renderInstanceProductionVariants() }),
     });

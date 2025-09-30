@@ -60,6 +60,7 @@ test('esbuild bundling in Docker', () => {
       '.png': 'dataurl',
     },
     forceDockerBundling: true,
+    network: 'host',
   });
 
   // Correctly bundles with esbuild
@@ -82,6 +83,7 @@ test('esbuild bundling in Docker', () => {
       IMAGE: expect.stringMatching(/build-nodejs/),
     }),
     platform: 'linux/amd64',
+    network: 'host',
   }));
 });
 
@@ -622,6 +624,29 @@ test('Detects bun.lockb', () => {
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
         expect.stringMatching(/bun\.lockb.+bun install/),
+      ]),
+    }),
+  });
+});
+
+test('Detects bun.lock', () => {
+  const bunLock = path.join(__dirname, '..', 'bun.lock');
+  Bundling.bundle(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(bunLock),
+    depsLockFilePath: bunLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    nodeModules: ['delay'],
+    forceDockerBundling: true,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(bunLock), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: expect.arrayContaining([
+        expect.stringMatching(/bun\.lock.+bun install/),
       ]),
     }),
   });

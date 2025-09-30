@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "alb-weight-rando-algorithm-test-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "553db6ea04426ea4612297a4dea969986be194754e251e05b2ac52a11f608b8b": {
+    "8c6ae5991ce2e53fcdb1906be4d3065396622a4cebe3a9879e5f6ec6055690f4": {
       "displayName": "alb-weight-rando-algorithm-test-stack Template",
       "source": {
         "path": "alb-weight-rando-algorithm-test-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-dae2f668": {
+        "current_account-current_region-80b08e7f": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "553db6ea04426ea4612297a4dea969986be194754e251e05b2ac52a11f608b8b.json",
+          "objectKey": "8c6ae5991ce2e53fcdb1906be4d3065396622a4cebe3a9879e5f6ec6055690f4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

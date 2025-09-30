@@ -1,9 +1,11 @@
 # See https://doc.mergify.io
 merge_queue:
-  # Hopefully this gets Mergify to stop creating PRs just to test merges (it both messes with statistics and our automatic validations)
+  # Required to force mergify to merge in place, see https://docs.mergify.com/merge-queue/parallel-checks/#inplace-checks-no-drafts
   max_parallel_checks: 1
 queue_rules:
   - name: default-merge
+    # batch_size: 1 enables in-place checks (no draft PRs created for testing merges)
+    batch_size: 1
     update_method: merge
     merge_method: merge
     conditions:
@@ -24,6 +26,8 @@ queue_rules:
       {{ body }}
 
   - name: priority-squash
+    # batch_size: 1 enables in-place checks (no draft PRs created for testing merges)
+    batch_size: 1
     update_method: merge
     merge_method: squash
     conditions:
@@ -44,6 +48,8 @@ queue_rules:
       {{ body }}
 
   - name: default-squash
+    # batch_size: 1 enables in-place checks (no draft PRs created for testing merges)
+    batch_size: 1
     update_method: merge
     merge_method: squash
     conditions:

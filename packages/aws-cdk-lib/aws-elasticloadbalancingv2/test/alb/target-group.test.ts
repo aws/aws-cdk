@@ -5,12 +5,15 @@ import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
+let app: cdk.App;
+let stack: cdk.Stack;
+beforeEach(() => {
+  app = new cdk.App();
+  stack = new cdk.Stack(app, 'Stack');
+});
+
 describe('tests', () => {
   test('Empty target Group without type still requires a VPC', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-
     // WHEN
     new elbv2.ApplicationTargetGroup(stack, 'LB', {});
 
@@ -21,9 +24,6 @@ describe('tests', () => {
   });
 
   test('Lambda target should not have stickiness.enabled set', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-
     new elbv2.ApplicationTargetGroup(stack, 'TG', {
       targetType: elbv2.TargetType.LAMBDA,
     });
@@ -49,9 +49,6 @@ describe('tests', () => {
   });
 
   test('Lambda target should not have port set', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-
     const tg = new elbv2.ApplicationTargetGroup(stack, 'TG2', {
       protocol: elbv2.ApplicationProtocol.HTTPS,
     });
@@ -67,9 +64,6 @@ describe('tests', () => {
   });
 
   test('Lambda target should not have protocol set', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-
     new elbv2.ApplicationTargetGroup(stack, 'TG', {
       port: 443,
       targetType: elbv2.TargetType.LAMBDA,
@@ -171,8 +165,6 @@ describe('tests', () => {
 
   test('Can add self-registering target to imported TargetGroup', () => {
     // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
     // WHEN
@@ -184,8 +176,6 @@ describe('tests', () => {
 
   testDeprecated('Cannot add direct target to imported TargetGroup', () => {
     // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
     const tg = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'TG', {
       targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myAlbTargetGroup/73e2d6bc24d8a067',
     });
@@ -198,8 +188,6 @@ describe('tests', () => {
 
   testDeprecated('HealthCheck fields set if provided', () => {
     // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'VPC', {});
     const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc });
     const listener = new elbv2.ApplicationListener(stack, 'Listener', {
@@ -243,7 +231,6 @@ describe('tests', () => {
     elbv2.TargetGroupIpAddressType.IPV4,
     elbv2.TargetGroupIpAddressType.IPV6,
   ])('configure IP address type %s', (ipAddressType) => {
-    const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
     new elbv2.ApplicationTargetGroup(stack, 'Group', {
@@ -258,8 +245,6 @@ describe('tests', () => {
 
   test('Load balancer duration cookie stickiness', () => {
     // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'VPC', {});
 
     // WHEN
@@ -289,8 +274,6 @@ describe('tests', () => {
 
   test('Load balancer app cookie stickiness', () => {
     // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'VPC', {});
 
     // WHEN
@@ -325,8 +308,6 @@ describe('tests', () => {
 
   test('Custom Load balancer algorithm type', () => {
     // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'VPC', {});
 
     // WHEN
@@ -352,8 +333,6 @@ describe('tests', () => {
 
   test('Can set a protocol version', () => {
     // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'VPC', {});
 
     // WHEN
@@ -388,8 +367,6 @@ describe('tests', () => {
 
   test('Bad stickiness cookie names', () => {
     // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'VPC', {});
     const errMessage = 'App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they\'re reserved for use by the load balancer';
 
@@ -407,8 +384,6 @@ describe('tests', () => {
 
   test('Empty stickiness cookie name', () => {
     // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'VPC', {});
 
     // THEN
@@ -423,8 +398,6 @@ describe('tests', () => {
 
   test('Bad stickiness duration value', () => {
     // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'VPC', {});
 
     // THEN
@@ -438,8 +411,6 @@ describe('tests', () => {
 
   test('Bad slow start duration value', () => {
     // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'VPC', {});
 
     // THEN
@@ -454,8 +425,6 @@ describe('tests', () => {
   });
 
   test('Disable slow start by setting to 0 seconds', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'VPC', {});
 
     // WHEN
@@ -483,8 +452,6 @@ describe('tests', () => {
     'Throws validation error, when `healthCheck` has `protocol` set to %s',
     (protocol) => {
       // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
       const vpc = new ec2.Vpc(stack, 'VPC', {});
 
       // WHEN
@@ -505,8 +472,6 @@ describe('tests', () => {
     'Throws validation error, when `configureHealthCheck()` has `protocol` set to %s',
     (protocol) => {
       // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
       const vpc = new ec2.Vpc(stack, 'VPC', {});
       const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
         vpc,
@@ -527,8 +492,6 @@ describe('tests', () => {
     'Does not throw validation error, when `healthCheck` has `protocol` set to %s',
     (protocol) => {
       // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
       const vpc = new ec2.Vpc(stack, 'VPC', {});
 
       // WHEN
@@ -549,8 +512,6 @@ describe('tests', () => {
     'Does not throw validation error, when `configureHealthCheck()` has `protocol` set to %s',
     (protocol) => {
       // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
       const vpc = new ec2.Vpc(stack, 'VPC', {});
       const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
         vpc,
@@ -571,8 +532,6 @@ describe('tests', () => {
     'Throws validation error, when `healthCheck` has `protocol` set to %s and `interval` is equal to `timeout`',
     (protocol) => {
       // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
       const vpc = new ec2.Vpc(stack, 'VPC', {});
 
       // WHEN
@@ -595,8 +554,6 @@ describe('tests', () => {
     'Throws validation error, when `healthCheck` has `protocol` set to %s and `interval` is smaller than `timeout`',
     (protocol) => {
       // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
       const vpc = new ec2.Vpc(stack, 'VPC', {});
 
       // WHEN
@@ -619,8 +576,6 @@ describe('tests', () => {
     'Throws validation error, when `configureHealthCheck()` has `protocol` set to %s and `interval` is equal to `timeout`',
     (protocol) => {
       // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
       const vpc = new ec2.Vpc(stack, 'VPC', {});
       const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
         vpc,
@@ -643,8 +598,6 @@ describe('tests', () => {
     'Throws validation error, when `configureHealthCheck()` has `protocol` set to %s and `interval` is smaller than `timeout`',
     (protocol) => {
       // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
       const vpc = new ec2.Vpc(stack, 'VPC', {});
       const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
         vpc,
@@ -665,8 +618,6 @@ describe('tests', () => {
 
   test('Throws validation error, when `configureHealthCheck()`protocol is undefined and `interval` is smaller than `timeout`', () => {
     // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'VPC', {});
     const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
       vpc,
@@ -685,8 +636,6 @@ describe('tests', () => {
   });
 
   test('Throws error for health check interval less than timeout', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
     new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
@@ -705,8 +654,6 @@ describe('tests', () => {
 
   // for backwards compatibility these can be equal, see discussion in https://github.com/aws/aws-cdk/pull/26031
   test('Throws error for health check interval less than timeout', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
     new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
@@ -724,10 +671,6 @@ describe('tests', () => {
   });
 
   test('imported targetGroup has targetGroupName', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-
     // WHEN
     const importedTg = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
       targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myAlbTargetGroup/73e2d6bc24d8a067',
@@ -738,10 +681,6 @@ describe('tests', () => {
   });
 
   test('imported targetGroup with imported ARN has targetGroupName', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-
     // WHEN
     const importedTgArn = cdk.Fn.importValue('ImportTargetGroupArn');
     const importedTg = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
@@ -785,10 +724,6 @@ describe('tests', () => {
   });
 
   test('imported targetGroup has metrics', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-
     // WHEN
     const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
       targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-target-group/50dc6c495c0c9188',
@@ -806,10 +741,6 @@ describe('tests', () => {
   });
 
   test('imported targetGroup without load balancer cannot have metrics', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-
     // WHEN
     const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
       targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-target-group/50dc6c495c0c9188',
@@ -821,8 +752,6 @@ describe('tests', () => {
   describe('weighted_random algorithm test', () => {
     test('weight_random algorithm and anomaly mitigation is enabled', () => {
       // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
       const vpc = new ec2.Vpc(stack, 'VPC', {});
 
       // WHEN
@@ -853,8 +782,6 @@ describe('tests', () => {
 
     test('weight_random algorithm and anomaly mitigation is disabled', () => {
       // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
       const vpc = new ec2.Vpc(stack, 'VPC', {});
 
       // WHEN
@@ -885,8 +812,6 @@ describe('tests', () => {
 
     test('Throws an error when weight_random algorithm is set with slow start setting', () => {
       // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
       const vpc = new ec2.Vpc(stack, 'VPC', {});
 
       // WHEN
@@ -900,8 +825,6 @@ describe('tests', () => {
 
     test('Throws an error when anomaly mitigation is enabled with an algorithm other than weight_random', () => {
       // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
       const vpc = new ec2.Vpc(stack, 'VPC', {});
 
       // WHEN
@@ -918,8 +841,6 @@ describe('tests', () => {
   describe('crossZoneEnabled', () => {
     test.each([true, false])('crossZoneEnabled can be %s', (crossZoneEnabled) => {
       // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
       const vpc = new ec2.Vpc(stack, 'VPC', {});
 
       // WHEN
@@ -941,8 +862,6 @@ describe('tests', () => {
 
     test('load_balancing.cross_zone.enabled is not set when crossZoneEnabled is not specified', () => {
       // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
       const vpc = new ec2.Vpc(stack, 'VPC', {});
 
       // WHEN
@@ -956,10 +875,6 @@ describe('tests', () => {
 
   describe('Lambda target multi_value_headers tests', () => {
     test('Lambda target should have multi_value_headers.enabled set to true when enabled', () => {
-      // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
-
       // WHEN
       new elbv2.ApplicationTargetGroup(stack, 'TG', {
         targetType: elbv2.TargetType.LAMBDA,
@@ -979,9 +894,6 @@ describe('tests', () => {
     });
 
     test.each([false, undefined])('lambda.multi_value_headers.enabled is not set when multiValueHeadersEnabled is %s', (multiValueHeadersEnabled) => {
-      // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
       // WHEN
       new elbv2.ApplicationTargetGroup(stack, 'TG', {
         targetType: elbv2.TargetType.LAMBDA,
@@ -995,10 +907,6 @@ describe('tests', () => {
     });
 
     test('Lambda target with addTarget should preserve multi_value_headers.enabled as true', () => {
-      // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
-
       // WHEN
       const tg = new elbv2.ApplicationTargetGroup(stack, 'TG', {
         targetType: elbv2.TargetType.LAMBDA,
@@ -1028,10 +936,6 @@ describe('tests', () => {
     });
 
     test('lambda.multi_value_headers.enabled is not set with addTarget when multiValueHeadersEnabled is false', () => {
-      // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
-
       // WHEN
       const tg = new elbv2.ApplicationTargetGroup(stack, 'TG', {
         targetType: elbv2.TargetType.LAMBDA,
@@ -1059,8 +963,6 @@ describe('tests', () => {
   describe('multiValueHeadersEnabled validation', () => {
     test.each([elbv2.TargetType.IP, elbv2.TargetType.INSTANCE])('Throws an error when multiValueHeadersEnabled is true for non-Lambda target type (%s)', (targetType) => {
       // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Stack');
       const vpc = new ec2.Vpc(stack, 'VPC');
       // WHEN & THEN
       expect(() => new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
@@ -1068,6 +970,223 @@ describe('tests', () => {
         targetType,
         multiValueHeadersEnabled: true,
       })).toThrow('multiValueHeadersEnabled is only supported for Lambda targets.');
+    });
+  });
+
+  describe('attributes.target_group_health', () => {
+    test.each([1, 5])('dns_failover.minimum_healthy_targets.count can be %s', (count) => {
+      // GIVEN
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      new elbv2.ApplicationTargetGroup(stack, 'LB', {
+        vpc,
+        targetGroupHealth: {
+          dnsMinimumHealthyTargetCount: count,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: [
+          {
+            Key: 'target_group_health.dns_failover.minimum_healthy_targets.count',
+            Value: `${count}`,
+          },
+          {
+            Key: 'stickiness.enabled',
+            Value: 'false',
+          },
+        ],
+      });
+    });
+
+    test('dns_failover.minimum_healthy_targets.count can be 0', () => {
+      // GIVEN
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      new elbv2.ApplicationTargetGroup(stack, 'LB', {
+        vpc,
+        targetGroupHealth: {
+          dnsMinimumHealthyTargetCount: 0,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: [
+          {
+            Key: 'target_group_health.dns_failover.minimum_healthy_targets.count',
+            Value: 'off',
+          },
+          {
+            Key: 'stickiness.enabled',
+            Value: 'false',
+          },
+        ],
+      });
+    });
+
+    test.each([-1, -0.5])('dns_failover.minimum_healthy_targets.count cannot be %s', (count) => {
+      expect(() => {
+        new elbv2.ApplicationTargetGroup(stack, 'LB', {
+          targetGroupHealth: {
+            dnsMinimumHealthyTargetCount: count,
+          },
+        });
+      }).toThrow(/target_group_health.dns_failover.minimum_healthy_targets.count must be an integer greater than 0 or 'off'/);
+    });
+
+    test.each([1, 50, 100])('dns_failover.minimum_healthy_targets.percentage can be %s', (percentage) => {
+      // GIVEN
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      new elbv2.ApplicationTargetGroup(stack, 'LB', {
+        vpc,
+        targetGroupHealth: {
+          dnsMinimumHealthyTargetPercentage: percentage,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: [
+          {
+            Key: 'target_group_health.dns_failover.minimum_healthy_targets.percentage',
+            Value: `${percentage}`,
+          },
+          {
+            Key: 'stickiness.enabled',
+            Value: 'false',
+          },
+        ],
+      });
+    });
+
+    test('dns_failover.minimum_healthy_targets.percentage can be 0', () => {
+      // GIVEN
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      new elbv2.ApplicationTargetGroup(stack, 'LB', {
+        vpc,
+        targetGroupHealth: {
+          dnsMinimumHealthyTargetPercentage: 0,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: [
+          {
+            Key: 'target_group_health.dns_failover.minimum_healthy_targets.percentage',
+            Value: 'off',
+          },
+          {
+            Key: 'stickiness.enabled',
+            Value: 'false',
+          },
+        ],
+      });
+    });
+
+    test.each([101, 99.5, -1])('dns_failover.minimum_healthy_targets.percentage cannot be %s', (percentage) => {
+      expect(() => {
+        new elbv2.ApplicationTargetGroup(stack, 'LB', {
+          targetGroupHealth: {
+            dnsMinimumHealthyTargetPercentage: percentage,
+          },
+        });
+      }).toThrow(/target_group_health.dns_failover.minimum_healthy_targets.percentage must be an integer from 1 to 100 or 'off'/);
+    });
+
+    test.each([1, 5])('unhealthy_state_routing.minimum_healthy_targets.count can be %s', (count) => {
+      // GIVEN
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      new elbv2.ApplicationTargetGroup(stack, 'LB', {
+        vpc,
+        targetGroupHealth: {
+          routingMinimumHealthyTargetCount: count,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: [
+          {
+            Key: 'target_group_health.unhealthy_state_routing.minimum_healthy_targets.count',
+            Value: `${count}`,
+          },
+          {
+            Key: 'stickiness.enabled',
+            Value: 'false',
+          },
+        ],
+      });
+    });
+
+    test.each([-1, -0.5])('unhealthy_state_routing.minimum_healthy_targets.count cannot be %s', (count) => {
+      expect(() => {
+        new elbv2.ApplicationTargetGroup(stack, 'LB', {
+          targetGroupHealth: {
+            routingMinimumHealthyTargetCount: count,
+          },
+        });
+      }).toThrow(/target_group_health.unhealthy_state_routing.minimum_healthy_targets.count must be an integer greater than 0/);
+    });
+
+    test.each([1, 50, 100])('unhealthy_state_routing.minimum_healthy_targets.percentage can be %s', (percentage) => {
+      // GIVEN
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      new elbv2.ApplicationTargetGroup(stack, 'LB', {
+        vpc,
+        targetGroupHealth: {
+          routingMinimumHealthyTargetPercentage: percentage,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: [
+          {
+            Key: 'target_group_health.unhealthy_state_routing.minimum_healthy_targets.percentage',
+            Value: `${percentage}`,
+          },
+          {
+            Key: 'stickiness.enabled',
+            Value: 'false',
+          },
+        ],
+      });
+    });
+
+    test('unhealthy_state_routing.minimum_healthy_targets.percentage can be %s', () => {
+      // GIVEN
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      new elbv2.ApplicationTargetGroup(stack, 'LB', {
+        vpc,
+        targetGroupHealth: {
+          routingMinimumHealthyTargetPercentage: 0,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        TargetGroupAttributes: [
+          {
+            Key: 'target_group_health.unhealthy_state_routing.minimum_healthy_targets.percentage',
+            Value: 'off',
+          },
+          {
+            Key: 'stickiness.enabled',
+            Value: 'false',
+          },
+        ],
+      });
+    });
+
+    test.each([101, 99.5, -1])('unhealthy_state_routing.minimum_healthy_targets.percentage cannot be %s', (percentage) => {
+      expect(() => {
+        new elbv2.ApplicationTargetGroup(stack, 'LB', {
+          targetGroupHealth: {
+            routingMinimumHealthyTargetPercentage: percentage,
+          },
+        });
+      }).toThrow(/unhealthy_state_routing.minimum_healthy_targets.percentage must be an integer from 1 to 100 or 'off'/);
     });
   });
 });
