@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.218.0](https://github.com/aws/aws-cdk/compare/v2.217.0...v2.218.0) (2025-09-29)
+
+
+### Features
+
+* **cloudfront-origins:** ip address type for http origin ([#35445](https://github.com/aws/aws-cdk/issues/35445)) ([196c7ae](https://github.com/aws/aws-cdk/commit/196c7ae65b0066d2eea8440a0dc58adf22667a00)), closes [#35427](https://github.com/aws/aws-cdk/issues/35427)
+* **docdb:** support for serverless clusters ([#35574](https://github.com/aws/aws-cdk/issues/35574)) ([89bfef7](https://github.com/aws/aws-cdk/commit/89bfef76557d2fd693e248191c3f436c9daf90b1)), closes [#35199](https://github.com/aws/aws-cdk/issues/35199)
+* **pipelines:** `CodeBuildFactory` support Docker server ([#35584](https://github.com/aws/aws-cdk/issues/35584)) ([c62d996](https://github.com/aws/aws-cdk/commit/c62d99603b75165b179726c7a0be4457ca1bda86))
+* **spec2cdk:** generate `from<Resource>Arn` and `from<Resource><Prop>` in every L1 ([#35470](https://github.com/aws/aws-cdk/issues/35470)) ([c588061](https://github.com/aws/aws-cdk/commit/c5880614297a1e81e6ab034bb6a922050e9c22b8))
+
 ## [2.217.0](https://github.com/aws/aws-cdk/compare/v2.216.0...v2.217.0) (2025-09-25)
 
 
