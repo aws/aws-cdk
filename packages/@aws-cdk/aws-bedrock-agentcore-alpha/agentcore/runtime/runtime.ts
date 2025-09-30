@@ -28,7 +28,7 @@ import {
   AuthorizerConfigurationRuntime,
   AuthenticationMode,
 } from './types';
-import { validateStringField, validateFieldPattern, ValidationError } from './validation-helpers';
+import { validateStringField, ValidationError, validateFieldPattern } from './validation-helpers';
 
 /******************************************************************************
  *                                Props
@@ -243,9 +243,7 @@ export class Runtime extends RuntimeBase {
       environmentVariables: Lazy.any({
         produce: () => this.renderEnvironmentVariables(props.environmentVariables),
       }),
-      authorizerConfiguration: Lazy.any({
-        produce: () => this.renderAuthorizerConfiguration(),
-      }),
+      // Don't set authorizerConfiguration here - it will be set via addPropertyOverride if needed
       tags: props.tags ?? {},
     };
 
@@ -254,6 +252,14 @@ export class Runtime extends RuntimeBase {
     // Add dependency on the role (for both custom and auto-created roles)
     // This ensures the Runtime waits for the role and all its policies (including ECR permissions) to be created
     this.runtimeResource.node.addDependency(this.role);
+
+    // If authorizerConfiguration was provided in props, apply it via addPropertyOverride
+    if (this.authorizerConfig) {
+      const formatted = this.formatAuthorizerConfiguration(this.authorizerConfig);
+      if (formatted) {
+        this.runtimeResource.addPropertyOverride('AuthorizerConfiguration', formatted);
+      }
+    }
 
     this.agentRuntimeId = this.runtimeResource.attrAgentRuntimeId;
     this.agentRuntimeArn = this.runtimeResource.attrAgentRuntimeArn;
@@ -305,17 +311,6 @@ export class Runtime extends RuntimeBase {
       return undefined;
     }
     return envVars;
-  }
-
-  /**
-   * Renders the authorizer configuration for CloudFormation
-   * @internal
-   */
-  private renderAuthorizerConfiguration(): any {
-    if (!this.authorizerConfig) {
-      return undefined;
-    }
-    return this.formatAuthorizerConfiguration(this.authorizerConfig);
   }
 
   /**
@@ -617,23 +612,13 @@ export class Runtime extends RuntimeBase {
    * CloudFormation expects PascalCase property names
    */
   private formatAuthorizerConfiguration(config: AuthorizerConfigurationRuntime): any {
-    // if customJWTAuthorizer is provided without mode
+    // Handle the legacy case where customJWTAuthorizer is provided without mode
     if (config.customJWTAuthorizer && !config.mode) {
-      const jwtConfigNoMode: any = {
-        DiscoveryUrl: config.customJWTAuthorizer.discoveryUrl,
-      };
-
-      // Only add optional properties if they have values
-      if (config.customJWTAuthorizer.allowedAudience && config.customJWTAuthorizer.allowedAudience.length > 0) {
-        jwtConfigNoMode.AllowedAudience = config.customJWTAuthorizer.allowedAudience;
-      }
-      if (config.customJWTAuthorizer.allowedClients && config.customJWTAuthorizer.allowedClients.length > 0) {
-        jwtConfigNoMode.AllowedClients = config.customJWTAuthorizer.allowedClients;
-      }
-
-      return {
-        CustomJWTAuthorizer: jwtConfigNoMode,
-      };
+      return this.formatJWTAuthorizer(
+        config.customJWTAuthorizer.discoveryUrl,
+        config.customJWTAuthorizer.allowedClients,
+        config.customJWTAuthorizer.allowedAudience,
+      );
     }
 
     // Get the authentication mode (default to IAM)
@@ -641,72 +626,16 @@ export class Runtime extends RuntimeBase {
 
     switch (mode) {
       case AuthenticationMode.IAM:
-        // For IAM authentication, return undefined to let AWS service use default
-        return undefined;
+        return this.formatIAMAuthorizer();
 
       case AuthenticationMode.JWT:
-        if (!config.customJWTAuthorizer) {
-          throw new ValidationError('customJWTAuthorizer configuration is required when mode is JWT');
-        }
-        const jwtAuthConfig: any = {
-          DiscoveryUrl: config.customJWTAuthorizer.discoveryUrl,
-        };
-
-        // Only add optional properties if they have values
-        if (config.customJWTAuthorizer.allowedAudience && config.customJWTAuthorizer.allowedAudience.length > 0) {
-          jwtAuthConfig.AllowedAudience = config.customJWTAuthorizer.allowedAudience;
-        }
-        if (config.customJWTAuthorizer.allowedClients && config.customJWTAuthorizer.allowedClients.length > 0) {
-          jwtAuthConfig.AllowedClients = config.customJWTAuthorizer.allowedClients;
-        }
-
-        return {
-          CustomJWTAuthorizer: jwtAuthConfig,
-        };
+        return this.formatJWTAuthorizerFromConfig(config);
 
       case AuthenticationMode.COGNITO:
-        if (!config.cognitoAuthorizer) {
-          throw new ValidationError('cognitoAuthorizer configuration is required when mode is COGNITO');
-        }
-        // Convert Cognito config to JWT format
-        const region = config.cognitoAuthorizer.region ?? Stack.of(this).region;
-        const discoveryUrl = `https://cognito-idp.${region}.amazonaws.com/${config.cognitoAuthorizer.userPoolId}/.well-known/openid-configuration`;
-
-        // Validate discovery URL format
-        if (!discoveryUrl.endsWith('/.well-known/openid-configuration')) {
-          throw new ValidationError('Invalid Cognito discovery URL format');
-        }
-
-        const cognitoJwtConfig: any = {
-          DiscoveryUrl: discoveryUrl,
-        };
-
-        if (config.cognitoAuthorizer.clientId) {
-          cognitoJwtConfig.AllowedClients = [config.cognitoAuthorizer.clientId];
-        }
-
-        return {
-          CustomJWTAuthorizer: cognitoJwtConfig,
-        };
+        return this.formatCognitoAuthorizer(config);
 
       case AuthenticationMode.OAUTH:
-        if (!config.oauthAuthorizer) {
-          throw new ValidationError('oauthAuthorizer configuration is required when mode is OAUTH');
-        }
-
-        // Validate discovery URL format
-        if (!config.oauthAuthorizer.discoveryUrl.endsWith('/.well-known/openid-configuration')) {
-          throw new ValidationError('OAuth discovery URL must end with /.well-known/openid-configuration');
-        }
-
-        return {
-          CustomJWTAuthorizer: {
-            DiscoveryUrl: config.oauthAuthorizer.discoveryUrl,
-            AllowedClients: [config.oauthAuthorizer.clientId],
-            // Note: OAuth scopes are typically validated at the OAuth provider level
-            // The runtime validates the token, not the scopes
-          },
-        };
+        return this.formatOAuthAuthorizer(config);
 
       default:
         throw new ValidationError(`Unsupported authentication mode: ${mode}`);
@@ -714,16 +643,116 @@ export class Runtime extends RuntimeBase {
   }
 
   /**
+   * Formats IAM authorizer configuration
+   * @returns undefined to use default IAM authentication
+   */
+  private formatIAMAuthorizer(): undefined {
+    // For IAM authentication, return undefined to let AWS service use default
+    return undefined;
+  }
+
+  /**
+   * Formats JWT authorizer configuration for CloudFormation
+   * @param discoveryUrl The OIDC discovery URL
+   * @param allowedClients Optional array of allowed client IDs
+   * @param allowedAudience Optional array of allowed audiences
+   * @returns Formatted JWT authorizer configuration
+   */
+  private formatJWTAuthorizer(
+    discoveryUrl: string,
+    allowedClients?: string[],
+    allowedAudience?: string[],
+  ): any {
+    return {
+      CustomJWTAuthorizer: {
+        DiscoveryUrl: discoveryUrl,
+        AllowedAudience: allowedAudience,
+        AllowedClients: allowedClients,
+      },
+    };
+  }
+
+  /**
+   * Formats JWT authorizer from configuration object
+   * @param config The authorizer configuration
+   * @returns Formatted JWT authorizer configuration
+   */
+  private formatJWTAuthorizerFromConfig(config: AuthorizerConfigurationRuntime): any {
+    if (!config.customJWTAuthorizer) {
+      throw new ValidationError('customJWTAuthorizer configuration is required when mode is JWT');
+    }
+    return this.formatJWTAuthorizer(
+      config.customJWTAuthorizer.discoveryUrl,
+      config.customJWTAuthorizer.allowedClients,
+      config.customJWTAuthorizer.allowedAudience,
+    );
+  }
+
+  /**
+   * Formats Cognito authorizer configuration
+   * Converts Cognito configuration to JWT format
+   * @param config The authorizer configuration
+   * @returns Formatted Cognito authorizer configuration as JWT
+   */
+  private formatCognitoAuthorizer(config: AuthorizerConfigurationRuntime): any {
+    if (!config.cognitoAuthorizer) {
+      throw new ValidationError('cognitoAuthorizer configuration is required when mode is COGNITO');
+    }
+
+    // Convert Cognito config to JWT format
+    const region = config.cognitoAuthorizer.region ?? Stack.of(this).region;
+    const discoveryUrl = `https://cognito-idp.${region}.amazonaws.com/${config.cognitoAuthorizer.userPoolId}/.well-known/openid-configuration`;
+
+    // Validate discovery URL format
+    if (!discoveryUrl.endsWith('/.well-known/openid-configuration')) {
+      throw new ValidationError('Invalid Cognito discovery URL format');
+    }
+
+    // Check if clientId is provided (it's optional in the type but required when using configureCognitoAuth)
+    if (!config.cognitoAuthorizer.clientId) {
+      throw new ValidationError('clientId is required for Cognito authentication');
+    }
+
+    return this.formatJWTAuthorizer(
+      discoveryUrl,
+      [config.cognitoAuthorizer.clientId],
+      undefined,
+    );
+  }
+
+  /**
+   * Formats OAuth authorizer configuration
+   * @param config The authorizer configuration
+   * @returns Formatted OAuth authorizer configuration as JWT
+   */
+  private formatOAuthAuthorizer(config: AuthorizerConfigurationRuntime): any {
+    if (!config.oauthAuthorizer) {
+      throw new ValidationError('oauthAuthorizer configuration is required when mode is OAUTH');
+    }
+
+    // Validate discovery URL format
+    if (!config.oauthAuthorizer.discoveryUrl.endsWith('/.well-known/openid-configuration')) {
+      throw new ValidationError('OAuth discovery URL must end with /.well-known/openid-configuration');
+    }
+
+    return this.formatJWTAuthorizer(
+      config.oauthAuthorizer.discoveryUrl,
+      [config.oauthAuthorizer.clientId],
+      undefined,
+    );
+  }
+
+  /**
    * Configure Cognito authentication for this runtime instance
    * This will override any existing authentication configuration
    *
    * @param userPoolId The Cognito User Pool ID (e.g., 'us-west-2_ABC123')
-   * @param clientId Optional Cognito App Client ID. If not provided, accepts any valid client from the user pool
+   * @param clientId Cognito App Client ID
    * @param region Optional AWS region (defaults to stack region)
    */
   public configureCognitoAuth(
     userPoolId: string,
-    clientId?: string,
+    clientId: string,
     region?: string,
   ): void {
     this.authorizerConfig = {
@@ -735,9 +764,10 @@ export class Runtime extends RuntimeBase {
       },
     };
 
-    const formattedAuth = this.formatAuthorizerConfiguration(this.authorizerConfig);
-    if (formattedAuth) {
-      this.runtimeResource.authorizerConfiguration = formattedAuth;
+    // Use addPropertyOverride to set the auth configuration on the CloudFormation resource
+    const formatted = this.formatAuthorizerConfiguration(this.authorizerConfig);
+    if (formatted) {
+      this.runtimeResource.addPropertyOverride('AuthorizerConfiguration', formatted);
     }
   }
 
@@ -762,10 +792,40 @@ export class Runtime extends RuntimeBase {
         allowedAudience,
       },
     };
+    const formatted = this.formatAuthorizerConfiguration(this.authorizerConfig);
+    if (formatted) {
+      this.runtimeResource.addPropertyOverride('AuthorizerConfiguration', formatted);
+    }
+  }
 
-    const formattedAuth = this.formatAuthorizerConfiguration(this.authorizerConfig);
-    if (formattedAuth) {
-      this.runtimeResource.authorizerConfiguration = formattedAuth;
+  /**
+   * Configure OAuth authentication for this runtime instance
+   * This will override any existing authentication configuration
+   *
+   * @param provider OAuth provider name (e.g., 'google', 'github', 'custom')
+   * @param discoveryUrl The OIDC discovery URL (must end with /.well-known/openid-configuration)
+   * @param clientId OAuth client ID
+   * @param scopes Optional array of OAuth scopes
+   */
+
+  public configureOAuth(
+    provider: string,
+    discoveryUrl: string,
+    clientId: string,
+    scopes?: string[],
+  ): void {
+    this.authorizerConfig = {
+      mode: AuthenticationMode.OAUTH,
+      oauthAuthorizer: {
+        provider,
+        discoveryUrl,
+        clientId,
+        scopes,
+      },
+    };
+    const formatted = this.formatAuthorizerConfiguration(this.authorizerConfig);
+    if (formatted) {
+      this.runtimeResource.addPropertyOverride('AuthorizerConfiguration', formatted);
     }
   }
 

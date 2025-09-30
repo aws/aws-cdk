@@ -690,7 +690,7 @@ describe('Runtime with instance-based auth configuration tests', () => {
 
     // The configuration will be applied via addPropertyOverride
     // We can't directly test the CloudFormation output here, but we can verify the method doesn't throw
-    expect(() => runtime.configureCognitoAuth('us-west-2_XYZ789')).not.toThrow();
+    expect(() => runtime.configureCognitoAuth('us-west-2_XYZ789', 'client123')).not.toThrow();
   });
 
   test('Should configure JWT auth using instance method', () => {

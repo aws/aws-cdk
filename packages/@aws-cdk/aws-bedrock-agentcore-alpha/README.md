@@ -161,7 +161,6 @@ const prodEndpoint = runtime.addEndpoint("production", {
 
 // When you update the runtime configuration e.g. new container image, protocol change, network settings
 // a new version (Version 2) is automatically created
-// Note: You would need to update the runtime via CloudFormation stack update or by creating a new runtime
 
 // After update: Version 2 is created automatically
 // DEFAULT endpoint automatically updates to Version 2
@@ -176,3 +175,43 @@ const stagingEndpoint = runtime.addEndpoint("staging", {
 // Staging endpoint: Points to Version 2 (testing)
 // After testing, you can update production endpoint to Version 2 using the AWS Console or APIs
 ```
+
+### Authentication Configuration
+
+The AgentCore Runtime supports multiple authentication modes to secure access to your agent endpoints. By default, IAM authentication is used, but you can configure Cognito, JWT, or OAuth authentication based on your security requirements.
+
+#### IAM Authentication (Default)
+
+IAM authentication is the default mode and requires no additional configuration. When creating a runtime, IAM authentication is automatically enabled, requiring callers to sign their requests with valid AWS credentials.
+
+#### Cognito Authentication
+
+To configure AWS Cognito User Pool authentication for your runtime, use the `configureCognitoAuth()` method after runtime creation. This method requires:
+
+- **User Pool ID** (required): The Cognito User Pool identifier (e.g., "us-west-2_ABC123")
+- **Client ID** (required): The Cognito App Client ID
+- **Region** (optional): The AWS region where the User Pool is located (defaults to the stack region)
+
+#### JWT Authentication
+
+To configure custom JWT authentication with your own OpenID Connect (OIDC) provider, use the `configureJWTAuth()` method after runtime creation. This method requires:
+
+- **Discovery URL**: The OIDC discovery URL (must end with /.well-known/openid-configuration)
+- **Allowed Client IDs**: An array of client IDs that are allowed to access the runtime
+- **Allowed Audiences** (optional): An array of allowed audiences for token validation
+
+#### OAuth Authentication
+
+OAuth 2.0 authentication can be configured during runtime creation by setting the `authorizerConfiguration` property with:
+
+- **Mode**: Set to `AuthenticationMode.OAUTH`
+- **OAuth Authorizer**: An object containing:
+  - **Discovery URL**: The OAuth provider's discovery URL (must end with /.well-known/openid-configuration)
+  - **Client ID**: The OAuth client identifier
+
+**Note**: When using custom authentication modes (Cognito, JWT, OAuth), ensure that your client applications are properly configured to obtain and include valid tokens in their requests to the runtime endpoints.
+
+#### Using a Custom IAM Role
+
+Instead of using the auto-created execution role, you can provide your own IAM role with specific permissions:
+The auto-created role includes all necessary baseline permissions for ECR access, CloudWatch logging, and X-Ray tracing. When providing a custom role, ensure these permissions are included.
