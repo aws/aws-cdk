@@ -176,7 +176,7 @@ const stagingEndpoint = runtime.addEndpoint("staging", {
 // After testing, you can update production endpoint to Version 2 using the AWS Console or APIs
 ```
 
-### Authentication Configuration
+### Runtime Authentication Configuration
 
 The AgentCore Runtime supports multiple authentication modes to secure access to your agent endpoints. By default, IAM authentication is used, but you can configure Cognito, JWT, or OAuth authentication based on your security requirements.
 
@@ -186,7 +186,7 @@ IAM authentication is the default mode and requires no additional configuration.
 
 #### Cognito Authentication
 
-To configure AWS Cognito User Pool authentication for your runtime, use the `configureCognitoAuth()` method after runtime creation. This method requires:
+To configure AWS Cognito User Pool authentication for your runtime, use the `runtime.configureCognitoAuth()` method after runtime creation. This method requires:
 
 - **User Pool ID** (required): The Cognito User Pool identifier (e.g., "us-west-2_ABC123")
 - **Client ID** (required): The Cognito App Client ID
@@ -194,7 +194,7 @@ To configure AWS Cognito User Pool authentication for your runtime, use the `con
 
 #### JWT Authentication
 
-To configure custom JWT authentication with your own OpenID Connect (OIDC) provider, use the `configureJWTAuth()` method after runtime creation. This method requires:
+To configure custom JWT authentication with your own OpenID Connect (OIDC) provider, use the `runtime.configureJWTAuth()` method after runtime creation. This method requires:
 
 - **Discovery URL**: The OIDC discovery URL (must end with /.well-known/openid-configuration)
 - **Allowed Client IDs**: An array of client IDs that are allowed to access the runtime
@@ -202,12 +202,12 @@ To configure custom JWT authentication with your own OpenID Connect (OIDC) provi
 
 #### OAuth Authentication
 
-OAuth 2.0 authentication can be configured during runtime creation by setting the `authorizerConfiguration` property with:
+OAuth 2.0 authentication can be configured during runtime creation by setting the `runtime.configureOAuth()` property with:
 
-- **Mode**: Set to `AuthenticationMode.OAUTH`
-- **OAuth Authorizer**: An object containing:
-  - **Discovery URL**: The OAuth provider's discovery URL (must end with /.well-known/openid-configuration)
-  - **Client ID**: The OAuth client identifier
+- **provider**: OAuth provider name
+- **Discovery URL**: The OAuth provider's discovery URL (must end with /.well-known/openid-configuration)
+- **Client ID**: The OAuth client identifier
+- **scopes**: Optional, array of OAuth scopes
 
 **Note**: When using custom authentication modes (Cognito, JWT, OAuth), ensure that your client applications are properly configured to obtain and include valid tokens in their requests to the runtime endpoints.
 
