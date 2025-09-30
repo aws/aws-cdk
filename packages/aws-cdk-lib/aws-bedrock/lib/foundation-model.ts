@@ -227,6 +227,9 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-sonnet-4-20250514-v1:0" */
   public static readonly ANTHROPIC_CLAUDE_SONNET_4_20250514_V1_0 = new FoundationModelIdentifier('anthropic.claude-sonnet-4-20250514-v1:0');
 
+  /** Base model "anthropic.claude-sonnet-4-5-20250929-v1:0" */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_4_5_20250929_V1_0 = new FoundationModelIdentifier('anthropic.claude-sonnet-4-5-20250929-v1:0');
+
   /** Base model "anthropic.claude-3-haiku-20240307-v1:0". */
   public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0');
 
@@ -304,6 +307,9 @@ export class FoundationModelIdentifier {
 
   /** Base model "deepseek.r1-v1:0". */
   public static readonly DEEP_SEEK_R1_V1_0 = new FoundationModelIdentifier('deepseek.r1-v1:0');
+
+  /** Base model "deepseek.v3-v1:0" */
+  public static readonly DEEP_SEEK_V3_V1_0 = new FoundationModelIdentifier('deepseek.v3-v1:0');
 
   /** Base model "openai.gpt-oss-120b-1:0". */
   public static readonly OPENAI_GPT_OSS_120B_1 = new FoundationModelIdentifier('openai.gpt-oss-120b-1:0');
@@ -421,6 +427,18 @@ export class FoundationModelIdentifier {
 
   /** Base model "mistral.pixtral-large-2502-v1:0". */
   public static readonly MISTRAL_PIXTRAL_LARGE_2502_V1_0 = new FoundationModelIdentifier('mistral.pixtral-large-2502-v1:0');
+
+  /** Base Model "qwen.qwen3-32b-v1:0" */
+  public static readonly QWEN_QWEN3_32B_V1_0 = new FoundationModelIdentifier('qwen.qwen3-32b-v1:0');
+
+  /** Base Model "qwen.qwen3-235b-a22b-2507-v1:0" */
+  public static readonly QWEN_QWEN3_235B_A22B_2507_V1_0 = new FoundationModelIdentifier('qwen.qwen3-235b-a22b-2507-v1:0');
+
+  /** Base Model "qwen.qwen3-coder-30b-a3b-v1:0" */
+  public static readonly QWEN_QWEN3_CODER_30B_A3B_V1_0 = new FoundationModelIdentifier('qwen.qwen3-coder-30b-a3b-v1:0');
+
+  /** Base Model "qwen.qwen3-coder-480b-a35b-v1:0" */
+  public static readonly QWEN_QWEN3_CODER_480B_A35B_V1_0 = new FoundationModelIdentifier('qwen.qwen3-coder-480b-a35b-v1:0');
 
   /**
    * Base model "stability.stable-diffusion-xl".

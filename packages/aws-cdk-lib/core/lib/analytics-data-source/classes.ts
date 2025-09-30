@@ -1154,6 +1154,177 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'ipv6Pool': '*'
     }
   },
+  '@aws-cdk.aws-elasticache-alpha': {
+    'IamUser': {
+      'userName': '*',
+      'engine': 'UserEngine',
+      'userId': '*',
+      'accessControl': '*',
+      'grantConnect': [
+        {
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        }
+      ],
+      'grant': [
+        {
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        },
+        '*'
+      ]
+    },
+    'NoPasswordUser': {
+      'userName': '*',
+      'engine': 'UserEngine',
+      'userId': '*',
+      'accessControl': '*'
+    },
+    'PasswordUser': {
+      'userName': '*',
+      'passwords': '*',
+      'engine': 'UserEngine',
+      'userId': '*',
+      'accessControl': '*'
+    },
+    'ServerlessCache': {
+      'engine': 'CacheEngine',
+      'serverlessCacheName': '*',
+      'description': '*',
+      'cacheUsageLimits': {
+        'dataStorageMinimumSize': '*',
+        'requestRateLimitMinimum': '*',
+        'requestRateLimitMaximum': '*'
+      },
+      'backup': {
+        'backupTime': '*',
+        'backupRetentionLimit': '*',
+        'backupNameBeforeDeletion': '*',
+        'backupArnsToRestore': '*'
+      },
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'vpc': {
+        'vpcId': '*',
+        'vpcArn': '*',
+        'vpcCidrBlock': '*',
+        'publicSubnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          },
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        },
+        'availabilityZones': '*',
+        'vpnGatewayId': '*'
+      },
+      'vpcSubnets': {
+        'subnetType': 'SubnetType',
+        'availabilityZones': '*',
+        'subnetGroupName': '*',
+        'subnetName': '*',
+        'onePerAz': 'boolean',
+        'subnetFilters': '*',
+        'subnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          },
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        }
+      },
+      'securityGroups': {
+        'securityGroupId': '*',
+        'allowAllOutbound': 'boolean',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*',
+        'canInlineRule': 'boolean',
+        'uniqueId': '*',
+        'connections': '*'
+      },
+      'userGroup': {
+        'userGroupName': '*',
+        'engine': 'UserEngine',
+        'users': {
+          'userId': '*',
+          'engine': 'UserEngine',
+          'userName': '*',
+          'userArn': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        },
+        'userGroupArn': '*'
+      }
+    },
+    'UserGroup': {
+      'userGroupName': '*',
+      'engine': 'UserEngine',
+      'users': {
+        'userId': '*',
+        'engine': 'UserEngine',
+        'userName': '*',
+        'userArn': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'addUser': [
+        {
+          'userId': '*',
+          'engine': 'UserEngine',
+          'userName': '*',
+          'userArn': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        }
+      ]
+    }
+  },
   '@aws-cdk.aws-gamelift-alpha': {
     'Alias': {
       'aliasName': '*',
@@ -11633,10 +11804,14 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'node': '*'
       },
       'storageEncrypted': 'boolean',
-      'instances': '*',
       'dbClusterName': '*',
       'instanceIdentifierBase': '*',
       'instanceType': '*',
+      'instances': '*',
+      'serverlessV2ScalingConfiguration': {
+        'minCapacity': '*',
+        'maxCapacity': '*'
+      },
       'caCertificate': '*',
       'vpc': {
         'vpcId': '*',
@@ -21180,6 +21355,75 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'DsRecord': {
       'values': '*',
+      'zone': {
+        'hostedZoneId': '*',
+        'zoneName': '*',
+        'hostedZoneArn': '*',
+        'hostedZoneNameServers': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'geoLocation': '*',
+      'recordName': '*',
+      'ttl': '*',
+      'comment': '*',
+      'deleteExisting': 'boolean',
+      'weight': '*',
+      'region': '*',
+      'multiValueAnswer': 'boolean',
+      'setIdentifier': '*',
+      'healthCheck': {
+        'healthCheckId': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'cidrRoutingConfig': '*'
+    },
+    'SvcbRecord': {
+      'values': '*',
+      'zone': {
+        'hostedZoneId': '*',
+        'zoneName': '*',
+        'hostedZoneArn': '*',
+        'hostedZoneNameServers': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'geoLocation': '*',
+      'recordName': '*',
+      'ttl': '*',
+      'comment': '*',
+      'deleteExisting': 'boolean',
+      'weight': '*',
+      'region': '*',
+      'multiValueAnswer': 'boolean',
+      'setIdentifier': '*',
+      'healthCheck': {
+        'healthCheckId': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'cidrRoutingConfig': '*'
+    },
+    'HttpsRecord': {
+      'values': '*',
+      'target': '*',
       'zone': {
         'hostedZoneId': '*',
         'zoneName': '*',
