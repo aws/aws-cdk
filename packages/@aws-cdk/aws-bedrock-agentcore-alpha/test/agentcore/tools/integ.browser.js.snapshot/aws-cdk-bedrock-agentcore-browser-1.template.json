@@ -29,6 +29,9 @@
     "Name": "browser",
     "NetworkConfiguration": {
      "NetworkMode": "PUBLIC"
+    },
+    "RecordingConfig": {
+     "Enabled": false
     }
    }
   },

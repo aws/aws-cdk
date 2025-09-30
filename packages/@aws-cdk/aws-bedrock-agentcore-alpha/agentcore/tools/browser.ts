@@ -597,7 +597,7 @@ export class BrowserCustom extends BrowserCustomBase {
     this.name = props.browserCustomName;
     this.description = props.description;
     this.networkConfiguration = props.networkConfiguration ?? { networkMode: BrowserNetworkMode.PUBLIC };
-    this.recordingConfig = props.recordingConfig;
+    this.recordingConfig = props.recordingConfig ?? { enabled: false };
     this.executionRole = props.executionRole ?? this._createBrowserRole();
     this.tags = props.tags;
 
@@ -764,22 +764,25 @@ export class BrowserCustom extends BrowserCustomBase {
   private _validateRecordingConfig = (recordingConfig?: RecordingConfig): string[] => {
     let errors: string[] = [];
     if (!recordingConfig) {
-      return errors; // No validation needed if no S3 location is provided or recording is disabled
+      return errors; // No validation needed if no recording config is provided
     }
 
     const s3Location = recordingConfig.s3Location;
 
-    // Both bucket name and object key are required when S3 location is provided
-    if (!s3Location?.bucketName) {
-      errors.push('S3 bucket name is required when S3 location is provided for recording configuration');
-    } else {
-      // Validate bucket name pattern: ^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$
-      const bucketNamePattern = /^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/;
-      errors.push(...validateFieldPattern(s3Location?.bucketName, 'S3 bucket name', bucketNamePattern));
-    }
+    // Only validate S3 location if it's actually provided
+    if (s3Location) {
+      // Both bucket name and object key are required when S3 location is provided
+      if (!s3Location.bucketName) {
+        errors.push('S3 bucket name is required when S3 location is provided for recording configuration');
+      } else {
+        // Validate bucket name pattern: ^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$
+        const bucketNamePattern = /^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/;
+        errors.push(...validateFieldPattern(s3Location.bucketName, 'S3 bucket name', bucketNamePattern));
+      }
 
-    if (!s3Location?.objectKey) {
-      errors.push('S3 object key (prefix) is required when S3 location is provided for recording configuration');
+      if (!s3Location.objectKey) {
+        errors.push('S3 object key (prefix) is required when S3 location is provided for recording configuration');
+      }
     }
 
     return errors;

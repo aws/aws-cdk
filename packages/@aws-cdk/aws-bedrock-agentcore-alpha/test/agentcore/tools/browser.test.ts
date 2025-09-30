@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { BrowserCustom, BrowserNetworkMode } from '../../../agentcore/tools/browser';
@@ -594,8 +594,9 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
     const resourceId = Object.keys(browserResource)[0];
     const resource = browserResource[resourceId];
 
-    // Should not have RecordingConfig when not provided
-    expect(resource.Properties).not.toHaveProperty('RecordingConfig');
+    // Should have RecordingConfig with enabled: false when not provided
+    expect(resource.Properties).toHaveProperty('RecordingConfig');
+    expect(resource.Properties.RecordingConfig).toEqual({ Enabled: false });
   });
 
   test('Should have recording disabled by default when not provided', () => {
@@ -613,16 +614,18 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
     app.synth();
     template = Template.fromStack(stack);
 
-    // Verify that recordingConfig is undefined (disabled by default)
-    expect(browser.recordingConfig).toBeUndefined();
+    // Verify that recordingConfig is set to disabled by default
+    expect(browser.recordingConfig).toBeDefined();
+    expect(browser.recordingConfig?.enabled).toBe(false);
 
-    // Verify that the CloudFormation template does not include RecordingConfig
+    // Verify that the CloudFormation template includes RecordingConfig with enabled: false
     const browserResource = template.findResources('AWS::BedrockAgentCore::BrowserCustom');
     const resourceId = Object.keys(browserResource)[0];
     const resource = browserResource[resourceId];
 
-    // Should not have RecordingConfig property when not provided
-    expect(resource.Properties).not.toHaveProperty('RecordingConfig');
+    // Should have RecordingConfig property with enabled: false when not provided
+    expect(resource.Properties).toHaveProperty('RecordingConfig');
+    expect(resource.Properties.RecordingConfig).toEqual({ Enabled: false });
   });
 
   test('Should validate CloudFormation template structure', () => {
@@ -730,7 +733,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
       }).not.toThrow();
     });
 
-    test('Should reject recording configuration without S3 location', () => {
+    test('Should accept recording configuration without S3 location', () => {
       app = new App();
       stack = new Stack(app, 'TestStack');
 
@@ -744,7 +747,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
             enabled: true,
           },
         });
-      }).toThrow('S3 bucket name is required when S3 location is provided for recording configuration');
+      }).not.toThrow();
     });
 
     test('Should accept S3 location without bucket name (validation not enforced)', () => {
@@ -1003,5 +1006,233 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
         }).not.toThrow();
       });
     });
+  });
+});
+
+describe('BrowserCustom grant method tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let browser: BrowserCustom;
+
+  beforeAll(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    browser = new BrowserCustom(stack, 'test-browser', {
+      browserCustomName: 'test_browser',
+      description: 'A test browser for grant testing',
+      networkConfiguration: {
+        networkMode: BrowserNetworkMode.PUBLIC,
+      },
+    });
+  });
+
+  test('Should grant custom actions to IAM principal', () => {
+    const user = new iam.User(stack, 'TestUser');
+    const grant = browser.grant(user, 'bedrock-agentcore:GetBrowser', 'bedrock-agentcore:ListBrowsers');
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+    expect(grant.principalStatements).toBeDefined();
+    expect(grant.principalStatements.length).toBeGreaterThan(0);
+  });
+
+  test('Should grant read permissions to IAM principal', () => {
+    const user = new iam.User(stack, 'TestUser2');
+    const grant = browser.grantRead(user);
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+    expect(grant.principalStatements).toBeDefined();
+    expect(grant.principalStatements.length).toBeGreaterThan(0);
+  });
+
+  test('Should grant use permissions to IAM principal', () => {
+    const user = new iam.User(stack, 'TestUser3');
+    const grant = browser.grantUse(user);
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+    expect(grant.principalStatements).toBeDefined();
+    expect(grant.principalStatements.length).toBeGreaterThan(0);
+  });
+
+  test('Should grant permissions to IAM role', () => {
+    const role = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com'),
+    });
+
+    const grant = browser.grantRead(role);
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+    expect(grant.principalStatements).toBeDefined();
+    expect(grant.principalStatements.length).toBeGreaterThan(0);
+  });
+
+  test('Should grant permissions to IAM group', () => {
+    const group = new iam.Group(stack, 'TestGroup');
+    const grant = browser.grantUse(group);
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+    expect(grant.principalStatements).toBeDefined();
+    expect(grant.principalStatements.length).toBeGreaterThan(0);
+  });
+
+  test('Should return a valid Grant object', () => {
+    const user = new iam.User(stack, 'TestUser4');
+    const grant = browser.grantRead(user);
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+    expect(grant.principalStatements).toBeDefined();
+    expect(grant.principalStatements.length).toBeGreaterThan(0);
+  });
+});
+
+describe('BrowserCustom recording configuration with S3 location tests', () => {
+  test('Should grant S3 permissions when recording is enabled with S3 location', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const recordingBucket = new s3.Bucket(stack, 'RecordingBucket', {
+      bucketName: 'test-browser-recordings',
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    new BrowserCustom(stack, 'test-browser-with-recording', {
+      browserCustomName: 'test_browser_with_recording',
+      description: 'A test browser with recording enabled',
+      networkConfiguration: {
+        networkMode: BrowserNetworkMode.PUBLIC,
+      },
+      recordingConfig: {
+        enabled: true,
+        s3Location: {
+          bucketName: recordingBucket.bucketName,
+          objectKey: 'recordings/',
+        },
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    // Should have the browser resource
+    template.resourceCountIs('AWS::BedrockAgentCore::BrowserCustom', 1);
+    template.resourceCountIs('AWS::S3::Bucket', 1);
+    template.resourceCountIs('AWS::IAM::Role', 1);
+
+    // Should have RecordingConfig with S3 location
+    template.hasResourceProperties('AWS::BedrockAgentCore::BrowserCustom', {
+      RecordingConfig: {
+        Enabled: true,
+        S3Location: {
+          Bucket: {
+            Ref: Match.stringLikeRegexp('RecordingBucket.*'),
+          },
+          Prefix: 'recordings/',
+        },
+      },
+    });
+  });
+
+  test('Should handle recording config with enabled true but no S3 location', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    expect(() => {
+      new BrowserCustom(stack, 'test-browser-recording-no-s3', {
+        browserCustomName: 'test_browser_recording_no_s3',
+        networkConfiguration: {
+          networkMode: BrowserNetworkMode.PUBLIC,
+        },
+        recordingConfig: {
+          enabled: true,
+          // No s3Location provided
+        },
+      });
+    }).not.toThrow();
+  });
+
+  test('Should handle recording config with S3 location but enabled false', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const recordingBucket = new s3.Bucket(stack, 'RecordingBucket2', {
+      bucketName: 'test-browser-recordings-2',
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    expect(() => {
+      new BrowserCustom(stack, 'test-browser-recording-disabled', {
+        browserCustomName: 'test_browser_recording_disabled',
+        networkConfiguration: {
+          networkMode: BrowserNetworkMode.PUBLIC,
+        },
+        recordingConfig: {
+          enabled: false,
+          s3Location: {
+            bucketName: recordingBucket.bucketName,
+            objectKey: 'recordings/',
+          },
+        },
+      });
+    }).not.toThrow();
+  });
+
+  test('Should test metric methods with different configurations', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const browser = new BrowserCustom(stack, 'test-browser-metrics', {
+      browserCustomName: 'test_browser_metrics',
+      networkConfiguration: {
+        networkMode: BrowserNetworkMode.PUBLIC,
+      },
+    });
+
+    // Test various metric methods
+    const latencyMetric = browser.metricLatencyForApiOperation('TestOperation');
+    const invocationsMetric = browser.metricInvocationsForApiOperation('TestOperation');
+    const errorsMetric = browser.metricErrorsForApiOperation('TestOperation');
+    const sessionDurationMetric = browser.metricSessionDuration();
+    const takeOverCountMetric = browser.metricTakeOverCount();
+    const takeOverReleaseCountMetric = browser.metricTakeOverReleaseCount();
+    const takeOverDurationMetric = browser.metricTakeOverDuration();
+
+    expect(latencyMetric).toBeDefined();
+    expect(invocationsMetric).toBeDefined();
+    expect(errorsMetric).toBeDefined();
+    expect(sessionDurationMetric).toBeDefined();
+    expect(takeOverCountMetric).toBeDefined();
+    expect(takeOverReleaseCountMetric).toBeDefined();
+    expect(takeOverDurationMetric).toBeDefined();
   });
 });

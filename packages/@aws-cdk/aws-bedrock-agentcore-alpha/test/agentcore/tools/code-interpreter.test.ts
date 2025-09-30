@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CodeInterpreterCustom, CodeInterpreterNetworkMode } from '../../../agentcore/tools/code-interpreter';
 
@@ -564,5 +564,267 @@ describe('CodeInterpreterCustom CloudFormation parameter validation tests', () =
     const resource = codeInterpreterResource[resourceId];
 
     expect(resource.Properties.NetworkConfiguration.NetworkMode).toBe('PUBLIC');
+  });
+});
+
+describe('CodeInterpreterCustom grant method tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let codeInterpreter: CodeInterpreterCustom;
+
+  beforeAll(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    codeInterpreter = new CodeInterpreterCustom(stack, 'test-code-interpreter', {
+      codeInterpreterCustomName: 'test_code_interpreter',
+      description: 'A test code interpreter for grant testing',
+      networkConfiguration: {
+        networkMode: CodeInterpreterNetworkMode.PUBLIC,
+      },
+    });
+  });
+
+  test('Should grant custom actions to IAM principal', () => {
+    const user = new iam.User(stack, 'TestUser');
+    const grant = codeInterpreter.grant(user, 'bedrock-agentcore:GetCodeInterpreter', 'bedrock-agentcore:ListCodeInterpreters');
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+    expect(grant.principalStatements).toBeDefined();
+    expect(grant.principalStatements.length).toBeGreaterThan(0);
+  });
+
+  test('Should grant read permissions to IAM principal', () => {
+    const user = new iam.User(stack, 'TestUser2');
+    const grant = codeInterpreter.grantRead(user);
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+    expect(grant.principalStatements).toBeDefined();
+    expect(grant.principalStatements.length).toBeGreaterThan(0);
+  });
+
+  test('Should grant use permissions to IAM principal', () => {
+    const user = new iam.User(stack, 'TestUser3');
+    const grant = codeInterpreter.grantUse(user);
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+    expect(grant.principalStatements).toBeDefined();
+    expect(grant.principalStatements.length).toBeGreaterThan(0);
+  });
+
+  test('Should grant invoke permissions to IAM principal', () => {
+    const user = new iam.User(stack, 'TestUser4');
+    const grant = codeInterpreter.grantInvoke(user);
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+    expect(grant.principalStatements).toBeDefined();
+    expect(grant.principalStatements.length).toBeGreaterThan(0);
+  });
+
+  test('Should grant permissions to IAM role', () => {
+    const role = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com'),
+    });
+
+    const grant = codeInterpreter.grantRead(role);
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+    expect(grant.principalStatements).toBeDefined();
+    expect(grant.principalStatements.length).toBeGreaterThan(0);
+  });
+
+  test('Should grant permissions to IAM group', () => {
+    const group = new iam.Group(stack, 'TestGroup');
+    const grant = codeInterpreter.grantUse(group);
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+    expect(grant.principalStatements).toBeDefined();
+    expect(grant.principalStatements.length).toBeGreaterThan(0);
+  });
+
+  test('Should return a valid Grant object', () => {
+    const user = new iam.User(stack, 'TestUser5');
+    const grant = codeInterpreter.grantRead(user);
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+    expect(grant.principalStatements).toBeDefined();
+    expect(grant.principalStatements.length).toBeGreaterThan(0);
+  });
+
+  test('Should grant invoke permissions separately from use permissions', () => {
+    const user = new iam.User(stack, 'TestUser6');
+    const useGrant = codeInterpreter.grantUse(user);
+    const invokeGrant = codeInterpreter.grantInvoke(user);
+
+    expect(useGrant).toBeDefined();
+    expect(invokeGrant).toBeDefined();
+    expect(useGrant.success).toBe(true);
+    expect(invokeGrant.success).toBe(true);
+  });
+});
+
+describe('CodeInterpreterCustom execution role edge cases', () => {
+  test('Should handle undefined execution role in CloudFormation template', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    // Create a code interpreter without explicit execution role
+    new CodeInterpreterCustom(stack, 'test-code-interpreter-no-role', {
+      codeInterpreterCustomName: 'test_code_interpreter_no_role',
+      description: 'A test code interpreter without explicit execution role',
+      networkConfiguration: {
+        networkMode: CodeInterpreterNetworkMode.PUBLIC,
+      },
+      // No executionRole provided - should create default role
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    // Should have the code interpreter resource
+    template.resourceCountIs('AWS::BedrockAgentCore::CodeInterpreterCustom', 1);
+    template.resourceCountIs('AWS::IAM::Role', 1);
+
+    // Should have ExecutionRoleArn property
+    template.hasResourceProperties('AWS::BedrockAgentCore::CodeInterpreterCustom', {
+      ExecutionRoleArn: {
+        'Fn::GetAtt': [Match.anyValue(), 'Arn'],
+      },
+    });
+  });
+
+  test('Should handle custom execution role', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const customRole = new iam.Role(stack, 'CustomCodeInterpreterRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+      roleName: 'custom-code-interpreter-role',
+    });
+
+    new CodeInterpreterCustom(stack, 'test-code-interpreter-custom-role', {
+      codeInterpreterCustomName: 'test_code_interpreter_custom_role',
+      description: 'A test code interpreter with custom execution role',
+      networkConfiguration: {
+        networkMode: CodeInterpreterNetworkMode.PUBLIC,
+      },
+      executionRole: customRole,
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    // Should have the code interpreter resource
+    template.resourceCountIs('AWS::BedrockAgentCore::CodeInterpreterCustom', 1);
+    template.resourceCountIs('AWS::IAM::Role', 1);
+
+    // Should have custom execution role
+    template.hasResourceProperties('AWS::IAM::Role', {
+      RoleName: 'custom-code-interpreter-role',
+    });
+
+    // Should reference the custom role
+    template.hasResourceProperties('AWS::BedrockAgentCore::CodeInterpreterCustom', {
+      ExecutionRoleArn: {
+        'Fn::GetAtt': [Match.stringLikeRegexp('CustomCodeInterpreterRole.*'), 'Arn'],
+      },
+    });
+  });
+
+  test('Should handle SANDBOX network mode', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    new CodeInterpreterCustom(stack, 'test-code-interpreter-sandbox', {
+      codeInterpreterCustomName: 'test_code_interpreter_sandbox',
+      description: 'A test code interpreter with SANDBOX network mode',
+      networkConfiguration: {
+        networkMode: CodeInterpreterNetworkMode.SANDBOX,
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    // Should have SANDBOX network mode
+    template.hasResourceProperties('AWS::BedrockAgentCore::CodeInterpreterCustom', {
+      NetworkConfiguration: {
+        NetworkMode: 'SANDBOX',
+      },
+    });
+  });
+
+  test('Should handle default network configuration when not provided', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const codeInterpreter = new CodeInterpreterCustom(stack, 'test-code-interpreter-default', {
+      codeInterpreterCustomName: 'test_code_interpreter_default',
+      description: 'A test code interpreter with default network configuration',
+      // No networkConfiguration provided
+    });
+
+    // Should default to PUBLIC network mode
+    expect(codeInterpreter.networkConfiguration.networkMode).toBe(CodeInterpreterNetworkMode.PUBLIC);
+  });
+
+  test('Should test metric methods with different configurations', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const codeInterpreter = new CodeInterpreterCustom(stack, 'test-code-interpreter-metrics', {
+      codeInterpreterCustomName: 'test_code_interpreter_metrics',
+      networkConfiguration: {
+        networkMode: CodeInterpreterNetworkMode.PUBLIC,
+      },
+    });
+
+    // Test various metric methods
+    const latencyMetric = codeInterpreter.metricLatencyForApiOperation('TestOperation');
+    const invocationsMetric = codeInterpreter.metricInvocationsForApiOperation('TestOperation');
+    const errorsMetric = codeInterpreter.metricErrorsForApiOperation('TestOperation');
+    const sessionDurationMetric = codeInterpreter.metricSessionDuration();
+
+    expect(latencyMetric).toBeDefined();
+    expect(invocationsMetric).toBeDefined();
+    expect(errorsMetric).toBeDefined();
+    expect(sessionDurationMetric).toBeDefined();
   });
 });
