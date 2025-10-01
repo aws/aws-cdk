@@ -13,6 +13,7 @@ import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 // Internal Libs
 import * as perms from './perms';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from './validation-helpers';
+import { CodeInterpreterNetworkConfiguration } from './network-configuration';
 
 /******************************************************************************
  *                              CONSTANTS
@@ -41,30 +42,6 @@ const CODE_INTERPRETER_TAG_MIN_LENGTH = 1;
  * @internal
  */
 const CODE_INTERPRETER_TAG_MAX_LENGTH = 256;
-
-/******************************************************************************
- *                                 Enums
- *****************************************************************************/
-/**
- * Network modes supported by code interpreter
- */
-export enum CodeInterpreterNetworkMode {
-  /**
-   * Public network mode - allows internet access
-   * This mode allows the code interpreter to access public internet resources.
-   * This is suitable for scenarios where the code needs to interact with external APIs,
-   * download libraries, or access public datasets.
-   */
-  PUBLIC = 'PUBLIC',
-
-  /**
-   * Sandbox network mode - isolated network environment
-   * This mode provides a fully isolated environment with no external network access.
-   * It is the most secure option, preventing the AI-generated code from accessing any external systems,
-   * which is ideal for sensitive operations or when strict isolation is required.
-   */
-  SANDBOX = 'SANDBOX',
-}
 
 /******************************************************************************
  *                                Interface
@@ -421,20 +398,6 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
 }
 
 /******************************************************************************
- *                                Network Configuration
- *****************************************************************************/
-
-/**
- * Network configuration for code interpreter
- */
-export interface CodeInterpreterNetworkConfiguration {
-  /**
-   * Network modes supported by code interpreter
-   */
-  readonly networkMode: CodeInterpreterNetworkMode;
-}
-
-/******************************************************************************
  *                        PROPS FOR NEW CONSTRUCT
  *****************************************************************************/
 /**
@@ -526,7 +489,7 @@ export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
     // ------------------------------------------------------
     this.name = props.codeInterpreterCustomName;
     this.description = props.description;
-    this.networkConfiguration = props.networkConfiguration ?? { networkMode: CodeInterpreterNetworkMode.PUBLIC };
+    this.networkConfiguration = props.networkConfiguration ?? CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK;
     this.executionRole = props.executionRole ?? this._createCodeInterpreterRole();
     this.tags = props.tags;
 
@@ -542,7 +505,7 @@ export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
     const cfnProps: agent_core.CfnCodeInterpreterCustomProps = {
       name: this.name,
       description: this.description,
-      networkConfiguration: this._renderNetworkConfiguration(),
+      networkConfiguration: this.networkConfiguration._render(),
       executionRoleArn: this.executionRole?.roleArn,
       tags: this.tags,
     };
@@ -556,23 +519,6 @@ export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
     this.status = this.__resource.attrStatus;
     this.createdAt = this.__resource.attrCreatedAt;
     this.lastUpdatedAt = this.__resource.attrLastUpdatedAt;
-  }
-
-  // ------------------------------------------------------
-  // Lazy Renderers
-  // ------------------------------------------------------
-
-  /**
-   * Render the network configuration.
-   *
-   * @returns CodeInterpreterNetworkConfigurationProperty object in CloudFormation format
-   * @default - Network mode is PUBLIC
-   * @internal This is an internal core function and should not be called directly.
-   */
-  private _renderNetworkConfiguration(): agent_core.CfnCodeInterpreterCustom.CodeInterpreterNetworkConfigurationProperty {
-    return {
-      networkMode: this.networkConfiguration.networkMode,
-    };
   }
 
   // ------------------------------------------------------

@@ -80,9 +80,7 @@ const browser = new agentcore.BrowserCustom(this, "MyBrowser", {
 const browser = new agentcore.BrowserCustom(this, "MyBrowser", {
   browserCustomName: "my_browser",
   description: "A browser for web automation with tags",
-  networkConfiguration: {
-    networkMode: agentcore.BrowserNetworkMode.PUBLIC,
-  },
+  networkConfiguration: agentcore.BrowserNetworkConfiguration.PUBLIC_NETWORK,
   tags: {
     Environment: "Production",
     Team: "AI/ML",
@@ -104,9 +102,7 @@ const recordingBucket = new s3.Bucket(this, "RecordingBucket", {
 const browser = new agentcore.BrowserCustom(this, "MyBrowser", {
   browserCustomName: "my_browser",
   description: "Browser with recording enabled",
-  networkConfiguration: {
-    networkMode: agentcore.BrowserNetworkMode.PUBLIC,
-  },
+  networkConfiguration: agentcore.BrowserNetworkConfiguration.PUBLIC_NETWORK,
   recordingConfig: {
     enabled: true,
     s3Location: {
@@ -132,9 +128,7 @@ const executionRole = new iam.Role(this, "BrowserExecutionRole", {
 const browser = new agentcore.BrowserCustom(this, "MyBrowser", {
   browserCustomName: "my_browser",
   description: "Browser with custom execution role",
-  networkConfiguration: {
-    networkMode: agentcore.BrowserNetworkMode.PUBLIC,
-  },
+  networkConfiguration: agentcore.BrowserNetworkConfiguration.PUBLIC_NETWORK,
   executionRole: executionRole,
 });
 ```
@@ -152,9 +146,7 @@ const recordingBucket = new s3.Bucket(this, "RecordingBucket", {
 const browser = new agentcore.BrowserCustom(this, "MyBrowser", {
   browserCustomName: "my_browser",
   description: "Browser with recording enabled",
-  networkConfiguration: {
-    networkMode: agentcore.BrowserNetworkMode.PUBLIC,
-  },
+  networkConfiguration: agentcore.BrowserNetworkConfiguration.PUBLIC_NETWORK,
   recordingConfig: {
     enabled: true,
     s3Location: {
@@ -177,9 +169,7 @@ The Browser construct provides convenient methods for granting IAM permissions:
 const browser = new agentcore.BrowserCustom(this, "MyBrowser", {
   browserCustomName: "my_browser",
   description: "Browser for web automation",
-  networkConfiguration: {
-    networkMode: agentcore.BrowserNetworkMode.PUBLIC,
-  },
+  networkConfiguration: agentcore.BrowserNetworkConfiguration.PUBLIC_NETWORK,
 });
 
 // Create a role that needs access to the browser
@@ -245,9 +235,7 @@ const codeInterpreter = new agentcore.CodeInterpreterCustom(this, "MyCodeInterpr
 const codeInterpreter = new agentcore.CodeInterpreterCustom(this, "MyCodeInterpreter", {
   codeInterpreterCustomName: "my_sandbox_interpreter",
   description: "Code interpreter with isolated network access",
-  networkConfiguration: {
-    networkMode: agentcore.CodeInterpreterNetworkMode.SANDBOX,
-  },
+  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
 });
 ```
 
@@ -263,9 +251,7 @@ const executionRole = new iam.Role(this, "CodeInterpreterExecutionRole", {
 const codeInterpreter = new agentcore.CodeInterpreterCustom(this, "MyCodeInterpreter", {
   codeInterpreterCustomName: "my_code_interpreter",
   description: "Code interpreter with custom execution role",
-  networkConfiguration: {
-    networkMode: agentcore.CodeInterpreterNetworkMode.PUBLIC,
-  },
+  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
   executionRole: executionRole,
 });
 ```
@@ -279,9 +265,7 @@ The Code Interpreter construct provides convenient methods for granting IAM perm
 const codeInterpreter = new agentcore.CodeInterpreterCustom(this, "MyCodeInterpreter", {
   codeInterpreterCustomName: "my_code_interpreter",
   description: "Code interpreter for Python execution",
-  networkConfiguration: {
-    networkMode: agentcore.CodeInterpreterNetworkMode.PUBLIC,
-  },
+  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
 });
 
 // Create a role that needs access to the code interpreter
@@ -306,9 +290,7 @@ codeInterpreter.grant(userRole, "bedrock-agentcore:GetCodeInterpreterSession");
 const codeInterpreter = new agentcore.CodeInterpreterCustom(this, "MyCodeInterpreter", {
   codeInterpreterCustomName: "my_sandbox_interpreter",
   description: "Code interpreter with isolated network access",
-  networkConfiguration: {
-    networkMode: agentcore.CodeInterpreterNetworkMode.SANDBOX,
-  },
+  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
   tags: {
     Environment: "Production",
     Team: "AI/ML",

@@ -7,7 +7,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as agentcore from '../../../agentcore';
-import { CodeInterpreterNetworkMode } from '../../../agentcore';
 
 const app = new cdk.App();
 
@@ -22,17 +21,13 @@ new agentcore.CodeInterpreterCustom(stack, 'MyCodeInterpreter', {
 // Create a code interpreter with sandbox network configuration
 new agentcore.CodeInterpreterCustom(stack, 'MyCodeInterpreter2', {
   codeInterpreterCustomName: 'my_code_interpreter2',
-  networkConfiguration: {
-    networkMode: CodeInterpreterNetworkMode.SANDBOX,
-  },
+  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.SANDBOX_NETWORK,
 });
 
 // Create a code interpreter with tags
 new agentcore.CodeInterpreterCustom(stack, 'MyCodeInterpreter3', {
   codeInterpreterCustomName: 'my_code_interpreter3',
-  networkConfiguration: {
-    networkMode: CodeInterpreterNetworkMode.PUBLIC,
-  },
+  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
   tags: {
     Environment: 'Dev',
     Team: 'AI/ML',

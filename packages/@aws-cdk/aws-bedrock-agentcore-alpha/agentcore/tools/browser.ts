@@ -15,6 +15,7 @@ import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 // Internal Libs
 import * as perms from './perms';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from './validation-helpers';
+import { BrowserNetworkConfiguration } from './network-configuration';
 
 /******************************************************************************
  *                              CONSTANTS
@@ -42,21 +43,6 @@ const BROWSER_TAG_MIN_LENGTH = 1;
  * @internal
  */
 const BROWSER_TAG_MAX_LENGTH = 256;
-
-/******************************************************************************
- *                                 Enums
- *****************************************************************************/
-/**
- * Network modes supported by browser
- */
-export enum BrowserNetworkMode {
-  /**
-   * Public network mode - This mode allows the Browser Tool to access public internet resources.
-   * It is suitable for scenarios where your agents need to interact with publicly available websites and web applications.
-   * VPC mode is not supported with this option.
-   */
-  PUBLIC = 'PUBLIC',
-}
 
 /******************************************************************************
  *                                Interface
@@ -460,20 +446,6 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
 }
 
 /******************************************************************************
- *                                Network Configuration
- *****************************************************************************/
-
-/**
- * Network configuration for browser
- */
-export interface BrowserNetworkConfiguration {
-  /**
-   * Network modes supported by browser
-   */
-  readonly networkMode: BrowserNetworkMode;
-}
-
-/******************************************************************************
  *                                Recording Configuration
  *****************************************************************************/
 
@@ -596,7 +568,7 @@ export class BrowserCustom extends BrowserCustomBase {
     // ------------------------------------------------------
     this.name = props.browserCustomName;
     this.description = props.description;
-    this.networkConfiguration = props.networkConfiguration ?? { networkMode: BrowserNetworkMode.PUBLIC };
+    this.networkConfiguration = props.networkConfiguration ?? BrowserNetworkConfiguration.PUBLIC_NETWORK;
     this.recordingConfig = props.recordingConfig ?? { enabled: false };
     this.executionRole = props.executionRole ?? this._createBrowserRole();
     this.tags = props.tags;
@@ -626,7 +598,7 @@ export class BrowserCustom extends BrowserCustomBase {
     const cfnProps: agent_core.CfnBrowserCustomProps = {
       name: this.name,
       description: this.description,
-      networkConfiguration: this._renderNetworkConfiguration(),
+      networkConfiguration: this.networkConfiguration._render(),
       recordingConfig: this._renderRecordingConfig(),
       executionRoleArn: this.executionRole?.roleArn,
       tags: this.tags,
@@ -641,23 +613,6 @@ export class BrowserCustom extends BrowserCustomBase {
     this.status = this.__resource.attrStatus;
     this.createdAt = this.__resource.attrCreatedAt;
     this.lastUpdatedAt = this.__resource.attrLastUpdatedAt;
-  }
-
-  // ------------------------------------------------------
-  // Lazy Renderers
-  // ------------------------------------------------------
-
-  /**
-   * Render the network configuration.
-   *
-   * @returns BrowserNetworkConfigurationProperty object in CloudFormation format
-   * @default - Network mode is PUBLIC
-   * @internal This is an internal core function and should not be called directly.
-   */
-  private _renderNetworkConfiguration(): agent_core.CfnBrowserCustom.BrowserNetworkConfigurationProperty {
-    return {
-      networkMode: this.networkConfiguration.networkMode,
-    };
   }
 
   /**

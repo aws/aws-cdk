@@ -2,7 +2,8 @@ import * as cdk from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { CodeInterpreterCustom, CodeInterpreterNetworkMode } from '../../../agentcore/tools/code-interpreter';
+import { CodeInterpreterCustom } from '../../../agentcore/tools/code-interpreter';
+import { CodeInterpreterNetworkConfiguration } from '../../../agentcore/tools/network-configuration';
 
 describe('CodeInterpreterCustom default tests', () => {
   let template: Template;
@@ -23,9 +24,7 @@ describe('CodeInterpreterCustom default tests', () => {
     codeInterpreter = new CodeInterpreterCustom(stack, 'test-code-interpreter', {
       codeInterpreterCustomName: 'test_code_interpreter',
       description: 'A test code interpreter for code execution',
-      networkConfiguration: {
-        networkMode: CodeInterpreterNetworkMode.PUBLIC,
-      },
+      networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
     });
 
     app.synth();
@@ -91,9 +90,7 @@ describe('CodeInterpreterCustom with custom execution role tests', () => {
     codeInterpreter = new CodeInterpreterCustom(stack, 'test-code-interpreter', {
       codeInterpreterCustomName: 'test_code_interpreter',
       description: 'A test code interpreter with custom execution role',
-      networkConfiguration: {
-        networkMode: CodeInterpreterNetworkMode.PUBLIC,
-      },
+      networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
       executionRole: customRole,
     });
 
@@ -152,9 +149,7 @@ describe('CodeInterpreterCustom name validation tests', () => {
     expect(() => {
       new CodeInterpreterCustom(stack, 'test-code-interpreter', {
         codeInterpreterCustomName: 'test-code-interpreter',
-        networkConfiguration: {
-          networkMode: CodeInterpreterNetworkMode.PUBLIC,
-        },
+        networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
       });
     }).toThrow('The field Code interpreter name with value "test-code-interpreter" does not match the required pattern /^[a-zA-Z][a-zA-Z0-9_]{0,47}$/');
   });
@@ -163,9 +158,7 @@ describe('CodeInterpreterCustom name validation tests', () => {
     expect(() => {
       new CodeInterpreterCustom(stack, 'empty-name', {
         codeInterpreterCustomName: '',
-        networkConfiguration: {
-          networkMode: CodeInterpreterNetworkMode.PUBLIC,
-        },
+        networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
       });
     }).toThrow('The field Code interpreter name is 0 characters long but must be at least 1 characters');
   });
@@ -174,9 +167,7 @@ describe('CodeInterpreterCustom name validation tests', () => {
     expect(() => {
       new CodeInterpreterCustom(stack, 'name-with-spaces', {
         codeInterpreterCustomName: 'test code interpreter',
-        networkConfiguration: {
-          networkMode: CodeInterpreterNetworkMode.PUBLIC,
-        },
+        networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
       });
     }).toThrow('The field Code interpreter name with value "test code interpreter" does not match the required pattern /^[a-zA-Z][a-zA-Z0-9_]{0,47}$/');
   });
@@ -185,9 +176,7 @@ describe('CodeInterpreterCustom name validation tests', () => {
     expect(() => {
       new CodeInterpreterCustom(stack, 'name-with-special-chars', {
         codeInterpreterCustomName: 'test@code-interpreter',
-        networkConfiguration: {
-          networkMode: CodeInterpreterNetworkMode.PUBLIC,
-        },
+        networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
       });
     }).toThrow('The field Code interpreter name with value "test@code-interpreter" does not match the required pattern /^[a-zA-Z][a-zA-Z0-9_]{0,47}$/');
   });
@@ -197,9 +186,7 @@ describe('CodeInterpreterCustom name validation tests', () => {
     expect(() => {
       new CodeInterpreterCustom(stack, 'long-name', {
         codeInterpreterCustomName: longName,
-        networkConfiguration: {
-          networkMode: CodeInterpreterNetworkMode.PUBLIC,
-        },
+        networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
       });
     }).toThrow('The field Code interpreter name is 49 characters long but must be less than or equal to 48 characters');
   });
@@ -208,9 +195,7 @@ describe('CodeInterpreterCustom name validation tests', () => {
     expect(() => {
       new CodeInterpreterCustom(stack, 'valid-name', {
         codeInterpreterCustomName: 'test_code_interpreter_123',
-        networkConfiguration: {
-          networkMode: CodeInterpreterNetworkMode.PUBLIC,
-        },
+        networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
       });
     }).not.toThrow();
   });
@@ -219,9 +204,7 @@ describe('CodeInterpreterCustom name validation tests', () => {
     expect(() => {
       new CodeInterpreterCustom(stack, 'valid-name-2', {
         codeInterpreterCustomName: 'testCodeInterpreter123',
-        networkConfiguration: {
-          networkMode: CodeInterpreterNetworkMode.PUBLIC,
-        },
+        networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
       });
     }).not.toThrow();
   });
@@ -231,7 +214,7 @@ describe('CodeInterpreterCustom name validation tests', () => {
       codeInterpreterCustomName: 'test_code_interpreter_default',
     });
 
-    expect(codeInterpreter.networkConfiguration.networkMode).toBe(CodeInterpreterNetworkMode.PUBLIC);
+    expect(codeInterpreter.networkConfiguration).toBe(CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK);
   });
 });
 
@@ -253,9 +236,7 @@ describe('CodeInterpreterCustom tags validation tests', () => {
     expect(() => {
       new CodeInterpreterCustom(stack, 'valid-tags', {
         codeInterpreterCustomName: 'test_code_interpreter',
-        networkConfiguration: {
-          networkMode: CodeInterpreterNetworkMode.PUBLIC,
-        },
+        networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
         tags: {
           'Environment': 'Production',
           'Team': 'AI/ML',
@@ -270,9 +251,7 @@ describe('CodeInterpreterCustom tags validation tests', () => {
     expect(() => {
       new CodeInterpreterCustom(stack, 'special-chars-tags', {
         codeInterpreterCustomName: 'test_code_interpreter',
-        networkConfiguration: {
-          networkMode: CodeInterpreterNetworkMode.PUBLIC,
-        },
+        networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
         tags: {
           'Environment': 'Production',
           'Team@Company': 'AI/ML',
@@ -288,9 +267,7 @@ describe('CodeInterpreterCustom tags validation tests', () => {
     expect(() => {
       new CodeInterpreterCustom(stack, 'empty-tag-key', {
         codeInterpreterCustomName: 'test_code_interpreter',
-        networkConfiguration: {
-          networkMode: CodeInterpreterNetworkMode.PUBLIC,
-        },
+        networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
         tags: {
           '': 'value',
         },
@@ -303,9 +280,7 @@ describe('CodeInterpreterCustom tags validation tests', () => {
     expect(() => {
       new CodeInterpreterCustom(stack, 'long-tag-key', {
         codeInterpreterCustomName: 'test_code_interpreter',
-        networkConfiguration: {
-          networkMode: CodeInterpreterNetworkMode.PUBLIC,
-        },
+        networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
         tags: {
           [longKey]: 'value',
         },
@@ -318,9 +293,7 @@ describe('CodeInterpreterCustom tags validation tests', () => {
     expect(() => {
       new CodeInterpreterCustom(stack, 'long-tag-value', {
         codeInterpreterCustomName: 'test_code_interpreter',
-        networkConfiguration: {
-          networkMode: CodeInterpreterNetworkMode.PUBLIC,
-        },
+        networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
         tags: {
           key: longValue,
         },
@@ -332,9 +305,7 @@ describe('CodeInterpreterCustom tags validation tests', () => {
     expect(() => {
       new CodeInterpreterCustom(stack, 'invalid-tag-key', {
         codeInterpreterCustomName: 'test_code_interpreter',
-        networkConfiguration: {
-          networkMode: CodeInterpreterNetworkMode.PUBLIC,
-        },
+        networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
         tags: {
           'key#invalid': 'value',
         },
@@ -346,9 +317,7 @@ describe('CodeInterpreterCustom tags validation tests', () => {
     expect(() => {
       new CodeInterpreterCustom(stack, 'invalid-tag-value', {
         codeInterpreterCustomName: 'test_code_interpreter',
-        networkConfiguration: {
-          networkMode: CodeInterpreterNetworkMode.PUBLIC,
-        },
+        networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
         tags: {
           key: 'value#invalid',
         },
@@ -360,9 +329,7 @@ describe('CodeInterpreterCustom tags validation tests', () => {
     expect(() => {
       new CodeInterpreterCustom(stack, 'null-tag-value', {
         codeInterpreterCustomName: 'test_code_interpreter',
-        networkConfiguration: {
-          networkMode: CodeInterpreterNetworkMode.PUBLIC,
-        },
+        networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
         tags: {
           key: null as any,
         },
@@ -374,9 +341,7 @@ describe('CodeInterpreterCustom tags validation tests', () => {
     expect(() => {
       new CodeInterpreterCustom(stack, 'undefined-tag-value', {
         codeInterpreterCustomName: 'test_code_interpreter',
-        networkConfiguration: {
-          networkMode: CodeInterpreterNetworkMode.PUBLIC,
-        },
+        networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
         tags: {
           key: undefined as any,
         },
@@ -388,9 +353,7 @@ describe('CodeInterpreterCustom tags validation tests', () => {
     expect(() => {
       new CodeInterpreterCustom(stack, 'undefined-tags', {
         codeInterpreterCustomName: 'test_code_interpreter',
-        networkConfiguration: {
-          networkMode: CodeInterpreterNetworkMode.PUBLIC,
-        },
+        networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
         tags: undefined,
       });
     }).not.toThrow();
@@ -400,9 +363,7 @@ describe('CodeInterpreterCustom tags validation tests', () => {
     expect(() => {
       new CodeInterpreterCustom(stack, 'empty-tags', {
         codeInterpreterCustomName: 'test_code_interpreter',
-        networkConfiguration: {
-          networkMode: CodeInterpreterNetworkMode.PUBLIC,
-        },
+        networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
         tags: {},
       });
     }).not.toThrow();
@@ -426,9 +387,7 @@ describe('CodeInterpreterCustom with tags CloudFormation template tests', () => 
     new CodeInterpreterCustom(stack, 'test-code-interpreter-with-tags', {
       codeInterpreterCustomName: 'test_code_interpreter_with_tags',
       description: 'A test code interpreter with tags',
-      networkConfiguration: {
-        networkMode: CodeInterpreterNetworkMode.PUBLIC,
-      },
+      networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
       tags: {
         Environment: 'Production',
         Team: 'AI/ML',
@@ -476,9 +435,7 @@ describe('CodeInterpreterCustom CloudFormation parameter validation tests', () =
 
     new CodeInterpreterCustom(stack, 'TestCodeInterpreter', {
       codeInterpreterCustomName: 'test_code_interpreter',
-      networkConfiguration: {
-        networkMode: CodeInterpreterNetworkMode.PUBLIC,
-      },
+      networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
       tags: {
         Environment: 'Test',
         Team: 'AI/ML',
@@ -504,9 +461,7 @@ describe('CodeInterpreterCustom CloudFormation parameter validation tests', () =
 
     new CodeInterpreterCustom(stack, 'TestCodeInterpreter', {
       codeInterpreterCustomName: 'test_code_interpreter',
-      networkConfiguration: {
-        networkMode: CodeInterpreterNetworkMode.PUBLIC,
-      },
+      networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
       executionRole: role,
     });
 
@@ -528,9 +483,7 @@ describe('CodeInterpreterCustom CloudFormation parameter validation tests', () =
 
     new CodeInterpreterCustom(stack, 'TestCodeInterpreter', {
       codeInterpreterCustomName: 'test_code_interpreter_sandbox',
-      networkConfiguration: {
-        networkMode: CodeInterpreterNetworkMode.SANDBOX,
-      },
+      networkConfiguration: CodeInterpreterNetworkConfiguration.SANDBOX_NETWORK,
     });
 
     app.synth();
@@ -550,9 +503,7 @@ describe('CodeInterpreterCustom CloudFormation parameter validation tests', () =
 
     new CodeInterpreterCustom(stack, 'TestCodeInterpreter', {
       codeInterpreterCustomName: 'test_code_interpreter_public',
-      networkConfiguration: {
-        networkMode: CodeInterpreterNetworkMode.PUBLIC,
-      },
+      networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
     });
 
     app.synth();
@@ -584,9 +535,7 @@ describe('CodeInterpreterCustom grant method tests', () => {
     codeInterpreter = new CodeInterpreterCustom(stack, 'test-code-interpreter', {
       codeInterpreterCustomName: 'test_code_interpreter',
       description: 'A test code interpreter for grant testing',
-      networkConfiguration: {
-        networkMode: CodeInterpreterNetworkMode.PUBLIC,
-      },
+      networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
     });
   });
 
@@ -689,9 +638,7 @@ describe('CodeInterpreterCustom execution role edge cases', () => {
     new CodeInterpreterCustom(stack, 'test-code-interpreter-no-role', {
       codeInterpreterCustomName: 'test_code_interpreter_no_role',
       description: 'A test code interpreter without explicit execution role',
-      networkConfiguration: {
-        networkMode: CodeInterpreterNetworkMode.PUBLIC,
-      },
+      networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
       // No executionRole provided - should create default role
     });
 
@@ -727,9 +674,7 @@ describe('CodeInterpreterCustom execution role edge cases', () => {
     new CodeInterpreterCustom(stack, 'test-code-interpreter-custom-role', {
       codeInterpreterCustomName: 'test_code_interpreter_custom_role',
       description: 'A test code interpreter with custom execution role',
-      networkConfiguration: {
-        networkMode: CodeInterpreterNetworkMode.PUBLIC,
-      },
+      networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
       executionRole: customRole,
     });
 
@@ -765,9 +710,7 @@ describe('CodeInterpreterCustom execution role edge cases', () => {
     new CodeInterpreterCustom(stack, 'test-code-interpreter-sandbox', {
       codeInterpreterCustomName: 'test_code_interpreter_sandbox',
       description: 'A test code interpreter with SANDBOX network mode',
-      networkConfiguration: {
-        networkMode: CodeInterpreterNetworkMode.SANDBOX,
-      },
+      networkConfiguration: CodeInterpreterNetworkConfiguration.SANDBOX_NETWORK,
     });
 
     app.synth();
@@ -797,7 +740,7 @@ describe('CodeInterpreterCustom execution role edge cases', () => {
     });
 
     // Should default to PUBLIC network mode
-    expect(codeInterpreter.networkConfiguration.networkMode).toBe(CodeInterpreterNetworkMode.PUBLIC);
+    expect(codeInterpreter.networkConfiguration).toBe(CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK);
   });
 
   test('Should test metric methods with different configurations', () => {
@@ -811,9 +754,7 @@ describe('CodeInterpreterCustom execution role edge cases', () => {
 
     const codeInterpreter = new CodeInterpreterCustom(stack, 'test-code-interpreter-metrics', {
       codeInterpreterCustomName: 'test_code_interpreter_metrics',
-      networkConfiguration: {
-        networkMode: CodeInterpreterNetworkMode.PUBLIC,
-      },
+      networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
     });
 
     // Test various metric methods

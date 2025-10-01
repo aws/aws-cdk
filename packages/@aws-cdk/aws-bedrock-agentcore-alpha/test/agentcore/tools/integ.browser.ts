@@ -26,6 +26,7 @@ const recordingBucket = new s3.Bucket(stack, 'RecordingBucket', {
 // Create a browser with recording configuration
 new agentcore.BrowserCustom(stack, 'BrowserWithRecording', {
   browserCustomName: 'browser_recording',
+  networkConfiguration: agentcore.BrowserNetworkConfiguration.PUBLIC_NETWORK,
   recordingConfig: {
     enabled: true,
     s3Location: {
