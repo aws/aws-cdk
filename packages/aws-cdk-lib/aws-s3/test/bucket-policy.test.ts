@@ -179,8 +179,8 @@ describe('bucket policy', () => {
     });
 
     test('should synthesize without errors and create duplicate cfn resource', () => {
-      const stack = new Stack();
-      const cfnBucketPolicy = new s3.CfnBucketPolicy(stack, 'TestBucketPolicy', {
+      const testStack = new Stack();
+      const cfnBucketPolicy = new s3.CfnBucketPolicy(testStack, 'TestBucketPolicy', {
         policyDocument: {
           'Statement': [
             {
@@ -199,8 +199,8 @@ describe('bucket policy', () => {
 
       s3.BucketPolicy.fromCfnBucketPolicy(cfnBucketPolicy);
 
-      // Verify that two CfnBucketPolicy resources are created 
-      const template = Template.fromStack(stack);
+      // Verify that two CfnBucketPolicy resources are created
+      const template = Template.fromStack(testStack);
       const bucketPolicies = template.findResources('AWS::S3::BucketPolicy');
       expect(Object.keys(bucketPolicies)).toHaveLength(2);
 
