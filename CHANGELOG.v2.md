@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.219.0](https://github.com/aws/aws-cdk/compare/v2.218.0...v2.219.0) (2025-10-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated
+from public CloudFormation Resource Schemas. They are built to closely
+reflect the real state of CloudFormation. Sometimes these updates can
+contain changes that are incompatible with previous types, but more
+accurately reflect reality. In this release we have changed:
+
+aws-servicecatalog: AWS::ServiceCatalog::PortfolioPrincipalAssociation:
+PortfolioId property is now required.
+aws-servicecatalog: AWS::ServiceCatalog::PortfolioPrincipalAssociation:
+PrincipalARN property is now required.
+
+Co-authored-by: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-servicecatalog: AWS::ServiceCatalog::PortfolioProductAssociation: Id attribute removed.
+
+### Features
+
+* **ecs:** new L2 construct for ManagedInstances CapacityProvider ([#35648](https://github.com/aws/aws-cdk/issues/35648)) ([c72a09b](https://github.com/aws/aws-cdk/commit/c72a09bbd712e22ee53cfa7d7362228660980754))
+* update L1 CloudFormation resource definitions ([#35646](https://github.com/aws/aws-cdk/issues/35646)) ([860ce0d](https://github.com/aws/aws-cdk/commit/860ce0d4aeeff9fd46442b1b18faecaeb46009fa))
+* **codebuild:** add custom instance type and VPC to Fleets ([#34572](https://github.com/aws/aws-cdk/issues/34572)) ([5c2781b](https://github.com/aws/aws-cdk/commit/5c2781bbadfef8481fbc5d808dc34b7d6379a467))
+* **codebuild:** support overflow behavior of fleet ([#35480](https://github.com/aws/aws-cdk/issues/35480)) ([e4113b0](https://github.com/aws/aws-cdk/commit/e4113b04d0b0b00ec54425e63a42b9d4c03c08f9))
+* update L1 CloudFormation resource definitions ([#35614](https://github.com/aws/aws-cdk/issues/35614)) ([fb0a114](https://github.com/aws/aws-cdk/commit/fb0a114a835c592594e241ae6752ad98db287ac6))
+
+
+### Bug Fixes
+
+* **cloudfront:** edgefunction does not propagate stack tags correctly ([#35518](https://github.com/aws/aws-cdk/issues/35518)) ([63088e8](https://github.com/aws/aws-cdk/commit/63088e8778bcaaad29eb55ddd3ce9005a79eab86))
+
 ## [2.218.0](https://github.com/aws/aws-cdk/compare/v2.217.0...v2.218.0) (2025-09-29)
 
 
