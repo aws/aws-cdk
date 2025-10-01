@@ -7,21 +7,13 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES
 
-* ** L1 resources are automatically generated
-from public CloudFormation Resource Schemas. They are built to closely
-reflect the real state of CloudFormation. Sometimes these updates can
-contain changes that are incompatible with previous types, but more
-accurately reflect reality. In this release we have changed:
-
-aws-servicecatalog: AWS::ServiceCatalog::PortfolioPrincipalAssociation:
-PortfolioId property is now required.
-aws-servicecatalog: AWS::ServiceCatalog::PortfolioPrincipalAssociation:
-PrincipalARN property is now required.
-
-Co-authored-by: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
 * ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
 
+aws-servicecatalog: AWS::ServiceCatalog::PortfolioPrincipalAssociation: PortfolioId property is now required.
+aws-servicecatalog: AWS::ServiceCatalog::PortfolioPrincipalAssociation: PrincipalARN property is now required.
 aws-servicecatalog: AWS::ServiceCatalog::PortfolioProductAssociation: Id attribute removed.
+
+Co-authored-by: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
 
 ### Features
 
