@@ -564,21 +564,6 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
         functionUrlConditions,
       );
 
-      // raise if failed
-      if (!grant.success) {
-        throw new ValidationError(
-          'Failed to grant Lambda function URL invoke permissions. This can happen when:\n' +
-          '- The Lambda function is imported from a different account without proper configuration\n' +
-          '- The Lambda function is using $LATEST version which cannot be modified\n' +
-          '- The function lacks permission to create new resource policies\n\n' +
-          'To fix this issue:\n' +
-          '- If importing from the same account, use `Function.fromFunctionAttributes()` with `sameEnvironment: true`\n' +
-          '- If importing from a different account with existing permissions, use `skipPermissions: true`\n' +
-          '- Ensure you are not trying to grant permissions on the $LATEST version directly',
-          this,
-        );
-      }
-
       // Build conditions for dual auth (invoked via function URL)
       const dualAuthConditions: Record<string, Record<string, unknown>> = {
         Bool: {
