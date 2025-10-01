@@ -400,9 +400,13 @@ export class BucketDeployment extends Construct {
 
     this.sources = props.sources.map((source: ISource) => source.bind(this, { handlerRole: this.handlerRole }));
 
-    this.destinationBucket.grantReadWrite(handler);
+    const objectPattern = props.destinationKeyPrefix
+      ? `${this.normalizePrefix(props.destinationKeyPrefix)}*`
+      : '*';
+
+    this.destinationBucket.grantReadWrite(handler, objectPattern);
     if (props.accessControl) {
-      this.destinationBucket.grantPutAcl(handler);
+      this.destinationBucket.grantPutAcl(handler, objectPattern);
     }
     if (props.distribution) {
       handler.addToRolePolicy(new iam.PolicyStatement({
@@ -644,6 +648,15 @@ export class BucketDeployment extends Construct {
     const stack = cdk.Stack.of(scope);
     const uuid = `BucketDeploymentEFS-VPC-${fileSystemProps.vpc.node.addr}`;
     return stack.node.tryFindChild(uuid) as efs.FileSystem ?? new efs.FileSystem(scope, uuid, fileSystemProps);
+  }
+  /**
+   * Normalize the prefix for S3 object keys.
+   * @param prefix prefix string
+   * @returns normalized prefix string
+   */
+  normalizePrefix(prefix?: string): string {
+    if (!prefix) return '';
+    return prefix.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
   }
 }
 
