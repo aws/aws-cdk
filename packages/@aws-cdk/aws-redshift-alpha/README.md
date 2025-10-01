@@ -734,3 +734,107 @@ You can specify one of the following `MaintenanceTrackName` values:
 
 * `CURRENT`: Use the most current approved cluster version.
 * `TRAILING`: Use the cluster version before the current version.
+
+## Scheduling Redshift Queries
+
+The `RedshiftQueryScheduler` construct allows you to schedule SQL queries to run on your Redshift cluster or Redshift Serverless workgroup at regular intervals. This is useful for automating tasks such as data transformations, report generation, or maintenance operations.
+
+The construct uses an EventBridge Rule with a schedule expression and a RedshiftQuery target to execute the queries.
+
+### Basic Usage
+
+```ts
+import * as scheduler from 'aws-cdk-lib/aws-scheduler';
+import { Duration } from 'aws-cdk-lib/core';
+import { RedshiftQueryScheduler } from '@aws-cdk/aws-redshift-alpha';
+
+// For a Redshift cluster
+new RedshiftQueryScheduler(this, 'DailyReport', {
+  schedulerName: 'daily-report',
+  database: 'analytics',
+  clusterArn: 'arn:aws:redshift:us-east-1:123456789012:cluster:my-cluster',
+  dbUser: 'scheduler_user',
+  sql: 'CALL generate_daily_report()',
+  schedule: scheduler.ScheduleExpression.rate(Duration.days(1)),
+});
+
+// For a Redshift Serverless workgroup with Secret object
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+
+const secret = secretsmanager.Secret.fromSecretNameV2(this, 'RedshiftSecret', 'arn:aws:secretsmanager:us-east-1:804245508169:secret:my-redshift-secret');
+
+new RedshiftQueryScheduler(this, 'HourlyMetrics', {
+  schedulerName: 'hourly-metrics',
+  database: 'analytics',
+  workgroupArn: 'arn:aws:redshift-serverless:us-east-1:123456789012:workgroup/my-workgroup',
+  secret: secret,
+  sql: 'CALL update_hourly_metrics()',
+  schedule: scheduler.ScheduleExpression.rate(Duration.hours(1)),
+});
+```
+
+### Multiple SQL Statements
+
+You can execute multiple SQL statements in a single scheduled job by using the `sqls` property instead of `sql`:
+
+```ts
+new RedshiftQueryScheduler(this, 'MaintenanceJob', {
+  schedulerName: 'weekly-maintenance',
+  database: 'analytics',
+  clusterArn: 'arn:aws:redshift:us-east-1:123456789012:cluster:my-cluster',
+  dbUser: 'admin',
+  sqls: [
+    'VACUUM DELETE ONLY sales',
+    'ANALYZE COMPRESSION sales',
+    'ANALYZE sales'
+  ],
+  schedule: scheduler.ScheduleExpression.rate(Duration.days(7)),
+});
+```
+
+### Custom IAM Role
+
+By default, the RedshiftQueryScheduler creates a new IAM role with the necessary permissions to execute queries on your Redshift cluster or workgroup. You can provide your own custom IAM role with the `role` property:
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+// Create a custom role with specific permissions
+const customRole = new iam.Role(this, 'CustomRedshiftRole', {
+  assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+  description: 'Custom role for Redshift query execution',
+});
+
+customRole.addToPolicy(new iam.PolicyStatement({
+  actions: ['redshift-data:ExecuteStatement'],
+  resources: ['*'],
+}));
+
+// Use the custom role in the scheduler
+new RedshiftQueryScheduler(this, 'SchedulerWithCustomRole', {
+  schedulerName: 'custom-role-scheduler',
+  database: 'analytics',
+  clusterArn: 'arn:aws:redshift:us-east-1:123456789012:cluster:my-cluster',
+  dbUser: 'scheduler_user',
+  sql: 'SELECT * FROM sales LIMIT 10',
+  schedule: scheduler.ScheduleExpression.rate(Duration.hours(6)),
+  role: customRole,
+});
+```
+
+### Additional Options
+
+The RedshiftQueryScheduler construct supports additional options:
+
+```ts
+new RedshiftQueryScheduler(this, 'ConfiguredScheduler', {
+  schedulerName: 'configured-scheduler',
+  database: 'analytics',
+  clusterArn: 'arn:aws:redshift:us-east-1:123456789012:cluster:my-cluster',
+  dbUser: 'scheduler_user',
+  sql: 'CALL generate_report()',
+  schedule: scheduler.ScheduleExpression.rate(Duration.days(1)),
+  description: 'Generates daily analytics reports',
+  enabled: false,  // Create the scheduler in disabled state
+});
+```
