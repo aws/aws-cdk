@@ -656,7 +656,15 @@ export class BucketDeployment extends Construct {
    */
   normalizePrefix(prefix?: string): string {
     if (!prefix) return '';
-    return prefix.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
+    let normalized = prefix;
+    while (normalized.startsWith('/')) {
+      normalized = normalized.slice(1);
+    }
+    while (normalized.endsWith('/')) {
+      normalized = normalized.slice(0, -1);
+    }
+
+    return normalized ? normalized + '/' : '';
   }
 }
 
