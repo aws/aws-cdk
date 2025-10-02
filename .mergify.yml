@@ -8,7 +8,7 @@ queue_rules:
     batch_size: 1
     update_method: merge
     merge_method: merge
-    conditions:
+    queue_conditions:
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)
       # Only if no-squash is set
@@ -30,7 +30,7 @@ queue_rules:
     batch_size: 1
     update_method: merge
     merge_method: squash
-    conditions:
+    queue_conditions:
       - base!=release
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge|no-squash)
@@ -52,7 +52,7 @@ queue_rules:
     batch_size: 1
     update_method: merge
     merge_method: squash
-    conditions:
+    queue_conditions:
       - base!=release
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge|no-squash|priority-pr)
