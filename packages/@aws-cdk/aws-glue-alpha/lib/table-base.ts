@@ -6,6 +6,7 @@ import { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
+import { validatePartitionConfiguration, generatePartitionProjectionParameters } from './partition-projection';
 import { Column } from './schema';
 import { StorageParameter } from './storage-parameter';
 
@@ -157,6 +158,18 @@ export interface TableBaseProps {
    * @default - The parameter is not defined
    */
   readonly parameters?: { [key: string]: string };
+
+  /**
+   * Partition projection configuration for this table.
+   *
+   * Partition projection allows Athena to automatically add new partitions
+   * without requiring `ALTER TABLE ADD PARTITION` statements.
+   *
+   * @see https://docs.aws.amazon.com/athena/latest/ug/partition-projection.html
+   *
+   * @default - No partition projection
+   */
+  readonly partitionProjection?: import('./partition-projection').PartitionProjection;
 }
 
 /**
@@ -224,6 +237,11 @@ export abstract class TableBase extends Resource implements ITable {
   public readonly storageParameters?: StorageParameter[];
 
   /**
+   * This table's partition projection configuration if enabled.
+   */
+  public readonly partitionProjection?: import('./partition-projection').PartitionProjection;
+
+  /**
    * The tables' properties associated with the table.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html#cfn-glue-table-tableinput-parameters
    */
@@ -251,9 +269,15 @@ export abstract class TableBase extends Resource implements ITable {
     this.columns = props.columns;
     this.partitionKeys = props.partitionKeys;
     this.storageParameters = props.storageParameters;
+    this.partitionProjection = props.partitionProjection;
     this.parameters = props.parameters ?? {};
 
     this.compressed = props.compressed ?? false;
+
+    // Validate and generate partition projection parameters
+    if (this.partitionProjection) {
+      this.validateAndGeneratePartitionProjection();
+    }
   }
 
   public abstract grantRead(grantee: iam.IGrantable): iam.Grant;
@@ -325,6 +349,52 @@ export abstract class TableBase extends Resource implements ITable {
     if (!index.keyNames.every(k => keyNames.includes(k))) {
       throw new ValidationError(`All index keys must also be partition keys. Got ${index.keyNames} but partition key names are ${keyNames}`, this);
     }
+  }
+
+  /**
+   * Validate partition projection configuration and merge generated
+   * parameters into this.parameters.
+   *
+   * @throws {ValidationError} if partition projection configuration is invalid
+   */
+  private validateAndGeneratePartitionProjection(): void {
+    if (!this.partitionProjection) {
+      return;
+    }
+
+    // Validate that partition keys exist
+    if (!this.partitionKeys || this.partitionKeys.length === 0) {
+      throw new ValidationError(
+        'The table must have partition keys to use partition projection',
+        this,
+      );
+    }
+
+    const partitionKeyNames = this.partitionKeys.map(pk => pk.name);
+
+    // Validate each partition projection configuration
+    for (const [columnName, config] of Object.entries(this.partitionProjection)) {
+      // Validate that column is a partition key
+      if (!partitionKeyNames.includes(columnName)) {
+        throw new ValidationError(
+          `Partition projection column "${columnName}" must be a partition key. ` +
+          `Partition keys are: ${partitionKeyNames.join(', ')}`,
+          this,
+        );
+      }
+
+      // Validate the configuration based on type
+      validatePartitionConfiguration(columnName, config);
+
+      // Generate CloudFormation parameters
+      const generatedParams = generatePartitionProjectionParameters(columnName, config);
+
+      // Merge into this.parameters
+      Object.assign(this.parameters, generatedParams);
+    }
+
+    // Enable partition projection globally
+    this.parameters['projection.enabled'] = 'true';
   }
 
   /**

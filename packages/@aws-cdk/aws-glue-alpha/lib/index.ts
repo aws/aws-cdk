@@ -6,6 +6,7 @@ export * from './data-format';
 export * from './data-quality-ruleset';
 export * from './database';
 export * from './external-table';
+export * from './partition-projection';
 export * from './s3-table';
 export * from './schema';
 export * from './security-configuration';
