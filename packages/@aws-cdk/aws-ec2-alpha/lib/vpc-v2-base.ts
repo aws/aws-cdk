@@ -6,6 +6,7 @@ import { EgressOnlyInternetGateway, InternetGateway, NatConnectivityType, NatGat
 import { ISubnetV2 } from './subnet-v2';
 import { AccountPrincipal, Effect, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 import { IVPCCidrBlock } from './vpc-v2';
+import { VPCReference } from 'aws-cdk-lib/aws-ec2/lib/ec2.generated';
 
 /**
  * Options to define EgressOnlyInternetGateway for VPC
@@ -324,6 +325,12 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
       subnets,
       hasPublic: subnets.some(s => pubs.has(s)),
       isPendingLookup: this.incompleteSubnetDefinition,
+    };
+  }
+
+  public get vpcRef(): VPCReference {
+    return {
+      vpcId: this.vpcId,
     };
   }
 

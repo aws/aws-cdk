@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
 import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
-import { CfnAccount, CfnRestApi } from './apigateway.generated';
+import { CfnAccount, CfnRestApi, IRestApiRef, RestApiReference } from './apigateway.generated';
 import { CorsOptions } from './cors';
 import { Deployment } from './deployment';
 import { DomainName, DomainNameOptions } from './domain-name';
@@ -27,7 +27,7 @@ import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
 const APIGATEWAY_RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApi');
 
-export interface IRestApi extends IResourceBase {
+export interface IRestApi extends IResourceBase, IRestApiRef {
   /**
    * The ID of this API Gateway RestApi.
    * @attribute
@@ -737,6 +737,12 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
       ...fn({ ApiName: this.restApiName }),
       ...props,
     }).attachTo(this);
+  }
+
+  public get restApiRef(): RestApiReference {
+    return {
+      restApiId: this.restApiId,
+    };
   }
 }
 

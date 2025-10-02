@@ -3,7 +3,7 @@ import { ClientVpnAuthorizationRule, ClientVpnAuthorizationRuleOptions } from '.
 import { IClientVpnConnectionHandler, IClientVpnEndpoint, TransportProtocol, VpnPort } from './client-vpn-endpoint-types';
 import { ClientVpnRoute, ClientVpnRouteOptions } from './client-vpn-route';
 import { Connections } from './connections';
-import { CfnClientVpnEndpoint, CfnClientVpnTargetNetworkAssociation } from './ec2.generated';
+import { CfnClientVpnEndpoint, CfnClientVpnTargetNetworkAssociation, ClientVpnEndpointReference } from './ec2.generated';
 import { CidrBlock } from './network-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { IVpc, SubnetSelection } from './vpc';
@@ -306,6 +306,12 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       public readonly endpointId = attrs.endpointId;
       public readonly connections = new Connections({ securityGroups: attrs.securityGroups });
       public readonly targetNetworksAssociated: IDependable = new DependencyGroup();
+
+      public get clientVpnEndpointRef(): ClientVpnEndpointReference {
+        return {
+          clientVpnEndpointId: this.endpointId,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -433,6 +439,12 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
         cidr: props.vpc.vpcCidrBlock,
       });
     }
+  }
+
+  public get clientVpnEndpointRef(): ClientVpnEndpointReference {
+    return {
+      clientVpnEndpointId: this.endpointId,
+    };
   }
 
   /**

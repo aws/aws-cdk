@@ -1,10 +1,12 @@
 {
-    "exclude": [
-      "attribute-tag:@aws-cdk/aws-ec2-alpha.RouteTable.routeTableId",
-      "from-method:@aws-cdk/aws-ec2-alpha.Route",
-      "from-method:@aws-cdk/aws-ec2-alpha.TransitGateway",
-      "from-method:@aws-cdk/aws-ec2-alpha.TransitGatewayRouteTableAssociation",
-      "from-method:@aws-cdk/aws-ec2-alpha.TransitGatewayRouteTablePropagation",
-      "from-method:@aws-cdk/aws-ec2-alpha.TransitGatewayVpcAttachment"
-    ]
+  "exclude": [
+    "attribute-tag:@aws-cdk/aws-ec2-alpha.RouteTable.routeTableId",
+    "from-method:@aws-cdk/aws-ec2-alpha.Route",
+    "from-method:@aws-cdk/aws-ec2-alpha.TransitGateway",
+    "from-method:@aws-cdk/aws-ec2-alpha.TransitGatewayRouteTableAssociation",
+    "from-method:@aws-cdk/aws-ec2-alpha.TransitGatewayRouteTablePropagation",
+    "from-method:@aws-cdk/aws-ec2-alpha.TransitGatewayVpcAttachment",
+    "docs-public-apis:@aws-cdk/aws-ec2-alpha.SubnetV2.subnetRef",
+    "docs-public-apis:@aws-cdk/aws-ec2-alpha.VpcV2Base.vpcRef"
+  ]
 }

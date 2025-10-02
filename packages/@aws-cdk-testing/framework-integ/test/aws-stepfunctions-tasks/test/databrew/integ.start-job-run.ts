@@ -24,6 +24,9 @@ class GlueDataBrewJobStack extends cdk.Stack {
     const role = new iam.Role(this, 'DataBrew Role', {
       managedPolicies: [{
         managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AWSGlueDataBrewServiceRole',
+        get node(): any {
+          throw new cdk.AssumptionError('Cannot reference node here');
+        },
       }],
       path: '/',
       assumedBy: new iam.ServicePrincipal('databrew.amazonaws.com'),

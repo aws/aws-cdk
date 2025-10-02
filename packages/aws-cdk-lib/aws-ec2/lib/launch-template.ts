@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
-import { CfnLaunchTemplate } from './ec2.generated';
+import { CfnLaunchTemplate, ILaunchTemplateRef, LaunchTemplateReference } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { IMachineImage, MachineImageConfig, OperatingSystemType } from './machine-image';
@@ -75,7 +75,7 @@ export enum InstanceInitiatedShutdownBehavior {
 /**
  * Interface for LaunchTemplate-like objects.
  */
-export interface ILaunchTemplate extends IResource {
+export interface ILaunchTemplate extends IResource, ILaunchTemplateRef {
   /**
    * The version number of this launch template to use
    *
@@ -527,6 +527,16 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       public readonly versionNumber = attrs.versionNumber ?? LaunchTemplateSpecialVersions.DEFAULT_VERSION;
       public readonly launchTemplateId? = attrs.launchTemplateId;
       public readonly launchTemplateName? = attrs.launchTemplateName;
+
+      public get launchTemplateRef(): LaunchTemplateReference {
+        if (!this.launchTemplateId) {
+          throw new ValidationError('You must set launchTemplateId in LaunchTemplate.fromLaunchTemplateAttributes() in order to use the LaunchTemplate in this API', this);
+        }
+
+        return {
+          launchTemplateId: this.launchTemplateId,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -850,6 +860,12 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     this.latestVersionNumber = resource.attrLatestVersionNumber;
     this.launchTemplateId = resource.ref;
     this.versionNumber = Token.asString(resource.getAtt('LatestVersionNumber'));
+  }
+
+  public get launchTemplateRef(): LaunchTemplateReference {
+    return {
+      launchTemplateId: this.launchTemplateId!,
+    };
   }
 
   private renderMetadataOptions(props: LaunchTemplateProps) {
