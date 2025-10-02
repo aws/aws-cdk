@@ -2,33 +2,20 @@
 import { CfnBrowserCustom, CfnCodeInterpreterCustom } from 'aws-cdk-lib/aws-bedrockagentcore';
 
 /**
- * Network modes. Configure the security level for agent
- * execution to control access, isolate resources, and protect sensitive data.
- */
-export enum NetworkMode {
-  /**
-   * Run this tool to operate in a public environment with internet access, suitable for less sensitive or open-use scenarios.
-   */
-  PUBLIC = 'PUBLIC',
-  /**
-   * Run this tool in a restricted environment with limited Permissions and Encryption to enhance safety and reduce potential risks.
-   */
-  SANDBOX = 'SANDBOX',
-}
-
-/**
  * Abstract base class for network configuration.
  */
 export abstract class NetworkConfiguration {
   /**
    * The network mode to use for the tool.
+   * Configure the security level for agent
+   * execution to control access, isolate resources, and protect sensitive data.
    */
-  readonly networkMode: NetworkMode;
+  readonly networkMode: string;
   /**
    * Creates a new network configuration.
    * @param mode - the network mode to use for the tool.
    */
-  protected constructor (mode: NetworkMode) {
+  protected constructor (mode: string) {
     this.networkMode = mode;
   }
 }
@@ -38,9 +25,11 @@ export abstract class NetworkConfiguration {
  */
 export class BrowserNetworkConfiguration extends NetworkConfiguration {
   /**
-   * Creates a public network configuration.
+   * Creates a public network configuration. PUBLIC is the default network mode.
+   *
+   * Run this tool to operate in a public environment with internet access, suitable for less sensitive or open-use scenarios.
    */
-  public static readonly PUBLIC_NETWORK = new BrowserNetworkConfiguration(NetworkMode.PUBLIC);
+  public static readonly PUBLIC_NETWORK = new BrowserNetworkConfiguration('PUBLIC');
 
   /**
    * Renders the network configuration as a CloudFormation property.
@@ -59,12 +48,16 @@ export class BrowserNetworkConfiguration extends NetworkConfiguration {
 export class CodeInterpreterNetworkConfiguration extends NetworkConfiguration {
   /**
    * Creates a public network configuration.
+   *
+   * Run this tool to operate in a public environment with internet access, suitable for less sensitive or open-use scenarios.
    */
-  public static readonly PUBLIC_NETWORK = new CodeInterpreterNetworkConfiguration(NetworkMode.PUBLIC);
+  public static readonly PUBLIC_NETWORK = new CodeInterpreterNetworkConfiguration('PUBLIC');
   /**
    * Creates a sandbox network configuration.
+   *
+   * Run this tool in a restricted environment with limited Permissions and Encryption to enhance safety and reduce potential risks.
    */
-  public static readonly SANDBOX_NETWORK = new CodeInterpreterNetworkConfiguration(NetworkMode.SANDBOX);
+  public static readonly SANDBOX_NETWORK = new CodeInterpreterNetworkConfiguration('SANDBOX');
 
   /**
    * Renders the network configuration as a CloudFormation property.
