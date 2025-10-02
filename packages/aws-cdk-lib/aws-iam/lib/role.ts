@@ -1,6 +1,6 @@
 import { Construct, IConstruct, DependencyGroup, Node } from 'constructs';
 import { Grant } from './grant';
-import { CfnRole } from './iam.generated';
+import { CfnRole, IRoleRef, RoleReference } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy, ManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
@@ -577,6 +577,13 @@ export class Role extends Resource implements IRole {
     this.node.addValidation({ validate: () => this.validateRole() });
   }
 
+  public get roleRef(): RoleReference {
+    return {
+      roleName: this.roleName,
+      roleArn: this.roleArn,
+    };
+  }
+
   /**
    * Adds a permission to the role's default policy document.
    * If there is no default policy attached to this role, it will be created.
@@ -787,7 +794,7 @@ export class Role extends Resource implements IRole {
 /**
  * A Role object
  */
-export interface IRole extends IIdentity {
+export interface IRole extends IIdentity, IRoleRef {
   /**
    * Returns the ARN of this role.
    *
