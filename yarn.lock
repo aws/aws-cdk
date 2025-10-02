@@ -4629,10 +4629,12 @@
   dependencies:
     undici-types "~7.10.0"
 
-"@types/node@18.11.19":
-  version "18.11.19"
-  resolved "https://registry.npmjs.org/@types/node/-/node-18.11.19.tgz#35e26df9ec441ab99d73e99e9aca82935eea216d"
-  integrity sha512-YUgMWAQBWLObABqrvx8qKO1enAvBUdjZOAWQ5grBAkp5LQv45jBvYKZ3oFS9iKRCQyFjqw6iuEa1vmFqtxYLZw==
+"@types/node@18.19.129":
+  version "18.19.129"
+  resolved "https://registry.npmjs.org/@types/node/-/node-18.19.129.tgz#1fea86229068c748ea395294dae4b0d5f1d96290"
+  integrity sha512-hrmi5jWt2w60ayox3iIXwpMEnfUvOLJCRtrOPbHtH15nTjvO7uhnelvrdAs0dO0/zl5DZ3ZbahiaXEVb54ca/A==
+  dependencies:
+    undici-types "~5.26.4"
 
 "@types/node@^16":
   version "16.18.126"
