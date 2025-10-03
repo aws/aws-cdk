@@ -62,11 +62,7 @@
     ]
   },
   "jsii": {
-    "excludeTypescript": [
-      "scripts",
-      "**/test/**/*.ts",
-      "**/*.d.ts"
-    ],
+    "tsconfig": "tsconfig.json",
     "outdir": "dist",
     "targets": {
       "dotnet": {
@@ -90,7 +86,6 @@
         "packageName": "awscdk"
       }
     },
-    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
