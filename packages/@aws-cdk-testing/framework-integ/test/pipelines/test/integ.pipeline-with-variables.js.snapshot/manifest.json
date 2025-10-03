@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9bd1ee704a5c0d1d0b6575dbddd0fe891c54e3436761c70c8c1a02495a5b0922.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fc054a37581575e192c18e7007908d0e6477d17982d174ac541a64307d39c9a1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -97,6 +97,22 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/VariablePipelineStack/Fleet": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "baseCapacity": "*",
+              "computeType": "BUILD_GENERAL1_SMALL",
+              "environmentType": "LINUX_CONTAINER"
+            }
+          }
+        ],
+        "/VariablePipelineStack/Fleet/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Fleet30813DF3"
           }
         ],
         "/VariablePipelineStack/Pipeline": [
