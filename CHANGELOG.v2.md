@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.214.1](https://github.com/aws/aws-cdk/compare/v2.214.0...v2.214.1) (2025-10-03)
+
+
+### Features
+
+* introduce reference interfaces, but don't require them yet ([09fc592](https://github.com/aws/aws-cdk/commit/09fc592f8debaf0b66ad5bec57d677ab776c0d6f))
+
 ## [2.214.0](https://github.com/aws/aws-cdk/compare/v2.213.0...v2.214.0) (2025-09-02)
 
 
