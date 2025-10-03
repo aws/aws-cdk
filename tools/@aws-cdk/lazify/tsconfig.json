@@ -23,7 +23,7 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "stripInternal": true,
-    "target": "2022"
+    "target": "ES2022"
   },
   "include": [
     "bin/**/*.ts",
