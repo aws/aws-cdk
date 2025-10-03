@@ -24,7 +24,6 @@
     ],
     "exclude": [
         "resources/**/*",
-        "**/*.snapshot/**/*",
-        "test/aws-lambda-nodejs/test/integ-handlers/ts-decorator-handler.ts"
+        "**/*.snapshot/**/*"
     ]
 }
