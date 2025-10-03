@@ -34,14 +34,14 @@
         "packageName": "awscdklambdagoalpha"
       }
     },
-    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
           "strict": true
         }
       }
-    }
+    },
+    "tsconfig": "tsconfig.json"
   },
   "repository": {
     "type": "git",

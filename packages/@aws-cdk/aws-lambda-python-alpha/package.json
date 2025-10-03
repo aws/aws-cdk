@@ -6,6 +6,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
+    "tsconfig": "tsconfig.json",
     "outdir": "dist",
     "targets": {
       "java": {
@@ -33,7 +34,6 @@
         "packageName": "awscdklambdapythonalpha"
       }
     },
-    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {

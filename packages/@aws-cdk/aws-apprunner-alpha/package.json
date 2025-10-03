@@ -6,7 +6,6 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
@@ -41,7 +40,8 @@
         "moduleName": "github.com/aws/aws-cdk-go",
         "packageName": "awscdkapprunneralpha"
       }
-    }
+    },
+    "tsconfig": "tsconfig.json"
   },
   "repository": {
     "type": "git",

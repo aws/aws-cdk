@@ -6,8 +6,8 @@
   "private": false,
   "types": "lib/index.d.ts",
   "jsii": {
+    "tsconfig": "tsconfig.json",
     "outdir": "dist",
-    "projectReferences": true,
     "targets": {
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Ivs.Alpha",

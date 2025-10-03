@@ -6,6 +6,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
+    "tsconfig": "tsconfig.json",
     "outdir": "dist",
     "targets": {
       "dotnet": {
@@ -33,7 +34,6 @@
         "packageName": "awscdkamplifyalpha"
       }
     },
-    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {

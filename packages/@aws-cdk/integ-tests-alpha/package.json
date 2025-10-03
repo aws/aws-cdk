@@ -33,14 +33,14 @@
         "packageName": "awscdkintegtestsalpha"
       }
     },
-    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
           "strict": true
         }
       }
-    }
+    },
+    "tsconfig": "tsconfig.json"
   },
   "scripts": {
     "build": "cdk-build",

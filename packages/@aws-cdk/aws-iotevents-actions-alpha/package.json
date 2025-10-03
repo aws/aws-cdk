@@ -32,7 +32,7 @@
         "packageName": "awscdkioteventsactionsalpha"
       }
     },
-    "projectReferences": true
+    "tsconfig": "tsconfig.json"
   },
   "repository": {
     "type": "git",
