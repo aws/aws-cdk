@@ -1,6 +1,6 @@
 import { Construct, IConstruct } from 'constructs';
-import { applyInjectors } from './prop-injectors-helpers';
 import { AssumptionError } from './errors';
+import { applyInjectors } from './prop-injectors-helpers';
 
 interface PropertyInjectableConstructConstructor {
   readonly PROPERTY_INJECTION_ID: string;
