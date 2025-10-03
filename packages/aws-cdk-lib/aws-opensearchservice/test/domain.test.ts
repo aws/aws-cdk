@@ -2020,6 +2020,24 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
   });
 
   test.each([
+    'i3.2xlarge.search',
+    'r6gd.large.search',
+    'im4gn.2xlarge.search',
+    'i4g.large.search',
+    'i4i.xlarge.search',
+    'i8g.4xlarge.search',
+    'r7gd.xlarge.search',
+  ])('should not throw when %s instance type is specified without EBS enabled', (dataNodeInstanceType) => {
+    expect(() => new Domain(stack, 'Domain2', {
+      version: engineVersion,
+      capacity: {
+        dataNodeInstanceType,
+      },
+      ebs: { enabled: false },
+    })).not.toThrow();
+  });
+
+  test.each([
     'm3.2xlarge.search',
     'r3.2xlarge.search',
     't2.2xlarge.search',
