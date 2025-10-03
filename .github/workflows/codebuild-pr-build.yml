@@ -24,6 +24,8 @@ concurrency:
 
 jobs:
   build:
+    # Runner exists only for aws-cdk repo
+    if: github.repository == 'aws/aws-cdk'
     runs-on: codebuild-aws-cdk-github-actions-runner-${{ github.run_id }}-${{ github.run_attempt }}
 
     env:
