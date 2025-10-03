@@ -13,7 +13,6 @@
         "noUnusedParameters": true,
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
-        "experimentalDecorators": true,
         "resolveJsonModule": true,
         "composite": true,
         "incremental": true
@@ -25,6 +24,7 @@
     ],
     "exclude": [
         "resources/**/*",
-        "**/*.snapshot/**/*"
+        "**/*.snapshot/**/*",
+        "test/aws-lambda-nodejs/test/integ-handlers/ts-decorator-handler.ts"
     ]
 }
