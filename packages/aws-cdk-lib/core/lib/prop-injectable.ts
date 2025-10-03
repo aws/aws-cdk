@@ -18,9 +18,6 @@ type ArbitraryConstructor = { new (...args: any[]): {} };
  * @returns an instance of the class with Property Injection applied.
  */
 export function propertyInjectable<T extends PropertyInjectableConstructConstructor>(constructor: T): T {
-  if (constructor.name === 'Bucket') {
-    debugger;
-  }
   // The cast is necessary otherwise we get the error:
   //
   // `A mixin class must have a constructor with a single rest parameter of type 'any[]'`
