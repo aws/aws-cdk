@@ -227,6 +227,9 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-sonnet-4-20250514-v1:0" */
   public static readonly ANTHROPIC_CLAUDE_SONNET_4_20250514_V1_0 = new FoundationModelIdentifier('anthropic.claude-sonnet-4-20250514-v1:0');
 
+  /** Base model "anthropic.claude-sonnet-4-5-20250929-v1:0" */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_4_5_20250929_V1_0 = new FoundationModelIdentifier('anthropic.claude-sonnet-4-5-20250929-v1:0');
+
   /** Base model "anthropic.claude-3-haiku-20240307-v1:0". */
   public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0');
 
