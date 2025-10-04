@@ -28,7 +28,8 @@ describe('PartitionProjectionConfiguration', () => {
   describe('Integer', () => {
     test('creates INTEGER configuration with required fields only', () => {
       const config = glue.PartitionProjectionConfiguration.integer({
-        range: [0, 100],
+        min: 0,
+        max: 100,
       });
 
       expect(config.type).toBe(glue.PartitionProjectionType.INTEGER);
@@ -42,7 +43,8 @@ describe('PartitionProjectionConfiguration', () => {
 
     test('creates INTEGER configuration with all fields', () => {
       const config = glue.PartitionProjectionConfiguration.integer({
-        range: [2020, 2023],
+        min: 2020,
+        max: 2023,
         interval: 1,
         digits: 4,
       });
@@ -57,7 +59,8 @@ describe('PartitionProjectionConfiguration', () => {
   describe('Date', () => {
     test('creates DATE configuration with required fields only', () => {
       const config = glue.PartitionProjectionConfiguration.date({
-        range: ['2020-01-01', '2023-12-31'],
+        min: '2020-01-01',
+        max: '2023-12-31',
         format: 'yyyy-MM-dd',
       });
 
@@ -70,7 +73,8 @@ describe('PartitionProjectionConfiguration', () => {
 
     test('creates DATE configuration with all fields', () => {
       const config = glue.PartitionProjectionConfiguration.date({
-        range: ['2020-01-01', '2023-12-31'],
+        min: '2020-01-01',
+        max: '2023-12-31',
         format: 'yyyy-MM-dd',
         interval: 1,
         intervalUnit: glue.DateIntervalUnit.WEEKS,
@@ -85,12 +89,23 @@ describe('PartitionProjectionConfiguration', () => {
 
     test('accepts DateIntervalUnit enum values', () => {
       const config = glue.PartitionProjectionConfiguration.date({
-        range: ['2020-01-01', '2023-12-31'],
+        min: '2020-01-01',
+        max: '2023-12-31',
         format: 'yyyy-MM-dd',
         intervalUnit: glue.DateIntervalUnit.DAYS,
       });
 
       expect(config.intervalUnit).toBe('DAYS');
+    });
+
+    test('supports NOW relative dates', () => {
+      const config = glue.PartitionProjectionConfiguration.date({
+        min: 'NOW-3YEARS',
+        max: 'NOW',
+        format: 'yyyy-MM-dd',
+      });
+
+      expect(config.range).toEqual(['NOW-3YEARS', 'NOW']);
     });
   });
 
@@ -123,7 +138,8 @@ describe('PartitionProjectionConfiguration', () => {
   describe('renderParameters', () => {
     test('renders INTEGER parameters with all fields', () => {
       const config = glue.PartitionProjectionConfiguration.integer({
-        range: [2020, 2023],
+        min: 2020,
+        max: 2023,
         interval: 1,
         digits: 4,
       });
@@ -140,7 +156,8 @@ describe('PartitionProjectionConfiguration', () => {
 
     test('renders INTEGER parameters with required fields only', () => {
       const config = glue.PartitionProjectionConfiguration.integer({
-        range: [0, 100],
+        min: 0,
+        max: 100,
       });
 
       const params = config._renderParameters('year');
@@ -153,7 +170,8 @@ describe('PartitionProjectionConfiguration', () => {
 
     test('renders DATE parameters with all fields', () => {
       const config = glue.PartitionProjectionConfiguration.date({
-        range: ['2020-01-01', '2023-12-31'],
+        min: '2020-01-01',
+        max: '2023-12-31',
         format: 'yyyy-MM-dd',
         interval: 1,
         intervalUnit: glue.DateIntervalUnit.DAYS,
@@ -172,7 +190,8 @@ describe('PartitionProjectionConfiguration', () => {
 
     test('renders DATE parameters with required fields only', () => {
       const config = glue.PartitionProjectionConfiguration.date({
-        range: ['2020-01-01', '2023-12-31'],
+        min: '2020-01-01',
+        max: '2023-12-31',
         format: 'yyyy-MM-dd',
       });
 

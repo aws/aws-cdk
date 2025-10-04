@@ -76,11 +76,20 @@ export enum DateIntervalUnit {
  */
 export interface IntegerPartitionProjectionConfigurationProps {
   /**
-   * Range of integer partition values [min, max] (inclusive).
+   * Minimum value for the integer partition range (inclusive).
    *
-   * Array must contain exactly 2 elements: [min, max]
+   * @example 2020
+   * @example 0
    */
-  readonly range: number[];
+  readonly min: number;
+
+  /**
+   * Maximum value for the integer partition range (inclusive).
+   *
+   * @example 2023
+   * @example 100
+   */
+  readonly max: number;
 
   /**
    * Interval between partition values.
@@ -104,14 +113,36 @@ export interface IntegerPartitionProjectionConfigurationProps {
  */
 export interface DatePartitionProjectionConfigurationProps {
   /**
-   * Range of date partition values [start, end] (inclusive) in ISO 8601 format.
+   * Start date for the partition range (inclusive).
    *
-   * Array must contain exactly 2 elements: [start, end]
+   * Can be either:
+   * - Fixed date in the format specified by `format` property
+   *   (e.g., '2020-01-01' for format 'yyyy-MM-dd')
+   * - Relative date using NOW syntax
+   *   (e.g., 'NOW', 'NOW-3YEARS', 'NOW+1MONTH')
    *
-   * @example ['2020-01-01', '2023-12-31']
-   * @example ['2020-01-01-00-00-00', '2023-12-31-23-59-59']
+   * @see https://docs.aws.amazon.com/athena/latest/ug/partition-projection-supported-types.html#partition-projection-date-type
+   *
+   * @example '2020-01-01'
+   * @example 'NOW-3YEARS'
+   * @example '2020-01-01-00-00-00'
    */
-  readonly range: string[];
+  readonly min: string;
+
+  /**
+   * End date for the partition range (inclusive).
+   *
+   * Can be either:
+   * - Fixed date in the format specified by `format` property
+   * - Relative date using NOW syntax
+   *
+   * Same format constraints as `min`.
+   *
+   * @example '2023-12-31'
+   * @example 'NOW'
+   * @example 'NOW+1MONTH'
+   */
+  readonly max: string;
 
   /**
    * Date format for partition values.
@@ -120,10 +151,9 @@ export interface DatePartitionProjectionConfigurationProps {
    *
    * @see https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
    *
-   * @example
-   * 'yyyy-MM-dd'
-   * 'yyyy-MM-dd-HH-mm-ss'
-   * 'yyyyMMdd'
+   * @example 'yyyy-MM-dd'
+   * @example 'yyyy-MM-dd-HH-mm-ss'
+   * @example 'yyyyMMdd'
    */
   readonly format: string;
 
@@ -161,15 +191,17 @@ export interface EnumPartitionProjectionConfigurationProps {
  *
  * @example
  * // Integer partition
- * const intConfig = PartitionProjectionConfiguration.Integer({
- *   range: [2020, 2023],
+ * const intConfig = PartitionProjectionConfiguration.integer({
+ *   min: 2020,
+ *   max: 2023,
  *   interval: 1,
  *   digits: 4,
  * });
  *
  * // Date partition
- * const dateConfig = PartitionProjectionConfiguration.Date({
- *   range: ['2020-01-01', '2023-12-31'],
+ * const dateConfig = PartitionProjectionConfiguration.date({
+ *   min: '2020-01-01',
+ *   max: '2023-12-31',
  *   format: 'yyyy-MM-dd',
  *   intervalUnit: DateIntervalUnit.DAYS,
  * });
@@ -191,7 +223,7 @@ export class PartitionProjectionConfiguration {
   public static integer(props: IntegerPartitionProjectionConfigurationProps): PartitionProjectionConfiguration {
     return new PartitionProjectionConfiguration(
       PartitionProjectionType.INTEGER,
-      props.range,
+      [props.min, props.max],
       props.interval,
       props.digits,
       undefined,
@@ -208,7 +240,7 @@ export class PartitionProjectionConfiguration {
   public static date(props: DatePartitionProjectionConfigurationProps): PartitionProjectionConfiguration {
     return new PartitionProjectionConfiguration(
       PartitionProjectionType.DATE,
-      props.range,
+      [props.min, props.max],
       props.interval,
       undefined,
       props.format,

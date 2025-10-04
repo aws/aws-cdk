@@ -602,7 +602,8 @@ describe('Partition Projection', () => {
       dataFormat: glue.DataFormat.JSON,
       partitionProjection: {
         year: glue.PartitionProjectionConfiguration.integer({
-          range: [2020, 2023],
+          min: 2020,
+          max: 2023,
           interval: 1,
         }),
       },
@@ -637,7 +638,8 @@ describe('Partition Projection', () => {
       dataFormat: glue.DataFormat.JSON,
       partitionProjection: {
         year: glue.PartitionProjectionConfiguration.integer({
-          range: [2020, 2023],
+          min: 2020,
+          max: 2023,
           digits: 4,
         }),
       },
@@ -672,7 +674,8 @@ describe('Partition Projection', () => {
       dataFormat: glue.DataFormat.JSON,
       partitionProjection: {
         date: glue.PartitionProjectionConfiguration.date({
-          range: ['2020-01-01', '2023-12-31'],
+          min: '2020-01-01',
+          max: '2023-12-31',
           format: 'yyyy-MM-dd',
           interval: 1,
           intervalUnit: glue.DateIntervalUnit.DAYS,
@@ -784,10 +787,12 @@ describe('Partition Projection', () => {
       dataFormat: glue.DataFormat.JSON,
       partitionProjection: {
         year: glue.PartitionProjectionConfiguration.integer({
-          range: [2020, 2023],
+          min: 2020,
+          max: 2023,
         }),
         month: glue.PartitionProjectionConfiguration.integer({
-          range: [1, 12],
+          min: 1,
+          max: 12,
           digits: 2,
         }),
         region: glue.PartitionProjectionConfiguration.enum({
