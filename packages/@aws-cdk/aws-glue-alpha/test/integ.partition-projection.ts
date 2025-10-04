@@ -23,12 +23,11 @@ new glue.S3Table(stack, 'TableInteger', {
   }],
   dataFormat: glue.DataFormat.JSON,
   partitionProjection: {
-    year: {
-      type: glue.PartitionProjectionType.INTEGER,
+    year: glue.PartitionProjectionConfiguration.integer({
       range: [2020, 2023],
       interval: 1,
       digits: 4,
-    },
+    }),
   },
 });
 
@@ -46,13 +45,12 @@ new glue.S3Table(stack, 'TableDate', {
   }],
   dataFormat: glue.DataFormat.JSON,
   partitionProjection: {
-    date: {
-      type: glue.PartitionProjectionType.DATE,
+    date: glue.PartitionProjectionConfiguration.date({
       range: ['2020-01-01', '2023-12-31'],
       format: 'yyyy-MM-dd',
       interval: 1,
-      intervalUnit: 'DAYS',
-    },
+      intervalUnit: glue.DateIntervalUnit.DAYS,
+    }),
   },
 });
 
@@ -70,10 +68,9 @@ new glue.S3Table(stack, 'TableEnum', {
   }],
   dataFormat: glue.DataFormat.JSON,
   partitionProjection: {
-    region: {
-      type: glue.PartitionProjectionType.ENUM,
+    region: glue.PartitionProjectionConfiguration.enum({
       values: ['us-east-1', 'us-west-2', 'eu-west-1'],
-    },
+    }),
   },
 });
 
@@ -91,9 +88,7 @@ new glue.S3Table(stack, 'TableInjected', {
   }],
   dataFormat: glue.DataFormat.JSON,
   partitionProjection: {
-    custom: {
-      type: glue.PartitionProjectionType.INJECTED,
-    },
+    custom: glue.PartitionProjectionConfiguration.injected(),
   },
 });
 
@@ -121,19 +116,16 @@ new glue.S3Table(stack, 'TableMultiple', {
   ],
   dataFormat: glue.DataFormat.JSON,
   partitionProjection: {
-    year: {
-      type: glue.PartitionProjectionType.INTEGER,
+    year: glue.PartitionProjectionConfiguration.integer({
       range: [2020, 2023],
-    },
-    month: {
-      type: glue.PartitionProjectionType.INTEGER,
+    }),
+    month: glue.PartitionProjectionConfiguration.integer({
       range: [1, 12],
       digits: 2,
-    },
-    region: {
-      type: glue.PartitionProjectionType.ENUM,
+    }),
+    region: glue.PartitionProjectionConfiguration.enum({
       values: ['us-east-1', 'us-west-2'],
-    },
+    }),
   },
 });
 

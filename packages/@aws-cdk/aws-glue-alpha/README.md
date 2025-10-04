@@ -737,12 +737,11 @@ new glue.S3Table(this, 'MyTable', {
   }],
   dataFormat: glue.DataFormat.JSON,
   partitionProjection: {
-    year: {
-      type: glue.PartitionProjectionType.INTEGER,
+    year: glue.PartitionProjectionConfiguration.Integer({
       range: [2020, 2023],
       interval: 1,  // optional, defaults to 1
       digits: 4,    // optional, pads with leading zeros
-    },
+    }),
   },
 });
 ```
@@ -765,13 +764,12 @@ new glue.S3Table(this, 'MyTable', {
   }],
   dataFormat: glue.DataFormat.JSON,
   partitionProjection: {
-    date: {
-      type: glue.PartitionProjectionType.DATE,
+    date: glue.PartitionProjectionConfiguration.Date({
       range: ['2020-01-01', '2023-12-31'],
       format: 'yyyy-MM-dd',
-      interval: 1,           // optional, defaults to 1
-      intervalUnit: 'DAYS',  // optional: YEARS, MONTHS, WEEKS, DAYS, HOURS, MINUTES, SECONDS
-    },
+      interval: 1,  // optional, defaults to 1
+      intervalUnit: glue.DateIntervalUnit.DAYS,  // optional: YEARS, MONTHS, WEEKS, DAYS, HOURS, MINUTES, SECONDS
+    }),
   },
 });
 ```
@@ -794,10 +792,9 @@ new glue.S3Table(this, 'MyTable', {
   }],
   dataFormat: glue.DataFormat.JSON,
   partitionProjection: {
-    region: {
-      type: glue.PartitionProjectionType.ENUM,
+    region: glue.PartitionProjectionConfiguration.Enum({
       values: ['us-east-1', 'us-west-2', 'eu-west-1'],
-    },
+    }),
   },
 });
 ```
@@ -820,9 +817,7 @@ new glue.S3Table(this, 'MyTable', {
   }],
   dataFormat: glue.DataFormat.JSON,
   partitionProjection: {
-    custom: {
-      type: glue.PartitionProjectionType.INJECTED,
-    },
+    custom: glue.PartitionProjectionConfiguration.Injected(),
   },
 });
 ```
@@ -855,19 +850,16 @@ new glue.S3Table(this, 'MyTable', {
   ],
   dataFormat: glue.DataFormat.JSON,
   partitionProjection: {
-    year: {
-      type: glue.PartitionProjectionType.INTEGER,
+    year: glue.PartitionProjectionConfiguration.Integer({
       range: [2020, 2023],
-    },
-    month: {
-      type: glue.PartitionProjectionType.INTEGER,
+    }),
+    month: glue.PartitionProjectionConfiguration.Integer({
       range: [1, 12],
       digits: 2,
-    },
-    region: {
-      type: glue.PartitionProjectionType.ENUM,
+    }),
+    region: glue.PartitionProjectionConfiguration.Enum({
       values: ['us-east-1', 'us-west-2'],
-    },
+    }),
   },
 });
 ```

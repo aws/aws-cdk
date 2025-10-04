@@ -30,22 +30,55 @@ export enum PartitionProjectionType {
 }
 
 /**
- * Configuration for INTEGER partition projection.
+ * Date interval unit for partition projection.
  *
- * @see https://docs.aws.amazon.com/athena/latest/ug/partition-projection-supported-types.html#partition-projection-integer-type
+ * @see https://docs.aws.amazon.com/athena/latest/ug/partition-projection-supported-types.html#partition-projection-date-type
  */
-export interface IntegerPartitionConfiguration {
+export enum DateIntervalUnit {
   /**
-   * The type of partition projection.
+   * Year interval.
    */
-  readonly type: PartitionProjectionType.INTEGER;
+  YEARS = 'YEARS',
 
+  /**
+   * Month interval.
+   */
+  MONTHS = 'MONTHS',
+
+  /**
+   * Week interval.
+   */
+  WEEKS = 'WEEKS',
+
+  /**
+   * Day interval (default).
+   */
+  DAYS = 'DAYS',
+
+  /**
+   * Hour interval.
+   */
+  HOURS = 'HOURS',
+
+  /**
+   * Minute interval.
+   */
+  MINUTES = 'MINUTES',
+
+  /**
+   * Second interval.
+   */
+  SECONDS = 'SECONDS',
+}
+
+/**
+ * Properties for INTEGER partition projection configuration.
+ */
+export interface IntegerPartitionProjectionConfigurationProps {
   /**
    * Range of integer partition values [min, max] (inclusive).
    *
    * Array must contain exactly 2 elements: [min, max]
-   *
-   * @example [0, 100]
    */
   readonly range: number[];
 
@@ -59,26 +92,17 @@ export interface IntegerPartitionConfiguration {
   /**
    * Number of digits to pad the partition value with leading zeros.
    *
-   * @default - no padding
+   * With digits: 4, partition values: 0001, 0002, ..., 0100
    *
-   * @example
-   * // With digits: 4, partition values: 0001, 0002, ..., 0100
-   * digits: 4
+   * @default - no padding
    */
   readonly digits?: number;
 }
 
 /**
- * Configuration for DATE partition projection.
- *
- * @see https://docs.aws.amazon.com/athena/latest/ug/partition-projection-supported-types.html#partition-projection-date-type
+ * Properties for DATE partition projection configuration.
  */
-export interface DatePartitionConfiguration {
-  /**
-   * The type of partition projection.
-   */
-  readonly type: PartitionProjectionType.DATE;
-
+export interface DatePartitionProjectionConfigurationProps {
   /**
    * Range of date partition values [start, end] (inclusive) in ISO 8601 format.
    *
@@ -113,22 +137,15 @@ export interface DatePartitionConfiguration {
   /**
    * Unit for the interval.
    *
-   * @default DAYS
+   * @default DateIntervalUnit.DAYS
    */
-  readonly intervalUnit?: 'YEARS' | 'MONTHS' | 'WEEKS' | 'DAYS' | 'HOURS' | 'MINUTES' | 'SECONDS';
+  readonly intervalUnit?: DateIntervalUnit;
 }
 
 /**
- * Configuration for ENUM partition projection.
- *
- * @see https://docs.aws.amazon.com/athena/latest/ug/partition-projection-supported-types.html#partition-projection-enum-type
+ * Properties for ENUM partition projection configuration.
  */
-export interface EnumPartitionConfiguration {
-  /**
-   * The type of partition projection.
-   */
-  readonly type: PartitionProjectionType.ENUM;
-
+export interface EnumPartitionProjectionConfigurationProps {
   /**
    * Explicit list of partition values.
    *
@@ -138,29 +155,200 @@ export interface EnumPartitionConfiguration {
 }
 
 /**
- * Configuration for INJECTED partition projection.
+ * Factory class for creating partition projection configurations.
  *
- * Partition values are injected at query time through the query statement.
+ * Provides static factory methods for each partition projection type.
  *
- * @see https://docs.aws.amazon.com/athena/latest/ug/partition-projection-supported-types.html#partition-projection-injected-type
+ * @example
+ * // Integer partition
+ * const intConfig = PartitionProjectionConfiguration.Integer({
+ *   range: [2020, 2023],
+ *   interval: 1,
+ *   digits: 4,
+ * });
+ *
+ * // Date partition
+ * const dateConfig = PartitionProjectionConfiguration.Date({
+ *   range: ['2020-01-01', '2023-12-31'],
+ *   format: 'yyyy-MM-dd',
+ *   intervalUnit: DateIntervalUnit.DAYS,
+ * });
+ *
+ * // Enum partition
+ * const enumConfig = PartitionProjectionConfiguration.Enum({
+ *   values: ['us-east-1', 'us-west-2'],
+ * });
+ *
+ * // Injected partition
+ * const injectedConfig = PartitionProjectionConfiguration.Injected();
  */
-export interface InjectedPartitionConfiguration {
+export class PartitionProjectionConfiguration {
   /**
-   * The type of partition projection.
+   * Create an INTEGER partition projection configuration.
+   *
+   * @param props Configuration properties
    */
-  readonly type: PartitionProjectionType.INJECTED;
-}
+  public static integer(props: IntegerPartitionProjectionConfigurationProps): PartitionProjectionConfiguration {
+    return new PartitionProjectionConfiguration(
+      PartitionProjectionType.INTEGER,
+      props.range,
+      props.interval,
+      props.digits,
+      undefined,
+      undefined,
+      undefined,
+    );
+  }
 
-/**
- * Partition projection configuration.
- *
- * Discriminated union of partition projection types.
- */
-export type PartitionConfiguration =
-  | IntegerPartitionConfiguration
-  | DatePartitionConfiguration
-  | EnumPartitionConfiguration
-  | InjectedPartitionConfiguration;
+  /**
+   * Create a DATE partition projection configuration.
+   *
+   * @param props Configuration properties
+   */
+  public static date(props: DatePartitionProjectionConfigurationProps): PartitionProjectionConfiguration {
+    return new PartitionProjectionConfiguration(
+      PartitionProjectionType.DATE,
+      props.range,
+      props.interval,
+      undefined,
+      props.format,
+      props.intervalUnit,
+      undefined,
+    );
+  }
+
+  /**
+   * Create an ENUM partition projection configuration.
+   *
+   * @param props Configuration properties
+   */
+  public static enum(props: EnumPartitionProjectionConfigurationProps): PartitionProjectionConfiguration {
+    return new PartitionProjectionConfiguration(
+      PartitionProjectionType.ENUM,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      props.values,
+    );
+  }
+
+  /**
+   * Create an INJECTED partition projection configuration.
+   *
+   * Partition values are injected at query time through the query statement.
+   *
+   * @see https://docs.aws.amazon.com/athena/latest/ug/partition-projection-supported-types.html#partition-projection-injected-type
+   */
+  public static injected(): PartitionProjectionConfiguration {
+    return new PartitionProjectionConfiguration(
+      PartitionProjectionType.INJECTED,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+    );
+  }
+
+  private constructor(
+    /**
+     * The type of partition projection.
+     */
+    public readonly type: PartitionProjectionType,
+
+    /**
+     * Range of partition values.
+     *
+     * For INTEGER: [min, max] as numbers
+     * For DATE: [start, end] as ISO 8601 strings
+     */
+    public readonly range?: number[] | string[],
+
+    /**
+     * Interval between partition values.
+     */
+    public readonly interval?: number,
+
+    /**
+     * Number of digits to pad INTEGER partition values.
+     */
+    public readonly digits?: number,
+
+    /**
+     * Date format for DATE partition values (Java SimpleDateFormat).
+     */
+    public readonly format?: string,
+
+    /**
+     * Unit for DATE partition interval.
+     */
+    public readonly intervalUnit?: DateIntervalUnit,
+
+    /**
+     * Explicit list of values for ENUM partitions.
+     */
+    public readonly values?: string[],
+  ) {}
+
+  /**
+   * Renders CloudFormation parameters for this partition projection configuration.
+   *
+   * @param columnName - The partition column name
+   * @returns CloudFormation parameters as key-value pairs
+   * @internal
+   */
+  public _renderParameters(columnName: string): { [key: string]: string } {
+    const params: { [key: string]: string } = {
+      [`projection.${columnName}.type`]: this.type,
+    };
+
+    switch (this.type) {
+      case PartitionProjectionType.INTEGER: {
+        const intRange = this.range as number[];
+        params[`projection.${columnName}.range`] = `${intRange[0]},${intRange[1]}`;
+        if (this.interval !== undefined) {
+          params[`projection.${columnName}.interval`] = this.interval.toString();
+        }
+        if (this.digits !== undefined) {
+          params[`projection.${columnName}.digits`] = this.digits.toString();
+        }
+        break;
+      }
+      case PartitionProjectionType.DATE: {
+        const dateRange = this.range as string[];
+        params[`projection.${columnName}.range`] = `${dateRange[0]},${dateRange[1]}`;
+        params[`projection.${columnName}.format`] = this.format!;
+        if (this.interval !== undefined) {
+          params[`projection.${columnName}.interval`] = this.interval.toString();
+        }
+        if (this.intervalUnit !== undefined) {
+          params[`projection.${columnName}.interval.unit`] = this.intervalUnit;
+        }
+        break;
+      }
+      case PartitionProjectionType.ENUM: {
+        params[`projection.${columnName}.values`] = this.values!.join(',');
+        break;
+      }
+      case PartitionProjectionType.INJECTED: {
+        // INJECTED has no additional parameters
+        break;
+      }
+      default: {
+        // TypeScript exhaustiveness check
+        const exhaustiveCheck: never = this.type;
+        throw new UnscopedValidationError(
+          `Unknown partition projection type for "${columnName}": ${exhaustiveCheck}`,
+        );
+      }
+    }
+
+    return params;
+  }
+}
 
 /**
  * Partition projection configuration for a table.
@@ -170,34 +358,44 @@ export type PartitionConfiguration =
  *
  * @example
  * {
- *   year: {
- *     type: PartitionProjectionType.INTEGER,
+ *   year: PartitionProjectionConfiguration.Integer({
  *     range: [2020, 2023],
- *   },
- *   region: {
- *     type: PartitionProjectionType.ENUM,
+ *   }),
+ *   region: PartitionProjectionConfiguration.Enum({
  *     values: ['us-east-1', 'us-west-2'],
- *   },
+ *   }),
  * }
  */
-export type PartitionProjection = { [columnName: string]: PartitionConfiguration };
+export type PartitionProjection = {
+  [columnName: string]: PartitionProjectionConfiguration;
+};
 
 /**
  * Validates INTEGER partition projection configuration.
  *
  * @param columnName - The partition column name
- * @param config - The INTEGER partition configuration
+ * @param config - The partition configuration
  * @throws {UnscopedValidationError} if the configuration is invalid
  */
-export function validateIntegerPartition(columnName: string, config: IntegerPartitionConfiguration): void {
-  // Validate range
-  if (config.range.length !== 2) {
+export function validateIntegerPartition(
+  columnName: string,
+  config: PartitionProjectionConfiguration,
+): void {
+  if (config.type !== PartitionProjectionType.INTEGER) {
     throw new UnscopedValidationError(
-      `INTEGER partition projection range for "${columnName}" must be [min, max], but got array of length ${config.range.length}`,
+      `Expected INTEGER partition type for "${columnName}", but got ${config.type}`,
     );
   }
 
-  const [min, max] = config.range;
+  // Validate range
+  if (!config.range || config.range.length !== 2) {
+    throw new UnscopedValidationError(
+      `INTEGER partition projection range for "${columnName}" must be [min, max], but got array of length ${config.range?.length ?? 0}`,
+    );
+  }
+
+  const range = config.range as number[];
+  const [min, max] = range;
   if (!Number.isInteger(min) || !Number.isInteger(max)) {
     throw new UnscopedValidationError(
       `INTEGER partition projection range for "${columnName}" must contain integers, but got [${min}, ${max}]`,
@@ -233,18 +431,28 @@ export function validateIntegerPartition(columnName: string, config: IntegerPart
  * Validates DATE partition projection configuration.
  *
  * @param columnName - The partition column name
- * @param config - The DATE partition configuration
+ * @param config - The partition configuration
  * @throws {UnscopedValidationError} if the configuration is invalid
  */
-export function validateDatePartition(columnName: string, config: DatePartitionConfiguration): void {
-  // Validate range
-  if (config.range.length !== 2) {
+export function validateDatePartition(
+  columnName: string,
+  config: PartitionProjectionConfiguration,
+): void {
+  if (config.type !== PartitionProjectionType.DATE) {
     throw new UnscopedValidationError(
-      `DATE partition projection range for "${columnName}" must be [start, end], but got array of length ${config.range.length}`,
+      `Expected DATE partition type for "${columnName}", but got ${config.type}`,
     );
   }
 
-  const [start, end] = config.range;
+  // Validate range
+  if (!config.range || config.range.length !== 2) {
+    throw new UnscopedValidationError(
+      `DATE partition projection range for "${columnName}" must be [start, end], but got array of length ${config.range?.length ?? 0}`,
+    );
+  }
+
+  const range = config.range as string[];
+  const [start, end] = range;
   if (typeof start !== 'string' || typeof end !== 'string') {
     throw new UnscopedValidationError(
       `DATE partition projection range for "${columnName}" must contain strings, but got [${typeof start}, ${typeof end}]`,
@@ -275,7 +483,7 @@ export function validateDatePartition(columnName: string, config: DatePartitionC
 
   // Validate interval unit
   if (config.intervalUnit !== undefined) {
-    const validUnits = ['YEARS', 'MONTHS', 'WEEKS', 'DAYS', 'HOURS', 'MINUTES', 'SECONDS'];
+    const validUnits = Object.values(DateIntervalUnit);
     if (!validUnits.includes(config.intervalUnit)) {
       throw new UnscopedValidationError(
         `DATE partition projection interval unit for "${columnName}" must be one of ${validUnits.join(', ')}, but got ${config.intervalUnit}`,
@@ -288,10 +496,19 @@ export function validateDatePartition(columnName: string, config: DatePartitionC
  * Validates ENUM partition projection configuration.
  *
  * @param columnName - The partition column name
- * @param config - The ENUM partition configuration
+ * @param config - The partition configuration
  * @throws {UnscopedValidationError} if the configuration is invalid
  */
-export function validateEnumPartition(columnName: string, config: EnumPartitionConfiguration): void {
+export function validateEnumPartition(
+  columnName: string,
+  config: PartitionProjectionConfiguration,
+): void {
+  if (config.type !== PartitionProjectionType.ENUM) {
+    throw new UnscopedValidationError(
+      `Expected ENUM partition type for "${columnName}", but got ${config.type}`,
+    );
+  }
+
   // Validate values
   if (!Array.isArray(config.values) || config.values.length === 0) {
     throw new UnscopedValidationError(
@@ -318,12 +535,20 @@ export function validateEnumPartition(columnName: string, config: EnumPartitionC
  * Validates INJECTED partition projection configuration.
  *
  * @param _columnName - The partition column name
- * @param _config - The INJECTED partition configuration
+ * @param config - The partition configuration
  * @throws {UnscopedValidationError} if the configuration is invalid
  */
-export function validateInjectedPartition(_columnName: string, _config: InjectedPartitionConfiguration): void {
+export function validateInjectedPartition(
+  _columnName: string,
+  config: PartitionProjectionConfiguration,
+): void {
+  if (config.type !== PartitionProjectionType.INJECTED) {
+    throw new UnscopedValidationError(
+      `Expected INJECTED partition type for "${_columnName}", but got ${config.type}`,
+    );
+  }
+
   // INJECTED type has no additional properties to validate
-  // This function exists for completeness and future extensibility
 }
 
 /**
@@ -333,7 +558,10 @@ export function validateInjectedPartition(_columnName: string, _config: Injected
  * @param config - The partition configuration
  * @throws {UnscopedValidationError} if the configuration is invalid
  */
-export function validatePartitionConfiguration(columnName: string, config: PartitionConfiguration): void {
+export function validatePartitionConfiguration(
+  columnName: string,
+  config: PartitionProjectionConfiguration,
+): void {
   switch (config.type) {
     case PartitionProjectionType.INTEGER:
       validateIntegerPartition(columnName, config);
@@ -347,89 +575,14 @@ export function validatePartitionConfiguration(columnName: string, config: Parti
     case PartitionProjectionType.INJECTED:
       validateInjectedPartition(columnName, config);
       break;
-    default:
+    default: {
       // TypeScript exhaustiveness check
-      const exhaustiveCheck: never = config;
+      const exhaustiveCheck: never = config.type;
       throw new UnscopedValidationError(
-        `Unknown partition projection type for "${columnName}": ${(exhaustiveCheck as any).type}`,
+        `Unknown partition projection type for "${columnName}": ${exhaustiveCheck}`,
       );
+    }
   }
-}
-
-/**
- * Generates CloudFormation parameters for INTEGER partition projection.
- *
- * @param columnName - The partition column name
- * @param config - The INTEGER partition configuration
- * @returns CloudFormation parameters
- */
-function generateIntegerParameters(columnName: string, config: IntegerPartitionConfiguration): { [key: string]: string } {
-  const params: { [key: string]: string } = {
-    [`projection.${columnName}.type`]: 'integer',
-    [`projection.${columnName}.range`]: `${config.range[0]},${config.range[1]}`,
-  };
-
-  if (config.interval !== undefined) {
-    params[`projection.${columnName}.interval`] = config.interval.toString();
-  }
-
-  if (config.digits !== undefined) {
-    params[`projection.${columnName}.digits`] = config.digits.toString();
-  }
-
-  return params;
-}
-
-/**
- * Generates CloudFormation parameters for DATE partition projection.
- *
- * @param columnName - The partition column name
- * @param config - The DATE partition configuration
- * @returns CloudFormation parameters
- */
-function generateDateParameters(columnName: string, config: DatePartitionConfiguration): { [key: string]: string } {
-  const params: { [key: string]: string } = {
-    [`projection.${columnName}.type`]: 'date',
-    [`projection.${columnName}.range`]: `${config.range[0]},${config.range[1]}`,
-    [`projection.${columnName}.format`]: config.format,
-  };
-
-  if (config.interval !== undefined) {
-    params[`projection.${columnName}.interval`] = config.interval.toString();
-  }
-
-  if (config.intervalUnit !== undefined) {
-    params[`projection.${columnName}.interval.unit`] = config.intervalUnit;
-  }
-
-  return params;
-}
-
-/**
- * Generates CloudFormation parameters for ENUM partition projection.
- *
- * @param columnName - The partition column name
- * @param config - The ENUM partition configuration
- * @returns CloudFormation parameters
- */
-function generateEnumParameters(columnName: string, config: EnumPartitionConfiguration): { [key: string]: string } {
-  return {
-    [`projection.${columnName}.type`]: 'enum',
-    [`projection.${columnName}.values`]: config.values.join(','),
-  };
-}
-
-/**
- * Generates CloudFormation parameters for INJECTED partition projection.
- *
- * @param columnName - The partition column name
- * @param _config - The INJECTED partition configuration
- * @returns CloudFormation parameters
- */
-function generateInjectedParameters(columnName: string, _config: InjectedPartitionConfiguration): { [key: string]: string } {
-  return {
-    [`projection.${columnName}.type`]: 'injected',
-  };
 }
 
 /**
@@ -441,22 +594,7 @@ function generateInjectedParameters(columnName: string, _config: InjectedPartiti
  */
 export function generatePartitionProjectionParameters(
   columnName: string,
-  config: PartitionConfiguration,
+  config: PartitionProjectionConfiguration,
 ): { [key: string]: string } {
-  switch (config.type) {
-    case PartitionProjectionType.INTEGER:
-      return generateIntegerParameters(columnName, config);
-    case PartitionProjectionType.DATE:
-      return generateDateParameters(columnName, config);
-    case PartitionProjectionType.ENUM:
-      return generateEnumParameters(columnName, config);
-    case PartitionProjectionType.INJECTED:
-      return generateInjectedParameters(columnName, config);
-    default:
-      // TypeScript exhaustiveness check
-      const exhaustiveCheck: never = config;
-      throw new UnscopedValidationError(
-        `Unknown partition projection type for "${columnName}": ${(exhaustiveCheck as any).type}`,
-      );
-  }
+  return config._renderParameters(columnName);
 }
