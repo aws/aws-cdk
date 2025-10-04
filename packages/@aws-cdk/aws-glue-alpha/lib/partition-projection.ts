@@ -103,7 +103,7 @@ export interface IntegerPartitionProjectionConfigurationProps {
    *
    * With digits: 4, partition values: 0001, 0002, ..., 0100
    *
-   * @default - no padding
+   * @default - no static number of digits and no leading zeroes
    */
   readonly digits?: number;
 }
@@ -160,14 +160,22 @@ export interface DatePartitionProjectionConfigurationProps {
   /**
    * Interval between partition values.
    *
-   * @default 1
+   * When the provided dates are at single-day or single-month precision,
+   * the interval is optional and defaults to 1 day or 1 month, respectively.
+   * Otherwise, interval is required.
+   *
+   * @default - 1 for single-day or single-month precision, otherwise required
    */
   readonly interval?: number;
 
   /**
    * Unit for the interval.
    *
-   * @default DateIntervalUnit.DAYS
+   * When the provided dates are at single-day or single-month precision,
+   * the intervalUnit is optional and defaults to 1 day or 1 month, respectively.
+   * Otherwise, the intervalUnit is required.
+   *
+   * @default - DAYS for single-day precision, MONTHS for single-month precision, otherwise required
    */
   readonly intervalUnit?: DateIntervalUnit;
 }
