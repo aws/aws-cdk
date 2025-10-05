@@ -193,6 +193,55 @@ export interface EnumPartitionProjectionConfigurationProps {
 }
 
 /**
+ * Internal properties for PartitionProjectionConfiguration.
+ */
+interface PartitionProjectionConfigurationProps {
+  /**
+   * The type of partition projection.
+   */
+  readonly type: PartitionProjectionType;
+
+  /**
+   * Range of partition values for INTEGER type.
+   *
+   * Array of [min, max] as numbers.
+   */
+  readonly integerRange?: number[];
+
+  /**
+   * Range of partition values for DATE type.
+   *
+   * Array of [start, end] as date strings.
+   */
+  readonly dateRange?: string[];
+
+  /**
+   * Interval between partition values.
+   */
+  readonly interval?: number;
+
+  /**
+   * Number of digits to pad INTEGER partition values.
+   */
+  readonly digits?: number;
+
+  /**
+   * Date format for DATE partition values (Java SimpleDateFormat).
+   */
+  readonly format?: string;
+
+  /**
+   * Unit for DATE partition interval.
+   */
+  readonly intervalUnit?: DateIntervalUnit;
+
+  /**
+   * Explicit list of values for ENUM partitions.
+   */
+  readonly values?: string[];
+}
+
+/**
  * Factory class for creating partition projection configurations.
  */
 export class PartitionProjectionConfiguration {
@@ -200,48 +249,35 @@ export class PartitionProjectionConfiguration {
    * Create an INTEGER partition projection configuration.
    */
   public static integer(props: IntegerPartitionProjectionConfigurationProps): PartitionProjectionConfiguration {
-    return new PartitionProjectionConfiguration(
-      PartitionProjectionType.INTEGER,
-      [props.min, props.max], // integerRange
-      undefined, // dateRange
-      props.interval,
-      props.digits,
-      undefined,
-      undefined,
-      undefined,
-    );
+    return new PartitionProjectionConfiguration({
+      type: PartitionProjectionType.INTEGER,
+      integerRange: [props.min, props.max],
+      interval: props.interval,
+      digits: props.digits,
+    });
   }
 
   /**
    * Create a DATE partition projection configuration.
    */
   public static date(props: DatePartitionProjectionConfigurationProps): PartitionProjectionConfiguration {
-    return new PartitionProjectionConfiguration(
-      PartitionProjectionType.DATE,
-      undefined, // integerRange
-      [props.min, props.max], // dateRange
-      props.interval,
-      undefined,
-      props.format,
-      props.intervalUnit,
-      undefined,
-    );
+    return new PartitionProjectionConfiguration({
+      type: PartitionProjectionType.DATE,
+      dateRange: [props.min, props.max],
+      interval: props.interval,
+      format: props.format,
+      intervalUnit: props.intervalUnit,
+    });
   }
 
   /**
    * Create an ENUM partition projection configuration.
    */
   public static enum(props: EnumPartitionProjectionConfigurationProps): PartitionProjectionConfiguration {
-    return new PartitionProjectionConfiguration(
-      PartitionProjectionType.ENUM,
-      undefined, // integerRange
-      undefined, // dateRange
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      props.values,
-    );
+    return new PartitionProjectionConfiguration({
+      type: PartitionProjectionType.ENUM,
+      values: props.values,
+    });
   }
 
   /**
@@ -252,63 +288,65 @@ export class PartitionProjectionConfiguration {
    * @see https://docs.aws.amazon.com/athena/latest/ug/partition-projection-supported-types.html#partition-projection-injected-type
    */
   public static injected(): PartitionProjectionConfiguration {
-    return new PartitionProjectionConfiguration(
-      PartitionProjectionType.INJECTED,
-      undefined, // integerRange
-      undefined, // dateRange
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-    );
+    return new PartitionProjectionConfiguration({
+      type: PartitionProjectionType.INJECTED,
+    });
   }
 
-  private constructor(
-    /**
-     * The type of partition projection.
-     */
-    public readonly type: PartitionProjectionType,
+  /**
+   * The type of partition projection.
+   */
+  public readonly type: PartitionProjectionType;
 
-    /**
-     * Range of partition values for INTEGER type.
-     *
-     * Array of [min, max] as numbers.
-     */
-    public readonly integerRange?: number[],
+  /**
+   * Range of partition values for INTEGER type.
+   *
+   * Array of [min, max] as numbers.
+   */
+  public readonly integerRange?: number[];
 
-    /**
-     * Range of partition values for DATE type.
-     *
-     * Array of [start, end] as date strings.
-     */
-    public readonly dateRange?: string[],
+  /**
+   * Range of partition values for DATE type.
+   *
+   * Array of [start, end] as date strings.
+   */
+  public readonly dateRange?: string[];
 
-    /**
-     * Interval between partition values.
-     */
-    public readonly interval?: number,
+  /**
+   * Interval between partition values.
+   */
+  public readonly interval?: number;
 
-    /**
-     * Number of digits to pad INTEGER partition values.
-     */
-    public readonly digits?: number,
+  /**
+   * Number of digits to pad INTEGER partition values.
+   */
+  public readonly digits?: number;
 
-    /**
-     * Date format for DATE partition values (Java SimpleDateFormat).
-     */
-    public readonly format?: string,
+  /**
+   * Date format for DATE partition values (Java SimpleDateFormat).
+   */
+  public readonly format?: string;
 
-    /**
-     * Unit for DATE partition interval.
-     */
-    public readonly intervalUnit?: DateIntervalUnit,
+  /**
+   * Unit for DATE partition interval.
+   */
+  public readonly intervalUnit?: DateIntervalUnit;
 
-    /**
-     * Explicit list of values for ENUM partitions.
-     */
-    public readonly values?: string[],
-  ) {}
+  /**
+   * Explicit list of values for ENUM partitions.
+   */
+  public readonly values?: string[];
+
+  private constructor(props: PartitionProjectionConfigurationProps) {
+    this.type = props.type;
+    this.integerRange = props.integerRange;
+    this.dateRange = props.dateRange;
+    this.interval = props.interval;
+    this.digits = props.digits;
+    this.format = props.format;
+    this.intervalUnit = props.intervalUnit;
+    this.values = props.values;
+  }
 
   /**
    * Renders CloudFormation parameters for this partition projection configuration.
