@@ -33,7 +33,7 @@ describe('PartitionProjectionConfiguration', () => {
       });
 
       expect(config.type).toBe(glue.PartitionProjectionType.INTEGER);
-      expect(config.range).toEqual([0, 100]);
+      expect(config.integerRange).toEqual([0, 100]);
       expect(config.interval).toBeUndefined();
       expect(config.digits).toBeUndefined();
       expect(config.format).toBeUndefined();
@@ -50,7 +50,7 @@ describe('PartitionProjectionConfiguration', () => {
       });
 
       expect(config.type).toBe(glue.PartitionProjectionType.INTEGER);
-      expect(config.range).toEqual([2020, 2023]);
+      expect(config.integerRange).toEqual([2020, 2023]);
       expect(config.interval).toBe(1);
       expect(config.digits).toBe(4);
     });
@@ -65,7 +65,7 @@ describe('PartitionProjectionConfiguration', () => {
       });
 
       expect(config.type).toBe(glue.PartitionProjectionType.DATE);
-      expect(config.range).toEqual(['2020-01-01', '2023-12-31']);
+      expect(config.dateRange).toEqual(['2020-01-01', '2023-12-31']);
       expect(config.format).toBe('yyyy-MM-dd');
       expect(config.interval).toBeUndefined();
       expect(config.intervalUnit).toBeUndefined();
@@ -81,7 +81,7 @@ describe('PartitionProjectionConfiguration', () => {
       });
 
       expect(config.type).toBe(glue.PartitionProjectionType.DATE);
-      expect(config.range).toEqual(['2020-01-01', '2023-12-31']);
+      expect(config.dateRange).toEqual(['2020-01-01', '2023-12-31']);
       expect(config.format).toBe('yyyy-MM-dd');
       expect(config.interval).toBe(1);
       expect(config.intervalUnit).toBe(glue.DateIntervalUnit.WEEKS);
@@ -105,7 +105,7 @@ describe('PartitionProjectionConfiguration', () => {
         format: 'yyyy-MM-dd',
       });
 
-      expect(config.range).toEqual(['NOW-3YEARS', 'NOW']);
+      expect(config.dateRange).toEqual(['NOW-3YEARS', 'NOW']);
     });
   });
 
@@ -117,7 +117,8 @@ describe('PartitionProjectionConfiguration', () => {
 
       expect(config.type).toBe(glue.PartitionProjectionType.ENUM);
       expect(config.values).toEqual(['us-east-1', 'us-west-2', 'eu-west-1']);
-      expect(config.range).toBeUndefined();
+      expect(config.integerRange).toBeUndefined();
+      expect(config.dateRange).toBeUndefined();
       expect(config.interval).toBeUndefined();
       expect(config.format).toBeUndefined();
     });
@@ -128,7 +129,8 @@ describe('PartitionProjectionConfiguration', () => {
       const config = glue.PartitionProjectionConfiguration.injected();
 
       expect(config.type).toBe(glue.PartitionProjectionType.INJECTED);
-      expect(config.range).toBeUndefined();
+      expect(config.integerRange).toBeUndefined();
+      expect(config.dateRange).toBeUndefined();
       expect(config.interval).toBeUndefined();
       expect(config.values).toBeUndefined();
       expect(config.format).toBeUndefined();

@@ -194,44 +194,16 @@ export interface EnumPartitionProjectionConfigurationProps {
 
 /**
  * Factory class for creating partition projection configurations.
- *
- * Provides static factory methods for each partition projection type.
- *
- * @example
- * // Integer partition
- * const intConfig = PartitionProjectionConfiguration.integer({
- *   min: 2020,
- *   max: 2023,
- *   interval: 1,
- *   digits: 4,
- * });
- *
- * // Date partition
- * const dateConfig = PartitionProjectionConfiguration.date({
- *   min: '2020-01-01',
- *   max: '2023-12-31',
- *   format: 'yyyy-MM-dd',
- *   intervalUnit: DateIntervalUnit.DAYS,
- * });
- *
- * // Enum partition
- * const enumConfig = PartitionProjectionConfiguration.Enum({
- *   values: ['us-east-1', 'us-west-2'],
- * });
- *
- * // Injected partition
- * const injectedConfig = PartitionProjectionConfiguration.Injected();
  */
 export class PartitionProjectionConfiguration {
   /**
    * Create an INTEGER partition projection configuration.
-   *
-   * @param props Configuration properties
    */
   public static integer(props: IntegerPartitionProjectionConfigurationProps): PartitionProjectionConfiguration {
     return new PartitionProjectionConfiguration(
       PartitionProjectionType.INTEGER,
-      [props.min, props.max],
+      [props.min, props.max], // integerRange
+      undefined, // dateRange
       props.interval,
       props.digits,
       undefined,
@@ -242,13 +214,12 @@ export class PartitionProjectionConfiguration {
 
   /**
    * Create a DATE partition projection configuration.
-   *
-   * @param props Configuration properties
    */
   public static date(props: DatePartitionProjectionConfigurationProps): PartitionProjectionConfiguration {
     return new PartitionProjectionConfiguration(
       PartitionProjectionType.DATE,
-      [props.min, props.max],
+      undefined, // integerRange
+      [props.min, props.max], // dateRange
       props.interval,
       undefined,
       props.format,
@@ -259,13 +230,12 @@ export class PartitionProjectionConfiguration {
 
   /**
    * Create an ENUM partition projection configuration.
-   *
-   * @param props Configuration properties
    */
   public static enum(props: EnumPartitionProjectionConfigurationProps): PartitionProjectionConfiguration {
     return new PartitionProjectionConfiguration(
       PartitionProjectionType.ENUM,
-      undefined,
+      undefined, // integerRange
+      undefined, // dateRange
       undefined,
       undefined,
       undefined,
@@ -284,7 +254,8 @@ export class PartitionProjectionConfiguration {
   public static injected(): PartitionProjectionConfiguration {
     return new PartitionProjectionConfiguration(
       PartitionProjectionType.INJECTED,
-      undefined,
+      undefined, // integerRange
+      undefined, // dateRange
       undefined,
       undefined,
       undefined,
@@ -300,12 +271,18 @@ export class PartitionProjectionConfiguration {
     public readonly type: PartitionProjectionType,
 
     /**
-     * Range of partition values.
+     * Range of partition values for INTEGER type.
      *
-     * For INTEGER: [min, max] as numbers
-     * For DATE: [start, end] as ISO 8601 strings
+     * Array of [min, max] as numbers.
      */
-    public readonly range?: number[] | string[],
+    public readonly integerRange?: number[],
+
+    /**
+     * Range of partition values for DATE type.
+     *
+     * Array of [start, end] as date strings.
+     */
+    public readonly dateRange?: string[],
 
     /**
      * Interval between partition values.
@@ -337,7 +314,6 @@ export class PartitionProjectionConfiguration {
    * Renders CloudFormation parameters for this partition projection configuration.
    *
    * @param columnName - The partition column name
-   * @returns CloudFormation parameters as key-value pairs
    * @internal
    */
   public _renderParameters(columnName: string): { [key: string]: string } {
@@ -347,8 +323,13 @@ export class PartitionProjectionConfiguration {
 
     switch (this.type) {
       case PartitionProjectionType.INTEGER: {
-        const intRange = this.range as number[];
-        params[`projection.${columnName}.range`] = `${intRange[0]},${intRange[1]}`;
+        if (!this.integerRange) {
+          throw new UnscopedValidationError(
+            `INTEGER partition projection for "${columnName}" is missing integerRange configuration`,
+          );
+        }
+        const [min, max] = this.integerRange;
+        params[`projection.${columnName}.range`] = `${min},${max}`;
         if (this.interval !== undefined) {
           params[`projection.${columnName}.interval`] = this.interval.toString();
         }
@@ -358,9 +339,19 @@ export class PartitionProjectionConfiguration {
         break;
       }
       case PartitionProjectionType.DATE: {
-        const dateRange = this.range as string[];
-        params[`projection.${columnName}.range`] = `${dateRange[0]},${dateRange[1]}`;
-        params[`projection.${columnName}.format`] = this.format!;
+        if (!this.dateRange) {
+          throw new UnscopedValidationError(
+            `DATE partition projection for "${columnName}" is missing dateRange configuration`,
+          );
+        }
+        if (!this.format) {
+          throw new UnscopedValidationError(
+            `DATE partition projection for "${columnName}" is missing format configuration`,
+          );
+        }
+        const [start, end] = this.dateRange;
+        params[`projection.${columnName}.range`] = `${start},${end}`;
+        params[`projection.${columnName}.format`] = this.format;
         if (this.interval !== undefined) {
           params[`projection.${columnName}.interval`] = this.interval.toString();
         }
@@ -370,7 +361,12 @@ export class PartitionProjectionConfiguration {
         break;
       }
       case PartitionProjectionType.ENUM: {
-        params[`projection.${columnName}.values`] = this.values!.join(',');
+        if (!this.values) {
+          throw new UnscopedValidationError(
+            `ENUM partition projection for "${columnName}" is missing values configuration`,
+          );
+        }
+        params[`projection.${columnName}.values`] = this.values.join(',');
         break;
       }
       case PartitionProjectionType.INJECTED: {
@@ -427,24 +423,23 @@ export function validateIntegerPartition(
     );
   }
 
-  // Validate range
-  if (!config.range || config.range.length !== 2) {
+  // Validate integerRange
+  if (!config.integerRange || config.integerRange.length !== 2) {
     throw new UnscopedValidationError(
-      `INTEGER partition projection range for "${columnName}" must be [min, max], but got array of length ${config.range?.length ?? 0}`,
+      `INTEGER partition projection integerRange for "${columnName}" must be [min, max], but got array of length ${config.integerRange?.length ?? 0}`,
     );
   }
 
-  const range = config.range as number[];
-  const [min, max] = range;
+  const [min, max] = config.integerRange;
   if (!Number.isInteger(min) || !Number.isInteger(max)) {
     throw new UnscopedValidationError(
-      `INTEGER partition projection range for "${columnName}" must contain integers, but got [${min}, ${max}]`,
+      `INTEGER partition projection integerRange for "${columnName}" must contain integers, but got [${min}, ${max}]`,
     );
   }
 
   if (min > max) {
     throw new UnscopedValidationError(
-      `INTEGER partition projection range for "${columnName}" must be [min, max] where min <= max, but got [${min}, ${max}]`,
+      `INTEGER partition projection integerRange for "${columnName}" must be [min, max] where min <= max, but got [${min}, ${max}]`,
     );
   }
 
@@ -484,24 +479,23 @@ export function validateDatePartition(
     );
   }
 
-  // Validate range
-  if (!config.range || config.range.length !== 2) {
+  // Validate dateRange
+  if (!config.dateRange || config.dateRange.length !== 2) {
     throw new UnscopedValidationError(
-      `DATE partition projection range for "${columnName}" must be [start, end], but got array of length ${config.range?.length ?? 0}`,
+      `DATE partition projection dateRange for "${columnName}" must be [start, end], but got array of length ${config.dateRange?.length ?? 0}`,
     );
   }
 
-  const range = config.range as string[];
-  const [start, end] = range;
+  const [start, end] = config.dateRange;
   if (typeof start !== 'string' || typeof end !== 'string') {
     throw new UnscopedValidationError(
-      `DATE partition projection range for "${columnName}" must contain strings, but got [${typeof start}, ${typeof end}]`,
+      `DATE partition projection dateRange for "${columnName}" must contain strings, but got [${typeof start}, ${typeof end}]`,
     );
   }
 
   if (start.trim() === '' || end.trim() === '') {
     throw new UnscopedValidationError(
-      `DATE partition projection range for "${columnName}" must not contain empty strings`,
+      `DATE partition projection dateRange for "${columnName}" must not contain empty strings`,
     );
   }
 
