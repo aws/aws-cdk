@@ -40,7 +40,7 @@ import {
   staticResourceTypeName,
 } from '../naming';
 import { splitDocumentation } from '../util';
-import { findArnProperty, shouldBuildReferenceInterface } from './reference-props';
+import { findArnProperty } from './reference-props';
 import { SelectiveImport, RelationshipDecider } from './relationship-decider';
 
 export interface ITypeHost {
@@ -57,7 +57,7 @@ export interface ResourceClassProps {
 
 export class ResourceClass extends ClassType {
   private readonly propsType: StructType;
-  private readonly refInterface?: InterfaceType;
+  private readonly refInterface: InterfaceType;
   private readonly decider: ResourceDecider;
   private readonly relationshipDecider: RelationshipDecider;
   private readonly converter: TypeConverter;
@@ -71,20 +71,17 @@ export class ResourceClass extends ClassType {
     private readonly resource: Resource,
     private readonly props: ResourceClassProps = {},
   ) {
-    let refInterface: InterfaceType | undefined;
-    if (shouldBuildReferenceInterface(resource)) {
-      // IBucketRef { bucketRef: BucketRef }
-      refInterface = new InterfaceType(scope, {
-        export: true,
-        name: referenceInterfaceName(resource.name, props.suffix),
-        extends: [CONSTRUCTS.IConstruct],
-        docs: {
-          summary: `Indicates that this resource can be referenced as a ${resource.name}.`,
-          stability: Stability.Experimental,
-          ...maybeDeprecated(props.deprecated),
-        },
-      });
-    }
+    // IBucketRef { bucketRef: BucketRef }
+    const refInterface = new InterfaceType(scope, {
+      export: true,
+      name: referenceInterfaceName(resource.name, props.suffix),
+      extends: [CONSTRUCTS.IConstruct],
+      docs: {
+        summary: `Indicates that this resource can be referenced as a ${resource.name}.`,
+        stability: Stability.Experimental,
+        ...maybeDeprecated(props.deprecated),
+      },
+    });
 
     super(scope, {
       export: true,
@@ -99,7 +96,7 @@ export class ResourceClass extends ClassType {
         ...maybeDeprecated(props.deprecated),
       },
       extends: CDK_CORE.CfnResource,
-      implements: [CDK_CORE.IInspectable, refInterface?.type, ...ResourceDecider.taggabilityInterfaces(resource)].filter(isDefined),
+      implements: [CDK_CORE.IInspectable, refInterface.type, ...ResourceDecider.taggabilityInterfaces(resource)].filter(isDefined),
     });
 
     this.refInterface = refInterface;
@@ -197,10 +194,6 @@ export class ResourceClass extends ClassType {
    * Build the reference interface for this resource
    */
   private buildReferenceInterface() {
-    if (!shouldBuildReferenceInterface(this.resource)) {
-      return;
-    }
-
     // BucketRef { bucketName, bucketArn }
     this.referenceStruct = new StructType(this.scope, {
       export: true,
@@ -216,7 +209,7 @@ export class ResourceClass extends ClassType {
       this.referenceStruct.addProperty(declaration);
     }
 
-    const refProperty = this.refInterface!.addProperty({
+    const refProperty = this.refInterface.addProperty({
       name: referenceInterfaceAttributeName(this.decider.camelResourceName),
       type: this.referenceStruct.type,
       immutable: true,
@@ -237,7 +230,7 @@ export class ResourceClass extends ClassType {
 
   private makeFromArnFactory() {
     const arnTemplate = this.resource.arnTemplate;
-    if (!(arnTemplate && this.refInterface && this.referenceStruct)) {
+    if (!(arnTemplate && this.referenceStruct)) {
       // We don't have enough information to build this factory
       return;
     }
@@ -292,9 +285,9 @@ export class ResourceClass extends ClassType {
     const factory = this.addMethod({
       name: `from${this.resource.name}Arn`,
       static: true,
-      returnType: this.refInterface?.type,
+      returnType: this.refInterface.type,
       docs: {
-        summary: `Creates a new ${this.refInterface?.name} from an ARN`,
+        summary: `Creates a new ${this.refInterface.name} from an ARN`,
       },
     });
     factory.addParameter({ name: 'scope', type: CONSTRUCTS.Construct });
@@ -325,7 +318,7 @@ export class ResourceClass extends ClassType {
 
   private makeFromNameFactory() {
     const arnTemplate = this.resource.arnTemplate;
-    if (!(arnTemplate && this.refInterface && this.referenceStruct)) {
+    if (!(arnTemplate && this.referenceStruct)) {
       // We don't have enough information to build this factory
       return;
     }
@@ -401,9 +394,9 @@ export class ResourceClass extends ClassType {
     const factory = this.addMethod({
       name: `from${variableName}`,
       static: true,
-      returnType: this.refInterface!.type,
+      returnType: this.refInterface.type,
       docs: {
-        summary: `Creates a new ${this.refInterface!.name} from a ${propName}`,
+        summary: `Creates a new ${this.refInterface.name} from a ${propName}`,
       },
     });
     factory.addParameter({ name: 'scope', type: CONSTRUCTS.Construct });

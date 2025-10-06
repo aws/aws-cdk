@@ -8,23 +8,8 @@ export interface ReferenceProp {
   readonly cfnValue: Expression;
 }
 
-// We temporarily only do this for a few services, to experiment
-const REFERENCE_PROP_SERVICES = [
-  'iam',
-  'apigateway',
-  'ec2',
-  'cloudfront',
-  'kms',
-  's3',
-  'lambda',
-];
-
 // Convenience typewriter builder
 const $this = $E(expr.this_());
-
-export function shouldBuildReferenceInterface(resource: Resource) {
-  return true || REFERENCE_PROP_SERVICES.some(s => resource.cloudFormationType.toLowerCase().startsWith(`aws::${s}::`));
-}
 
 export function getReferenceProps(resource: Resource): ReferenceProp[] {
   const referenceProps = [];

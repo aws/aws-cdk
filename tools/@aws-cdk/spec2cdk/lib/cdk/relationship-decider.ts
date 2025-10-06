@@ -1,6 +1,6 @@
 import { Property, RelationshipRef, Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { namespaceFromResource, referenceInterfaceName, referenceInterfaceAttributeName, referencePropertyName, typeAliasPrefixFromResource } from '../naming';
-import { getReferenceProps, shouldBuildReferenceInterface } from './reference-props';
+import { getReferenceProps } from './reference-props';
 import { createModuleDefinitionFromCfnNamespace } from '../cfn2ts/pkglint';
 import { log } from '../util';
 
@@ -69,9 +69,7 @@ export class RelationshipDecider {
     }
     for (const relationship of relationships) {
       const targetResource = this.db.lookup('resource', 'cloudFormationType', 'equals', relationship.typeName).only();
-      if (!shouldBuildReferenceInterface(targetResource)) {
-        continue;
-      }
+
       // Find the target prop
       const refProps = getReferenceProps(targetResource);
       const expectedPropName = referencePropertyName(relationship.propertyName, targetResource.name);
