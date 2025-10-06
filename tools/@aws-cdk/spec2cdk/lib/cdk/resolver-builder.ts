@@ -39,13 +39,13 @@ export class ResolverBuilder {
 
     const relationships = this.relationshipDecider.parseRelationship(name, prop.relationshipRefs);
     if (relationships.length > 0) {
-      return this.buildRelationshipResolver(relationships, baseType, name, resolvableType);
+      return this.buildRelationshipResolver({ relationships, baseType, name, resolvableType });
     }
 
     const originalType = this.converter.originalType(baseType);
     if (originalType.type === 'ref' && this.relationshipDecider.needsFlatteningFunction(prop)) {
       const optional = !prop.required;
-      return this.buildNestedResolver(name, baseType, originalType, resolvableType, optional);
+      return this.buildNestedResolver({ name, baseType, typeRef: originalType, resolvableType, optional });
     }
 
     return {
@@ -57,7 +57,12 @@ export class ResolverBuilder {
     };
   }
 
-  private buildRelationshipResolver(relationships: Relationship[], baseType: Type, name: string, resolvableType: Type): ResolverResult {
+  private buildRelationshipResolver({ relationships, baseType, name, resolvableType }: {
+    relationships: Relationship[];
+    baseType: Type;
+    name: string;
+    resolvableType: Type;
+  }): ResolverResult {
     if (!(baseType === Type.STRING || baseType.arrayOfType === Type.STRING)) {
       throw Error('Trying to map to a non string property');
     }
@@ -81,7 +86,13 @@ export class ResolverBuilder {
     return { name, propType, resolvableType, baseType, resolver };
   }
 
-  private buildNestedResolver(name: string, baseType: Type, typeRef: DefinitionReference, resolvableType: Type, optional: boolean): ResolverResult {
+  private buildNestedResolver({ name, baseType, typeRef, resolvableType, optional }: {
+    name: string;
+    baseType: Type;
+    typeRef: DefinitionReference;
+    resolvableType: Type;
+    optional: boolean;
+  }): ResolverResult {
     const referencedTypeDef = this.converter.db.get('typeDefinition', typeRef.reference.$ref);
     const referencedStruct = this.converter.convertTypeDefinitionType(referencedTypeDef);
     const functionName = flattenFunctionNameFromType(referencedStruct);

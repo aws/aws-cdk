@@ -45,7 +45,11 @@ export class RelationshipDecider {
     this.namespace = namespaceFromResource(resource);
   }
 
-  private registerRequiredImport(namespace: string, originalType: string, aliasedType: string) {
+  private registerRequiredImport({ namespace, originalType, aliasedType }: {
+    namespace: string;
+    originalType: string;
+    aliasedType: string;
+  }) {
     const moduleName = createModuleDefinitionFromCfnNamespace(namespace).moduleName;
     const moduleImport = this.imports.find(i => i.moduleName === moduleName);
     if (!moduleImport) {
@@ -92,7 +96,7 @@ export class RelationshipDecider {
       if (this.namespace !== namespace) {
         // If this is not in our namespace we need to alias the import type
         aliasedTypeName = `${typeAliasPrefixFromResource(targetResource)}${interfaceName}`;
-        this.registerRequiredImport(namespace, originalTypeName, aliasedTypeName);
+        this.registerRequiredImport({ namespace, originalType: originalTypeName, aliasedType: aliasedTypeName });
       }
       parsedRelationships.push({
         referenceType: aliasedTypeName ?? originalTypeName,
