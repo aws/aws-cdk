@@ -28,18 +28,20 @@ import {
 } from '@cdklabs/typewriter';
 import { CDK_CORE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
-import { ResourceDecider, shouldBuildReferenceInterface } from './resource-decider';
+import { ResourceDecider } from './resource-decider';
 import { TypeConverter } from './type-converter';
 import {
   cfnParserNameFromType,
   cfnProducerNameFromType,
   classNameFromResource,
   cloudFormationDocLink, propertyNameFromCloudFormation,
-  propStructNameFromResource, referencePropertyName,
+  propStructNameFromResource, referenceInterfaceName, referencePropertyName,
   staticRequiredTransform,
   staticResourceTypeName,
 } from '../naming';
 import { splitDocumentation } from '../util';
+import { findArnProperty, shouldBuildReferenceInterface } from './reference-props';
+import { SelectiveImport, RelationshipDecider } from './relationship-decider';
 
 export interface ITypeHost {
   typeFromSpecType(type: PropertyType): Type;
@@ -57,9 +59,11 @@ export class ResourceClass extends ClassType {
   private readonly propsType: StructType;
   private readonly refInterface?: InterfaceType;
   private readonly decider: ResourceDecider;
+  private readonly relationshipDecider: RelationshipDecider;
   private readonly converter: TypeConverter;
   private readonly module: Module;
   private referenceStruct?: StructType;
+  public readonly imports = new Array<SelectiveImport>();
 
   constructor(
     scope: IScope,
@@ -72,7 +76,7 @@ export class ResourceClass extends ClassType {
       // IBucketRef { bucketRef: BucketRef }
       refInterface = new InterfaceType(scope, {
         export: true,
-        name: `I${resource.name}${props.suffix ?? ''}Ref`,
+        name: referenceInterfaceName(resource.name, props.suffix),
         extends: [CONSTRUCTS.IConstruct],
         docs: {
           summary: `Indicates that this resource can be referenced as a ${resource.name}.`,
@@ -110,17 +114,19 @@ export class ResourceClass extends ClassType {
         see: cloudFormationDocLink({
           resourceType: this.resource.cloudFormationType,
         }),
-        ...maybeDeprecated(props.deprecated),
       },
     });
 
+    this.relationshipDecider = new RelationshipDecider(this.resource, db);
     this.converter = TypeConverter.forResource({
       db: db,
       resource: this.resource,
       resourceClass: this,
+      relationshipDecider: this.relationshipDecider,
     });
 
-    this.decider = new ResourceDecider(this.resource, this.converter);
+    this.imports = this.relationshipDecider.imports;
+    this.decider = new ResourceDecider(this.resource, this.converter, this.relationshipDecider);
   }
 
   /**
@@ -202,7 +208,6 @@ export class ResourceClass extends ClassType {
       docs: {
         summary: `A reference to a ${this.resource.name} resource.`,
         stability: Stability.External,
-        ...maybeDeprecated(this.props.deprecated),
       },
     });
 
@@ -237,7 +242,7 @@ export class ResourceClass extends ClassType {
       return;
     }
 
-    const cfnArnProperty = this.decider.findArnProperty();
+    const cfnArnProperty = findArnProperty(this.resource);
     if (cfnArnProperty == null) {
       return;
     }

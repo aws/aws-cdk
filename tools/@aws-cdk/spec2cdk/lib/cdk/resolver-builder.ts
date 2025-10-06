@@ -1,0 +1,101 @@
+import { DefinitionReference, Property } from '@aws-cdk/service-spec-types';
+import { expr, Expression, Module, Type } from '@cdklabs/typewriter';
+import { CDK_CORE } from './cdk';
+import { RelationshipDecider, Relationship } from './relationship-decider';
+import { NON_RESOLVABLE_PROPERTY_NAMES } from './tagging';
+import { TypeConverter } from './type-converter';
+import { flattenFunctionNameFromType, propertyNameFromCloudFormation } from '../naming';
+
+export interface ResolverResult {
+  /** Property name */
+  name: string;
+  /** Property type augmented with the relationships type information */
+  propType: Type;
+  /** Property type without relationship type information */
+  resolvableType: Type;
+  /** The type that was converted (does not have the IResolvable union) */
+  baseType: Type;
+  resolver: (props: Expression) => Expression;
+}
+
+/**
+ * Builds property resolvers that handle relationships and nested property flattening
+ */
+export class ResolverBuilder {
+  constructor(
+    private readonly converter: TypeConverter,
+    private readonly relationshipDecider: RelationshipDecider,
+    private readonly module: Module,
+  ) {}
+
+  public buildResolver(prop: Property, cfnName: string): ResolverResult {
+    const name = propertyNameFromCloudFormation(cfnName);
+    const baseType = this.converter.typeFromProperty(prop);
+
+    // Whether or not a property is made `IResolvable` originally depended on
+    // the name of the property. These conditions were probably expected to coincide,
+    // but didn't.
+    const resolvableType = cfnName in NON_RESOLVABLE_PROPERTY_NAMES ? baseType : this.converter.makeTypeResolvable(baseType);
+
+    const relationships = this.relationshipDecider.parseRelationship(name, prop.relationshipRefs);
+    if (relationships.length > 0) {
+      return this.buildRelationshipResolver(relationships, baseType, name, resolvableType);
+    }
+
+    const originalType = this.converter.originalType(baseType);
+    if (originalType.type === 'ref' && this.relationshipDecider.needsFlatteningFunction(prop)) {
+      const optional = !prop.required;
+      return this.buildNestedResolver(name, baseType, originalType, resolvableType, optional);
+    }
+
+    return {
+      name,
+      propType: resolvableType,
+      resolvableType,
+      baseType,
+      resolver: (props: Expression) => expr.get(props, name),
+    };
+  }
+
+  private buildRelationshipResolver(relationships: Relationship[], baseType: Type, name: string, resolvableType: Type): ResolverResult {
+    if (!(baseType === Type.STRING || baseType.arrayOfType === Type.STRING)) {
+      throw Error('Trying to map to a non string property');
+    }
+    const newTypes = relationships.map(t => Type.fromName(this.module, t.referenceType));
+    const propType = resolvableType.arrayOfType
+      ? Type.arrayOf(Type.distinctUnionOf(resolvableType.arrayOfType, ...newTypes))
+      : Type.distinctUnionOf(resolvableType, ...newTypes);
+
+    const buildChain = (itemName: string) => [
+      ...relationships.map(r => `(${itemName} as ${r.referenceType})?.${r.referenceName}?.${r.propName}`),
+      itemName,
+    ].join(' ?? ');
+    const resolver = (_: Expression) => {
+      if (resolvableType.arrayOfType) {
+        return expr.directCode(`props.${name}?.map((item: any) => ${ buildChain('item') })`);
+      } else {
+        return expr.directCode(buildChain(`props.${name}`));
+      }
+    };
+
+    return { name, propType, resolvableType, baseType, resolver };
+  }
+
+  private buildNestedResolver(name: string, baseType: Type, typeRef: DefinitionReference, resolvableType: Type, optional: boolean): ResolverResult {
+    const referencedTypeDef = this.converter.db.get('typeDefinition', typeRef.reference.$ref);
+    const referencedStruct = this.converter.convertTypeDefinitionType(referencedTypeDef);
+    const functionName = flattenFunctionNameFromType(referencedStruct);
+
+    const resolver = (props: Expression) => {
+      const condition = optional
+        ? expr.cond(expr.get(props, name)).then(expr.ident(functionName).call(expr.get(props, name))).else(expr.UNDEFINED)
+        : expr.ident(functionName).call(expr.get(props, name));
+
+      return expr.cond(CDK_CORE.isResolvableObject(expr.get(props, name)))
+        .then(expr.get(props, name))
+        .else(condition);
+    };
+
+    return { name, propType: resolvableType, resolvableType, baseType, resolver };
+  }
+}
