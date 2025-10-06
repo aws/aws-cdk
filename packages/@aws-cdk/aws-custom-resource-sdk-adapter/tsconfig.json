@@ -2,7 +2,9 @@
   "compilerOptions": {
     "target": "es2022",
     "module": "commonjs",
-    "lib": ["es2022"],
+    "lib": [
+      "es2022"
+    ],
     "strict": true,
     "alwaysStrict": true,
     "declaration": true,
@@ -11,10 +13,15 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
     "composite": true,
     "incremental": true
   },
-  "include": ["**/*.ts", "**/*.d.ts"]
+  "include": [
+    "**/*.ts",
+    "**/*.d.ts"
+  ]
 }

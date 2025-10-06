@@ -25,7 +25,8 @@
     "stripInternal": false,
     "target": "es2022",
     "composite": false,
-    "tsBuildInfoFile": "tsconfig.tsbuildinfo"
+    "tsBuildInfoFile": "tsconfig.tsbuildinfo",
+    "esModuleInterop": true
   },
   "include": [
     "**/*.ts"

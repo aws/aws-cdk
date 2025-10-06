@@ -1,5 +1,5 @@
 import { isDeepStrictEqual } from 'util';
-import * as nock from 'nock';
+import nock from 'nock';
 import { handler as lambda_handler, isComplete, onTimeout } from '../../../../lib/assertions/providers/lambda-handler';
 import { CustomResourceHandler } from '../../../../lib/assertions/providers/lambda-handler/base';
 import { mockClient } from 'aws-sdk-client-mock';
