@@ -40,7 +40,8 @@
         }
       }
     },
-    "tsconfig": "tsconfig.json"
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal"
   },
   "scripts": {
     "build": "cdk-build",

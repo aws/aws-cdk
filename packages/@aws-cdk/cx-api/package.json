@@ -55,7 +55,8 @@
         }
       }
     },
-    "tsconfig": "tsconfig.json"
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal"
   },
   "scripts": {
     "build": "yarn gen && cdk-build --skip-lint",

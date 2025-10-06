@@ -92,7 +92,8 @@
           "strict": true
         }
       }
-    }
+    },
+    "validateTsconfig": "minimal"
   },
   "author": {
     "name": "Amazon Web Services",

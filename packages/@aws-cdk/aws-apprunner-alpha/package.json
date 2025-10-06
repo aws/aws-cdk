@@ -41,7 +41,8 @@
         "packageName": "awscdkapprunneralpha"
       }
     },
-    "tsconfig": "tsconfig.json"
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal"
   },
   "repository": {
     "type": "git",

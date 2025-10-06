@@ -39,7 +39,8 @@
           "strict": true
         }
       }
-    }
+    },
+    "validateTsconfig": "minimal"
   },
   "repository": {
     "type": "git",
