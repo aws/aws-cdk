@@ -2,7 +2,7 @@
 // Read priveleges
 export const TABLE_BUCKET_READ_ACCESS = [
   's3tables:Get*',
-  's3tables:ListNamespace',
+  's3tables:ListNamespaces',
   's3tables:ListTables',
 ];
 
