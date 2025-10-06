@@ -206,6 +206,8 @@ const endpoint = new agentcore.RuntimeEndpoint(this, "MyEndpoint", {
 Standalone endpoints can update their runtime version using the `updateRuntimeVersion()` method:
 
 ```typescript
+const runtimeId = "abc123-runtime-id";
+
 const endpoint = new agentcore.RuntimeEndpoint(this, "MyEndpoint", {
   endpointName: "production",
   agentRuntimeId: runtimeId,
@@ -222,21 +224,18 @@ The AgentCore Runtime supports multiple authentication modes to secure access to
 
 #### IAM Authentication (Default)
 
-IAM authentication is the default mode, requiring callers to sign their requests with valid AWS credentials using SigV4:
-
-```typescript
-const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
-  runtimeName: "myAgent",
-  agentRuntimeArtifact: agentRuntimeArtifact,
-  // IAM is the default, 
-});
-```
+IAM authentication is the default mode, when no authorizerConfiguration is set then the underlying service use IAM.
 
 #### Cognito Authentication
 
 To configure AWS Cognito User Pool authentication:
 
 ```typescript
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
 const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
   agentRuntimeArtifact: agentRuntimeArtifact,
@@ -253,6 +252,11 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
 To configure custom JWT authentication with your own OpenID Connect (OIDC) provider:
 
 ```typescript
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
 const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
   agentRuntimeArtifact: agentRuntimeArtifact,
@@ -271,6 +275,11 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
 To configure OAuth 2.0 authentication:
 
 ```typescript
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
 const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
   agentRuntimeArtifact: agentRuntimeArtifact,

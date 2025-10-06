@@ -62,6 +62,7 @@ export interface RuntimeProps {
   /**
    * Optional description for the agent runtime
    * @default - No description
+   * Length Minimum: 1 , Maximum: 1200
    */
   readonly description?: string;
 
