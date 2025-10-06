@@ -1,6 +1,5 @@
 import { Property, RelationshipRef, Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
-import * as camelcase from 'camelcase';
-import { namespaceFromResource, referenceInterfaceName, referencePropertyName, typeAliasPrefixFromResource } from '../naming';
+import { namespaceFromResource, referenceInterfaceName, referenceInterfaceAttributeName, referencePropertyName, typeAliasPrefixFromResource } from '../naming';
 import { getReferenceProps, shouldBuildReferenceInterface } from './reference-props';
 import { createModuleDefinitionFromCfnNamespace } from '../cfn2ts/pkglint';
 import { log } from '../util';
@@ -88,7 +87,7 @@ export class RelationshipDecider {
       // Ignore the suffix part because it's an edge case that happens only for one module
       const interfaceName = referenceInterfaceName(targetResource.name);
       const originalTypeName = interfaceName;
-      const refPropStructName = `${camelcase(targetResource.name)}Ref`;
+      const refPropStructName = referenceInterfaceAttributeName(targetResource.name);
 
       const namespace = namespaceFromResource(targetResource);
       let aliasedTypeName = undefined;

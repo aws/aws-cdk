@@ -35,7 +35,7 @@ import {
   cfnProducerNameFromType,
   classNameFromResource,
   cloudFormationDocLink, propertyNameFromCloudFormation,
-  propStructNameFromResource, referenceInterfaceName, referencePropertyName,
+  propStructNameFromResource, referenceInterfaceName, referenceInterfaceAttributeName, referencePropertyName,
   staticRequiredTransform,
   staticResourceTypeName,
 } from '../naming';
@@ -217,7 +217,7 @@ export class ResourceClass extends ClassType {
     }
 
     const refProperty = this.refInterface!.addProperty({
-      name: `${this.decider.camelResourceName}Ref`,
+      name: referenceInterfaceAttributeName(this.decider.camelResourceName),
       type: this.referenceStruct.type,
       immutable: true,
       docs: {
@@ -265,7 +265,7 @@ export class ResourceClass extends ClassType {
     }
 
     const innerClass = mkImportClass(this.scope);
-    const refAttributeName = `${this.decider.camelResourceName}Ref`;
+    const refAttributeName = referenceInterfaceAttributeName(this.decider.camelResourceName);
 
     innerClass.addProperty({
       name: refAttributeName,
@@ -349,7 +349,7 @@ export class ResourceClass extends ClassType {
 
     const innerClass = mkImportClass(this.scope);
 
-    const refAttributeName = `${this.decider.camelResourceName}Ref`;
+    const refAttributeName = referenceInterfaceAttributeName(this.decider.camelResourceName);
     innerClass.addProperty({
       name: refAttributeName,
       type: this.referenceStruct!.type,

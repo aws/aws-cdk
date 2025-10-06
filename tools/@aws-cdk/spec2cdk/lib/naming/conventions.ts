@@ -129,6 +129,10 @@ export function referenceInterfaceName(resourceName: string, suffix?: string) {
   return `I${resourceName}${suffix ?? ''}Ref`;
 }
 
+export function referenceInterfaceAttributeName(resourceName: string) {
+  return `${camelcase(resourceName)}Ref`;
+}
+
 /**
  * Generate a name for the given declaration so that we can generate helper symbols for it that won't class
  *
