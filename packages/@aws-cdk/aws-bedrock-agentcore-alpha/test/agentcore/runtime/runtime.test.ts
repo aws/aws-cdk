@@ -1,15 +1,3 @@
-/**
- *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance
- *  with the License. A copy of the License is located at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES
- *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions
- *  and limitations under the License.
- */
 
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
@@ -19,10 +7,10 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { Runtime } from '../../../agentcore/runtime/runtime';
 import { RuntimeEndpoint } from '../../../agentcore/runtime/runtime-endpoint';
 import { AgentRuntimeArtifact } from '../../../agentcore/runtime/runtime-artifact';
+import { RuntimeAuthorizerConfiguration } from '../../../agentcore/runtime/runtime-authorizer-configuration';
+import { RuntimeNetworkConfiguration } from '../../../agentcore/runtime/runtime-network-configuration';
 import {
-  NetworkMode,
   ProtocolType,
-  AuthenticationMode,
 } from '../../../agentcore/runtime/types';
 
 describe('Runtime default tests', () => {
@@ -273,14 +261,11 @@ describe('Runtime with authorizer configuration tests', () => {
       runtimeName: 'test_runtime_auth',
       description: 'A test runtime with authorizer configuration',
       agentRuntimeArtifact: agentRuntimeArtifact,
-      authorizerConfiguration: {
-        mode: AuthenticationMode.JWT,
-        customJWTAuthorizer: {
-          discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
-          allowedClients: ['client1', 'client2'],
-          allowedAudience: ['audience1'],
-        },
-      },
+      authorizerConfiguration: RuntimeAuthorizerConfiguration.configureJWT(
+        'https://auth.example.com/.well-known/openid-configuration',
+        ['client1', 'client2'],
+        ['audience1'],
+      ),
     });
 
     app.synth();
@@ -310,9 +295,9 @@ describe('Runtime with authorizer configuration tests', () => {
     // This is a known issue with how L1 constructs handle complex nested properties
     // For now, we'll check if it's either properly set or an empty object
     if (Object.keys(authConfig).length > 0) {
-      // Check that it has CustomJWTAuthorizer (PascalCase) not customJWTAuthorizer
+      // Check that it has CustomJWTAuthorizer (PascalCase) as CloudFormation uses PascalCase
       expect(authConfig).toHaveProperty('CustomJWTAuthorizer');
-      expect(authConfig).not.toHaveProperty('customJWTAuthorizer');
+      expect(authConfig).not.toHaveProperty('customJwtAuthorizer');
 
       // Check the properties inside CustomJWTAuthorizer are also PascalCase
       const jwtConfig = authConfig.CustomJWTAuthorizer;
@@ -359,13 +344,10 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
       runtimeName: 'test_runtime_cognito',
       description: 'A test runtime with Cognito authorizer configuration',
       agentRuntimeArtifact: agentRuntimeArtifact,
-      authorizerConfiguration: {
-        mode: AuthenticationMode.COGNITO,
-        cognitoAuthorizer: {
-          userPoolId: 'us-west-2_ABC123',
-          clientId: 'client123',
-        },
-      },
+      authorizerConfiguration: RuntimeAuthorizerConfiguration.configureCognito(
+        'us-west-2_ABC123',
+        'client123',
+      ),
     });
 
     app.synth();
@@ -396,7 +378,17 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
       expect(jwtConfig).toHaveProperty('AllowedClients');
 
       // Verify the Cognito discovery URL is correctly formatted
-      expect(jwtConfig.DiscoveryUrl).toBe('https://cognito-idp.us-east-1.amazonaws.com/us-west-2_ABC123/.well-known/openid-configuration');
+      // The URL now uses a token for the region (Ref: AWS::Region)
+      expect(jwtConfig.DiscoveryUrl).toMatchObject({
+        'Fn::Join': [
+          '',
+          [
+            'https://cognito-idp.',
+            { Ref: 'AWS::Region' },
+            '.amazonaws.com/us-west-2_ABC123/.well-known/openid-configuration',
+          ],
+        ],
+      });
       expect(jwtConfig.AllowedClients).toEqual(['client123']);
     } else {
       // L1 construct might not be handling the authorizer configuration properly
@@ -633,138 +625,8 @@ describe('Runtime environment variables validation tests', () => {
   });
 });
 
-describe('Runtime with instance-based auth configuration tests', () => {
-  let app: cdk.App;
-  let stack: cdk.Stack;
-  let repository: ecr.Repository;
-  let agentRuntimeArtifact: AgentRuntimeArtifact;
-  let runtime: Runtime;
-
-  beforeEach(() => {
-    app = new cdk.App();
-    stack = new cdk.Stack(app, 'test-stack', {
-      env: {
-        account: '123456789012',
-        region: 'us-east-1',
-      },
-    });
-
-    repository = new ecr.Repository(stack, 'TestRepository', {
-      repositoryName: 'test-agent-runtime',
-    });
-
-    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
-  });
-
-  test('Should create runtime with default IAM auth when no auth specified', () => {
-    runtime = new Runtime(stack, 'test-runtime', {
-      runtimeName: 'test_runtime',
-      agentRuntimeArtifact: agentRuntimeArtifact,
-      // No authorizerConfiguration - should default to IAM
-    });
-
-    const template = Template.fromStack(stack);
-
-    // Should have runtime resource
-    template.resourceCountIs('AWS::BedrockAgentCore::Runtime', 1);
-
-    // Should not have AuthorizerConfiguration by default (IAM is default)
-    const resources = template.findResources('AWS::BedrockAgentCore::Runtime');
-    const runtimeResource = Object.values(resources)[0];
-
-    // AuthorizerConfiguration might not be present or might be undefined for IAM
-    expect(runtimeResource.Properties.AuthorizerConfiguration).toBeUndefined();
-  });
-
-  test('Should configure Cognito auth using instance method', () => {
-    runtime = new Runtime(stack, 'test-runtime', {
-      runtimeName: 'test_runtime',
-      agentRuntimeArtifact: agentRuntimeArtifact,
-    });
-
-    // Configure Cognito auth after creation
-    runtime.configureCognitoAuth('us-west-2_ABC123', 'client123');
-
-    // Synthesize to apply the configuration
-    app.synth();
-
-    // The configuration will be applied via addPropertyOverride
-    // We can't directly test the CloudFormation output here, but we can verify the method doesn't throw
-    expect(() => runtime.configureCognitoAuth('us-west-2_XYZ789', 'client123')).not.toThrow();
-  });
-
-  test('Should configure JWT auth using instance method', () => {
-    runtime = new Runtime(stack, 'test-runtime', {
-      runtimeName: 'test_runtime',
-      agentRuntimeArtifact: agentRuntimeArtifact,
-    });
-
-    // Configure JWT auth after creation
-    runtime.configureJWTAuth(
-      'https://auth.example.com/.well-known/openid-configuration',
-      ['client1', 'client2'],
-      ['audience1'],
-    );
-
-    app.synth();
-
-    // Verify the method doesn't throw
-    expect(() => runtime.configureJWTAuth(
-      'https://auth.example.com/.well-known/openid-configuration',
-      ['client3'],
-    )).not.toThrow();
-  });
-
-  test('Should allow multiple auth reconfigurations (last one wins)', () => {
-    runtime = new Runtime(stack, 'test-runtime', {
-      runtimeName: 'test_runtime',
-      agentRuntimeArtifact: agentRuntimeArtifact,
-    });
-
-    // Configure multiple auth methods - last one should win
-    runtime.configureCognitoAuth('us-west-2_ABC123', 'client123');
-    runtime.configureJWTAuth('https://jwt.example.com/.well-known/openid-configuration', ['client1']);
-    runtime.configureCognitoAuth('us-west-2_XYZ789', 'client456');
-
-    app.synth();
-
-    // All methods should work without throwing
-    expect(() => {
-      runtime.configureCognitoAuth('us-west-2_ABC123', 'client123');
-      runtime.configureJWTAuth('https://jwt.example.com/.well-known/openid-configuration', ['client1']);
-      runtime.configureCognitoAuth('us-west-2_XYZ789', 'client456');
-    }).not.toThrow();
-  });
-
-  test('Should work with runtime that has auth in constructor and then reconfigured', () => {
-    // Create with Cognito auth in constructor (using direct configuration object)
-    runtime = new Runtime(stack, 'test-runtime', {
-      runtimeName: 'test_runtime',
-      agentRuntimeArtifact: agentRuntimeArtifact,
-      authorizerConfiguration: {
-        mode: AuthenticationMode.COGNITO,
-        cognitoAuthorizer: {
-          userPoolId: 'us-west-2_INITIAL',
-          clientId: 'client-initial',
-        },
-      },
-    });
-
-    // Reconfigure to JWT auth
-    runtime.configureJWTAuth(
-      'https://jwt.example.com/.well-known/openid-configuration',
-      ['client-new'],
-    );
-
-    app.synth();
-
-    // Should not throw
-    expect(() => runtime.configureJWTAuth(
-      'https://jwt.example.com/.well-known/openid-configuration',
-      ['client-new'],
-    )).not.toThrow();
-  });
-});
+// Tests for instance-based auth configuration removed as these methods no longer exist
+// Use RuntimeAuthorizerConfiguration static factory methods instead
 
 describe('Runtime with local asset tests', () => {
   let template: Template;
@@ -796,9 +658,7 @@ describe('Runtime with local asset tests', () => {
       runtimeName: 'test_runtime_local',
       description: 'A test runtime with local asset for agent execution',
       agentRuntimeArtifact: agentRuntimeArtifact,
-      networkConfiguration: {
-        networkMode: NetworkMode.PUBLIC,
-      },
+      networkConfiguration: RuntimeNetworkConfiguration.publicNetwork(),
       protocolConfiguration: ProtocolType.HTTP,
     });
 
@@ -950,15 +810,12 @@ describe('Runtime with OAuth authorizer tests', () => {
     const runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime_oauth',
       agentRuntimeArtifact: agentRuntimeArtifact,
-      authorizerConfiguration: {
-        mode: AuthenticationMode.OAUTH,
-        oauthAuthorizer: {
-          provider: 'custom',
-          discoveryUrl: 'https://oauth.example.com/.well-known/openid-configuration',
-          clientId: 'oauth-client-123',
-          scopes: ['read', 'write'],
-        },
-      },
+      authorizerConfiguration: RuntimeAuthorizerConfiguration.configureOAuth(
+        'custom',
+        'https://oauth.example.com/.well-known/openid-configuration',
+        'oauth-client-123',
+        ['read', 'write'],
+      ),
     });
 
     app.synth();
@@ -972,7 +829,7 @@ describe('Runtime with OAuth authorizer tests', () => {
   });
 });
 
-describe('Runtime with JWT authorizer without mode tests', () => {
+describe('Runtime with JWT authorizer tests', () => {
   let app: cdk.App;
   let stack: cdk.Stack;
   let repository: ecr.Repository;
@@ -993,16 +850,14 @@ describe('Runtime with JWT authorizer without mode tests', () => {
     agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
   });
 
-  test('Should create runtime with JWT authorizer when no mode specified', () => {
+  test('Should create runtime with JWT authorizer', () => {
     const runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime_jwt',
       agentRuntimeArtifact: agentRuntimeArtifact,
-      authorizerConfiguration: {
-        customJWTAuthorizer: {
-          discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
-          allowedClients: ['client1'],
-        },
-      },
+      authorizerConfiguration: RuntimeAuthorizerConfiguration.configureJWT(
+        'https://auth.example.com/.well-known/openid-configuration',
+        ['client1'],
+      ),
     });
 
     app.synth();
@@ -1138,6 +993,130 @@ describe('Runtime with tags tests', () => {
         },
       });
     }).toThrow('Tag value for key "TestKey" cannot be null or undefined');
+  });
+});
+
+// OAuth instance method tests removed as these methods no longer exist
+
+describe('Runtime authentication configuration error cases', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let repository: ecr.Repository;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should throw error for JWT with invalid discovery URL', () => {
+    expect(() => {
+      RuntimeAuthorizerConfiguration.configureJWT(
+        'https://auth.example.com/invalid', // Doesn't end with /.well-known/openid-configuration
+        ['client1'],
+      );
+    }).toThrow('JWT discovery URL must end with /.well-known/openid-configuration');
+  });
+
+  test('Should create runtime with Cognito auth using static factory', () => {
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      authorizerConfiguration: RuntimeAuthorizerConfiguration.configureCognito(
+        'us-west-2_ABC123',
+        'client456',
+      ),
+    });
+
+    app.synth();
+    expect(runtime.agentRuntimeName).toBe('test_runtime');
+  });
+
+  test('Should throw error for OAuth with invalid discovery URL', () => {
+    expect(() => {
+      RuntimeAuthorizerConfiguration.configureOAuth(
+        'custom',
+        'https://oauth.example.com/invalid', // Doesn't end with /.well-known/openid-configuration
+        'oauth-client-123',
+      );
+    }).toThrow('OAuth discovery URL must end with /.well-known/openid-configuration');
+  });
+
+  test('Should work with IAM authentication', () => {
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      authorizerConfiguration: RuntimeAuthorizerConfiguration.configureIAM(),
+    });
+
+    app.synth();
+    expect(runtime.agentRuntimeName).toBe('test_runtime');
+  });
+});
+
+describe('RuntimeNetworkConfiguration tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let repository: ecr.Repository;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should create runtime with publicNetwork() method', () => {
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      networkConfiguration: RuntimeNetworkConfiguration.publicNetwork(),
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    // Should have runtime resource
+    template.resourceCountIs('AWS::BedrockAgentCore::Runtime', 1);
+
+    // Verify the runtime was created
+    expect(runtime.agentRuntimeName).toBe('test_runtime');
+  });
+
+  test('Should work with legacy PUBLIC_NETWORK constant', () => {
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      networkConfiguration: RuntimeNetworkConfiguration.PUBLIC_NETWORK,
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    // Should have runtime resource
+    template.resourceCountIs('AWS::BedrockAgentCore::Runtime', 1);
+
+    // Verify the runtime was created
+    expect(runtime.agentRuntimeName).toBe('test_runtime');
   });
 });
 

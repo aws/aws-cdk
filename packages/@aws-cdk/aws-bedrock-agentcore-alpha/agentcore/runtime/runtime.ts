@@ -1,15 +1,3 @@
-/**
- *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance
- *  with the License. A copy of the License is located at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES
- *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions
- *  and limitations under the License.
- */
 
 import { Duration, Stack, Annotations, Token, Arn, ArnFormat, Lazy } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
@@ -17,17 +5,23 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
-import { RuntimePerms } from './perms';
+import {
+  RUNTIME_ECR_IMAGE_ACTIONS,
+  RUNTIME_ECR_TOKEN_ACTIONS,
+  RUNTIME_LOGS_GROUP_ACTIONS,
+  RUNTIME_LOGS_DESCRIBE_ACTIONS,
+  RUNTIME_LOGS_STREAM_ACTIONS,
+  RUNTIME_XRAY_ACTIONS,
+  RUNTIME_CLOUDWATCH_METRICS_ACTIONS,
+  RUNTIME_WORKLOAD_IDENTITY_ACTIONS,
+  RUNTIME_CLOUDWATCH_NAMESPACE,
+} from './perms';
 import { AgentRuntimeArtifact } from './runtime-artifact';
+import { RuntimeAuthorizerConfiguration } from './runtime-authorizer-configuration';
 import { RuntimeBase, IBedrockAgentRuntime, AgentRuntimeAttributes } from './runtime-base';
 import { RuntimeEndpoint } from './runtime-endpoint';
-import {
-  NetworkConfiguration,
-  NetworkMode,
-  ProtocolType,
-  AuthorizerConfigurationRuntime,
-  AuthenticationMode,
-} from './types';
+import { RuntimeNetworkConfiguration } from './runtime-network-configuration';
+import { ProtocolType } from './types';
 import { validateStringField, ValidationError, validateFieldPattern } from './validation-helpers';
 
 /******************************************************************************
@@ -61,9 +55,9 @@ export interface RuntimeProps {
 
   /**
    * Network configuration for the agent runtime
-   * @default - { networkMode: NetworkMode.PUBLIC }
+   * @default - RuntimeNetworkConfiguration.publicNetwork()
    */
-  readonly networkConfiguration?: NetworkConfiguration;
+  readonly networkConfiguration?: RuntimeNetworkConfiguration;
 
   /**
    * Optional description for the agent runtime
@@ -88,10 +82,10 @@ export interface RuntimeProps {
 
   /**
    * Authorizer configuration for the agent runtime
-   * Supports IAM, Cognito, JWT, and OAuth authentication modes
-   * @default - IAM authentication
+   * Use RuntimeAuthorizerConfiguration static methods to create the configuration
+   * @default - RuntimeAuthorizerConfiguration.iam() (IAM authentication)
    */
-  readonly authorizerConfiguration?: AuthorizerConfigurationRuntime;
+  readonly authorizerConfiguration?: RuntimeAuthorizerConfiguration;
 
   /**
    * Tags for the agent runtime
@@ -106,7 +100,7 @@ export interface RuntimeProps {
  */
 export interface AddEndpointOptions {
   /**
-   * Description for the endpoint
+   * Description for the endpoint, Must be between 1 and 1200 characters
    * @default - No description
    */
   readonly description?: string;
@@ -154,11 +148,11 @@ export class Runtime extends RuntimeBase {
       public readonly agentRuntimeName = attrs.agentRuntimeName;
       public readonly role = attrs.role;
       public readonly agentRuntimeVersion = attrs.agentRuntimeVersion;
-      public readonly agentStatus: string | undefined = undefined;
+      public readonly agentStatus = undefined;
       public readonly description = attrs.description;
-      public readonly createdAt: string | undefined = undefined;
-      public readonly lastUpdatedAt: string | undefined = undefined;
-      public readonly grantPrincipal: iam.IPrincipal = attrs.role;
+      public readonly createdAt = undefined;
+      public readonly lastUpdatedAt = undefined;
+      public readonly grantPrincipal = attrs.role;
     }
 
     return new ImportedBedrockAgentRuntime(scope, id);
@@ -182,9 +176,9 @@ export class Runtime extends RuntimeBase {
    * The artifact configuration for the agent runtime
    */
   public readonly agentRuntimeArtifact: AgentRuntimeArtifact;
-  private readonly networkConfiguration: NetworkConfiguration;
+  private readonly networkConfiguration: RuntimeNetworkConfiguration ;
   private readonly protocolConfiguration: ProtocolType;
-  private authorizerConfig?: AuthorizerConfigurationRuntime;
+  private readonly authorizerConfiguration?: RuntimeAuthorizerConfiguration;
 
   constructor(scope: Construct, id: string, props: RuntimeProps) {
     super(scope, id);
@@ -218,48 +212,40 @@ export class Runtime extends RuntimeBase {
     }
 
     this.grantPrincipal = this.role;
-
     this.agentRuntimeArtifact = props.agentRuntimeArtifact;
-
-    this.networkConfiguration = props.networkConfiguration ?? {
-      networkMode: NetworkMode.PUBLIC,
-    };
+    this.networkConfiguration = props.networkConfiguration ?? RuntimeNetworkConfiguration.publicNetwork();
     this.protocolConfiguration = props.protocolConfiguration ?? ProtocolType.HTTP;
-    this.authorizerConfig = props.authorizerConfiguration;
+    this.authorizerConfiguration = props.authorizerConfiguration;
 
-    const cfnProps: bedrockagentcore.CfnRuntimeProps = {
+    const cfnProps: any = {
       agentRuntimeName: this.agentRuntimeName,
       roleArn: this.role.roleArn,
       agentRuntimeArtifact: Lazy.any({
         produce: () => this.renderAgentRuntimeArtifact(),
       }),
       networkConfiguration: Lazy.any({
-        produce: () => this.renderNetworkConfiguration(),
+        produce: () => this.networkConfiguration._render(),
       }),
       protocolConfiguration: Lazy.string({
-        produce: () => this.renderProtocolConfiguration(),
+        produce: () => this.protocolConfiguration,
       }),
       description: props.description,
       environmentVariables: Lazy.any({
         produce: () => this.renderEnvironmentVariables(props.environmentVariables),
       }),
-      // Don't set authorizerConfiguration here - it will be set via addPropertyOverride if needed
       tags: props.tags ?? {},
     };
+    if (props.authorizerConfiguration) {
+      cfnProps.authorizerConfiguration = Lazy.any({
+        produce: () => this.authorizerConfiguration!._render(),
+      });
+    }
 
-    this.runtimeResource = new bedrockagentcore.CfnRuntime(this, 'Resource', cfnProps);
+    this.runtimeResource = new bedrockagentcore.CfnRuntime(this, 'Resource', cfnProps as bedrockagentcore.CfnRuntimeProps);
 
     // Add dependency on the role (for both custom and auto-created roles)
     // This ensures the Runtime waits for the role and all its policies (including ECR permissions) to be created
     this.runtimeResource.node.addDependency(this.role);
-
-    // If authorizerConfiguration was provided in props, apply it via addPropertyOverride
-    if (this.authorizerConfig) {
-      const formatted = this.formatAuthorizerConfiguration(this.authorizerConfig);
-      if (formatted) {
-        this.runtimeResource.addPropertyOverride('AuthorizerConfiguration', formatted);
-      }
-    }
 
     this.agentRuntimeId = this.runtimeResource.attrAgentRuntimeId;
     this.agentRuntimeArn = this.runtimeResource.attrAgentRuntimeArn;
@@ -267,39 +253,6 @@ export class Runtime extends RuntimeBase {
     this.agentRuntimeVersion = this.runtimeResource.attrAgentRuntimeVersion;
     this.createdAt = this.runtimeResource.attrCreatedAt;
     this.lastUpdatedAt = this.runtimeResource.attrLastUpdatedAt;
-  }
-
-  /**
-   * Renders the artifact configuration for CloudFormation
-   * @internal
-   */
-  private renderAgentRuntimeArtifact(): any {
-    const containerUri = this.agentRuntimeArtifact.bind(this, this).containerUri;
-    this.validateContainerUri(containerUri);
-
-    return {
-      containerConfiguration: {
-        containerUri: containerUri,
-      },
-    };
-  }
-
-  /**
-   * Renders the network configuration for CloudFormation
-   * @internal
-   */
-  private renderNetworkConfiguration(): any {
-    return {
-      networkMode: this.networkConfiguration.networkMode,
-    };
-  }
-
-  /**
-   * Renders the protocol configuration for CloudFormation
-   * @internal
-   */
-  private renderProtocolConfiguration(): string {
-    return this.protocolConfiguration;
   }
 
   /**
@@ -331,7 +284,7 @@ export class Runtime extends RuntimeBase {
     role.addToPolicy(new iam.PolicyStatement({
       sid: 'ECRImageAccess',
       effect: iam.Effect.ALLOW,
-      actions: RuntimePerms.ECR_IMAGE_ACTIONS,
+      actions: RUNTIME_ECR_IMAGE_ACTIONS,
       resources: [`arn:${Stack.of(this).partition}:ecr:${region}:${account}:repository/*`],
     }));
 
@@ -339,7 +292,7 @@ export class Runtime extends RuntimeBase {
     role.addToPolicy(new iam.PolicyStatement({
       sid: 'ECRTokenAccess',
       effect: iam.Effect.ALLOW,
-      actions: RuntimePerms.ECR_TOKEN_ACTIONS,
+      actions: RUNTIME_ECR_TOKEN_ACTIONS,
       resources: ['*'],
     }));
 
@@ -347,7 +300,7 @@ export class Runtime extends RuntimeBase {
     role.addToPolicy(new iam.PolicyStatement({
       sid: 'LogGroupAccess',
       effect: iam.Effect.ALLOW,
-      actions: RuntimePerms.LOGS_GROUP_ACTIONS,
+      actions: RUNTIME_LOGS_GROUP_ACTIONS,
       resources: [`arn:${Stack.of(this).partition}:logs:${region}:${account}:log-group:/aws/bedrock-agentcore/runtimes/*`],
     }));
 
@@ -355,7 +308,7 @@ export class Runtime extends RuntimeBase {
     role.addToPolicy(new iam.PolicyStatement({
       sid: 'DescribeLogGroups',
       effect: iam.Effect.ALLOW,
-      actions: RuntimePerms.LOGS_DESCRIBE_ACTIONS,
+      actions: RUNTIME_LOGS_DESCRIBE_ACTIONS,
       resources: [`arn:${Stack.of(this).partition}:logs:${region}:${account}:log-group:*`],
     }));
 
@@ -363,7 +316,7 @@ export class Runtime extends RuntimeBase {
     role.addToPolicy(new iam.PolicyStatement({
       sid: 'LogStreamAccess',
       effect: iam.Effect.ALLOW,
-      actions: RuntimePerms.LOGS_STREAM_ACTIONS,
+      actions: RUNTIME_LOGS_STREAM_ACTIONS,
       resources: [`arn:${Stack.of(this).partition}:logs:${region}:${account}:log-group:/aws/bedrock-agentcore/runtimes/*:log-stream:*`],
     }));
 
@@ -371,7 +324,7 @@ export class Runtime extends RuntimeBase {
     role.addToPolicy(new iam.PolicyStatement({
       sid: 'XRayAccess',
       effect: iam.Effect.ALLOW,
-      actions: RuntimePerms.XRAY_ACTIONS,
+      actions: RUNTIME_XRAY_ACTIONS,
       resources: ['*'],
     }));
 
@@ -379,11 +332,11 @@ export class Runtime extends RuntimeBase {
     role.addToPolicy(new iam.PolicyStatement({
       sid: 'CloudWatchMetrics',
       effect: iam.Effect.ALLOW,
-      actions: RuntimePerms.CLOUDWATCH_METRICS_ACTIONS,
+      actions: RUNTIME_CLOUDWATCH_METRICS_ACTIONS,
       resources: ['*'],
       conditions: {
         StringEquals: {
-          'cloudwatch:namespace': RuntimePerms.CLOUDWATCH_NAMESPACE,
+          'cloudwatch:namespace': RUNTIME_CLOUDWATCH_NAMESPACE,
         },
       },
     }));
@@ -393,7 +346,7 @@ export class Runtime extends RuntimeBase {
     role.addToPolicy(new iam.PolicyStatement({
       sid: 'GetAgentAccessToken',
       effect: iam.Effect.ALLOW,
-      actions: RuntimePerms.WORKLOAD_IDENTITY_ACTIONS,
+      actions: RUNTIME_WORKLOAD_IDENTITY_ACTIONS,
       resources: [
         `arn:${Stack.of(this).partition}:bedrock-agentcore:${region}:${account}:workload-identity-directory/default`,
         `arn:${Stack.of(this).partition}:bedrock-agentcore:${region}:${account}:workload-identity-directory/default/workload-identity/*`,
@@ -407,26 +360,22 @@ export class Runtime extends RuntimeBase {
   }
 
   /**
-   * Validates the container URI format
+   * Renders the artifact configuration for CloudFormation
+   * @internal
    */
-  private validateContainerUri(uri: string): void {
-    // Skip validation if the URI contains CDK tokens (unresolved values)
-    if (Token.isUnresolved(uri)) {
-      // Add a warning that validation will be skipped for token-based URIs
-      Annotations.of(this).addInfo(
-        'Container URI validation skipped as it contains unresolved CDK tokens. ' +
-        'The URI will be validated at deployment time.',
-      );
-      return;
+  private renderAgentRuntimeArtifact(): any {
+    // set permission with bind
+    this.agentRuntimeArtifact.bind(this, this);
+    const config = this.agentRuntimeArtifact._render();
+    const containerUri = (config as any).containerUri;
+    if (containerUri) {
+      this.validateContainerUri(containerUri);
     }
-
-    // Only validate if the URI is a concrete string (not a token)
-    const pattern = /^\d{12}\.dkr\.ecr\.([a-z0-9-]+)\.amazonaws\.com\/((?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*)([:@]\S+)$/;
-    if (!pattern.test(uri)) {
-      throw new ValidationError(
-        `Invalid container URI format: ${uri}. Must be a valid ECR URI (e.g., 123456789012.dkr.ecr.us-west-2.amazonaws.com/my-agent:latest)`,
-      );
-    }
+    return {
+      containerConfiguration: {
+        containerUri: containerUri,
+      },
+    };
   }
 
   /**
@@ -607,225 +556,25 @@ export class Runtime extends RuntimeBase {
   }
 
   /**
-   * Formats authorizer configuration
-   * Handles different authentication modes and converts them to the appropriate format
-   * CloudFormation expects PascalCase property names
+   * Validates the container URI format
    */
-  private formatAuthorizerConfiguration(config: AuthorizerConfigurationRuntime): any {
-    // Handle the legacy case where customJWTAuthorizer is provided without mode
-    if (config.customJWTAuthorizer && !config.mode) {
-      return this.formatJWTAuthorizer(
-        config.customJWTAuthorizer.discoveryUrl,
-        config.customJWTAuthorizer.allowedClients,
-        config.customJWTAuthorizer.allowedAudience,
+  private validateContainerUri(uri: string): void {
+    // Skip validation if the URI contains CDK tokens (unresolved values)
+    if (Token.isUnresolved(uri)) {
+      // Add a warning that validation will be skipped for token-based URIs
+      Annotations.of(this).addInfo(
+        'Container URI validation skipped as it contains unresolved CDK tokens. ' +
+        'The URI will be validated at deployment time.',
       );
+      return;
     }
 
-    // Get the authentication mode (default to IAM)
-    const mode = config.mode ?? AuthenticationMode.IAM;
-
-    switch (mode) {
-      case AuthenticationMode.IAM:
-        return this.formatIAMAuthorizer();
-
-      case AuthenticationMode.JWT:
-        return this.formatJWTAuthorizerFromConfig(config);
-
-      case AuthenticationMode.COGNITO:
-        return this.formatCognitoAuthorizer(config);
-
-      case AuthenticationMode.OAUTH:
-        return this.formatOAuthAuthorizer(config);
-
-      default:
-        throw new ValidationError(`Unsupported authentication mode: ${mode}`);
-    }
-  }
-
-  /**
-   * Formats IAM authorizer configuration
-   * @returns undefined to use default IAM authentication
-   */
-  private formatIAMAuthorizer(): undefined {
-    // For IAM authentication, return undefined to let AWS service use default
-    return undefined;
-  }
-
-  /**
-   * Formats JWT authorizer configuration for CloudFormation
-   * @param discoveryUrl The OIDC discovery URL
-   * @param allowedClients Optional array of allowed client IDs
-   * @param allowedAudience Optional array of allowed audiences
-   * @returns Formatted JWT authorizer configuration
-   */
-  private formatJWTAuthorizer(
-    discoveryUrl: string,
-    allowedClients?: string[],
-    allowedAudience?: string[],
-  ): any {
-    return {
-      CustomJWTAuthorizer: {
-        DiscoveryUrl: discoveryUrl,
-        AllowedAudience: allowedAudience,
-        AllowedClients: allowedClients,
-      },
-    };
-  }
-
-  /**
-   * Formats JWT authorizer from configuration object
-   * @param config The authorizer configuration
-   * @returns Formatted JWT authorizer configuration
-   */
-  private formatJWTAuthorizerFromConfig(config: AuthorizerConfigurationRuntime): any {
-    if (!config.customJWTAuthorizer) {
-      throw new ValidationError('customJWTAuthorizer configuration is required when mode is JWT');
-    }
-    return this.formatJWTAuthorizer(
-      config.customJWTAuthorizer.discoveryUrl,
-      config.customJWTAuthorizer.allowedClients,
-      config.customJWTAuthorizer.allowedAudience,
-    );
-  }
-
-  /**
-   * Formats Cognito authorizer configuration
-   * Converts Cognito configuration to JWT format
-   * @param config The authorizer configuration
-   * @returns Formatted Cognito authorizer configuration as JWT
-   */
-  private formatCognitoAuthorizer(config: AuthorizerConfigurationRuntime): any {
-    if (!config.cognitoAuthorizer) {
-      throw new ValidationError('cognitoAuthorizer configuration is required when mode is COGNITO');
-    }
-
-    // Convert Cognito config to JWT format
-    const region = config.cognitoAuthorizer.region ?? Stack.of(this).region;
-    const discoveryUrl = `https://cognito-idp.${region}.amazonaws.com/${config.cognitoAuthorizer.userPoolId}/.well-known/openid-configuration`;
-
-    // Validate discovery URL format
-    if (!discoveryUrl.endsWith('/.well-known/openid-configuration')) {
-      throw new ValidationError('Invalid Cognito discovery URL format');
-    }
-
-    // Check if clientId is provided (it's optional in the type but required when using configureCognitoAuth)
-    if (!config.cognitoAuthorizer.clientId) {
-      throw new ValidationError('clientId is required for Cognito authentication');
-    }
-
-    return this.formatJWTAuthorizer(
-      discoveryUrl,
-      [config.cognitoAuthorizer.clientId],
-      undefined,
-    );
-  }
-
-  /**
-   * Formats OAuth authorizer configuration
-   * @param config The authorizer configuration
-   * @returns Formatted OAuth authorizer configuration as JWT
-   */
-  private formatOAuthAuthorizer(config: AuthorizerConfigurationRuntime): any {
-    if (!config.oauthAuthorizer) {
-      throw new ValidationError('oauthAuthorizer configuration is required when mode is OAUTH');
-    }
-
-    // Validate discovery URL format
-    if (!config.oauthAuthorizer.discoveryUrl.endsWith('/.well-known/openid-configuration')) {
-      throw new ValidationError('OAuth discovery URL must end with /.well-known/openid-configuration');
-    }
-
-    return this.formatJWTAuthorizer(
-      config.oauthAuthorizer.discoveryUrl,
-      [config.oauthAuthorizer.clientId],
-      undefined,
-    );
-  }
-
-  /**
-   * Configure Cognito authentication for this runtime instance
-   * This will override any existing authentication configuration
-   *
-   * @param userPoolId The Cognito User Pool ID (e.g., 'us-west-2_ABC123')
-   * @param clientId Cognito App Client ID
-   * @param region Optional AWS region (defaults to stack region)
-   */
-  public configureCognitoAuth(
-    userPoolId: string,
-    clientId: string,
-    region?: string,
-  ): void {
-    this.authorizerConfig = {
-      mode: AuthenticationMode.COGNITO,
-      cognitoAuthorizer: {
-        userPoolId,
-        clientId,
-        region,
-      },
-    };
-
-    // Use addPropertyOverride to set the auth configuration on the CloudFormation resource
-    const formatted = this.formatAuthorizerConfiguration(this.authorizerConfig);
-    if (formatted) {
-      this.runtimeResource.addPropertyOverride('AuthorizerConfiguration', formatted);
-    }
-  }
-
-  /**
-   * Configure JWT authentication for this runtime instance
-   * This will override any existing authentication configuration
-   *
-   * @param discoveryUrl The OIDC discovery URL (must end with /.well-known/openid-configuration)
-   * @param allowedClients Array of allowed client IDs
-   * @param allowedAudience Optional array of allowed audiences
-   */
-  public configureJWTAuth(
-    discoveryUrl: string,
-    allowedClients: string[],
-    allowedAudience?: string[],
-  ): void {
-    this.authorizerConfig = {
-      mode: AuthenticationMode.JWT,
-      customJWTAuthorizer: {
-        discoveryUrl,
-        allowedClients,
-        allowedAudience,
-      },
-    };
-    const formatted = this.formatAuthorizerConfiguration(this.authorizerConfig);
-    if (formatted) {
-      this.runtimeResource.addPropertyOverride('AuthorizerConfiguration', formatted);
-    }
-  }
-
-  /**
-   * Configure OAuth authentication for this runtime instance
-   * This will override any existing authentication configuration
-   *
-   * @param provider OAuth provider name (e.g., 'google', 'github', 'custom')
-   * @param discoveryUrl The OIDC discovery URL (must end with /.well-known/openid-configuration)
-   * @param clientId OAuth client ID
-   * @param scopes Optional array of OAuth scopes
-   */
-
-  public configureOAuth(
-    provider: string,
-    discoveryUrl: string,
-    clientId: string,
-    scopes?: string[],
-  ): void {
-    this.authorizerConfig = {
-      mode: AuthenticationMode.OAUTH,
-      oauthAuthorizer: {
-        provider,
-        discoveryUrl,
-        clientId,
-        scopes,
-      },
-    };
-    const formatted = this.formatAuthorizerConfiguration(this.authorizerConfig);
-    if (formatted) {
-      this.runtimeResource.addPropertyOverride('AuthorizerConfiguration', formatted);
+    // Only validate if the URI is a concrete string (not a token)
+    const pattern = /^\d{12}\.dkr\.ecr\.([a-z0-9-]+)\.amazonaws\.com\/((?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*)([:@]\S+)$/;
+    if (!pattern.test(uri)) {
+      throw new ValidationError(
+        `Invalid container URI format: ${uri}. Must be a valid ECR URI (e.g., 123456789012.dkr.ecr.us-west-2.amazonaws.com/my-agent:latest)`,
+      );
     }
   }
 

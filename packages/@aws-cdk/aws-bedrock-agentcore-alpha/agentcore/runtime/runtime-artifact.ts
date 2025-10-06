@@ -13,19 +13,10 @@
 
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as assets from 'aws-cdk-lib/aws-ecr-assets';
+import { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import { Runtime } from './runtime';
-
-/**
- * Agent runtime artifact configuration for Bedrock Agent Core Runtime
- */
-export interface AgentRuntimeArtifactConfig {
-  /**
-   * The ECR URI of the container.
-   */
-  readonly containerUri: string;
-}
 
 /**
  * Abstract base class for agent runtime artifacts.
@@ -49,37 +40,51 @@ export abstract class AgentRuntimeArtifact {
   }
 
   /**
-   * Called when the image is used by a Runtime
+   * Called when the image is used by a Runtime to handle side effects like permissions
    */
-  public abstract bind(scope: Construct, runtime: Runtime): AgentRuntimeArtifactConfig;
+  public abstract bind(scope: Construct, runtime: Runtime): void;
+
+  /**
+   * Render the artifact configuration for CloudFormation
+   * @internal
+   */
+  public abstract _render(): CfnRuntime.AgentRuntimeArtifactProperty;
 }
 
 class EcrImage extends AgentRuntimeArtifact {
+  private bound = false;
+
   constructor(private readonly repository: ecr.IRepository, private readonly tag: string) {
     super();
   }
 
-  public bind(_scope: Construct, runtime: Runtime): AgentRuntimeArtifactConfig {
-    // Now we can use runtime.role for permissions
-    if (runtime.role) {
+  public bind(_scope: Construct, runtime: Runtime): void {
+    // Handle permissions (only once)
+    if (!this.bound && runtime.role) {
       this.repository.grantPull(runtime.role);
+      this.bound = true;
     }
+  }
 
+  public _render(): CfnRuntime.AgentRuntimeArtifactProperty {
+    // Return container configuration directly as expected by the runtime
+    // The runtime wraps this in containerConfiguration
     return {
       containerUri: this.repository.repositoryUriForTag(this.tag),
-    };
+    } as any;
   }
 }
 
 class AssetImage extends AgentRuntimeArtifact {
   private asset?: assets.DockerImageAsset;
+  private bound = false;
 
   constructor(private readonly directory: string, private readonly options: assets.DockerImageAssetOptions = {}) {
     super();
   }
 
-  public bind(scope: Construct, runtime: Runtime): AgentRuntimeArtifactConfig {
-    // Retain the first instantiation of this asset
+  public bind(scope: Construct, runtime: Runtime): void {
+    // Create the asset if not already created
     if (!this.asset) {
       const hash = md5hash(this.directory);
       this.asset = new assets.DockerImageAsset(scope, `AgentRuntimeArtifact${hash}`, {
@@ -88,10 +93,22 @@ class AssetImage extends AgentRuntimeArtifact {
       });
     }
 
-    this.asset.repository.grantPull(runtime.role);
+    // Grant permissions (only once)
+    if (!this.bound) {
+      this.asset.repository.grantPull(runtime.role);
+      this.bound = true;
+    }
+  }
 
+  public _render(): CfnRuntime.AgentRuntimeArtifactProperty {
+    if (!this.asset) {
+      throw new Error('Asset not initialized. Call bind() before _render()');
+    }
+
+    // Return container configuration directly as expected by the runtime
+    // The runtime wraps this in containerConfiguration
     return {
       containerUri: this.asset.imageUri,
-    };
+    } as any;
   }
 }

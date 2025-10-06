@@ -21,7 +21,7 @@ import {
 } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
-import { RuntimePerms } from './perms';
+import { RUNTIME_INVOKE_PERMS } from './perms';
 
 /******************************************************************************
  *                                Interface
@@ -218,7 +218,7 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
   public grantInvoke(grantee: iam.IGrantable) {
     return iam.Grant.addToPrincipal({
       grantee,
-      actions: RuntimePerms.INVOKE_PERMS,
+      actions: RUNTIME_INVOKE_PERMS,
       resourceArns: [this.agentRuntimeArn],
     });
   }

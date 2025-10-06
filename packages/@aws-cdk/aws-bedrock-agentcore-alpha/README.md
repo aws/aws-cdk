@@ -45,9 +45,15 @@ and the construct handles all the configuration with sensible defaults.
 ### Runtime Endpoints
 
 Endpoints provide a stable way to invoke specific versions of your agent runtime, enabling controlled deployments across different environments.
-When you create an agent runtime, Amazon Bedrock AgentCore automatically creates a "DEFAULT" endpoint which always points to thelatest version
-of runtime. You can create explicit endpoints using the `addEndpoint()` helper method to reference specific versions for staging
-or production environments. For example, you might keep a "production" endpoint on a stable version while testing newer versions
+When you create an agent runtime, Amazon Bedrock AgentCore automatically creates a "DEFAULT" endpoint which always points to the latest version
+of runtime.
+
+You can create additional endpoints in two ways:
+
+1. **Using Runtime.addEndpoint()** - Convenient method when creating endpoints alongside the runtime.
+2. **Using RuntimeEndpoint** - Flexible approach for existing runtimes.
+
+For example, you might keep a "production" endpoint on a stable version while testing newer versions
 through a "staging" endpoint. This separation allows you to test changes thoroughly before promoting them
 to production by simply updating the endpoint to point to the newer version.
 
@@ -61,7 +67,7 @@ to production by simply updating the endpoint to point to the newer version.
 | `networkConfiguration` | `NetworkConfiguration` | No | Network configuration for the agent runtime. Defaults to `{ networkMode: NetworkMode.PUBLIC }` |
 | `description` | `string` | No | Optional description for the agent runtime |
 | `protocolConfiguration` | `ProtocolType` | No | Protocol configuration for the agent runtime. Defaults to `ProtocolType.HTTP` |
-| `authorizerConfiguration` | `AuthorizerConfigurationRuntime` | No | Authorizer configuration for the agent runtime. Supports IAM, Cognito, JWT, and OAuth authentication modes |
+| `authorizerConfiguration` | `RuntimeAuthorizerConfiguration` | No | Authorizer configuration for the agent runtime. Use `RuntimeAuthorizerConfiguration` static methods to create configurations for IAM, Cognito, JWT, or OAuth authentication |
 | `environmentVariables` | `{ [key: string]: string }` | No | Environment variables for the agent runtime. Maximum 50 environment variables |
 | `tags` | `{ [key: string]: string }` | No | Tags for the agent runtime. A list of key:value pairs of tags to apply to this Runtime resource |
 
@@ -92,7 +98,7 @@ const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(re
 // Create runtime using the built image
 const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
-  agentRuntimeArtifact: agentRuntimeArtifact,
+  agentRuntimeArtifact: agentRuntimeArtifact
 });
 ```
 
@@ -176,40 +182,106 @@ const stagingEndpoint = runtime.addEndpoint("staging", {
 // After testing, you can update production endpoint to Version 2 using the AWS Console or APIs
 ```
 
+### Creating Standalone Runtime Endpoints
+
+RuntimeEndpoint can also be created as a standalone resource.
+
+#### Example: Creating an endpoint for an existing runtime
+
+```typescript
+// Reference an existing runtime by its ID
+const existingRuntimeId = "abc123-runtime-id"; // The ID of an existing runtime
+
+// Create a standalone endpoint
+const endpoint = new agentcore.RuntimeEndpoint(this, "MyEndpoint", {
+  endpointName: "production",
+  agentRuntimeId: existingRuntimeId,
+  agentRuntimeVersion: "1", // Specify which version to use
+  description: "Production endpoint for existing runtime"
+});
+```
+
+#### Updating endpoint versions
+
+Standalone endpoints can update their runtime version using the `updateRuntimeVersion()` method:
+
+```typescript
+const endpoint = new agentcore.RuntimeEndpoint(this, "MyEndpoint", {
+  endpointName: "production",
+  agentRuntimeId: runtimeId,
+  agentRuntimeVersion: "1",
+});
+
+// Later, update to a new version
+endpoint.updateRuntimeVersion("2");
+```
+
 ### Runtime Authentication Configuration
 
-The AgentCore Runtime supports multiple authentication modes to secure access to your agent endpoints. By default, IAM authentication is used, but you can configure Cognito, JWT, or OAuth authentication based on your security requirements.
+The AgentCore Runtime supports multiple authentication modes to secure access to your agent endpoints. Authentication is configured during runtime creation using the `RuntimeAuthorizerConfiguration` class's static factory methods.
 
 #### IAM Authentication (Default)
 
-IAM authentication is the default mode and requires no additional configuration. When creating a runtime, IAM authentication is automatically enabled, requiring callers to sign their requests with valid AWS credentials.
+IAM authentication is the default mode, requiring callers to sign their requests with valid AWS credentials using SigV4:
+
+```typescript
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  // IAM is the default, 
+});
+```
 
 #### Cognito Authentication
 
-To configure AWS Cognito User Pool authentication for your runtime, use the `runtime.configureCognitoAuth()` method after runtime creation. This method requires:
+To configure AWS Cognito User Pool authentication:
 
-- **User Pool ID** (required): The Cognito User Pool identifier (e.g., "us-west-2_ABC123")
-- **Client ID** (required): The Cognito App Client ID
-- **Region** (optional): The AWS region where the User Pool is located (defaults to the stack region)
+```typescript
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.configureCognito(
+    "us-west-2_ABC123",  // User Pool ID (required)
+    "client123",         // Client ID (required)
+    "us-west-2"         // Region (optional, defaults to stack region)
+  ),
+});
+```
 
 #### JWT Authentication
 
-To configure custom JWT authentication with your own OpenID Connect (OIDC) provider, use the `runtime.configureJWTAuth()` method after runtime creation. This method requires:
+To configure custom JWT authentication with your own OpenID Connect (OIDC) provider:
 
-- **Discovery URL**: The OIDC discovery URL (must end with /.well-known/openid-configuration)
-- **Allowed Client IDs**: An array of client IDs that are allowed to access the runtime
-- **Allowed Audiences** (optional): An array of allowed audiences for token validation
+```typescript
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.configureJWT(
+    "https://example.com/.well-known/openid-configuration",  // Discovery URL (required)
+    ["client1", "client2"],  // Allowed Client IDs (optional)
+    ["audience1"]           // Allowed Audiences (optional)
+  ),
+});
+```
+
+**Note**: The discovery URL must end with `/.well-known/openid-configuration`.
 
 #### OAuth Authentication
 
-OAuth 2.0 authentication can be configured during runtime creation by setting the `runtime.configureOAuth()` property with:
+To configure OAuth 2.0 authentication:
 
-- **provider**: OAuth provider name
-- **Discovery URL**: The OAuth provider's discovery URL (must end with /.well-known/openid-configuration)
-- **Client ID**: The OAuth client identifier
-- **scopes**: Optional, array of OAuth scopes
-
-**Note**: When using custom authentication modes (Cognito, JWT, OAuth), ensure that your client applications are properly configured to obtain and include valid tokens in their requests to the runtime endpoints.
+```typescript
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.configureOAuth(
+    "github",  // Provider name (e.g., 'google', 'github', 'custom')
+    "https://github.com/.well-known/openid-configuration",  // Discovery URL
+    "oauth_client_123",  // Client ID
+    ["read:user", "repo"]  // Scopes (optional)
+  ),
+});
+```
 
 #### Using a Custom IAM Role
 

@@ -1,16 +1,3 @@
-/**
- *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance
- *  with the License. A copy of the License is located at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES
- *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions
- *  and limitations under the License.
- */
-
 import { Annotations, Token, Lazy } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
@@ -97,6 +84,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
       public readonly agentRuntimeArn = attrs.agentRuntimeArn;
       public readonly description = attrs.description;
       public readonly status: string | undefined = undefined;
+      public readonly liveVersion: string | undefined = undefined;
       public readonly targetVersion: string | undefined = undefined;
       public readonly createdAt: string | undefined = undefined;
     }
@@ -109,6 +97,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
   public readonly endpointName: string;
   public readonly agentRuntimeArn: string;
   public readonly status?: string;
+  public readonly liveVersion?: string;
   public readonly targetVersion?: string;
   public readonly createdAt?: string;
   public readonly description?: string;
@@ -176,7 +165,8 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
     this.agentRuntimeEndpointArn = this.endpointResource.attrAgentRuntimeEndpointArn;
     this.agentRuntimeArn = this.endpointResource.attrAgentRuntimeArn;
     this.status = this.endpointResource.attrStatus;
-    this.targetVersion = this.endpointResource.attrLiveVersion;
+    this.liveVersion = this.endpointResource.attrLiveVersion;
+    this.targetVersion = this.endpointResource.attrTargetVersion;
     this.createdAt = this.endpointResource.attrCreatedAt;
     this.lastUpdatedAt = this.endpointResource.attrLastUpdatedAt;
   }

@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "TestRuntimeExecutionRoleF819113E": {
+  "ExistingRuntimeExecutionRole8B00B9CA": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -19,7 +19,7 @@
     "MaxSessionDuration": 28800
    }
   },
-  "TestRuntimeExecutionRoleDefaultPolicyC7A978D3": {
+  "ExistingRuntimeExecutionRoleDefaultPolicy6C465EA7": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -251,15 +251,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "TestRuntimeExecutionRoleDefaultPolicyC7A978D3",
+    "PolicyName": "ExistingRuntimeExecutionRoleDefaultPolicy6C465EA7",
     "Roles": [
      {
-      "Ref": "TestRuntimeExecutionRoleF819113E"
+      "Ref": "ExistingRuntimeExecutionRole8B00B9CA"
      }
     ]
    }
   },
-  "TestRuntime65042BB5": {
+  "ExistingRuntimeCC05F9CB": {
    "Type": "AWS::BedrockAgentCore::Runtime",
    "Properties": {
     "AgentRuntimeArtifact": {
@@ -269,122 +269,99 @@
       }
      }
     },
-    "AgentRuntimeName": "integ_test_runtime",
-    "Description": "Integration test runtime for BedrockAgentCore",
-    "EnvironmentVariables": {
-     "TEST_ENV": "integration",
-     "LOG_LEVEL": "INFO"
-    },
+    "AgentRuntimeName": "endpoint_test_runtime",
+    "Description": "Runtime for endpoint integration test",
     "NetworkConfiguration": {
      "NetworkMode": "PUBLIC"
     },
     "ProtocolConfiguration": "HTTP",
     "RoleArn": {
      "Fn::GetAtt": [
-      "TestRuntimeExecutionRoleF819113E",
+      "ExistingRuntimeExecutionRole8B00B9CA",
       "Arn"
      ]
-    },
-    "Tags": {
-     "Environment": "Integration",
-     "TestType": "CDK"
     }
    },
    "DependsOn": [
-    "TestRuntimeExecutionRoleDefaultPolicyC7A978D3",
-    "TestRuntimeExecutionRoleF819113E"
+    "ExistingRuntimeExecutionRoleDefaultPolicy6C465EA7",
+    "ExistingRuntimeExecutionRole8B00B9CA"
    ]
   },
-  "BasicEndpoint73A65319": {
+  "TestEndpoint4E197ABD": {
    "Type": "AWS::BedrockAgentCore::RuntimeEndpoint",
    "Properties": {
     "AgentRuntimeId": {
      "Fn::GetAtt": [
-      "TestRuntime65042BB5",
+      "ExistingRuntimeCC05F9CB",
       "AgentRuntimeId"
      ]
     },
     "AgentRuntimeVersion": "1",
-    "Description": "Basic endpoint for testing",
-    "Name": "basic_endpoint"
-   }
-  },
-  "TaggedEndpointB1B1CDE4": {
-   "Type": "AWS::BedrockAgentCore::RuntimeEndpoint",
-   "Properties": {
-    "AgentRuntimeId": {
-     "Fn::GetAtt": [
-      "TestRuntime65042BB5",
-      "AgentRuntimeId"
-     ]
-    },
-    "AgentRuntimeVersion": "1",
-    "Description": "Endpoint with tags",
-    "Name": "tagged_endpoint",
+    "Description": "Simple endpoint for integration testing",
+    "Name": "test_endpoint",
     "Tags": {
-     "EndpointType": "Tagged",
-     "Version": "v1"
+     "Component": "RuntimeEndpoint",
+     "Purpose": "IntegrationTest"
     }
-   }
-  },
-  "V2EndpointFFAF1748": {
-   "Type": "AWS::BedrockAgentCore::RuntimeEndpoint",
-   "Properties": {
-    "AgentRuntimeId": {
-     "Fn::GetAtt": [
-      "TestRuntime65042BB5",
-      "AgentRuntimeId"
-     ]
-    },
-    "AgentRuntimeVersion": "2",
-    "Description": "Version 2 endpoint",
-    "Name": "v2_endpoint"
    }
   }
  },
  "Outputs": {
   "RuntimeId": {
-   "Description": "Runtime ID",
+   "Description": "The ID of the runtime",
    "Value": {
     "Fn::GetAtt": [
-     "TestRuntime65042BB5",
+     "ExistingRuntimeCC05F9CB",
      "AgentRuntimeId"
     ]
    }
   },
   "RuntimeArn": {
-   "Description": "Runtime ARN",
+   "Description": "The ARN of the runtime",
    "Value": {
     "Fn::GetAtt": [
-     "TestRuntime65042BB5",
+     "ExistingRuntimeCC05F9CB",
      "AgentRuntimeArn"
     ]
    }
   },
-  "BasicEndpointId": {
-   "Description": "Basic endpoint ID",
+  "EndpointId": {
+   "Description": "The ID of the endpoint",
    "Value": {
     "Fn::GetAtt": [
-     "BasicEndpoint73A65319",
+     "TestEndpoint4E197ABD",
      "Id"
     ]
    }
   },
-  "TaggedEndpointId": {
-   "Description": "Tagged endpoint ID",
+  "EndpointArn": {
+   "Description": "The ARN of the endpoint",
    "Value": {
     "Fn::GetAtt": [
-     "TaggedEndpointB1B1CDE4",
-     "Id"
+     "TestEndpoint4E197ABD",
+     "AgentRuntimeEndpointArn"
     ]
    }
   },
-  "V2EndpointId": {
-   "Description": "Version 2 endpoint ID",
+  "EndpointName": {
+   "Description": "The name of the endpoint",
+   "Value": "test_endpoint"
+  },
+  "EndpointLiveVersion": {
+   "Description": "The live version of the endpoint",
    "Value": {
     "Fn::GetAtt": [
-     "V2EndpointFFAF1748",
-     "Id"
+     "TestEndpoint4E197ABD",
+     "LiveVersion"
+    ]
+   }
+  },
+  "EndpointTargetVersion": {
+   "Description": "The target version of the endpoint",
+   "Value": {
+    "Fn::GetAtt": [
+     "TestEndpoint4E197ABD",
+     "TargetVersion"
     ]
    }
   }

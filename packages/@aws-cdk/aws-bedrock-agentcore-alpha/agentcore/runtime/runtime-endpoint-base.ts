@@ -44,7 +44,12 @@ export interface IRuntimeEndpoint extends IResource {
   readonly status?: string;
 
   /**
-   * The target version of the agent runtime
+   * The live version of the agent runtime that is currently serving requests
+   */
+  readonly liveVersion?: string;
+
+  /**
+   * The target version the endpoint is transitioning to (during updates)
    */
   readonly targetVersion?: string;
 
@@ -71,6 +76,7 @@ export abstract class RuntimeEndpointBase extends Resource implements IRuntimeEn
   public abstract readonly endpointName: string;
   public abstract readonly agentRuntimeArn: string;
   public abstract readonly status?: string;
+  public abstract readonly liveVersion?: string;
   public abstract readonly targetVersion?: string;
   public abstract readonly createdAt?: string;
   public abstract readonly description?: string;
@@ -104,36 +110,4 @@ export interface RuntimeEndpointAttributes {
    * @default - No description
    */
   readonly description?: string;
-}
-
-/**
- * An imported Runtime Endpoint
- */
-class ImportedRuntimeEndpoint extends RuntimeEndpointBase {
-  public readonly agentRuntimeEndpointArn: string;
-  public readonly endpointName: string;
-  public readonly agentRuntimeArn: string;
-  public readonly status?: string;
-  public readonly targetVersion?: string;
-  public readonly createdAt?: string;
-  public readonly description?: string;
-
-  constructor(scope: Construct, id: string, attrs: RuntimeEndpointAttributes) {
-    super(scope, id);
-    this.agentRuntimeEndpointArn = attrs.agentRuntimeEndpointArn;
-    this.endpointName = attrs.endpointName;
-    this.agentRuntimeArn = attrs.agentRuntimeArn;
-    this.description = attrs.description;
-  }
-}
-
-/**
- * Import an existing Runtime Endpoint
- */
-export function fromRuntimeEndpointAttributes(
-  scope: Construct,
-  id: string,
-  attrs: RuntimeEndpointAttributes,
-): IRuntimeEndpoint {
-  return new ImportedRuntimeEndpoint(scope, id, attrs);
 }
