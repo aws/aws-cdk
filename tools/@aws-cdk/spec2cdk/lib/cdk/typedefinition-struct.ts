@@ -1,11 +1,12 @@
 import { Resource, TypeDefinition } from '@aws-cdk/service-spec-types';
-import { ClassType, expr, FreeFunction, Module, Stability, stmt, StructType } from '@cdklabs/typewriter';
+import { ClassType, expr, FreeFunction, Module, Stability, stmt, StructType, Type } from '@cdklabs/typewriter';
 import { CloudFormationMapping } from './cloudformation-mapping';
 import { RelationshipDecider } from './relationship-decider';
 import { TypeConverter } from './type-converter';
 import { TypeDefinitionDecider } from './typedefinition-decider';
 import { cloudFormationDocLink, flattenFunctionNameFromType, structNameFromTypeDefinition } from '../naming';
 import { splitDocumentation } from '../util';
+import { CDK_CORE } from './cdk';
 
 export interface TypeDefinitionStructOptions {
   readonly typeDefinition: TypeDefinition;
@@ -69,12 +70,15 @@ export class TypeDefinitionStruct extends StructType {
     if (needsResolverFunction) {
       const resolverFunction = new FreeFunction(this.module, {
         name: flattenFunctionNameFromType(this),
-        returnType: this.type,
-        parameters: [{ name: 'props', type: this.type }],
+        returnType: Type.unionOf(this.type, CDK_CORE.IResolvable),
+        parameters: [{ name: 'props', type: Type.unionOf(this.type, CDK_CORE.IResolvable) }],
       });
 
       const propsParam = resolverFunction.parameters[0];
       resolverFunction.addBody(
+        stmt.if_(CDK_CORE.isResolvableObject(propsParam))
+          .then(stmt.ret(propsParam)),
+
         stmt.ret(expr.object(
           Object.fromEntries(
             decider.properties.map(prop => [

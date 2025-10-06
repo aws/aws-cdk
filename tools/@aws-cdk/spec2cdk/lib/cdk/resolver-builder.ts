@@ -43,9 +43,12 @@ export class ResolverBuilder {
     }
 
     const originalType = this.converter.originalType(baseType);
-    if (originalType.type === 'ref' && this.relationshipDecider.needsFlatteningFunction(prop)) {
+    if (this.relationshipDecider.needsFlatteningFunction(prop)) {
       const optional = !prop.required;
-      return this.buildNestedResolver({ name, baseType, typeRef: originalType, resolvableType, optional });
+      const typeRef = originalType.type === 'array' ? originalType.element : originalType;
+      if (typeRef.type === 'ref') {
+        return this.buildNestedResolver({ name, baseType, typeRef: typeRef, resolvableType, optional });
+      }
     }
 
     return {
@@ -98,12 +101,20 @@ export class ResolverBuilder {
     const functionName = flattenFunctionNameFromType(referencedStruct);
 
     const resolver = (props: Expression) => {
-      const condition = optional
-        ? expr.cond(expr.get(props, name)).then(expr.ident(functionName).call(expr.get(props, name))).else(expr.UNDEFINED)
-        : expr.ident(functionName).call(expr.get(props, name));
+      const propValue = expr.get(props, name);
 
-      return expr.cond(CDK_CORE.isResolvableObject(expr.get(props, name)))
-        .then(expr.get(props, name))
+      const isArray = baseType.arrayOfType !== undefined;
+
+      const flattenCall = isArray
+        ? propValue.callMethod('map', expr.ident(functionName))
+        : expr.ident(functionName).call(propValue);
+
+      const condition = optional
+        ? expr.cond(propValue).then(flattenCall).else(expr.UNDEFINED)
+        : flattenCall;
+
+      return expr.cond(CDK_CORE.isResolvableObject(propValue))
+        .then(propValue)
         .else(condition);
     };
 

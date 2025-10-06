@@ -114,8 +114,17 @@ export class RelationshipDecider {
     if (prop.relationshipRefs && prop.relationshipRefs.length > 0) {
       return true;
     }
-    if (prop.type.type === 'ref') {
-      const refId = prop.type.reference.$ref;
+    const type = prop.previousTypes?.at(0) ?? prop.type;
+    if (type.type === 'ref' || (type.type === 'array' && type.element.type === 'ref')) {
+      let refId: string;
+      if (type.type === 'ref') {
+        refId = type.reference.$ref;
+      } else if (type.type === 'array' && type.element.type === 'ref') {
+        refId = type.element.reference.$ref;
+      } else {
+        return false;
+      }
+
       if (visited.has(refId)) {
         return false;
       }
