@@ -24,7 +24,7 @@
     "strictPropertyInitialization": true,
     "stripInternal": false,
     "target": "es2022",
-    "esModuleInterop": true,
+    "esModuleInterop": false,
     "composite": false,
     "tsBuildInfoFile": "tsconfig.tsbuildinfo"
   },

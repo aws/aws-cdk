@@ -19,7 +19,7 @@
     "noUnusedParameters": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "esModuleInterop": true,
+    "esModuleInterop": false,
     "strict": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
