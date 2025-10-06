@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@nx/workspace": "^20",
-    "@types/node": "18.11.19",
+    "@types/node": "18.19.129",
     "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "aws-sdk-js-codemod": "^2.4.5",

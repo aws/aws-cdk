@@ -33,14 +33,15 @@
         "packageName": "awscdkredshiftalpha"
       }
     },
-    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
           "strict": false
         }
       }
-    }
+    },
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal"
   },
   "repository": {
     "type": "git",

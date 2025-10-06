@@ -1,4 +1,3 @@
-import { describe } from 'node:test';
 import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as kms from '../../aws-kms';
