@@ -21,4 +21,3 @@ nyc.config.js
 *.jsii
 .jsii.tabl.json.gz
 .jsiirc.json
-tsconfig.json
