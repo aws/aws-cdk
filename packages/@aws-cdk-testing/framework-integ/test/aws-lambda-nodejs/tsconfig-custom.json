@@ -5,8 +5,6 @@
     "inlineSources": true,
     "alwaysStrict": true,
     "declaration": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
     "incremental": true,
     "lib": [
       "es2022",
