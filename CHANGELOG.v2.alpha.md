@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.219.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.218.0-alpha.0...v2.219.0-alpha.0) (2025-10-01)
+
+## [2.218.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.217.0-alpha.0...v2.218.0-alpha.0) (2025-09-29)
+* **elasticache-alpha:** implement Serverless ElastiCache L2 Construct ([#35424](https://github.com/aws/aws-cdk/issues/35424)) ([0e08c8c](https://github.com/aws/aws-cdk/commit/0e08c8ccc17f45a9023433c17c22a951b23cad43))
 ## [2.217.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.216.0-alpha.0...v2.217.0-alpha.0) (2025-09-25)
 
 ## [2.216.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.215.0-alpha.0...v2.216.0-alpha.0) (2025-09-22)
