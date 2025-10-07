@@ -57,12 +57,14 @@ export interface IBrowserCustom extends IResource {
    * - Format Custom browser: `arn:${Partition}:bedrock-agentcore:${Region}:${Account}:browser-custom/${BrowserId}`
    * - Format AWS browser: `arn:${Partition}:bedrock-agentcore:${Region}:aws:browser/${BrowserId}`
    * @example "arn:aws:bedrock-agentcore:eu-central-1:249522321342:browser/browser_6647g-vko61CBXCd"
+   * @attribute
    */
   readonly browserArn: string;
 
   /**
    * The id of the browser
    * @example "browser_6647g-vko61CBXCd"
+   * @attribute
    */
   readonly browserId: string;
 
@@ -93,16 +95,19 @@ export interface IBrowserCustom extends IResource {
 
   /**
    * Timestamp when the browser was last updated
+   * @attribute
    */
   readonly lastUpdatedAt?: string;
 
   /**
    * The status of the browser
+   * @attribute
    */
   readonly status?: string;
 
   /**
    * Timestamp when the browser was created
+   * @attribute
    */
   readonly createdAt?: string;
 
@@ -538,14 +543,34 @@ export class BrowserCustom extends BrowserCustomBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-agentcore-alpha.BrowserCustom';
 
+  /**
+   * The ARN of the browser resource.
+   * @attribute
+   */
   public readonly browserArn: string;
+  /**
+   * The id of the browser
+   * @attribute
+   */
   public readonly browserId: string;
   public readonly name: string;
   public readonly description?: string;
   public readonly networkConfiguration: BrowserNetworkConfiguration;
   public readonly recordingConfig?: RecordingConfig;
+  /**
+   * The last updated timestamp of the browser
+   * @attribute
+   */
   public readonly lastUpdatedAt?: string;
+  /**
+   * The status of the browser
+   * @attribute
+   */
   public readonly status?: string;
+  /**
+   * The created timestamp of the browser
+   * @attribute
+   */
   public readonly createdAt?: string;
   public readonly executionRole?: iam.IRole;
   /**

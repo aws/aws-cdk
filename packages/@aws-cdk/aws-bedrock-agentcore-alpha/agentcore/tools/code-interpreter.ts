@@ -54,12 +54,14 @@ export interface ICodeInterpreterCustom extends IResource {
   /**
    * The ARN of the code interpreter resource
    * @example "arn:aws:bedrock-agentcore:eu-central-1:249522321342:codeinterpreter/codeinterpreter_6647g-vko61CBXCd"
+   * @attribute
    */
   readonly codeInterpreterArn: string;
 
   /**
    * The id of the code interpreter
    * @example "codeinterpreter_6647g-vko61CBXCd"
+   * @attribute
    */
   readonly codeInterpreterId: string;
 
@@ -80,16 +82,19 @@ export interface ICodeInterpreterCustom extends IResource {
 
   /**
    * The status of the code interpreter
+   * @attribute
    */
   readonly status?: string;
 
   /**
    * Timestamp when the code interpreter was created
+   * @attribute
    */
   readonly createdAt?: string;
 
   /**
    * Timestamp when the code interpreter was last updated
+   * @attribute
    */
   readonly lastUpdatedAt?: string;
 
@@ -463,13 +468,33 @@ export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-agentcore-alpha.CodeInterpreterCustom';
 
+  /**
+   * The ARN of the code interpreter resource
+   * @attribute
+   */
   public readonly codeInterpreterArn: string;
+  /**
+   * The id of the code interpreter
+   * @attribute
+   */
   public readonly codeInterpreterId: string;
   public readonly name: string;
   public readonly description?: string;
   public readonly networkConfiguration: CodeInterpreterNetworkConfiguration;
+  /**
+   * The status of the code interpreter
+   * @attribute
+   */
   public readonly status?: string;
+  /**
+   * The created timestamp of the code interpreter
+   * @attribute
+   */
   public readonly createdAt?: string;
+  /**
+   * The last updated timestamp of the code interpreter
+   * @attribute
+   */
   public readonly lastUpdatedAt?: string;
   public readonly executionRole?: iam.IRole;
   /**
