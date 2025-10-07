@@ -452,8 +452,8 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
 
     super(scope, id, {
       physicalName: props.canaryName || cdk.Lazy.string({
-          produce: () => this.generateUniqueName(),
-        }),
+        produce: () => this.generateUniqueName(),
+      }),
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
@@ -463,10 +463,10 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
     }
 
     this.artifactsBucket = props.artifactsBucketLocation?.bucket ?? new s3.Bucket(this, 'ArtifactsBucket', {
-        encryption: s3.BucketEncryption.KMS_MANAGED,
-        enforceSSL: true,
-        lifecycleRules: props.artifactsBucketLifecycleRules,
-      });
+      encryption: s3.BucketEncryption.KMS_MANAGED,
+      enforceSSL: true,
+      lifecycleRules: props.artifactsBucketLifecycleRules,
+    });
 
     this.role = props.role ?? this.createDefaultRole(props);
 
@@ -492,10 +492,10 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
       vpcConfig: this.createVpcConfig(props),
       artifactConfig: this.createArtifactConfig(props),
       provisionedResourceCleanup: props.provisionedResourceCleanup !== undefined
-          ? props.provisionedResourceCleanup
-            ? 'AUTOMATIC'
-            : 'OFF'
-          : undefined,
+        ? props.provisionedResourceCleanup
+          ? 'AUTOMATIC'
+          : 'OFF'
+        : undefined,
       dryRunAndUpdate: props.dryRunAndUpdate,
       browserConfigs: props.browserConfigs?.map(browserType => ({
         browserType,
@@ -567,25 +567,25 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
 
   private cleanupUnderlyingResources() {
     const provider = AutoDeleteUnderlyingResourcesProvider.getOrCreateProvider(this, AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE, {
-        useCfnResponseWrapper: false,
-        description: `Lambda function for auto-deleting underlying resources created by ${this.canaryName}.`,
+      useCfnResponseWrapper: false,
+      description: `Lambda function for auto-deleting underlying resources created by ${this.canaryName}.`,
       policyStatements: [{
-            Effect: 'Allow',
-            Action: ['lambda:DeleteFunction'],
-            Resource: this.lambdaArn(),
+        Effect: 'Allow',
+        Action: ['lambda:DeleteFunction'],
+        Resource: this.lambdaArn(),
       }, {
-            Effect: 'Allow',
-            Action: ['synthetics:GetCanary'],
-            Resource: '*',
+        Effect: 'Allow',
+        Action: ['synthetics:GetCanary'],
+        Resource: '*',
       }],
     });
 
     new cdk.CustomResource(this, 'AutoDeleteUnderlyingResourcesCustomResource', {
-        resourceType: AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE,
-        serviceToken: provider.serviceToken,
-        properties: {
-          CanaryName: this.canaryName,
-        },
+      resourceType: AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE,
+      serviceToken: provider.serviceToken,
+      properties: {
+        CanaryName: this.canaryName,
+      },
     });
 
     // We also tag the canary to record the fact that we want it autodeleted.
@@ -819,7 +819,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
       durationInSeconds: String(`${props.timeToLive?.toSeconds() ?? 0}`),
       expression: props.schedule?.expressionString ?? 'rate(5 minutes)',
       retryConfig: props.maxRetries ? {
-            maxRetries: props.maxRetries,
+        maxRetries: props.maxRetries,
       } : undefined,
     };
   }
