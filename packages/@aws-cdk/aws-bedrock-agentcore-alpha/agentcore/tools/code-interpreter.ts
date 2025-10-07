@@ -10,10 +10,11 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
 import { Construct } from 'constructs';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 // Internal Libs
 import * as perms from './perms';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from './validation-helpers';
-import { CodeInterpreterNetworkConfiguration } from './network-configuration';
+import { CodeInterpreterNetworkConfiguration } from '../network/network-configuration';
 
 /******************************************************************************
  *                              CONSTANTS
@@ -457,7 +458,11 @@ export interface CodeInterpreterCustomProps {
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/code-interpreter.html
  * @resource AWS::BedrockAgentCore::CodeInterpreterCustom
  */
+@propertyInjectable
 export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-agentcore-alpha.CodeInterpreterCustom';
+
   public readonly codeInterpreterArn: string;
   public readonly codeInterpreterId: string;
   public readonly name: string;

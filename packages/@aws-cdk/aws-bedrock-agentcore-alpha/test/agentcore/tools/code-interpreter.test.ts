@@ -3,7 +3,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CodeInterpreterCustom } from '../../../agentcore/tools/code-interpreter';
-import { CodeInterpreterNetworkConfiguration } from '../../../agentcore/tools/network-configuration';
+import { CodeInterpreterNetworkConfiguration } from '../../../agentcore/network/network-configuration';
 
 describe('CodeInterpreterCustom default tests', () => {
   let template: Template;

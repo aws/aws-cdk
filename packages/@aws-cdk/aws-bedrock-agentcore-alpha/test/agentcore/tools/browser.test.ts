@@ -4,7 +4,7 @@ import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { BrowserCustom } from '../../../agentcore/tools/browser';
-import { BrowserNetworkConfiguration } from '../../../agentcore/tools/network-configuration';
+import { BrowserNetworkConfiguration } from '../../../agentcore/network/network-configuration';
 
 describe('BrowserCustom default tests', () => {
   let template: Template;

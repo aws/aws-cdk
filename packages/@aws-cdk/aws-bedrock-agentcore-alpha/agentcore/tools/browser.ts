@@ -12,10 +12,11 @@ import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
 import { Location } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 // Internal Libs
 import * as perms from './perms';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from './validation-helpers';
-import { BrowserNetworkConfiguration } from './network-configuration';
+import { BrowserNetworkConfiguration } from '../network/network-configuration';
 
 /******************************************************************************
  *                              CONSTANTS
@@ -532,7 +533,11 @@ export interface BrowserCustomProps {
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/browser.html
  * @resource AWS::BedrockAgentCore::BrowserCustom
  */
+@propertyInjectable
 export class BrowserCustom extends BrowserCustomBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-agentcore-alpha.BrowserCustom';
+
   public readonly browserArn: string;
   public readonly browserId: string;
   public readonly name: string;
