@@ -479,13 +479,14 @@ export class ResourceClass extends ClassType {
       return;
     }
 
-    CDK_IAM.import(this.module, 'iam');
+    if (!this.module.imports.some(imp => imp.module.fqn === CDK_IAM.fqn)) {
+      CDK_IAM.import(this.module, 'iam');
+    }
 
     const grant = this.addMethod({
       name: 'grant',
       docs: {
         summary: 'Grant the given IGrantable permissions to perform the actions specified in actions on this resource.',
-        stability: Stability.External,
       },
       returnType: CDK_IAM.Grant,
     });
