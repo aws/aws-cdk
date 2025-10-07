@@ -64,13 +64,10 @@ describe('CodeInterpreterCustom default tests', () => {
 });
 
 describe('CodeInterpreterCustom static methods tests', () => {
-
   // @ts-ignore
   let template: Template;
   let app: cdk.App;
   let stack: cdk.Stack;
-  // @ts-ignore
-  let codeInterpreter: CodeInterpreterCustom;
 
   beforeAll(() => {
     app = new cdk.App();

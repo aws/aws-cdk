@@ -65,13 +65,10 @@ describe('BrowserCustom default tests', () => {
 });
 
 describe('BrowserCustom static methods tests', () => {
-
   // @ts-ignore
   let template: Template;
   let app: cdk.App;
   let stack: cdk.Stack;
-  // @ts-ignore
-  let browser: BrowserCustom;
 
   beforeAll(() => {
     app = new cdk.App();
