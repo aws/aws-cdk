@@ -115,33 +115,31 @@ export class RelationshipDecider {
       return true;
     }
     const type = prop.previousTypes?.at(0) ?? prop.type;
-    if (type.type === 'ref' || (type.type === 'array' && type.element.type === 'ref')) {
-      let refId: string;
-      if (type.type === 'ref') {
-        refId = type.reference.$ref;
-      } else if (type.type === 'array' && type.element.type === 'ref') {
-        refId = type.element.reference.$ref;
-      } else {
-        return false;
+    let refId: string;
+    if (type.type === 'ref') {
+      refId = type.reference.$ref;
+    } else if (type.type === 'array' && type.element.type === 'ref') {
+      refId = type.element.reference.$ref;
+    } else {
+      return false;
+    }
+
+    if (visited.has(refId)) {
+      return false;
+    }
+    visited.add(refId);
+
+    const referencedTypeDef = this.db.get('typeDefinition', refId);
+
+    // Check if any property in the referenced type has relationships
+    for (const [propName, nestedProp] of Object.entries(referencedTypeDef.properties)) {
+      const relationships = this.parseRelationship(propName, nestedProp.relationshipRefs);
+      if (relationships.length > 0) {
+        return true;
       }
 
-      if (visited.has(refId)) {
-        return false;
-      }
-      visited.add(refId);
-
-      const referencedTypeDef = this.db.get('typeDefinition', refId);
-
-      // Check if any property in the referenced type has relationships
-      for (const [propName, nestedProp] of Object.entries(referencedTypeDef.properties)) {
-        const relationships = this.parseRelationship(propName, nestedProp.relationshipRefs);
-        if (relationships.length > 0) {
-          return true;
-        }
-
-        if (this.needsFlatteningFunction(nestedProp, visited)) {
-          return true;
-        }
+      if (this.needsFlatteningFunction(nestedProp, visited)) {
+        return true;
       }
     }
     return false;
