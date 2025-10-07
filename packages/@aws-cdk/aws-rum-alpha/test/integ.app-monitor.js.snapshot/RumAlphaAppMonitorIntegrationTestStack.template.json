@@ -1,0 +1,123 @@
+{
+ "Resources": {
+  "BasicAppMonitor7000DDB2": {
+   "Type": "AWS::RUM::AppMonitor",
+   "Properties": {
+    "Domain": "example.com",
+    "Name": "basic-alpha-integ-test-app"
+   }
+  },
+  "AppMonitorWithLogs5573DCD9": {
+   "Type": "AWS::RUM::AppMonitor",
+   "Properties": {
+    "CwLogEnabled": true,
+    "Domain": "example.com",
+    "Name": "alpha-integ-test-app-with-logs"
+   }
+  },
+  "ConfiguredAppMonitor49808BA1": {
+   "Type": "AWS::RUM::AppMonitor",
+   "Properties": {
+    "AppMonitorConfiguration": {
+     "AllowCookies": true,
+     "EnableXRay": true,
+     "SessionSampleRate": 0.3
+    },
+    "CustomEvents": {
+     "Status": "ENABLED"
+    },
+    "Domain": "example.com",
+    "Name": "configured-alpha-integ-test-app"
+   }
+  }
+ },
+ "Outputs": {
+  "BasicAppMonitorId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "BasicAppMonitor7000DDB2",
+     "Id"
+    ]
+   }
+  },
+  "BasicAppMonitorName": {
+   "Value": "basic-alpha-integ-test-app"
+  },
+  "AppMonitorWithLogsId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AppMonitorWithLogs5573DCD9",
+     "Id"
+    ]
+   }
+  },
+  "ConfiguredAppMonitorId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ConfiguredAppMonitor49808BA1",
+     "Id"
+    ]
+   }
+  },
+  "LogGroupName": {
+   "Value": {
+    "Fn::Sub": [
+     "RUMService_${Name}${Id}",
+     {
+      "Name": "alpha-integ-test-app-with-logs",
+      "Id": {
+       "Fn::Select": [
+        0,
+        {
+         "Fn::Split": [
+          "-",
+          {
+           "Fn::GetAtt": [
+            "AppMonitorWithLogs5573DCD9",
+            "Id"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
