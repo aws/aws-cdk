@@ -27,7 +27,7 @@ const taggedCustomAsset = new assets.DockerImageAsset(stack, 'TaggedCustomAsset'
   imageTag: 'v1.2.3',
 });
 
-// Test 3: Custom repository with tag prefix  
+// Test 3: Custom repository with tag prefix
 const prefixedCustomAsset = new assets.DockerImageAsset(stack, 'PrefixedCustomAsset', {
   directory: path.join(__dirname, 'demo-image'),
   ecrRepository: customRepo,
