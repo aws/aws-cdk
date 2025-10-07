@@ -6,8 +6,10 @@ import {
   Block,
   ClassType,
   code,
+  DocsSpec,
   DummyScope,
-  expr, Expression,
+  expr,
+  Expression,
   Initializer,
   InterfaceType,
   IScope,
@@ -16,7 +18,8 @@ import {
   MemberVisibility,
   Module,
   ObjectLiteral,
-  Stability, Statement,
+  Stability,
+  Statement,
   stmt,
   StructType,
   SuperInitializer,
@@ -24,18 +27,20 @@ import {
   TruthyOr,
   Type,
   TypeDeclarationStatement,
-  DocsSpec,
 } from '@cdklabs/typewriter';
-import { CDK_CORE, CONSTRUCTS } from './cdk';
+import { CDK_CORE, CDK_IAM, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
 import { ResourceDecider, shouldBuildReferenceInterface } from './resource-decider';
 import { TypeConverter } from './type-converter';
 import {
+  attributePropertyName,
   cfnParserNameFromType,
   cfnProducerNameFromType,
   classNameFromResource,
-  cloudFormationDocLink, propertyNameFromCloudFormation,
-  propStructNameFromResource, referencePropertyName,
+  cloudFormationDocLink,
+  propertyNameFromCloudFormation,
+  propStructNameFromResource,
+  referencePropertyName,
   staticRequiredTransform,
   staticResourceTypeName,
 } from '../naming';
@@ -152,6 +157,7 @@ export class ResourceClass extends ClassType {
     this.makeFromCloudFormationFactory();
     this.makeFromArnFactory();
     this.makeFromNameFactory();
+    this.makeGrant();
 
     if (this.resource.cloudFormationTransform) {
       this.addProperty({
@@ -464,6 +470,53 @@ export class ResourceClass extends ClassType {
 
       options.parser.handleAttributes(ret, resourceAttributes, id),
       stmt.ret(ret),
+    );
+  }
+
+  private makeGrant() {
+    const cfnArnProperty = this.decider.findArnProperty();
+    if (cfnArnProperty == null) {
+      return;
+    }
+
+    CDK_IAM.import(this.module, 'iam');
+
+    const grant = this.addMethod({
+      name: 'grant',
+      docs: {
+        summary: 'Grant the given IGrantable permissions to perform the actions specified in actions on this resource.',
+        stability: Stability.External,
+      },
+      returnType: CDK_IAM.Grant,
+    });
+
+    grant.addParameter({
+      name: 'grantee',
+      type: CDK_IAM.IGrantable,
+      documentation: 'The principal to grant permissions to.',
+    });
+
+    grant.addParameter({
+      name: 'actions',
+      type: Type.arrayOf(Type.STRING),
+      documentation: 'The actions to grant permissions for.',
+    });
+
+    grant.addParameter({
+      name: 'conditions',
+      type: Type.mapOf(Type.mapOf(Type.ambient('unknown'))),
+      documentation: 'The conditions under which the actions should be allowed.',
+      optional: true,
+    });
+
+    grant.addBody(
+      stmt.ret(CDK_IAM.Grant.addToPrincipal(expr.object({
+        grantee: expr.ident('grantee'),
+        actions: expr.ident('actions'),
+        resourceArns: expr.list([$this[attributePropertyName(cfnArnProperty)]]),
+        scope: $this,
+        conditions: expr.ident('conditions'),
+      }))),
     );
   }
 

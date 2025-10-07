@@ -123,8 +123,14 @@ export class CdkCloudWatch extends ExternalModule {
   public readonly MetricOptions = Type.fromName(this, 'MetricOptions');
 }
 
+export class CdkIam extends ExternalModule {
+  public readonly Grant = $T(Type.fromName(this, 'Grant'));
+  public readonly IGrantable = $T(Type.fromName(this, 'IGrantable'));
+}
+
 export const CDK_CORE = new CdkCore('aws-cdk-lib');
 export const CDK_CLOUDWATCH = new CdkCloudWatch('aws-cdk-lib/aws-cloudwatch');
+export const CDK_IAM = new CdkIam('aws-cdk-lib/aws-iam');
 export const CONSTRUCTS = new Constructs();
 
 function makeCallableExpr(scope: IScope, name: string) {

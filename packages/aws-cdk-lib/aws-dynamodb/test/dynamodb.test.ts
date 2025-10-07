@@ -441,6 +441,59 @@ describe('L1 static factory methods', () => {
   });
 });
 
+describe('L1 grant method', () => {
+  test('grant can be used to add permissions to a principal', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new CfnTable(stack, 'MyTable', {
+      keySchema: [{ attributeName: 'ID', keyType: 'HASH' }],
+    });
+    const user = new iam.User(stack, 'user');
+
+    // WHEN
+    const grant = table.grant(
+      user,
+      ['dynamodb:GetRecords', 'dynamodb:GetShardIterator'],
+      {
+        'StringEqualsIfExists': {
+          'dynamodb:Select': 'SPECIFIC_ATTRIBUTES',
+        },
+      },
+    );
+
+    // THEN
+    grant.assertSuccess();
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': ['dynamodb:GetRecords', 'dynamodb:GetShardIterator'],
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::GetAtt': [
+                'MyTable',
+                'Arn',
+              ],
+            },
+            'Condition': {
+              'StringEqualsIfExists': {
+                'dynamodb:Select': 'SPECIFIC_ATTRIBUTES',
+              },
+            },
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+      'PolicyName': 'userDefaultPolicy083DF682',
+      'Users': [
+        {
+          'Ref': 'user2C2B57AE',
+        },
+      ],
+    });
+  });
+});
+
 testDeprecated('when specifying every property', () => {
   const stack = new Stack();
   const stream = new kinesis.Stream(stack, 'MyStream');
