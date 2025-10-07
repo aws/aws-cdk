@@ -114,6 +114,7 @@ export class RelationshipDecider {
     if (prop.relationshipRefs && prop.relationshipRefs.length > 0) {
       return true;
     }
+    // Need to check for previous types because they are the one being used
     const type = prop.previousTypes?.at(0) ?? prop.type;
     let refId: string;
     if (type.type === 'ref') {
