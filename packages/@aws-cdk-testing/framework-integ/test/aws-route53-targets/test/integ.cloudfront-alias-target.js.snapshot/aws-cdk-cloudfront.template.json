@@ -9,8 +9,6 @@
   "HostedZoneAlias40D2E006": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
-    "Name": "_foo.test.public.",
-    "Type": "A",
     "AliasTarget": {
      "DNSName": {
       "Fn::GetAtt": [
@@ -30,7 +28,63 @@
     },
     "HostedZoneId": {
      "Ref": "HostedZoneDB99F866"
-    }
+    },
+    "Name": "_foo.test.public.",
+    "Type": "A"
+   }
+  },
+  "HostedZoneAaaaAliasD8DDBA5A": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "MyDistributionCFDistributionDE147309",
+       "DomainName"
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::FindInMap": [
+       "AWSCloudFrontPartitionHostedZoneIdMap",
+       {
+        "Ref": "AWS::Partition"
+       },
+       "zoneId"
+      ]
+     }
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "_foo.test.public.",
+    "Type": "AAAA"
+   }
+  },
+  "HostedZoneHttpsAlias0D3AF83C": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "MyDistributionCFDistributionDE147309",
+       "DomainName"
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::FindInMap": [
+       "AWSCloudFrontPartitionHostedZoneIdMap",
+       {
+        "Ref": "AWS::Partition"
+       },
+       "zoneId"
+      ]
+     }
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "_foo.test.public.",
+    "Type": "HTTPS"
    }
   },
   "Bucket83908E77": {
