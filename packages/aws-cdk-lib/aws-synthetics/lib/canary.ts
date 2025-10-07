@@ -1,6 +1,7 @@
 import * as crypto from 'crypto';
 import { Construct } from 'constructs';
 import { Code } from './code';
+import { ICanary } from './interfaces';
 import { Runtime, RuntimeFamily } from './runtime';
 import { Schedule } from './schedule';
 import { CloudWatchSyntheticsMetrics } from './synthetics-canned-metrics.generated';
@@ -395,7 +396,7 @@ export enum ArtifactsEncryptionMode {
  * Define a new Canary
  */
 @propertyInjectable
-export class Canary extends cdk.Resource implements ec2.IConnectable {
+export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
   /**
    * Uniquely identifies this class.
    */
@@ -425,6 +426,12 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
   public readonly canaryName: string;
 
   /**
+   * The canary ARN
+   * @attribute
+   */
+  public readonly canaryArn: string;
+
+  /**
    * Bucket where data from each canary run is stored.
    */
   public readonly artifactsBucket: s3.IBucket;
@@ -445,8 +452,8 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
 
     super(scope, id, {
       physicalName: props.canaryName || cdk.Lazy.string({
-        produce: () => this.generateUniqueName(),
-      }),
+          produce: () => this.generateUniqueName(),
+        }),
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
@@ -456,10 +463,10 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     }
 
     this.artifactsBucket = props.artifactsBucketLocation?.bucket ?? new s3.Bucket(this, 'ArtifactsBucket', {
-      encryption: s3.BucketEncryption.KMS_MANAGED,
-      enforceSSL: true,
-      lifecycleRules: props.artifactsBucketLifecycleRules,
-    });
+        encryption: s3.BucketEncryption.KMS_MANAGED,
+        enforceSSL: true,
+        lifecycleRules: props.artifactsBucketLifecycleRules,
+      });
 
     this.role = props.role ?? this.createDefaultRole(props);
 
@@ -485,10 +492,10 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       vpcConfig: this.createVpcConfig(props),
       artifactConfig: this.createArtifactConfig(props),
       provisionedResourceCleanup: props.provisionedResourceCleanup !== undefined
-        ? props.provisionedResourceCleanup
-          ? 'AUTOMATIC'
-          : 'OFF'
-        : undefined,
+          ? props.provisionedResourceCleanup
+            ? 'AUTOMATIC'
+            : 'OFF'
+          : undefined,
       dryRunAndUpdate: props.dryRunAndUpdate,
       browserConfigs: props.browserConfigs?.map(browserType => ({
         browserType,
@@ -500,6 +507,12 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     this.canaryId = resource.attrId;
     this.canaryState = resource.attrState;
     this.canaryName = this.getResourceNameAttribute(resource.ref);
+    this.canaryArn = cdk.Stack.of(this).formatArn({
+      service: 'synthetics',
+      resource: 'canary',
+      resourceName: this.canaryName,
+      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+    });
 
     if (props.cleanup === Cleanup.LAMBDA) {
       this.cleanupUnderlyingResources();
@@ -554,25 +567,25 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
 
   private cleanupUnderlyingResources() {
     const provider = AutoDeleteUnderlyingResourcesProvider.getOrCreateProvider(this, AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE, {
-      useCfnResponseWrapper: false,
-      description: `Lambda function for auto-deleting underlying resources created by ${this.canaryName}.`,
+        useCfnResponseWrapper: false,
+        description: `Lambda function for auto-deleting underlying resources created by ${this.canaryName}.`,
       policyStatements: [{
-        Effect: 'Allow',
-        Action: ['lambda:DeleteFunction'],
-        Resource: this.lambdaArn(),
+            Effect: 'Allow',
+            Action: ['lambda:DeleteFunction'],
+            Resource: this.lambdaArn(),
       }, {
-        Effect: 'Allow',
-        Action: ['synthetics:GetCanary'],
-        Resource: '*',
+            Effect: 'Allow',
+            Action: ['synthetics:GetCanary'],
+            Resource: '*',
       }],
     });
 
     new cdk.CustomResource(this, 'AutoDeleteUnderlyingResourcesCustomResource', {
-      resourceType: AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE,
-      serviceToken: provider.serviceToken,
-      properties: {
-        CanaryName: this.canaryName,
-      },
+        resourceType: AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE,
+        serviceToken: provider.serviceToken,
+        properties: {
+          CanaryName: this.canaryName,
+        },
     });
 
     // We also tag the canary to record the fact that we want it autodeleted.
@@ -758,7 +771,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     if (
       props.activeTracing &&
       (
-        // Only check runtime family is nodejs because versions prior to syn-nodejs-2.0 are deprecated and can no longer be configured.
+      // Only check runtime family is nodejs because versions prior to syn-nodejs-2.0 are deprecated and can no longer be configured.
         (!cdk.Token.isUnresolved(props.runtime.family) && props.runtime.family !== RuntimeFamily.NODEJS) ||
         (!cdk.Token.isUnresolved(props.runtime.name) && props.runtime.name.includes('playwright'))
       )
@@ -806,7 +819,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       durationInSeconds: String(`${props.timeToLive?.toSeconds() ?? 0}`),
       expression: props.schedule?.expressionString ?? 'rate(5 minutes)',
       retryConfig: props.maxRetries ? {
-        maxRetries: props.maxRetries,
+            maxRetries: props.maxRetries,
       } : undefined,
     };
   }

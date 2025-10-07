@@ -14,15 +14,15 @@ The Hitchhikers Guide to the Galaxy
 The below code defines a canary that will hit the `books/topbook` endpoint every 5 minutes:
 
 ```ts
-const canary = new synthetics.Canary(this, 'MyCanary', {
+const canary = new synthetics.Canary(this, "MyCanary", {
   schedule: synthetics.Schedule.rate(Duration.minutes(5)),
   test: synthetics.Test.custom({
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
-    handler: 'index.handler',
+    code: synthetics.Code.fromAsset(path.join(__dirname, "canary")),
+    handler: "index.handler",
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
   environmentVariables: {
-    stage: 'prod',
+    stage: "prod",
   },
 });
 ```
@@ -30,23 +30,26 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
 The following is an example of an `index.js` file which exports the `handler` function:
 
 ```js
-const synthetics = require('Synthetics');
-const log = require('SyntheticsLogger');
+const synthetics = require("Synthetics");
+const log = require("SyntheticsLogger");
 
 const pageLoadBlueprint = async function () {
   // Configure the stage of the API using environment variables
   const url = `https://api.example.com/${process.env.stage}/user/books/topbook/`;
 
   const page = await synthetics.getPage();
-  const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  const response = await page.goto(url, {
+    waitUntil: "domcontentloaded",
+    timeout: 30000,
+  });
   // Wait for page to render. Increase or decrease wait time based on endpoint being monitored.
   await page.waitFor(15000);
   // This will take a screenshot that will be included in test output artifacts.
-  await synthetics.takeScreenshot('loaded', 'loaded');
+  await synthetics.takeScreenshot("loaded", "loaded");
   const pageTitle = await page.title();
-  log.info('Page title: ' + pageTitle);
+  log.info("Page title: " + pageTitle);
   if (response.status() !== 200) {
-    throw 'Failed to load page!';
+    throw "Failed to load page!";
   }
 };
 
@@ -81,7 +84,7 @@ You can also specify a [cron expression](https://docs.aws.amazon.com/AmazonCloud
 
 ```ts
 const schedule = synthetics.Schedule.cron({
-  hour: '0,8,16', // Run at 12am, 8am, 4pm UTC every day
+  hour: "0,8,16", // Run at 12am, 8am, 4pm UTC every day
 });
 ```
 
@@ -98,11 +101,11 @@ Max retries can be set between 0 and 2. Canaries which time out after 10 minutes
 For more information, see [Configuring your canary to retry automatically](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_autoretry.html).
 
 ```ts
-const canary = new synthetics.Canary(this, 'MyCanary', {
-  schedule: synthetics.Schedule.rate(Duration.minutes(5)), 
+const canary = new synthetics.Canary(this, "MyCanary", {
+  schedule: synthetics.Schedule.rate(Duration.minutes(5)),
   test: synthetics.Test.custom({
-    handler: 'canary.handler',
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+    handler: "canary.handler",
+    code: synthetics.Code.fromAsset(path.join(__dirname, "canaries")),
   }),
   runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_5_1,
   maxRetries: 2, // The canary run will retry up to 2 times on a failure
@@ -118,11 +121,11 @@ With tracing enabled, traces are sent for all calls made by the canary that use 
 For more information, see [Canaries and X-Ray tracing](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_tracing.html).
 
 ```ts
-const canary = new synthetics.Canary(this, 'MyCanary', {
+const canary = new synthetics.Canary(this, "MyCanary", {
   schedule: synthetics.Schedule.rate(Duration.minutes(5)),
   test: synthetics.Test.custom({
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
-    handler: 'index.handler',
+    code: synthetics.Code.fromAsset(path.join(__dirname, "canary")),
+    handler: "index.handler",
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
   activeTracing: true, // active tracing enabled
@@ -136,11 +139,11 @@ You can set the maximum amount of memory the canary can use while running with t
 ```ts
 import * as cdk from "aws-cdk-lib";
 
-const canary = new synthetics.Canary(this, 'MyCanary', {
+const canary = new synthetics.Canary(this, "MyCanary", {
   schedule: synthetics.Schedule.rate(Duration.minutes(5)),
   test: synthetics.Test.custom({
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
-    handler: 'index.handler',
+    code: synthetics.Code.fromAsset(path.join(__dirname, "canary")),
+    handler: "index.handler",
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
   memory: cdk.Size.mebibytes(1024), // 1024 MiB
@@ -154,11 +157,11 @@ You can set how long the canary is allowed to run before it must stop with the `
 ```ts
 import * as cdk from "aws-cdk-lib";
 
-const canary = new synthetics.Canary(this, 'MyCanary', {
+const canary = new synthetics.Canary(this, "MyCanary", {
   schedule: synthetics.Schedule.rate(Duration.minutes(5)),
   test: synthetics.Test.custom({
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
-    handler: 'index.handler',
+    code: synthetics.Code.fromAsset(path.join(__dirname, "canary")),
+    handler: "index.handler",
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
   timeout: cdk.Duration.seconds(60), // 60 seconds
@@ -170,17 +173,18 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
 You can configure which browsers your canary uses for testing by specifying the `browserConfigs` property. This allows you to test your application across different browsers to ensure compatibility.
 
 Available browser types:
+
 - `BrowserType.CHROME` - Google Chrome browser
 - `BrowserType.FIREFOX` - Mozilla Firefox browser
 
 You can specify up to 2 browser configurations. When multiple browsers are configured, the canary will run tests on each browser sequentially.
 
 ```ts
-const canary = new synthetics.Canary(this, 'MyCanary', {
+const canary = new synthetics.Canary(this, "MyCanary", {
   schedule: synthetics.Schedule.rate(Duration.minutes(5)),
   test: synthetics.Test.custom({
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
-    handler: 'index.handler',
+    code: synthetics.Code.fromAsset(path.join(__dirname, "canary")),
+    handler: "index.handler",
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1,
   browserConfigs: [
@@ -196,10 +200,10 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
 
 When you delete a lambda, the following underlying resources are isolated in your AWS account:
 
-  - Lambda Function that runs your canary script
-  - S3 Bucket for artifact storage
-  - IAM roles and policies
-  - Log Groups in CloudWatch Logs.
+- Lambda Function that runs your canary script
+- S3 Bucket for artifact storage
+- IAM roles and policies
+- Log Groups in CloudWatch Logs.
 
 To learn more about these underlying resources, see
 [Synthetics Canaries Deletion](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/synthetics_canaries_deletion.html).
@@ -208,10 +212,10 @@ In the CDK, you can configure your canary to delete the underlying lambda functi
 This can be provisioned by setting `provisionedResourceCleanup` to `true`.
 
 ```ts
-const canary = new synthetics.Canary(this, 'Canary', {
+const canary = new synthetics.Canary(this, "Canary", {
   test: synthetics.Test.custom({
-    handler: 'index.handler',
-    code: synthetics.Code.fromInline('/* Synthetics handler code'),
+    handler: "index.handler",
+    code: synthetics.Code.fromInline("/* Synthetics handler code"),
   }),
   provisionedResourceCleanup: true,
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
@@ -229,38 +233,38 @@ To configure the script the canary executes, use the `test` property. The `test`
 
 The `synthetics.Code` class exposes static methods to bundle your code artifacts:
 
-  - `code.fromInline(code)` - specify an inline script.
-  - `code.fromAsset(path)` - specify a .zip file or a directory in the local filesystem which will be zipped and uploaded to S3 on deployment. See the below Note for directory structure.
-  - `code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object that contains the .zip file of your runtime code. See the below Note for directory structure.
+- `code.fromInline(code)` - specify an inline script.
+- `code.fromAsset(path)` - specify a .zip file or a directory in the local filesystem which will be zipped and uploaded to S3 on deployment. See the below Note for directory structure.
+- `code.fromBucket(bucket, key[, objectVersion])` - specify an S3 object that contains the .zip file of your runtime code. See the below Note for directory structure.
 
 Using the `Code` class static initializers:
 
 ```ts
 // To supply the code inline:
-new synthetics.Canary(this, 'Inline Canary', {
+new synthetics.Canary(this, "Inline Canary", {
   test: synthetics.Test.custom({
-    code: synthetics.Code.fromInline('/* Synthetics handler code */'),
-    handler: 'index.handler', // must be 'index.handler'
+    code: synthetics.Code.fromInline("/* Synthetics handler code */"),
+    handler: "index.handler", // must be 'index.handler'
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
 });
 
 // To supply the code from your local filesystem:
-new synthetics.Canary(this, 'Asset Canary', {
+new synthetics.Canary(this, "Asset Canary", {
   test: synthetics.Test.custom({
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
-    handler: 'index.handler', // must end with '.handler'
+    code: synthetics.Code.fromAsset(path.join(__dirname, "canary")),
+    handler: "index.handler", // must end with '.handler'
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
 });
 
 // To supply the code from a S3 bucket:
-import * as s3 from 'aws-cdk-lib/aws-s3';
-const bucket = new s3.Bucket(this, 'Code Bucket');
-new synthetics.Canary(this, 'Bucket Canary', {
+import * as s3 from "aws-cdk-lib/aws-s3";
+const bucket = new s3.Bucket(this, "Code Bucket");
+new synthetics.Canary(this, "Bucket Canary", {
   test: synthetics.Test.custom({
-    code: synthetics.Code.fromBucket(bucket, 'canary.zip'),
-    handler: 'index.handler', // must end with '.handler'
+    code: synthetics.Code.fromBucket(bucket, "canary.zip"),
+    handler: "index.handler", // must end with '.handler'
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
 });
@@ -306,13 +310,13 @@ This can allow for monitoring services that may be internal to a specific VPC. T
 This will automatically attach the appropriate IAM permissions to attach to the VPC. This will also create a Security Group and attach to the default subnets for the VPC unless specified via `vpcSubnets` and `securityGroups`.
 
 ```ts
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ec2 from "aws-cdk-lib/aws-ec2";
 
 declare const vpc: ec2.IVpc;
-new synthetics.Canary(this, 'Vpc Canary', {
+new synthetics.Canary(this, "Vpc Canary", {
   test: synthetics.Test.custom({
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
-    handler: 'index.handler',
+    code: synthetics.Code.fromAsset(path.join(__dirname, "canary")),
+    handler: "index.handler",
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
   vpc,
@@ -336,10 +340,10 @@ You can configure a CloudWatch Alarm on a canary metric. Metrics are emitted by 
 Create an alarm that tracks the canary metric:
 
 ```ts
-import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as cloudwatch from "aws-cdk-lib/aws-cloudwatch";
 
 declare const canary: synthetics.Canary;
-new cloudwatch.Alarm(this, 'CanaryAlarm', {
+new cloudwatch.Alarm(this, "CanaryAlarm", {
   metric: canary.metricSuccessPercent(),
   evaluationPeriods: 2,
   threshold: 90,
@@ -357,11 +361,11 @@ If the dry run succeeds, the canary will be updated with the changes.
 If the dry run fails, the CloudFormation deployment will fail with the dry run's failure reason.
 
 ```ts
-const canary = new synthetics.Canary(this, 'MyCanary', {
+const canary = new synthetics.Canary(this, "MyCanary", {
   schedule: synthetics.Schedule.rate(Duration.minutes(5)),
   test: synthetics.Test.custom({
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
-    handler: 'index.handler',
+    code: synthetics.Code.fromAsset(path.join(__dirname, "canary")),
+    handler: "index.handler",
   }),
   runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_5_1,
   dryRunAndUpdate: true, // Enable dry run before updating
@@ -378,16 +382,18 @@ one will be auto-generated when the canary is created. You may add
 to the auto-generated bucket.
 
 ```ts
-const canary = new synthetics.Canary(this, 'MyCanary', {
+const canary = new synthetics.Canary(this, "MyCanary", {
   schedule: synthetics.Schedule.rate(Duration.minutes(5)),
   test: synthetics.Test.custom({
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
-    handler: 'index.handler',
+    code: synthetics.Code.fromAsset(path.join(__dirname, "canary")),
+    handler: "index.handler",
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
-  artifactsBucketLifecycleRules: [{
-    expiration: Duration.days(30),
-  }],
+  artifactsBucketLifecycleRules: [
+    {
+      expiration: Duration.days(30),
+    },
+  ],
 });
 ```
 
@@ -398,20 +404,22 @@ You can choose the encryption options SSE-S3 or SSE-KMS by setting the `artifact
 When you use SSE-KMS, you can also supply your own external KMS key by specifying the `kmsKey` property. If you don't, a KMS key will be automatically created and associated with the canary.
 
 ```ts
-import * as kms from 'aws-cdk-lib/aws-kms';
+import * as kms from "aws-cdk-lib/aws-kms";
 
-const key = new kms.Key(this, 'myKey');
+const key = new kms.Key(this, "myKey");
 
-const canary = new synthetics.Canary(this, 'MyCanary', {
+const canary = new synthetics.Canary(this, "MyCanary", {
   schedule: synthetics.Schedule.rate(Duration.minutes(5)),
   test: synthetics.Test.custom({
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
-    handler: 'index.handler',
+    code: synthetics.Code.fromAsset(path.join(__dirname, "canary")),
+    handler: "index.handler",
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
-  artifactsBucketLifecycleRules: [{
-    expiration: Duration.days(30),
-  }],
+  artifactsBucketLifecycleRules: [
+    {
+      expiration: Duration.days(30),
+    },
+  ],
   artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.KMS,
   artifactS3KmsKey: key,
 });
@@ -422,16 +430,79 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
 You can configure a canary to replicate its tags to the underlying Lambda function. This is useful when you want the same tags that are applied to the canary to also be applied to the Lambda function that the canary uses.
 
 ```ts
-const canary = new synthetics.Canary(this, 'MyCanary', {
+const canary = new synthetics.Canary(this, "MyCanary", {
   schedule: synthetics.Schedule.rate(Duration.minutes(5)),
   test: synthetics.Test.custom({
-    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
-    handler: 'index.handler',
+    code: synthetics.Code.fromAsset(path.join(__dirname, "canary")),
+    handler: "index.handler",
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
-  resourcesToReplicateTags: [synthetics.ResourceToReplicateTags.LAMBDA_FUNCTION],
+  resourcesToReplicateTags: [
+    synthetics.ResourceToReplicateTags.LAMBDA_FUNCTION,
+  ],
 });
 ```
 
 When you specify `ResourceToReplicateTags.LAMBDA_FUNCTION` in the `resourcesToReplicateTags` property, CloudWatch Synthetics will keep the tags of the canary and the Lambda function synchronized. Any future changes you make to the canary's tags will also be applied to the function.
 
+## Groups
+
+You can create groups to associate canaries with each other, including cross-Region canaries. Using groups can help you with managing and automating your canaries, and you can also view aggregated run results and statistics for all canaries in a group.
+
+Groups are global resources. When you create a group, it is replicated across all AWS Regions that support groups, and you can add canaries from any of these Regions to it.
+
+### Creating a Group
+
+You can create a group and associate canaries with it:
+
+```ts
+// First, declare your canaries
+declare const canary1: synthetics.Canary;
+declare const canary2: synthetics.Canary;
+
+const group = new synthetics.Group(this, "MyCanaryGroup", {
+  groupName: "production-canaries",
+  canaries: [canary1, canary2],
+});
+```
+
+### Adding Canaries to a Group
+
+You can add canaries to a group after creation:
+
+```ts
+declare const canary: synthetics.Canary;
+
+const group = new synthetics.Group(this, "MyCanaryGroup");
+
+// Add canary to group
+group.addCanary(canary);
+```
+
+### Group Limitations
+
+- Each group can contain as many as 10 canaries
+- You can have as many as 20 groups in your account
+- Any single canary can be a member of up to 10 groups
+
+### Importing Existing Groups
+
+You can import existing groups by ARN or name:
+
+```ts
+// Import by ARN
+const importedGroup = synthetics.Group.fromGroupArn(
+  this,
+  "ImportedGroup",
+  "arn:aws:synthetics:us-east-1:123456789012:group:my-group"
+);
+
+// Import by name
+const importedGroup = synthetics.Group.fromGroupName(
+  this,
+  "ImportedGroup",
+  "my-group"
+);
+```
+
+For more information about groups, see the [CloudWatch Synthetics Groups documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Groups.html).
