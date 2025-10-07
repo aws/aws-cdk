@@ -164,4 +164,26 @@ describe('Group', () => {
     expect(group.groupName).toBe('my-group');
     expect(group.groupId).toBe('my-group');
   });
+
+  test('can import canary by ARN', () => {
+    // WHEN
+    const canary = synthetics.Canary.fromCanaryArn(
+      stack,
+      'ImportedCanary',
+      'arn:aws:synthetics:us-east-1:123456789012:canary:my-canary',
+    );
+
+    // THEN
+    expect(canary.canaryName).toBe('my-canary');
+    expect(canary.canaryArn).toContain('my-canary');
+  });
+
+  test('can import canary by name', () => {
+    // WHEN
+    const canary = synthetics.Canary.fromCanaryName(stack, 'ImportedCanary', 'my-canary');
+
+    // THEN
+    expect(canary.canaryName).toBe('my-canary');
+    expect(canary.canaryId).toBe('my-canary');
+  });
 });

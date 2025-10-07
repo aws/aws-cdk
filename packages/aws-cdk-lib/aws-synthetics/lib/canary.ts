@@ -403,6 +403,38 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-synthetics.Canary';
 
   /**
+   * Import an existing canary by ARN
+   */
+  public static fromCanaryArn(scope: Construct, id: string, canaryArn: string): ICanary {
+    const arnParts = cdk.Arn.split(canaryArn, cdk.ArnFormat.COLON_RESOURCE_NAME);
+    const canaryName = arnParts.resourceName;
+
+    if (!canaryName) {
+      throw new ValidationError('Canary ARN must contain a canary name', scope);
+    }
+
+    return Canary.fromCanaryName(scope, id, canaryName);
+  }
+
+  /**
+   * Import an existing canary by name
+   */
+  public static fromCanaryName(scope: Construct, id: string, canaryName: string): ICanary {
+    class Import extends cdk.Resource implements ICanary {
+      public readonly canaryId = canaryName;
+      public readonly canaryName = canaryName;
+      public readonly canaryArn = cdk.Stack.of(this).formatArn({
+        service: 'synthetics',
+        resource: 'canary',
+        resourceName: canaryName,
+        arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+      });
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
    * Execution role associated with this Canary.
    */
   public readonly role: iam.IRole;
