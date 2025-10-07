@@ -65,6 +65,7 @@ describe('CodeInterpreterCustom default tests', () => {
 
 describe('CodeInterpreterCustom static methods tests', () => {
 
+  // @ts-ignore
   let template: Template;
   let app: cdk.App;
   let stack: cdk.Stack;
