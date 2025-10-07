@@ -102,7 +102,6 @@ export class ResolverBuilder {
 
     const resolver = (props: Expression) => {
       const propValue = expr.get(props, name);
-
       const isArray = baseType.arrayOfType !== undefined;
 
       const flattenCall = isArray
@@ -113,11 +112,10 @@ export class ResolverBuilder {
         ? expr.cond(propValue).then(flattenCall).else(expr.UNDEFINED)
         : flattenCall;
 
-      return expr.cond(CDK_CORE.isResolvableObject(propValue))
-        .then(propValue)
-        .else(condition);
+      return isArray
+        ? expr.cond(CDK_CORE.isResolvableObject(propValue)).then(propValue).else(condition)
+        : condition;
     };
-
     return { name, propType: resolvableType, resolvableType, baseType, resolver };
   }
 }
