@@ -284,6 +284,7 @@
       "AL2023_x86_64_STANDARD",
       "AL2023_x86_64_NEURON",
       "AL2023_x86_64_NVIDIA",
+      "AL2023_ARM_64_NVIDIA",
       "AL2023_ARM_64_STANDARD"
     ],
     "CapacityType": [
@@ -307,6 +308,27 @@
     "LifecycleLabel": [
       "OnDemand",
       "Ec2Spot"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/common.ts": {
+    "UserEngine": [
+      "valkey",
+      "redis"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache-base.ts": {
+    "CacheEngine": [
+      "valkey",
+      "valkey_7",
+      "valkey_8",
+      "redis",
+      "redis_7",
+      "memcached"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache.ts": {
+    "DataStorageUnit": [
+      "GB"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-gamelift-alpha/lib/build.ts": {
@@ -1812,6 +1834,11 @@
     "OriginSelectionCriteria": [
       "default",
       "media-quality-based"
+    ],
+    "OriginIpAddressType": [
+      "ipv4",
+      "ipv6",
+      "dualstack"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/response-headers-policy.ts": {
@@ -2633,6 +2660,10 @@
       "r8g",
       "memory8-graviton4-nvme-drive",
       "r8gd",
+      "memory8-graviton4-high-network-bandwidth",
+      "r8gn",
+      "memory8-graviton4-ebs-optimized",
+      "r8gb",
       "compute3",
       "c3",
       "compute4",
@@ -4085,6 +4116,7 @@
       "AL2023_x86_64_STANDARD",
       "AL2023_x86_64_NEURON",
       "AL2023_x86_64_NVIDIA",
+      "AL2023_ARM_64_NVIDIA",
       "AL2023_ARM_64_STANDARD"
     ],
     "CapacityType": [

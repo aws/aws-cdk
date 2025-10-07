@@ -2,6 +2,64 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.219.0](https://github.com/aws/aws-cdk/compare/v2.218.0...v2.219.0) (2025-10-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-servicecatalog: AWS::ServiceCatalog::PortfolioPrincipalAssociation: PortfolioId property is now required.
+aws-servicecatalog: AWS::ServiceCatalog::PortfolioPrincipalAssociation: PrincipalARN property is now required.
+aws-servicecatalog: AWS::ServiceCatalog::PortfolioProductAssociation: Id attribute removed.
+
+Co-authored-by: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
+
+### Features
+
+* **ecs:** new L2 construct for ManagedInstances CapacityProvider ([#35648](https://github.com/aws/aws-cdk/issues/35648)) ([c72a09b](https://github.com/aws/aws-cdk/commit/c72a09bbd712e22ee53cfa7d7362228660980754))
+* update L1 CloudFormation resource definitions ([#35646](https://github.com/aws/aws-cdk/issues/35646)) ([860ce0d](https://github.com/aws/aws-cdk/commit/860ce0d4aeeff9fd46442b1b18faecaeb46009fa))
+* **codebuild:** add custom instance type and VPC to Fleets ([#34572](https://github.com/aws/aws-cdk/issues/34572)) ([5c2781b](https://github.com/aws/aws-cdk/commit/5c2781bbadfef8481fbc5d808dc34b7d6379a467))
+* **codebuild:** support overflow behavior of fleet ([#35480](https://github.com/aws/aws-cdk/issues/35480)) ([e4113b0](https://github.com/aws/aws-cdk/commit/e4113b04d0b0b00ec54425e63a42b9d4c03c08f9))
+* update L1 CloudFormation resource definitions ([#35614](https://github.com/aws/aws-cdk/issues/35614)) ([fb0a114](https://github.com/aws/aws-cdk/commit/fb0a114a835c592594e241ae6752ad98db287ac6))
+
+
+### Bug Fixes
+
+* **cloudfront:** edgefunction does not propagate stack tags correctly ([#35518](https://github.com/aws/aws-cdk/issues/35518)) ([63088e8](https://github.com/aws/aws-cdk/commit/63088e8778bcaaad29eb55ddd3ce9005a79eab86))
+
+## [2.218.0](https://github.com/aws/aws-cdk/compare/v2.217.0...v2.218.0) (2025-09-29)
+
+
+### Features
+
+* **cloudfront-origins:** ip address type for http origin ([#35445](https://github.com/aws/aws-cdk/issues/35445)) ([196c7ae](https://github.com/aws/aws-cdk/commit/196c7ae65b0066d2eea8440a0dc58adf22667a00)), closes [#35427](https://github.com/aws/aws-cdk/issues/35427)
+* **docdb:** support for serverless clusters ([#35574](https://github.com/aws/aws-cdk/issues/35574)) ([89bfef7](https://github.com/aws/aws-cdk/commit/89bfef76557d2fd693e248191c3f436c9daf90b1)), closes [#35199](https://github.com/aws/aws-cdk/issues/35199)
+* **pipelines:** `CodeBuildFactory` support Docker server ([#35584](https://github.com/aws/aws-cdk/issues/35584)) ([c62d996](https://github.com/aws/aws-cdk/commit/c62d99603b75165b179726c7a0be4457ca1bda86))
+* **spec2cdk:** generate `from<Resource>Arn` and `from<Resource><Prop>` in every L1 ([#35470](https://github.com/aws/aws-cdk/issues/35470)) ([c588061](https://github.com/aws/aws-cdk/commit/c5880614297a1e81e6ab034bb6a922050e9c22b8))
+
+## [2.217.0](https://github.com/aws/aws-cdk/compare/v2.216.0...v2.217.0) (2025-09-25)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#35491](https://github.com/aws/aws-cdk/issues/35491)) ([d095f68](https://github.com/aws/aws-cdk/commit/d095f687e77bed7d064dc30938a69f51d8b2c6a8))
+* update L1 CloudFormation resource definitions ([#35567](https://github.com/aws/aws-cdk/issues/35567)) ([b0ccf81](https://github.com/aws/aws-cdk/commit/b0ccf819277bd65057de87de8a43fbc8f09a03f7))
+
+
+### Bug Fixes
+
+* **cloudfront:** `Function` ARN reference changed from GetAtt to Ref ([#35547](https://github.com/aws/aws-cdk/issues/35547)) ([8a26869](https://github.com/aws/aws-cdk/commit/8a26869586e56e85994822815a21596aecf68453)), closes [#35531](https://github.com/aws/aws-cdk/issues/35531)
+* **core:** negated gitignore patterns inside subdirectories are not including matched files ([#35511](https://github.com/aws/aws-cdk/issues/35511)) ([44781ef](https://github.com/aws/aws-cdk/commit/44781efe38113a7f7b86d74c605274fecbaca546)), closes [#9146](https://github.com/aws/aws-cdk/issues/9146) [#22002](https://github.com/aws/aws-cdk/issues/22002)
+* **kms:** `Alias` reference incorrectly resolves to underlying `Key` ([#35545](https://github.com/aws/aws-cdk/issues/35545)) ([43ffcff](https://github.com/aws/aws-cdk/commit/43ffcff6a5092b9ec5030ba020c366ca7d6a8820)), closes [#35543](https://github.com/aws/aws-cdk/issues/35543)
+* **lambda:** function.latestVersion points to wrong ARN ([#35546](https://github.com/aws/aws-cdk/issues/35546)) ([761dde2](https://github.com/aws/aws-cdk/commit/761dde288dce01cca60cbfd44e79b9bab9e0faf3)), closes [#35545](https://github.com/aws/aws-cdk/issues/35545)
+* **rds:** cannot use connections in rds.DatabaseInstance.fromLookup ([#35193](https://github.com/aws/aws-cdk/issues/35193)) ([973d234](https://github.com/aws/aws-cdk/commit/973d23460787d3dc2eb1883eddb120a67cb8688f)), closes [#35192](https://github.com/aws/aws-cdk/issues/35192)
+
+
+### Reverts
+
+* **dynamodb:** use keyId instead of keyArn for TableV2 replica encryption ([#35568](https://github.com/aws/aws-cdk/issues/35568)) ([b1f7f78](https://github.com/aws/aws-cdk/commit/b1f7f78ebc3ebdb5995bfb8b500e4b2ccd505afa)), closes [aws/aws-cdk#35144](https://github.com/aws/aws-cdk/issues/35144) [#35144](https://github.com/aws/aws-cdk/issues/35144) [#35551](https://github.com/aws/aws-cdk/issues/35551)
+
 ## [2.216.0](https://github.com/aws/aws-cdk/compare/v2.215.0...v2.216.0) (2025-09-22)
 
 
