@@ -29,8 +29,20 @@ describe('AwsCustomResource externalId', () => {
     });
 
     const template = Template.fromStack(stack);
-    const templateJson = JSON.stringify(template.toJSON(), null, 2);
-    expect(templateJson).toContain('test-external-id');
+    template.hasResourceProperties('Custom::AWS', {
+      Create: Match.objectLike({
+        'Fn::Join': [
+          '',
+          [
+            '{"service":"STS","action":"getCallerIdentity","assumedRoleArn":"',
+            {
+              'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
+            },
+            '","externalId":"test-external-id","physicalResourceId":{"id":"test-resource"}}',
+          ],
+        ],
+      }),
+    });
   });
 
   test('externalId is passed through to Lambda function when specified', () => {
@@ -49,15 +61,17 @@ describe('AwsCustomResource externalId', () => {
     });
 
     // THEN - The Custom::AWS resource should have Create property containing external ID
-    // THEN - The Custom::AWS resource should have Create property containing external ID
     const template = Template.fromStack(stack);
     template.hasResourceProperties('Custom::AWS', {
-      Create: Match.anyValue(), // Accept any CloudFormation construct (like Fn::Join)
+      Create: Match.objectLike({
+        'Fn::Join': [
+          '',
+          Match.arrayWith([
+            Match.stringLikeRegexp('test-external-id-123'),
+          ]),
+        ],
+      }),
     });
-
-    // Verify the external ID appears in the template
-    const templateJson = JSON.stringify(template.toJSON());
-    expect(templateJson).toContain('test-external-id-123');
   });
 
   test('externalId works with all lifecycle operations', () => {
@@ -90,15 +104,31 @@ describe('AwsCustomResource externalId', () => {
     // THEN - All three external IDs should appear in the template
     const template = Template.fromStack(stack);
     template.hasResourceProperties('Custom::AWS', {
-      Create: Match.anyValue(),
-      Update: Match.anyValue(),
-      Delete: Match.anyValue(),
+      Create: Match.objectLike({
+        'Fn::Join': [
+          '',
+          Match.arrayWith([
+            Match.stringLikeRegexp('create-external-id'),
+          ]),
+        ],
+      }),
+      Update: Match.objectLike({
+        'Fn::Join': [
+          '',
+          Match.arrayWith([
+            Match.stringLikeRegexp('update-external-id'),
+          ]),
+        ],
+      }),
+      Delete: Match.objectLike({
+        'Fn::Join': [
+          '',
+          Match.arrayWith([
+            Match.stringLikeRegexp('delete-external-id'),
+          ]),
+        ],
+      }),
     });
-
-    const templateJson = JSON.stringify(template.toJSON());
-    expect(templateJson).toContain('create-external-id');
-    expect(templateJson).toContain('update-external-id');
-    expect(templateJson).toContain('delete-external-id');
   });
 
   test('backward compatibility: works without external ID', () => {
@@ -125,12 +155,15 @@ describe('AwsCustomResource externalId', () => {
     // THEN - Should work normally without external ID
     const template = Template.fromStack(cleanStack);
     template.hasResourceProperties('Custom::AWS', {
-      Create: Match.anyValue(),
+      Create: Match.objectLike({
+        'Fn::Join': [
+          '',
+          Match.arrayWith([
+            Match.not(Match.stringLikeRegexp('externalId')),
+          ]),
+        ],
+      }),
     });
-
-    // Should not contain any external ID
-    const templateJson = JSON.stringify(template.toJSON());
-    expect(templateJson).not.toContain('externalId');
   });
 
   test('complex external ID values are handled correctly', () => {
@@ -154,10 +187,16 @@ describe('AwsCustomResource externalId', () => {
     });
 
     const template = Template.fromStack(testStack);
-    const templateJson = JSON.stringify(template.toJSON());
-
-    // Should contain the complex external ID in the template
-    expect(templateJson).toContain(complexExternalId);
+    template.hasResourceProperties('Custom::AWS', {
+      Create: Match.objectLike({
+        'Fn::Join': [
+          '',
+          Match.arrayWith([
+            Match.stringLikeRegexp('arn:aws:organizations::123456789012:account/o-example123456/123456789012'),
+          ]),
+        ],
+      }),
+    });
   });
 
   test('external ID with special characters is properly escaped', () => {
@@ -181,15 +220,15 @@ describe('AwsCustomResource externalId', () => {
     });
 
     const template = Template.fromStack(testStack);
-
-    // Verify the resource is created and external ID is properly handled
     template.hasResourceProperties('Custom::AWS', {
-      Create: Match.anyValue(),
+      Create: Match.objectLike({
+        'Fn::Join': [
+          '',
+          Match.arrayWith([
+            Match.stringLikeRegexp('test-.*quoted.*-&-special-chars'),
+          ]),
+        ],
+      }),
     });
-
-    // Check that the external ID appears in the template (it will be escaped)
-    const templateJson = JSON.stringify(template.toJSON());
-    expect(templateJson).toContain('test-');
-    expect(templateJson).toContain('quoted');
   });
 });
