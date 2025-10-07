@@ -63,6 +63,57 @@ describe('CodeInterpreterCustom default tests', () => {
   });
 });
 
+describe('CodeInterpreterCustom static methods tests', () => {
+
+  let template: Template;
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  // @ts-ignore
+  let codeInterpreter: CodeInterpreterCustom;
+
+  beforeAll(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    app.synth();
+    template = Template.fromStack(stack);
+  });
+
+  test('fromCodeInterpreterCustomAttributes should create a CodeInterpreterCustom reference from existing attributes', () => {
+    const codeInterpreter = CodeInterpreterCustom.fromCodeInterpreterCustomAttributes(stack, 'test-ci', {
+      codeInterpreterArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:code-interpreter/test-ci',
+      roleArn: 'arn:aws:iam::123456789012:role/test-browser-role',
+      lastUpdatedAt: '2021-01-01T00:00:00Z',
+      status: 'ACTIVE',
+      createdAt: '2021-01-01T00:00:00Z',
+    });
+
+    expect(codeInterpreter.codeInterpreterArn).toBe('arn:aws:bedrock-agentcore:us-east-1:123456789012:code-interpreter/test-ci');
+    expect(codeInterpreter.executionRole).toBeDefined();
+    expect(codeInterpreter.lastUpdatedAt).toBe('2021-01-01T00:00:00Z');
+    expect(codeInterpreter.status).toBe('ACTIVE');
+    expect(codeInterpreter.createdAt).toBe('2021-01-01T00:00:00Z');
+  });
+
+  test('fromCodeInterpreterCustomAttributes provides undefined values when not provided', () => {
+    const codeInterpreter = CodeInterpreterCustom.fromCodeInterpreterCustomAttributes(stack, 'test-ci-2', {
+      codeInterpreterArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:code-interpreter/test-ci',
+      roleArn: 'arn:aws:iam::123456789012:role/test-browser-role',
+    });
+
+    expect(codeInterpreter.codeInterpreterArn).toBe('arn:aws:bedrock-agentcore:us-east-1:123456789012:code-interpreter/test-ci');
+    expect(codeInterpreter.executionRole).toBeDefined();
+    expect(codeInterpreter.lastUpdatedAt).toBeUndefined();
+    expect(codeInterpreter.status).toBeUndefined();
+    expect(codeInterpreter.createdAt).toBeUndefined();
+  });
+});
+
 describe('CodeInterpreterCustom with custom execution role tests', () => {
   let template: Template;
   let app: cdk.App;

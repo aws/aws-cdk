@@ -1,4 +1,4 @@
-import { IResource, Resource } from 'aws-cdk-lib';
+import { Arn, ArnFormat, IResource, Resource } from 'aws-cdk-lib';
 import {
   DimensionsMap,
   Metric,
@@ -51,47 +51,23 @@ const BROWSER_TAG_MAX_LENGTH = 256;
 /**
  * Interface for Browser resources
  */
-export interface IBrowserCustom extends IResource {
+export interface IBrowserCustom extends IResource, iam.IGrantable {
   /**
-   * The ARN of the browser resource.
-   * - Format Custom browser: `arn:${Partition}:bedrock-agentcore:${Region}:${Account}:browser-custom/${BrowserId}`
-   * - Format AWS browser: `arn:${Partition}:bedrock-agentcore:${Region}:aws:browser/${BrowserId}`
-   * @example "arn:aws:bedrock-agentcore:eu-central-1:249522321342:browser/browser_6647g-vko61CBXCd"
+   * The ARN of the browser resource
    * @attribute
    */
   readonly browserArn: string;
 
   /**
    * The id of the browser
-   * @example "browser_6647g-vko61CBXCd"
    * @attribute
    */
   readonly browserId: string;
 
   /**
-   * The name of the browser
-   */
-  readonly name: string;
-
-  /**
-   * The description of the browser
-   */
-  readonly description?: string;
-
-  /**
-   * The network configuration for the browser
-   */
-  readonly networkConfiguration: BrowserNetworkConfiguration;
-
-  /**
-   * The recording configuration for the browser
-   */
-  readonly recordingConfig?: RecordingConfig;
-
-  /**
    * The IAM role that provides permissions for the browser to access AWS services
    */
-  readonly executionRole?: iam.IRole;
+  readonly executionRole: iam.IRole;
 
   /**
    * Timestamp when the browser was last updated
@@ -198,14 +174,14 @@ export interface IBrowserCustom extends IResource {
 export abstract class BrowserCustomBase extends Resource implements IBrowserCustom {
   public abstract readonly browserArn: string;
   public abstract readonly browserId: string;
-  public abstract readonly name: string;
-  public abstract readonly description?: string;
-  public abstract readonly networkConfiguration: BrowserNetworkConfiguration;
-  public abstract readonly recordingConfig?: RecordingConfig;
   public abstract readonly lastUpdatedAt?: string;
   public abstract readonly status?: string;
   public abstract readonly createdAt?: string;
-  public abstract readonly executionRole?: iam.IRole;
+  public abstract readonly executionRole: iam.IRole;
+  /**
+   * The principal to grant permissions to
+   */
+  public abstract readonly grantPrincipal: iam.IPrincipal;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
@@ -529,6 +505,40 @@ export interface BrowserCustomProps {
 }
 
 /******************************************************************************
+ *                      ATTRS FOR IMPORTED CONSTRUCT
+ *****************************************************************************/
+/**
+ * Attributes for specifying an imported Browser Custom.
+ */
+export interface BrowserCustomAttributes {
+  /**
+   * The ARN of the agent.
+   * @attribute
+   */
+  readonly browserArn: string;
+  /**
+   * The ARN of the IAM role associated to the browser.
+   * @attribute
+   */
+  readonly roleArn: string;
+  /**
+   * When this browser was last updated.
+   * @default undefined - No last updated timestamp is provided
+   */
+  readonly lastUpdatedAt?: string;
+  /**
+   * The status of the browser.
+   * @default undefined - No status is provided
+   */
+  readonly status?: string;
+  /**
+   * The created timestamp of the browser.
+   * @default undefined - No created timestamp is provided
+   */
+  readonly createdAt?: string;
+}
+
+/******************************************************************************
  *                                Class
  *****************************************************************************/
 /**
@@ -544,6 +554,34 @@ export class BrowserCustom extends BrowserCustomBase {
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-agentcore-alpha.BrowserCustom';
 
   /**
+   * Static Method for importing an existing Bedrock AgentCore Browser Custom.
+   */
+  /**
+   * Creates an Browser Custom reference from an existing browser's attributes.
+   *
+   * @param scope - The construct scope
+   * @param id - Identifier of the construct
+   * @param attrs - Attributes of the existing browser custom
+   * @returns An IBrowserCustom reference to the existing browser
+   */
+  public static fromBrowserCustomAttributes(scope: Construct, id: string, attrs: BrowserCustomAttributes): IBrowserCustom {
+    class Import extends BrowserCustomBase {
+      public readonly browserArn = attrs.browserArn;
+      public readonly browserId = Arn.split(attrs.browserArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+      public readonly executionRole = iam.Role.fromRoleArn(scope, `${id}Role`, attrs.roleArn);
+      public readonly lastUpdatedAt = attrs.lastUpdatedAt;
+      public readonly grantPrincipal = this.executionRole;
+      public readonly status = attrs.status;
+      public readonly createdAt = attrs.createdAt;
+    }
+
+    // Return new Browser Custom
+    return new Import(scope, id);
+  }
+  // ------------------------------------------------------
+  // Attributes
+  // ------------------------------------------------------
+  /**
    * The ARN of the browser resource.
    * @attribute
    */
@@ -553,10 +591,14 @@ export class BrowserCustom extends BrowserCustomBase {
    * @attribute
    */
   public readonly browserId: string;
+  /**
+   * The name of the browser
+   */
   public readonly name: string;
+  /**
+   * The description of the browser
+   */
   public readonly description?: string;
-  public readonly networkConfiguration: BrowserNetworkConfiguration;
-  public readonly recordingConfig?: RecordingConfig;
   /**
    * The last updated timestamp of the browser
    * @attribute
@@ -572,13 +614,28 @@ export class BrowserCustom extends BrowserCustomBase {
    * @attribute
    */
   public readonly createdAt?: string;
-  public readonly executionRole?: iam.IRole;
+  /**
+   * The IAM role associated to the browser.
+   */
+  public readonly executionRole: iam.IRole;
   /**
    * Tags applied to this browser resource
    * A map of key-value pairs for resource tagging
    * @default - No tags applied
    */
   public readonly tags?: { [key: string]: string };
+  /**
+   * The principal to grant permissions to
+   */
+  public readonly grantPrincipal: iam.IPrincipal;
+  /**
+   * The network configuration of the browser
+   */
+  public readonly networkConfiguration: BrowserNetworkConfiguration;
+  /**
+   * The recording configuration of the browser
+   */
+  public readonly recordingConfig?: RecordingConfig;
 
   // ------------------------------------------------------
   // Internal Only
@@ -601,6 +658,7 @@ export class BrowserCustom extends BrowserCustomBase {
     this.networkConfiguration = props.networkConfiguration ?? BrowserNetworkConfiguration.PUBLIC_NETWORK;
     this.recordingConfig = props.recordingConfig ?? { enabled: false };
     this.executionRole = props.executionRole ?? this._createBrowserRole();
+    this.grantPrincipal = this.executionRole;
     this.tags = props.tags;
 
     // Validate browser name

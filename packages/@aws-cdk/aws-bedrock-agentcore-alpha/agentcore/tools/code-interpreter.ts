@@ -1,4 +1,4 @@
-import { IResource, Resource } from 'aws-cdk-lib';
+import { Arn, ArnFormat, IResource, Resource } from 'aws-cdk-lib';
 import {
   DimensionsMap,
   Metric,
@@ -50,35 +50,18 @@ const CODE_INTERPRETER_TAG_MAX_LENGTH = 256;
 /**
  * Interface for CodeInterpreterCustom resources
  */
-export interface ICodeInterpreterCustom extends IResource {
+export interface ICodeInterpreterCustom extends IResource, iam.IGrantable {
   /**
    * The ARN of the code interpreter resource
-   * @example "arn:aws:bedrock-agentcore:eu-central-1:249522321342:codeinterpreter/codeinterpreter_6647g-vko61CBXCd"
    * @attribute
    */
   readonly codeInterpreterArn: string;
 
   /**
    * The id of the code interpreter
-   * @example "codeinterpreter_6647g-vko61CBXCd"
    * @attribute
    */
   readonly codeInterpreterId: string;
-
-  /**
-   * The name of the code interpreter
-   */
-  readonly name: string;
-
-  /**
-   * The description of the code interpreter
-   */
-  readonly description?: string;
-
-  /**
-   * The network configuration for the code interpreter
-   */
-  readonly networkConfiguration: CodeInterpreterNetworkConfiguration;
 
   /**
    * The status of the code interpreter
@@ -101,7 +84,7 @@ export interface ICodeInterpreterCustom extends IResource {
   /**
    * The IAM role that provides permissions for the code interpreter to access AWS services.
    */
-  readonly executionRole?: iam.IRole;
+  readonly executionRole: iam.IRole;
 
   /**
    *  Grants IAM actions to the IAM Principal
@@ -177,13 +160,14 @@ export interface ICodeInterpreterCustom extends IResource {
 export abstract class CodeInterpreterCustomBase extends Resource implements ICodeInterpreterCustom {
   public abstract readonly codeInterpreterArn: string;
   public abstract readonly codeInterpreterId: string;
-  public abstract readonly name: string;
-  public abstract readonly description?: string;
-  public abstract readonly networkConfiguration: CodeInterpreterNetworkConfiguration;
   public abstract readonly status?: string;
   public abstract readonly createdAt?: string;
   public abstract readonly lastUpdatedAt?: string;
-  public abstract readonly executionRole?: iam.IRole;
+  public abstract readonly executionRole: iam.IRole;
+  /**
+   * The principal to grant permissions to
+   */
+  public abstract readonly grantPrincipal: iam.IPrincipal;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
@@ -454,6 +438,40 @@ export interface CodeInterpreterCustomProps {
 }
 
 /******************************************************************************
+ *                      ATTRS FOR IMPORTED CONSTRUCT
+ *****************************************************************************/
+/**
+ * Attributes for specifying an imported Code Interpreter Custom.
+ */
+export interface CodeInterpreterCustomAttributes {
+  /**
+   * The ARN of the agent.
+   * @attribute
+   */
+  readonly codeInterpreterArn: string;
+  /**
+   * The ARN of the IAM role associated to the code interpreter.
+   * @attribute
+   */
+  readonly roleArn: string;
+  /**
+   * When this code interpreter was last updated.
+   * @default undefined - No last updated timestamp is provided
+   */
+  readonly lastUpdatedAt?: string;
+  /**
+   * The status of the code interpreter.
+   * @default undefined - No status is provided
+   */
+  readonly status?: string;
+  /**
+   * The created timestamp of the code interpreter.
+   * @default undefined - No created timestamp is provided
+   */
+  readonly createdAt?: string;
+}
+
+/******************************************************************************
  *                                Class
  *****************************************************************************/
 /**
@@ -469,6 +487,34 @@ export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-agentcore-alpha.CodeInterpreterCustom';
 
   /**
+   * Static Method for importing an existing Bedrock AgentCore Code Interpreter Custom.
+   */
+  /**
+   * Creates an Code Interpreter Custom reference from an existing code interpreter's attributes.
+   *
+   * @param scope - The construct scope
+   * @param id - Identifier of the construct
+   * @param attrs - Attributes of the existing code interpreter custom
+   * @returns An ICodeInterpreterCustom reference to the existing code interpreter
+   */
+  public static fromCodeInterpreterCustomAttributes(scope: Construct, id: string, attrs: CodeInterpreterCustomAttributes): ICodeInterpreterCustom {
+    class Import extends CodeInterpreterCustomBase {
+      public readonly codeInterpreterArn = attrs.codeInterpreterArn;
+      public readonly codeInterpreterId = Arn.split(attrs.codeInterpreterArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+      public readonly executionRole = iam.Role.fromRoleArn(scope, `${id}Role`, attrs.roleArn);
+      public readonly lastUpdatedAt = attrs.lastUpdatedAt;
+      public readonly grantPrincipal = this.executionRole;
+      public readonly status = attrs.status;
+      public readonly createdAt = attrs.createdAt;
+    }
+
+    // Return new Code Interpreter Custom
+    return new Import(scope, id);
+  }
+  // ------------------------------------------------------
+  // Attributes
+  // ------------------------------------------------------
+  /**
    * The ARN of the code interpreter resource
    * @attribute
    */
@@ -478,8 +524,17 @@ export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
    * @attribute
    */
   public readonly codeInterpreterId: string;
+  /**
+   * The name of the code interpreter
+   */
   public readonly name: string;
+  /**
+   * The description of the code interpreter
+   */
   public readonly description?: string;
+  /**
+   * The network configuration of the code interpreter
+   */
   public readonly networkConfiguration: CodeInterpreterNetworkConfiguration;
   /**
    * The status of the code interpreter
@@ -496,7 +551,14 @@ export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
    * @attribute
    */
   public readonly lastUpdatedAt?: string;
-  public readonly executionRole?: iam.IRole;
+  /**
+   * The IAM role that provides permissions for the code interpreter to access AWS services.
+   */
+  public readonly executionRole: iam.IRole;
+  /**
+   * The principal to grant permissions to
+   */
+  public readonly grantPrincipal: iam.IPrincipal;
   /**
    * Tags applied to this code interpreter resource
    * A map of key-value pairs for resource tagging
@@ -521,6 +583,7 @@ export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
     this.description = props.description;
     this.networkConfiguration = props.networkConfiguration ?? CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK;
     this.executionRole = props.executionRole ?? this._createCodeInterpreterRole();
+    this.grantPrincipal = this.executionRole;
     this.tags = props.tags;
 
     // Validate code interpreter name

@@ -64,6 +64,57 @@ describe('BrowserCustom default tests', () => {
   });
 });
 
+describe('BrowserCustom static methods tests', () => {
+
+  let template: Template;
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  // @ts-ignore
+  let browser: BrowserCustom;
+
+  beforeAll(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    app.synth();
+    template = Template.fromStack(stack);
+  });
+
+  test('fromBrowserCustomAttributes should create a BrowserCustom reference from existing attributes', () => {
+    const browser = BrowserCustom.fromBrowserCustomAttributes(stack, 'test-browser', {
+      browserArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:browser/test-browser',
+      roleArn: 'arn:aws:iam::123456789012:role/test-browser-role',
+      lastUpdatedAt: '2021-01-01T00:00:00Z',
+      status: 'ACTIVE',
+      createdAt: '2021-01-01T00:00:00Z',
+    });
+
+    expect(browser.browserArn).toBe('arn:aws:bedrock-agentcore:us-east-1:123456789012:browser/test-browser');
+    expect(browser.executionRole).toBeDefined();
+    expect(browser.lastUpdatedAt).toBe('2021-01-01T00:00:00Z');
+    expect(browser.status).toBe('ACTIVE');
+    expect(browser.createdAt).toBe('2021-01-01T00:00:00Z');
+  });
+
+  test('fromBrowserCustomAttributes provides undefined values when not provided', () => {
+    const browser = BrowserCustom.fromBrowserCustomAttributes(stack, 'test-browser-2', {
+      browserArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:browser/test-browser',
+      roleArn: 'arn:aws:iam::123456789012:role/test-browser-role',
+    });
+
+    expect(browser.browserArn).toBe('arn:aws:bedrock-agentcore:us-east-1:123456789012:browser/test-browser');
+    expect(browser.executionRole).toBeDefined();
+    expect(browser.lastUpdatedAt).toBeUndefined();
+    expect(browser.status).toBeUndefined();
+    expect(browser.createdAt).toBeUndefined();
+  });
+});
+
 describe('BrowserCustom with recording config tests', () => {
   let template: Template;
   let app: cdk.App;
