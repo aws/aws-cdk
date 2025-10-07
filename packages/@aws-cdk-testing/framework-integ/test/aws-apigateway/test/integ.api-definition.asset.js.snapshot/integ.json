@@ -5,7 +5,7 @@
       "stacks": [
         "integtest-restapi-fromdefinition-asset"
       ],
-      "assertionStack": "restapi-fromdefinition/DefaultTest/DeployAssert",
+      "assertionStack": "restapi-fromdefinition/DefaultTest/DeployAssert111",
       "assertionStackName": "restapifromdefinitionDefaultTestDeployAssertDF3B0845"
     }
   },
