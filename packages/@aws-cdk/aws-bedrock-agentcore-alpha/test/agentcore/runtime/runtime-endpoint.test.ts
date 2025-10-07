@@ -246,21 +246,6 @@ describe('RuntimeEndpoint tests', () => {
     });
   });
 
-  describe('RuntimeEndpoint updateRuntimeVersion tests', () => {
-    test('Should update runtime version', () => {
-      const endpoint = new RuntimeEndpoint(stack, 'TestEndpoint', {
-        endpointName: 'test_endpoint',
-        agentRuntimeId: 'test_runtime_id',
-        agentRuntimeVersion: '1',
-      });
-
-      endpoint.updateRuntimeVersion('2');
-
-      // The version should be updated
-      expect((endpoint as any).agentRuntimeVersion).toBe('2');
-    });
-  });
-
   describe('RuntimeEndpoint with empty tag values', () => {
     test('Should accept empty tag value', () => {
       expect(() => {

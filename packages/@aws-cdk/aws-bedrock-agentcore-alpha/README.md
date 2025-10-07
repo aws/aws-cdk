@@ -201,23 +201,6 @@ const endpoint = new agentcore.RuntimeEndpoint(this, "MyEndpoint", {
 });
 ```
 
-#### Updating endpoint versions
-
-Standalone endpoints can update their runtime version using the `updateRuntimeVersion()` method:
-
-```typescript
-const runtimeId = "abc123-runtime-id";
-
-const endpoint = new agentcore.RuntimeEndpoint(this, "MyEndpoint", {
-  endpointName: "production",
-  agentRuntimeId: runtimeId,
-  agentRuntimeVersion: "1",
-});
-
-// Later, update to a new version
-endpoint.updateRuntimeVersion("2");
-```
-
 ### Runtime Authentication Configuration
 
 The AgentCore Runtime supports multiple authentication modes to secure access to your agent endpoints. Authentication is configured during runtime creation using the `RuntimeAuthorizerConfiguration` class's static factory methods.

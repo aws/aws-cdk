@@ -1,4 +1,4 @@
-import { Annotations, Token, Lazy } from 'aws-cdk-lib';
+import { Token, Lazy } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -366,21 +366,5 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
         throw new ValidationError(valueErrors.join('\n'));
       }
     }
-  }
-
-  /**
-   * Update the runtime version for this endpoint
-   * This allows you to point the endpoint to a different version of the runtime
-   *
-   * @param newVersion The new runtime version to use
-   */
-  public updateRuntimeVersion(newVersion: string): void {
-    (this as any).agentRuntimeVersion = newVersion;
-
-    this.endpointResource.agentRuntimeVersion = newVersion;
-
-    Annotations.of(this).addInfo(
-      `Runtime endpoint '${this.endpointName}' updated to use runtime version '${newVersion}'`,
-    );
   }
 }
