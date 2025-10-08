@@ -129,7 +129,7 @@ export interface DeploymentLifecycleLambdaTargetProps {
    *
    * @example
    * // JSON object
-   * hookDetails: { environment: "production", timeout: 300 }
+   * hookDetails: {environment:"production",timeout:300}
    *
    * @default - No custom parameters will be passed
    */
