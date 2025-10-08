@@ -16,14 +16,14 @@ export interface ClusterEngineBindOptions {
    *
    * @default - none
    */
-  readonly s3ImportRole?: iam.IRole;
+  readonly s3ImportRole?: iam.IRoleRef;
 
   /**
    * The role used for S3 exporting.
    *
    *  @default - none
    */
-  readonly s3ExportRole?: iam.IRole;
+  readonly s3ExportRole?: iam.IRoleRef;
 
   /**
    * The customer-provided ParameterGroup.
@@ -203,13 +203,13 @@ abstract class MySqlClusterEngineBase extends ClusterEngineBase {
       const s3ImportParam = this.combineImportAndExportRoles
         ? 'aws_default_s3_role'
         : 'aurora_load_from_s3_role';
-      parameterGroup?.addParameter(s3ImportParam, options.s3ImportRole.roleArn);
+      parameterGroup?.addParameter(s3ImportParam, options.s3ImportRole.roleRef.roleArn);
     }
     if (options.s3ExportRole) {
       const s3ExportParam = this.combineImportAndExportRoles
         ? 'aws_default_s3_role'
         : 'aurora_select_into_s3_role';
-      parameterGroup?.addParameter(s3ExportParam, options.s3ExportRole.roleArn);
+      parameterGroup?.addParameter(s3ExportParam, options.s3ExportRole.roleRef.roleArn);
     }
 
     return {
@@ -689,6 +689,8 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_3_09_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.09.0');
   /** Version "8.0.mysql_aurora.3.10.0". */
   public static readonly VER_3_10_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.10.0');
+  /** Version "8.0.mysql_aurora.3.10.1". */
+  public static readonly VER_3_10_1 = AuroraMysqlEngineVersion.builtIn_8_0('3.10.1');
 
   /**
    * Create a new AuroraMysqlEngineVersion with an arbitrary version.
@@ -1257,6 +1259,9 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_16_8_LIMITLESS = AuroraPostgresEngineVersion.of('16.8-limitless', '16', { s3Import: true, s3Export: true });
   /** Version "16.9". */
   public static readonly VER_16_9 = AuroraPostgresEngineVersion.of('16.9', '16', { s3Import: true, s3Export: true });
+  /** Version "16.9 limitless" */
+  public static readonly VER_16_9_LIMITLESS = AuroraPostgresEngineVersion.of('16.9-limitless', '16', { s3Import: true, s3Export: true });
+
   /**
    * Version "17.1"
    * @deprecated Version 17.1 is no longer supported by Amazon RDS.

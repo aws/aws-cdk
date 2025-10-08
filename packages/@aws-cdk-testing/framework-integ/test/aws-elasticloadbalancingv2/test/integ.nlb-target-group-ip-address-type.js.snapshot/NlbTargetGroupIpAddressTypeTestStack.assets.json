@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "NlbTargetGroupIpAddressTypeTestStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "cbcb82bce1e3591fe90de2c9dc3d3f306e3ac7673252be8aa1de62038dc4e3b5": {
+    "6faa993af8245bd8d38c4bc71e6f8094280b819c7b61142cc8aae2abfd96b1a6": {
       "displayName": "NlbTargetGroupIpAddressTypeTestStack Template",
       "source": {
         "path": "NlbTargetGroupIpAddressTypeTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-2308337f": {
+        "current_account-current_region-e33abccb": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "cbcb82bce1e3591fe90de2c9dc3d3f306e3ac7673252be8aa1de62038dc4e3b5.json",
+          "objectKey": "6faa993af8245bd8d38c4bc71e6f8094280b819c7b61142cc8aae2abfd96b1a6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -39,7 +39,7 @@ export interface StackSetsConstraintOptions extends CommonConstraintOptions {
   /**
    * IAM role used to administer the StackSets configuration.
    */
-  readonly adminRole: iam.IRole;
+  readonly adminRole: iam.IRoleRef;
 
   /**
    * IAM role used to provision the products in the Stacks.
