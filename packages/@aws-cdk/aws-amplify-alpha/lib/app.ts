@@ -598,17 +598,17 @@ export interface CustomResponseHeader {
 
 /**
  * Renders custom response headers to YAML format.
- * 
+ *
  * @param customHeaders - Array of custom headers. Must not be empty.
  * @param scope - Construct scope for error reporting
  * @returns YAML string representation of custom headers
- * 
+ *
  * @internal
  */
 function renderCustomResponseHeaders(customHeaders: CustomResponseHeader[], scope: IConstruct): string {
   // Defensive assertion - should never happen due to call site validation
   if (customHeaders.length === 0) {
-    throw new Error('Internal CDK error: renderCustomResponseHeaders requires non-empty array');
+    throw new ValidationError('renderCustomResponseHeaders called with empty array', scope);
   }
 
   const hasAppRoot = customHeaders[0].appRoot !== undefined;
