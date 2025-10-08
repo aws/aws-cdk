@@ -3,6 +3,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { BrowserCustom } from '../../../agentcore/tools/browser';
 import { BrowserNetworkConfiguration } from '../../../agentcore/network/network-configuration';
 
@@ -64,6 +65,154 @@ describe('BrowserCustom default tests', () => {
   });
 });
 
+describe('BrowserCustom with VPC config tests', () => {
+  let template: Template;
+  let app: cdk.App;
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+  });
+
+  test('Provide VPC and security groups, no security group created', () => {
+    const vpc = new ec2.Vpc(stack, 'testVPC');
+    const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
+
+    new BrowserCustom(stack, 'test-browser', {
+      browserCustomName: 'test_browser',
+      description: 'A test browser for web automation',
+      networkConfiguration: BrowserNetworkConfiguration.fromVpcConfig(stack, {
+        vpc: vpc,
+        securityGroups: [sg],
+      }),
+    });
+
+    template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::BrowserCustom', {
+      NetworkConfiguration: {
+        NetworkMode: 'VPC',
+        VpcConfig: {
+          Subnets: Match.anyValue(),
+          SecurityGroups: Match.anyValue(),
+        },
+      },
+    });
+  });
+
+  test('Provide VPC and no security groups, a security group is created', () => {
+    const vpc = new ec2.Vpc(stack, 'testVPC');
+
+    new BrowserCustom(stack, 'test-browser', {
+      browserCustomName: 'test_browser',
+      description: 'A test browser for web automation',
+      networkConfiguration: BrowserNetworkConfiguration.fromVpcConfig(stack, {
+        vpc: vpc,
+      }),
+    });
+
+    template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::BrowserCustom', {
+      NetworkConfiguration: {
+        NetworkMode: 'VPC',
+        VpcConfig: {
+          Subnets: Match.anyValue(),
+          SecurityGroups: Match.anyValue(),
+        },
+      },
+    });
+  });
+
+  test('Both security groups and allowAllOutbound are specified, an exception is thrown', () => {
+    expect(() => {
+      const vpc = new ec2.Vpc(stack, 'testVPC');
+      const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
+
+      new BrowserCustom(stack, 'test-browser', {
+        browserCustomName: 'test_browser',
+        networkConfiguration: BrowserNetworkConfiguration.fromVpcConfig(stack, {
+          vpc: vpc,
+          securityGroups: [sg],
+          allowAllOutbound: false,
+        }),
+      });
+    }).toThrow('Configure \'allowAllOutbound\' directly on the supplied SecurityGroups');
+  });
+
+  test('Vpc specified but no scope, an exception is thrown', () => {
+    expect(() => {
+      const vpc = new ec2.Vpc(stack, 'testVPC');
+      const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
+
+      new BrowserCustom(stack, 'test-browser', {
+        browserCustomName: 'test_browser',
+        networkConfiguration: BrowserNetworkConfiguration.fromVpcConfig(undefined as any, {
+          vpc: vpc,
+          securityGroups: [sg],
+        }),
+      });
+    }).toThrow('Scope is required to create the security group');
+  });
+
+  test('Vpc not specified, an exception is thrown when accessing Connections object', () => {
+    const browser = new BrowserCustom(stack, 'test-browser', {
+      browserCustomName: 'test_browser',
+      networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+    });
+
+    const when = () => browser.connections;
+    expect(when).toThrow('Cannot manage network access without configuring a VPC');
+  });
+
+  test('When adding security group after browser instantiation, it is reflected in VpcConfig of Browser Custom', () => {
+    const vpc = new ec2.Vpc(stack, 'testVPC');
+
+    const browser = new BrowserCustom(stack, 'test-browser', {
+      browserCustomName: 'test_browser',
+      networkConfiguration: BrowserNetworkConfiguration.fromVpcConfig(stack, {
+        vpc: vpc,
+      }),
+    });
+
+    expect(browser.connections.securityGroups.length).toBe(1);
+
+    browser.connections.addSecurityGroup(new ec2.SecurityGroup(stack, 'AdditionalGroup', { vpc }));
+
+    expect(browser.connections.securityGroups.length).toBe(2);
+
+    template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::BrowserCustom', {
+      NetworkConfiguration: {
+        NetworkMode: 'VPC',
+        VpcConfig: {
+          SecurityGroups: [
+            {
+              'Fn::GetAtt': [
+                'SecurityGroupDD263621',
+                'GroupId',
+              ],
+            },
+            {
+              'Fn::GetAtt': [
+                'AdditionalGroup4973CFAA',
+                'GroupId',
+              ],
+            },
+          ],
+        },
+      },
+    });
+  });
+});
+
 describe('BrowserCustom static methods tests', () => {
   // @ts-ignore
   let template: Template;
@@ -110,6 +259,23 @@ describe('BrowserCustom static methods tests', () => {
     expect(browser.lastUpdatedAt).toBeUndefined();
     expect(browser.status).toBeUndefined();
     expect(browser.createdAt).toBeUndefined();
+  });
+
+  test('fromBrowserCustomAttributes with no security groups specified, an exception is thrown', () => {
+    // GIVEN
+    const browser = BrowserCustom.fromBrowserCustomAttributes(stack, 'test-browser-3', {
+      browserArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:browser/test-browser',
+      roleArn: 'arn:aws:iam::123456789012:role/test-browser-role',
+      lastUpdatedAt: '2021-01-01T00:00:00Z',
+      status: 'ACTIVE',
+      createdAt: '2021-01-01T00:00:00Z',
+    });
+
+    // WHEN
+    const when = () => browser.connections;
+
+    // THEN
+    expect(when).toThrow(/Cannot manage network access without configuring a VPC/);
   });
 });
 

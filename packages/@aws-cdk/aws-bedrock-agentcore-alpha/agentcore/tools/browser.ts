@@ -1,4 +1,4 @@
-import { Arn, ArnFormat, IResource, Resource } from 'aws-cdk-lib';
+import { Arn, ArnFormat, IResource, Lazy, Resource } from 'aws-cdk-lib';
 import {
   DimensionsMap,
   Metric,
@@ -8,6 +8,7 @@ import {
 } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
 import { Location } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
@@ -51,7 +52,7 @@ const BROWSER_TAG_MAX_LENGTH = 256;
 /**
  * Interface for Browser resources
  */
-export interface IBrowserCustom extends IResource, iam.IGrantable {
+export interface IBrowserCustom extends IResource, iam.IGrantable, ec2.IConnectable {
   /**
    * The ARN of the browser resource
    * @attribute
@@ -182,6 +183,22 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
    * The principal to grant permissions to
    */
   public abstract readonly grantPrincipal: iam.IPrincipal;
+  /**
+   * An accessor for the Connections object that will fail if this Browser does not have a VPC
+   * configured.
+   */
+  public get connections(): ec2.Connections {
+    if (!this._connections) {
+      throw new Error('Cannot manage network access without configuring a VPC');
+    }
+    return this._connections;
+  }
+  /**
+   * The actual Connections object for this Browser. This may be unset in the event that a VPC has not
+   * been configured.
+   * @internal
+   */
+  protected _connections: ec2.Connections | undefined;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
@@ -536,6 +553,12 @@ export interface BrowserCustomAttributes {
    * @default undefined - No created timestamp is provided
    */
   readonly createdAt?: string;
+  /**
+   * The security groups for this browser, if in a VPC.
+   *
+   * @default - By default, the browser is not in a VPC.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 }
 
 /******************************************************************************
@@ -573,6 +596,17 @@ export class BrowserCustom extends BrowserCustomBase {
       public readonly grantPrincipal = this.executionRole;
       public readonly status = attrs.status;
       public readonly createdAt = attrs.createdAt;
+
+      constructor(s: Construct, i: string) {
+        super(s, i);
+
+        this.grantPrincipal = this.executionRole || new iam.UnknownPrincipal({ resource: this });
+        if (attrs.securityGroups) {
+          this._connections = new ec2.Connections({
+            securityGroups: attrs.securityGroups,
+          });
+        }
+      }
     }
 
     // Return new Browser Custom
@@ -614,6 +648,10 @@ export class BrowserCustom extends BrowserCustomBase {
    * @attribute
    */
   public readonly createdAt?: string;
+  /**
+   * The failure reason of the browser
+   */
+  public readonly failureReason?: string;
   /**
    * The IAM role associated to the browser.
    */
@@ -670,6 +708,15 @@ export class BrowserCustom extends BrowserCustomBase {
     // Validate recording configuration
     throwIfInvalid(this._validateRecordingConfig, this.recordingConfig);
 
+    // Network configuration and validation is done in the network configuration class
+    // So we don't need to validate it here
+
+    // Set connections - create a shared connections object
+    if (this.networkConfiguration.connections) {
+      // Use the network configuration's connections as the shared object
+      this._connections = this.networkConfiguration.connections;
+    }
+
     // if recording is configured, add permissions to the execution role
     if (this.recordingConfig && this.recordingConfig.s3Location) {
       const bucket = s3.Bucket.fromBucketName(
@@ -686,7 +733,7 @@ export class BrowserCustom extends BrowserCustomBase {
     const cfnProps: agent_core.CfnBrowserCustomProps = {
       name: this.name,
       description: this.description,
-      networkConfiguration: this.networkConfiguration._render(),
+      networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration._render(this._connections) }),
       recordingConfig: this._renderRecordingConfig(),
       executionRoleArn: this.executionRole?.roleArn,
       tags: this.tags,
@@ -701,6 +748,7 @@ export class BrowserCustom extends BrowserCustomBase {
     this.status = this.__resource.attrStatus;
     this.createdAt = this.__resource.attrCreatedAt;
     this.lastUpdatedAt = this.__resource.attrLastUpdatedAt;
+    this.failureReason = this.__resource.attrFailureReason;
   }
 
   /**
