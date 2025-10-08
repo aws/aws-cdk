@@ -37,6 +37,7 @@ export interface IGatewayAuthorizer {
 
   /**
    * The authorizer configuration in CFN format
+   * @internal
    */
   _render(): CfnGateway.AuthorizerConfigurationProperty | undefined;
 }
@@ -95,6 +96,9 @@ export class CustomJwtAuthorizer implements IGatewayAuthorizer {
     this.allowedClients = config.allowedClients;
   }
 
+  /**
+   * @internal
+   */
   _render(): CfnGateway.AuthorizerConfigurationProperty | undefined {
     return {
       customJwtAuthorizer: {
@@ -116,6 +120,9 @@ export class CustomJwtAuthorizer implements IGatewayAuthorizer {
 export class IamAuthorizer implements IGatewayAuthorizer {
   public readonly authorizerType = GatewayAuthorizerType.AWS_IAM;
 
+  /**
+   * @internal
+   */
   _render(): CfnGateway.AuthorizerConfigurationProperty | undefined {
     return undefined;
   }
@@ -131,7 +138,7 @@ export interface CognitoAuthorizerProps {
   readonly allowedAudiences?: string[];
 }
 export abstract class GatewayAuthorizer {
-  public static AWS_IAM = new IamAuthorizer();
+  public static awsIam = new IamAuthorizer();
 
   public static customJwt(configuration: CustomJwtConfiguration): IGatewayAuthorizer {
     // At least one of allowedAudience or allowedClients must be defined for CUSTOM_JWT authorizer

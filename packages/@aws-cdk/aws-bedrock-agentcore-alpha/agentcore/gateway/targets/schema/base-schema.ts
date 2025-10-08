@@ -29,6 +29,7 @@ export abstract class TargetSchema {
 
   /**
    * Bind the schema to a construct
+   * @internal
    */
   public abstract _bind(scope: Construct): void;
 
@@ -37,5 +38,5 @@ export abstract class TargetSchema {
    *
    * @internal This is an internal core function and should not be called directly.
    */
-  public abstract grantPermissionsToRole(role: IRole): Grant | undefined;
+  public abstract _grantPermissionsToRole(role: IRole): Grant | undefined;
 }

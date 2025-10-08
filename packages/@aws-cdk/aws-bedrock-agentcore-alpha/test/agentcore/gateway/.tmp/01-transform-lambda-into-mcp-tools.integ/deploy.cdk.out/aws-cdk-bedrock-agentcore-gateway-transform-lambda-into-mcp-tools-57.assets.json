@@ -1,0 +1,34 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "cba3f7e6383f384d9beb7131386c66d7b947462fb0483d0e6a7d5a06fec1e012": {
+      "displayName": "MyFunction/Code",
+      "source": {
+        "path": "asset.cba3f7e6383f384d9beb7131386c66d7b947462fb0483d0e6a7d5a06fec1e012",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-f0c809f9": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cba3f7e6383f384d9beb7131386c66d7b947462fb0483d0e6a7d5a06fec1e012.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "bb8cfd587c88f5c5fbd1b620a9a67972e10da9ba600b0b2982140c5149362eaf": {
+      "displayName": "aws-cdk-bedrock-agentcore-gateway-transform-lambda-into-mcp-tools-57 Template",
+      "source": {
+        "path": "aws-cdk-bedrock-agentcore-gateway-transform-lambda-into-mcp-tools-57.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-ceeae4bb": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "bb8cfd587c88f5c5fbd1b620a9a67972e10da9ba600b0b2982140c5149362eaf.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

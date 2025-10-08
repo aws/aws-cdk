@@ -118,9 +118,5 @@
     "exclude": [
       "props-physical-name:@aws-cdk/aws-bedrock-agentcore-alpha.RuntimeEndpointProps"
     ]
-  },
-  "dependencies": {
-    "@aws-cdk/integ-runner": "^2.190.8",
-    "@aws-cdk/integ-tests-alpha": "^2.214.1-alpha.0"
   }
 }

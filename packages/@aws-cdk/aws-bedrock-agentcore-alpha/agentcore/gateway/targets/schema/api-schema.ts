@@ -116,6 +116,7 @@ export class AssetApiSchema extends ApiSchema {
    * Must be called before rendering the schema as CFN properties.
    *
    * @param scope - The construct scope to bind to
+   * @internal
    */
   public _bind(scope: Construct): void {
     // If the same AssetApiSchema is used multiple times, retain only the first instantiation
@@ -147,7 +148,10 @@ export class AssetApiSchema extends ApiSchema {
     };
   }
 
-  public grantPermissionsToRole(role: IRole): Grant | undefined {
+  /**
+   * @internal
+   */
+  public _grantPermissionsToRole(role: IRole): Grant | undefined {
     this.asset?.grantRead(role);
     // Asset does not implement Grant properly
     return undefined;
@@ -173,12 +177,18 @@ export class InlineApiSchema extends ApiSchema {
     };
   }
 
-  public grantPermissionsToRole(role: IRole): Grant | undefined {
+  /**
+   * @internal
+   */
+  public _grantPermissionsToRole(role: IRole): Grant | undefined {
     if (role) {
     }
     return undefined;
   }
 
+  /**
+   * @internal
+   */
   public _bind(scope: Construct): void {
     if (scope) {
     }
@@ -208,13 +218,19 @@ export class S3ApiSchema extends ApiSchema {
     };
   }
 
+  /**
+   * @internal
+   */
   public _bind(scope: Construct): void {
     if (scope) {
     }
     // No-op
   }
 
-  public grantPermissionsToRole(role: IRole): Grant | undefined {
+  /**
+   * @internal
+   */
+  public _grantPermissionsToRole(role: IRole): Grant | undefined {
     return Grant.addToPrincipal({
       grantee: role,
       actions: ['s3:GetObject'],

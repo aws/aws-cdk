@@ -1,0 +1,16 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "AgentCoreGateway/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-agentcore-gateway-transform-lambda-into-mcp-tools-57"
+      ],
+      "regions": [
+        "eu-central-1"
+      ],
+      "assertionStack": "AgentCoreGateway/DefaultTest/DeployAssert",
+      "assertionStackName": "AgentCoreGatewayDefaultTestDeployAssertD67210D0"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

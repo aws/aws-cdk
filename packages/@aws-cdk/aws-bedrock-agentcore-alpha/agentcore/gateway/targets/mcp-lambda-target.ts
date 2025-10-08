@@ -67,7 +67,7 @@ export class McpLambdaTarget extends GatewayTargetBase implements IMcpGatewayTar
     // Permissions
     // ------------------------------------------------------
     // Allow gateway to retrieve schema from S3 if not inline
-    this.schema.grantPermissionsToRole(this.gateway.role);
+    this.schema._grantPermissionsToRole(this.gateway.role);
     // Allow gateway role to invoke Lambda
     this.lambdaFunction.grantInvoke(this.gateway.role);
 
@@ -77,7 +77,7 @@ export class McpLambdaTarget extends GatewayTargetBase implements IMcpGatewayTar
     // Create Lambda function for custom resource using NodejsFunction
 
     const resourceProps: CfnGatewayTargetProps = {
-      credentialProviderConfigurations: this.credentialProviders.map((provider) => provider.render()),
+      credentialProviderConfigurations: this.credentialProviders.flatMap((provider) => provider.render()),
       description: this.description,
       gatewayIdentifier: this.gateway.gatewayId,
       name: this.name,
@@ -91,6 +91,7 @@ export class McpLambdaTarget extends GatewayTargetBase implements IMcpGatewayTar
       },
     };
 
+    console.log(resourceProps);
     const _resource = new CfnGatewayTarget(this, 'Resource', resourceProps);
 
     // ------------------------------------------------------
@@ -107,11 +108,11 @@ export class McpLambdaTarget extends GatewayTargetBase implements IMcpGatewayTar
     // ------------------------------------------------------
     // Assignments
     // ------------------------------------------------------
-    this.targetId = _resource.getAtt('TargetId').toString();
-    this.targetArn = _resource.getAtt('TargetArn').toString();
-    this.status = _resource.getAtt('Status').toString();
-    this.createdAt = _resource.getAtt('CreatedAt').toString();
-    this.updatedAt = _resource.getAtt('UpdatedAt').toString();
+    this.targetId = _resource.attrTargetId;
+    this.targetArn = _resource.attrGatewayArn;
+    this.status = _resource.attrStatus;
+    this.createdAt = _resource.attrCreatedAt;
+    this.updatedAt = _resource.attrUpdatedAt;
 
     // ------------------------------------------------------
   }

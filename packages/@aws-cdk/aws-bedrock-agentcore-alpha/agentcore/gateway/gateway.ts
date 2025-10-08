@@ -429,10 +429,10 @@ export class Gateway extends GatewayBase {
   public readonly exceptionLevel?: GatewayExceptionLevel;
   public readonly kmsKey?: kms.IKey;
   public readonly role: iam.IRole;
-  public readonly gatewayUrl: string;
-  public readonly status: string;
-  public readonly createdAt: string;
-  public readonly updatedAt: string;
+  public readonly gatewayUrl?: string;
+  public readonly status?: string;
+  public readonly createdAt?: string;
+  public readonly updatedAt?: string;
   public readonly tags?: { [key: string]: string };
 
   constructor(scope: Construct, id: string, props: GatewayProps) {

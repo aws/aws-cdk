@@ -37,10 +37,11 @@ export interface IGatewayProtocol {
   /**
    * The protocol type
    */
-  readonly protocolType: string;
+  readonly protocolType: GatewayProtocolType;
 
   /**
    * Returns internal info as the CFN protocol configuration object
+   * @internal
    */
   _render(): CfnGateway.GatewayProtocolConfigurationProperty | undefined;
 }
@@ -120,7 +121,7 @@ export interface McpConfiguration {
  * MCP (Model Context Protocol) configuration implementation
  */
 export class McpProtocolConfiguration implements IGatewayProtocol {
-  public readonly protocolType = GatewayProtocolType.MCP;
+  public readonly protocolType: GatewayProtocolType = GatewayProtocolType.MCP;
   public readonly supportedVersions?: MCPProtocolVersion[];
   public readonly searchType?: string;
   public readonly instructions?: string;
@@ -133,6 +134,9 @@ export class McpProtocolConfiguration implements IGatewayProtocol {
     this.instructions = props?.instructions;
   }
 
+  /**
+   * @internal
+   */
   _render(): CfnGateway.GatewayProtocolConfigurationProperty | undefined {
     if (!this.searchType && !this.supportedVersions && !this.instructions) {
       return undefined;

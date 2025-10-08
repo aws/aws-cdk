@@ -200,6 +200,7 @@ export class AssetToolSchema extends ToolSchema {
    * Must be called before rendering the schema as CFN properties.
    *
    * @param scope - The construct scope to bind to
+   * @internal
    */
   public _bind(scope: Construct): void {
     // If the same AssetToolSchema is used multiple times, retain only the first instantiation
@@ -231,7 +232,10 @@ export class AssetToolSchema extends ToolSchema {
     };
   }
 
-  public grantPermissionsToRole(role: IRole): Grant | undefined {
+  /**
+   * @internal
+   */
+  public _grantPermissionsToRole(role: IRole): Grant | undefined {
     this.asset?.grantRead(role);
     // Asset does not implement grant properly
     return undefined;
@@ -279,13 +283,19 @@ export class InlineToolSchema extends ToolSchema {
     };
   }
 
+  /**
+   * @internal
+   */
   public _bind(scope: Construct): void {
     if (scope) {
     }
     // No-op
   }
 
-  public grantPermissionsToRole(role: any): Grant | undefined {
+  /**
+   * @internal
+   */
+  public _grantPermissionsToRole(role: any): Grant | undefined {
     if (role) {
     }
     return undefined;
@@ -314,13 +324,19 @@ export class S3ToolSchema extends ToolSchema {
     };
   }
 
+  /**
+   * @internal
+   */
   public _bind(scope: Construct): void {
     if (scope) {
     }
     // No-op
   }
 
-  public grantPermissionsToRole(role: IRole): Grant | undefined {
+  /**
+   * @internal
+   */
+  public _grantPermissionsToRole(role: IRole): Grant | undefined {
     return Grant.addToPrincipal({
       grantee: role,
       actions: ['s3:GetObject'],
