@@ -6427,13 +6427,13 @@ case@1.6.3, case@^1.6.3:
   resolved "https://registry.npmjs.org/case/-/case-1.6.3.tgz#0a4386e3e9825351ca2e6216c60467ff5f1ea1c9"
   integrity sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==
 
-cdk-generate-synthetic-examples@^0.2.29:
-  version "0.2.29"
-  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.2.29.tgz#5dae1ec8f43b6797259e081eb6c6aa69e16158cd"
-  integrity sha512-JP3/2wL0drTcQLgoEJeewWCneBYEcOWmLtwPvvScvXNt3lRApOfhBGcqplM7w/YS2pgKAzort2w2tSzFBTmlzA==
+cdk-generate-synthetic-examples@^0.2.31:
+  version "0.2.31"
+  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.2.31.tgz#49601b41adf5466b0a2445a3a2aac0a5fcbc35cd"
+  integrity sha512-v3qE/R3M4xnVsnTD7Lp4umAgtMEAZ6MEJCxrtpxZx/5aePsU70n2ctnw2+sByxNrSjjT7Ml6tytCnrNVpo0Y+g==
   dependencies:
-    "@jsii/spec" "^1.113.0"
-    jsii-reflect "^1.113.0"
+    "@jsii/spec" "^1.114.1"
+    jsii-reflect "^1.114.1"
     yargs "^17.7.2"
 
 cdk8s-plus-27@2.9.5:
@@ -10133,7 +10133,7 @@ jsii-reflect@1.113.0, jsii-reflect@^1.113.0:
     oo-ascii-tree "^1.113.0"
     yargs "^16.2.0"
 
-jsii-reflect@1.115.0, jsii-reflect@^1.115.0:
+jsii-reflect@1.115.0, jsii-reflect@^1.114.1, jsii-reflect@^1.115.0:
   version "1.115.0"
   resolved "https://registry.npmjs.org/jsii-reflect/-/jsii-reflect-1.115.0.tgz#debe523fa2de0ba020d54d41a2f7b0e0bc8ef048"
   integrity sha512-svWvulZ8IH035sLR0aEt3UiN4Ejqh99zSBfVTFsr3bjBfDZqcxIlExFI/fMb7O+a7XwT0WdTakTuX/aajQt3cg==
@@ -10145,10 +10145,10 @@ jsii-reflect@1.115.0, jsii-reflect@^1.115.0:
     oo-ascii-tree "^1.115.0"
     yargs "^17.7.2"
 
-jsii-rosetta@~5.9.7:
-  version "5.9.7"
-  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.9.7.tgz#b0ae7aa3dbefb6410b963b480b0b0ce93f89853b"
-  integrity sha512-OQbKI0Q1aOAbJ8vR1I+/Jv3cqZisgBBEm0DwSxrRfEeNd67UOYIcsHM0nefsV48R/FZAKIGEGxZYlix9jgAl8Q==
+jsii-rosetta@~5.9.8:
+  version "5.9.8"
+  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.9.8.tgz#dbe2bb9ea89b4793e3ff8f5c3fea7fcbb93a1bba"
+  integrity sha512-QpCE+5CmYPidfgtDztlFeYcfr2LuTYh3o9H58qhtFHHtTxY3PaRDxZGB4LwcuO6lRnz1a9INlgE2O6AafffReg==
   dependencies:
     "@jsii/check-node" "1.114.1"
     "@jsii/spec" "^1.114.1"
