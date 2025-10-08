@@ -30,10 +30,12 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
   - [Browser properties](#browser-properties)
   - [Browser Network modes](#browser-network-modes)
   - [Basic Browser Creation](#basic-browser-creation)
+  - [Browser IAM permissions](#browser-iam-permissions)
 - [Code Interpreter Custom tool](#code-interpreter)
   - [Code Interpreter properties](#code-interpreter-properties)
   - [Code Interpreter Network Modes](#code-interpreter-network-modes)
   - [Basic Code Interpreter Creation](#basic-code-interpreter-creation)
+  - [Code Interpreter IAM permissions](#code-interpreter-iam-permissions)
 
 ## Browser
 
@@ -51,6 +53,13 @@ The Browser construct supports the following network modes:
    - Suitable for scenarios where agents need to interact with publicly available websites
    - Enables full web browsing capabilities
    - VPC mode is not supported with this option
+
+2. **VPC (Virtual Private Cloud)** (`BrowserNetworkMode.fromVpcConfig()`)
+
+   - Select whether to run the browser in a virtual private cloud (VPC).
+   - By configuring VPC connectivity, you enable secure access to private resources such as databases, internal APIs, and services within your VPC.
+
+For more information on VPC connectivity for Amazon Bedrock AgentCore Browser, please refer to the [official documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agentcore-vpc.html).
 
 ### Browser Properties
 
@@ -86,6 +95,17 @@ const browser = new agentcore.BrowserCustom(this, "MyBrowser", {
     Team: "AI/ML",
     Project: "AgentCore",
   },
+});
+```
+
+### Browser with VPC
+
+```typescript fixture=default
+const browser = new agentcore.BrowserCustom(this, 'BrowserVpcWithRecording', {
+  browserCustomName: 'browser_recording',
+  networkConfiguration: agentcore.BrowserNetworkConfiguration.fromVpcConfig(this, {
+    vpc: new ec2.Vpc(this, 'VPC', { restrictDefaultSecurityGroup: false }),
+  }),
 });
 ```
 
@@ -208,6 +228,12 @@ The Code Interpreter construct supports two network modes:
    - Suitable for production environments with strict security requirements
    - Only allows access to pre-installed packages and local resources
 
+3. **VPC (Virtual Private Cloud)** (`CodeInterpreterNetworkMode.fromVpcConfig()`)
+   - Select whether to run the browser in a virtual private cloud (VPC).
+   - By configuring VPC connectivity, you enable secure access to private resources such as databases, internal APIs, and services within your VPC.
+
+For more information on VPC connectivity for Amazon Bedrock AgentCore Browser, please refer to the [official documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agentcore-vpc.html).
+
 ### Code Interpreter Properties
 
 | Name | Type | Required | Description |
@@ -228,6 +254,18 @@ const codeInterpreter = new agentcore.CodeInterpreterCustom(this, "MyCodeInterpr
 });
 ```
 
+### Code Interpreter with VPC
+
+```typescript fixture=default
+const codeInterpreter = new agentcore.CodeInterpreterCustom(this, "MyCodeInterpreter", {
+  codeInterpreterCustomName: "my_sandbox_interpreter",
+  description: "Code interpreter with isolated network access",
+  networkConfiguration: agentcore.BrowserNetworkConfiguration.fromVpcConfig(this, {
+    vpc: new ec2.Vpc(this, 'VPC', { restrictDefaultSecurityGroup: false }),
+  }),
+});
+```
+
 ### Code Interpreter with Sandbox Network Mode
 
 ```typescript fixture=default
@@ -235,7 +273,7 @@ const codeInterpreter = new agentcore.CodeInterpreterCustom(this, "MyCodeInterpr
 const codeInterpreter = new agentcore.CodeInterpreterCustom(this, "MyCodeInterpreter", {
   codeInterpreterCustomName: "my_sandbox_interpreter",
   description: "Code interpreter with isolated network access",
-  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
+  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.SANDBOX_NETWORK,
 });
 ```
 

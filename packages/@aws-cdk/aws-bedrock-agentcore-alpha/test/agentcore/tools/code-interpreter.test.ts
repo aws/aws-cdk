@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { CodeInterpreterCustom } from '../../../agentcore/tools/code-interpreter';
 import { CodeInterpreterNetworkConfiguration } from '../../../agentcore/network/network-configuration';
 
@@ -63,6 +64,154 @@ describe('CodeInterpreterCustom default tests', () => {
   });
 });
 
+describe('CodeInterpreterCustom with VPC config tests', () => {
+  let template: Template;
+  let app: cdk.App;
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+  });
+
+  test('Provide VPC and security groups, no security group created', () => {
+    const vpc = new ec2.Vpc(stack, 'testVPC');
+    const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
+
+    new CodeInterpreterCustom(stack, 'test-ci', {
+      codeInterpreterCustomName: 'test_ci',
+      description: 'A code interpreter',
+      networkConfiguration: CodeInterpreterNetworkConfiguration.fromVpcConfig(stack, {
+        vpc: vpc,
+        securityGroups: [sg],
+      }),
+    });
+
+    template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::CodeInterpreterCustom', {
+      NetworkConfiguration: {
+        NetworkMode: 'VPC',
+        VpcConfig: {
+          Subnets: Match.anyValue(),
+          SecurityGroups: Match.anyValue(),
+        },
+      },
+    });
+  });
+
+  test('Provide VPC and no security groups, a security group is created', () => {
+    const vpc = new ec2.Vpc(stack, 'testVPC');
+
+    new CodeInterpreterCustom(stack, 'test-ci', {
+      codeInterpreterCustomName: 'test_ci',
+      description: 'A test code interpreter',
+      networkConfiguration: CodeInterpreterNetworkConfiguration.fromVpcConfig(stack, {
+        vpc: vpc,
+      }),
+    });
+
+    template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::CodeInterpreterCustom', {
+      NetworkConfiguration: {
+        NetworkMode: 'VPC',
+        VpcConfig: {
+          Subnets: Match.anyValue(),
+          SecurityGroups: Match.anyValue(),
+        },
+      },
+    });
+  });
+
+  test('Both security groups and allowAllOutbound are specified, an exception is thrown', () => {
+    expect(() => {
+      const vpc = new ec2.Vpc(stack, 'testVPC');
+      const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
+
+      new CodeInterpreterCustom(stack, 'test-ci', {
+        codeInterpreterCustomName: 'test_ci',
+        networkConfiguration: CodeInterpreterNetworkConfiguration.fromVpcConfig(stack, {
+          vpc: vpc,
+          securityGroups: [sg],
+          allowAllOutbound: false,
+        }),
+      });
+    }).toThrow('Configure \'allowAllOutbound\' directly on the supplied SecurityGroups');
+  });
+
+  test('Vpc specified but no scope, an exception is thrown', () => {
+    expect(() => {
+      const vpc = new ec2.Vpc(stack, 'testVPC');
+      const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
+
+      new CodeInterpreterCustom(stack, 'test-ci', {
+        codeInterpreterCustomName: 'test_ci',
+        networkConfiguration: CodeInterpreterNetworkConfiguration.fromVpcConfig(undefined as any, {
+          vpc: vpc,
+          securityGroups: [sg],
+        }),
+      });
+    }).toThrow('Scope is required to create the security group');
+  });
+
+  test('Vpc not specified, an exception is thrown when accessing Connections object', () => {
+    const codeInterpreter = new CodeInterpreterCustom(stack, 'test-ci', {
+      codeInterpreterCustomName: 'test_ci',
+      networkConfiguration: CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
+    });
+
+    const when = () => codeInterpreter.connections;
+    expect(when).toThrow('Cannot manage network access without configuring a VPC');
+  });
+
+  test('When adding security group after code interpreter instantiation, it is reflected in VpcConfig of Code Interpreter Custom', () => {
+    const vpc = new ec2.Vpc(stack, 'testVPC');
+
+    const codeInterpreter = new CodeInterpreterCustom(stack, 'test-ci', {
+      codeInterpreterCustomName: 'test_ci',
+      networkConfiguration: CodeInterpreterNetworkConfiguration.fromVpcConfig(stack, {
+        vpc: vpc,
+      }),
+    });
+
+    expect(codeInterpreter.connections.securityGroups.length).toBe(1);
+
+    codeInterpreter.connections.addSecurityGroup(new ec2.SecurityGroup(stack, 'AdditionalGroup', { vpc }));
+
+    expect(codeInterpreter.connections.securityGroups.length).toBe(2);
+
+    template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::CodeInterpreterCustom', {
+      NetworkConfiguration: {
+        NetworkMode: 'VPC',
+        VpcConfig: {
+          SecurityGroups: [
+            {
+              'Fn::GetAtt': [
+                'SecurityGroupDD263621',
+                'GroupId',
+              ],
+            },
+            {
+              'Fn::GetAtt': [
+                'AdditionalGroup4973CFAA',
+                'GroupId',
+              ],
+            },
+          ],
+        },
+      },
+    });
+  });
+});
+
 describe('CodeInterpreterCustom static methods tests', () => {
   // @ts-ignore
   let template: Template;
@@ -85,7 +234,7 @@ describe('CodeInterpreterCustom static methods tests', () => {
   test('fromCodeInterpreterCustomAttributes should create a CodeInterpreterCustom reference from existing attributes', () => {
     const codeInterpreter = CodeInterpreterCustom.fromCodeInterpreterCustomAttributes(stack, 'test-ci', {
       codeInterpreterArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:code-interpreter/test-ci',
-      roleArn: 'arn:aws:iam::123456789012:role/test-browser-role',
+      roleArn: 'arn:aws:iam::123456789012:role/test-ci-role',
       lastUpdatedAt: '2021-01-01T00:00:00Z',
       status: 'ACTIVE',
       createdAt: '2021-01-01T00:00:00Z',
@@ -101,7 +250,7 @@ describe('CodeInterpreterCustom static methods tests', () => {
   test('fromCodeInterpreterCustomAttributes provides undefined values when not provided', () => {
     const codeInterpreter = CodeInterpreterCustom.fromCodeInterpreterCustomAttributes(stack, 'test-ci-2', {
       codeInterpreterArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:code-interpreter/test-ci',
-      roleArn: 'arn:aws:iam::123456789012:role/test-browser-role',
+      roleArn: 'arn:aws:iam::123456789012:role/test-ci-role',
     });
 
     expect(codeInterpreter.codeInterpreterArn).toBe('arn:aws:bedrock-agentcore:us-east-1:123456789012:code-interpreter/test-ci');
@@ -109,6 +258,23 @@ describe('CodeInterpreterCustom static methods tests', () => {
     expect(codeInterpreter.lastUpdatedAt).toBeUndefined();
     expect(codeInterpreter.status).toBeUndefined();
     expect(codeInterpreter.createdAt).toBeUndefined();
+  });
+
+  test('fromCodeInterpreterCustomAttributes with no security groups specified, an exception is thrown', () => {
+    // GIVEN
+    const codeInterpreter = CodeInterpreterCustom.fromCodeInterpreterCustomAttributes(stack, 'test-ci-3', {
+      codeInterpreterArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:code-interpreter/test-ci',
+      roleArn: 'arn:aws:iam::123456789012:role/test-ci-role',
+      lastUpdatedAt: '2021-01-01T00:00:00Z',
+      status: 'ACTIVE',
+      createdAt: '2021-01-01T00:00:00Z',
+    });
+
+    // WHEN
+    const when = () => codeInterpreter.connections;
+
+    // THEN
+    expect(when).toThrow(/Cannot manage network access without configuring a VPC/);
   });
 });
 

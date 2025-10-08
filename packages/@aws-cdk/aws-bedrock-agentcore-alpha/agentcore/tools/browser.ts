@@ -1,4 +1,12 @@
-import { Arn, ArnFormat, IResource, Lazy, Resource } from 'aws-cdk-lib';
+import {
+  Arn,
+  ArnFormat,
+  IResource,
+  Lazy,
+  Resource,
+  Token,
+  Stack,
+} from 'aws-cdk-lib';
 import {
   DimensionsMap,
   Metric,
@@ -719,6 +727,9 @@ export class BrowserCustom extends BrowserCustomBase {
 
     // if recording is configured, add permissions to the execution role
     if (this.recordingConfig && this.recordingConfig.s3Location) {
+      if (!Token.isUnresolved(this.recordingConfig.s3Location.bucketName)) {
+        Stack.of(this).resolve(this.recordingConfig.s3Location.bucketName);
+      }
       const bucket = s3.Bucket.fromBucketName(
         this,
         `${this.name}RecordingBucket`,

@@ -1,4 +1,10 @@
-import { Arn, ArnFormat, IResource, Resource } from 'aws-cdk-lib';
+import {
+  Arn,
+  ArnFormat,
+  IResource,
+  Lazy,
+  Resource,
+} from 'aws-cdk-lib';
 import {
   DimensionsMap,
   Metric,
@@ -7,6 +13,7 @@ import {
   Stats,
 } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
 import { Construct } from 'constructs';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
@@ -50,7 +57,7 @@ const CODE_INTERPRETER_TAG_MAX_LENGTH = 256;
 /**
  * Interface for CodeInterpreterCustom resources
  */
-export interface ICodeInterpreterCustom extends IResource, iam.IGrantable {
+export interface ICodeInterpreterCustom extends IResource, iam.IGrantable, ec2.IConnectable {
   /**
    * The ARN of the code interpreter resource
    * @attribute
@@ -168,6 +175,23 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
    * The principal to grant permissions to
    */
   public abstract readonly grantPrincipal: iam.IPrincipal;
+
+  /**
+   * An accessor for the Connections object that will fail if this Browser does not have a VPC
+   * configured.
+   */
+  public get connections(): ec2.Connections {
+    if (!this._connections) {
+      throw new Error('Cannot manage network access without configuring a VPC');
+    }
+    return this._connections;
+  }
+  /**
+   * The actual Connections object for this Browser. This may be unset in the event that a VPC has not
+   * been configured.
+   * @internal
+   */
+  protected _connections: ec2.Connections | undefined;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
@@ -469,6 +493,12 @@ export interface CodeInterpreterCustomAttributes {
    * @default undefined - No created timestamp is provided
    */
   readonly createdAt?: string;
+  /**
+   * The security groups for this code interpreter, if in a VPC.
+   *
+   * @default - By default, the code interpreter is not in a VPC.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 }
 
 /******************************************************************************
@@ -506,6 +536,17 @@ export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
       public readonly grantPrincipal = this.executionRole;
       public readonly status = attrs.status;
       public readonly createdAt = attrs.createdAt;
+
+      constructor(s: Construct, i: string) {
+        super(s, i);
+
+        this.grantPrincipal = this.executionRole || new iam.UnknownPrincipal({ resource: this });
+        if (attrs.securityGroups) {
+          this._connections = new ec2.Connections({
+            securityGroups: attrs.securityGroups,
+          });
+        }
+      }
     }
 
     // Return new Code Interpreter Custom
@@ -552,6 +593,10 @@ export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
    */
   public readonly lastUpdatedAt?: string;
   /**
+   * The failure reason of the code interpreter
+   */
+  public readonly failureReason?: string;
+  /**
    * The IAM role that provides permissions for the code interpreter to access AWS services.
    */
   public readonly executionRole: iam.IRole;
@@ -592,13 +637,22 @@ export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
     // Validate code interpreter tags
     throwIfInvalid(this._validateCodeInterpreterTags, this.tags);
 
+    // Network configuration and validation is done in the network configuration class
+    // So we don't need to validate it here
+
+    // Set connections - create a shared connections object
+    if (this.networkConfiguration.connections) {
+      // Use the network configuration's connections as the shared object
+      this._connections = this.networkConfiguration.connections;
+    }
+
     // ------------------------------------------------------
     // CFN Props - With Lazy support
     // ------------------------------------------------------
     const cfnProps: agent_core.CfnCodeInterpreterCustomProps = {
       name: this.name,
       description: this.description,
-      networkConfiguration: this.networkConfiguration._render(),
+      networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration._render(this._connections) }),
       executionRoleArn: this.executionRole?.roleArn,
       tags: this.tags,
     };
@@ -612,6 +666,7 @@ export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
     this.status = this.__resource.attrStatus;
     this.createdAt = this.__resource.attrCreatedAt;
     this.lastUpdatedAt = this.__resource.attrLastUpdatedAt;
+    this.failureReason = this.__resource.attrFailureReason;
   }
 
   // ------------------------------------------------------

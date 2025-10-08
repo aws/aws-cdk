@@ -102,7 +102,7 @@ export abstract class NetworkConfiguration {
   /**
    * Validates the vpc config.
    */
-  private _validateAndConfigureVpcConfig = (vpcConfig?: VpcConfigProps): NetworkConfig | undefined=> {
+  private _validateAndConfigureVpcConfig = (vpcConfig?: VpcConfigProps): NetworkConfig | undefined => {
     if ((vpcConfig?.securityGroups || vpcConfig?.allowAllOutbound !== undefined) && !vpcConfig?.vpc) {
       throw new Error('Cannot configure \'securityGroups\' or \'allowAllOutbound\' without configuring a VPC');
     }
@@ -130,7 +130,7 @@ export abstract class NetworkConfiguration {
       securityGroups = [securityGroup];
     }
 
-    const vpcSubnets = vpcConfig.vpcSubnets ? vpcConfig.vpc.selectSubnets(vpcConfig.vpcSubnets) : undefined;
+    const vpcSubnets = vpcConfig.vpcSubnets ? vpcConfig.vpc.selectSubnets(vpcConfig.vpcSubnets) : vpcConfig.vpc.selectSubnets();
 
     return {
       connections: new ec2.Connections({ securityGroups: securityGroups }),
@@ -193,12 +193,26 @@ export class CodeInterpreterNetworkConfiguration extends NetworkConfiguration {
   public static readonly SANDBOX_NETWORK = new CodeInterpreterNetworkConfiguration('SANDBOX');
 
   /**
+   * Creates a network configuration from a VPC configuration.
+   * @param vpcConfig - The VPC configuration.
+   * @returns A CodeInterpreterNetworkConfiguration.
+   */
+  public static fromVpcConfig(scope: Construct, vpcConfig: VpcConfigProps): CodeInterpreterNetworkConfiguration {
+    return new CodeInterpreterNetworkConfiguration('VPC', scope, vpcConfig);
+  }
+
+  /**
    * Renders the network configuration as a CloudFormation property.
+   * @param codeInterpreterConnections - The connections object to the code interpreter.
    * @internal This is an internal core function and should not be called directly.
    */
-  public _render(): CfnCodeInterpreterCustom.CodeInterpreterNetworkConfigurationProperty {
+  public _render(codeInterpreterConnections?: ec2.Connections): CfnCodeInterpreterCustom.CodeInterpreterNetworkConfigurationProperty {
     return {
       networkMode: this.networkMode,
+      vpcConfig: (this.networkMode === 'VPC' && codeInterpreterConnections) ? {
+        subnets: this.vpcSubnets?.subnets?.map(subnet => subnet.subnetId) ?? [],
+        securityGroups: codeInterpreterConnections?.securityGroups?.map(s => s.securityGroupId) ?? [],
+      } : undefined,
     };
   }
 }
