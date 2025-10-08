@@ -803,14 +803,6 @@ export interface MetricFilterOptions {
    * @default - Cloudformation generated name.
    */
   readonly filterName?: string;
-
-  /**
-   * Whether the metric filter is applied on the tranformed logs. This parameter is valid only for log groups that have an active log transformer.
-   * If this value is true, the metric filter is applied on the transformed version of the log events instead of the original ingested log events.
-   *
-   * @default - false
-   */
-  readonly applyOnTransformedLogs?: boolean;
 }
 
 /**
