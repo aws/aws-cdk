@@ -644,7 +644,7 @@ export class AnomalyDetectionAlarm extends Alarm {
       comparisonOperator: props.comparisonOperator ?? ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
       metric: Metric.anomalyDetectionFor({
         ...props,
-        period: metricPeriod(props.metric),
+        period: metricPeriod(props.metric), // AnomalyDetectionAlarmProps.period is deprecated - the guidance recommends encoding the period in the metric itself.
       }),
       threshold: Alarm.ANOMALY_DETECTION_NO_THRESHOLD,
     });
