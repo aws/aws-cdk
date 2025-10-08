@@ -46,6 +46,16 @@ export interface BucketDeploymentProps {
   readonly destinationKeyPrefix?: string;
 
   /**
+   * The AWS region of the destination bucket.
+   *
+   * This property is only needed for certain regions (like ZAZ) that have special
+   * requirements. Most cross-region deployments work without specifying this.
+   *
+   * @default - Not specified, uses default AWS CLI behavior
+   */
+  readonly destinationBucketRegion?: string;
+
+  /**
    * If this is set, the zip file will be synced to the destination S3 bucket and extracted.
    * If false, the file will remain zipped in the destination bucket.
    * @default true
@@ -414,6 +424,7 @@ export class BucketDeployment extends Construct {
     });
 
     const crUniqueId = `CustomResource${this.renderUniqueId(props.memoryLimit, props.ephemeralStorageSize, props.vpc)}`;
+
     this.cr = new cdk.CustomResource(this, crUniqueId, {
       serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
@@ -448,6 +459,7 @@ export class BucketDeployment extends Construct {
         }, { omitEmptyArray: true }),
         DestinationBucketName: this.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
+        DestinationBucketRegion: props.destinationBucketRegion,
         RetainOnDelete: props.retainOnDelete,
         Extract: props.extract,
         Prune: props.prune ?? true,
