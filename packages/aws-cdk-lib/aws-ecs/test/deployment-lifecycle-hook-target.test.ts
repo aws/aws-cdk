@@ -5,6 +5,7 @@ import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import { App, Stack } from '../../core';
 import * as ecs from '../lib';
+import { stringifyHookDetails } from '../lib/deployment-lifecycle-hook-target';
 
 describe('DeploymentLifecycleHookTarget', () => {
   let stack: cdk.Stack;
@@ -281,5 +282,179 @@ describe('DeploymentLifecycleHookTarget', () => {
       });
       service.addLifecycleHook(hookTarget);
     }).toThrow(/Deployment lifecycle hooks requires the ECS deployment controller/);
+  });
+
+  describe('hookDetails validation', () => {
+    test('validates valid JSON object hookDetails', () => {
+      // GIVEN
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      // WHEN
+      const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
+        lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+        hookDetails: { environment: 'production', timeout: 300 },
+      });
+      service.addLifecycleHook(hookTarget);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          LifecycleHooks: [
+            {
+              LifecycleStages: ['PRE_SCALE_UP'],
+              HookTargetArn: {
+                'Fn::GetAtt': [
+                  Match.stringLikeRegexp('TestFunction'),
+                  'Arn',
+                ],
+              },
+              HookDetails: '{\"environment\":\"production\",\"timeout\":300}',
+            },
+          ],
+        },
+      });
+    });
+
+    test('throws error for JSON array hookDetails', () => {
+      // GIVEN
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      // WHEN
+      const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
+        lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+        hookDetails: ['param1', 'param2', 1, true],
+      });
+      service.addLifecycleHook(hookTarget);
+
+      // GIVEN & WHEN & THEN
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow(/hookDetails must be a JSON object, got: array/);
+    });
+
+    test('throws error for primitive string hookDetails', () => {
+      const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
+        lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+        hookDetails: 'just a string',
+      });
+
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      service.addLifecycleHook(hookTarget);
+
+      // GIVEN & WHEN & THEN
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow(/hookDetails must be a JSON object, got: string/);
+    });
+
+    test('throws error for primitive number hookDetails', () => {
+      const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
+        lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+        hookDetails: 42,
+      });
+
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      service.addLifecycleHook(hookTarget);
+
+      // GIVEN & WHEN & THEN
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow(/hookDetails must be a JSON object, got: number/);
+    });
+
+    test('throws error for null hookDetails', () => {
+      const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
+        lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+        hookDetails: null,
+      });
+
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      service.addLifecycleHook(hookTarget);
+
+      // GIVEN & WHEN & THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          LifecycleHooks: [
+            {
+              LifecycleStages: ['PRE_SCALE_UP'],
+              HookTargetArn: {
+                'Fn::GetAtt': [
+                  Match.stringLikeRegexp('TestFunction'),
+                  'Arn',
+                ],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('throws error for undefined hookDetails', () => {
+      const hookTarget = new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
+        lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+      });
+
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      service.addLifecycleHook(hookTarget);
+
+      // GIVEN & WHEN & THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          LifecycleHooks: [
+            {
+              LifecycleStages: ['PRE_SCALE_UP'],
+              HookTargetArn: {
+                'Fn::GetAtt': [
+                  Match.stringLikeRegexp('TestFunction'),
+                  'Arn',
+                ],
+              },
+            },
+          ],
+        },
+      });
+    });
+  });
+
+  describe('stringifyHookDetails function', () => {
+    test('validates and stringifies object directly', () => {
+      const objectInput = { environment: 'production', timeout: 300 };
+      expect(() => stringifyHookDetails(objectInput)).not.toThrow();
+      expect(stringifyHookDetails(objectInput)).toBe('{"environment":"production","timeout":300}');
+    });
+
+    test('rejects primitive string value', () => {
+      expect(() => stringifyHookDetails('just a string')).toThrow(/hookDetails must be a JSON object, got: string/);
+    });
+
+    test('rejects primitive number value', () => {
+      expect(() => stringifyHookDetails(42)).toThrow(/hookDetails must be a JSON object, got: number/);
+    });
+
+    test('rejects primitive boolean value', () => {
+      expect(() => stringifyHookDetails(true)).toThrow(/hookDetails must be a JSON object, got: boolean/);
+    });
   });
 });
