@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "displayName": "aws-cdk-scheduler-targets-firehose-put-record/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "b2545d92ca47e34bd39a0ca10eae7967283d518235dd4ec30c28e6d6f6171cff": {
+    "7d192970953ed3c5959d60bd14f0aca3a6d098ebcd477acb00740c84e7fef8e2": {
       "displayName": "aws-cdk-scheduler-targets-firehose-put-record Template",
       "source": {
         "path": "aws-cdk-scheduler-targets-firehose-put-record.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-bee720f9": {
+        "current_account-current_region-b8dd977d": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b2545d92ca47e34bd39a0ca10eae7967283d518235dd4ec30c28e6d6f6171cff.json",
+          "objectKey": "7d192970953ed3c5959d60bd14f0aca3a6d098ebcd477acb00740c84e7fef8e2.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

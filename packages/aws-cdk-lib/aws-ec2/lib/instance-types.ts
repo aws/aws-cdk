@@ -441,6 +441,28 @@ export enum InstanceClass {
   R7IZ = 'r7iz',
 
   /**
+   * Memory optimized instances based on custom Intel Xeon Scalable 6 processors, available only on AWS
+   */
+  MEMORY8_INTEL_BASE = 'memory8-intel-base',
+
+  /**
+   * Memory optimized instances based on custom Intel Xeon Scalable 6 processors, available only on AWS
+   */
+  R8I = 'r8i',
+
+  /**
+   * Memory optimized flexible instances based on custom Intel Xeon Scalable 6 processors, available only on AWS
+   * Provide up to 20% higher performance, 2.5x more memory throughput, and can scale up to full CPU performance 95% of the time
+   */
+  MEMORY8_INTEL_FLEX = 'memory8-intel-flex',
+
+  /**
+   * Memory optimized flexible instances based on custom Intel Xeon Scalable 6 processors, available only on AWS
+   * Provide up to 20% higher performance, 2.5x more memory throughput, and can scale up to full CPU performance 95% of the time
+   */
+  R8I_FLEX = 'r8i-flex',
+
+  /**
    * Memory optimized instances based on 4th generation AMD EPYC (codename Genoa), 7th generation
    */
   MEMORY7_AMD = 'memory7-amd',
@@ -469,6 +491,26 @@ export enum InstanceClass {
    * Memory optimized instances, 8th generation with Graviton4 processors and local NVME drive
    */
   R8GD = 'r8gd',
+
+  /**
+   * Memory optimized instances, 8th generation with Graviton4 processors and high network bandwidth capabilities
+   */
+  MEMORY8_GRAVITON4_HIGH_NETWORK_BANDWIDTH = 'memory8-graviton4-high-network-bandwidth',
+
+  /**
+   * Memory optimized instances, 8th generation with Graviton4 processors and high network bandwidth capabilities
+   */
+  R8GN = 'r8gn',
+
+  /**
+   * Memory and EBS optimized instances, 8th generation with Graviton4 processors
+   */
+  MEMORY8_GRAVITON4_EBS_OPTIMIZED = 'memory8-graviton4-ebs-optimized',
+
+  /**
+   * Memory and EBS optimized instances, 8th generation with Graviton4 processors
+   */
+  R8GB = 'r8gb',
 
   /**
    * Compute optimized instances, 3rd generation
@@ -889,6 +931,16 @@ export enum InstanceClass {
    * Storage optimized instances powered by Graviton4 processor, 8th generation
    */
   I8G = 'i8g',
+
+  /**
+   * Storage optimized instances powered by Graviton4 processor, 8th generation
+   */
+  STORAGE8_GRAVITON_STORAGE_OPTIMIZED = 'storage8-graviton-storage-optimized',
+
+  /**
+   * Storage optimized instances powered by Graviton4 processor, 8th generation
+   */
+  I8GE = 'i8ge',
 
   /**
    * Burstable instances, 2nd generation
@@ -1338,6 +1390,28 @@ export enum InstanceClass {
    * Standard instances, 8th generation with Graviton4 processors and local NVME drive
    */
   M8GD = 'm8gd',
+
+  /**
+   * Standard instances based on custom Intel Xeon Scalable 6 processors, available only on AWS
+   */
+  STANDARD8_INTEL = 'standard8-intel',
+
+  /**
+   * Standard instances based on custom Intel Xeon Scalable 6 processors, available only on AWS
+   */
+  M8I = 'm8i',
+
+  /**
+   * Flexible instances based on custom Intel Xeon Scalable 6 processors, available only on AWS
+   * Provide up to 20% higher performance, 2.5x more memory throughput, and can scale up to full CPU performance 95% of the time
+   */
+  STANDARD8_INTEL_FLEX = 'standard8-intel-flex',
+
+  /**
+   * Flexible instances based on custom Intel Xeon Scalable 6 processors, available only on AWS
+   * Provide up to 20% higher performance, 2.5x more memory throughput, and can scale up to full CPU performance 95% of the time
+   */
+  M8I_FLEX = 'm8i-flex',
 
   /**
    * Standard instances with high memory and compute capacity based on Intel Xeon Scalable (Sapphire Rapids) processors, 7th generation
@@ -1795,6 +1869,14 @@ export class InstanceType {
       [InstanceClass.R8G]: 'r8g',
       [InstanceClass.MEMORY8_GRAVITON4_NVME_DRIVE]: 'r8gd',
       [InstanceClass.R8GD]: 'r8gd',
+      [InstanceClass.MEMORY8_GRAVITON4_HIGH_NETWORK_BANDWIDTH]: 'r8gn',
+      [InstanceClass.R8GN]: 'r8gn',
+      [InstanceClass.MEMORY8_GRAVITON4_EBS_OPTIMIZED]: 'r8gb',
+      [InstanceClass.R8GB]: 'r8gb',
+      [InstanceClass.MEMORY8_INTEL_BASE]: 'r8i',
+      [InstanceClass.R8I]: 'r8i',
+      [InstanceClass.MEMORY8_INTEL_FLEX]: 'r8i-flex',
+      [InstanceClass.R8I_FLEX]: 'r8i-flex',
       [InstanceClass.COMPUTE3]: 'c3',
       [InstanceClass.C3]: 'c3',
       [InstanceClass.COMPUTE4]: 'c4',
@@ -1873,6 +1955,8 @@ export class InstanceType {
       [InstanceClass.I7I]: 'i7i',
       [InstanceClass.STORAGE8_GRAVITON]: 'i8g',
       [InstanceClass.I8G]: 'i8g',
+      [InstanceClass.STORAGE8_GRAVITON_STORAGE_OPTIMIZED]: 'i8ge',
+      [InstanceClass.I8GE]: 'i8ge',
       [InstanceClass.BURSTABLE2]: 't2',
       [InstanceClass.T2]: 't2',
       [InstanceClass.BURSTABLE3]: 't3',
@@ -1955,6 +2039,10 @@ export class InstanceType {
       [InstanceClass.M7I]: 'm7i',
       [InstanceClass.STANDARD7_INTEL_FLEX]: 'm7i-flex',
       [InstanceClass.M7I_FLEX]: 'm7i-flex',
+      [InstanceClass.STANDARD8_INTEL]: 'm8i',
+      [InstanceClass.M8I]: 'm8i',
+      [InstanceClass.STANDARD8_INTEL_FLEX]: 'm8i-flex',
+      [InstanceClass.M8I_FLEX]: 'm8i-flex',
       [InstanceClass.STANDARD7_AMD]: 'm7a',
       [InstanceClass.M7A]: 'm7a',
       [InstanceClass.HIGH_COMPUTE_MEMORY1]: 'z1d',

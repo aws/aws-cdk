@@ -61,6 +61,7 @@ export class MetricFilter extends Resource {
         dimensions: props.dimensions ? Object.entries(props.dimensions).map(([key, value]) => ({ key, value })) : undefined,
         unit: props.unit,
       }],
+      applyOnTransformedLogs: props.applyOnTransformedLogs,
     });
   }
 

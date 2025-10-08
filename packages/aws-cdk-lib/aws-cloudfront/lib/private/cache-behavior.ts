@@ -55,15 +55,15 @@ export class CacheBehavior {
       targetOriginId: this.originId,
       allowedMethods: this.props.allowedMethods?.methods,
       cachedMethods: this.props.cachedMethods?.methods,
-      cachePolicyId: (this.props.cachePolicy ?? CachePolicy.CACHING_OPTIMIZED).cachePolicyId,
+      cachePolicyId: (this.props.cachePolicy?.cachePolicyRef ?? CachePolicy.CACHING_OPTIMIZED).cachePolicyId,
       compress: this.props.compress ?? true,
-      originRequestPolicyId: this.props.originRequestPolicy?.originRequestPolicyId,
-      realtimeLogConfigArn: this.props?.realtimeLogConfig?.realtimeLogConfigArn,
-      responseHeadersPolicyId: this.props.responseHeadersPolicy?.responseHeadersPolicyId,
+      originRequestPolicyId: this.props.originRequestPolicy?.originRequestPolicyRef.originRequestPolicyId,
+      realtimeLogConfigArn: this.props?.realtimeLogConfig?.realtimeLogConfigRef.realtimeLogConfigArn,
+      responseHeadersPolicyId: this.props.responseHeadersPolicy?.responseHeadersPolicyRef.responseHeadersPolicyId,
       smoothStreaming: this.props.smoothStreaming,
       viewerProtocolPolicy: this.props.viewerProtocolPolicy ?? ViewerProtocolPolicy.ALLOW_ALL,
       functionAssociations: this.props.functionAssociations?.map(association => ({
-        functionArn: association.function.functionArn,
+        functionArn: association.function.functionRef.functionArn,
         eventType: association.eventType.toString(),
       })),
       lambdaFunctionAssociations: this.props.edgeLambdas?.map(edgeLambda => ({
@@ -71,7 +71,7 @@ export class CacheBehavior {
         eventType: edgeLambda.eventType.toString(),
         includeBody: edgeLambda.includeBody,
       })),
-      trustedKeyGroups: this.props.trustedKeyGroups?.map(keyGroup => keyGroup.keyGroupId),
+      trustedKeyGroups: this.props.trustedKeyGroups?.map(keyGroup => keyGroup.keyGroupRef.keyGroupId),
       grpcConfig: this.props.enableGrpc !== undefined
         ? {
           enabled: this.props.enableGrpc,

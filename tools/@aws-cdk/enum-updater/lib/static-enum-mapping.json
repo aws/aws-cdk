@@ -755,6 +755,12 @@
       "sdk_enum_name": "ComputeType",
       "match_percentage": 1
     },
+    "DockerServerComputeType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/compute-type.ts",
+      "sdk_service": "codebuild",
+      "sdk_enum_name": "ComputeType",
+      "match_percentage": 1
+    },
     "EnvironmentType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/environment-type.ts",
       "sdk_service": "codebuild",
@@ -849,6 +855,18 @@
       "sdk_enum_name": "AttributeType",
       "match_percentage": 1
     },
+    "ContributorInsightsMode": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/shared.ts",
+      "sdk_service": "dynamodb",
+      "sdk_enum_name": "Mode",
+      "match_percentage": 1
+    },
+    "MultiRegionConsistency": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/shared.ts",
+      "sdk_service": "dynamodb",
+      "sdk_enum_name": "MultiRegionConsistency",
+      "match_percentage": 1
+    },
     "ApproximateCreationDateTimePrecision": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.ts",
       "sdk_service": "dynamodb",
@@ -881,6 +899,12 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts",
       "sdk_service": "ecs",
       "sdk_enum_name": "RequiresCompatibilities",
+      "match_percentage": 1
+    },
+    "DeploymentStrategy": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts",
+      "sdk_service": "ecs",
+      "sdk_enum_name": "Strategy",
       "match_percentage": 1
     },
     "FileSystemType": {
@@ -941,6 +965,12 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/container-definition.ts",
       "sdk_service": "ecs",
       "sdk_enum_name": "VersionConsistency",
+      "match_percentage": 1
+    },
+    "DeploymentLifecycleStage": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/deployment-lifecycle-hook-target.ts",
+      "sdk_service": "ecs",
+      "sdk_enum_name": "LifecycleStages",
       "match_percentage": 1
     },
     "DevicePermission": {
@@ -1243,6 +1273,12 @@
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/props.ts",
       "sdk_service": "rds",
       "sdk_enum_name": "PerformanceInsightsRetentionPeriod",
+      "match_percentage": 1
+    },
+    "ProxyEndpointTargetRole": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy-endpoint.ts",
+      "sdk_service": "rds",
+      "sdk_enum_name": "TargetRole",
       "match_percentage": 1
     },
     "ClientPasswordAuthType": {

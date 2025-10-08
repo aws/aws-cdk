@@ -34,6 +34,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [SubmitJob](#submitjob)
   - [Bedrock](#bedrock)
     - [InvokeModel](#invokemodel)
+    - [Using Input Path for S3 URI](#using-input-path-for-s3-uri)
+    - [Using Input Path](#using-input-path)
     - [createModelCustomizationJob](#createmodelcustomizationjob)
   - [CodeBuild](#codebuild)
     - [StartBuild](#startbuild)
@@ -47,6 +49,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [RunTask](#runtask)
       - [EC2](#ec2)
       - [Fargate](#fargate)
+      - [Override CPU and Memory Parameter](#override-cpu-and-memory-parameter)
       - [ECS enable Exec](#ecs-enable-exec)
   - [EMR](#emr)
     - [Create Cluster](#create-cluster)
@@ -64,15 +67,18 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Call](#call)
   - [EventBridge](#eventbridge)
     - [Put Events](#put-events)
+  - [EventBridge Scheduler](#eventbridge-scheduler)
+    - [Create Scheduler](#create-scheduler)
   - [Glue](#glue)
     - [StartJobRun](#startjobrun)
     - [StartCrawlerRun](#startcrawlerrun)
   - [Glue DataBrew](#glue-databrew)
     - [Start Job Run](#start-job-run-1)
+  - [Invoke HTTP API](#invoke-http-api)
   - [Lambda](#lambda)
     - [Invoke](#invoke)
   - [MediaConvert](#mediaconvert)
-    - [Create Job](#create-job)
+    - [CreateJob](#createjob)
   - [SageMaker](#sagemaker)
     - [Create Training Job](#create-training-job)
     - [Create Transform Job](#create-transform-job)
@@ -956,6 +962,18 @@ new tasks.EmrCreateCluster(this, 'SpotSpecification', {
 });
 ```
 
+You can [customize EBS root device volume](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-custom-ami-root-volume-size.html).
+
+```ts
+new tasks.EmrCreateCluster(this, 'Create Cluster', {
+  instances: {},
+  name: 'ClusterName',
+  ebsRootVolumeIops: 4000,
+  ebsRootVolumeSize: Size.gibibytes(20),
+  ebsRootVolumeThroughput: 200,
+});
+```
+
 If you want to run multiple steps in [parallel](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-concurrent-steps.html),
 you can specify the `stepConcurrencyLevel` property. The concurrency range is between 1
 and 256 inclusive, where the default concurrency of 1 means no step concurrency is allowed.
@@ -978,6 +996,47 @@ new tasks.EmrCreateCluster(this, 'Create Cluster', {
   instances: {},
   name: 'ClusterName',
   autoTerminationPolicyIdleTimeout: Duration.seconds(100),
+});
+```
+
+If you want to use [managed scaling](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-scaling.html),
+you can specify the `managedScalingPolicy` property.
+
+```ts
+new tasks.EmrCreateCluster(this, 'CreateCluster', {
+  instances: {
+    instanceFleets: [
+      {
+        instanceFleetType: tasks.EmrCreateCluster.InstanceRoleType.CORE,
+        instanceTypeConfigs: [
+          {
+            instanceType: 'm5.xlarge',
+          },
+        ],
+        targetOnDemandCapacity: 1,
+      },
+      {
+        instanceFleetType: tasks.EmrCreateCluster.InstanceRoleType.MASTER,
+        instanceTypeConfigs: [
+          {
+            instanceType: 'm5.xlarge',
+          },
+        ],
+        targetOnDemandCapacity: 1,
+      },
+    ],
+  },
+  name: 'ClusterName',
+  releaseLabel: 'emr-7.9.0',
+  managedScalingPolicy: {
+    computeLimits: {
+      unitType: tasks.EmrCreateCluster.ComputeLimitsUnitType.INSTANCE_FLEET_UNITS,
+      maximumCapacityUnits: 4,
+      minimumCapacityUnits: 1,
+      maximumOnDemandCapacityUnits: 4,
+      maximumCoreCapacityUnits: 2,
+    },
+  },
 });
 ```
 
@@ -1315,12 +1374,12 @@ The following code snippet includes a Task state that uses eks:call to list the 
 
 ```ts
 import * as eks from 'aws-cdk-lib/aws-eks';
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 
 const myEksCluster = new eks.Cluster(this, 'my sample cluster', {
   version: eks.KubernetesVersion.V1_32,
   clusterName: 'myEksCluster',
-  kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
+  kubectlLayer: new KubectlV33Layer(this, 'kubectl'),
 });
 
 new tasks.EksCall(this, 'Call a EKS Endpoint', {
