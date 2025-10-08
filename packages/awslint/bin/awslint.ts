@@ -9,7 +9,7 @@ import * as reflect from 'jsii-reflect';
 import * as yargs from 'yargs';
 import { ALL_RULES_LINTER, DiagnosticLevel, RuleFilterSet } from '../lib';
 
-const FEATURES: JsiiFeature[] = ['class-covariant-overrides', 'intersection-types'];
+const FEATURES: JsiiFeature[] = ['intersection-types'];
 
 let stackTrace = false;
 
