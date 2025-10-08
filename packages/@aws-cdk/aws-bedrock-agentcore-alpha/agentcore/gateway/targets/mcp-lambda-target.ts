@@ -77,7 +77,7 @@ export class McpLambdaTarget extends GatewayTargetBase implements IMcpGatewayTar
     // Create Lambda function for custom resource using NodejsFunction
 
     const resourceProps: CfnGatewayTargetProps = {
-      credentialProviderConfigurations: this.credentialProviders.flatMap((provider) => provider.render()),
+      credentialProviderConfigurations: this.credentialProviders.map((provider) => provider.render()),
       description: this.description,
       gatewayIdentifier: this.gateway.gatewayId,
       name: this.name,

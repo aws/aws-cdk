@@ -24,8 +24,9 @@ import { GatewayAuthorizer } from '../../../agentcore/gateway/authorizer';
 import { PythonFunction } from '@aws-cdk/aws-lambda-python-alpha';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as path from 'path';
-// import { McpLambdaTarget } from '../../../agentcore/gateway/targets/mcp-lambda-target';
-// import { ToolSchema } from '../../../agentcore/gateway/targets/schema/tool-schema';
+import { McpLambdaTarget } from '../../../agentcore/gateway/targets/mcp-lambda-target';
+import { ToolSchema } from '../../../agentcore/gateway/targets/schema/tool-schema';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 const app = new cdk.App();
 
@@ -59,21 +60,22 @@ const myGateway = new Gateway(stack, 'MyGateway', {
   kmsKey: encryptionKey,
 });
 
-// const myLambdaFunction =
-new PythonFunction(stack, 'MyFunction', {
+const myLambdaFunction = new PythonFunction(stack, 'MyFunction', {
   entry: path.join(__dirname),
   index: 'lambda_function_code.py',
   runtime: Runtime.PYTHON_3_12,
   handler: 'lambda_handler',
 });
 
-// new McpLambdaTarget(stack, 'my-function', {
-//   name: 'my-function-target',
-//   description: 'Lambda Target using CDK',
-//   gateway: myGateway,
-//   lambdaFunction: myLambdaFunction,
-//   schema: ToolSchema.fromLocalAsset(path.join(__dirname, 'lambda_function_schema.json')),
-// });
+const bucket = Bucket.fromBucketName(stack, 'MyBucket', 'aaa-rafams-gfs-demos');
+
+new McpLambdaTarget(stack, 'my-function', {
+  name: 'my-function-target',
+  description: 'Lambda Target using CDK',
+  gateway: myGateway,
+  lambdaFunction: myLambdaFunction,
+  schema: ToolSchema.fromS3File(bucket, 'lambda_function_schema.json'),
+});
 
 new cdk.CfnOutput(stack, 'MyGatewayUrl', {
   value: myGateway.gatewayUrl!,
@@ -85,7 +87,7 @@ new cdk.CfnOutput(stack, 'UserPoolUrl', {
 
 new integ.IntegTest(app, 'AgentCoreGateway', {
   testCases: [stack],
-  regions: ['us-east-1'],
+  regions: ['eu-central-1'],
 });
 
 app.synth();
