@@ -201,6 +201,7 @@ export class ResourceClass extends ClassType {
       docs: {
         summary: `A reference to a ${this.resource.name} resource.`,
         stability: Stability.External,
+        ...maybeDeprecated(this.props.deprecated),
       },
     });
 

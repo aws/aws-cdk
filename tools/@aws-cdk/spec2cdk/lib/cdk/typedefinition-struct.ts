@@ -61,10 +61,10 @@ export class TypeDefinitionStruct extends StructType {
     }
 
     let needsResolverFunction = false;
-    for (const [_, prop] of Object.entries(this.typeDefinition.properties)) {
+    for (const [propName, prop] of Object.entries(this.typeDefinition.properties)) {
       needsResolverFunction = needsResolverFunction
         ? needsResolverFunction
-        : this.relationshipDecider.needsFlatteningFunction(prop);
+        : this.relationshipDecider.needsFlatteningFunction(propName, prop);
     }
 
     if (needsResolverFunction) {

@@ -43,7 +43,7 @@ export class ResolverBuilder {
     }
 
     const originalType = this.converter.originalType(baseType);
-    if (this.relationshipDecider.needsFlatteningFunction(prop)) {
+    if (this.relationshipDecider.needsFlatteningFunction(name, prop)) {
       const optional = !prop.required;
       const typeRef = originalType.type === 'array' ? originalType.element : originalType;
       if (typeRef.type === 'ref') {
