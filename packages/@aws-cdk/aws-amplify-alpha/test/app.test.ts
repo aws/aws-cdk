@@ -550,7 +550,7 @@ test('error with inconsistent appRoot in custom headers', () => {
 });
 
 test('with empty custom response headers array', () => {
-  // WHEN
+  // WHEN - Empty array should be handled gracefully (regression test for #35693)
   new amplify.App(stack, 'App', {
     sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
       owner: 'aws',
@@ -560,7 +560,7 @@ test('with empty custom response headers array', () => {
     customResponseHeaders: [],
   });
 
-  // THEN
+  // THEN - CustomHeaders property should be omitted from CloudFormation
   Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
     Name: 'App',
     CustomHeaders: Match.absent(),
