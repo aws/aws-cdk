@@ -633,6 +633,12 @@ export class DockerImageAsset extends Construct implements IAsset {
     // but override the tag generation logic
     const baseLocation = stack.synthesizer.addDockerImageAsset(source);
 
+    // Check if imageUri contains unresolved tokens
+    if (Token.isUnresolved(baseLocation.imageUri)) {
+      throw new Error('Cannot apply custom tag to Docker image asset: imageUri contains unresolved tokens. ' +
+        'Custom tags can only be applied when the image URI is fully resolved.');
+    }
+
     // Create a modified location with our custom tag
     return {
       repositoryName: baseLocation.repositoryName,
