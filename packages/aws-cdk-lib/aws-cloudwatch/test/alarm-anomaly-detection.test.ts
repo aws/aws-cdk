@@ -144,7 +144,7 @@ describe('AnomalyDetectionAlarm', () => {
       });
     });
   });
-  
+
   describe('Validation', () => {
     test('throws error for non-anomaly detection operators', () => {
       // WHEN/THEN
