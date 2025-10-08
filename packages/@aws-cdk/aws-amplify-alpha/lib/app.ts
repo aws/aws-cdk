@@ -316,7 +316,9 @@ export class App extends Resource implements IApp, iam.IGrantable {
       name: props.appName || this.node.id,
       oauthToken: sourceCodeProviderOptions?.oauthToken?.unsafeUnwrap(), // Safe usage
       repository: sourceCodeProviderOptions?.repository,
-      customHeaders: props.customResponseHeaders ? renderCustomResponseHeaders(props.customResponseHeaders, this) : undefined,
+      customHeaders: props.customResponseHeaders && props.customResponseHeaders.length > 0
+        ? renderCustomResponseHeaders(props.customResponseHeaders, this)
+        : undefined,
       platform: appPlatform,
       jobConfig: props.buildComputeType ? { buildComputeType: props.buildComputeType } : undefined,
     });
@@ -595,6 +597,7 @@ export interface CustomResponseHeader {
 }
 
 function renderCustomResponseHeaders(customHeaders: CustomResponseHeader[], scope: IConstruct): string {
+  if (customHeaders.length === 0) return '';
   const hasAppRoot = customHeaders[0].appRoot !== undefined;
   const yaml = [hasAppRoot ? 'applications:' : 'customHeaders:'];
 

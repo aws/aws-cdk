@@ -1,4 +1,4 @@
-import { Template } from 'aws-cdk-lib/assertions';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -547,6 +547,24 @@ test('error with inconsistent appRoot in custom headers', () => {
       ],
     });
   }).toThrow('appRoot must be either be present or absent across all custom response headers');
+});
+
+test('with empty custom response headers array', () => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.unsafePlainText('secret'),
+    }),
+    customResponseHeaders: [],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+    Name: 'App',
+    CustomHeaders: Match.absent(),
+  });
 });
 
 test('create a statically hosted app by default', () => {
