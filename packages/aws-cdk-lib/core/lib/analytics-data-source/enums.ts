@@ -476,6 +476,14 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "AMPLIFY_MANAGED",
     "AMPLIFY_MANAGED_NO_COOKIES"
   ],
+  "CacheEngine": [
+    "valkey",
+    "valkey_7",
+    "valkey_8",
+    "redis",
+    "redis_7",
+    "memcached"
+  ],
   "Capability": [
     "ALL",
     "AUDIT_CONTROL",
@@ -952,6 +960,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "Esri",
     "Grab",
     "Here"
+  ],
+  "DataStorageUnit": [
+    "GB"
   ],
   "DatabaseInsightsMode": [
     "standard",
@@ -1626,6 +1637,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ECR_PUBLIC",
     "ECR"
   ],
+  "IncludeDetail": [
+    "FULL",
+    "NONE"
+  ],
   "IncludeExecutionData": [
     "ALL"
   ],
@@ -1759,6 +1774,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "r8g",
     "memory8-graviton4-nvme-drive",
     "r8gd",
+    "memory8-graviton4-high-network-bandwidth",
+    "r8gn",
+    "memory8-graviton4-ebs-optimized",
+    "r8gb",
     "compute3",
     "c3",
     "compute4",
@@ -2257,6 +2276,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "right",
     "hidden"
   ],
+  "Level": [
+    "INFO",
+    "ERROR",
+    "TRACE",
+    "OFF"
+  ],
   "LicenseModel": [
     "license-included",
     "bring-your-own-license",
@@ -2549,6 +2574,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "AL2023_x86_64_STANDARD",
     "AL2023_x86_64_NEURON",
     "AL2023_x86_64_NVIDIA",
+    "AL2023_ARM_64_NVIDIA",
     "AL2023_ARM_64_STANDARD"
   ],
   "NumericOverflowHandlingAction": [
@@ -2649,6 +2675,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "lambda",
     "mediastore",
     "mediapackagev2"
+  ],
+  "OriginIpAddressType": [
+    "ipv4",
+    "ipv6",
+    "dualstack"
   ],
   "OriginProtocolPolicy": [
     "http-only",
@@ -3602,7 +3633,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "TagMutability": [
     "MUTABLE",
-    "IMMUTABLE"
+    "IMMUTABLE",
+    "IMMUTABLE_WITH_EXCLUSION",
+    "MUTABLE_WITH_EXCLUSION"
   ],
   "TagOperation": [
     "STRINGEQUALS",
@@ -3846,6 +3879,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "UsagePlanKeyType": [
     "API_KEY"
+  ],
+  "UserEngine": [
+    "valkey",
+    "redis"
   ],
   "UserPoolDefaultAction": [
     "ALLOW",
