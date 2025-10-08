@@ -67,7 +67,7 @@ describe('AwsCustomResource externalId', () => {
         'Fn::Join': [
           '',
           Match.arrayWith([
-            Match.stringLikeRegexp('test-external-id-123'),
+            Match.stringLikeRegexp('"externalId":"test-external-id-123"'),
           ]),
         ],
       }),
@@ -108,7 +108,7 @@ describe('AwsCustomResource externalId', () => {
         'Fn::Join': [
           '',
           Match.arrayWith([
-            Match.stringLikeRegexp('create-external-id'),
+            Match.stringLikeRegexp('"externalId":"create-external-id"'),
           ]),
         ],
       }),
@@ -116,7 +116,7 @@ describe('AwsCustomResource externalId', () => {
         'Fn::Join': [
           '',
           Match.arrayWith([
-            Match.stringLikeRegexp('update-external-id'),
+            Match.stringLikeRegexp('"externalId":"update-external-id"'),
           ]),
         ],
       }),
@@ -124,7 +124,7 @@ describe('AwsCustomResource externalId', () => {
         'Fn::Join': [
           '',
           Match.arrayWith([
-            Match.stringLikeRegexp('delete-external-id'),
+            Match.stringLikeRegexp('"externalId":"delete-external-id"'),
           ]),
         ],
       }),
@@ -192,7 +192,7 @@ describe('AwsCustomResource externalId', () => {
         'Fn::Join': [
           '',
           Match.arrayWith([
-            Match.stringLikeRegexp('arn:aws:organizations::123456789012:account/o-example123456/123456789012'),
+            Match.stringLikeRegexp('"externalId":"arn:aws:organizations::123456789012:account/o-example123456/123456789012"'),
           ]),
         ],
       }),
@@ -225,7 +225,7 @@ describe('AwsCustomResource externalId', () => {
         'Fn::Join': [
           '',
           Match.arrayWith([
-            Match.stringLikeRegexp('test-.*quoted.*-&-special-chars'),
+            Match.stringLikeRegexp('"externalId":"test-.*quoted.*-&-special-chars"'),
           ]),
         ],
       }),
