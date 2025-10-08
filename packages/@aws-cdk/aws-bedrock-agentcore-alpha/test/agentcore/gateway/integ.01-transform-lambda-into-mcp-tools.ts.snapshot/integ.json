@@ -1,0 +1,16 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "BedrockAgentMemory/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-agentcore-gateway-transform-lambda-into-mcp-tools-57"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "BedrockAgentMemory/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockAgentMemoryDefaultTestDeployAssertA1E4C398"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

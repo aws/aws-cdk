@@ -4,6 +4,7 @@
 
 import { Grant, IRole } from 'aws-cdk-lib/aws-iam';
 import { CredentialProviderType, IGatewayCredentialProvider } from './credential-provider';
+import { CfnGatewayTarget } from 'aws-cdk-lib/aws-bedrockagentcore';
 
 /**
  * Gateway IAM Role credential provider configuration implementation
@@ -13,9 +14,9 @@ export class GatewayIamRoleCredentialProvider implements IGatewayCredentialProvi
 
   constructor() {}
 
-  render(): any {
+  render(): CfnGatewayTarget.CredentialProviderConfigurationProperty {
     return {
-      CredentialProviderType: this.credentialProviderType,
+      credentialProviderType: this.credentialProviderType,
     };
   }
 

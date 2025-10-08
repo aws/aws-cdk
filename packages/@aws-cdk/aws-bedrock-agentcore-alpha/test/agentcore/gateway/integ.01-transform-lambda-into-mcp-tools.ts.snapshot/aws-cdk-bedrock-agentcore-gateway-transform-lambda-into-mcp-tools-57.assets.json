@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "df6c447db5cf5c7eac690e1e525f1a287ad120a8094550579ad31da1b9c63f76": {
+      "displayName": "aws-cdk-bedrock-agentcore-gateway-transform-lambda-into-mcp-tools-57 Template",
+      "source": {
+        "path": "aws-cdk-bedrock-agentcore-gateway-transform-lambda-into-mcp-tools-57.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-2f21e46d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "df6c447db5cf5c7eac690e1e525f1a287ad120a8094550579ad31da1b9c63f76.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

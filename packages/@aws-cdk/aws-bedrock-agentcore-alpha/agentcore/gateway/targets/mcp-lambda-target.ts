@@ -5,7 +5,7 @@ import { GatewayTargetProtocolType, IMcpGatewayTarget, McpGatewayTargetCommonPro
 import { IGateway } from '../gateway';
 import { GatewayCredentialProvider, IGatewayCredentialProvider } from '../outbound-auth/credential-provider';
 import { ToolSchema } from './schema/tool-schema';
-import { CfnGatewayTarget } from 'aws-cdk-lib/aws-bedrockagentcore';
+import { CfnGatewayTarget, CfnGatewayTargetProps } from 'aws-cdk-lib/aws-bedrockagentcore';
 
 /**
  * Properties for creating a GatewayTarget resource
@@ -76,7 +76,7 @@ export class McpLambdaTarget extends GatewayTargetBase implements IMcpGatewayTar
     // ------------------------------------------------------
     // Create Lambda function for custom resource using NodejsFunction
 
-    const _resource = new CfnGatewayTarget(this, 'Resource', {
+    const resourceProps: CfnGatewayTargetProps = {
       credentialProviderConfigurations: this.credentialProviders.flatMap((provider) => provider.render()),
       description: this.description,
       gatewayIdentifier: this.gateway.gatewayId,
@@ -89,7 +89,9 @@ export class McpLambdaTarget extends GatewayTargetBase implements IMcpGatewayTar
           },
         },
       },
-    });
+    };
+
+    const _resource = new CfnGatewayTarget(this, 'Resource', resourceProps);
 
     // ------------------------------------------------------
     // Permissions

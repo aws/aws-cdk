@@ -528,12 +528,12 @@ export class Gateway extends GatewayBase {
   //   });
   // }
 
-  validate(props: CfnGatewayProps): string[] {
-    // strat with empty array
-    const errors: string[] = [];
+  // validate(props: CfnGatewayProps): string[] {
+  //   // strat with empty array
+  //   const errors: string[] = [];
 
-    return errors;
-  }
+  //   return errors;
+  // }
 
   // // TODO: provision a cognito user pool and client and provide correct info
   createCognitoDefaultAuthorizer(): IGatewayAuthorizer {
