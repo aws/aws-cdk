@@ -509,6 +509,12 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       }
     }
 
+    for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
+      if (call?.externalId && !call?.assumedRoleArn) {
+        throw new cdk.ValidationError('ExternalId can only be provided when assumedRoleArn is specified.', this);
+      }
+    }
+
     if (includesPhysicalResourceIdRef(props.onCreate?.parameters)) {
       throw new cdk.ValidationError('`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.', this);
     }
