@@ -9,7 +9,7 @@ const stack = new Stack(app, 'AnomalyDetectionAlarmTestStack');
 const metric = new Metric({
   namespace: 'AWS/EC2',
   metricName: 'CPUUtilization',
-  statistic: 'Average'
+  statistic: 'Average',
 });
 
 // Create test metric with custom period
