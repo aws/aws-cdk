@@ -14,7 +14,7 @@
 import { IBucket, Location } from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import { Construct } from 'constructs';
-import { TargetSchema } from './base-schema';
+import { TargetSchema } from '../base-schema';
 import { Grant, IRole } from 'aws-cdk-lib/aws-iam';
 import { Aws } from 'aws-cdk-lib';
 
@@ -63,7 +63,7 @@ export abstract class ApiSchema extends TargetSchema {
         bucketName: bucket.bucketName,
         objectKey: objectKey,
       },
-      bucketOwnerAccountId,
+      bucketOwnerAccountId
     );
   }
 
@@ -137,7 +137,7 @@ export class AssetApiSchema extends ApiSchema {
     if (!this.asset) {
       throw new ApiSchemaError(
         'ApiSchema must be bound to a scope before rendering. Call bind() first.',
-        'Asset not initialized',
+        'Asset not initialized'
       );
     }
 

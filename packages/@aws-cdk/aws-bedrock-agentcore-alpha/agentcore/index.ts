@@ -25,9 +25,9 @@ export * from './gateway/outbound-auth/credential-provider';
 export * from './gateway/targets/base-class';
 export * from './gateway/targets/mcp-lambda-target';
 export * from './gateway/targets/target';
-export * from './gateway/targets/schema/api-schema';
-export * from './gateway/targets/schema/base-schema';
-export * from './gateway/targets/schema/tool-schema';
+export * from './gateway/targets/api/api-schema';
+export * from './gateway/targets/base-schema';
+export * from './gateway/targets/lambda/tool-schema';
 
 // ===================================
 // Identity

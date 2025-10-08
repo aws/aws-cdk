@@ -1,10 +1,10 @@
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import { GatewayTargetBase } from './base-class';
+import { GatewayTargetBase } from '../base-class';
 import { Construct } from 'constructs';
-import { GatewayTargetProtocolType, IMcpGatewayTarget, McpGatewayTargetCommonProps, McpTargetType } from './target';
-import { IGateway } from '../gateway';
-import { GatewayCredentialProvider, IGatewayCredentialProvider } from '../outbound-auth/credential-provider';
-import { ToolSchema } from './schema/tool-schema';
+import { GatewayTargetProtocolType, IMcpGatewayTarget, McpGatewayTargetCommonProps, McpTargetType } from '../target';
+import { IGateway } from '../../gateway';
+import { GatewayCredentialProvider, IGatewayCredentialProvider } from '../../outbound-auth/credential-provider';
+import { ToolSchema } from './tool-schema';
 import { CfnGatewayTarget, CfnGatewayTargetProps } from 'aws-cdk-lib/aws-bedrockagentcore';
 
 /**

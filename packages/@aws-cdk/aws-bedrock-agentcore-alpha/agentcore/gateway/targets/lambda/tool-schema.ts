@@ -14,7 +14,7 @@
 import { IBucket, Location } from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import { Construct } from 'constructs';
-import { TargetSchema } from './base-schema';
+import { TargetSchema } from '../base-schema';
 import { Grant, IRole } from 'aws-cdk-lib/aws-iam';
 import { CfnGatewayTarget } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { Aws } from 'aws-cdk-lib';
@@ -147,7 +147,7 @@ export abstract class ToolSchema extends TargetSchema {
         bucketName: bucket.bucketName,
         objectKey: objectKey,
       },
-      bucketOwnerAccountId,
+      bucketOwnerAccountId
     );
   }
 
@@ -221,7 +221,7 @@ export class AssetToolSchema extends ToolSchema {
     if (!this.asset) {
       throw new ToolSchemaError(
         'ToolSchema must be bound to a scope before rendering. Call bind() first.',
-        'Asset not initialized',
+        'Asset not initialized'
       );
     }
 
@@ -264,8 +264,8 @@ export class InlineToolSchema extends ToolSchema {
         items: schema.items ? convertSchemaDefinition(schema.items) : undefined,
         properties: schema.properties
           ? Object.fromEntries(
-            Object.entries(schema.properties).map(([key, value]) => [key, convertSchemaDefinition(value)]),
-          )
+              Object.entries(schema.properties).map(([key, value]) => [key, convertSchemaDefinition(value)])
+            )
           : undefined,
         required: schema.required,
       };

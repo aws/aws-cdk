@@ -13,7 +13,13 @@
 
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
+import {
+  OAuthScope,
+  UserPool,
+  UserPoolClient,
+  UserPoolClientIdentityProvider,
+  UserPoolResourceServer,
+} from 'aws-cdk-lib/aws-cognito';
 import { Key } from 'aws-cdk-lib/aws-kms';
 
 // internal
@@ -25,7 +31,7 @@ import { PythonFunction } from '@aws-cdk/aws-lambda-python-alpha';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as path from 'path';
 import { McpLambdaTarget } from '../../../agentcore/gateway/targets/mcp-lambda-target';
-import { ToolSchema } from '../../../agentcore/gateway/targets/schema/tool-schema';
+import { ToolSchema } from '../../../agentcore/gateway/targets/lambda/tool-schema';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 const app = new cdk.App();
@@ -40,7 +46,9 @@ const userPool = new UserPool(stack, 'MyUserPool', {
 const client = new UserPoolClient(stack, 'MyUserPoolClient', {
   userPool: userPool,
   userPoolClientName: 'sample-agentcore-gateway-client',
+  supportedIdentityProviders: [UserPoolClientIdentityProvider.COGNITO],
   preventUserExistenceErrors: true,
+  generateSecret: true,
 });
 
 const encryptionKey = new Key(stack, 'MyKey', {
