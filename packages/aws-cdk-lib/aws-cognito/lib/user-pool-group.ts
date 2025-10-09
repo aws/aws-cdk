@@ -124,6 +124,6 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
       roleArn: props.role?.roleRef.roleArn,
     });
 
-    this.groupName = resource.ref;
+    this.groupName = this.getResourceNameAttribute(resource.ref);
   }
 }
