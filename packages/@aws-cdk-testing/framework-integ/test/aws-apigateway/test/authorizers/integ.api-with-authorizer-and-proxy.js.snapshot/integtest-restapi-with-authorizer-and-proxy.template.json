@@ -251,7 +251,7 @@
     }
    }
   },
-  "ActionsApiGatewayInitiateActionproxyANYApiPermissionintegtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065ANYInitiateActionproxy1FB876EB": {
+  "ActionsApiGatewayInitiateActionproxyANYApiPermissionintegtestrestapiwithauthorizerandproxylambdas39072AD1BintegtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065ANYInitiateActionproxyFD3F1D84": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -292,7 +292,7 @@
     }
    }
   },
-  "ActionsApiGatewayInitiateActionproxyANYApiPermissionTestintegtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065ANYInitiateActionproxyD05DD0B4": {
+  "ActionsApiGatewayInitiateActionproxyANYApiPermissionTestintegtestrestapiwithauthorizerandproxylambdas39072AD1BintegtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065ANYInitiateActionproxy6828870D": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
