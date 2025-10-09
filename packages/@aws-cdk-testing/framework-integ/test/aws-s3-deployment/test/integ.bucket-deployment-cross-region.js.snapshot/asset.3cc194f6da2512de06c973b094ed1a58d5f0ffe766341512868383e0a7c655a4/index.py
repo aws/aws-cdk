@@ -11,11 +11,18 @@ from uuid import uuid4
 from zipfile import ZipFile
 
 import boto3
+from botocore.config import Config
+from botocore.exceptions import WaiterError
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-cloudfront = boto3.client('cloudfront')
+cloudfront = boto3.client('cloudfront', config=Config(
+    retries = {
+        'max_attempts': 10,
+        'mode': 'standard',
+    }
+))
 s3 = boto3.client('s3')
 
 CFN_SUCCESS = "SUCCESS"
@@ -60,6 +67,7 @@ def handler(event, context):
             extract             = props.get('Extract', 'true') == 'true'
             retain_on_delete    = props.get('RetainOnDelete', "true") == "true"
             distribution_id     = props.get('DistributionId', '')
+            wait_for_distribution_invalidation = props.get('WaitForDistributionInvalidation', True)
             user_metadata       = props.get('UserMetadata', {})
             system_metadata     = props.get('SystemMetadata', {})
             prune               = props.get('Prune', 'true').lower() == 'true'
@@ -92,11 +100,6 @@ def handler(event, context):
                 os.remove(AWS_CLI_CONFIG_FILE)
         if sign_content:
                 aws_command("configure", "set", "default.s3.payload_signing_enabled", "true")
-        
-        # Configure AWS CLI region for cross-region deployments
-        if dest_bucket_region:
-            aws_command("configure", "set", "default.region", dest_bucket_region)
-            os.environ['AWS_DEFAULT_REGION'] = dest_bucket_region
 
         # treat "/" as if no prefix was specified
         if dest_bucket_prefix == "/":
@@ -126,7 +129,7 @@ def handler(event, context):
         # delete or create/update (only if "retain_on_delete" is false)
         if request_type == "Delete" and not retain_on_delete:
             if not bucket_owned(dest_bucket_name, dest_bucket_prefix):
-                aws_command("s3", "rm", s3_dest, "--recursive")
+                s3_delete(s3_dest, dest_bucket_region)
 
         # if we are updating without retention and the destination changed, delete first
         if request_type == "Update" and not retain_on_delete and old_s3_dest != s3_dest:
@@ -134,13 +137,13 @@ def handler(event, context):
                 logger.warn("cannot delete old resource without old resource properties")
                 return
 
-            aws_command("s3", "rm", old_s3_dest, "--recursive")
+            s3_delete(old_s3_dest, dest_bucket_region)
 
         if request_type == "Update" or request_type == "Create":
-            s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract, source_markers_config)
+            s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract, source_markers_config, dest_bucket_region)
 
         if distribution_id:
-            cloudfront_invalidate(distribution_id, distribution_paths)
+            cloudfront_invalidate(distribution_id, distribution_paths, wait_for_distribution_invalidation)
 
         cfn_send(event, context, CFN_SUCCESS, physicalResourceId=physical_id, responseData={
             # Passing through the ARN sequences dependencees on the deployment
@@ -168,11 +171,20 @@ def sanitize_message(message):
     return encoded_message
 
 #---------------------------------------------------------------------------------------------------
+# delete files from S3 bucket
+def s3_delete(s3_path, dest_bucket_region=None):
+    region_args = ["--region", dest_bucket_region] if dest_bucket_region else []
+    aws_command("s3", "rm", s3_path, "--recursive", *region_args)
+
+#---------------------------------------------------------------------------------------------------
 # populate all files from s3_source_zips to a destination bucket
-def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract, source_markers_config):
+def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract, source_markers_config, dest_bucket_region=None):
     # list lengths are equal
     if len(s3_source_zips) != len(source_markers):
         raise Exception("'source_markers' and 's3_source_zips' must be the same length")
+
+    # Prepare region arguments for AWS CLI commands
+    region_args = ["--region", dest_bucket_region] if dest_bucket_region else []
 
     # create a temporary working directory in /tmp or if enabled an attached efs volume
     if ENV_KEY_MOUNT_PATH in os.environ:
@@ -197,39 +209,39 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
             if extract:
                 archive=os.path.join(workdir, str(uuid4()))
                 logger.info("archive: %s" % archive)
-                aws_command("s3", "cp", s3_source_zip, archive)
+                aws_command("s3", "cp", s3_source_zip, archive, *region_args)
                 logger.info("| extracting archive to: %s\n" % contents_dir)
                 logger.info("| markers: %s" % markers)
                 extract_and_replace_markers(archive, contents_dir, markers, markers_config)
             else:
                 logger.info("| copying archive to: %s\n" % contents_dir)
-                aws_command("s3", "cp", s3_source_zip, contents_dir)
+                aws_command("s3", "cp", s3_source_zip, contents_dir, *region_args)
 
         # sync from "contents" to destination
-
-        s3_command = ["s3", "sync"]
+        s3_command_args = ["s3", "sync"]
 
         if prune:
-          s3_command.append("--delete")
+          s3_command_args.append("--delete")
 
         if exclude:
           for filter in exclude:
-            s3_command.extend(["--exclude", filter])
+            s3_command_args.extend(["--exclude", filter])
 
         if include:
           for filter in include:
-            s3_command.extend(["--include", filter])
+            s3_command_args.extend(["--include", filter])
 
-        s3_command.extend([contents_dir, s3_dest])
-        s3_command.extend(create_metadata_args(user_metadata, system_metadata))
-        aws_command(*s3_command)
+        s3_command_args.extend([contents_dir, s3_dest])
+        s3_command_args.extend(create_metadata_args(user_metadata, system_metadata))
+        s3_command_args.extend(region_args)
+        aws_command(*s3_command_args)
     finally:
         if not os.getenv(ENV_KEY_SKIP_CLEANUP):
             shutil.rmtree(workdir)
 
 #---------------------------------------------------------------------------------------------------
 # invalidate files in the CloudFront distribution edge caches
-def cloudfront_invalidate(distribution_id, distribution_paths):
+def cloudfront_invalidate(distribution_id, distribution_paths, wait_for_invalidation):
     invalidation_resp = cloudfront.create_invalidation(
         DistributionId=distribution_id,
         InvalidationBatch={
@@ -239,10 +251,20 @@ def cloudfront_invalidate(distribution_id, distribution_paths):
             },
             'CallerReference': str(uuid4()),
         })
-    # by default, will wait up to 10 minutes
-    cloudfront.get_waiter('invalidation_completed').wait(
-        DistributionId=distribution_id,
-        Id=invalidation_resp['Invalidation']['Id'])
+    if wait_for_invalidation:
+        try:
+            # Wait for a maximum of 13 minutes for invalidation to complete.
+            cloudfront.get_waiter('invalidation_completed').wait(
+                DistributionId=distribution_id,
+                Id=invalidation_resp['Invalidation']['Id'],
+                WaiterConfig={
+                    'Delay': 20,
+                    'MaxAttempts': (13*60)//20,
+                }
+            )
+        except WaiterError as e:
+            raise RuntimeError(f"Unable to confirm that cache invalidation was successful. This may be a CloudFront regression as reported in https://github.com/aws/aws-cdk/issues/15891") from e
+
 
 #---------------------------------------------------------------------------------------------------
 # set metadata

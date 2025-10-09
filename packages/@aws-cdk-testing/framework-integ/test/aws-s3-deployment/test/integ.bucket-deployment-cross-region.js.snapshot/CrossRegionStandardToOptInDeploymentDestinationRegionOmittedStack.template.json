@@ -35,7 +35,7 @@
     "SourceObjectKeys": [
      "a1745aae9b3334ecd2691d30e42e852c5d803d7652029dabf0d96f90aa5a4775.zip",
      "fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e.zip",
-     "f0576748f5c2a0afac63cdb78e2777ef3ab0c41043f1b8d06f906ee172e12a55.zip"
+     "458e8cc3aefb09ee692ca328dc326319e0b42a34c428ec1fe9002a70dad2f773.zip"
     ],
     "SourceMarkers": [
      {},
@@ -47,9 +47,8 @@
      {},
      {}
     ],
-    "DestinationBucketName": "cdk-integ-cross-region-ck43ptd9o36",
+    "DestinationBucketName": "cdk-integ-cross-region-zns3p5wg2df",
     "DestinationBucketKeyPrefix": "bucket-deployment-test/",
-    "DestinationBucketRegion": "us-west-2",
     "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
@@ -142,8 +141,8 @@
        ],
        "Effect": "Allow",
        "Resource": [
-        "arn:aws:s3:::cdk-integ-cross-region-ck43ptd9o36",
-        "arn:aws:s3:::cdk-integ-cross-region-ck43ptd9o36/*"
+        "arn:aws:s3:::cdk-integ-cross-region-zns3p5wg2df",
+        "arn:aws:s3:::cdk-integ-cross-region-zns3p5wg2df/*"
        ]
       }
      ],

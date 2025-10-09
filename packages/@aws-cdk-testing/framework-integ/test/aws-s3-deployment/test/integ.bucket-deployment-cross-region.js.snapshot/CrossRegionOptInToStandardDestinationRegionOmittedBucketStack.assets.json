@@ -2,7 +2,7 @@
   "version": "48.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
-      "displayName": "SameRegionStandardDeploymentDestinationRegionOmittedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "displayName": "CrossRegionOptInToStandardDestinationRegionOmittedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
       "source": {
         "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
         "packaging": "zip"
@@ -16,16 +16,16 @@
         }
       }
     },
-    "49c3550b82478174ae7e4e04055fdde89880721743b25fa8d6cc0c3a4916ce9a": {
-      "displayName": "SameRegionStandardDeploymentDestinationRegionOmittedBucketStack Template",
+    "d2044f3f449e7f5fee32b03ea0ea5ca8a7840f8aadc74c1cb6b14fc1188b39b6": {
+      "displayName": "CrossRegionOptInToStandardDestinationRegionOmittedBucketStack Template",
       "source": {
-        "path": "SameRegionStandardDeploymentDestinationRegionOmittedBucketStack.template.json",
+        "path": "CrossRegionOptInToStandardDestinationRegionOmittedBucketStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-west-2-4be8c803": {
+        "current_account-us-west-2-9b21ecf7": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
-          "objectKey": "49c3550b82478174ae7e4e04055fdde89880721743b25fa8d6cc0c3a4916ce9a.json",
+          "objectKey": "d2044f3f449e7f5fee32b03ea0ea5ca8a7840f8aadc74c1cb6b14fc1188b39b6.json",
           "region": "us-west-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
         }

@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack.assets": {
+    "CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack.assets.json",
+        "file": "CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack": {
+    "CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/eu-south-2",
       "properties": {
-        "templateFile": "CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack.template.json",
+        "templateFile": "CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-south-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-south-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2/8daa05e86598df6ff526a82583966e41e28f54a484991248e707ee9aaad1c182.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2/49828b84b0d35e659bc4cbeedeed793b28f6616aca30b1a4eafe23c62fc47690.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack.assets"
+          "CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-eu-south-2",
@@ -31,10 +31,10 @@
         }
       },
       "dependencies": [
-        "CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack.assets"
+        "CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack.assets"
       ],
       "metadata": {
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack/TestBucket": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack/TestBucket": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -44,13 +44,13 @@
             }
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack/TestBucket/Resource": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack/TestBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestBucket560B80BC"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack/TestBucket/Policy": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack/TestBucket/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -58,85 +58,85 @@
             }
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack/TestBucket/Policy/Resource": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack/TestBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestBucketPolicyBA12ED38"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack/TestBucket/AutoDeleteObjectsCustomResource": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack/TestBucket/AutoDeleteObjectsCustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack/TestBucket/AutoDeleteObjectsCustomResource/Default": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack/TestBucket/AutoDeleteObjectsCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestBucketAutoDeleteObjectsCustomResource8FEAABD5"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
           {
             "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
             "data": true
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack/BucketName": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack/BucketName": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketName"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack/BootstrapVersion": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack/CheckBootstrapVersion": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack"
+      "displayName": "CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack"
     },
-    "CrossRegionOptInDeploymentDestinationRegionOmittedStack.assets": {
+    "CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "CrossRegionOptInDeploymentDestinationRegionOmittedStack.assets.json",
+        "file": "CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "CrossRegionOptInDeploymentDestinationRegionOmittedStack": {
+    "CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/us-east-1",
       "properties": {
-        "templateFile": "CrossRegionOptInDeploymentDestinationRegionOmittedStack.template.json",
+        "templateFile": "CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/7f269da9d8f0c3256dbba77e98e3176503c85eccd99b6cdba2bea828d7b26ab3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/4dba957691602adcae123003205d96e820fe25fd6329f3b5b9611f748128a95e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "CrossRegionOptInDeploymentDestinationRegionOmittedStack.assets"
+          "CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
@@ -145,23 +145,23 @@
         }
       },
       "dependencies": [
-        "CrossRegionOptInDeploymentDestinationRegionOmittedBucketStack",
-        "CrossRegionOptInDeploymentDestinationRegionOmittedStack.assets"
+        "CrossRegionStandardToOptInDeploymentDestinationRegionOmittedBucketStack",
+        "CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack.assets"
       ],
       "metadata": {
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedStack/Deployment/AwsCliLayer": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack/Deployment/AwsCliLayer": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {}
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedStack/Deployment/AwsCliLayer/Resource": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack/Deployment/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DeploymentAwsCliLayerB82B26A3"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedStack/Deployment/CustomResourceHandler": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack/Deployment/CustomResourceHandler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -203,19 +203,19 @@
             }
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedStack/Deployment/CustomResource": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack/Deployment/CustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedStack/Deployment/CustomResource/Default": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack/Deployment/CustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DeploymentCustomResource47E8B2E6"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -262,7 +262,7 @@
             "data": 2
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -326,19 +326,19 @@
             }
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -392,55 +392,55 @@
             }
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedStack/BootstrapVersion": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionOmittedStack/CheckBootstrapVersion": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "CrossRegionOptInDeploymentDestinationRegionOmittedStack"
+      "displayName": "CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack"
     },
-    "CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack.assets": {
+    "CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack.assets.json",
+        "file": "CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack": {
+    "CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/eu-south-2",
       "properties": {
-        "templateFile": "CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack.template.json",
+        "templateFile": "CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-south-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-south-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2/3b95aa8bfb7fbe978bf6b2731a5dffaff7b2fc6d4d2c3800b75921ab2e1a1423.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2/c0f2956fbb4b62de59c199ff2c13498a6e25f808a6aa1c0673e85bddec6f7edf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack.assets"
+          "CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-eu-south-2",
@@ -449,10 +449,10 @@
         }
       },
       "dependencies": [
-        "CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack.assets"
+        "CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack.assets"
       ],
       "metadata": {
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack/TestBucket": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack/TestBucket": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -462,13 +462,13 @@
             }
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack/TestBucket/Resource": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack/TestBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestBucket560B80BC"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack/TestBucket/Policy": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack/TestBucket/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -476,85 +476,85 @@
             }
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack/TestBucket/Policy/Resource": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack/TestBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestBucketPolicyBA12ED38"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack/TestBucket/AutoDeleteObjectsCustomResource": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack/TestBucket/AutoDeleteObjectsCustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack/TestBucket/AutoDeleteObjectsCustomResource/Default": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack/TestBucket/AutoDeleteObjectsCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestBucketAutoDeleteObjectsCustomResource8FEAABD5"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
           {
             "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
             "data": true
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack/BucketName": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack/BucketName": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketName"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack/BootstrapVersion": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack/CheckBootstrapVersion": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack"
+      "displayName": "CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack"
     },
-    "CrossRegionOptInDeploymentDestinationRegionSpecifiedStack.assets": {
+    "CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "CrossRegionOptInDeploymentDestinationRegionSpecifiedStack.assets.json",
+        "file": "CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "CrossRegionOptInDeploymentDestinationRegionSpecifiedStack": {
+    "CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/us-east-1",
       "properties": {
-        "templateFile": "CrossRegionOptInDeploymentDestinationRegionSpecifiedStack.template.json",
+        "templateFile": "CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/4641e721e7a9a05d40bbdd8b32f1ee6711e77f6a34ee18922ebcbf65c35af74b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/30b4a0cbb22acfe7fb6b328f08472b3f4f728a2018d270d8299f7553558ad1a3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "CrossRegionOptInDeploymentDestinationRegionSpecifiedStack.assets"
+          "CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
@@ -563,23 +563,23 @@
         }
       },
       "dependencies": [
-        "CrossRegionOptInDeploymentDestinationRegionSpecifiedBucketStack",
-        "CrossRegionOptInDeploymentDestinationRegionSpecifiedStack.assets"
+        "CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedBucketStack",
+        "CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack.assets"
       ],
       "metadata": {
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedStack/Deployment/AwsCliLayer": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack/Deployment/AwsCliLayer": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {}
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedStack/Deployment/AwsCliLayer/Resource": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack/Deployment/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DeploymentAwsCliLayerB82B26A3"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedStack/Deployment/CustomResourceHandler": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack/Deployment/CustomResourceHandler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -621,19 +621,19 @@
             }
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedStack/Deployment/CustomResource": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack/Deployment/CustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedStack/Deployment/CustomResource/Default": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack/Deployment/CustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DeploymentCustomResource47E8B2E6"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -680,7 +680,7 @@
             "data": 2
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -744,19 +744,19 @@
             }
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -810,32 +810,32 @@
             }
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedStack/BootstrapVersion": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/CrossRegionOptInDeploymentDestinationRegionSpecifiedStack/CheckBootstrapVersion": [
+        "/CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "CrossRegionOptInDeploymentDestinationRegionSpecifiedStack"
+      "displayName": "CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack"
     },
     "SameRegionOptInDeploymentDestinationRegionOmittedBucketStack.assets": {
       "type": "cdk:asset-manifest",
@@ -854,7 +854,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-south-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-south-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2/c277c204705b83cc82c5a14ede9886b27e6a07d959dc330cc1f8f10fefbd7d77.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2/8eace517892d0b17f4caa4eec199808f7c4f480e32cd4f093f8bc21bdabf0e8a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -974,7 +974,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-south-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-south-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2/222ed49e235c153789ca80cb0fc12384a8d7f9012f23ed584f9e6bc337d7fa0c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2/3510d0c05e70ce69d04c99a8f2f8aef71cfb0a9c28e69753a13f667b50b4ddf4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1278,7 +1278,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-south-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-south-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2/57148c8c036769b573a19883b7ed4cdab2105985ba3f9f7bc5f17d0807ed4934.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2/1bdeadf05e7d71f824ca5bd8c49e5b35512b3f4525222bb750680da6c8201873.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1398,7 +1398,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-south-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-south-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2/703818905ac54c482ab38e40a74f2271f7c3e1dfe0f0d44e1b0942742394e8d4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2/9d4ca13f2fd984e0cdad9252c5c48b95f48766eaedb3a42dce6f6f630cae1931.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1702,7 +1702,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/97d08d22d09d2fa2c55ef63a659c08845117b80935bc560b82b17de5f3bc1883.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/2c6957e80e01dc23d3e51493d60c7847fb4665448f796825d666fa31876e9d82.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1816,7 +1816,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/ef61492ace0d460fbc01987edaa61eed5eac98e20fa2581cd7f5b94d54c0e1b4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/68da9c9f786602f278a6ec31de97505286aca493b9bd974437cf844734acccbc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -2120,7 +2120,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/325e5e4ba51b51181cf4bf2a8cc76a229a3a4e459326ebffd18da5e613361577.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/02409e907dc7a8ed6a589220f8b718a760e0451753b4155eaa3b5fdd795ef533.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -2234,7 +2234,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/8c8c5e4a9a81970522fae3b8d56fba4cd053d365359eaa7647e15ba6d50aff6d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/1f9db8fb0f94130c8b18b5fde48afd3752d927e5576483fe2dd9ef1b2da55ef2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -2538,7 +2538,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/e85695d117d16b1199dfd7f09f748ae3396cd5effba4f647e7f142634b402bb7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/49c3550b82478174ae7e4e04055fdde89880721743b25fa8d6cc0c3a4916ce9a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -2658,7 +2658,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/59be96fa5c5007808102332b09e82d72d3e97ad39628f73163fb35129400315a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/70599dea2bc3e8f54946f47503a393629adb1ec5bd75a19e5f8026ebd58e84dc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -2962,7 +2962,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/99bb837fa991ced3e436c3a1480f0b69da73ffc9f59f12349e324bab2a5b18ea.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/d18e0eec9b319488e00ed23fd3783957b3364e8fca0cce2d7a2c380edc9dd601.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -3082,7 +3082,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/8b3081d092c807207f318eb6995e4f102e6eebb0dfe7613e89c2bd88528eec27.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/2677683e561c64bcaff89b2969df46812c11f1d7485ad47282cb779b4f358bdf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -3369,6 +3369,842 @@
       },
       "displayName": "SameRegionStandardDeploymentDestinationRegionSpecifiedStack"
     },
+    "CrossRegionOptInToStandardDestinationRegionOmittedBucketStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CrossRegionOptInToStandardDestinationRegionOmittedBucketStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CrossRegionOptInToStandardDestinationRegionOmittedBucketStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-west-2",
+      "properties": {
+        "templateFile": "CrossRegionOptInToStandardDestinationRegionOmittedBucketStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/d2044f3f449e7f5fee32b03ea0ea5ca8a7840f8aadc74c1cb6b14fc1188b39b6.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CrossRegionOptInToStandardDestinationRegionOmittedBucketStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-west-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CrossRegionOptInToStandardDestinationRegionOmittedBucketStack.assets"
+      ],
+      "metadata": {
+        "/CrossRegionOptInToStandardDestinationRegionOmittedBucketStack/TestBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucketName": "*",
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
+            }
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedBucketStack/TestBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestBucket560B80BC"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedBucketStack/TestBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedBucketStack/TestBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestBucketPolicyBA12ED38"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedBucketStack/TestBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedBucketStack/TestBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestBucketAutoDeleteObjectsCustomResource8FEAABD5"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedBucketStack/BucketName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketName"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedBucketStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedBucketStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CrossRegionOptInToStandardDestinationRegionOmittedBucketStack"
+    },
+    "CrossRegionOptInToStandardDestinationRegionOmittedStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CrossRegionOptInToStandardDestinationRegionOmittedStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CrossRegionOptInToStandardDestinationRegionOmittedStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/eu-south-2",
+      "properties": {
+        "templateFile": "CrossRegionOptInToStandardDestinationRegionOmittedStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-south-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-south-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2/01fa1e8344092698d3c0a0408bc4d33fd6ff95096a95ddde68e409ee86fbae35.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CrossRegionOptInToStandardDestinationRegionOmittedStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-eu-south-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CrossRegionOptInToStandardDestinationRegionOmittedBucketStack",
+        "CrossRegionOptInToStandardDestinationRegionOmittedStack.assets"
+      ],
+      "metadata": {
+        "/CrossRegionOptInToStandardDestinationRegionOmittedStack/Deployment/AwsCliLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedStack/Deployment/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeploymentAwsCliLayerB82B26A3"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedStack/Deployment/CustomResourceHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "layers": [
+                "*"
+              ],
+              "environment": "*",
+              "lambdaPurpose": "*",
+              "timeout": "*",
+              "role": "*",
+              "memorySize": "*",
+              "ephemeralStorageSize": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "filesystem": "*",
+              "logGroup": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedStack/Deployment/CustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedStack/Deployment/CustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeploymentCustomResource47E8B2E6"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "layers": [
+                "*"
+              ],
+              "environment": "*",
+              "timeout": "*",
+              "role": "*",
+              "memorySize": "*",
+              "ephemeralStorageSize": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "filesystem": "*",
+              "logGroup": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLayers": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 2
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionOmittedStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CrossRegionOptInToStandardDestinationRegionOmittedStack"
+    },
+    "CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-west-2",
+      "properties": {
+        "templateFile": "CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/1f99c7fb0a73d2c0a91490d9f838d7579d8e77b20ae80880230df4be7cbbb93c.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-west-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack.assets"
+      ],
+      "metadata": {
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack/TestBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucketName": "*",
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
+            }
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack/TestBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestBucket560B80BC"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack/TestBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack/TestBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestBucketPolicyBA12ED38"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack/TestBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack/TestBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestBucketAutoDeleteObjectsCustomResource8FEAABD5"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack/BucketName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketName"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack"
+    },
+    "CrossRegionOptInToStandardDestinationRegionSpecifiedStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CrossRegionOptInToStandardDestinationRegionSpecifiedStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CrossRegionOptInToStandardDestinationRegionSpecifiedStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/eu-south-2",
+      "properties": {
+        "templateFile": "CrossRegionOptInToStandardDestinationRegionSpecifiedStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-south-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-south-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2/fa8d696e7e938b1d6c490ed2fc298e2c341545b1abcdad00c571dfb213ccc386.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CrossRegionOptInToStandardDestinationRegionSpecifiedStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-eu-south-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CrossRegionOptInToStandardDestinationRegionSpecifiedBucketStack",
+        "CrossRegionOptInToStandardDestinationRegionSpecifiedStack.assets"
+      ],
+      "metadata": {
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedStack/Deployment/AwsCliLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedStack/Deployment/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeploymentAwsCliLayerB82B26A3"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedStack/Deployment/CustomResourceHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "layers": [
+                "*"
+              ],
+              "environment": "*",
+              "lambdaPurpose": "*",
+              "timeout": "*",
+              "role": "*",
+              "memorySize": "*",
+              "ephemeralStorageSize": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "filesystem": "*",
+              "logGroup": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedStack/Deployment/CustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedStack/Deployment/CustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeploymentCustomResource47E8B2E6"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "layers": [
+                "*"
+              ],
+              "environment": "*",
+              "timeout": "*",
+              "role": "*",
+              "memorySize": "*",
+              "ephemeralStorageSize": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "filesystem": "*",
+              "logGroup": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLayers": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 2
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CrossRegionOptInToStandardDestinationRegionSpecifiedStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CrossRegionOptInToStandardDestinationRegionSpecifiedStack"
+    },
     "BucketDeploymentCrossRegionTestDefaultTestDeployAssert3A98935C.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -3428,19 +4264,9 @@
       "properties": {
         "module": "aws-cdk-lib",
         "flags": {
-          "@aws-cdk/core:enableStackNameDuplicates": {
+          "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
             "recommendedValue": true,
-            "explanation": "Allow multiple stacks with the same name",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "aws-cdk:enableDiffNoFail": {
-            "recommendedValue": true,
-            "explanation": "Make `cdk diff` not fail when there are differences",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
           "@aws-cdk/core:newStyleStackSynthesis": {
             "recommendedValue": true,
@@ -3456,40 +4282,9 @@
               "v2": true
             }
           },
-          "@aws-cdk/aws-ecr-assets:dockerIgnoreSupport": {
+          "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
             "recommendedValue": true,
-            "explanation": "DockerImageAsset properly supports `.dockerignore` files by default",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-secretsmanager:parseOwnedSecretName": {
-            "recommendedValue": true,
-            "explanation": "Fix the referencing of SecretsManager names from ARNs",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-kms:defaultKeyPolicies": {
-            "recommendedValue": true,
-            "explanation": "Tighten default KMS key policies",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-s3:grantWriteWithoutAcl": {
-            "recommendedValue": true,
-            "explanation": "Remove `PutObjectAcl` from Bucket.grantWrite",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount": {
-            "recommendedValue": true,
-            "explanation": "Do not specify a default DesiredCount for ECS services",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Disable implicit openListener when custom security groups are provided"
           },
           "@aws-cdk/aws-rds:lowercaseDbIdentifier": {
             "recommendedValue": true,
@@ -3501,13 +4296,6 @@
           "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": {
             "recommendedValue": true,
             "explanation": "Allow adding/removing multiple UsagePlanKeys independently",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-efs:defaultEncryptionAtRest": {
-            "recommendedValue": true,
-            "explanation": "Enable this feature flag to have elastic file systems encrypted at rest by default.",
             "unconfiguredBehavesLike": {
               "v2": true
             }
@@ -3908,10 +4696,7 @@
           },
           "@aws-cdk/cognito:logUserPoolClientSecretValue": {
             "recommendedValue": false,
-            "explanation": "When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs.",
-            "unconfiguredBehavesLike": {
-              "v2": false
-            }
+            "explanation": "When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs."
           },
           "@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope": {
             "recommendedValue": true,
@@ -3937,10 +4722,7 @@
           },
           "@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration": {
             "recommendedValue": false,
-            "explanation": "When enabled, use resource IDs for VPC V2 migration",
-            "unconfiguredBehavesLike": {
-              "v2": false
-            }
+            "explanation": "When enabled, use resource IDs for VPC V2 migration"
           },
           "@aws-cdk/aws-s3:publicAccessBlockedByDefault": {
             "userValue": true,
@@ -3950,14 +4732,11 @@
           "@aws-cdk/aws-lambda:useCdkManagedLogGroup": {
             "userValue": false,
             "recommendedValue": true,
-            "explanation": "When enabled, CDK creates and manages loggroup for the lambda function",
-            "unconfiguredBehavesLike": {
-              "v2": false
-            }
+            "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1023.0"
+  "minimumCliVersion": "2.1027.0"
 }

@@ -5,20 +5,18 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
 
-// Constants for regions and test data
-const OPT_IN_REGION_ZAZ = 'eu-south-2'; // Opt-in region that requires explicit region specification
-const STANDARD_REGION_IAD = 'us-east-1'; // Standard region that works without explicit region specification
-const STANDARD_REGION_PDX = 'us-west-2'; // Standard region that works without explicit region specification
+// Region constants
+const OPT_IN_REGION_ZAZ = 'eu-south-2'; // Opt-in region (requires explicit region specification)
+const STANDARD_REGION_IAD = 'us-east-1'; // Standard region (works without explicit region specification)
+const STANDARD_REGION_PDX = 'us-west-2'; // Standard region (works without explicit region specification)
 
-// Unified test data
+// Deployment constants
 const TEST_PREFIX = 'bucket-deployment-test/';
 const TEST_MESSAGE = 'Bucket deployment test';
-
-// File names
 const TEST_FILE_NAME = 'test-file.txt';
 const CONFIG_FILE_NAME = 'config.json';
 
-// Stack to create a bucket in any region
+// Stack to create a bucket
 class BucketStack extends Stack {
   public readonly bucket: Bucket;
 
@@ -37,16 +35,11 @@ class BucketStack extends Stack {
   }
 }
 
-// Stack for bucket deployments with configurable options
+// Stack to create a bucket deployment
 interface BucketDeploymentStackProps {
   destinationBucket: IBucket;
   destinationBucketRegion?: string;
   env?: any;
-}
-
-// Helper function to get deployedTo value
-function getDeploymentRegionValue(region?: string): string {
-  return region || 'not-specified';
 }
 
 class BucketDeploymentStack extends Stack {
@@ -75,7 +68,11 @@ class BucketDeploymentStack extends Stack {
   }
 }
 
-// Helper function to create a test case
+// Helper functions to create test cases
+function getDeploymentRegionValue(region?: string): string {
+  return region || 'not-specified';
+}
+
 interface CreateTestCaseProps {
   app: App;
   testName: string;
@@ -85,7 +82,7 @@ interface CreateTestCaseProps {
 }
 
 function createTestCase(props: CreateTestCaseProps) {
-  // Create bucket stack for this specific test
+  // Create bucket for this specific test
   const bucketStack = new BucketStack(props.app, `${props.testName}BucketStack`, {
     env: { region: props.destinationBucketRegion },
   });
@@ -118,7 +115,7 @@ const testCases = [];
 // Test 1: us-east-1 → eu-south-2 WITHOUT destinationBucketRegion specified (key test case)
 const test1 = createTestCase({
   app,
-  testName: 'CrossRegionOptInDeploymentDestinationRegionOmitted',
+  testName: 'CrossRegionStandardToOptInDeploymentDestinationRegionOmitted',
   deploymentRegion: STANDARD_REGION_IAD,
   destinationBucketRegion: OPT_IN_REGION_ZAZ,
   isDestinationBucketRegionSpecified: false,
@@ -128,7 +125,7 @@ testCases.push(test1.deploymentStack);
 // Test 2: us-east-1 → eu-south-2 WITH destinationBucketRegion specified
 const test2 = createTestCase({
   app,
-  testName: 'CrossRegionOptInDeploymentDestinationRegionSpecified',
+  testName: 'CrossRegionStandardToOptInDeploymentDestinationRegionSpecified',
   deploymentRegion: STANDARD_REGION_IAD,
   destinationBucketRegion: OPT_IN_REGION_ZAZ,
   isDestinationBucketRegionSpecified: true,
@@ -194,6 +191,26 @@ const test8 = createTestCase({
   isDestinationBucketRegionSpecified: true,
 });
 testCases.push(test8.deploymentStack);
+
+// Test 9: eu-south-2 → us-west-2 WITHOUT destinationBucketRegion specified
+const test9 = createTestCase({
+  app,
+  testName: 'CrossRegionOptInToStandardDestinationRegionOmitted',
+  deploymentRegion: OPT_IN_REGION_ZAZ,
+  destinationBucketRegion: STANDARD_REGION_PDX,
+  isDestinationBucketRegionSpecified: false,
+});
+testCases.push(test9.deploymentStack);
+
+// Test 10: eu-south-2 → us-west-2 WITH destinationBucketRegion specified
+const test10 = createTestCase({
+  app,
+  testName: 'CrossRegionOptInToStandardDestinationRegionSpecified',
+  deploymentRegion: OPT_IN_REGION_ZAZ,
+  destinationBucketRegion: STANDARD_REGION_PDX,
+  isDestinationBucketRegionSpecified: true,
+});
+testCases.push(test10.deploymentStack);
 
 // Create single IntegTest with all test cases
 new IntegTest(app, 'BucketDeploymentCrossRegionTest', {

@@ -35,7 +35,7 @@
     "SourceObjectKeys": [
      "a1745aae9b3334ecd2691d30e42e852c5d803d7652029dabf0d96f90aa5a4775.zip",
      "fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e.zip",
-     "1b5805c3b3364f05438c464eb6679d5b575654e4bf73b5639848d9a0d99273ce.zip"
+     "b65bf0d6602f589c0a2bda7243c19635f97c18d61683cc98c20ce06b92f9b3bb.zip"
     ],
     "SourceMarkers": [
      {},
@@ -52,6 +52,7 @@
     },
     "DestinationBucketKeyPrefix": "bucket-deployment-test/",
     "DestinationBucketRegion": "us-west-2",
+    "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
     "OutputObjectKeys": true
@@ -186,7 +187,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2"
      },
-     "S3Key": "b4cea336527ebfe150cc35fc042c0014ac8c7017e6a7f08cb2619f04ef0e90ef.zip"
+     "S3Key": "3cc194f6da2512de06c973b094ed1a58d5f0ffe766341512868383e0a7c655a4.zip"
     },
     "Environment": {
      "Variables": {
@@ -205,7 +206,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.11",
+    "Runtime": "python3.13",
     "Timeout": 900
    },
    "DependsOn": [

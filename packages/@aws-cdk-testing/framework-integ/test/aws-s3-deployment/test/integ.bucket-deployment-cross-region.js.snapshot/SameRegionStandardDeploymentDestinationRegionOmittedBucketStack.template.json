@@ -3,7 +3,7 @@
   "TestBucket560B80BC": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
-    "BucketName": "cdk-integ-cross-region-g1s7r93ss",
+    "BucketName": "cdk-integ-cross-region-3ihqn9lxkfb",
     "Tags": [
      {
       "Key": "aws-cdk:auto-delete-objects",

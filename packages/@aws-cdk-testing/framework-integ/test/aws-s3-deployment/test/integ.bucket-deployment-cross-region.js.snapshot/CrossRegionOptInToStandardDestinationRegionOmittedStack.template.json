@@ -5,7 +5,7 @@
    "Properties": {
     "Content": {
      "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2"
      },
      "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
     },
@@ -23,19 +23,19 @@
     },
     "SourceBucketNames": [
      {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2"
      },
      {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2"
      },
      {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2"
      }
     ],
     "SourceObjectKeys": [
      "a1745aae9b3334ecd2691d30e42e852c5d803d7652029dabf0d96f90aa5a4775.zip",
      "fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e.zip",
-     "f0576748f5c2a0afac63cdb78e2777ef3ab0c41043f1b8d06f906ee172e12a55.zip"
+     "299679a7590af63514e2123074cab35b99a9b4544bda18f73cd697ae001ddae6.zip"
     ],
     "SourceMarkers": [
      {},
@@ -47,9 +47,8 @@
      {},
      {}
     ],
-    "DestinationBucketName": "cdk-integ-cross-region-ck43ptd9o36",
+    "DestinationBucketName": "cdk-integ-cross-region-74lonh9ek34",
     "DestinationBucketKeyPrefix": "bucket-deployment-test/",
-    "DestinationBucketRegion": "us-west-2",
     "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
@@ -108,7 +107,7 @@
           [
            "arn:aws:s3:::",
            {
-            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2"
            },
            "/*"
           ]
@@ -120,7 +119,7 @@
           [
            "arn:aws:s3:::",
            {
-            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2"
            }
           ]
          ]
@@ -142,8 +141,8 @@
        ],
        "Effect": "Allow",
        "Resource": [
-        "arn:aws:s3:::cdk-integ-cross-region-ck43ptd9o36",
-        "arn:aws:s3:::cdk-integ-cross-region-ck43ptd9o36/*"
+        "arn:aws:s3:::cdk-integ-cross-region-74lonh9ek34",
+        "arn:aws:s3:::cdk-integ-cross-region-74lonh9ek34/*"
        ]
       }
      ],
@@ -162,7 +161,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-south-2"
      },
      "S3Key": "3cc194f6da2512de06c973b094ed1a58d5f0ffe766341512868383e0a7c655a4.zip"
     },

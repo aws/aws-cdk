@@ -3,14 +3,16 @@
   "testCases": {
     "BucketDeploymentCrossRegionTest/DefaultTest": {
       "stacks": [
-        "CrossRegionOptInDeploymentDestinationRegionOmittedStack",
-        "CrossRegionOptInDeploymentDestinationRegionSpecifiedStack",
+        "CrossRegionStandardToOptInDeploymentDestinationRegionOmittedStack",
+        "CrossRegionStandardToOptInDeploymentDestinationRegionSpecifiedStack",
         "SameRegionOptInDeploymentDestinationRegionOmittedStack",
         "SameRegionOptInDeploymentDestinationRegionSpecifiedStack",
         "CrossRegionStandardDeploymentDestinationRegionOmittedStack",
         "CrossRegionStandardDeploymentDestinationRegionSpecifiedStack",
         "SameRegionStandardDeploymentDestinationRegionOmittedStack",
-        "SameRegionStandardDeploymentDestinationRegionSpecifiedStack"
+        "SameRegionStandardDeploymentDestinationRegionSpecifiedStack",
+        "CrossRegionOptInToStandardDestinationRegionOmittedStack",
+        "CrossRegionOptInToStandardDestinationRegionSpecifiedStack"
       ],
       "regions": [
         "us-east-1",
@@ -22,5 +24,5 @@
       "assertionStackName": "BucketDeploymentCrossRegionTestDefaultTestDeployAssert3A98935C"
     }
   },
-  "minimumCliVersion": "2.1023.0"
+  "minimumCliVersion": "2.1027.0"
 }
