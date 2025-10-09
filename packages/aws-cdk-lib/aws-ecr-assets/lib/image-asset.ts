@@ -577,7 +577,7 @@ export class DockerImageAsset extends Construct implements IAsset {
 
     // Handle custom ECR repository or use default synthesizer
     let location: DockerImageAssetLocation;
-    const locationProps = {
+    const locationProps: DockerImageAssetSource = {
       directoryName: this.assetPath,
       assetName: this.assetName,
       dockerBuildArgs: this.dockerBuildArgs,
@@ -593,6 +593,9 @@ export class DockerImageAsset extends Construct implements IAsset {
       dockerCacheTo: this.dockerCacheTo,
       dockerCacheDisabled: this.dockerCacheDisabled,
       displayName: props.displayName ?? props.assetName ?? Names.stackRelativeConstructPath(this),
+      // Pass custom tag properties to synthesizer (only used if not using custom repository)
+      imageTag: props.ecrRepository ? undefined : props.imageTag,
+      imageTagPrefix: props.ecrRepository ? undefined : props.imageTagPrefix,
     };
     if (props.ecrRepository) {
       // Custom repository: create location manually
@@ -603,55 +606,14 @@ export class DockerImageAsset extends Construct implements IAsset {
         imageTag: customTag,
       };
       this.repository = props.ecrRepository;
-    } else if (props.imageTagPrefix || props.imageTag) {
-      // Custom tagging with default repository: create a custom synthesizer call
-      location = this.addDockerImageAssetWithCustomTag(this, stack, locationProps, props.imageTagPrefix, props.imageTag);
-      this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
     } else {
-      // Default behavior: use synthesizer
+      // Default repository: use synthesizer (which now respects per-asset imageTag/imageTagPrefix)
       location = stack.synthesizer.addDockerImageAsset(locationProps);
       this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
     }
 
     this.imageUri = location.imageUri;
     this.imageTag = location.imageTag ?? this.assetHash;
-  }
-
-  /**
-   * Helper method to add Docker image asset with custom tag using synthesizer
-   */
-  private addDockerImageAssetWithCustomTag(
-    construct: Construct,
-    stack: Stack,
-    source: DockerImageAssetSource,
-    imageTagPrefix?: string,
-    imageTag?: string,
-  ): DockerImageAssetLocation {
-    // Create a custom tag
-    const customTag = imageTag ?? `${imageTagPrefix ?? ''}${source.sourceHash}`;
-
-    // For custom tagging, we need to work with the synthesizer's docker repository
-    // but override the tag generation logic
-    const baseLocation = stack.synthesizer.addDockerImageAsset(source);
-
-    // Check if imageUri contains unresolved tokens
-    if (Token.isUnresolved(baseLocation.imageUri)) {
-      Annotations.of(construct).addWarning('Custom tag applied to Docker image asset with unresolved imageUri. ' +
-        'The tag will be set correctly, but the imageUri may not reflect the custom tag until deployment.');
-      // Still return the custom tag, even though imageUri has tokens
-      return {
-        repositoryName: baseLocation.repositoryName,
-        imageUri: baseLocation.imageUri, // Keep the token-based URI
-        imageTag: customTag, // But use our custom tag
-      };
-    }
-
-    // Create a modified location with our custom tag
-    return {
-      repositoryName: baseLocation.repositoryName,
-      imageUri: baseLocation.imageUri.replace(/:.*$/, `:${customTag}`),
-      imageTag: customTag,
-    };
   }
 
   /**

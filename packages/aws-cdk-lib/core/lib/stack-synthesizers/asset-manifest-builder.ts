@@ -63,7 +63,9 @@ export class AssetManifestBuilder {
     options?: AddDockerImageAssetOptions,
   ) {
     validateDockerImageAssetSource(asset);
-    const imageTag = `${target.dockerTagPrefix ?? ''}${asset.sourceHash}`;
+    
+    // Use per-asset tag if specified, otherwise use prefix + hash
+    const imageTag = asset.imageTag ?? `${asset.imageTagPrefix ?? target.dockerTagPrefix ?? ''}${asset.sourceHash}`;
 
     // Add to manifest
     const sourceHash = asset.assetName ? `${asset.assetName}-${asset.sourceHash}` : asset.sourceHash;
