@@ -3517,7 +3517,7 @@
   dependencies:
     ajv "^8.17.1"
 
-"@jsii/spec@1.115.0", "@jsii/spec@^1.114.1":
+"@jsii/spec@1.115.0", "@jsii/spec@^1.114.1", "@jsii/spec@^1.115.0":
   version "1.115.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.115.0.tgz#be0818bd31509687cb6445873d1ec65e8d24bd24"
   integrity sha512-qnicuByM0G5L6ZF2yO/e5cHwT6pb5E0aUvgHBycFPHBkgf5yjtvm+Wtk6q61srNuRASYI25BiTOonyABNeRjlw==
@@ -6412,13 +6412,13 @@ case@1.6.3, case@^1.6.3:
   resolved "https://registry.npmjs.org/case/-/case-1.6.3.tgz#0a4386e3e9825351ca2e6216c60467ff5f1ea1c9"
   integrity sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==
 
-cdk-generate-synthetic-examples@^0.2.31:
-  version "0.2.31"
-  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.2.31.tgz#49601b41adf5466b0a2445a3a2aac0a5fcbc35cd"
-  integrity sha512-v3qE/R3M4xnVsnTD7Lp4umAgtMEAZ6MEJCxrtpxZx/5aePsU70n2ctnw2+sByxNrSjjT7Ml6tytCnrNVpo0Y+g==
+cdk-generate-synthetic-examples@^0.2.32:
+  version "0.2.32"
+  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.2.32.tgz#e79900e3b1f6ecc7fdb5141086561eb847fd9184"
+  integrity sha512-Uj7s8dHNv2xUM3E9iLMeSaNwWp1oJ3PmW3fZQ3wlyhUoAielOJP2eH3aMsY81FNy7vJa5KxvGZjWHi101stuWQ==
   dependencies:
-    "@jsii/spec" "^1.114.1"
-    jsii-reflect "^1.114.1"
+    "@jsii/spec" "^1.115.0"
+    jsii-reflect "^1.115.0"
     yargs "^17.7.2"
 
 cdk8s-plus-27@2.9.5:
@@ -10079,7 +10079,7 @@ jsii-pacmak@1.115.0:
     xmlbuilder "^15.1.1"
     yargs "^17.7.2"
 
-jsii-reflect@1.115.0, jsii-reflect@^1.114.1, jsii-reflect@^1.115.0:
+jsii-reflect@1.115.0, jsii-reflect@^1.115.0:
   version "1.115.0"
   resolved "https://registry.npmjs.org/jsii-reflect/-/jsii-reflect-1.115.0.tgz#debe523fa2de0ba020d54d41a2f7b0e0bc8ef048"
   integrity sha512-svWvulZ8IH035sLR0aEt3UiN4Ejqh99zSBfVTFsr3bjBfDZqcxIlExFI/fMb7O+a7XwT0WdTakTuX/aajQt3cg==
