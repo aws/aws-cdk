@@ -17,23 +17,69 @@
   },
   "BasicCustomAssetUri": {
    "Value": {
-    "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
+    "Fn::Join": [
+     "",
+     [
+      {
+       "Fn::Select": [
+        4,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "CustomRepo98CFBAD2",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      ".dkr.ecr.",
+      {
+       "Fn::Select": [
+        3,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "CustomRepo98CFBAD2",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "CustomRepo98CFBAD2"
+      },
+      ":0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
+     ]
+    ]
    }
   },
   "TaggedCustomAssetTag": {
-   "Value": "0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
+   "Value": "v1.2.3"
   },
   "PrefixedCustomAssetTag": {
-   "Value": "0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
+   "Value": "branch-main-0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
   },
   "DefaultRepoCustomTagTag": {
-   "Value": "0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
+   "Value": "custom-tag-v2"
   },
   "DefaultRepoPrefixedTag": {
-   "Value": "0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
+   "Value": "feature-0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
   },
   "PrecedenceTestTag": {
-   "Value": "0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
+   "Value": "explicit-wins"
   }
  },
  "Parameters": {
