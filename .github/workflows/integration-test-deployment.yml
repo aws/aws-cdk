@@ -21,6 +21,8 @@ jobs:
   integration_test_deployment:
     runs-on: codebuild-aws-cdk-github-actions-deployment-integ-runner-${{ github.run_id }}-${{ github.run_attempt }}
     environment: deployment-integ-test # Do not change or remove this without discussing with Appsec
+    if: contains(github.event.pull_request.labels.*.name, 'request-deployment-integ-run')
+    name: 'Deploy integration test snapshots (requires `request-deployment-integ-run` label)'
 
     env:
       PR_BUILD: true
