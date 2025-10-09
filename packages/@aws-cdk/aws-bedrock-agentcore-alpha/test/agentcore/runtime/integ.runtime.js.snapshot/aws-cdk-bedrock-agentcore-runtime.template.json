@@ -26,40 +26,6 @@
      "Statement": [
       {
        "Action": [
-        "ecr:BatchGetImage",
-        "ecr:GetDownloadUrlForLayer"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":ecr:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":repository/*"
-         ]
-        ]
-       },
-       "Sid": "ECRImageAccess"
-      },
-      {
-       "Action": "ecr:GetAuthorizationToken",
-       "Effect": "Allow",
-       "Resource": "*",
-       "Sid": "ECRTokenAccess"
-      },
-      {
-       "Action": [
         "logs:CreateLogGroup",
         "logs:DescribeLogStreams"
        ],

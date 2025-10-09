@@ -222,7 +222,7 @@ const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(re
 const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
   agentRuntimeArtifact: agentRuntimeArtifact,
-  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.configureCognito(
+  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingCognito(
     "us-west-2_ABC123",  // User Pool ID (required)
     "client123",         // Client ID (required)
     "us-west-2"         // Region (optional, defaults to stack region)
@@ -243,7 +243,7 @@ const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(re
 const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
   agentRuntimeArtifact: agentRuntimeArtifact,
-  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.configureJWT(
+  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingJWT(
     "https://example.com/.well-known/openid-configuration",  // Discovery URL (required)
     ["client1", "client2"],  // Allowed Client IDs (optional)
     ["audience1"]           // Allowed Audiences (optional)
@@ -266,7 +266,7 @@ const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(re
 const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
   agentRuntimeArtifact: agentRuntimeArtifact,
-  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.configureOAuth(
+  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingOAuth(
     "github",  // Provider name (e.g., 'google', 'github', 'custom')
     "https://github.com/.well-known/openid-configuration",  // Discovery URL
     "oauth_client_123",  // Client ID

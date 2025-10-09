@@ -26,7 +26,7 @@ export abstract class RuntimeAuthorizerConfiguration {
    *
    * @returns RuntimeAuthorizerConfiguration for IAM authentication
    */
-  public static configureIAM(): RuntimeAuthorizerConfiguration {
+  public static usingIAM(): RuntimeAuthorizerConfiguration {
     return new IamAuthorizerConfiguration();
   }
 
@@ -39,7 +39,7 @@ export abstract class RuntimeAuthorizerConfiguration {
    * @param allowedAudience Optional array of allowed audiences
    * @returns RuntimeAuthorizerConfiguration for JWT authentication
    */
-  public static configureJWT(
+  public static usingJWT(
     discoveryUrl: string,
     allowedClients?: string[],
     allowedAudience?: string[],
@@ -59,7 +59,7 @@ export abstract class RuntimeAuthorizerConfiguration {
    * @param region Optional AWS region where the User Pool is located (defaults to stack region)
    * @returns RuntimeAuthorizerConfiguration for Cognito authentication
    */
-  public static configureCognito(
+  public static usingCognito(
     userPoolId: string,
     clientId: string,
     region?: string,
@@ -77,7 +77,7 @@ export abstract class RuntimeAuthorizerConfiguration {
    * @param scopes Optional array of OAuth scopes
    * @returns RuntimeAuthorizerConfiguration for OAuth authentication
    */
-  public static configureOAuth(
+  public static usingOAuth(
     provider: string,
     discoveryUrl: string,
     clientId: string,

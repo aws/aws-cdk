@@ -6,8 +6,6 @@ import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import {
-  RUNTIME_ECR_IMAGE_ACTIONS,
-  RUNTIME_ECR_TOKEN_ACTIONS,
   RUNTIME_LOGS_GROUP_ACTIONS,
   RUNTIME_LOGS_DESCRIBE_ACTIONS,
   RUNTIME_LOGS_STREAM_ACTIONS,
@@ -107,7 +105,7 @@ export interface AddEndpointOptions {
   readonly description?: string;
   /**
    * Override the runtime version for this endpoint
-   * @default - Uses the runtime's version
+   * @default  1
    */
   readonly version?: string;
 }
@@ -159,17 +157,52 @@ export class Runtime extends RuntimeBase {
     return new ImportedBedrockAgentRuntime(scope, id);
   }
 
+  /**
+   * The ARN of the agent runtime
+   * @attribute
+   * @returns a token representing the ARN of this agent runtime
+   */
   public readonly agentRuntimeArn: string;
+  /**
+   * The unique identifier of the agent runtime
+   * @attribute
+   * @returns a token representing the ID of this agent runtime
+   */
   public readonly agentRuntimeId: string;
+  /**
+   * The name of the agent runtime
+   * @attribute
+   * @returns a token representing the name of this agent runtime
+   */
   public readonly agentRuntimeName: string;
   public readonly role: iam.IRole;
+  /**
+   * The version of the agent runtime
+   * @attribute
+   * @returns a token representing the version of this agent runtime
+   */
   public readonly agentRuntimeVersion?: string;
+  /**
+   * The status of the agent runtime
+   * @attribute
+   * @returns a token representing the status of this agent runtime
+   */
   public readonly agentStatus?: string;
   /**
    * Optional description for the agent runtime
    */
   public readonly description?: string;
+  /**
+   * The timestamp when the agent runtime was created
+   * @attribute
+   * @returns a token representing the creation timestamp of this agent runtime
+   */
   public readonly createdAt?: string;
+  /**
+   * The timestamp when the agent runtime was last updated
+   * @attribute
+   * @returns a token representing the last update timestamp of this agent runtime
+   */
   public readonly lastUpdatedAt?: string;
   public readonly grantPrincipal: iam.IPrincipal;
   private readonly runtimeResource: bedrockagentcore.CfnRuntime;
@@ -281,21 +314,9 @@ export class Runtime extends RuntimeBase {
     const region = Stack.of(this).region;
     const account = Stack.of(this).account;
 
-    // ECR Image Access - scoped to account repositories
-    role.addToPolicy(new iam.PolicyStatement({
-      sid: 'ECRImageAccess',
-      effect: iam.Effect.ALLOW,
-      actions: RUNTIME_ECR_IMAGE_ACTIONS,
-      resources: [`arn:${Stack.of(this).partition}:ecr:${region}:${account}:repository/*`],
-    }));
-
-    // ECR Token Access - must be * for authorization token
-    role.addToPolicy(new iam.PolicyStatement({
-      sid: 'ECRTokenAccess',
-      effect: iam.Effect.ALLOW,
-      actions: RUNTIME_ECR_TOKEN_ACTIONS,
-      resources: ['*'],
-    }));
+    // Skipping  ECR Image Access (RUNTIME_ECR_IMAGE_ACTIONS)
+    // and ECR Token Access (RUNTIME_ECR_TOKEN_ACTIONS) permission
+    // because these are set by runtime-artifact (grantPull) with the bind function
 
     // CloudWatch Logs - Log Group operations
     role.addToPolicy(new iam.PolicyStatement({

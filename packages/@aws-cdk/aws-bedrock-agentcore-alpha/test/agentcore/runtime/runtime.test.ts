@@ -261,7 +261,7 @@ describe('Runtime with authorizer configuration tests', () => {
       runtimeName: 'test_runtime_auth',
       description: 'A test runtime with authorizer configuration',
       agentRuntimeArtifact: agentRuntimeArtifact,
-      authorizerConfiguration: RuntimeAuthorizerConfiguration.configureJWT(
+      authorizerConfiguration: RuntimeAuthorizerConfiguration.usingJWT(
         'https://auth.example.com/.well-known/openid-configuration',
         ['client1', 'client2'],
         ['audience1'],
@@ -344,7 +344,7 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
       runtimeName: 'test_runtime_cognito',
       description: 'A test runtime with Cognito authorizer configuration',
       agentRuntimeArtifact: agentRuntimeArtifact,
-      authorizerConfiguration: RuntimeAuthorizerConfiguration.configureCognito(
+      authorizerConfiguration: RuntimeAuthorizerConfiguration.usingCognito(
         'us-west-2_ABC123',
         'client123',
       ),
@@ -810,7 +810,7 @@ describe('Runtime with OAuth authorizer tests', () => {
     const runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime_oauth',
       agentRuntimeArtifact: agentRuntimeArtifact,
-      authorizerConfiguration: RuntimeAuthorizerConfiguration.configureOAuth(
+      authorizerConfiguration: RuntimeAuthorizerConfiguration.usingOAuth(
         'custom',
         'https://oauth.example.com/.well-known/openid-configuration',
         'oauth-client-123',
@@ -854,7 +854,7 @@ describe('Runtime with JWT authorizer tests', () => {
     const runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime_jwt',
       agentRuntimeArtifact: agentRuntimeArtifact,
-      authorizerConfiguration: RuntimeAuthorizerConfiguration.configureJWT(
+      authorizerConfiguration: RuntimeAuthorizerConfiguration.usingJWT(
         'https://auth.example.com/.well-known/openid-configuration',
         ['client1'],
       ),
@@ -1021,7 +1021,7 @@ describe('Runtime authentication configuration error cases', () => {
 
   test('Should throw error for JWT with invalid discovery URL', () => {
     expect(() => {
-      RuntimeAuthorizerConfiguration.configureJWT(
+      RuntimeAuthorizerConfiguration.usingJWT(
         'https://auth.example.com/invalid', // Doesn't end with /.well-known/openid-configuration
         ['client1'],
       );
@@ -1032,7 +1032,7 @@ describe('Runtime authentication configuration error cases', () => {
     const runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
       agentRuntimeArtifact: agentRuntimeArtifact,
-      authorizerConfiguration: RuntimeAuthorizerConfiguration.configureCognito(
+      authorizerConfiguration: RuntimeAuthorizerConfiguration.usingCognito(
         'us-west-2_ABC123',
         'client456',
       ),
@@ -1044,7 +1044,7 @@ describe('Runtime authentication configuration error cases', () => {
 
   test('Should throw error for OAuth with invalid discovery URL', () => {
     expect(() => {
-      RuntimeAuthorizerConfiguration.configureOAuth(
+      RuntimeAuthorizerConfiguration.usingOAuth(
         'custom',
         'https://oauth.example.com/invalid', // Doesn't end with /.well-known/openid-configuration
         'oauth-client-123',
@@ -1056,7 +1056,7 @@ describe('Runtime authentication configuration error cases', () => {
     const runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
       agentRuntimeArtifact: agentRuntimeArtifact,
-      authorizerConfiguration: RuntimeAuthorizerConfiguration.configureIAM(),
+      authorizerConfiguration: RuntimeAuthorizerConfiguration.usingIAM(),
     });
 
     app.synth();
@@ -1117,6 +1117,145 @@ describe('RuntimeNetworkConfiguration tests', () => {
 
     // Verify the runtime was created
     expect(runtime.agentRuntimeName).toBe('test_runtime');
+  });
+});
+
+describe('Runtime metrics and grant methods tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let runtime: Runtime;
+  let repository: ecr.Repository;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+
+    runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+  });
+
+  test('Should create metricInvocations metric', () => {
+    const metric = runtime.metricInvocations();
+    expect(metric.metricName).toBe('Invocations');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.statistic).toBe('Sum');
+  });
+
+  test('Should create metricInvocationsAggregated metric', () => {
+    const metric = runtime.metricInvocationsAggregated();
+    expect(metric.metricName).toBe('Invocations');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    // The dimension value will be tokenized in CDK
+    expect(metric.dimensions?.Resource).toBeDefined();
+  });
+
+  test('Should create metricThrottles metric', () => {
+    const metric = runtime.metricThrottles();
+    expect(metric.metricName).toBe('Throttles');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.statistic).toBe('Sum');
+  });
+
+  test('Should create metricSystemErrors metric', () => {
+    const metric = runtime.metricSystemErrors();
+    expect(metric.metricName).toBe('SystemErrors');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.statistic).toBe('Sum');
+  });
+
+  test('Should create metricUserErrors metric', () => {
+    const metric = runtime.metricUserErrors();
+    expect(metric.metricName).toBe('UserErrors');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.statistic).toBe('Sum');
+  });
+
+  test('Should create metricLatency metric', () => {
+    const metric = runtime.metricLatency();
+    expect(metric.metricName).toBe('Latency');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.statistic).toBe('Average');
+  });
+
+  test('Should create metricTotalErrors metric', () => {
+    const metric = runtime.metricTotalErrors();
+    expect(metric.metricName).toBe('TotalErrors');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.statistic).toBe('Sum');
+  });
+
+  test('Should create metricSessionCount metric', () => {
+    const metric = runtime.metricSessionCount();
+    expect(metric.metricName).toBe('SessionCount');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.statistic).toBe('Sum');
+  });
+
+  test('Should create metricSessionsAggregated metric', () => {
+    const metric = runtime.metricSessionsAggregated();
+    expect(metric.metricName).toBe('Sessions');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    // The dimension value will be tokenized in CDK
+    expect(metric.dimensions?.Resource).toBeDefined();
+  });
+
+  test('Should grant invoke permissions', () => {
+    const grantee = new iam.Role(stack, 'GranteeRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    const grant = runtime.grantInvoke(grantee);
+    expect(grant).toBeDefined();
+  });
+
+  test('Should grant custom actions to runtime role', () => {
+    const grant = runtime.grant(['bedrock:InvokeRuntime'], ['arn:aws:bedrock:*:*:*']);
+    expect(grant).toBeDefined();
+  });
+
+  test('Should add policy statement to runtime role', () => {
+    const statement = new iam.PolicyStatement({
+      actions: ['s3:GetObject'],
+      resources: ['arn:aws:s3:::bucket/*'],
+    });
+
+    const result = runtime.addToRolePolicy(statement);
+    expect(result).toBe(runtime);
+  });
+
+  test('Should add policy to imported runtime role', () => {
+    // Create an imported runtime with IRole (not Role)
+    const importedRole = iam.Role.fromRoleArn(stack, 'ImportedRole',
+      'arn:aws:iam::123456789012:role/imported-role');
+
+    const imported = Runtime.fromAgentRuntimeAttributes(stack, 'ImportedRuntime', {
+      agentRuntimeArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id',
+      agentRuntimeId: 'test-runtime-id',
+      agentRuntimeName: 'test-runtime',
+      role: importedRole,
+      agentRuntimeVersion: '1',
+    });
+
+    const statement = new iam.PolicyStatement({
+      actions: ['s3:GetObject'],
+      resources: ['arn:aws:s3:::bucket/*'],
+    });
+
+    const result = imported.addToRolePolicy(statement);
+    expect(result).toBe(imported);
   });
 });
 
@@ -1272,5 +1411,28 @@ describe('Runtime role validation tests', () => {
         executionRole: invalidRole,
       });
     }).toThrow(/Invalid IAM role ARN format/);
+  });
+
+  test('Should handle cross-account role with warning', () => {
+    const crossAccountRole = {
+      roleArn: 'arn:aws:iam::987654321098:role/test-role',
+      roleName: 'test-role',
+      assumeRoleAction: 'sts:AssumeRole',
+      grantPrincipal: {} as iam.IPrincipal,
+      principalAccount: '987654321098',
+      applyRemovalPolicy: () => {},
+      node: {} as any,
+      stack: stack,
+      env: { account: '987654321098', region: 'us-east-1' },
+    } as unknown as iam.IRole;
+
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      executionRole: crossAccountRole,
+    });
+
+    // Should not throw, just add warning
+    expect(runtime.role).toBe(crossAccountRole);
   });
 });

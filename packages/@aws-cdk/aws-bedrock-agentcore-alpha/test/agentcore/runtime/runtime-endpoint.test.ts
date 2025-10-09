@@ -18,7 +18,7 @@ describe('RuntimeEndpoint tests', () => {
       // Create a runtime endpoint
       new RuntimeEndpoint(stack, 'TestEndpoint', {
         endpointName: 'test_endpoint',
-        agentRuntimeId: 'test_runtime_id',
+        agentRuntimeId: 'testruntime-abc1234567',
         agentRuntimeVersion: '1',
       });
 
@@ -28,7 +28,7 @@ describe('RuntimeEndpoint tests', () => {
       // Verify the RuntimeEndpoint resource is created
       template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
         Name: 'test_endpoint',
-        AgentRuntimeId: 'test_runtime_id',
+        AgentRuntimeId: 'testruntime-abc1234567',
         AgentRuntimeVersion: '1',
       });
     });
@@ -37,7 +37,7 @@ describe('RuntimeEndpoint tests', () => {
       // Create a runtime endpoint with description
       new RuntimeEndpoint(stack, 'TestEndpoint', {
         endpointName: 'test_endpoint',
-        agentRuntimeId: 'test_runtime_id',
+        agentRuntimeId: 'testruntime-abc1234567',
         agentRuntimeVersion: '1',
         description: 'Test endpoint description',
       });
@@ -48,7 +48,7 @@ describe('RuntimeEndpoint tests', () => {
       // Verify the RuntimeEndpoint resource is created
       template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
         Name: 'test_endpoint',
-        AgentRuntimeId: 'test_runtime_id',
+        AgentRuntimeId: 'testruntime-abc1234567',
         AgentRuntimeVersion: '1',
       });
 
@@ -62,7 +62,7 @@ describe('RuntimeEndpoint tests', () => {
       // Create a runtime endpoint with tags
       new RuntimeEndpoint(stack, 'TestEndpoint', {
         endpointName: 'test_endpoint',
-        agentRuntimeId: 'test_runtime_id',
+        agentRuntimeId: 'testruntime-abc1234567',
         agentRuntimeVersion: '1',
         tags: {
           Environment: 'Test',
@@ -76,7 +76,7 @@ describe('RuntimeEndpoint tests', () => {
       // Verify the RuntimeEndpoint resource has tags
       template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
         Name: 'test_endpoint',
-        AgentRuntimeId: 'test_runtime_id',
+        AgentRuntimeId: 'testruntime-abc1234567',
         AgentRuntimeVersion: '1',
         Tags: {
           Environment: 'Test',
@@ -89,7 +89,7 @@ describe('RuntimeEndpoint tests', () => {
       // Create a runtime endpoint (security config no longer supported)
       new RuntimeEndpoint(stack, 'TestEndpoint', {
         endpointName: 'test_endpoint',
-        agentRuntimeId: 'test_runtime_id',
+        agentRuntimeId: 'testruntime-abc1234567',
         agentRuntimeVersion: '1',
       });
 
@@ -99,7 +99,7 @@ describe('RuntimeEndpoint tests', () => {
       // Verify the RuntimeEndpoint resource is created
       template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
         Name: 'test_endpoint',
-        AgentRuntimeId: 'test_runtime_id',
+        AgentRuntimeId: 'testruntime-abc1234567',
         AgentRuntimeVersion: '1',
       });
     });
@@ -110,7 +110,7 @@ describe('RuntimeEndpoint tests', () => {
       expect(() => {
         new RuntimeEndpoint(stack, 'TestEndpoint', {
           endpointName: 'test-endpoint',
-          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeId: 'testruntime-abc1234567',
           agentRuntimeVersion: '1',
         });
       }).toThrow('Endpoint name must start with a letter and contain only letters, numbers, and underscores');
@@ -121,7 +121,7 @@ describe('RuntimeEndpoint tests', () => {
       expect(() => {
         new RuntimeEndpoint(stack, 'TestEndpoint', {
           endpointName: longName,
-          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeId: 'testruntime-abc1234567',
           agentRuntimeVersion: '1',
         });
       }).toThrow(/The field Endpoint name is 49 characters long but must be less than or equal to 48 characters/);
@@ -131,27 +131,27 @@ describe('RuntimeEndpoint tests', () => {
       expect(() => {
         new RuntimeEndpoint(stack, 'TestEndpoint', {
           endpointName: 'test_endpoint',
-          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeId: 'testruntime-abc1234567',
           agentRuntimeVersion: '0',
         });
-      }).toThrow(/Agent runtime version must be a number starting with 1-9/);
+      }).toThrow(/Agent runtime version must be a number between 1 and 99999/);
     });
 
     test('Should throw error for runtime version too long', () => {
       expect(() => {
         new RuntimeEndpoint(stack, 'TestEndpoint', {
           endpointName: 'test_endpoint',
-          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeId: 'testruntime-abc1234567',
           agentRuntimeVersion: '123456',
         });
-      }).toThrow(/is 6 characters long but must be less than or equal to 5 characters/);
+      }).toThrow(/Agent runtime version must be a number between 1 and 99999/);
     });
 
     test('Should accept valid endpoint name with underscores', () => {
       expect(() => {
         new RuntimeEndpoint(stack, 'TestEndpoint', {
           endpointName: 'test_endpoint_name',
-          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeId: 'testruntime-abc1234567',
           agentRuntimeVersion: '1',
         });
       }).not.toThrow();
@@ -161,7 +161,7 @@ describe('RuntimeEndpoint tests', () => {
       expect(() => {
         new RuntimeEndpoint(stack, 'TestEndpoint', {
           endpointName: 'test_endpoint',
-          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeId: 'testruntime-abc1234567',
           agentRuntimeVersion: '12345',
         });
       }).not.toThrow();
@@ -174,7 +174,7 @@ describe('RuntimeEndpoint tests', () => {
       expect(() => {
         new RuntimeEndpoint(stack, 'TestEndpoint', {
           endpointName: 'test_endpoint',
-          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeId: 'testruntime-abc1234567',
           agentRuntimeVersion: '1',
           tags: {
             [longKey]: 'value',
@@ -188,7 +188,7 @@ describe('RuntimeEndpoint tests', () => {
       expect(() => {
         new RuntimeEndpoint(stack, 'TestEndpoint', {
           endpointName: 'test_endpoint',
-          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeId: 'testruntime-abc1234567',
           agentRuntimeVersion: '1',
           tags: {
             TestKey: longValue,
@@ -201,7 +201,7 @@ describe('RuntimeEndpoint tests', () => {
       expect(() => {
         new RuntimeEndpoint(stack, 'TestEndpoint', {
           endpointName: 'test_endpoint',
-          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeId: 'testruntime-abc1234567',
           agentRuntimeVersion: '1',
           tags: {
             'Test!Key': 'value',
@@ -214,7 +214,7 @@ describe('RuntimeEndpoint tests', () => {
       expect(() => {
         new RuntimeEndpoint(stack, 'TestEndpoint', {
           endpointName: 'test_endpoint',
-          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeId: 'testruntime-abc1234567',
           agentRuntimeVersion: '1',
           tags: {
             'Environment': 'Test',
@@ -229,7 +229,7 @@ describe('RuntimeEndpoint tests', () => {
 
   describe('RuntimeEndpoint static methods tests', () => {
     test('Should import endpoint from attributes', () => {
-      const imported = RuntimeEndpoint.fromAgentRuntimeEndpointAttributes(stack, 'ImportedEndpoint', {
+      const imported = RuntimeEndpoint.fromRuntimeEndpointAttributes(stack, 'ImportedEndpoint', {
         agentRuntimeEndpointArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:endpoint/test-endpoint-id',
         endpointName: 'test-endpoint',
         agentRuntimeArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id',
@@ -251,7 +251,7 @@ describe('RuntimeEndpoint tests', () => {
       expect(() => {
         new RuntimeEndpoint(stack, 'TestEndpoint', {
           endpointName: 'test_endpoint',
-          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeId: 'testruntime-abc1234567',
           agentRuntimeVersion: '1',
           tags: {
             EmptyTag: '',
@@ -268,7 +268,7 @@ describe('RuntimeEndpoint tests', () => {
       expect(() => {
         new RuntimeEndpoint(stack, 'TestEndpoint', {
           endpointName: tokenName,
-          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeId: 'testruntime-abc1234567',
           agentRuntimeVersion: '1',
         });
       }).not.toThrow();
@@ -292,7 +292,7 @@ describe('RuntimeEndpoint tests', () => {
       expect(() => {
         new RuntimeEndpoint(stack, 'TestEndpoint', {
           endpointName: 'test_endpoint',
-          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeId: 'testruntime-abc1234567',
           agentRuntimeVersion: tokenVersion,
         });
       }).not.toThrow();
@@ -304,7 +304,7 @@ describe('RuntimeEndpoint tests', () => {
       expect(() => {
         new RuntimeEndpoint(stack, 'TestEndpoint', {
           endpointName: 'test_endpoint',
-          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeId: 'testruntime-abc1234567',
           agentRuntimeVersion: '1',
           description: tokenDescription,
         });
@@ -318,7 +318,7 @@ describe('RuntimeEndpoint tests', () => {
       expect(() => {
         new RuntimeEndpoint(stack, 'TestEndpoint', {
           endpointName: 'test_endpoint',
-          agentRuntimeId: 'test_runtime_id',
+          agentRuntimeId: 'testruntime-abc1234567',
           agentRuntimeVersion: '1',
           tags: {
             [tokenKey]: tokenValue,

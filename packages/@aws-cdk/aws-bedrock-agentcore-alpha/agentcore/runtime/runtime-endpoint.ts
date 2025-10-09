@@ -25,17 +25,21 @@ export interface RuntimeEndpointProps {
   /**
    * The ID of the agent runtime to associate with this endpoint
    * This is the unique identifier of the runtime resource
+   * Pattern: ^[a-zA-Z][a-zA-Z0-9_]{0,99}-[a-zA-Z0-9]{10}$
    */
   readonly agentRuntimeId: string;
 
   /**
    * The version of the agent runtime to use for this endpoint
-   * @default - "1"
+   * If not specified, the endpoint will point to version "1" of the runtime.
+   * Pattern: ^([1-9][0-9]{0,4})$
+   * @default "1"
    */
   readonly agentRuntimeVersion?: string;
 
   /**
    * Optional description for the agent runtime endpoint
+   * Length Minimum: 1 ,  Maximum: 256
    * @default - No description
    */
   readonly description?: string;
@@ -43,6 +47,7 @@ export interface RuntimeEndpointProps {
   /**
    * Tags for the agent runtime endpoint
    * A list of key:value pairs of tags to apply to this RuntimeEndpoint resource
+   * Pattern: ^[a-zA-Z0-9\s._:/=+@-]*$
    * @default {} - no tags
    */
   readonly tags?: { [key: string]: string };
@@ -73,7 +78,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
    * @param attrs The attributes of the existing Agent Runtime Endpoint
    * @returns An IRuntimeEndpoint instance representing the imported endpoint
    */
-  public static fromAgentRuntimeEndpointAttributes(
+  public static fromRuntimeEndpointAttributes(
     scope: Construct,
     id: string,
     attrs: RuntimeEndpointAttributes,
@@ -93,16 +98,56 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
   }
 
   // Properties from base interface
+  /**
+   * The ARN of the agent runtime endpoint
+   * @attribute
+   * @returns a token representing the ARN of this agent runtime endpoint
+   */
   public readonly agentRuntimeEndpointArn: string;
+  /**
+   * The name of the endpoint
+   * @attribute
+   * @returns a token representing the name of this endpoint
+   */
   public readonly endpointName: string;
+  /**
+   * The ARN of the agent runtime associated with this endpoint
+   * @attribute
+   * @returns a token representing the ARN of the agent runtime
+   */
   public readonly agentRuntimeArn: string;
+  /**
+   * The status of the endpoint
+   * @attribute
+   * @returns a token representing the status of this endpoint
+   */
   public readonly status?: string;
+  /**
+   * The live version of the endpoint
+   * @attribute
+   * @returns a token representing the live version of this endpoint
+   */
   public readonly liveVersion?: string;
+  /**
+   * The target version of the endpoint
+   * @attribute
+   * @returns a token representing the target version of this endpoint
+   */
   public readonly targetVersion?: string;
+  /**
+   * The timestamp when the endpoint was created
+   * @attribute
+   * @returns a token representing the creation timestamp of this endpoint
+   */
   public readonly createdAt?: string;
+  /**
+   * Optional description for the endpoint
+   */
   public readonly description?: string;
   /**
    * The unique identifier of the runtime endpoint
+   * @attribute
+   * @returns a token representing the ID of this endpoint
    */
   public readonly endpointId: string;
   /**
@@ -115,6 +160,8 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
   public readonly agentRuntimeVersion: string;
   /**
    * When this endpoint was last updated
+   * @attribute
+   * @returns a token representing the last update timestamp of this endpoint
    */
   public readonly lastUpdatedAt?: string;
 
@@ -231,7 +278,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
 
   /**
    * Validates the description format
-   * Must be between 1 and 1200 characters (per CloudFormation specification)
+   * Must be between 1 and 256 characters (per CloudFormation specification)
    * @throws Error if validation fails
    */
   private validateDescription(): void {
@@ -244,7 +291,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
         value: this.description,
         fieldName: 'Description',
         minLength: 1,
-        maxLength: 1200,
+        maxLength: 256,
       });
 
       if (errors.length > 0) {
@@ -255,6 +302,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
 
   /**
    * Validates the agent runtime ID format
+   * Pattern: ^[a-zA-Z][a-zA-Z0-9_]{0,99}-[a-zA-Z0-9]{10}$
    * @throws Error if validation fails
    */
   private validateAgentRuntimeId(): void {
@@ -263,20 +311,22 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
       return;
     }
 
-    const errors = validateStringField({
-      value: this.agentRuntimeId,
-      fieldName: 'Agent runtime ID',
-      minLength: 1,
-      maxLength: 256,
-    });
+    // Validate pattern only (no length validation per AWS specs)
+    const patternErrors = validateFieldPattern(
+      this.agentRuntimeId,
+      'Agent runtime ID',
+      /^[a-zA-Z][a-zA-Z0-9_]{0,99}-[a-zA-Z0-9]{10}$/,
+      'Agent runtime ID must start with a letter, followed by up to 99 alphanumeric or underscore characters, then a hyphen, and exactly 10 alphanumeric characters',
+    );
 
-    if (errors.length > 0) {
-      throw new ValidationError(errors.join('\n'));
+    if (patternErrors.length > 0) {
+      throw new ValidationError(patternErrors.join('\n'));
     }
   }
 
   /**
    * Validates the agent runtime version format
+   * Pattern: ^([1-9][0-9]{0,4})$
    * @throws Error if validation fails
    */
   private validateAgentRuntimeVersion(): void {
@@ -284,26 +334,16 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
       return;
     }
 
-    // Validate length
-    const lengthErrors = validateStringField({
-      value: this.agentRuntimeVersion,
-      fieldName: 'Agent runtime version',
-      minLength: 1,
-      maxLength: 5,
-    });
-
-    // Validate pattern
+    // Validate pattern only (no length validation per AWS specs)
     const patternErrors = validateFieldPattern(
       this.agentRuntimeVersion,
       'Agent runtime version',
       /^[1-9]\d{0,4}$/,
-      'Agent runtime version must be a number starting with 1-9',
+      'Agent runtime version must be a number between 1 and 99999',
     );
 
-    // Combine and throw if any errors
-    const allErrors = [...lengthErrors, ...patternErrors];
-    if (allErrors.length > 0) {
-      throw new ValidationError(allErrors.join('\n'));
+    if (patternErrors.length > 0) {
+      throw new ValidationError(patternErrors.join('\n'));
     }
   }
 

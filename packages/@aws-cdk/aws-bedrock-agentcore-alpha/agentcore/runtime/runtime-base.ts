@@ -35,12 +35,14 @@ export interface IBedrockAgentRuntime extends IResource, iam.IGrantable {
    * The ARN of the agent runtime resource
    * - Format `arn:${Partition}:bedrock-agentcore:${Region}:${Account}:runtime/${RuntimeId}`
    *
+   * @attribute
    * @example "arn:aws:bedrock-agentcore:us-west-2:123456789012:runtime/runtime-abc123"
    */
   readonly agentRuntimeArn: string;
 
   /**
    * The ID of the agent runtime
+   * @attribute
    * @example "runtime-abc123"
    */
   readonly agentRuntimeId: string;
@@ -58,6 +60,7 @@ export interface IBedrockAgentRuntime extends IResource, iam.IGrantable {
 
   /**
    * The version of the agent runtime
+   * @attribute
    */
   readonly agentRuntimeVersion?: string;
 
@@ -68,12 +71,14 @@ export interface IBedrockAgentRuntime extends IResource, iam.IGrantable {
 
   /**
    * The time at which the runtime was created
+   * @attribute
    * @example "2024-01-15T10:30:00Z"
    */
   readonly createdAt?: string;
 
   /**
    * The time at which the runtime was last updated
+   * @attribute
    * @example "2024-01-15T14:45:00Z"
    */
   readonly lastUpdatedAt?: string;
@@ -139,10 +144,10 @@ export interface IBedrockAgentRuntime extends IResource, iam.IGrantable {
    * Grant the runtime specific actions on AWS resources
    *
    * @param actions The actions to grant
-   * @param resources The resource ARNs to grant access to (defaults to '*')
+   * @param resources The resource ARNs to grant access to
    * @returns The Grant object for chaining
    */
-  grant(actions: string[], resources?: string[]): iam.Grant;
+  grant(actions: string[], resources: string[]): iam.Grant;
 
   /**
    * Adds a policy statement to the runtime's execution role
@@ -180,10 +185,10 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
    * Grant the runtime specific actions on AWS resources
    *
    * @param actions The actions to grant
-   * @param resources The resource ARNs to grant access to (defaults to '*')
+   * @param resources The resource ARNs to grant access to
    * @returns The Grant object for chaining
    */
-  public grant(actions: string[], resources: string[] = ['*']): iam.Grant {
+  public grant(actions: string[], resources: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: this.role,
       actions,
@@ -346,7 +351,9 @@ export interface AgentRuntimeAttributes {
 
   /**
    * The version of the agent runtime
-   * @default - Unknown
+   * When importing a runtime and this is not specified or undefined, endpoints created on this runtime
+   * will point to version "1" unless explicitly overridden.
+   * @default - undefined
    */
   readonly agentRuntimeVersion?: string;
 

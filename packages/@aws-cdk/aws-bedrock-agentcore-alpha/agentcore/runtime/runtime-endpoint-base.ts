@@ -24,6 +24,7 @@ import { Construct } from 'constructs';
 export interface IRuntimeEndpoint extends IResource {
   /**
    * The ARN of the runtime endpoint resource
+   * @attribute
    * @example "arn:aws:bedrock-agentcore:us-west-2:123456789012:agent-runtime-endpoint/endpoint-abc123"
    */
   readonly agentRuntimeEndpointArn: string;
@@ -35,26 +36,31 @@ export interface IRuntimeEndpoint extends IResource {
 
   /**
    * The ARN of the parent agent runtime
+   * @attribute
    */
   readonly agentRuntimeArn: string;
 
   /**
    * The current status of the runtime endpoint
+   * @attribute
    */
   readonly status?: string;
 
   /**
    * The live version of the agent runtime that is currently serving requests
+   * @attribute
    */
   readonly liveVersion?: string;
 
   /**
    * The target version the endpoint is transitioning to (during updates)
+   * @attribute
    */
   readonly targetVersion?: string;
 
   /**
    * When the endpoint was created
+   * @attribute
    */
   readonly createdAt?: string;
 

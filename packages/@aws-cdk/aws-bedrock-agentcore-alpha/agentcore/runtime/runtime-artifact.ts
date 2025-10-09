@@ -17,6 +17,7 @@ import { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import { Runtime } from './runtime';
+import { ValidationError } from './validation-helpers';
 
 /**
  * Abstract base class for agent runtime artifacts.
@@ -102,7 +103,7 @@ class AssetImage extends AgentRuntimeArtifact {
 
   public _render(): CfnRuntime.AgentRuntimeArtifactProperty {
     if (!this.asset) {
-      throw new Error('Asset not initialized. Call bind() before _render()');
+      throw new ValidationError('Asset not initialized. Call bind() before _render()');
     }
 
     // Return container configuration directly as expected by the runtime
