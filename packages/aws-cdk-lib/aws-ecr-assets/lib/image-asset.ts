@@ -605,7 +605,7 @@ export class DockerImageAsset extends Construct implements IAsset {
       this.repository = props.ecrRepository;
     } else if (props.imageTagPrefix || props.imageTag) {
       // Custom tagging with default repository: create a custom synthesizer call
-      location = this.addDockerImageAssetWithCustomTag(stack, locationProps, props.imageTagPrefix, props.imageTag);
+      location = this.addDockerImageAssetWithCustomTag(this, stack, locationProps, props.imageTagPrefix, props.imageTag);
       this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
     } else {
       // Default behavior: use synthesizer
@@ -621,6 +621,7 @@ export class DockerImageAsset extends Construct implements IAsset {
    * Helper method to add Docker image asset with custom tag using synthesizer
    */
   private addDockerImageAssetWithCustomTag(
+    construct: Construct,
     stack: Stack,
     source: DockerImageAssetSource,
     imageTagPrefix?: string,
@@ -635,7 +636,7 @@ export class DockerImageAsset extends Construct implements IAsset {
 
     // Check if imageUri contains unresolved tokens
     if (Token.isUnresolved(baseLocation.imageUri)) {
-      throw new Error('Cannot apply custom tag to Docker image asset: imageUri contains unresolved tokens. ' +
+      Annotations.of(construct).addError('Cannot apply custom tag to Docker image asset: imageUri contains unresolved tokens. ' +
         'Custom tags can only be applied when the image URI is fully resolved.');
     }
 
