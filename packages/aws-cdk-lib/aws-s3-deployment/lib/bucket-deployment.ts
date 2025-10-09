@@ -48,10 +48,14 @@ export interface BucketDeploymentProps {
   /**
    * The AWS region of the destination bucket.
    *
-   * This property is only needed for certain regions (like ZAZ) that have special
-   * requirements. Most cross-region deployments work without specifying this.
+   * Specify this property when deploying to a bucket in a different region than the stack,
+   * especially when deploying to or from opt-in regions (e.g. eu-south-2, ap-east-1).
+   *
+   * Without this property, the AWS CLI will use its default region configuration,
+   * which may cause IllegalLocationConstraintException errors for cross-region operations.
    *
    * @default - Not specified, uses default AWS CLI behavior
+   * @see https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html
    */
   readonly destinationBucketRegion?: string;
 
