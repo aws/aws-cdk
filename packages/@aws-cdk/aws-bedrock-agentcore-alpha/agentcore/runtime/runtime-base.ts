@@ -19,9 +19,11 @@ import {
   MetricProps,
   Stats,
 } from 'aws-cdk-lib/aws-cloudwatch';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { RUNTIME_INVOKE_PERMS } from './perms';
+import { ValidationError } from './validation-helpers';
 
 /******************************************************************************
  *                                Interface
@@ -30,7 +32,7 @@ import { RUNTIME_INVOKE_PERMS } from './perms';
 /**
  * Interface for Agent Runtime resources
  */
-export interface IBedrockAgentRuntime extends IResource, iam.IGrantable {
+export interface IBedrockAgentRuntime extends IResource, iam.IGrantable, ec2.IConnectable {
   /**
    * The ARN of the agent runtime resource
    * - Format `arn:${Partition}:bedrock-agentcore:${Region}:${Account}:runtime/${RuntimeId}`
@@ -176,6 +178,24 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
   public abstract readonly createdAt?: string;
   public abstract readonly lastUpdatedAt?: string;
   public abstract readonly grantPrincipal: iam.IPrincipal;
+
+  /**
+   * An accessor for the Connections object that will fail if this Runtime does not have a VPC
+   * configured.
+   */
+  public get connections(): ec2.Connections {
+    if (!this._connections) {
+      throw new ValidationError('Cannot manage network access without configuring a VPC');
+    }
+    return this._connections;
+  }
+
+  /**
+   * The actual Connections object for this Runtime. This may be unset in the event that a VPC has not
+   * been configured.
+   * @internal
+   */
+  protected _connections: ec2.Connections | undefined;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);

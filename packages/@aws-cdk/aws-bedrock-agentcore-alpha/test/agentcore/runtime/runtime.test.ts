@@ -8,7 +8,7 @@ import { Runtime } from '../../../agentcore/runtime/runtime';
 import { RuntimeEndpoint } from '../../../agentcore/runtime/runtime-endpoint';
 import { AgentRuntimeArtifact } from '../../../agentcore/runtime/runtime-artifact';
 import { RuntimeAuthorizerConfiguration } from '../../../agentcore/runtime/runtime-authorizer-configuration';
-import { RuntimeNetworkConfiguration } from '../../../agentcore/runtime/runtime-network-configuration';
+import { RuntimeNetworkConfiguration } from '../../../agentcore/network/network-configuration';
 import {
   ProtocolType,
 } from '../../../agentcore/runtime/types';
@@ -658,7 +658,7 @@ describe('Runtime with local asset tests', () => {
       runtimeName: 'test_runtime_local',
       description: 'A test runtime with local asset for agent execution',
       agentRuntimeArtifact: agentRuntimeArtifact,
-      networkConfiguration: RuntimeNetworkConfiguration.publicNetwork(),
+      networkConfiguration: RuntimeNetworkConfiguration.usingPublicNetwork(),
       protocolConfiguration: ProtocolType.HTTP,
     });
 
@@ -1084,28 +1084,11 @@ describe('RuntimeNetworkConfiguration tests', () => {
     agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
   });
 
-  test('Should create runtime with publicNetwork() method', () => {
+  test('Should create runtime with usingPublicNetwork() method', () => {
     const runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
       agentRuntimeArtifact: agentRuntimeArtifact,
-      networkConfiguration: RuntimeNetworkConfiguration.publicNetwork(),
-    });
-
-    app.synth();
-    const template = Template.fromStack(stack);
-
-    // Should have runtime resource
-    template.resourceCountIs('AWS::BedrockAgentCore::Runtime', 1);
-
-    // Verify the runtime was created
-    expect(runtime.agentRuntimeName).toBe('test_runtime');
-  });
-
-  test('Should work with legacy PUBLIC_NETWORK constant', () => {
-    const runtime = new Runtime(stack, 'test-runtime', {
-      runtimeName: 'test_runtime',
-      agentRuntimeArtifact: agentRuntimeArtifact,
-      networkConfiguration: RuntimeNetworkConfiguration.PUBLIC_NETWORK,
+      networkConfiguration: RuntimeNetworkConfiguration.usingPublicNetwork(),
     });
 
     app.synth();

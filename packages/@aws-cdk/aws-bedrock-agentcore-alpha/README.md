@@ -279,3 +279,101 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
 
 Instead of using the auto-created execution role, you can provide your own IAM role with specific permissions:
 The auto-created role includes all necessary baseline permissions for ECR access, CloudWatch logging, and X-Ray tracing. When providing a custom role, ensure these permissions are included.
+
+### Runtime Network Configuration
+
+The AgentCore Runtime supports two network modes for deployment:
+
+#### Public Network Mode (Default)
+
+By default, runtimes are deployed in PUBLIC network mode, which provides internet access suitable for less sensitive or open-use scenarios:
+
+```typescript
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+// Explicitly using public network (this is the default)
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  networkConfiguration: agentcore.RuntimeNetworkConfiguration.usingPublicNetwork(),
+});
+```
+
+#### VPC Network Mode
+
+For enhanced security and network isolation, you can deploy your runtime within a VPC:
+
+```typescript
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+// Create or use an existing VPC
+const vpc = new ec2.Vpc(this, 'MyVpc', {
+  maxAzs: 2,
+});
+
+// Configure runtime with VPC
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  networkConfiguration: agentcore.RuntimeNetworkConfiguration.usingVpc(this, {
+    vpc: vpc,
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    // Optionally specify security groups, or one will be created automatically
+    // securityGroups: [mySecurityGroup],
+    allowAllOutbound: true,  // Default is true
+  }),
+});
+```
+
+#### Managing Security Groups with VPC Configuration
+
+When using VPC mode, the Runtime implements `ec2.IConnectable`, allowing you to manage network access using the `connections` property:
+
+```typescript
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'MyVpc', {
+  maxAzs: 2,
+});
+
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+// Create runtime with VPC configuration
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  networkConfiguration: agentcore.RuntimeNetworkConfiguration.usingVpc(this, {
+    vpc: vpc,
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+  }),
+});
+
+// Now you can manage network access using the connections property
+// Allow inbound HTTPS traffic from a specific security group
+const webServerSecurityGroup = new ec2.SecurityGroup(this, 'WebServerSG', { vpc });
+runtime.connections.allowFrom(webServerSecurityGroup, ec2.Port.tcp(443), 'Allow HTTPS from web servers');
+
+// Allow outbound connections to a database
+const databaseSecurityGroup = new ec2.SecurityGroup(this, 'DatabaseSG', { vpc });
+runtime.connections.allowTo(databaseSecurityGroup, ec2.Port.tcp(5432), 'Allow PostgreSQL connection');
+
+// Allow outbound HTTPS to anywhere (for external API calls)
+runtime.connections.allowToAnyIpv4(ec2.Port.tcp(443), 'Allow HTTPS outbound');
+```
+
+**Important Notes:**
+- The `connections` property is only available when the runtime is configured with VPC mode
+- Attempting to access `connections` on a runtime with PUBLIC network mode will throw an error
+- By default, a security group is created automatically if none are specified
+- The `allowAllOutbound` parameter controls whether the security group allows all outbound traffic (default: true)

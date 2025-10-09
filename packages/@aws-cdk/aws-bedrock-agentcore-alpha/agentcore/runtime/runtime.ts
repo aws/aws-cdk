@@ -18,7 +18,7 @@ import { AgentRuntimeArtifact } from './runtime-artifact';
 import { RuntimeAuthorizerConfiguration } from './runtime-authorizer-configuration';
 import { RuntimeBase, IBedrockAgentRuntime, AgentRuntimeAttributes } from './runtime-base';
 import { RuntimeEndpoint } from './runtime-endpoint';
-import { RuntimeNetworkConfiguration } from './runtime-network-configuration';
+import { RuntimeNetworkConfiguration } from '../network/network-configuration';
 import { ProtocolType } from './types';
 import { validateStringField, ValidationError, validateFieldPattern } from './validation-helpers';
 
@@ -53,7 +53,7 @@ export interface RuntimeProps {
 
   /**
    * Network configuration for the agent runtime
-   * @default - RuntimeNetworkConfiguration.publicNetwork()
+   * @default - RuntimeNetworkConfiguration.usingPublicNetwork()
    */
   readonly networkConfiguration?: RuntimeNetworkConfiguration;
 
@@ -247,7 +247,19 @@ export class Runtime extends RuntimeBase {
 
     this.grantPrincipal = this.role;
     this.agentRuntimeArtifact = props.agentRuntimeArtifact;
-    this.networkConfiguration = props.networkConfiguration ?? RuntimeNetworkConfiguration.publicNetwork();
+    // Set up network configuration with VPC support
+    this.networkConfiguration = props.networkConfiguration ?? RuntimeNetworkConfiguration.usingPublicNetwork();
+    // For VPC configuration, pass this as the scope
+    if (props.networkConfiguration && this.networkConfiguration.networkMode === 'VPC' && !this.networkConfiguration.scope) {
+      this.networkConfiguration = RuntimeNetworkConfiguration.usingVpc(this, {
+        vpc: (props.networkConfiguration as any).vpc,
+        vpcSubnets: (props.networkConfiguration as any).vpcSubnets,
+        securityGroups: (props.networkConfiguration as any).securityGroups,
+        allowAllOutbound: (props.networkConfiguration as any).allowAllOutbound,
+      });
+    }
+    // Set connections from network configuration
+    this._connections = this.networkConfiguration.connections;
     this.protocolConfiguration = props.protocolConfiguration ?? ProtocolType.HTTP;
     this.authorizerConfiguration = props.authorizerConfiguration;
 
