@@ -13,7 +13,7 @@ export interface ResolverResult {
   propType: Type;
   /** Property type without relationship type information */
   resolvableType: Type;
-  /** The type that was converted (does not have the IResolvable union) */
+  /** Same as propType without IResolvable */
   baseType: Type;
   resolver: (props: Expression) => Expression;
 }
@@ -74,6 +74,9 @@ export class ResolverBuilder {
       ? Type.arrayOf(Type.distinctUnionOf(resolvableType.arrayOfType, ...newTypes))
       : Type.distinctUnionOf(resolvableType, ...newTypes);
 
+    // Generates code like:
+    // For single value: (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? (props.roleArn as IUserRef)?.userRef?.userArn ?? props.roleArn
+    // For array: props.roleArns?.map((item: any) => (item as IRoleRef)?.roleRef?.roleArn ?? (item as IUserRef)?.userRef?.userArn ?? item)
     const buildChain = (itemName: string) => [
       ...relationships.map(r => `(${itemName} as ${r.referenceType})?.${r.referenceName}?.${r.propName}`),
       itemName,

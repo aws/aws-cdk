@@ -1,0 +1,451 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`resource with nested relationship with type history 1`] = `
+"/* eslint-disable prettier/prettier, @stylistic/max-len */
+import * as cdk from "aws-cdk-lib";
+import * as constructs from "constructs";
+import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
+import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
+
+/**
+ * Indicates that this resource can be referenced as a Role.
+ *
+ * @stability experimental
+ */
+export interface IRoleRef extends constructs.IConstruct {
+  /**
+   * A reference to a Role resource.
+   */
+  readonly roleRef: RoleReference;
+}
+
+/**
+ * @cloudformationResource AWS::Some::Role
+ * @stability external
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-role.html
+ */
+export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleRef {
+  /**
+   * The CloudFormation resource type name for this resource class.
+   */
+  public static readonly CFN_RESOURCE_TYPE_NAME: string = "AWS::Some::Role";
+
+  /**
+   * Build a CfnRole from CloudFormation properties
+   *
+   * A factory method that creates a new instance of this class from an object
+   * containing the CloudFormation properties of this resource.
+   * Used in the @aws-cdk/cloudformation-include module.
+   *
+   * @internal
+   */
+  public static _fromCloudFormation(scope: constructs.Construct, id: string, resourceAttributes: any, options: cfn_parse.FromCloudFormationOptions): CfnRole {
+    resourceAttributes = resourceAttributes || {};
+    const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
+    const propsResult = CfnRolePropsFromCloudFormation(resourceProperties);
+    if (cdk.isResolvableObject(propsResult.value)) {
+      throw new cdk_errors.ValidationError("Unexpected IResolvable", scope);
+    }
+    const ret = new CfnRole(scope, id, propsResult.value);
+    for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
+      ret.addPropertyOverride(propKey, propVal);
+    }
+    options.parser.handleAttributes(ret, resourceAttributes, id);
+    return ret;
+  }
+
+  /**
+   * @cloudformationAttribute RoleArn
+   */
+  public readonly attrRoleArn: string;
+
+  /**
+   * @param scope Scope in which this resource is defined
+   * @param id Construct identifier for this resource (unique in its scope)
+   * @param props Resource properties
+   */
+  public constructor(scope: constructs.Construct, id: string, props: CfnRoleProps = {}) {
+    super(scope, id, {
+      "type": CfnRole.CFN_RESOURCE_TYPE_NAME,
+      "properties": props
+    });
+
+    this.attrRoleArn = cdk.Token.asString(this.getAtt("RoleArn", cdk.ResolutionTypeHint.STRING));
+  }
+
+  public get roleRef(): RoleReference {
+    return {
+      "roleArn": this.attrRoleArn
+    };
+  }
+
+  protected get cfnProperties(): Record<string, any> {
+    return {};
+  }
+
+  /**
+   * Examines the CloudFormation resource and discloses attributes
+   *
+   * @param inspector tree inspector to collect and process attributes
+   */
+  public inspect(inspector: cdk.TreeInspector): void {
+    inspector.addAttribute("aws:cdk:cloudformation:type", CfnRole.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
+  }
+
+  protected renderProperties(props: Record<string, any>): Record<string, any> {
+    return convertCfnRolePropsToCloudFormation(props);
+  }
+}
+
+/**
+ * Properties for defining a \`CfnRole\`
+ *
+ * @struct
+ * @stability external
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-role.html
+ */
+export interface CfnRoleProps {
+
+}
+
+/**
+ * A reference to a Role resource.
+ *
+ * @struct
+ * @stability external
+ */
+export interface RoleReference {
+  /**
+   * The ARN of the Role resource.
+   */
+  readonly roleArn: string;
+}
+
+/**
+ * Determine whether the given properties match those of a \`CfnRoleProps\`
+ *
+ * @param properties - the TypeScript properties of a \`CfnRoleProps\`
+ *
+ * @returns the result of the validation.
+ */
+// @ts-ignore TS6133
+function CfnRolePropsValidator(properties: any): cdk.ValidationResult {
+  if (!cdk.canInspect(properties)) return cdk.VALIDATION_SUCCESS;
+  const errors = new cdk.ValidationResults();
+  if (!(properties && typeof properties == 'object' && !Array.isArray(properties))) {
+    errors.collect(new cdk.ValidationResult("Expected an object, but received: " + JSON.stringify(properties)));
+  }
+  return errors.wrap("supplied properties not correct for \\"CfnRoleProps\\"");
+}
+
+// @ts-ignore TS6133
+function convertCfnRolePropsToCloudFormation(properties: any): any {
+  if (!cdk.canInspect(properties)) return properties;
+  CfnRolePropsValidator(properties).assertSuccess();
+  return {};
+}
+
+// @ts-ignore TS6133
+function CfnRolePropsFromCloudFormation(properties: any): cfn_parse.FromCloudFormationResult<CfnRoleProps | cdk.IResolvable> {
+  if (cdk.isResolvableObject(properties)) {
+    return new cfn_parse.FromCloudFormationResult(properties);
+  }
+  properties = ((properties == null) ? {} : properties);
+  if (!(properties && typeof properties == 'object' && !Array.isArray(properties))) {
+    return new cfn_parse.FromCloudFormationResult(properties);
+  }
+  const ret = new cfn_parse.FromCloudFormationPropertyObject<CfnRoleProps>();
+  ret.addUnrecognizedPropertiesAsExtra(properties);
+  return ret;
+}
+
+/**
+ * Indicates that this resource can be referenced as a Job.
+ *
+ * @stability experimental
+ */
+export interface IJobRef extends constructs.IConstruct {
+  /**
+   * A reference to a Job resource.
+   */
+  readonly jobRef: JobReference;
+}
+
+/**
+ * @cloudformationResource AWS::Some::Job
+ * @stability external
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-job.html
+ */
+export class CfnJob extends cdk.CfnResource implements cdk.IInspectable, IJobRef {
+  /**
+   * The CloudFormation resource type name for this resource class.
+   */
+  public static readonly CFN_RESOURCE_TYPE_NAME: string = "AWS::Some::Job";
+
+  /**
+   * Build a CfnJob from CloudFormation properties
+   *
+   * A factory method that creates a new instance of this class from an object
+   * containing the CloudFormation properties of this resource.
+   * Used in the @aws-cdk/cloudformation-include module.
+   *
+   * @internal
+   */
+  public static _fromCloudFormation(scope: constructs.Construct, id: string, resourceAttributes: any, options: cfn_parse.FromCloudFormationOptions): CfnJob {
+    resourceAttributes = resourceAttributes || {};
+    const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
+    const propsResult = CfnJobPropsFromCloudFormation(resourceProperties);
+    if (cdk.isResolvableObject(propsResult.value)) {
+      throw new cdk_errors.ValidationError("Unexpected IResolvable", scope);
+    }
+    const ret = new CfnJob(scope, id, propsResult.value);
+    for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
+      ret.addPropertyOverride(propKey, propVal);
+    }
+    options.parser.handleAttributes(ret, resourceAttributes, id);
+    return ret;
+  }
+
+  public config?: cdk.IResolvable | CfnJob.OldConfigProperty;
+
+  /**
+   * @param scope Scope in which this resource is defined
+   * @param id Construct identifier for this resource (unique in its scope)
+   * @param props Resource properties
+   */
+  public constructor(scope: constructs.Construct, id: string, props: CfnJobProps = {}) {
+    super(scope, id, {
+      "type": CfnJob.CFN_RESOURCE_TYPE_NAME,
+      "properties": props
+    });
+
+    this.config = (props.config ? flattenCfnJobOldConfigProperty(props.config) : undefined);
+  }
+
+  public get jobRef(): JobReference {
+    return {};
+  }
+
+  protected get cfnProperties(): Record<string, any> {
+    return {
+      "config": this.config
+    };
+  }
+
+  /**
+   * Examines the CloudFormation resource and discloses attributes
+   *
+   * @param inspector tree inspector to collect and process attributes
+   */
+  public inspect(inspector: cdk.TreeInspector): void {
+    inspector.addAttribute("aws:cdk:cloudformation:type", CfnJob.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
+  }
+
+  protected renderProperties(props: Record<string, any>): Record<string, any> {
+    return convertCfnJobPropsToCloudFormation(props);
+  }
+}
+
+export namespace CfnJob {
+  /**
+   * @struct
+   * @stability external
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-some-job-config.html
+   */
+  export interface ConfigProperty {
+    /**
+     * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-some-job-config.html#cfn-some-job-config-rolearn
+     */
+    readonly roleArn?: IRoleRef | string;
+
+    /**
+     * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-some-job-config.html#cfn-some-job-config-timeout
+     */
+    readonly timeout?: number;
+  }
+
+  /**
+   * @struct
+   * @stability external
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-some-job-oldconfig.html
+   */
+  export interface OldConfigProperty {
+    /**
+     * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-some-job-oldconfig.html#cfn-some-job-oldconfig-rolearn
+     */
+    readonly roleArn?: IRoleRef | string;
+  }
+}
+
+/**
+ * Properties for defining a \`CfnJob\`
+ *
+ * @struct
+ * @stability external
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-job.html
+ */
+export interface CfnJobProps {
+  /**
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-job.html#cfn-some-job-config
+   */
+  readonly config?: cdk.IResolvable | CfnJob.OldConfigProperty;
+}
+
+// @ts-ignore TS6133
+function flattenCfnJobConfigProperty(props: CfnJob.ConfigProperty | cdk.IResolvable): CfnJob.ConfigProperty | cdk.IResolvable {
+  if (cdk.isResolvableObject(props)) return props;
+  return {
+    "roleArn": (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? props.roleArn,
+    "timeout": props.timeout
+  };
+}
+
+/**
+ * Determine whether the given properties match those of a \`ConfigProperty\`
+ *
+ * @param properties - the TypeScript properties of a \`ConfigProperty\`
+ *
+ * @returns the result of the validation.
+ */
+// @ts-ignore TS6133
+function CfnJobConfigPropertyValidator(properties: any): cdk.ValidationResult {
+  if (!cdk.canInspect(properties)) return cdk.VALIDATION_SUCCESS;
+  const errors = new cdk.ValidationResults();
+  if (!(properties && typeof properties == 'object' && !Array.isArray(properties))) {
+    errors.collect(new cdk.ValidationResult("Expected an object, but received: " + JSON.stringify(properties)));
+  }
+  errors.collect(cdk.propertyValidator("roleArn", cdk.validateString)(properties.roleArn));
+  errors.collect(cdk.propertyValidator("timeout", cdk.validateNumber)(properties.timeout));
+  return errors.wrap("supplied properties not correct for \\"ConfigProperty\\"");
+}
+
+// @ts-ignore TS6133
+function convertCfnJobConfigPropertyToCloudFormation(properties: any): any {
+  if (!cdk.canInspect(properties)) return properties;
+  CfnJobConfigPropertyValidator(properties).assertSuccess();
+  return {
+    "RoleArn": cdk.stringToCloudFormation(properties.roleArn),
+    "Timeout": cdk.numberToCloudFormation(properties.timeout)
+  };
+}
+
+// @ts-ignore TS6133
+function CfnJobConfigPropertyFromCloudFormation(properties: any): cfn_parse.FromCloudFormationResult<CfnJob.ConfigProperty | cdk.IResolvable> {
+  if (cdk.isResolvableObject(properties)) {
+    return new cfn_parse.FromCloudFormationResult(properties);
+  }
+  properties = ((properties == null) ? {} : properties);
+  if (!(properties && typeof properties == 'object' && !Array.isArray(properties))) {
+    return new cfn_parse.FromCloudFormationResult(properties);
+  }
+  const ret = new cfn_parse.FromCloudFormationPropertyObject<CfnJob.ConfigProperty>();
+  ret.addPropertyResult("roleArn", "RoleArn", (properties.RoleArn != null ? cfn_parse.FromCloudFormation.getString(properties.RoleArn) : undefined));
+  ret.addPropertyResult("timeout", "Timeout", (properties.Timeout != null ? cfn_parse.FromCloudFormation.getNumber(properties.Timeout) : undefined));
+  ret.addUnrecognizedPropertiesAsExtra(properties);
+  return ret;
+}
+
+// @ts-ignore TS6133
+function flattenCfnJobOldConfigProperty(props: cdk.IResolvable | CfnJob.OldConfigProperty): cdk.IResolvable | CfnJob.OldConfigProperty {
+  if (cdk.isResolvableObject(props)) return props;
+  return {
+    "roleArn": (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? props.roleArn
+  };
+}
+
+/**
+ * Determine whether the given properties match those of a \`OldConfigProperty\`
+ *
+ * @param properties - the TypeScript properties of a \`OldConfigProperty\`
+ *
+ * @returns the result of the validation.
+ */
+// @ts-ignore TS6133
+function CfnJobOldConfigPropertyValidator(properties: any): cdk.ValidationResult {
+  if (!cdk.canInspect(properties)) return cdk.VALIDATION_SUCCESS;
+  const errors = new cdk.ValidationResults();
+  if (!(properties && typeof properties == 'object' && !Array.isArray(properties))) {
+    errors.collect(new cdk.ValidationResult("Expected an object, but received: " + JSON.stringify(properties)));
+  }
+  errors.collect(cdk.propertyValidator("roleArn", cdk.validateString)(properties.roleArn));
+  return errors.wrap("supplied properties not correct for \\"OldConfigProperty\\"");
+}
+
+// @ts-ignore TS6133
+function convertCfnJobOldConfigPropertyToCloudFormation(properties: any): any {
+  if (!cdk.canInspect(properties)) return properties;
+  CfnJobOldConfigPropertyValidator(properties).assertSuccess();
+  return {
+    "RoleArn": cdk.stringToCloudFormation(properties.roleArn)
+  };
+}
+
+// @ts-ignore TS6133
+function CfnJobOldConfigPropertyFromCloudFormation(properties: any): cfn_parse.FromCloudFormationResult<cdk.IResolvable | CfnJob.OldConfigProperty> {
+  if (cdk.isResolvableObject(properties)) {
+    return new cfn_parse.FromCloudFormationResult(properties);
+  }
+  properties = ((properties == null) ? {} : properties);
+  if (!(properties && typeof properties == 'object' && !Array.isArray(properties))) {
+    return new cfn_parse.FromCloudFormationResult(properties);
+  }
+  const ret = new cfn_parse.FromCloudFormationPropertyObject<CfnJob.OldConfigProperty>();
+  ret.addPropertyResult("roleArn", "RoleArn", (properties.RoleArn != null ? cfn_parse.FromCloudFormation.getString(properties.RoleArn) : undefined));
+  ret.addUnrecognizedPropertiesAsExtra(properties);
+  return ret;
+}
+
+/**
+ * A reference to a Job resource.
+ *
+ * @struct
+ * @stability external
+ */
+export interface JobReference {
+
+}
+
+/**
+ * Determine whether the given properties match those of a \`CfnJobProps\`
+ *
+ * @param properties - the TypeScript properties of a \`CfnJobProps\`
+ *
+ * @returns the result of the validation.
+ */
+// @ts-ignore TS6133
+function CfnJobPropsValidator(properties: any): cdk.ValidationResult {
+  if (!cdk.canInspect(properties)) return cdk.VALIDATION_SUCCESS;
+  const errors = new cdk.ValidationResults();
+  if (!(properties && typeof properties == 'object' && !Array.isArray(properties))) {
+    errors.collect(new cdk.ValidationResult("Expected an object, but received: " + JSON.stringify(properties)));
+  }
+  errors.collect(cdk.propertyValidator("config", CfnJobOldConfigPropertyValidator)(properties.config));
+  return errors.wrap("supplied properties not correct for \\"CfnJobProps\\"");
+}
+
+// @ts-ignore TS6133
+function convertCfnJobPropsToCloudFormation(properties: any): any {
+  if (!cdk.canInspect(properties)) return properties;
+  CfnJobPropsValidator(properties).assertSuccess();
+  return {
+    "Config": convertCfnJobOldConfigPropertyToCloudFormation(properties.config)
+  };
+}
+
+// @ts-ignore TS6133
+function CfnJobPropsFromCloudFormation(properties: any): cfn_parse.FromCloudFormationResult<CfnJobProps | cdk.IResolvable> {
+  if (cdk.isResolvableObject(properties)) {
+    return new cfn_parse.FromCloudFormationResult(properties);
+  }
+  properties = ((properties == null) ? {} : properties);
+  if (!(properties && typeof properties == 'object' && !Array.isArray(properties))) {
+    return new cfn_parse.FromCloudFormationResult(properties);
+  }
+  const ret = new cfn_parse.FromCloudFormationPropertyObject<CfnJobProps>();
+  ret.addPropertyResult("config", "Config", (properties.Config != null ? CfnJobOldConfigPropertyFromCloudFormation(properties.Config) : undefined));
+  ret.addUnrecognizedPropertiesAsExtra(properties);
+  return ret;
+}"
+`;
