@@ -10,10 +10,8 @@ import { Construct } from 'constructs';
 export interface VpcConfigProps {
   /**
    * The VPC to deploy the resource to.
-   *
-   * @default - none
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc: ec2.IVpc;
   /**
    * Where to place the network interfaces within the VPC.
    *
