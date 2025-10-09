@@ -5,6 +5,10 @@ import { Lazy, Names, Token } from '../../../core';
 import { IntegrationConfig, IntegrationOptions } from '../integration';
 import { Method } from '../method';
 
+// The maximum number of individual method-scoped lambda permissions to be added before they are
+// consolidated into a single permission scoped to the API
+const LAMBDA_PERMISSION_CONSOLIDATION_THRESHOLD = 10;
+
 export interface LambdaIntegrationOptions extends IntegrationOptions {
   /**
    * Use proxy integration or normal (request/response mapping) integration.
@@ -59,21 +63,43 @@ export class LambdaIntegration extends AwsIntegration {
     const bindResult = super.bind(method);
     const principal = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
-    const desc = `${Names.nodeUniqueId(method.api.node)}.${method.httpMethod}.${method.resource.path.replace(/\//g, '.')}`;
+    // Permission prefix is unique to the handler and the api
+    const descPrefix = `${Names.nodeUniqueId(this.handler.node)}.${Names.nodeUniqueId(method.api.node)}`;
+    const desc = `${descPrefix}.${method.httpMethod}.${method.resource.path.replace(/\//g, '.')}`;
 
-    this.handler.addPermission(`ApiPermission.${desc}`, {
-      principal,
-      scope: method,
-      sourceArn: Lazy.string({ produce: () => method.methodArn }),
-    });
+    // Find any existing permissions for this handler and this API
+    const otherHandlerPermissions = method.api.node.findAll()
+      .filter(c => c instanceof lambda.CfnPermission && (
+        c.node.id.startsWith(`ApiPermission.${descPrefix}.`)
+        || c.node.id.startsWith(`ApiPermission.Test.${descPrefix}.`)));
 
-    // add permission to invoke from the console
-    if (this.enableTest) {
-      this.handler.addPermission(`ApiPermission.Test.${desc}`, {
+    const consolidatedPermisson = method.api.node.findAll()
+      .find(c => c instanceof lambda.CfnPermission && c.node.id.startsWith(`ApiPermission.Any.${descPrefix}`));
+
+    if (otherHandlerPermissions.length >= LAMBDA_PERMISSION_CONSOLIDATION_THRESHOLD) {
+      // If there are existing permissions, remove them in favour of a single permission scoped only to the API
+      otherHandlerPermissions.forEach(permission => permission.node.scope?.node?.tryRemoveChild?.(permission.node.id));
+      this.handler.addPermission(`ApiPermission.Any.${descPrefix}`, {
+        principal,
+        scope: method.api,
+        sourceArn: Lazy.string({ produce: () => method.api.arnForExecuteApi() }),
+      });
+    } else if (!consolidatedPermisson) {
+      // No other permissions exist, so scope the permission to the specific method
+      this.handler.addPermission(`ApiPermission.${desc}`, {
         principal,
         scope: method,
-        sourceArn: method.testMethodArn,
+        sourceArn: Lazy.string({ produce: () => method.methodArn }),
       });
+
+      // add permission to invoke from the console
+      if (this.enableTest) {
+        this.handler.addPermission(`ApiPermission.Test.${desc}`, {
+          principal,
+          scope: method,
+          sourceArn: method.testMethodArn,
+        });
+      }
     }
 
     let functionName;

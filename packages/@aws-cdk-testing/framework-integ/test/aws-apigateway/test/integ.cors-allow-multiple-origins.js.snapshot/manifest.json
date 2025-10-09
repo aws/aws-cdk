@@ -232,16 +232,16 @@
             }
           }
         ],
-        "/stack-cors-allow-multiple-origins/cors-api-test/Default/my-resource/GET/ApiPermission.stackcorsallowmultipleoriginscorsapitestC473FAE8.GET..my-resource": [
+        "/stack-cors-allow-multiple-origins/cors-api-test/Default/my-resource/GET/ApiPermission.stackcorsallowmultipleoriginshandler2A0F4220.stackcorsallowmultipleoriginscorsapitestC473FAE8.GET..my-resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitestmyresourceGETApiPermissionstackcorsallowmultipleoriginscorsapitestC473FAE8GETmyresourceB82B6C26"
+            "data": "corsapitestmyresourceGETApiPermissionstackcorsallowmultipleoriginshandler2A0F4220stackcorsallowmultipleoriginscorsapitestC473FAE8GETmyresource4F8A5431"
           }
         ],
-        "/stack-cors-allow-multiple-origins/cors-api-test/Default/my-resource/GET/ApiPermission.Test.stackcorsallowmultipleoriginscorsapitestC473FAE8.GET..my-resource": [
+        "/stack-cors-allow-multiple-origins/cors-api-test/Default/my-resource/GET/ApiPermission.Test.stackcorsallowmultipleoriginshandler2A0F4220.stackcorsallowmultipleoriginscorsapitestC473FAE8.GET..my-resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "corsapitestmyresourceGETApiPermissionTeststackcorsallowmultipleoriginscorsapitestC473FAE8GETmyresource29B41ABB"
+            "data": "corsapitestmyresourceGETApiPermissionTeststackcorsallowmultipleoriginshandler2A0F4220stackcorsallowmultipleoriginscorsapitestC473FAE8GETmyresourceC1EC759B"
           }
         ],
         "/stack-cors-allow-multiple-origins/cors-api-test/Default/my-resource/GET/Resource": [
@@ -304,6 +304,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "corsapitestmyresourceGETApiPermissionstackcorsallowmultipleoriginscorsapitestC473FAE8GETmyresourceB82B6C26": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "corsapitestmyresourceGETApiPermissionstackcorsallowmultipleoriginscorsapitestC473FAE8GETmyresourceB82B6C26",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "corsapitestmyresourceGETApiPermissionTeststackcorsallowmultipleoriginscorsapitestC473FAE8GETmyresource29B41ABB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "corsapitestmyresourceGETApiPermissionTeststackcorsallowmultipleoriginscorsapitestC473FAE8GETmyresource29B41ABB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

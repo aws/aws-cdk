@@ -33,7 +33,7 @@
     "PayloadFormatVersion": "2.0"
    }
   },
-  "HttpApiGETgetGetIntegrationPermissionEF8D4F02": {
+  "HttpApiGETgetApiPermissionInvokeFunctionAssertionsGetHandler6C8ECF8FInvokeFunctionAssertionsHttpApiA59AAC51GetIntegrationFE3465D4": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -107,7 +107,7 @@
     "PayloadFormatVersion": "2.0"
    }
   },
-  "HttpApiPOSTpostPostIntegrationPermission1B542DB2": {
+  "HttpApiPOSTpostApiPermissionInvokeFunctionAssertionsPostHandler177CBC8FInvokeFunctionAssertionsHttpApiA59AAC51PostIntegration4087AA7A": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -181,7 +181,7 @@
     "PayloadFormatVersion": "2.0"
    }
   },
-  "HttpApiGETstatus403ForbiddenIntegrationPermissionE26C308F": {
+  "HttpApiGETstatus403ApiPermissionInvokeFunctionAssertionsForbiddenHandlerCE5C23A6InvokeFunctionAssertionsHttpApiA59AAC51ForbiddenIntegrationAB527444": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -255,7 +255,7 @@
     "PayloadFormatVersion": "2.0"
    }
   },
-  "HttpApiGETechoechoEchoIntegrationPermission23357605": {
+  "HttpApiGETechoechoApiPermissionInvokeFunctionAssertionsEchoHandler9A76B859InvokeFunctionAssertionsHttpApiA59AAC51EchoIntegration721C85EF": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",

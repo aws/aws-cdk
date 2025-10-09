@@ -198,16 +198,16 @@
             }
           }
         ],
-        "/aws-cdk-pipes-enrichments-api-gateway/RestApi/Default/test/GET/ApiPermission.awscdkpipesenrichmentsapigatewayRestApi6BE747E3.GET..test": [
+        "/aws-cdk-pipes-enrichments-api-gateway/RestApi/Default/test/GET/ApiPermission.awscdkpipesenrichmentsapigatewayConnectHandler89F223F1.awscdkpipesenrichmentsapigatewayRestApi6BE747E3.GET..test": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RestApitestGETApiPermissionawscdkpipesenrichmentsapigatewayRestApi6BE747E3GETtest3FFB693F"
+            "data": "RestApitestGETApiPermissionawscdkpipesenrichmentsapigatewayConnectHandler89F223F1awscdkpipesenrichmentsapigatewayRestApi6BE747E3GETtestF6CB1C5D"
           }
         ],
-        "/aws-cdk-pipes-enrichments-api-gateway/RestApi/Default/test/GET/ApiPermission.Test.awscdkpipesenrichmentsapigatewayRestApi6BE747E3.GET..test": [
+        "/aws-cdk-pipes-enrichments-api-gateway/RestApi/Default/test/GET/ApiPermission.Test.awscdkpipesenrichmentsapigatewayConnectHandler89F223F1.awscdkpipesenrichmentsapigatewayRestApi6BE747E3.GET..test": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RestApitestGETApiPermissionTestawscdkpipesenrichmentsapigatewayRestApi6BE747E3GETtest58CB642D"
+            "data": "RestApitestGETApiPermissionTestawscdkpipesenrichmentsapigatewayConnectHandler89F223F1awscdkpipesenrichmentsapigatewayRestApi6BE747E3GETtestF68BDAD8"
           }
         ],
         "/aws-cdk-pipes-enrichments-api-gateway/RestApi/Default/test/GET/Resource": [
@@ -365,6 +365,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "RestApitestGETApiPermissionawscdkpipesenrichmentsapigatewayRestApi6BE747E3GETtest3FFB693F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApitestGETApiPermissionawscdkpipesenrichmentsapigatewayRestApi6BE747E3GETtest3FFB693F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "RestApitestGETApiPermissionTestawscdkpipesenrichmentsapigatewayRestApi6BE747E3GETtest58CB642D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApitestGETApiPermissionTestawscdkpipesenrichmentsapigatewayRestApi6BE747E3GETtest58CB642D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

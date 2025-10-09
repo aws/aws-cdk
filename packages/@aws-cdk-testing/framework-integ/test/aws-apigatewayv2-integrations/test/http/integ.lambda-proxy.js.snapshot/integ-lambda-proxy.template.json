@@ -73,7 +73,7 @@
     "PayloadFormatVersion": "2.0"
    }
   },
-  "LambdaProxyApiDefaultRouteDefaultIntegrationPermission39F587FC": {
+  "LambdaProxyApiDefaultRouteApiPermissioninteglambdaproxyAlwaysSuccess711D8D96integlambdaproxyLambdaProxyApi4C0B86A7DefaultIntegration1BCD0436": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",

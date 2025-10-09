@@ -93,7 +93,7 @@
     "PayloadFormatVersion": "2.0"
    }
   },
-  "HttpApiPOSTtestLambdaIntegrationPermission04EC2B3D": {
+  "HttpApiPOSTtestApiPermissionawscdkpipesenrichmentslambdaConnectHandler1BCFB96AawscdkpipesenrichmentslambdaHttpApiC2308A36LambdaIntegrationE628E0DA": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",

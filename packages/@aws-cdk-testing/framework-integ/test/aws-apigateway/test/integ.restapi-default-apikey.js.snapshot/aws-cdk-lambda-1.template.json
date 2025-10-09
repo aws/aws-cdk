@@ -84,7 +84,7 @@
     "StageName": "prod"
    }
   },
-  "MyRestApiGETApiPermissionawscdklambda1MyRestApi20890E8FGET6B62C72C": {
+  "MyRestApiGETApiPermissionawscdklambda1MyLambda82056696awscdklambda1MyRestApi20890E8FGETED9F96C9": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -125,7 +125,7 @@
     }
    }
   },
-  "MyRestApiGETApiPermissionTestawscdklambda1MyRestApi20890E8FGETB5733BDE": {
+  "MyRestApiGETApiPermissionTestawscdklambda1MyLambda82056696awscdklambda1MyRestApi20890E8FGETB7278307": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -206,7 +206,7 @@
     }
    }
   },
-  "MyRestApiPOSTApiPermissionawscdklambda1MyRestApi20890E8FPOST70683B77": {
+  "MyRestApiPOSTApiPermissionawscdklambda1MyLambda82056696awscdklambda1MyRestApi20890E8FPOST8FEB23A8": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -247,7 +247,7 @@
     }
    }
   },
-  "MyRestApiPOSTApiPermissionTestawscdklambda1MyRestApi20890E8FPOST931BCBA1": {
+  "MyRestApiPOSTApiPermissionTestawscdklambda1MyLambda82056696awscdklambda1MyRestApi20890E8FPOSTAE66F31F": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",

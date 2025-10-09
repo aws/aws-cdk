@@ -109,7 +109,7 @@
     }
    }
   },
-  "RestApitestGETApiPermissionawscdkpipesenrichmentsapigatewayRestApi6BE747E3GETtest3FFB693F": {
+  "RestApitestGETApiPermissionawscdkpipesenrichmentsapigatewayConnectHandler89F223F1awscdkpipesenrichmentsapigatewayRestApi6BE747E3GETtestF6CB1C5D": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -150,7 +150,7 @@
     }
    }
   },
-  "RestApitestGETApiPermissionTestawscdkpipesenrichmentsapigatewayRestApi6BE747E3GETtest58CB642D": {
+  "RestApitestGETApiPermissionTestawscdkpipesenrichmentsapigatewayConnectHandler89F223F1awscdkpipesenrichmentsapigatewayRestApi6BE747E3GETtestF68BDAD8": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",

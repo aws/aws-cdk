@@ -983,7 +983,7 @@
     }
    }
   },
-  "MyRestAPIproxyANYApiPermissionTestStackMyRestAPIC2110DF7ANYproxy61217372": {
+  "MyRestAPIproxyANYApiPermissionTestStackFunction0204A443TestStackMyRestAPIC2110DF7ANYproxy76B9E43F": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -1020,7 +1020,7 @@
     }
    }
   },
-  "MyRestAPIproxyANYApiPermissionTestTestStackMyRestAPIC2110DF7ANYproxyAA075AE5": {
+  "MyRestAPIproxyANYApiPermissionTestTestStackFunction0204A443TestStackMyRestAPIC2110DF7ANYproxy02F02D14": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -1097,7 +1097,7 @@
     }
    }
   },
-  "MyRestAPIANYApiPermissionTestStackMyRestAPIC2110DF7ANYB4C9B6E3": {
+  "MyRestAPIANYApiPermissionTestStackFunction0204A443TestStackMyRestAPIC2110DF7ANY9DEEF6B4": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -1134,7 +1134,7 @@
     }
    }
   },
-  "MyRestAPIANYApiPermissionTestTestStackMyRestAPIC2110DF7ANY8F157E85": {
+  "MyRestAPIANYApiPermissionTestTestStackFunction0204A443TestStackMyRestAPIC2110DF7ANY54631A1E": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",

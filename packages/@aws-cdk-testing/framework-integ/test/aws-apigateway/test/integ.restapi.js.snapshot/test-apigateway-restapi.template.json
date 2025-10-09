@@ -142,7 +142,7 @@
     }
    }
   },
-  "myapiv1toysGETApiPermissiontestapigatewayrestapimyapi1AE401C4GETv1toysA829D1CC": {
+  "myapiv1toysGETApiPermissiontestapigatewayrestapiMyHandler17AB0AE0testapigatewayrestapimyapi1AE401C4GETv1toys6A61B13F": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -183,7 +183,7 @@
     }
    }
   },
-  "myapiv1toysGETApiPermissionTesttestapigatewayrestapimyapi1AE401C4GETv1toys9E0BAE9F": {
+  "myapiv1toysGETApiPermissionTesttestapigatewayrestapiMyHandler17AB0AE0testapigatewayrestapimyapi1AE401C4GETv1toys0C5F4D36": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -333,7 +333,7 @@
     }
    }
   },
-  "myapiv1booksGETApiPermissiontestapigatewayrestapimyapi1AE401C4GETv1books484ACD3F": {
+  "myapiv1booksGETApiPermissiontestapigatewayrestapiMyHandler17AB0AE0testapigatewayrestapimyapi1AE401C4GETv1books81EC506D": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -374,7 +374,7 @@
     }
    }
   },
-  "myapiv1booksGETApiPermissionTesttestapigatewayrestapimyapi1AE401C4GETv1booksE255E31A": {
+  "myapiv1booksGETApiPermissionTesttestapigatewayrestapiMyHandler17AB0AE0testapigatewayrestapimyapi1AE401C4GETv1books2DA1E290": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -451,7 +451,7 @@
     }
    }
   },
-  "myapiv1booksPOSTApiPermissiontestapigatewayrestapimyapi1AE401C4POSTv1books2B1BC62B": {
+  "myapiv1booksPOSTApiPermissiontestapigatewayrestapiMyHandler17AB0AE0testapigatewayrestapimyapi1AE401C4POSTv1books701578A2": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -492,7 +492,7 @@
     }
    }
   },
-  "myapiv1booksPOSTApiPermissionTesttestapigatewayrestapimyapi1AE401C4POSTv1books816A6B37": {
+  "myapiv1booksPOSTApiPermissionTesttestapigatewayrestapiMyHandler17AB0AE0testapigatewayrestapimyapi1AE401C4POSTv1books82B8D2E2": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",

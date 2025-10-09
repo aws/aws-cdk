@@ -85,7 +85,7 @@
     "MyRestApiAccount2FB6DB7A"
    ]
   },
-  "MyRestApiANYApiPermissionCallRestApiIntegMyRestApiB570839CANY0C27C1E3": {
+  "MyRestApiANYApiPermissionCallRestApiIntegHello072B0A95CallRestApiIntegMyRestApiB570839CANYF50F32CF": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -126,7 +126,7 @@
     }
    }
   },
-  "MyRestApiANYApiPermissionTestCallRestApiIntegMyRestApiB570839CANY379723EF": {
+  "MyRestApiANYApiPermissionTestCallRestApiIntegHello072B0A95CallRestApiIntegMyRestApiB570839CANY18C73DEA": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",

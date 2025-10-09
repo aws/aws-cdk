@@ -50,6 +50,25 @@
    "DependsOn": [
     "firstLambdaServiceRoleB6408C31"
    ]
+  },
+  "firstLambdaLogGroup73894D8D": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "firstLambda395F9ADE"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Outputs": {

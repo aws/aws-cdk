@@ -24,7 +24,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"body\":\"success-hit-first-lambda\",\"status\":200}}",
     "flattenResponse": "false",
-    "salt": "1761050867396"
+    "salt": "1761260646611"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -95,7 +95,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"body\":\"success-hit-first-lambda\",\"status\":200}}",
     "flattenResponse": "false",
-    "salt": "1761050867398"
+    "salt": "1761260646612"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -124,7 +124,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"body\":\"success-hit-second-lambda\",\"status\":200}}",
     "flattenResponse": "false",
-    "salt": "1761050867398"
+    "salt": "1761260646612"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -153,7 +153,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"body\":\"success-hit-second-lambda\",\"status\":200}}",
     "flattenResponse": "false",
-    "salt": "1761050867398"
+    "salt": "1761260646612"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -182,7 +182,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"body\":\"success-hit-third-lambda\",\"status\":200}}",
     "flattenResponse": "false",
-    "salt": "1761050867398"
+    "salt": "1761260646613"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -211,7 +211,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"body\":\"success-hit-third-lambda\",\"status\":200}}",
     "flattenResponse": "false",
-    "salt": "1761050867398"
+    "salt": "1761260646613"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

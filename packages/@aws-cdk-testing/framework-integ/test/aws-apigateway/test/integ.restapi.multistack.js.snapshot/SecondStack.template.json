@@ -121,7 +121,7 @@
     }
    }
   },
-  "BooksApibooksGETApiPermissionSecondStackBooksApi2660DEC5GETbooksE54B6E9B": {
+  "BooksApibooksGETApiPermissionFirstStackfirstLambdaA614CF32SecondStackBooksApi2660DEC5GETbooks34D17717": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -159,7 +159,7 @@
     }
    }
   },
-  "BooksApibooksGETApiPermissionTestSecondStackBooksApi2660DEC5GETbooks0B7ED39D": {
+  "BooksApibooksGETApiPermissionTestFirstStackfirstLambdaA614CF32SecondStackBooksApi2660DEC5GETbooks984BDE4A": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",

@@ -42,7 +42,7 @@
     }
    }
   },
-  "myapiv1toysGETApiPermissiontestapigatewayspecrestapimyapiA4A36FD7GETv1toysE7114441": {
+  "myapiv1toysGETApiPermissiontestapigatewayspecrestapiMyHandlerA9FBC22AtestapigatewayspecrestapimyapiA4A36FD7GETv1toys26A8B70B": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -83,7 +83,7 @@
     }
    }
   },
-  "myapiv1toysGETApiPermissionTesttestapigatewayspecrestapimyapiA4A36FD7GETv1toys468023A4": {
+  "myapiv1toysGETApiPermissionTesttestapigatewayspecrestapiMyHandlerA9FBC22AtestapigatewayspecrestapimyapiA4A36FD7GETv1toys68B4212A": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -233,7 +233,7 @@
     }
    }
   },
-  "myapiv1booksGETApiPermissiontestapigatewayspecrestapimyapiA4A36FD7GETv1books1BA6FE85": {
+  "myapiv1booksGETApiPermissiontestapigatewayspecrestapiMyHandlerA9FBC22AtestapigatewayspecrestapimyapiA4A36FD7GETv1books8B0C78E9": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -274,7 +274,7 @@
     }
    }
   },
-  "myapiv1booksGETApiPermissionTesttestapigatewayspecrestapimyapiA4A36FD7GETv1booksC9F2D354": {
+  "myapiv1booksGETApiPermissionTesttestapigatewayspecrestapiMyHandlerA9FBC22AtestapigatewayspecrestapimyapiA4A36FD7GETv1booksADCA6765": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -351,7 +351,7 @@
     }
    }
   },
-  "myapiv1booksPOSTApiPermissiontestapigatewayspecrestapimyapiA4A36FD7POSTv1books555D819D": {
+  "myapiv1booksPOSTApiPermissiontestapigatewayspecrestapiMyHandlerA9FBC22AtestapigatewayspecrestapimyapiA4A36FD7POSTv1books92D9FFEE": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -392,7 +392,7 @@
     }
    }
   },
-  "myapiv1booksPOSTApiPermissionTesttestapigatewayspecrestapimyapiA4A36FD7POSTv1booksF101DFF9": {
+  "myapiv1booksPOSTApiPermissionTesttestapigatewayspecrestapiMyHandlerA9FBC22AtestapigatewayspecrestapimyapiA4A36FD7POSTv1books9AB58F46": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",

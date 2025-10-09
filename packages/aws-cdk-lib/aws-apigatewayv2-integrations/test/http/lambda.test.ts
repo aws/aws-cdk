@@ -89,7 +89,23 @@ describe('LambdaProxyIntegration', () => {
     expect(() => app.synth()).not.toThrow();
   });
 
-  test('multiple routes for the same lambda integration', () => {
+  test('handler reused once maintains route-specific permissions', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'HttpApi');
+    const handler = fooFunction(stack, 'Handler');
+
+    new HttpRoute(stack, 'Route1', {
+      httpApi: api,
+      integration: new HttpLambdaIntegration('Integration1', handler),
+      routeKey: HttpRouteKey.with('/foo'),
+    });
+
+    // Make sure we have one route-specific permission
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Lambda::Permission', 1);
+  });
+
+  test('handler reused twice maintains route-specific permissions', () => {
     const app = new App();
     const lambdaStack = new Stack(app, 'lambdaStack');
     const fooFn = fooFunction(lambdaStack, 'Fn');
@@ -108,20 +124,116 @@ describe('LambdaProxyIntegration', () => {
       integration,
     });
 
-    // Make sure we have two permissions -- one for each method -- but a single integration
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+    // Make sure we have two route-specific permissions (below threshold)
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Lambda::Permission', 2);
+
+    template.hasResourceProperties('AWS::Lambda::Permission', {
       SourceArn: {
         'Fn::Join': ['', Match.arrayWith([':execute-api:', '/*/*/foo'])],
       },
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+    template.hasResourceProperties('AWS::Lambda::Permission', {
       SourceArn: {
         'Fn::Join': ['', Match.arrayWith([':execute-api:', '/*/*/bar'])],
       },
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Integration', 1);
+    template.resourceCountIs('AWS::ApiGatewayV2::Integration', 1);
+  });
+
+  test('handler reused 11 times consolidates to API-scoped permission', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'HttpApi');
+    const handler = fooFunction(stack, 'Handler');
+
+    // Add 11 routes with the same handler (exceeds threshold of 10 permissions)
+    for (let i = 1; i <= 11; i++) {
+      new HttpRoute(stack, `Route${i}`, {
+        httpApi: api,
+        integration: new HttpLambdaIntegration(`Integration${i}`, handler),
+        routeKey: HttpRouteKey.with(`/path${i}`),
+      });
+    }
+
+    // Make sure we have only one permission scoped to the full API
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Lambda::Permission', 1);
+
+    template.hasResourceProperties('AWS::Lambda::Permission', {
+      SourceArn: {
+        'Fn::Join': ['', Match.arrayWith([':execute-api:', '/*/*/*'])],
+      },
+    });
+  });
+
+  test('adding route after consolidation maintains single API-scoped permission', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'HttpApi');
+    const handler = fooFunction(stack, 'Handler');
+
+    // Add 11 routes to trigger consolidation, then add another
+    for (let i = 1; i <= 11; i++) {
+      new HttpRoute(stack, `Route${i}`, {
+        httpApi: api,
+        integration: new HttpLambdaIntegration(`Integration${i}`, handler),
+        routeKey: HttpRouteKey.with(`/path${i}`),
+      });
+    }
+
+    // Add another route after consolidation
+    new HttpRoute(stack, 'Route12', {
+      httpApi: api,
+      integration: new HttpLambdaIntegration('Integration12', handler),
+      routeKey: HttpRouteKey.with('/path12'),
+    });
+
+    // Should still have only 1 consolidated permission
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Lambda::Permission', 1);
+
+    // Verify it's still the API-scoped permission
+    template.hasResourceProperties('AWS::Lambda::Permission', {
+      SourceArn: {
+        'Fn::Join': ['', Match.arrayWith([':execute-api:', '/*/*/*'])],
+      },
+    });
+  });
+
+  test('different handlers maintain route-specific permissions', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'HttpApi');
+    const handler1 = fooFunction(stack, 'Handler1');
+    const handler2 = fooFunction(stack, 'Handler2');
+
+    new HttpRoute(stack, 'Route1', {
+      httpApi: api,
+      integration: new HttpLambdaIntegration('Integration1', handler1),
+      routeKey: HttpRouteKey.with('/foo'),
+    });
+
+    new HttpRoute(stack, 'Route2', {
+      httpApi: api,
+      integration: new HttpLambdaIntegration('Integration2', handler2),
+      routeKey: HttpRouteKey.with('/bar'),
+    });
+
+    // Make sure we have two permissions -- one for each handler
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Lambda::Permission', 2);
+
+    template.hasResourceProperties('AWS::Lambda::Permission', {
+      SourceArn: {
+        'Fn::Join': ['', Match.arrayWith([':execute-api:', '/*/*/foo'])],
+      },
+    });
+
+    template.hasResourceProperties('AWS::Lambda::Permission', {
+      SourceArn: {
+        'Fn::Join': ['', Match.arrayWith([':execute-api:', '/*/*/bar'])],
+      },
+    });
   });
 });
 
