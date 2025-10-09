@@ -77,17 +77,11 @@ export enum DateIntervalUnit {
 export interface IntegerPartitionProjectionConfigurationProps {
   /**
    * Minimum value for the integer partition range (inclusive).
-   *
-   * @example 2020
-   * @example 0
    */
   readonly min: number;
 
   /**
    * Maximum value for the integer partition range (inclusive).
-   *
-   * @example 2023
-   * @example 100
    */
   readonly max: number;
 
@@ -122,10 +116,6 @@ export interface DatePartitionProjectionConfigurationProps {
    *   (e.g., 'NOW', 'NOW-3YEARS', 'NOW+1MONTH')
    *
    * @see https://docs.aws.amazon.com/athena/latest/ug/partition-projection-supported-types.html#partition-projection-date-type
-   *
-   * @example '2020-01-01'
-   * @example 'NOW-3YEARS'
-   * @example '2020-01-01-00-00-00'
    */
   readonly min: string;
 
@@ -137,10 +127,6 @@ export interface DatePartitionProjectionConfigurationProps {
    * - Relative date using NOW syntax
    *
    * Same format constraints as `min`.
-   *
-   * @example '2023-12-31'
-   * @example 'NOW'
-   * @example 'NOW+1MONTH'
    */
   readonly max: string;
 
@@ -150,10 +136,6 @@ export interface DatePartitionProjectionConfigurationProps {
    * Uses Java SimpleDateFormat patterns.
    *
    * @see https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
-   *
-   * @example 'yyyy-MM-dd'
-   * @example 'yyyy-MM-dd-HH-mm-ss'
-   * @example 'yyyyMMdd'
    */
   readonly format: string;
 
@@ -429,16 +411,6 @@ export class PartitionProjectionConfiguration {
  *
  * Maps partition column names to their projection configurations.
  * The key is the partition column name, the value is the partition configuration.
- *
- * @example
- * {
- *   year: PartitionProjectionConfiguration.Integer({
- *     range: [2020, 2023],
- *   }),
- *   region: PartitionProjectionConfiguration.Enum({
- *     values: ['us-east-1', 'us-west-2'],
- *   }),
- * }
  */
 export type PartitionProjection = {
   [columnName: string]: PartitionProjectionConfiguration;
@@ -449,7 +421,6 @@ export type PartitionProjection = {
  *
  * @param columnName - The partition column name
  * @param config - The partition configuration
- * @throws {UnscopedValidationError} if the configuration is invalid
  */
 export function validateIntegerPartition(
   columnName: string,
@@ -505,7 +476,6 @@ export function validateIntegerPartition(
  *
  * @param columnName - The partition column name
  * @param config - The partition configuration
- * @throws {UnscopedValidationError} if the configuration is invalid
  */
 export function validateDatePartition(
   columnName: string,
@@ -569,7 +539,6 @@ export function validateDatePartition(
  *
  * @param columnName - The partition column name
  * @param config - The partition configuration
- * @throws {UnscopedValidationError} if the configuration is invalid
  */
 export function validateEnumPartition(
   columnName: string,
@@ -608,7 +577,6 @@ export function validateEnumPartition(
  *
  * @param _columnName - The partition column name
  * @param config - The partition configuration
- * @throws {UnscopedValidationError} if the configuration is invalid
  */
 export function validateInjectedPartition(
   _columnName: string,
@@ -628,7 +596,6 @@ export function validateInjectedPartition(
  *
  * @param columnName - The partition column name
  * @param config - The partition configuration
- * @throws {UnscopedValidationError} if the configuration is invalid
  */
 export function validatePartitionConfiguration(
   columnName: string,
