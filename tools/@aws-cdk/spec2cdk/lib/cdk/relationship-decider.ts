@@ -1,4 +1,4 @@
-import { Property, RelationshipRef, Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
+import { Property, RelationshipRef, Resource, RichProperty, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { namespaceFromResource, referenceInterfaceName, referenceInterfaceAttributeName, referencePropertyName, typeAliasPrefixFromResource } from '../naming';
 import { getReferenceProps } from './reference-props';
 import { createModuleDefinitionFromCfnNamespace } from '../cfn2ts/pkglint';
@@ -118,15 +118,15 @@ export class RelationshipDecider {
   }
 
   /**
-   * Extracts the reference ID from a property's type, for direct refs and array element refs.
+   * Extracts the referenced type from a property's type, for direct refs and array element refs.
    */
-  private getRefId(prop: Property) {
-    // Need to check for previous types because they are the one being used
-    const type = prop.previousTypes?.at(0) ?? prop.type;
+  private getReferencedType(prop: Property) {
+    // Use the oldest type for backwards compatibility
+    const type = new RichProperty(prop).types()[0];
     if (type.type === 'ref') {
-      return type.reference.$ref;
+      return this.db.get('typeDefinition', type.reference.$ref);
     } else if (type.type === 'array' && type.element.type === 'ref') {
-      return type.element.reference.$ref;
+      return this.db.get('typeDefinition', type.element.reference.$ref);
     }
     return undefined;
   }
@@ -146,17 +146,16 @@ export class RelationshipDecider {
       return true;
     }
 
-    const refId = this.getRefId(prop);
-    if (!refId) {
+    const referencedTypeDef = this.getReferencedType(prop);
+    if (!referencedTypeDef) {
       return false;
     }
 
-    if (visited.has(refId)) {
+    if (visited.has(referencedTypeDef.$id)) {
       return false;
     }
-    visited.add(refId);
+    visited.add(referencedTypeDef.$id);
 
-    const referencedTypeDef = this.db.get('typeDefinition', refId);
     for (const [nestedPropName, nestedProp] of Object.entries(referencedTypeDef.properties)) {
       if (this.needsFlatteningFunction(nestedPropName, nestedProp, visited)) {
         return true;
