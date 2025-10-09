@@ -145,17 +145,19 @@ export abstract class NetworkConfiguration {
 export class BrowserNetworkConfiguration extends NetworkConfiguration {
   /**
    * Creates a public network configuration. PUBLIC is the default network mode.
-   *
+   * @returns A BrowserNetworkConfiguration.
    * Run this tool to operate in a public environment with internet access, suitable for less sensitive or open-use scenarios.
    */
-  public static readonly PUBLIC_NETWORK = new BrowserNetworkConfiguration('PUBLIC');
+  public static usingPublicNetwork(): BrowserNetworkConfiguration {
+    return new BrowserNetworkConfiguration('PUBLIC');
+  }
 
   /**
    * Creates a network configuration from a VPC configuration.
    * @param vpcConfig - The VPC configuration.
    * @returns A BrowserNetworkConfiguration.
    */
-  public static fromVpcConfig(scope: Construct, vpcConfig: VpcConfigProps): BrowserNetworkConfiguration {
+  public static usingVpc(scope: Construct, vpcConfig: VpcConfigProps): BrowserNetworkConfiguration {
     return new BrowserNetworkConfiguration('VPC', scope, vpcConfig);
   }
 
@@ -181,23 +183,28 @@ export class BrowserNetworkConfiguration extends NetworkConfiguration {
 export class CodeInterpreterNetworkConfiguration extends NetworkConfiguration {
   /**
    * Creates a public network configuration.
-   *
+   * @returns A CodeInterpreterNetworkConfiguration.
    * Run this tool to operate in a public environment with internet access, suitable for less sensitive or open-use scenarios.
    */
-  public static readonly PUBLIC_NETWORK = new CodeInterpreterNetworkConfiguration('PUBLIC');
+  public static usingPublicNetwork(): CodeInterpreterNetworkConfiguration {
+    return new CodeInterpreterNetworkConfiguration('PUBLIC');
+  }
+
   /**
    * Creates a sandbox network configuration.
-   *
+   * @returns A CodeInterpreterNetworkConfiguration.
    * Run this tool in a restricted environment with limited Permissions and Encryption to enhance safety and reduce potential risks.
    */
-  public static readonly SANDBOX_NETWORK = new CodeInterpreterNetworkConfiguration('SANDBOX');
+  public static usingSandboxNetwork(): CodeInterpreterNetworkConfiguration {
+    return new CodeInterpreterNetworkConfiguration('SANDBOX');
+  }
 
   /**
    * Creates a network configuration from a VPC configuration.
    * @param vpcConfig - The VPC configuration.
    * @returns A CodeInterpreterNetworkConfiguration.
    */
-  public static fromVpcConfig(scope: Construct, vpcConfig: VpcConfigProps): CodeInterpreterNetworkConfiguration {
+  public static usingVpc(scope: Construct, vpcConfig: VpcConfigProps): CodeInterpreterNetworkConfiguration {
     return new CodeInterpreterNetworkConfiguration('VPC', scope, vpcConfig);
   }
 

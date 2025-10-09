@@ -26,7 +26,7 @@ describe('BrowserCustom default tests', () => {
     browser = new BrowserCustom(stack, 'test-browser', {
       browserCustomName: 'test_browser',
       description: 'A test browser for web automation',
-      networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
     });
 
     app.synth();
@@ -87,7 +87,7 @@ describe('BrowserCustom with VPC config tests', () => {
     new BrowserCustom(stack, 'test-browser', {
       browserCustomName: 'test_browser',
       description: 'A test browser for web automation',
-      networkConfiguration: BrowserNetworkConfiguration.fromVpcConfig(stack, {
+      networkConfiguration: BrowserNetworkConfiguration.usingVpc(stack, {
         vpc: vpc,
         securityGroups: [sg],
       }),
@@ -112,7 +112,7 @@ describe('BrowserCustom with VPC config tests', () => {
     new BrowserCustom(stack, 'test-browser', {
       browserCustomName: 'test_browser',
       description: 'A test browser for web automation',
-      networkConfiguration: BrowserNetworkConfiguration.fromVpcConfig(stack, {
+      networkConfiguration: BrowserNetworkConfiguration.usingVpc(stack, {
         vpc: vpc,
       }),
     });
@@ -137,7 +137,7 @@ describe('BrowserCustom with VPC config tests', () => {
 
       new BrowserCustom(stack, 'test-browser', {
         browserCustomName: 'test_browser',
-        networkConfiguration: BrowserNetworkConfiguration.fromVpcConfig(stack, {
+        networkConfiguration: BrowserNetworkConfiguration.usingVpc(stack, {
           vpc: vpc,
           securityGroups: [sg],
           allowAllOutbound: false,
@@ -153,7 +153,7 @@ describe('BrowserCustom with VPC config tests', () => {
 
       new BrowserCustom(stack, 'test-browser', {
         browserCustomName: 'test_browser',
-        networkConfiguration: BrowserNetworkConfiguration.fromVpcConfig(undefined as any, {
+        networkConfiguration: BrowserNetworkConfiguration.usingVpc(undefined as any, {
           vpc: vpc,
           securityGroups: [sg],
         }),
@@ -164,7 +164,7 @@ describe('BrowserCustom with VPC config tests', () => {
   test('Vpc not specified, an exception is thrown when accessing Connections object', () => {
     const browser = new BrowserCustom(stack, 'test-browser', {
       browserCustomName: 'test_browser',
-      networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
     });
 
     const when = () => browser.connections;
@@ -176,7 +176,7 @@ describe('BrowserCustom with VPC config tests', () => {
 
     const browser = new BrowserCustom(stack, 'test-browser', {
       browserCustomName: 'test_browser',
-      networkConfiguration: BrowserNetworkConfiguration.fromVpcConfig(stack, {
+      networkConfiguration: BrowserNetworkConfiguration.usingVpc(stack, {
         vpc: vpc,
       }),
     });
@@ -304,7 +304,7 @@ describe('BrowserCustom with recording config tests', () => {
     browser = new BrowserCustom(stack, 'test-browser', {
       browserCustomName: 'test_browser',
       description: 'A test browser for web automation',
-      networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
       recordingConfig: {
         enabled: true,
         s3Location: {
@@ -361,7 +361,7 @@ describe('BrowserCustom with custom execution role tests', () => {
     browser = new BrowserCustom(stack, 'test-browser', {
       browserCustomName: 'test_browser',
       description: 'A test browser with custom execution role',
-      networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
       executionRole: customRole,
     });
 
@@ -420,7 +420,7 @@ describe('BrowserCustom name validation tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'test-browser', {
         browserCustomName: 'test-browser',
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
       });
     }).toThrow('The field Browser name with value "test-browser" does not match the required pattern /^[a-zA-Z][a-zA-Z0-9_]{0,47}$/');
   });
@@ -429,7 +429,7 @@ describe('BrowserCustom name validation tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'empty-name', {
         browserCustomName: '',
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
       });
     }).toThrow('The field Browser name is 0 characters long but must be at least 1 characters');
   });
@@ -438,7 +438,7 @@ describe('BrowserCustom name validation tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'name-with-spaces', {
         browserCustomName: 'test browser',
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
       });
     }).toThrow('The field Browser name with value "test browser" does not match the required pattern /^[a-zA-Z][a-zA-Z0-9_]{0,47}$/');
   });
@@ -447,7 +447,7 @@ describe('BrowserCustom name validation tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'name-with-special-chars', {
         browserCustomName: 'test@browser',
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
       });
     }).toThrow('The field Browser name with value "test@browser" does not match the required pattern /^[a-zA-Z][a-zA-Z0-9_]{0,47}$/');
   });
@@ -457,7 +457,7 @@ describe('BrowserCustom name validation tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'long-name', {
         browserCustomName: longName,
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
       });
     }).toThrow('The field Browser name is 49 characters long but must be less than or equal to 48 characters');
   });
@@ -466,7 +466,7 @@ describe('BrowserCustom name validation tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'valid-name', {
         browserCustomName: 'test_browser_123',
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
       });
     }).not.toThrow();
   });
@@ -475,7 +475,7 @@ describe('BrowserCustom name validation tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'valid-name-2', {
         browserCustomName: 'testBrowser123',
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
       });
     }).not.toThrow();
   });
@@ -485,7 +485,7 @@ describe('BrowserCustom name validation tests', () => {
       browserCustomName: 'test_browser_default',
     });
 
-    expect(browser.networkConfiguration).toBe(BrowserNetworkConfiguration.PUBLIC_NETWORK);
+    expect(browser.networkConfiguration.networkMode).toBe('PUBLIC');
   });
 });
 
@@ -507,7 +507,7 @@ describe('BrowserCustom tags validation tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'valid-tags', {
         browserCustomName: 'test_browser',
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
         tags: {
           'Environment': 'Production',
           'Team': 'AI/ML',
@@ -522,7 +522,7 @@ describe('BrowserCustom tags validation tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'special-chars-tags', {
         browserCustomName: 'test_browser',
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
         tags: {
           'Environment': 'Production',
           'Team@Company': 'AI/ML',
@@ -538,7 +538,7 @@ describe('BrowserCustom tags validation tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'empty-tag-key', {
         browserCustomName: 'test_browser',
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
         tags: {
           '': 'value',
         },
@@ -551,7 +551,7 @@ describe('BrowserCustom tags validation tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'long-tag-key', {
         browserCustomName: 'test_browser',
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
         tags: {
           [longKey]: 'value',
         },
@@ -564,7 +564,7 @@ describe('BrowserCustom tags validation tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'long-tag-value', {
         browserCustomName: 'test_browser',
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
         tags: {
           key: longValue,
         },
@@ -576,7 +576,7 @@ describe('BrowserCustom tags validation tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'invalid-tag-key', {
         browserCustomName: 'test_browser',
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
         tags: {
           'key#invalid': 'value',
         },
@@ -588,7 +588,7 @@ describe('BrowserCustom tags validation tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'invalid-tag-value', {
         browserCustomName: 'test_browser',
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
         tags: {
           key: 'value#invalid',
         },
@@ -600,7 +600,7 @@ describe('BrowserCustom tags validation tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'null-tag-value', {
         browserCustomName: 'test_browser',
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
         tags: {
           key: null as any,
         },
@@ -612,7 +612,7 @@ describe('BrowserCustom tags validation tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'undefined-tag-value', {
         browserCustomName: 'test_browser',
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
         tags: {
           key: undefined as any,
         },
@@ -624,7 +624,7 @@ describe('BrowserCustom tags validation tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'undefined-tags', {
         browserCustomName: 'test_browser',
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
         tags: undefined,
       });
     }).not.toThrow();
@@ -634,7 +634,7 @@ describe('BrowserCustom tags validation tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'empty-tags', {
         browserCustomName: 'test_browser',
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
         tags: {},
       });
     }).not.toThrow();
@@ -658,7 +658,7 @@ describe('BrowserCustom with tags CloudFormation template tests', () => {
     new BrowserCustom(stack, 'test-browser-with-tags', {
       browserCustomName: 'test_browser_with_tags',
       description: 'A test browser with tags',
-      networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
       tags: {
         Environment: 'Production',
         Team: 'AI/ML',
@@ -712,7 +712,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
     // Create browser with S3 bucket resource
     new BrowserCustom(stack, 'TestBrowser', {
       browserCustomName: 'test_browser',
-      networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
       recordingConfig: {
         enabled: true,
         s3Location: {
@@ -750,7 +750,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
 
     new BrowserCustom(stack, 'TestBrowser', {
       browserCustomName: 'test_browser',
-      networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
       // No recording config provided
     });
 
@@ -773,7 +773,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
 
     const browser = new BrowserCustom(stack, 'TestBrowser', {
       browserCustomName: 'test_browser',
-      networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
       // No recording config provided - should default to disabled
     });
 
@@ -800,7 +800,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
 
     new BrowserCustom(stack, 'TestBrowser', {
       browserCustomName: 'test_browser',
-      networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
       recordingConfig: {
         enabled: true,
         s3Location: {
@@ -843,7 +843,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
 
     new BrowserCustom(stack, 'TestBrowser', {
       browserCustomName: 'test_browser',
-      networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
       executionRole: role,
     });
 
@@ -867,7 +867,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
       expect(() => {
         new BrowserCustom(stack, 'TestBrowser', {
           browserCustomName: 'test_browser',
-          networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+          networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
           recordingConfig: {
             enabled: true,
             s3Location: {
@@ -886,7 +886,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
       expect(() => {
         new BrowserCustom(stack, 'TestBrowser', {
           browserCustomName: 'test_browser',
-          networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+          networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
         });
       }).not.toThrow();
     });
@@ -898,7 +898,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
       expect(() => {
         new BrowserCustom(stack, 'TestBrowser', {
           browserCustomName: 'test_browser',
-          networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+          networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
           recordingConfig: {
             enabled: true,
           },
@@ -913,7 +913,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
       expect(() => {
         new BrowserCustom(stack, 'TestBrowser', {
           browserCustomName: 'test_browser',
-          networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+          networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
           recordingConfig: {
             enabled: true,
             s3Location: {
@@ -932,7 +932,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
       expect(() => {
         new BrowserCustom(stack, 'TestBrowser', {
           browserCustomName: 'test_browser',
-          networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+          networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
           recordingConfig: {
             enabled: true,
             s3Location: {
@@ -951,7 +951,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
       expect(() => {
         new BrowserCustom(stack, 'TestBrowser', {
           browserCustomName: 'test_browser',
-          networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+          networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
           recordingConfig: {
             enabled: true,
             s3Location: {
@@ -970,7 +970,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
       expect(() => {
         new BrowserCustom(stack, 'TestBrowser', {
           browserCustomName: 'test_browser',
-          networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+          networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
           recordingConfig: {
             enabled: true,
             s3Location: {
@@ -989,7 +989,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
       expect(() => {
         new BrowserCustom(stack, 'TestBrowser', {
           browserCustomName: 'test_browser',
-          networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+          networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
           recordingConfig: {
             enabled: true,
             s3Location: {
@@ -1008,7 +1008,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
       expect(() => {
         new BrowserCustom(stack, 'TestBrowser', {
           browserCustomName: 'test_browser',
-          networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+          networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
           recordingConfig: {
             enabled: true,
             s3Location: {
@@ -1027,7 +1027,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
       expect(() => {
         new BrowserCustom(stack, 'TestBrowser', {
           browserCustomName: 'test_browser',
-          networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+          networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
           recordingConfig: {
             enabled: true,
             s3Location: {
@@ -1048,7 +1048,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
       expect(() => {
         new BrowserCustom(stack, 'TestBrowser', {
           browserCustomName: 'test_browser',
-          networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+          networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
           recordingConfig: {
             enabled: true,
             s3Location: {
@@ -1067,7 +1067,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
       expect(() => {
         new BrowserCustom(stack, 'TestBrowser', {
           browserCustomName: 'test_browser',
-          networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+          networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
           recordingConfig: {
             enabled: true,
             s3Location: {
@@ -1098,7 +1098,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
         expect(() => {
           new BrowserCustom(stack, `TestBrowser${index}`, {
             browserCustomName: `test_browser_${index}`,
-            networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+            networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
             recordingConfig: {
               enabled: true,
               s3Location: {
@@ -1128,7 +1128,7 @@ describe('BrowserCustom CloudFormation parameter validation tests', () => {
         expect(() => {
           new BrowserCustom(stack, `TestBrowser${index}`, {
             browserCustomName: `test_browser_${index}`,
-            networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+            networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
             recordingConfig: {
               enabled: true,
               s3Location: {
@@ -1160,7 +1160,7 @@ describe('BrowserCustom grant method tests', () => {
     browser = new BrowserCustom(stack, 'test-browser', {
       browserCustomName: 'test_browser',
       description: 'A test browser for grant testing',
-      networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
     });
   });
 
@@ -1246,7 +1246,7 @@ describe('BrowserCustom recording configuration with S3 location tests', () => {
     new BrowserCustom(stack, 'test-browser-with-recording', {
       browserCustomName: 'test_browser_with_recording',
       description: 'A test browser with recording enabled',
-      networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
       recordingConfig: {
         enabled: true,
         s3Location: {
@@ -1290,7 +1290,7 @@ describe('BrowserCustom recording configuration with S3 location tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'test-browser-recording-no-s3', {
         browserCustomName: 'test_browser_recording_no_s3',
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
         recordingConfig: {
           enabled: true,
           // No s3Location provided
@@ -1316,7 +1316,7 @@ describe('BrowserCustom recording configuration with S3 location tests', () => {
     expect(() => {
       new BrowserCustom(stack, 'test-browser-recording-disabled', {
         browserCustomName: 'test_browser_recording_disabled',
-        networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+        networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
         recordingConfig: {
           enabled: false,
           s3Location: {
@@ -1339,7 +1339,7 @@ describe('BrowserCustom recording configuration with S3 location tests', () => {
 
     const browser = new BrowserCustom(stack, 'test-browser-metrics', {
       browserCustomName: 'test_browser_metrics',
-      networkConfiguration: BrowserNetworkConfiguration.PUBLIC_NETWORK,
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
     });
 
     // Test various metric methods

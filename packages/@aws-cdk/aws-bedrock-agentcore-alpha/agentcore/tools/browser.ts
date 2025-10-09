@@ -658,6 +658,7 @@ export class BrowserCustom extends BrowserCustomBase {
   public readonly createdAt?: string;
   /**
    * The failure reason of the browser
+   * @attribute
    */
   public readonly failureReason?: string;
   /**
@@ -701,7 +702,7 @@ export class BrowserCustom extends BrowserCustomBase {
     // ------------------------------------------------------
     this.name = props.browserCustomName;
     this.description = props.description;
-    this.networkConfiguration = props.networkConfiguration ?? BrowserNetworkConfiguration.PUBLIC_NETWORK;
+    this.networkConfiguration = props.networkConfiguration ?? BrowserNetworkConfiguration.usingPublicNetwork();
     this.recordingConfig = props.recordingConfig ?? { enabled: false };
     this.executionRole = props.executionRole ?? this._createBrowserRole();
     this.grantPrincipal = this.executionRole;

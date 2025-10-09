@@ -21,13 +21,13 @@ new agentcore.CodeInterpreterCustom(stack, 'MyCodeInterpreter', {
 // Create a code interpreter with sandbox network configuration
 new agentcore.CodeInterpreterCustom(stack, 'MyCodeInterpreter2', {
   codeInterpreterCustomName: 'my_code_interpreter2',
-  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.SANDBOX_NETWORK,
+  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.usingSandboxNetwork(),
 });
 
 // Create a code interpreter with tags
 new agentcore.CodeInterpreterCustom(stack, 'MyCodeInterpreter3', {
   codeInterpreterCustomName: 'my_code_interpreter3',
-  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
+  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.usingPublicNetwork(),
   tags: {
     Environment: 'Dev',
     Team: 'AI/ML',

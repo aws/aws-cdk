@@ -594,6 +594,7 @@ export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
   public readonly lastUpdatedAt?: string;
   /**
    * The failure reason of the code interpreter
+   * @attribute
    */
   public readonly failureReason?: string;
   /**
@@ -626,7 +627,7 @@ export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
     // ------------------------------------------------------
     this.name = props.codeInterpreterCustomName;
     this.description = props.description;
-    this.networkConfiguration = props.networkConfiguration ?? CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK;
+    this.networkConfiguration = props.networkConfiguration ?? CodeInterpreterNetworkConfiguration.usingPublicNetwork();
     this.executionRole = props.executionRole ?? this._createCodeInterpreterRole();
     this.grantPrincipal = this.executionRole;
     this.tags = props.tags;

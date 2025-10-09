@@ -47,14 +47,14 @@ Additional information about the browser tool can be found in the [official docu
 
 The Browser construct supports the following network modes:
 
-1. **Public Network Mode** (`BrowserNetworkMode.PUBLIC`) - Default
+1. **Public Network Mode** (`BrowserNetworkMode.usingPublicNetwork()`) - Default
 
    - Allows internet access for web browsing and external API calls
    - Suitable for scenarios where agents need to interact with publicly available websites
    - Enables full web browsing capabilities
    - VPC mode is not supported with this option
 
-2. **VPC (Virtual Private Cloud)** (`BrowserNetworkMode.fromVpcConfig()`)
+2. **VPC (Virtual Private Cloud)** (`BrowserNetworkMode.usingVpc()`)
 
    - Select whether to run the browser in a virtual private cloud (VPC).
    - By configuring VPC connectivity, you enable secure access to private resources such as databases, internal APIs, and services within your VPC.
@@ -89,7 +89,7 @@ const browser = new agentcore.BrowserCustom(this, "MyBrowser", {
 const browser = new agentcore.BrowserCustom(this, "MyBrowser", {
   browserCustomName: "my_browser",
   description: "A browser for web automation with tags",
-  networkConfiguration: agentcore.BrowserNetworkConfiguration.PUBLIC_NETWORK,
+  networkConfiguration: agentcore.BrowserNetworkConfiguration.usingPublicNetwork(),
   tags: {
     Environment: "Production",
     Team: "AI/ML",
@@ -103,7 +103,7 @@ const browser = new agentcore.BrowserCustom(this, "MyBrowser", {
 ```typescript fixture=default
 const browser = new agentcore.BrowserCustom(this, 'BrowserVpcWithRecording', {
   browserCustomName: 'browser_recording',
-  networkConfiguration: agentcore.BrowserNetworkConfiguration.fromVpcConfig(this, {
+  networkConfiguration: agentcore.BrowserNetworkConfiguration.usingVpc(this, {
     vpc: new ec2.Vpc(this, 'VPC', { restrictDefaultSecurityGroup: false }),
   }),
 });
@@ -122,7 +122,7 @@ const recordingBucket = new s3.Bucket(this, "RecordingBucket", {
 const browser = new agentcore.BrowserCustom(this, "MyBrowser", {
   browserCustomName: "my_browser",
   description: "Browser with recording enabled",
-  networkConfiguration: agentcore.BrowserNetworkConfiguration.PUBLIC_NETWORK,
+  networkConfiguration: agentcore.BrowserNetworkConfiguration.usingPublicNetwork(),
   recordingConfig: {
     enabled: true,
     s3Location: {
@@ -148,7 +148,7 @@ const executionRole = new iam.Role(this, "BrowserExecutionRole", {
 const browser = new agentcore.BrowserCustom(this, "MyBrowser", {
   browserCustomName: "my_browser",
   description: "Browser with custom execution role",
-  networkConfiguration: agentcore.BrowserNetworkConfiguration.PUBLIC_NETWORK,
+  networkConfiguration: agentcore.BrowserNetworkConfiguration.usingPublicNetwork(),
   executionRole: executionRole,
 });
 ```
@@ -166,7 +166,7 @@ const recordingBucket = new s3.Bucket(this, "RecordingBucket", {
 const browser = new agentcore.BrowserCustom(this, "MyBrowser", {
   browserCustomName: "my_browser",
   description: "Browser with recording enabled",
-  networkConfiguration: agentcore.BrowserNetworkConfiguration.PUBLIC_NETWORK,
+  networkConfiguration: agentcore.BrowserNetworkConfiguration.usingPublicNetwork(),
   recordingConfig: {
     enabled: true,
     s3Location: {
@@ -189,7 +189,7 @@ The Browser construct provides convenient methods for granting IAM permissions:
 const browser = new agentcore.BrowserCustom(this, "MyBrowser", {
   browserCustomName: "my_browser",
   description: "Browser for web automation",
-  networkConfiguration: agentcore.BrowserNetworkConfiguration.PUBLIC_NETWORK,
+  networkConfiguration: agentcore.BrowserNetworkConfiguration.usingPublicNetwork(),
 });
 
 // Create a role that needs access to the browser
@@ -217,18 +217,18 @@ For more information about code interpreter, please refer to the [official docum
 
 The Code Interpreter construct supports two network modes:
 
-1. **Public Network Mode** (`CodeInterpreterNetworkMode.PUBLIC`) - Default
+1. **Public Network Mode** (`CodeInterpreterNetworkMode.usingPublicNetwork()`) - Default
 
    - Allows internet access for package installation and external API calls
    - Suitable for development and testing environments
    - Enables downloading Python packages from PyPI
 
-2. **Sandbox Network Mode** (`CodeInterpreterNetworkMode.SANDBOX`)
+2. **Sandbox Network Mode** (`CodeInterpreterNetworkMode.usingSandboxNetwork()`)
    - Isolated network environment with no internet access
    - Suitable for production environments with strict security requirements
    - Only allows access to pre-installed packages and local resources
 
-3. **VPC (Virtual Private Cloud)** (`CodeInterpreterNetworkMode.fromVpcConfig()`)
+3. **VPC (Virtual Private Cloud)** (`CodeInterpreterNetworkMode.usingVpc()`)
    - Select whether to run the browser in a virtual private cloud (VPC).
    - By configuring VPC connectivity, you enable secure access to private resources such as databases, internal APIs, and services within your VPC.
 
@@ -260,7 +260,7 @@ const codeInterpreter = new agentcore.CodeInterpreterCustom(this, "MyCodeInterpr
 const codeInterpreter = new agentcore.CodeInterpreterCustom(this, "MyCodeInterpreter", {
   codeInterpreterCustomName: "my_sandbox_interpreter",
   description: "Code interpreter with isolated network access",
-  networkConfiguration: agentcore.BrowserNetworkConfiguration.fromVpcConfig(this, {
+  networkConfiguration: agentcore.BrowserNetworkConfiguration.usingVpc(this, {
     vpc: new ec2.Vpc(this, 'VPC', { restrictDefaultSecurityGroup: false }),
   }),
 });
@@ -273,7 +273,7 @@ const codeInterpreter = new agentcore.CodeInterpreterCustom(this, "MyCodeInterpr
 const codeInterpreter = new agentcore.CodeInterpreterCustom(this, "MyCodeInterpreter", {
   codeInterpreterCustomName: "my_sandbox_interpreter",
   description: "Code interpreter with isolated network access",
-  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.SANDBOX_NETWORK,
+  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.usingSandboxNetwork(),
 });
 ```
 
@@ -289,7 +289,7 @@ const executionRole = new iam.Role(this, "CodeInterpreterExecutionRole", {
 const codeInterpreter = new agentcore.CodeInterpreterCustom(this, "MyCodeInterpreter", {
   codeInterpreterCustomName: "my_code_interpreter",
   description: "Code interpreter with custom execution role",
-  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
+  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.usingPublicNetwork(),
   executionRole: executionRole,
 });
 ```
@@ -303,7 +303,7 @@ The Code Interpreter construct provides convenient methods for granting IAM perm
 const codeInterpreter = new agentcore.CodeInterpreterCustom(this, "MyCodeInterpreter", {
   codeInterpreterCustomName: "my_code_interpreter",
   description: "Code interpreter for Python execution",
-  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
+  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.usingPublicNetwork(),
 });
 
 // Create a role that needs access to the code interpreter
@@ -328,7 +328,7 @@ codeInterpreter.grant(userRole, "bedrock-agentcore:GetCodeInterpreterSession");
 const codeInterpreter = new agentcore.CodeInterpreterCustom(this, "MyCodeInterpreter", {
   codeInterpreterCustomName: "my_sandbox_interpreter",
   description: "Code interpreter with isolated network access",
-  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.PUBLIC_NETWORK,
+  networkConfiguration: agentcore.CodeInterpreterNetworkConfiguration.usingPublicNetwork(),
   tags: {
     Environment: "Production",
     Team: "AI/ML",
