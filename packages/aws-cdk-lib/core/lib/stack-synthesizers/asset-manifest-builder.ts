@@ -63,7 +63,7 @@ export class AssetManifestBuilder {
     options?: AddDockerImageAssetOptions,
   ) {
     validateDockerImageAssetSource(asset);
-    
+
     // Use per-asset tag if specified, otherwise use prefix + hash
     const imageTag = asset.imageTag ?? `${asset.imageTagPrefix ?? target.dockerTagPrefix ?? ''}${asset.sourceHash}`;
 
