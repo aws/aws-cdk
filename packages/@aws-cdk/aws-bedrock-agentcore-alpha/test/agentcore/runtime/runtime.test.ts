@@ -813,8 +813,7 @@ describe('Runtime with OAuth authorizer tests', () => {
       authorizerConfiguration: RuntimeAuthorizerConfiguration.usingOAuth(
         'custom',
         'https://oauth.example.com/.well-known/openid-configuration',
-        'oauth-client-123',
-        ['read', 'write'],
+        ['oauth-client-123'],
       ),
     });
 
@@ -1047,7 +1046,7 @@ describe('Runtime authentication configuration error cases', () => {
       RuntimeAuthorizerConfiguration.usingOAuth(
         'custom',
         'https://oauth.example.com/invalid', // Doesn't end with /.well-known/openid-configuration
-        'oauth-client-123',
+        ['oauth-client-123'],
       );
     }).toThrow('OAuth discovery URL must end with /.well-known/openid-configuration');
   });

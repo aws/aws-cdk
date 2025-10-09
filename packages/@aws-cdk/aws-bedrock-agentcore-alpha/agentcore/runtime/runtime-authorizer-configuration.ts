@@ -57,36 +57,36 @@ export abstract class RuntimeAuthorizerConfiguration {
    * @param userPoolId The Cognito User Pool ID (e.g., 'us-west-2_ABC123')
    * @param clientId The Cognito App Client ID
    * @param region Optional AWS region where the User Pool is located (defaults to stack region)
+   * @param allowedAudience Optional array of allowed audiences
    * @returns RuntimeAuthorizerConfiguration for Cognito authentication
    */
   public static usingCognito(
     userPoolId: string,
     clientId: string,
     region?: string,
+    allowedAudience?: string[],
   ): RuntimeAuthorizerConfiguration {
-    return new CognitoAuthorizerConfiguration(userPoolId, clientId, region);
+    return new CognitoAuthorizerConfiguration(userPoolId, clientId, region, allowedAudience);
   }
 
   /**
    * Use OAuth 2.0 authentication.
    * Supports various OAuth providers.
    *
-   * @param provider OAuth provider name (e.g., 'google', 'github', 'custom')
    * @param discoveryUrl The OIDC discovery URL (must end with /.well-known/openid-configuration)
    * @param clientId OAuth client ID
-   * @param scopes Optional array of OAuth scopes
+   * @param allowedAudience Optional array of allowed audiences
    * @returns RuntimeAuthorizerConfiguration for OAuth authentication
    */
   public static usingOAuth(
-    provider: string,
     discoveryUrl: string,
     clientId: string,
-    scopes?: string[],
+    allowedAudience?: string[],
   ): RuntimeAuthorizerConfiguration {
     if (!discoveryUrl.endsWith('/.well-known/openid-configuration')) {
       throw new ValidationError('OAuth discovery URL must end with /.well-known/openid-configuration');
     }
-    return new OAuthAuthorizerConfiguration(provider, discoveryUrl, clientId, scopes);
+    return new OAuthAuthorizerConfiguration(discoveryUrl, clientId, allowedAudience);
   }
 
   /**
@@ -137,6 +137,7 @@ class CognitoAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
     private readonly userPoolId: string,
     private readonly clientId: string,
     private readonly region?: string,
+    private readonly allowedAudience?: string[],
   ) {
     super();
   }
@@ -152,7 +153,7 @@ class CognitoAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
       customJwtAuthorizer: {
         discoveryUrl: discoveryUrl,
         allowedClients: [this.clientId],
-        allowedAudience: undefined,
+        allowedAudience: this.allowedAudience,
       },
     };
   }
@@ -163,10 +164,9 @@ class CognitoAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
  */
 class OAuthAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
   constructor(
-    _provider: string,
     private readonly discoveryUrl: string,
     private readonly clientId: string,
-    _scopes?: string[],
+    private readonly allowedAudience?: string[],
   ) {
     super();
   }
@@ -177,9 +177,7 @@ class OAuthAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
       customJwtAuthorizer: {
         discoveryUrl: this.discoveryUrl,
         allowedClients: [this.clientId],
-        allowedAudience: undefined,
-        // Note: scopes are not directly supported in CloudFormation,
-        // they would be validated by the OAuth provider
+        allowedAudience: this.allowedAudience,
       },
     };
   }
