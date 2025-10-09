@@ -52,7 +52,7 @@ describe('Kinesis data streams', () => {
         new Stream(stack, 'MyStream', {
           shardLevelMetrics: [ShardLevelMetrics.ALL, ShardLevelMetrics.INCOMING_BYTES],
         });
-      }).toThrow('shardLevelMetrics cannot include `ShardLevelMetrics.ALL` and other metrics at the same time.');
+      }).toThrow('`shardLevelMetrics` cannot include `ShardLevelMetrics.ALL` together with individual metrics, use either `ShardLevelMetrics.ALL` alone or specify individual metrics.');
     });
 
     test('throw error for configuring duplicate metrics', () => {
