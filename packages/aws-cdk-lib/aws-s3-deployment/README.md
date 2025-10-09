@@ -533,10 +533,6 @@ new cdk.CfnOutput(this, 'ObjectKey', {
 });
 ```
 
- Cross-region deployment
-
-By default, the S3 deployment uses the same region as your CDK stack. To deploy objects to a bucket in a different region, specify the `destinationBucketRegion` property:
-
 ## Cross-region deployment
 
 To deploy objects to a bucket located in a region different from the stack region, specify the `destinationBucketRegion` property:
