@@ -382,4 +382,10 @@ export interface AgentRuntimeAttributes {
    * @default - No description
    */
   readonly description?: string;
+
+  /**
+   * The security groups for this runtime, if in a VPC.
+   * @default - By default, the runtime is not in a VPC.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 }

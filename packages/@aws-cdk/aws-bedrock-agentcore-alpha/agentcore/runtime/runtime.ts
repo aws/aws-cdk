@@ -1,6 +1,7 @@
 
 import { Duration, Stack, Annotations, Token, Arn, ArnFormat, Lazy } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -152,6 +153,16 @@ export class Runtime extends RuntimeBase {
       public readonly createdAt = undefined;
       public readonly lastUpdatedAt = undefined;
       public readonly grantPrincipal = attrs.role;
+
+      constructor(s: Construct, i: string) {
+        super(s, i);
+        // Add connections support for imported runtimes
+        if (attrs.securityGroups) {
+          this._connections = new ec2.Connections({
+            securityGroups: attrs.securityGroups,
+          });
+        }
+      }
     }
 
     return new ImportedBedrockAgentRuntime(scope, id);
@@ -249,17 +260,11 @@ export class Runtime extends RuntimeBase {
     this.agentRuntimeArtifact = props.agentRuntimeArtifact;
     // Set up network configuration with VPC support
     this.networkConfiguration = props.networkConfiguration ?? RuntimeNetworkConfiguration.usingPublicNetwork();
-    // For VPC configuration, pass this as the scope
-    if (props.networkConfiguration && this.networkConfiguration.networkMode === 'VPC' && !this.networkConfiguration.scope) {
-      this.networkConfiguration = RuntimeNetworkConfiguration.usingVpc(this, {
-        vpc: (props.networkConfiguration as any).vpc,
-        vpcSubnets: (props.networkConfiguration as any).vpcSubnets,
-        securityGroups: (props.networkConfiguration as any).securityGroups,
-        allowAllOutbound: (props.networkConfiguration as any).allowAllOutbound,
-      });
+    // Set connections - create a shared connections object
+    if (this.networkConfiguration.connections) {
+      // Use the network configuration's connections as the shared object
+      this._connections = this.networkConfiguration.connections;
     }
-    // Set connections from network configuration
-    this._connections = this.networkConfiguration.connections;
     this.protocolConfiguration = props.protocolConfiguration ?? ProtocolType.HTTP;
     this.authorizerConfiguration = props.authorizerConfiguration;
 
@@ -270,7 +275,7 @@ export class Runtime extends RuntimeBase {
         produce: () => this.renderAgentRuntimeArtifact(),
       }),
       networkConfiguration: Lazy.any({
-        produce: () => this.networkConfiguration._render(),
+        produce: () => this.networkConfiguration._render(this._connections),
       }),
       protocolConfiguration: Lazy.string({
         produce: () => this.protocolConfiguration,

@@ -371,9 +371,3 @@ runtime.connections.allowTo(databaseSecurityGroup, ec2.Port.tcp(5432), 'Allow Po
 // Allow outbound HTTPS to anywhere (for external API calls)
 runtime.connections.allowToAnyIpv4(ec2.Port.tcp(443), 'Allow HTTPS outbound');
 ```
-
-**Important Notes:**
-- The `connections` property is only available when the runtime is configured with VPC mode
-- Attempting to access `connections` on a runtime with PUBLIC network mode will throw an error
-- By default, a security group is created automatically if none are specified
-- The `allowAllOutbound` parameter controls whether the security group allows all outbound traffic (default: true)

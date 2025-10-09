@@ -25,7 +25,7 @@ const runtime = new agentcore.Runtime(stack, 'TestRuntime', {
   description: 'Integration test runtime for BedrockAgentCore',
   agentRuntimeArtifact: runtimeArtifact,
   protocolConfiguration: agentcore.ProtocolType.HTTP,
-  networkConfiguration: agentcore.RuntimeNetworkConfiguration.publicNetwork(),
+  networkConfiguration: agentcore.RuntimeNetworkConfiguration.usingPublicNetwork(),
   environmentVariables: {
     TEST_ENV: 'integration',
     LOG_LEVEL: 'INFO',

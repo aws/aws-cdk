@@ -161,11 +161,13 @@ export class RuntimeNetworkConfiguration extends NetworkConfiguration {
 
   /**
    * Renders the network configuration as a CloudFormation property.
+   * @param runtimeConnections - The connections object to the runtime.
    * @internal This is an internal core function and should not be called directly.
+   *
+   * Note: The current CloudFormation spec for Runtime only supports networkMode.
    */
-  public _render(): CfnRuntime.NetworkConfigurationProperty {
-    // Note: The current CloudFormation spec for Runtime only supports networkMode
-    // VPC configuration details (subnets, security groups) are not yet supported in the CF spec
+  public _render(_runtimeConnections?: ec2.Connections): CfnRuntime.NetworkConfigurationProperty {
+    // Note: Currently only networkMode is supported in CloudFormation
     return {
       networkMode: this.networkMode,
     };

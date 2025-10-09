@@ -24,7 +24,7 @@ const runtime = new agentcore.Runtime(stack, 'ExistingRuntime', {
   description: 'Runtime for endpoint integration test',
   agentRuntimeArtifact: runtimeArtifact,
   protocolConfiguration: agentcore.ProtocolType.HTTP,
-  networkConfiguration: agentcore.RuntimeNetworkConfiguration.publicNetwork(),
+  networkConfiguration: agentcore.RuntimeNetworkConfiguration.usingPublicNetwork(),
 });
 
 // Create a simple endpoint pointing to the existing runtime
