@@ -15,7 +15,7 @@ import { IRole } from '../../../aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
 import { CfnOutput, Duration, FeatureFlags, Stack, Token, ValidationError } from '../../../core';
-import { ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER } from '../../../cx-api';
+import { ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER, ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID } from '../../../cx-api';
 
 /**
  * Describes the type of DNS record the service should create
@@ -519,7 +519,18 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       open: props.openListener ?? defaultOpenListener,
       sslPolicy: props.sslPolicy,
     });
-    this.targetGroup = this.listener.addTargets('ECS', targetProps);
+
+    // Generate unique target group ID to prevent conflicts during load balancer replacement
+    let targetGroupId: string;
+    if (FeatureFlags.of(this).isEnabled(ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID)) {
+      // Include both internetFacing and loadBalancerName in target group ID
+      targetGroupId = `ECS${props.loadBalancerName ?? ''}${internetFacing ? '' : 'Private'}`;
+    } else {
+      // Legacy behavior: only include internetFacing
+      targetGroupId = internetFacing ? 'ECS' : 'ECSPrivate';
+    }
+
+    this.targetGroup = this.listener.addTargets(targetGroupId, targetProps);
 
     if (protocol === ApplicationProtocol.HTTPS) {
       if (props.certificate !== undefined) {
