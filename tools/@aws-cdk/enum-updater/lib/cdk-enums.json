@@ -546,6 +546,7 @@
         "COHERE_EMBED_MULTILINGUAL_V3",
         "COHERE_EMBED_MULTILINGUAL_V3_0_512",
         "DEEP_SEEK_R1_V1_0",
+        "DEEP_SEEK_V3_V1_0",
         "OPENAI_GPT_OSS_120B_1",
         "OPENAI_GPT_OSS_20B_1",
         "LUMA_RAY_V2_0",
@@ -577,6 +578,10 @@
         "MISTRAL_SMALL_V0_1",
         "MISTRAL_LARGE_2_V0_1",
         "MISTRAL_PIXTRAL_LARGE_2502_V1_0",
+        "QWEN_QWEN3_32B_V1_0",
+        "QWEN_QWEN3_235B_A22B_2507_V1_0",
+        "QWEN_QWEN3_CODER_30B_A3B_V1_0",
+        "QWEN_QWEN3_CODER_480B_A35B_V1_0",
         "STABILITY_STABLE_DIFFUSION_XL",
         "STABILITY_STABLE_DIFFUSION_XL_V0",
         "STABILITY_STABLE_DIFFUSION_XL_V1",
@@ -805,6 +810,10 @@
         "r8g",
         "memory8-graviton4-nvme-drive",
         "r8gd",
+        "memory8-graviton4-high-network-bandwidth",
+        "r8gn",
+        "memory8-graviton4-ebs-optimized",
+        "r8gb",
         "compute3",
         "c3",
         "compute4",
@@ -2550,6 +2559,7 @@
         "AL2023_x86_64_STANDARD",
         "AL2023_x86_64_NEURON",
         "AL2023_x86_64_NVIDIA",
+        "AL2023_ARM_64_NVIDIA",
         "AL2023_ARM_64_STANDARD"
       ]
     },
@@ -2660,6 +2670,35 @@
         "V1_31",
         "V1_32",
         "V1_33"
+      ]
+    }
+  },
+  "elasticache": {
+    "UserEngine": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/common.ts",
+      "enumLike": false,
+      "values": [
+        "valkey",
+        "redis"
+      ]
+    },
+    "CacheEngine": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache-base.ts",
+      "enumLike": false,
+      "values": [
+        "valkey",
+        "valkey_7",
+        "valkey_8",
+        "redis",
+        "redis_7",
+        "memcached"
+      ]
+    },
+    "DataStorageUnit": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache.ts",
+      "enumLike": false,
+      "values": [
+        "GB"
       ]
     }
   },
@@ -3872,6 +3911,7 @@
         "python3.9",
         "python3.10",
         "python3.11",
+        "python3.13",
         "python3.13"
       ]
     },
@@ -5270,6 +5310,15 @@
       "values": [
         "default",
         "media-quality-based"
+      ]
+    },
+    "OriginIpAddressType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/origin.ts",
+      "enumLike": false,
+      "values": [
+        "ipv4",
+        "ipv6",
+        "dualstack"
       ]
     },
     "HeadersFrameOption": {
@@ -7093,7 +7142,9 @@
       "enumLike": false,
       "values": [
         "MUTABLE",
-        "IMMUTABLE"
+        "IMMUTABLE",
+        "IMMUTABLE_WITH_EXCLUSION",
+        "MUTABLE_WITH_EXCLUSION"
       ]
     },
     "RepositoryEncryption": {
@@ -7741,6 +7792,7 @@
         "AL2023_x86_64_STANDARD",
         "AL2023_x86_64_NEURON",
         "AL2023_x86_64_NVIDIA",
+        "AL2023_ARM_64_NVIDIA",
         "AL2023_ARM_64_STANDARD"
       ]
     },
@@ -8128,6 +8180,24 @@
         "API_KEY",
         "BASIC",
         "OAUTH_CLIENT_CREDENTIALS"
+      ]
+    },
+    "IncludeDetail": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-events/lib/event-bus.ts",
+      "enumLike": false,
+      "values": [
+        "FULL",
+        "NONE"
+      ]
+    },
+    "Level": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-events/lib/event-bus.ts",
+      "enumLike": false,
+      "values": [
+        "INFO",
+        "ERROR",
+        "TRACE",
+        "OFF"
       ]
     },
     "InputType": {
@@ -9728,6 +9798,7 @@
         "VER_5_7_44_RDS_20250103",
         "VER_5_7_44_RDS_20250213",
         "VER_5_7_44_RDS_20250508",
+        "VER_5_7_44_RDS_20250818",
         "VER_8_0",
         "VER_8_0_11",
         "VER_8_0_13",
@@ -10305,6 +10376,15 @@
         "issue",
         "issuewild",
         "iodef"
+      ]
+    },
+    "Alpn": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.ts",
+      "enumLike": true,
+      "values": [
+        "HTTP1_1",
+        "H2",
+        "H3"
       ]
     }
   },
