@@ -1,6 +1,7 @@
 import * as crypto from 'crypto';
 import { Construct } from 'constructs';
 import { Code } from './code';
+import { ICanary } from './interfaces';
 import { Runtime, RuntimeFamily } from './runtime';
 import { Schedule } from './schedule';
 import { CloudWatchSyntheticsMetrics } from './synthetics-canned-metrics.generated';
@@ -395,11 +396,43 @@ export enum ArtifactsEncryptionMode {
  * Define a new Canary
  */
 @propertyInjectable
-export class Canary extends cdk.Resource implements ec2.IConnectable {
+export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
   /**
    * Uniquely identifies this class.
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-synthetics.Canary';
+
+  /**
+   * Import an existing canary by ARN
+   */
+  public static fromCanaryArn(scope: Construct, id: string, canaryArn: string): ICanary {
+    const arnParts = cdk.Arn.split(canaryArn, cdk.ArnFormat.COLON_RESOURCE_NAME);
+    const canaryName = arnParts.resourceName;
+
+    if (!canaryName) {
+      throw new ValidationError('Canary ARN must contain a canary name', scope);
+    }
+
+    return Canary.fromCanaryName(scope, id, canaryName);
+  }
+
+  /**
+   * Import an existing canary by name
+   */
+  public static fromCanaryName(scope: Construct, id: string, canaryName: string): ICanary {
+    class Import extends cdk.Resource implements ICanary {
+      public readonly canaryId = canaryName;
+      public readonly canaryName = canaryName;
+      public readonly canaryArn = cdk.Stack.of(this).formatArn({
+        service: 'synthetics',
+        resource: 'canary',
+        resourceName: canaryName,
+        arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+      });
+    }
+
+    return new Import(scope, id);
+  }
 
   /**
    * Execution role associated with this Canary.
@@ -423,6 +456,12 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
    * @attribute
    */
   public readonly canaryName: string;
+
+  /**
+   * The canary ARN
+   * @attribute
+   */
+  public readonly canaryArn: string;
 
   /**
    * Bucket where data from each canary run is stored.
@@ -500,6 +539,12 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     this.canaryId = resource.attrId;
     this.canaryState = resource.attrState;
     this.canaryName = this.getResourceNameAttribute(resource.ref);
+    this.canaryArn = cdk.Stack.of(this).formatArn({
+      service: 'synthetics',
+      resource: 'canary',
+      resourceName: this.canaryName,
+      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+    });
 
     if (props.cleanup === Cleanup.LAMBDA) {
       this.cleanupUnderlyingResources();
@@ -758,7 +803,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     if (
       props.activeTracing &&
       (
-        // Only check runtime family is nodejs because versions prior to syn-nodejs-2.0 are deprecated and can no longer be configured.
+      // Only check runtime family is nodejs because versions prior to syn-nodejs-2.0 are deprecated and can no longer be configured.
         (!cdk.Token.isUnresolved(props.runtime.family) && props.runtime.family !== RuntimeFamily.NODEJS) ||
         (!cdk.Token.isUnresolved(props.runtime.name) && props.runtime.name.includes('playwright'))
       )
