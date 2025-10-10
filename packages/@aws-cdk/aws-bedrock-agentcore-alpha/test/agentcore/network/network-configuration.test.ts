@@ -271,10 +271,13 @@ describe('RuntimeNetworkConfiguration', () => {
       });
       const mockConnections = new ec2.Connections();
       const rendered = config._render(mockConnections);
-      // Currently only networkMode is rendered
-      expect(rendered).toEqual({
-        networkMode: 'VPC',
-      });
+      // When connections are passed, networkModeConfig is included
+      expect(rendered.networkMode).toBe('VPC');
+      expect(rendered.networkModeConfig).toBeDefined();
+      // Type assertion to handle the union type
+      const networkConfig = rendered.networkModeConfig as any;
+      expect(networkConfig.subnets).toHaveLength(2);
+      expect(networkConfig.securityGroups).toEqual([]);
     });
 
     test('Should render without connections parameter', () => {

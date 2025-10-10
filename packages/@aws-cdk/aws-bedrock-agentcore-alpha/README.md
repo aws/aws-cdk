@@ -267,10 +267,8 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
   agentRuntimeArtifact: agentRuntimeArtifact,
   authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingOAuth(
-    "github",  // Provider name (e.g., 'google', 'github', 'custom')
-    "https://github.com/.well-known/openid-configuration",  // Discovery URL
-    "oauth_client_123",  // Client ID
-    ["read:user", "repo"]  // Scopes (optional)
+    "https://github.com/.well-known/openid-configuration",  
+    "oauth_client_123",  
   ),
 });
 ```
@@ -307,8 +305,6 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
 For enhanced security and network isolation, you can deploy your runtime within a VPC:
 
 ```typescript
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-
 const repository = new ecr.Repository(this, "TestRepository", {
   repositoryName: "test-agent-runtime",
 });
@@ -328,7 +324,6 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
     vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     // Optionally specify security groups, or one will be created automatically
     // securityGroups: [mySecurityGroup],
-    allowAllOutbound: true,  // Default is true
   }),
 });
 ```
@@ -338,7 +333,6 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
 When using VPC mode, the Runtime implements `ec2.IConnectable`, allowing you to manage network access using the `connections` property:
 
 ```typescript
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 const vpc = new ec2.Vpc(this, 'MyVpc', {
   maxAzs: 2,
