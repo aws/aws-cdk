@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnVolume, IInstanceRef, IVolumeRef, VolumeReference } from './ec2.generated';
-import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
+import { AccountRootPrincipal, Grant, IGrantable, IResourceWithKey } from '../../aws-iam';
 import { IKey, ViaServicePrincipal } from '../../aws-kms';
 import {
   FeatureFlags,
@@ -518,18 +518,95 @@ export interface VolumeAttributes {
   readonly encryptionKey?: IKey;
 }
 
+export class VolumeGrants {
+  public static fromVolume(volume: IVolumeRef) {
+    return new VolumeGrants(volume);
+  }
+
+  public static fromVolumeWithKey(volume: IVolumeRef & IResourceWithKey) {
+    return new VolumeGrants(volume, volume);
+  }
+
+  private constructor(private readonly volume: IVolumeRef,
+    private readonly resourceWithKey?: IResourceWithKey) {
+  }
+
+  public grantAttachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
+    const tagValue = this.calculateResourceTagValue([this.volume, ...constructs]);
+    const tagKey = `VolumeGrantAttach-${tagKeySuffix ?? tagValue.slice(0, 10).toUpperCase()}`;
+    const grantCondition: { [key: string]: string } = {};
+    grantCondition[`ec2:ResourceTag/${tagKey}`] = tagValue;
+
+    const result = this.grantAttachVolume(grantee);
+    result.principalStatement!.addCondition(
+      'ForAnyValue:StringEquals', grantCondition,
+    );
+
+    // The ResourceTag condition requires that all resources involved in the operation have
+    // the given tag, so we tag this and all constructs given.
+    Tags.of(this.volume).add(tagKey, tagValue);
+    constructs.forEach(construct => Tags.of(construct).add(tagKey, tagValue));
+
+    return result;
+  }
+
+  public grantAttachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant {
+    const result = Grant.addToPrincipal({
+      grantee,
+      actions: ['ec2:AttachVolume'],
+      resourceArns: this.collectGrantResourceArns(instances),
+    });
+
+    this.resourceWithKey?.grantKey(grantee, ['kms:CreateGrant'], {
+      Bool: { 'kms:GrantIsForAWSResource': true },
+      StringEquals: {
+        'kms:ViaService': `ec2.${Stack.of(this.volume).region}.amazonaws.com`,
+        'kms:GrantConstraintType': 'EncryptionContextSubset',
+      },
+    });
+
+    return result;
+  }
+
+  private calculateResourceTagValue(constructs: Construct[]): string {
+    return md5hash(constructs.map(c => Names.uniqueId(c)).join(''));
+  }
+
+  private collectGrantResourceArns(instances?: IInstanceRef[]): string[] {
+    const stack = Stack.of(this.volume);
+    const resourceArns: string[] = [
+      `arn:${stack.partition}:ec2:${stack.region}:${stack.account}:volume/${this.volume.volumeRef.volumeId}`,
+    ];
+    const instanceArnPrefix = `arn:${stack.partition}:ec2:${stack.region}:${stack.account}:instance`;
+    if (instances) {
+      instances.forEach(instance => resourceArns.push(`${instanceArnPrefix}/${instance?.instanceRef.instanceId}`));
+    } else {
+      resourceArns.push(`${instanceArnPrefix}/*`);
+    }
+    return resourceArns;
+  }
+}
+
 /**
  * Common behavior of Volumes. Users should not use this class directly, and instead use ``Volume``.
  */
-abstract class VolumeBase extends Resource implements IVolume {
+abstract class VolumeBase extends Resource implements IVolume, IResourceWithKey {
   public abstract readonly volumeId: string;
   public abstract readonly availabilityZone: string;
   public abstract readonly encryptionKey?: IKey;
-
   public get volumeRef(): VolumeReference {
     return {
       volumeId: this.volumeId,
     };
+  }
+
+  public grantKey(grantee: IGrantable, actions: string[], conditions?: Record<string, unknown>) {
+    if (this.encryptionKey) {
+      const kmsGrant: Grant = this.encryptionKey.grant(grantee, ...actions);
+      if (conditions) {
+        kmsGrant.principalStatement!.addConditions(conditions);
+      }
+    }
   }
 
   public grantAttachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant {
@@ -560,22 +637,7 @@ abstract class VolumeBase extends Resource implements IVolume {
   }
 
   public grantAttachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
-    const tagValue = this.calculateResourceTagValue([this, ...constructs]);
-    const tagKey = `VolumeGrantAttach-${tagKeySuffix ?? tagValue.slice(0, 10).toUpperCase()}`;
-    const grantCondition: { [key: string]: string } = {};
-    grantCondition[`ec2:ResourceTag/${tagKey}`] = tagValue;
-
-    const result = this.grantAttachVolume(grantee);
-    result.principalStatement!.addCondition(
-      'ForAnyValue:StringEquals', grantCondition,
-    );
-
-    // The ResourceTag condition requires that all resources involved in the operation have
-    // the given tag, so we tag this and all constructs given.
-    Tags.of(this).add(tagKey, tagValue);
-    constructs.forEach(construct => Tags.of(construct).add(tagKey, tagValue));
-
-    return result;
+    return VolumeGrants.fromVolumeWithKey(this).grantAttachVolumeByResourceTag(grantee, constructs, tagKeySuffix);
   }
 
   public grantDetachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant {
