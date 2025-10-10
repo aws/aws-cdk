@@ -362,7 +362,7 @@ new s3deploy.BucketDeployment(this, 'DeployWithSignedPayloads', {
 
 ## Size Limits
 
-The default memory limit for the deployment resource is 128MiB. If you need to
+The default memory limit for the deployment resource is 512MiB when the feature flag `@aws-cdk/aws-s3-deployment:defaultMemoryLimit` is enabled, otherwise 128MiB. If you need to
 copy larger files, you can use the `memoryLimit` configuration to increase the
 size of the AWS Lambda resource handler.
 
