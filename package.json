@@ -12,7 +12,8 @@
     "pack": "./pack.sh",
     "compat": "./scripts/check-api-compatibility.sh",
     "bump": "./bump.sh",
-    "build-all": "tsc -b"
+    "build-all": "tsc -b",
+    "deploy-changed-snapshots": "lerna run build --scope @aws-cdk/integration-test-deployment && lerna run integration-test-deployment"
   },
   "devDependencies": {
     "@nx/workspace": "^20",
