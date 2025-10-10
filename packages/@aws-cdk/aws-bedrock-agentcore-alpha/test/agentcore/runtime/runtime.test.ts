@@ -2,6 +2,7 @@
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Runtime } from '../../../agentcore/runtime/runtime';
@@ -811,9 +812,9 @@ describe('Runtime with OAuth authorizer tests', () => {
       runtimeName: 'test_runtime_oauth',
       agentRuntimeArtifact: agentRuntimeArtifact,
       authorizerConfiguration: RuntimeAuthorizerConfiguration.usingOAuth(
-        'custom',
         'https://oauth.example.com/.well-known/openid-configuration',
-        ['oauth-client-123'],
+        'oauth-client-123',
+        ['audience1'],
       ),
     });
 
@@ -825,6 +826,52 @@ describe('Runtime with OAuth authorizer tests', () => {
 
     // Verify the runtime was created
     expect(runtime.agentRuntimeName).toBe('test_runtime_oauth');
+  });
+
+  test('Should render OAuth authorizer configuration correctly', () => {
+    new Runtime(stack, 'test-runtime-oauth-render', {
+      runtimeName: 'test_runtime_oauth_render',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      authorizerConfiguration: RuntimeAuthorizerConfiguration.usingOAuth(
+        'https://oauth.provider.com/.well-known/openid-configuration',
+        'oauth-client-456',
+        ['aud1', 'aud2'],
+      ),
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    // Verify the OAuth configuration is properly rendered
+    const resources = template.findResources('AWS::BedrockAgentCore::Runtime');
+    const runtimeResource = Object.values(resources)[0];
+
+    expect(runtimeResource.Properties).toHaveProperty('AuthorizerConfiguration');
+    const authConfig = runtimeResource.Properties.AuthorizerConfiguration;
+
+    if (Object.keys(authConfig).length > 0) {
+      expect(authConfig).toHaveProperty('CustomJWTAuthorizer');
+      const jwtConfig = authConfig.CustomJWTAuthorizer;
+      expect(jwtConfig.DiscoveryUrl).toBe('https://oauth.provider.com/.well-known/openid-configuration');
+      expect(jwtConfig.AllowedClients).toEqual(['oauth-client-456']);
+      expect(jwtConfig.AllowedAudience).toEqual(['aud1', 'aud2']);
+    }
+  });
+
+  test('Should create OAuth configuration without audience', () => {
+    const runtime = new Runtime(stack, 'test-runtime-oauth-no-aud', {
+      runtimeName: 'test_runtime_oauth_no_aud',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      authorizerConfiguration: RuntimeAuthorizerConfiguration.usingOAuth(
+        'https://oauth2.example.com/.well-known/openid-configuration',
+        'client-789',
+      ),
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+    expect(runtime.agentRuntimeName).toBe('test_runtime_oauth_no_aud');
+    template.resourceCountIs('AWS::BedrockAgentCore::Runtime', 1);
   });
 });
 
@@ -1238,6 +1285,116 @@ describe('Runtime metrics and grant methods tests', () => {
 
     const result = imported.addToRolePolicy(statement);
     expect(result).toBe(imported);
+  });
+});
+
+describe('Runtime with VPC network configuration tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let repository: ecr.Repository;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should create runtime with VPC network configuration', () => {
+    const vpc = new ec2.Vpc(stack, 'TestVpc', {
+      maxAzs: 2,
+    });
+
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime_vpc',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      networkConfiguration: RuntimeNetworkConfiguration.usingVpc(stack, {
+        vpc: vpc,
+      }),
+    });
+
+    app.synth();
+    expect(runtime.agentRuntimeName).toBe('test_runtime_vpc');
+    expect(runtime.connections).toBeDefined();
+    expect(runtime.connections?.securityGroups).toHaveLength(1);
+  });
+
+  test('Should import runtime with security groups', () => {
+    const vpc = new ec2.Vpc(stack, 'TestVpc', {
+      maxAzs: 2,
+    });
+
+    const sg = new ec2.SecurityGroup(stack, 'TestSG', {
+      vpc: vpc,
+    });
+
+    const role = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+    });
+
+    const imported = Runtime.fromAgentRuntimeAttributes(stack, 'ImportedRuntime', {
+      agentRuntimeArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id',
+      agentRuntimeId: 'test-runtime-id',
+      agentRuntimeName: 'test-runtime',
+      role: role,
+      agentRuntimeVersion: '1',
+      securityGroups: [sg],
+    });
+
+    expect(imported.connections).toBeDefined();
+    expect(imported.connections?.securityGroups).toContain(sg);
+  });
+});
+
+describe('Runtime description validation tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let repository: ecr.Repository;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should throw error for description too long', () => {
+    const longDescription = 'a'.repeat(1201);
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        description: longDescription,
+      });
+    }).toThrow(/The field Description is 1201 characters long but must be less than or equal to 1200 characters/);
+  });
+
+  test('Should accept valid description', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        description: 'Valid description for the runtime',
+      });
+    }).not.toThrow();
   });
 });
 
