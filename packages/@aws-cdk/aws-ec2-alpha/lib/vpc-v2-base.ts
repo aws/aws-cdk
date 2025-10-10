@@ -18,6 +18,7 @@ import {
   SubnetFilter,
   SubnetSelection,
   SubnetType,
+  VPCReference,
   VpnConnection,
   VpnConnectionOptions,
   VpnConnectionType,
@@ -39,7 +40,6 @@ import {
 import { ISubnetV2 } from './subnet-v2';
 import { AccountPrincipal, Effect, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 import { IVPCCidrBlock } from './vpc-v2';
-import { VPCReference } from 'aws-cdk-lib/aws-ec2/lib/ec2.generated';
 
 /**
  * Options to define EgressOnlyInternetGateway for VPC
