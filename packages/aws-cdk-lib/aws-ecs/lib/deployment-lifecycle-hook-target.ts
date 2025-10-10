@@ -1,17 +1,7 @@
 import { IConstruct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
-import { Fn } from '../../core';
-
-/**
- * Error thrown when hook details validation fails
- */
-class HookDetailsValidationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'HookDetailsValidationError';
-  }
-}
+import { Fn, ValidationError } from '../../core';
 
 /**
  * Validates that input is a valid JSON object and returns it as a stringified JSON using Fn::ToJsonString
@@ -19,10 +9,10 @@ class HookDetailsValidationError extends Error {
  * @returns The stringified JSON using CloudFormation's Fn::ToJsonString intrinsic function
  * @throws HookDetailsValidationError if the input is not a valid JSON object
  */
-export function stringifyHookDetails(hookDetails: any): string {
+export function stringifyHookDetails(scope: IConstruct, hookDetails: any): string {
   // Reject arrays
   if (Array.isArray(hookDetails)) {
-    throw new HookDetailsValidationError('hookDetails must be a JSON object, got: array');
+    throw new ValidationError('hookDetails must be a JSON object, got: array', scope);
   }
 
   // Check if it's a plain object
@@ -31,7 +21,7 @@ export function stringifyHookDetails(hookDetails: any): string {
   }
 
   // Everything else is invalid (primitives, functions, dates, etc.)
-  throw new HookDetailsValidationError(`hookDetails must be a JSON object, got: ${typeof hookDetails}`);
+  throw new ValidationError(`hookDetails must be a JSON object, got: ${typeof hookDetails}`, scope);
 }
 
 /**
@@ -173,7 +163,7 @@ export class DeploymentLifecycleLambdaTarget implements IDeploymentLifecycleHook
       role: this._role,
       lifecycleStages: this.props.lifecycleStages,
       hookDetails: (this.props.hookDetails === undefined || this.props.hookDetails === null)?
-        this.props.hookDetails : stringifyHookDetails(this.props.hookDetails),
+        this.props.hookDetails : stringifyHookDetails(scope, this.props.hookDetails),
     };
   }
 }

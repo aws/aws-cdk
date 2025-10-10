@@ -441,20 +441,20 @@ describe('DeploymentLifecycleHookTarget', () => {
   describe('stringifyHookDetails function', () => {
     test('validates and stringifies object directly', () => {
       const objectInput = { environment: 'production', timeout: 300 };
-      expect(() => stringifyHookDetails(objectInput)).not.toThrow();
-      expect(stringifyHookDetails(objectInput)).toBe('{"environment":"production","timeout":300}');
+      expect(() => stringifyHookDetails(stack, objectInput)).not.toThrow();
+      expect(stringifyHookDetails(stack, objectInput)).toBe('{"environment":"production","timeout":300}');
     });
 
     test('rejects primitive string value', () => {
-      expect(() => stringifyHookDetails('just a string')).toThrow(/hookDetails must be a JSON object, got: string/);
+      expect(() => stringifyHookDetails(stack, 'just a string')).toThrow(/hookDetails must be a JSON object, got: string/);
     });
 
     test('rejects primitive number value', () => {
-      expect(() => stringifyHookDetails(42)).toThrow(/hookDetails must be a JSON object, got: number/);
+      expect(() => stringifyHookDetails(stack, 42)).toThrow(/hookDetails must be a JSON object, got: number/);
     });
 
     test('rejects primitive boolean value', () => {
-      expect(() => stringifyHookDetails(true)).toThrow(/hookDetails must be a JSON object, got: boolean/);
+      expect(() => stringifyHookDetails(stack, true)).toThrow(/hookDetails must be a JSON object, got: boolean/);
     });
   });
 });
