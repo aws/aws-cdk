@@ -520,7 +520,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       sslPolicy: props.sslPolicy,
     });
     // Include publicLoadBalancer in target group ID to force replacement when switching between public/private
-    const targetGroupId = internetFacing ? 'ECS' : 'ECSPrivate';
+    const targetGroupId = `ECS{props.loadBalancerName ?? ''}{internetFacing? '' : 'Private'}`;
     this.targetGroup = this.listener.addTargets(targetGroupId, targetProps);
 
     if (protocol === ApplicationProtocol.HTTPS) {
