@@ -70,7 +70,7 @@ export abstract class TableEncryptionV2 {
 
         if (replicaRegion === stackRegion) {
           return {
-            kmsMasterKeyId: tableKey.keyId,
+            kmsMasterKeyId: tableKey.keyArn,
           } satisfies CfnGlobalTable.ReplicaSSESpecificationProperty;
         }
 

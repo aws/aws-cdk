@@ -69,7 +69,13 @@ abstract class AliasBase extends Resource implements IAlias {
   }
 
   public get keyRef(): KeyReference {
-    return this.aliasTargetKey.keyRef;
+    // Not actually referering to the key: `IKeyRef` here is being used as a
+    // hypothetical `IKeyLikeRef`, and we need to return the Alias values using
+    // the Key interface.
+    return {
+      keyArn: this.aliasArn,
+      keyId: this.keyId,
+    };
   }
 
   /**
@@ -220,7 +226,10 @@ export class Alias extends AliasBase {
       }
 
       public get keyRef(): KeyReference {
-        return this.aliasTargetKey.keyRef;
+        return {
+          keyArn: this.keyArn,
+          keyId: this.keyId,
+        };
       }
 
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {

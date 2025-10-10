@@ -134,6 +134,30 @@ new route53.AaaaRecord(this, 'Alias', {
 });
 ```
 
+To add an HTTPS record:
+
+``` ts
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+
+declare const myZone: route53.HostedZone;
+declare const distribution: cloudfront.CloudFrontWebDistribution;
+// Alias to CloudFront target
+new route53.HttpsRecord(this, 'HttpsRecord-CloudFrontAlias', {
+  zone: myZone,
+  target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+});
+// ServiceMode (priority >= 1)
+new route53.HttpsRecord(this, 'HttpsRecord-ServiceMode', {
+  zone: myZone,
+  values: [route53.HttpsRecordValue.service({ alpn: [route53.Alpn.H3, route53.Alpn.H2] })],
+});
+// AliasMode (priority = 0)
+new route53.HttpsRecord(this, 'HttpsRecord-AliasMode', {
+  zone: myZone,
+  values: [route53.HttpsRecordValue.alias('service.example.com')],
+});
+```
+
 [Geolocation routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geo.html) can be enabled for continent, country or subdivision:
 
 ```ts
@@ -532,6 +556,18 @@ const zoneFromAttributes = route53.PublicHostedZone.fromPublicHostedZoneAttribut
 
 // Does not know zoneName
 const zoneFromId = route53.PublicHostedZone.fromPublicHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');
+```
+
+You can import a Private Hosted Zone with `PrivateHostedZone.fromPrivateHostedZoneId` and `PrivateHostedZone.fromPrivateHostedZoneAttributes` methods:
+
+```ts
+const privateZoneFromAttributes = route53.PrivateHostedZone.fromPrivateHostedZoneAttributes(this, 'MyPrivateZone', {
+  zoneName: 'example.local',
+  hostedZoneId: 'ZOJJZC49E0EPZ',
+});
+
+// Does not know zoneName  
+const privateZoneFromId = route53.PrivateHostedZone.fromPrivateHostedZoneId(this, 'MyPrivateZone', 'ZOJJZC49E0EPZ');
 ```
 
 You can use `CrossAccountZoneDelegationRecord` on imported Hosted Zones with the `grantDelegation` method:

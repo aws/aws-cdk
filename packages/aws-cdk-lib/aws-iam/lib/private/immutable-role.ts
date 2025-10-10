@@ -27,19 +27,28 @@ import { IRole } from '../role';
 export class ImmutableRole extends Resource implements IRole {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.ImmutableRole';
-  public readonly assumeRoleAction = this.role.assumeRoleAction;
-  public readonly policyFragment = this.role.policyFragment;
-  public readonly grantPrincipal = this;
-  public readonly principalAccount = this.role.principalAccount;
-  public readonly roleArn = this.role.roleArn;
-  public readonly roleName = this.role.roleName;
-  public readonly stack = this.role.stack;
+  public readonly assumeRoleAction: string;
+  public readonly policyFragment: any;
+  public readonly grantPrincipal: IPrincipal;
+  public readonly principalAccount: string | undefined;
+  public readonly roleArn: string;
+  public readonly roleName: string;
+  public readonly stack: IRole['stack'];
 
   constructor(scope: Construct, id: string, private readonly role: IRole, private readonly addGrantsToResources: boolean) {
     super(scope, id, {
       account: role.env.account,
       region: role.env.region,
     });
+
+    this.assumeRoleAction = this.role.assumeRoleAction;
+    this.policyFragment = this.role.policyFragment;
+    this.grantPrincipal = this;
+    this.principalAccount = this.role.principalAccount;
+    this.roleArn = this.role.roleArn;
+    this.roleName = this.role.roleName;
+    this.stack = this.role.stack;
+
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, role);
 

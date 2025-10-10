@@ -1,4 +1,3 @@
-import { describe } from 'node:test';
 import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as kms from '../../aws-kms';
@@ -159,7 +158,7 @@ describe('default tests', () => {
       });
 
       expect(app.synth().getStackByName(stack.stackName).template).toEqual(expect.objectContaining({
-        Transform: 'AWS::SecretsManager-2020-07-23',
+        Transform: 'AWS::SecretsManager-2024-09-16',
       }));
 
       Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::ResourcePolicy', {

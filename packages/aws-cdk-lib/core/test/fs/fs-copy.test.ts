@@ -142,6 +142,28 @@ describe('fs copy', () => {
       '        file3.txt',
     ]);
   });
+
+  test('negated pattern inside subdirectory with git ignore mode', () => {
+    // GIVEN
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+
+    // WHEN
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {
+      exclude: [
+        '*',
+        '!.hidden',
+        '!*/',
+      ],
+      ignoreMode: IgnoreMode.GIT,
+    });
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'subdir2 (D)',
+      '    empty-subdir (D)',
+      '        .hidden',
+    ]);
+  });
 });
 
 function tree(dir: string, depth = ''): string[] {

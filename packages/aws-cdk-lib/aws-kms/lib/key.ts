@@ -26,6 +26,9 @@ import * as cxapi from '../../cx-api';
 
 /**
  * A KMS Key, either managed by this CDK app, or imported.
+ *
+ * This interface does double duty: it represents an actual KMS keys, but it
+ * also represents things that can behave like KMS keys, like a key alias.
  */
 export interface IKey extends IResource, IKeyRef {
   /**

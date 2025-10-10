@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "alb-target-group-attributes-test/DefaultTest": {
+      "stacks": [
+        "alb-target-group-attributes"
+      ],
+      "assertionStack": "alb-target-group-attributes-test/DefaultTest/DeployAssert",
+      "assertionStackName": "albtargetgroupattributestestDefaultTestDeployAssert8393825C"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

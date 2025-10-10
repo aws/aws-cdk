@@ -35,6 +35,7 @@ async function main() {
   }
 
   if (!argv.scope) {
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
     throw new Error(
       '--scope is not provided and cannot be auto-detected from package.json (under "cdk-build.cloudformation")',
     );
@@ -42,6 +43,7 @@ async function main() {
 
   await generate(argv.scope, argv.out, {
     coreImport: argv['core-import'],
+    autoGenerateSuffixes: true, // for backwards compat
   });
 }
 

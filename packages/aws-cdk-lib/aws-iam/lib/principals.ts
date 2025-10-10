@@ -225,11 +225,14 @@ export abstract class PrincipalBase implements IAssumeRolePrincipal, IComparable
  * Base class for Principals that wrap other principals
  */
 abstract class PrincipalAdapter extends PrincipalBase {
-  public readonly assumeRoleAction = this.wrapped.assumeRoleAction;
-  public readonly principalAccount = this.wrapped.principalAccount;
+  public readonly assumeRoleAction: IPrincipal['assumeRoleAction'];
+  public readonly principalAccount: IPrincipal['principalAccount'];
 
   constructor(protected readonly wrapped: IPrincipal) {
     super();
+
+    this.assumeRoleAction = this.wrapped.assumeRoleAction;
+    this.principalAccount = this.wrapped.principalAccount;
   }
 
   public get policyFragment(): PrincipalPolicyFragment { return this.wrapped.policyFragment; }

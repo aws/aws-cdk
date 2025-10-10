@@ -493,6 +493,26 @@ export enum InstanceClass {
   R8GD = 'r8gd',
 
   /**
+   * Memory optimized instances, 8th generation with Graviton4 processors and high network bandwidth capabilities
+   */
+  MEMORY8_GRAVITON4_HIGH_NETWORK_BANDWIDTH = 'memory8-graviton4-high-network-bandwidth',
+
+  /**
+   * Memory optimized instances, 8th generation with Graviton4 processors and high network bandwidth capabilities
+   */
+  R8GN = 'r8gn',
+
+  /**
+   * Memory and EBS optimized instances, 8th generation with Graviton4 processors
+   */
+  MEMORY8_GRAVITON4_EBS_OPTIMIZED = 'memory8-graviton4-ebs-optimized',
+
+  /**
+   * Memory and EBS optimized instances, 8th generation with Graviton4 processors
+   */
+  R8GB = 'r8gb',
+
+  /**
    * Compute optimized instances, 3rd generation
    */
   COMPUTE3 = 'compute3',
@@ -1849,6 +1869,10 @@ export class InstanceType {
       [InstanceClass.R8G]: 'r8g',
       [InstanceClass.MEMORY8_GRAVITON4_NVME_DRIVE]: 'r8gd',
       [InstanceClass.R8GD]: 'r8gd',
+      [InstanceClass.MEMORY8_GRAVITON4_HIGH_NETWORK_BANDWIDTH]: 'r8gn',
+      [InstanceClass.R8GN]: 'r8gn',
+      [InstanceClass.MEMORY8_GRAVITON4_EBS_OPTIMIZED]: 'r8gb',
+      [InstanceClass.R8GB]: 'r8gb',
       [InstanceClass.MEMORY8_INTEL_BASE]: 'r8i',
       [InstanceClass.R8I]: 'r8i',
       [InstanceClass.MEMORY8_INTEL_FLEX]: 'r8i-flex',

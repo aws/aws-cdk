@@ -2,10 +2,11 @@ import { Construct } from 'constructs';
 import { BuildSpec } from './build-spec';
 import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
+import { ImagePullPrincipalType } from './image-pull-principal-type';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
 import {
   BuildEnvironment, BuildImageBindOptions, BuildImageConfig, IBindableBuildImage, IBuildImage,
-  ImagePullPrincipalType, IProject,
+  IProject,
 } from './project';
 import * as ecr from '../../aws-ecr';
 import * as core from '../../core';

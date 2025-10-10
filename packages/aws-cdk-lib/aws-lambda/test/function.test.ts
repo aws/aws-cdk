@@ -2764,6 +2764,21 @@ describe('function', () => {
     expect(stack.resolve(version2.functionArn)).toEqual(expectedArn);
   });
 
+  test('latestVersion functionRef ARN is the version ARN, not the plain ARN', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    });
+
+    // THEN
+    expect(fn.latestVersion.functionRef.functionArn).toEqual(fn.latestVersion.functionArn);
+  });
+
   test('default function with kmsKeyArn, environmentEncryption passed as props', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -5205,135 +5220,6 @@ describe('telemetry metadata', () => {
     expect(fn.node.metadata).toStrictEqual([]);
   });
 });
-
-// describe('NODEJS_LATEST runtime resolution', () => {
-//   test('uses determineLatestNodeRuntime when runtime is NODEJS_LATEST', () => {
-//     // GIVEN
-//     const stack = new cdk.Stack();
-
-//     // WHEN
-//     const fn = new lambda.Function(stack, 'MyFunction', {
-//       runtime: lambda.Runtime.NODEJS_LATEST,
-//       handler: 'index.handler',
-//       code: lambda.Code.fromInline('exports.handler = function() {}'),
-//     });
-
-//     // THEN
-//     // The function should use the determined runtime, not the NODEJS_LATEST token
-//     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-//       Runtime: {
-//         'Fn::FindInMap': [
-//           'LatestNodeRuntimeMap',
-//           {
-//             Ref: 'AWS::Region',
-//           },
-//           'value',
-//         ],
-//       },
-//     });
-//   });
-
-//   test('uses provided runtime when not NODEJS_LATEST', () => {
-//     // GIVEN
-//     const stack = new cdk.Stack();
-
-//     // WHEN
-//     const fn = new lambda.Function(stack, 'MyFunction', {
-//       runtime: lambda.Runtime.NODEJS_18_X,
-//       handler: 'index.handler',
-//       code: lambda.Code.fromInline('exports.handler = function() {}'),
-//     });
-
-//     // THEN
-//     // The function should use the exact runtime provided
-//     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-//       Runtime: 'nodejs18.x',
-//     });
-//   });
-
-//   test('effectiveRuntime property returns determined runtime for NODEJS_LATEST', () => {
-//     // GIVEN
-//     const stack = new cdk.Stack();
-
-//     // WHEN
-//     const fn = new lambda.Function(stack, 'MyFunction', {
-//       runtime: lambda.Runtime.NODEJS_LATEST,
-//       handler: 'index.handler',
-//       code: lambda.Code.fromInline('exports.handler = function() {}'),
-//     });
-
-//     // THEN
-//     // The runtime property should return the determined runtime, not NODEJS_LATEST
-//     expect(fn.runtime).not.toBe(lambda.Runtime.NODEJS_LATEST);
-//     expect(fn.runtime.family).toBe(lambda.RuntimeFamily.NODEJS);
-//     expect(fn.runtime.isVariable).toBe(true); // Should be variable since it's determined at deploy time
-//   });
-
-//   test('effectiveRuntime property returns original runtime for non-NODEJS_LATEST', () => {
-//     // GIVEN
-//     const stack = new cdk.Stack();
-
-//     // WHEN
-//     const fn = new lambda.Function(stack, 'MyFunction', {
-//       runtime: lambda.Runtime.NODEJS_18_X,
-//       handler: 'index.handler',
-//       code: lambda.Code.fromInline('exports.handler = function() {}'),
-//     });
-
-//     // THEN
-//     // The runtime property should return the exact runtime provided
-//     expect(fn.runtime).toBe(lambda.Runtime.NODEJS_18_X);
-//   });
-
-//   test('NODEJS_LATEST resolution works in different regions', () => {
-//     // GIVEN
-//     const usEast1Stack = new cdk.Stack(undefined, 'USEast1Stack', {
-//       env: { region: 'us-east-1' },
-//     });
-//     const euWest1Stack = new cdk.Stack(undefined, 'EUWest1Stack', {
-//       env: { region: 'eu-west-1' },
-//     });
-
-//     // WHEN
-//     const fnUSEast1 = new lambda.Function(usEast1Stack, 'MyFunction', {
-//       runtime: lambda.Runtime.NODEJS_LATEST,
-//       handler: 'index.handler',
-//       code: lambda.Code.fromInline('exports.handler = function() {}'),
-//     });
-
-//     const fnEUWest1 = new lambda.Function(euWest1Stack, 'MyFunction', {
-//       runtime: lambda.Runtime.NODEJS_LATEST,
-//       handler: 'index.handler',
-//       code: lambda.Code.fromInline('exports.handler = function() {}'),
-//     });
-
-//     // THEN
-//     // Both should resolve to concrete runtime strings when regions are explicit
-//     Template.fromStack(usEast1Stack).hasResourceProperties('AWS::Lambda::Function', {
-//       Runtime: 'nodejs22.x',
-//     });
-
-//     Template.fromStack(euWest1Stack).hasResourceProperties('AWS::Lambda::Function', {
-//       Runtime: 'nodejs22.x',
-//     });
-//   });
-
-//   test('NODEJS_LATEST creates regional mapping in template', () => {
-//     // GIVEN
-//     const stack = new cdk.Stack();
-
-//     // WHEN
-//     new lambda.Function(stack, 'MyFunction', {
-//       runtime: lambda.Runtime.NODEJS_LATEST,
-//       handler: 'index.handler',
-//       code: lambda.Code.fromInline('exports.handler = function() {}'),
-//     });
-
-//     // THEN
-//     // Should create the LatestNodeRuntimeMap mapping
-//     Template.fromStack(stack).hasMapping('LatestNodeRuntimeMap', {});
-//   });
-// });
 
 function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {

@@ -905,6 +905,8 @@ export class MysqlEngineVersion {
   public static readonly VER_5_7_44_RDS_20250213 = MysqlEngineVersion.of('5.7.44-rds.20250213', '5.7');
   /** Version "5.7.44-rds.20250508". */
   public static readonly VER_5_7_44_RDS_20250508 = MysqlEngineVersion.of('5.7.44-rds.20250508', '5.7');
+  /** Version "5.7.44-RDS.20250818". */
+  public static readonly VER_5_7_44_RDS_20250818 = MysqlEngineVersion.of('5.7.44-rds.20250818', '5.7');
 
   /** Version "8.0" (only a major version, without a specific minor version). */
   public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
