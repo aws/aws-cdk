@@ -2,6 +2,7 @@ import { Template } from '../../../assertions';
 import * as autoscaling from '../../../aws-autoscaling';
 import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
+import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
 import * as tasks from '../../lib';
@@ -87,6 +88,100 @@ test('Cannot override container definitions when container is not in task defini
       launchTarget: new tasks.EcsFargateLaunchTarget(),
     }).toStateJson(),
   ).toThrow(/no such container in task definition/);
+});
+
+test('Cannot supply both taskDefinition and taskDefinitionInput', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    memoryMiB: '512',
+    cpu: '256',
+    compatibility: ecs.Compatibility.FARGATE,
+  });
+
+  expect(() =>
+    new tasks.EcsRunTask(stack, 'task', {
+      cluster,
+      taskDefinition: taskDefinition,
+      taskDefinitionFromArnOptions: {
+        taskDefinitionArnInput: sfn.TaskInput.fromText('arn:aws:ecs:us-east-1:111122223333:task-definition/TestTaskFamilyName:*'),
+      },
+      launchTarget: new tasks.EcsFargateLaunchTarget(),
+    }).toStateJson(),
+  ).toThrow(/Exactly one of 'taskDefinition' or 'taskDefinitionFromArnOptions' must be provided./);
+});
+
+test('Must supply at least one of taskDefinition or taskDefinitionFromArnOptions', () => {
+  expect(() =>
+    new tasks.EcsRunTask(stack, 'task', {
+      cluster,
+      taskDefinition: undefined,
+      taskDefinitionFromArnOptions: undefined,
+      launchTarget: new tasks.EcsFargateLaunchTarget(),
+    }).toStateJson(),
+  ).toThrow(/Exactly one of 'taskDefinition' or 'taskDefinitionFromArnOptions' must be provided./);
+});
+
+test('Cannot supply revisionNumber when using taskDefinitionInput', () => {
+  expect(() =>
+
+    new tasks.EcsRunTask(stack, 'task', {
+      cluster,
+      taskDefinitionFromArnOptions: {
+        taskDefinitionArnInput: sfn.TaskInput.fromText('arn:aws:ecs:us-east-1:111122223333:task-definition/TestTaskFamilyName:*'),
+      },
+      revisionNumber: 1,
+      launchTarget: new tasks.EcsFargateLaunchTarget(),
+    }).toStateJson(),
+  ).toThrow(/Cannot supply 'revisionNumber' when using 'taskDefinitionFromArnOptions'./);
+});
+
+test('Cannot supply subnets when taskDefinitionFromArnOptions.networkMode is not set', () => {
+  expect(() =>
+    new tasks.EcsRunTask(stack, 'task', {
+      cluster,
+      taskDefinitionFromArnOptions: {
+        taskDefinitionArnInput: sfn.TaskInput.fromText('arn:aws:ecs:us-east-1:111122223333:task-definition/TestTaskFamilyName:*'),
+        networkMode: undefined,
+      },
+      securityGroups: undefined,
+      subnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }),
+      launchTarget: new tasks.EcsFargateLaunchTarget(),
+    }).toStateJson(),
+  ).toThrow(/A 'networkMode' of 'AWS_VPC' is required to use 'vpcSubnets' and 'securityGroup'. 'networkMode' is not defined./);
+});
+
+test('Cannot supply subnets when taskDefinitionFromArnOptions.networkMode is bridge', () => {
+  expect(() =>
+    new tasks.EcsRunTask(stack, 'task', {
+      cluster,
+      taskDefinitionFromArnOptions: {
+        taskDefinitionArnInput: sfn.TaskInput.fromText('arn:aws:ecs:us-east-1:111122223333:task-definition/TestTaskFamilyName:*'),
+        networkMode: ecs.NetworkMode.BRIDGE,
+      },
+      securityGroups: undefined,
+      subnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }),
+      launchTarget: new tasks.EcsFargateLaunchTarget(),
+    }).toStateJson(),
+  ).toThrow(/A 'networkMode' of 'AWS_VPC' is required to use 'vpcSubnets' and 'securityGroup'. Received: bridge./);
+});
+
+test('Cannot supply securityGroups when networkMode is not AWS_VPC', () => {
+  expect(() =>
+    new tasks.EcsRunTask(stack, 'task', {
+      cluster,
+      taskDefinitionFromArnOptions: {
+        taskDefinitionArnInput: sfn.TaskInput.fromText('arn:aws:ecs:us-east-1:111122223333:task-definition/TestTaskFamilyName:*'),
+        networkMode: undefined,
+      },
+      securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+        allowAllOutbound: true,
+        description: 'Test Security Group',
+        securityGroupName: 'Test',
+        vpc,
+      })],
+      subnets: undefined,
+      launchTarget: new tasks.EcsFargateLaunchTarget(),
+    }).toStateJson(),
+  ).toThrow(/A 'networkMode' of 'AWS_VPC' is required to use 'vpcSubnets' and 'securityGroup'. 'networkMode' is not defined./);
 });
 
 test('Running a task with container override and container has explicitly set a container name', () => {
@@ -473,6 +568,232 @@ test('Running a Fargate Task - using JSONata', () => {
   });
 });
 
+test('Running a Fargate Task using taskDefinitionInput', () => {
+  const taskRole = new iam.Role(stack, 'TaskRole', {
+    assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+  });
+  const taskExecutionRole = new iam.Role(stack, 'ExecutionRole', {
+    assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+  });
+
+  // WHEN
+  const runTask = new tasks.EcsRunTask(stack, 'RunFargate', {
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+    cluster,
+    taskDefinitionFromArnOptions: {
+      taskDefinitionArnInput: sfn.TaskInput.fromText('arn:aws:ecs:us-east-1:111122223333:task-definition/TestTaskFamilyName:1'),
+      networkMode: ecs.NetworkMode.AWS_VPC,
+      taskRole,
+      taskExecutionRole,
+    },
+    subnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }),
+    launchTarget: new tasks.EcsFargateLaunchTarget({
+      platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    }),
+  });
+
+  new sfn.StateMachine(stack, 'SM', {
+    definitionBody: sfn.DefinitionBody.fromChainable(runTask),
+  });
+
+  // THEN
+  expect(stack.resolve(runTask.toStateJson())).toEqual({
+    End: true,
+    Parameters: {
+      Cluster: { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
+      LaunchType: 'FARGATE',
+      NetworkConfiguration: {
+        AwsvpcConfiguration: {
+          SecurityGroups: [{ 'Fn::GetAtt': ['RunFargateSecurityGroup709740F2', 'GroupId'] }],
+          Subnets: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }, { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' }],
+        },
+      },
+      PlatformVersion: '1.4.0',
+      TaskDefinition: 'arn:aws:ecs:us-east-1:111122223333:task-definition/TestTaskFamilyName:1',
+    },
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::ecs:runTask.sync',
+        ],
+      ],
+    },
+    Type: 'Task',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'ecs:RunTask',
+          Condition: {
+            ArnLike: {
+              'ecs:cluster': { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
+            },
+          },
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: ['ecs:StopTask', 'ecs:DescribeTasks'],
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: 'iam:PassRole',
+          Condition: {
+            StringEquals: {
+              'iam:PassedToService': 'ecs-tasks.amazonaws.com',
+            },
+          },
+          Effect: 'Allow',
+          Resource: [
+            { 'Fn::GetAtt': ['TaskRole30FC0FBB', 'Arn'] },
+            { 'Fn::GetAtt': ['ExecutionRole605A040B', 'Arn'] },
+          ],
+        },
+        {
+          Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':events:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':rule/StepFunctionsGetEventsForECSTaskRule',
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('Running a Fargate Task using JSONata for taskDefinitionInput', () => {
+  const taskRole = new iam.Role(stack, 'TaskRole', {
+    assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+  });
+  const taskExecutionRole = new iam.Role(stack, 'ExecutionRole', {
+    assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+  });
+
+  // WHEN
+  const runTask = new tasks.EcsRunTask(stack, 'RunFargate', {
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+    cluster,
+    taskDefinitionFromArnOptions: {
+      taskDefinitionArnInput: sfn.TaskInput.fromText('{% $states.input.taskDefinition %}'),
+      networkMode: ecs.NetworkMode.AWS_VPC,
+      taskRole,
+      taskExecutionRole,
+    },
+    subnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }),
+    launchTarget: new tasks.EcsFargateLaunchTarget({
+      platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    }),
+    queryLanguage: sfn.QueryLanguage.JSONATA,
+  });
+
+  new sfn.StateMachine(stack, 'SM', {
+    definitionBody: sfn.DefinitionBody.fromChainable(runTask),
+  });
+
+  // THEN
+  expect(stack.resolve(runTask.toStateJson())).toEqual({
+    Arguments: {
+      Cluster: { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
+      LaunchType: 'FARGATE',
+      NetworkConfiguration: {
+        AwsvpcConfiguration: {
+          SecurityGroups: [{ 'Fn::GetAtt': ['RunFargateSecurityGroup709740F2', 'GroupId'] }],
+          Subnets: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }, { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' }],
+        },
+      },
+      PlatformVersion: '1.4.0',
+      TaskDefinition: '{% $states.input.taskDefinition %}',
+    },
+    End: true,
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::ecs:runTask.sync',
+        ],
+      ],
+    },
+    Type: 'Task',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'ecs:RunTask',
+          Condition: {
+            ArnLike: {
+              'ecs:cluster': { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
+            },
+          },
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: ['ecs:StopTask', 'ecs:DescribeTasks'],
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: 'iam:PassRole',
+          Condition: {
+            StringEquals: {
+              'iam:PassedToService': 'ecs-tasks.amazonaws.com',
+            },
+          },
+          Effect: 'Allow',
+          Resource: [
+            { 'Fn::GetAtt': ['TaskRole30FC0FBB', 'Arn'] },
+            { 'Fn::GetAtt': ['ExecutionRole605A040B', 'Arn'] },
+          ],
+        },
+        {
+          Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':events:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':rule/StepFunctionsGetEventsForECSTaskRule',
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  });
+});
+
 test('Running an EC2 Task with bridge network', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     compatibility: ecs.Compatibility.EC2,
@@ -572,6 +893,198 @@ test('Running an EC2 Task with bridge network', () => {
           Action: 'iam:PassRole',
           Effect: 'Allow',
           Resource: { 'Fn::GetAtt': ['TDTaskRoleC497AFFC', 'Arn'] },
+        },
+        {
+          Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':events:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':rule/StepFunctionsGetEventsForECSTaskRule',
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('Running an EC2 Task with bridge network using taskDefinitionInput', () => {
+  const taskRole = new iam.Role(stack, 'TaskRole', {
+    assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+  });
+
+  // WHEN
+  const runTask = new tasks.EcsRunTask(stack, 'Run', {
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+    cluster,
+    taskDefinitionFromArnOptions: {
+      taskDefinitionArnInput: sfn.TaskInput.fromText('arn:aws:ecs:us-east-1:111122223333:task-definition/TestTaskFamilyName:1'),
+      networkMode: ecs.NetworkMode.BRIDGE,
+      taskRole,
+    },
+    launchTarget: new tasks.EcsEc2LaunchTarget(),
+  });
+
+  new sfn.StateMachine(stack, 'SM', {
+    definitionBody: sfn.DefinitionBody.fromChainable(runTask),
+  });
+
+  // THEN
+  expect(stack.resolve(runTask.toStateJson())).toEqual({
+    End: true,
+    Parameters: {
+      Cluster: { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
+      LaunchType: 'EC2',
+      TaskDefinition: 'arn:aws:ecs:us-east-1:111122223333:task-definition/TestTaskFamilyName:1',
+    },
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::ecs:runTask.sync',
+        ],
+      ],
+    },
+    Type: 'Task',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'ecs:RunTask',
+          Condition: {
+            ArnLike: {
+              'ecs:cluster': { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
+            },
+          },
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: ['ecs:StopTask', 'ecs:DescribeTasks'],
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: 'iam:PassRole',
+          Condition: {
+            StringEquals: {
+              'iam:PassedToService': 'ecs-tasks.amazonaws.com',
+            },
+          },
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': ['TaskRole30FC0FBB', 'Arn'] },
+        },
+        {
+          Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':events:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':rule/StepFunctionsGetEventsForECSTaskRule',
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('Running an EC2 Task with bridge network using JSONata taskDefinitionInput', () => {
+  const taskRole = new iam.Role(stack, 'TaskRole', {
+    assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+  });
+
+  // WHEN
+  const runTask = new tasks.EcsRunTask(stack, 'Run', {
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+    cluster,
+    taskDefinitionFromArnOptions: {
+      taskDefinitionArnInput: sfn.TaskInput.fromText('{% $states.input.taskDefinition %}'),
+      networkMode: ecs.NetworkMode.BRIDGE,
+      taskRole,
+    },
+    launchTarget: new tasks.EcsEc2LaunchTarget(),
+    queryLanguage: sfn.QueryLanguage.JSONATA,
+  });
+
+  new sfn.StateMachine(stack, 'SM', {
+    definitionBody: sfn.DefinitionBody.fromChainable(runTask),
+  });
+
+  // THEN
+  expect(stack.resolve(runTask.toStateJson())).toEqual({
+    Arguments: {
+      Cluster: { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
+      LaunchType: 'EC2',
+      TaskDefinition: '{% $states.input.taskDefinition %}',
+    },
+    End: true,
+    QueryLanguage: 'JSONata',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::ecs:runTask.sync',
+        ],
+      ],
+    },
+    Type: 'Task',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'ecs:RunTask',
+          Condition: {
+            ArnLike: {
+              'ecs:cluster': { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
+            },
+          },
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: ['ecs:StopTask', 'ecs:DescribeTasks'],
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: 'iam:PassRole',
+          Condition: {
+            StringEquals: {
+              'iam:PassedToService': 'ecs-tasks.amazonaws.com',
+            },
+          },
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': ['TaskRole30FC0FBB', 'Arn'] },
         },
         {
           Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
