@@ -18,7 +18,7 @@
     "awslint": "bin/awslint"
   },
   "dependencies": {
-    "@jsii/spec": "1.113.0",
+    "@jsii/spec": "1.115.0",
     "chalk": "^4",
     "fs-extra": "^9.1.0",
     "jsii-reflect": "1.115.0",

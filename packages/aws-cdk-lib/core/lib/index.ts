@@ -74,3 +74,5 @@ export * from './validation';
 export * from './private/intrinsic';
 export * from './names';
 export * from './time-zone';
+
+export * from './test-intersections';
