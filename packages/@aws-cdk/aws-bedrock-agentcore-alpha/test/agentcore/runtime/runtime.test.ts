@@ -1554,15 +1554,15 @@ describe('Runtime role validation tests', () => {
 
   test('Should handle cross-account role with warning', () => {
     const crossAccountRole = {
-      roleArn: 'arn:aws:iam::987654321098:role/test-role',
+      roleArn: 'arn:aws:iam::123456789012:role/test-role',
       roleName: 'test-role',
       assumeRoleAction: 'sts:AssumeRole',
       grantPrincipal: {} as iam.IPrincipal,
-      principalAccount: '987654321098',
+      principalAccount: '123456789012',
       applyRemovalPolicy: () => {},
       node: {} as any,
       stack: stack,
-      env: { account: '987654321098', region: 'us-east-1' },
+      env: { account: '123456789012', region: 'us-east-1' },
     } as unknown as iam.IRole;
 
     const runtime = new Runtime(stack, 'test-runtime', {
