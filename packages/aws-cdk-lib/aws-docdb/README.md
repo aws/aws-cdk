@@ -140,7 +140,7 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
   masterUser: {
     username: 'myuser',
   },
-  masterUserSecretKmsKey: myKmsKey, // Custom KMS key for secret encryption
+  masterUserSecretKmsKey: myKmsKey, // KMS Key for secret encryption
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.MEMORY5, ec2.InstanceSize.LARGE),
   vpc,
 });
