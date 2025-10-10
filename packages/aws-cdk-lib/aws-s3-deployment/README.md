@@ -533,6 +533,20 @@ new cdk.CfnOutput(this, 'ObjectKey', {
 });
 ```
 
+## Cross-region deployment
+
+To deploy objects to a bucket located in a region different from the stack region, specify the `destinationBucketRegion` property:
+
+```ts
+new s3deploy.BucketDeployment(this, 'CrossRegionDeployment', {
+ sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+ destinationBucket: bucket,
+ destinationBucketRegion: 'eu-south-2', // Deploy to eu-south-2 regardless of stack region
+});
+```
+
+This is especially useful when deploying assets from/to opt-in AWS regions.
+
 ## Notes
 
 - This library uses an AWS CloudFormation custom resource which is about 10MiB in
