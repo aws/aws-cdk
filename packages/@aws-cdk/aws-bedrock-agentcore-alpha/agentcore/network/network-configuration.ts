@@ -123,7 +123,7 @@ export abstract class NetworkConfiguration {
     } else {
       const securityGroup = new ec2.SecurityGroup(this.scope!, 'SecurityGroup', {
         vpc: vpcConfig.vpc,
-        allowAllOutbound: vpcConfig.allowAllOutbound,
+        allowAllOutbound: vpcConfig.allowAllOutbound ?? true,
       });
       securityGroups = [securityGroup];
     }
