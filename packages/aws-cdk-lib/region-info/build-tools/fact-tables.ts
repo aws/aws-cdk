@@ -123,7 +123,7 @@ export const LATEST_NODE_RUNTIME_MAP: Record<Partition, string> = {
   [Partition.Cn]: Runtime.NODE_22,
   [Partition.UsGov]: Runtime.NODE_22,
   [Partition.UsIso]: Runtime.NODE_22,
-  [Partition.UsIsoB]: Runtime.NODE_18,
+  [Partition.UsIsoB]: Runtime.NODE_22,
   [Partition.UsIsoF]: Runtime.NODE_22,
   [Partition.EuIsoE]: Runtime.NODE_22,
   [Partition.Eusc]: Runtime.NODE_22,

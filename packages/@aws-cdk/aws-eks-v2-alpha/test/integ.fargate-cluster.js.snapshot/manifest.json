@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6465628f46dfadbe10399f076741db6b9f03019455e66ac848ff20642dfb1162.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c9fae9f7d50de857c9ded5f1cb6f4eceb1e570902d653804688a265d79b3336a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -840,12 +840,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "FargateTestClusterfargateprofiledefault120EDDF6"
-          }
-        ],
-        "/eks-fargate-cluster-test-stack/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/eks-fargate-cluster-test-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [

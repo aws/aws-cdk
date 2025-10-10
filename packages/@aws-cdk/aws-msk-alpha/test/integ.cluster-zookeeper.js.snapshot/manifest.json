@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7fdd1d990d7bf67469db565e9f8a766863770b2e62f65fad690a60472ec69af9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b769417d0950428eac47d89f17d5f2a82be7b9bc5054654fb45ce9c4ac1677ff.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -429,12 +429,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterZookeeperZookeeperConnectCustomResourcePolicy762D4B4E"
-          }
-        ],
-        "/KafkaZookeeperTestStack/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/KafkaZookeeperTestStack/AWS679f53fac002430cb0da5b7982bd2287": [

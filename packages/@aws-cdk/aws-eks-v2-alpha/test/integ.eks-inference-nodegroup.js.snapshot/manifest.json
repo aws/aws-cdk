@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c4d7d3f185518d91500dd6b5c7d99869196c3678e5f47e344a31df739228e665.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6e266aa4d3a80dcbb8cf4efadc31a8dcf6942fe7ada1a07364d54b678bc878f4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1003,12 +1003,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterNodegroupInference2InstancesEE502FE8"
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference-nodegroup/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-cdk-eks-cluster-inference-nodegroup/awscdkeksclusterinferencenodegroupCluster4FEA031E-AlbController/alb-sa/ConditionJson/Resource": [

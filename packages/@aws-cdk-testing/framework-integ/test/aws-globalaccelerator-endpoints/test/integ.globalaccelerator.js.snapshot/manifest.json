@@ -726,12 +726,6 @@
             "data": "GroupPeerCustomResourceCustomResourcePolicy42EF8263"
           }
         ],
-        "/integ-globalaccelerator/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
         "/integ-globalaccelerator/AWS679f53fac002430cb0da5b7982bd2287": [
           {
             "type": "aws:cdk:analytics:construct",
