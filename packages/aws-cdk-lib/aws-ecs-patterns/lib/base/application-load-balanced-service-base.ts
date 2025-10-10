@@ -519,7 +519,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       open: props.openListener ?? defaultOpenListener,
       sslPolicy: props.sslPolicy,
     });
-    
+
     // Generate unique target group ID to prevent conflicts during load balancer replacement
     let targetGroupId: string;
     if (FeatureFlags.of(this).isEnabled(ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID)) {
@@ -529,7 +529,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       // Legacy behavior: only include internetFacing
       targetGroupId = internetFacing ? 'ECS' : 'ECSPrivate';
     }
-    
+
     this.targetGroup = this.listener.addTargets(targetGroupId, targetProps);
 
     if (protocol === ApplicationProtocol.HTTPS) {
