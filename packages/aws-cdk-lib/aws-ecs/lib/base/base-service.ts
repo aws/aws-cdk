@@ -879,6 +879,7 @@ export abstract class BaseService extends Resource
         hookTargetArn: config.targetArn,
         roleArn: config.role!.roleArn,
         lifecycleStages: config.lifecycleStages.map(stage => stage.toString()),
+        hookDetails: config.hookDetails,
       };
     });
   }

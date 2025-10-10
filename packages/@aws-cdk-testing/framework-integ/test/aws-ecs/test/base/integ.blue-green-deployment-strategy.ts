@@ -125,6 +125,12 @@ const service = new ecs.FargateService(stack, 'Service', {
 
 service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaHook, 'PreScaleUp', {
   lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+  hookDetails: {
+    stringKey: 'stringValue',
+    intKey: 1,
+    boolKey: true,
+    listKey: ['stringValue1', 'stringValue2'],
+  },
 }));
 
 const target = service.loadBalancerTarget({

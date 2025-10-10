@@ -1,6 +1,28 @@
 import { IConstruct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
+import { Fn, ValidationError } from '../../core';
+
+/**
+ * Validates that input is a valid JSON object and returns it as a stringified JSON using Fn::ToJsonString
+ * @param hookDetails The input to validate (must be a JSON object)
+ * @returns The stringified JSON using CloudFormation's Fn::ToJsonString intrinsic function
+ * @throws HookDetailsValidationError if the input is not a valid JSON object
+ */
+export function stringifyHookDetails(scope: IConstruct, hookDetails: any): string {
+  // Reject arrays
+  if (Array.isArray(hookDetails)) {
+    throw new ValidationError('hookDetails must be a JSON object, got: array', scope);
+  }
+
+  // Check if it's a plain object
+  if (typeof hookDetails === 'object' && hookDetails.constructor === Object) {
+    return Fn.toJsonString(hookDetails);
+  }
+
+  // Everything else is invalid (primitives, functions, dates, etc.)
+  throw new ValidationError(`hookDetails must be a JSON object, got: ${typeof hookDetails}`, scope);
+}
 
 /**
  * Deployment lifecycle stages where hooks can be executed
@@ -55,6 +77,12 @@ export interface DeploymentLifecycleHookTargetConfig {
    * The lifecycle stages when this hook should be executed
    */
   readonly lifecycleStages: DeploymentLifecycleStage[];
+
+  /**
+   * Use this field to specify custom parameters that Amazon ECS will pass to your hook target invocations (such as a Lambda function).
+   * @default - No custom parameters will be passed
+   */
+  readonly hookDetails?: string;
 }
 
 /**
@@ -65,7 +93,6 @@ export interface IDeploymentLifecycleHookTarget {
    * Bind this target to a deployment lifecycle hook
    *
    * @param scope The construct scope
-   * @param id A unique identifier for this binding
    */
   bind(scope: IConstruct): DeploymentLifecycleHookTargetConfig;
 }
@@ -84,6 +111,19 @@ export interface DeploymentLifecycleLambdaTargetProps {
    * The lifecycle stages when this hook should be executed
    */
   readonly lifecycleStages: DeploymentLifecycleStage[];
+
+  /**
+   * Use this field to specify custom parameters that Amazon ECS will pass to your hook target invocations (such as a Lambda function).
+   *
+   * This field accepts JSON objects only
+   *
+   * @example
+   * // JSON object
+   * {environment:"production",timeout:300}
+   *
+   * @default - No custom parameters will be passed
+   */
+  readonly hookDetails?: any;
 }
 
 /**
@@ -122,6 +162,8 @@ export class DeploymentLifecycleLambdaTarget implements IDeploymentLifecycleHook
       targetArn: this.handler.functionArn,
       role: this._role,
       lifecycleStages: this.props.lifecycleStages,
+      hookDetails: (this.props.hookDetails === undefined || this.props.hookDetails === null)?
+        this.props.hookDetails : stringifyHookDetails(scope, this.props.hookDetails),
     };
   }
 }
