@@ -1,16 +1,19 @@
 import { Resource, TypeDefinition } from '@aws-cdk/service-spec-types';
-import { ClassType, Module, Stability, StructType } from '@cdklabs/typewriter';
+import { ClassType, expr, FreeFunction, Module, Stability, stmt, StructType, Type } from '@cdklabs/typewriter';
 import { CloudFormationMapping } from './cloudformation-mapping';
+import { RelationshipDecider } from './relationship-decider';
 import { TypeConverter } from './type-converter';
 import { TypeDefinitionDecider } from './typedefinition-decider';
-import { cloudFormationDocLink, structNameFromTypeDefinition } from '../naming';
+import { cloudFormationDocLink, flattenFunctionNameFromType, structNameFromTypeDefinition } from '../naming';
 import { splitDocumentation } from '../util';
+import { CDK_CORE } from './cdk';
 
 export interface TypeDefinitionStructOptions {
   readonly typeDefinition: TypeDefinition;
   readonly converter: TypeConverter;
   readonly resource: Resource;
   readonly resourceClass: ClassType;
+  readonly relationshipDecider: RelationshipDecider;
 }
 
 /**
@@ -23,6 +26,7 @@ export class TypeDefinitionStruct extends StructType {
   private readonly converter: TypeConverter;
   private readonly resource: Resource;
   private readonly module: Module;
+  private readonly relationshipDecider: RelationshipDecider;
 
   constructor(options: TypeDefinitionStructOptions) {
     super(options.resourceClass, {
@@ -41,6 +45,7 @@ export class TypeDefinitionStruct extends StructType {
     this.typeDefinition = options.typeDefinition;
     this.converter = options.converter;
     this.resource = options.resource;
+    this.relationshipDecider = options.relationshipDecider;
 
     this.module = Module.of(this);
   }
@@ -48,11 +53,41 @@ export class TypeDefinitionStruct extends StructType {
   public build() {
     const cfnMapping = new CloudFormationMapping(this.module, this.converter);
 
-    const decider = new TypeDefinitionDecider(this.resource, this.typeDefinition, this.converter);
+    const decider = new TypeDefinitionDecider(this.resource, this.typeDefinition, this.converter, this.relationshipDecider);
 
     for (const prop of decider.properties) {
       this.addProperty(prop.propertySpec);
       cfnMapping.add(prop.cfnMapping);
+    }
+
+    let needsResolverFunction = false;
+    for (const [propName, prop] of Object.entries(this.typeDefinition.properties)) {
+      needsResolverFunction = needsResolverFunction
+        ? needsResolverFunction
+        : this.relationshipDecider.needsFlatteningFunction(propName, prop);
+    }
+
+    if (needsResolverFunction) {
+      const resolverFunction = new FreeFunction(this.module, {
+        name: flattenFunctionNameFromType(this),
+        returnType: Type.unionOf(this.type, CDK_CORE.IResolvable),
+        parameters: [{ name: 'props', type: Type.unionOf(this.type, CDK_CORE.IResolvable) }],
+      });
+
+      const propsParam = resolverFunction.parameters[0];
+      resolverFunction.addBody(
+        stmt.if_(CDK_CORE.isResolvableObject(propsParam))
+          .then(stmt.ret(propsParam)),
+
+        stmt.ret(expr.object(
+          Object.fromEntries(
+            decider.properties.map(prop => [
+              prop.propertySpec.name,
+              prop.resolver(propsParam),
+            ]),
+          ),
+        )),
+      );
     }
 
     cfnMapping.makeCfnProducer(this.module, this);
