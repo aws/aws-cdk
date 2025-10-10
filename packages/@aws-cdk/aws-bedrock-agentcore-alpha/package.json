@@ -1,0 +1,117 @@
+{
+  "name": "@aws-cdk/aws-bedrock-agentcore-alpha",
+  "version": "0.0.0",
+  "private": false,
+  "description": "The CDK Construct Library for Amazon Bedrock",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.bedrock.agentcore.alpha",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "bedrock-agentcore-alpha"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Bedrock.Agentcore.Alpha",
+        "packageId": "Amazon.CDK.AWS.Bedrock.Agentcore.Alpha",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-bedrock-agentcore-alpha",
+        "module": "aws_cdk.aws_bedrock_agentcore_alpha",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
+        ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awsbedrockagentcorealpha"
+      }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    },
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-bedrock-agentcore-alpha"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "integ-runner --unstable=toolkit-lib-engine --language javascript",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "bedrock",
+    "agentcore"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "aws-cdk-lib": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "^2.190.2",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0",
+    "@types/jest": "^29.5.14",
+    "constructs": "^10.0.0",
+    "jest": "^29.7.0"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "aws-cdk-lib": "^0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "engines": {
+    "node": ">= 18.0.0"
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "cdk-build": {
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "awscdkio": {
+    "announce": false
+  },
+  "pkglint": {
+    "exclude": [
+      "naming/package-matches-directory",
+      "assert/assert-dependency"
+    ]
+  }
+}
