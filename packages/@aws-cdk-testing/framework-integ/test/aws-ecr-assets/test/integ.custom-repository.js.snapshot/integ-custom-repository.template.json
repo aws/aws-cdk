@@ -61,7 +61,7 @@
       {
        "Ref": "CustomRepo98CFBAD2"
       },
-      ":0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
+      ":b4832ce0a1531e509c18ed5609b86a4e82164e014280c2fff4c9aa8f4e69a0d9"
      ]
     ]
    }
@@ -70,13 +70,13 @@
    "Value": "v1.2.3"
   },
   "PrefixedCustomAssetTag": {
-   "Value": "branch-main-0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
+   "Value": "branch-main-c24e55557574222c6da8349e74cbf9e20ec94a6397b3848e97903cd13ab627f4"
   },
   "DefaultRepoCustomTagTag": {
    "Value": "custom-tag-v2"
   },
   "DefaultRepoPrefixedTag": {
-   "Value": "feature-0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
+   "Value": "feature-8edfe7607498bbd5722848a8b2f76ea961ec87deca4159b67a764c643bb7ba5f"
   },
   "PrecedenceTestTag": {
    "Value": "explicit-wins"
