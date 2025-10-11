@@ -6,7 +6,7 @@ import { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
-import { validatePartitionConfiguration, generatePartitionProjectionParameters } from './partition-projection';
+import { generatePartitionProjectionParameters, PartitionProjection } from './partition-projection';
 import { Column } from './schema';
 import { StorageParameter } from './storage-parameter';
 
@@ -169,7 +169,7 @@ export interface TableBaseProps {
    *
    * @default - No partition projection
    */
-  readonly partitionProjection?: import('./partition-projection').PartitionProjection;
+  readonly partitionProjection?: PartitionProjection;
 }
 
 /**
@@ -239,7 +239,7 @@ export abstract class TableBase extends Resource implements ITable {
   /**
    * This table's partition projection configuration if enabled.
    */
-  public readonly partitionProjection?: import('./partition-projection').PartitionProjection;
+  public readonly partitionProjection?: PartitionProjection;
 
   /**
    * The tables' properties associated with the table.
@@ -274,10 +274,7 @@ export abstract class TableBase extends Resource implements ITable {
 
     this.compressed = props.compressed ?? false;
 
-    // Validate and generate partition projection parameters
-    if (this.partitionProjection) {
-      this.validateAndGeneratePartitionProjection();
-    }
+    this.validateAndGeneratePartitionProjection();
   }
 
   public abstract grantRead(grantee: iam.IGrantable): iam.Grant;
@@ -352,10 +349,7 @@ export abstract class TableBase extends Resource implements ITable {
   }
 
   /**
-   * Validate partition projection configuration and merge generated
-   * parameters into this.parameters.
-   *
-   * @throws {ValidationError} if partition projection configuration is invalid
+   * Validate partition projection configuration and merge generated parameters into this.parameters.
    */
   private validateAndGeneratePartitionProjection(): void {
     if (!this.partitionProjection) {
@@ -382,9 +376,6 @@ export abstract class TableBase extends Resource implements ITable {
           this,
         );
       }
-
-      // Validate the configuration based on type
-      validatePartitionConfiguration(columnName, config);
 
       // Generate CloudFormation parameters
       const generatedParams = generatePartitionProjectionParameters(columnName, config);

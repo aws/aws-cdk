@@ -231,6 +231,38 @@ export class PartitionProjectionConfiguration {
    * Create an INTEGER partition projection configuration.
    */
   public static integer(props: IntegerPartitionProjectionConfigurationProps): PartitionProjectionConfiguration {
+    // Validate min/max are integers
+    if (!Number.isInteger(props.min) || !Number.isInteger(props.max)) {
+      throw new UnscopedValidationError(
+        `INTEGER partition projection range must contain integers, but got [${props.min}, ${props.max}]`,
+      );
+    }
+
+    // Validate min <= max
+    if (props.min > props.max) {
+      throw new UnscopedValidationError(
+        `INTEGER partition projection range must be [min, max] where min <= max, but got [${props.min}, ${props.max}]`,
+      );
+    }
+
+    // Validate interval
+    if (props.interval !== undefined) {
+      if (!Number.isInteger(props.interval) || props.interval <= 0) {
+        throw new UnscopedValidationError(
+          `INTEGER partition projection interval must be a positive integer, but got ${props.interval}`,
+        );
+      }
+    }
+
+    // Validate digits
+    if (props.digits !== undefined) {
+      if (!Number.isInteger(props.digits) || props.digits < 1) {
+        throw new UnscopedValidationError(
+          `INTEGER partition projection digits must be an integer >= 1, but got ${props.digits}`,
+        );
+      }
+    }
+
     return new PartitionProjectionConfiguration({
       type: PartitionProjectionType.INTEGER,
       integerRange: [props.min, props.max],
@@ -243,6 +275,29 @@ export class PartitionProjectionConfiguration {
    * Create a DATE partition projection configuration.
    */
   public static date(props: DatePartitionProjectionConfigurationProps): PartitionProjectionConfiguration {
+    // Validate min/max are not empty
+    if (props.min.trim() === '' || props.max.trim() === '') {
+      throw new UnscopedValidationError(
+        'DATE partition projection range must not contain empty strings',
+      );
+    }
+
+    // Validate format is not empty
+    if (props.format.trim() === '') {
+      throw new UnscopedValidationError(
+        'DATE partition projection format must be a non-empty string',
+      );
+    }
+
+    // Validate interval
+    if (props.interval !== undefined) {
+      if (!Number.isInteger(props.interval) || props.interval <= 0) {
+        throw new UnscopedValidationError(
+          `DATE partition projection interval must be a positive integer, but got ${props.interval}`,
+        );
+      }
+    }
+
     return new PartitionProjectionConfiguration({
       type: PartitionProjectionType.DATE,
       dateRange: [props.min, props.max],
@@ -256,6 +311,23 @@ export class PartitionProjectionConfiguration {
    * Create an ENUM partition projection configuration.
    */
   public static enum(props: EnumPartitionProjectionConfigurationProps): PartitionProjectionConfiguration {
+    // Validate values is not empty
+    if (props.values.length === 0) {
+      throw new UnscopedValidationError(
+        'ENUM partition projection values must be a non-empty array',
+      );
+    }
+
+    // Validate no empty strings
+    for (let i = 0; i < props.values.length; i++) {
+      const value = props.values[i];
+      if (value.trim() === '') {
+        throw new UnscopedValidationError(
+          'ENUM partition projection values must not contain empty strings',
+        );
+      }
+    }
+
     return new PartitionProjectionConfiguration({
       type: PartitionProjectionType.ENUM,
       values: props.values,
@@ -343,12 +415,7 @@ export class PartitionProjectionConfiguration {
 
     switch (this.type) {
       case PartitionProjectionType.INTEGER: {
-        if (!this.integerRange) {
-          throw new UnscopedValidationError(
-            `INTEGER partition projection for "${columnName}" is missing integerRange configuration`,
-          );
-        }
-        const [min, max] = this.integerRange;
+        const [min, max] = this.integerRange!;
         params[`projection.${columnName}.range`] = `${min},${max}`;
         if (this.interval !== undefined) {
           params[`projection.${columnName}.interval`] = this.interval.toString();
@@ -359,19 +426,9 @@ export class PartitionProjectionConfiguration {
         break;
       }
       case PartitionProjectionType.DATE: {
-        if (!this.dateRange) {
-          throw new UnscopedValidationError(
-            `DATE partition projection for "${columnName}" is missing dateRange configuration`,
-          );
-        }
-        if (!this.format) {
-          throw new UnscopedValidationError(
-            `DATE partition projection for "${columnName}" is missing format configuration`,
-          );
-        }
-        const [start, end] = this.dateRange;
+        const [start, end] = this.dateRange!;
         params[`projection.${columnName}.range`] = `${start},${end}`;
-        params[`projection.${columnName}.format`] = this.format;
+        params[`projection.${columnName}.format`] = this.format!;
         if (this.interval !== undefined) {
           params[`projection.${columnName}.interval`] = this.interval.toString();
         }
@@ -381,12 +438,7 @@ export class PartitionProjectionConfiguration {
         break;
       }
       case PartitionProjectionType.ENUM: {
-        if (!this.values) {
-          throw new UnscopedValidationError(
-            `ENUM partition projection for "${columnName}" is missing values configuration`,
-          );
-        }
-        params[`projection.${columnName}.values`] = this.values.join(',');
+        params[`projection.${columnName}.values`] = this.values!.join(',');
         break;
       }
       case PartitionProjectionType.INJECTED: {
@@ -415,214 +467,6 @@ export class PartitionProjectionConfiguration {
 export type PartitionProjection = {
   [columnName: string]: PartitionProjectionConfiguration;
 };
-
-/**
- * Validates INTEGER partition projection configuration.
- *
- * @param columnName - The partition column name
- * @param config - The partition configuration
- */
-export function validateIntegerPartition(
-  columnName: string,
-  config: PartitionProjectionConfiguration,
-): void {
-  if (config.type !== PartitionProjectionType.INTEGER) {
-    throw new UnscopedValidationError(
-      `Expected INTEGER partition type for "${columnName}", but got ${config.type}`,
-    );
-  }
-
-  // Validate integerRange
-  if (!config.integerRange || config.integerRange.length !== 2) {
-    throw new UnscopedValidationError(
-      `INTEGER partition projection integerRange for "${columnName}" must be [min, max], but got array of length ${config.integerRange?.length ?? 0}`,
-    );
-  }
-
-  const [min, max] = config.integerRange;
-  if (!Number.isInteger(min) || !Number.isInteger(max)) {
-    throw new UnscopedValidationError(
-      `INTEGER partition projection integerRange for "${columnName}" must contain integers, but got [${min}, ${max}]`,
-    );
-  }
-
-  if (min > max) {
-    throw new UnscopedValidationError(
-      `INTEGER partition projection integerRange for "${columnName}" must be [min, max] where min <= max, but got [${min}, ${max}]`,
-    );
-  }
-
-  // Validate interval
-  if (config.interval !== undefined) {
-    if (!Number.isInteger(config.interval) || config.interval <= 0) {
-      throw new UnscopedValidationError(
-        `INTEGER partition projection interval for "${columnName}" must be a positive integer, but got ${config.interval}`,
-      );
-    }
-  }
-
-  // Validate digits
-  if (config.digits !== undefined) {
-    if (!Number.isInteger(config.digits) || config.digits < 1) {
-      throw new UnscopedValidationError(
-        `INTEGER partition projection digits for "${columnName}" must be an integer >= 1, but got ${config.digits}`,
-      );
-    }
-  }
-}
-
-/**
- * Validates DATE partition projection configuration.
- *
- * @param columnName - The partition column name
- * @param config - The partition configuration
- */
-export function validateDatePartition(
-  columnName: string,
-  config: PartitionProjectionConfiguration,
-): void {
-  if (config.type !== PartitionProjectionType.DATE) {
-    throw new UnscopedValidationError(
-      `Expected DATE partition type for "${columnName}", but got ${config.type}`,
-    );
-  }
-
-  // Validate dateRange
-  if (!config.dateRange || config.dateRange.length !== 2) {
-    throw new UnscopedValidationError(
-      `DATE partition projection dateRange for "${columnName}" must be [start, end], but got array of length ${config.dateRange?.length ?? 0}`,
-    );
-  }
-
-  const [start, end] = config.dateRange;
-  if (typeof start !== 'string' || typeof end !== 'string') {
-    throw new UnscopedValidationError(
-      `DATE partition projection dateRange for "${columnName}" must contain strings, but got [${typeof start}, ${typeof end}]`,
-    );
-  }
-
-  if (start.trim() === '' || end.trim() === '') {
-    throw new UnscopedValidationError(
-      `DATE partition projection dateRange for "${columnName}" must not contain empty strings`,
-    );
-  }
-
-  // Validate format
-  if (typeof config.format !== 'string' || config.format.trim() === '') {
-    throw new UnscopedValidationError(
-      `DATE partition projection format for "${columnName}" must be a non-empty string`,
-    );
-  }
-
-  // Validate interval
-  if (config.interval !== undefined) {
-    if (!Number.isInteger(config.interval) || config.interval <= 0) {
-      throw new UnscopedValidationError(
-        `DATE partition projection interval for "${columnName}" must be a positive integer, but got ${config.interval}`,
-      );
-    }
-  }
-
-  // Validate interval unit
-  if (config.intervalUnit !== undefined) {
-    const validUnits = Object.values(DateIntervalUnit);
-    if (!validUnits.includes(config.intervalUnit)) {
-      throw new UnscopedValidationError(
-        `DATE partition projection interval unit for "${columnName}" must be one of ${validUnits.join(', ')}, but got ${config.intervalUnit}`,
-      );
-    }
-  }
-}
-
-/**
- * Validates ENUM partition projection configuration.
- *
- * @param columnName - The partition column name
- * @param config - The partition configuration
- */
-export function validateEnumPartition(
-  columnName: string,
-  config: PartitionProjectionConfiguration,
-): void {
-  if (config.type !== PartitionProjectionType.ENUM) {
-    throw new UnscopedValidationError(
-      `Expected ENUM partition type for "${columnName}", but got ${config.type}`,
-    );
-  }
-
-  // Validate values
-  if (!Array.isArray(config.values) || config.values.length === 0) {
-    throw new UnscopedValidationError(
-      `ENUM partition projection values for "${columnName}" must be a non-empty array`,
-    );
-  }
-
-  for (let i = 0; i < config.values.length; i++) {
-    const value = config.values[i];
-    if (typeof value !== 'string') {
-      throw new UnscopedValidationError(
-        `ENUM partition projection values for "${columnName}" must contain only strings, but found ${typeof value} at index ${i}`,
-      );
-    }
-    if (value.trim() === '') {
-      throw new UnscopedValidationError(
-        `ENUM partition projection values for "${columnName}" must not contain empty strings`,
-      );
-    }
-  }
-}
-
-/**
- * Validates INJECTED partition projection configuration.
- *
- * @param _columnName - The partition column name
- * @param config - The partition configuration
- */
-export function validateInjectedPartition(
-  _columnName: string,
-  config: PartitionProjectionConfiguration,
-): void {
-  if (config.type !== PartitionProjectionType.INJECTED) {
-    throw new UnscopedValidationError(
-      `Expected INJECTED partition type for "${_columnName}", but got ${config.type}`,
-    );
-  }
-
-  // INJECTED type has no additional properties to validate
-}
-
-/**
- * Validates partition projection configuration based on its type.
- *
- * @param columnName - The partition column name
- * @param config - The partition configuration
- */
-export function validatePartitionConfiguration(
-  columnName: string,
-  config: PartitionProjectionConfiguration,
-): void {
-  switch (config.type) {
-    case PartitionProjectionType.INTEGER:
-      validateIntegerPartition(columnName, config);
-      break;
-    case PartitionProjectionType.DATE:
-      validateDatePartition(columnName, config);
-      break;
-    case PartitionProjectionType.ENUM:
-      validateEnumPartition(columnName, config);
-      break;
-    case PartitionProjectionType.INJECTED:
-      validateInjectedPartition(columnName, config);
-      break;
-    default: {
-      // TypeScript exhaustiveness check
-      const exhaustiveCheck: never = config.type;
-      throw new UnscopedValidationError(
-        `Unknown partition projection type for "${columnName}": ${exhaustiveCheck}`,
-      );
-    }
-  }
-}
 
 /**
  * Generates CloudFormation parameters for partition projection configuration.

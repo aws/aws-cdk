@@ -1,232 +1,95 @@
 import * as glue from '../lib';
 
-describe('DateIntervalUnit', () => {
-  test('has correct enum values', () => {
-    expect(glue.DateIntervalUnit.YEARS).toBe('YEARS');
-    expect(glue.DateIntervalUnit.MONTHS).toBe('MONTHS');
-    expect(glue.DateIntervalUnit.WEEKS).toBe('WEEKS');
-    expect(glue.DateIntervalUnit.DAYS).toBe('DAYS');
-    expect(glue.DateIntervalUnit.HOURS).toBe('HOURS');
-    expect(glue.DateIntervalUnit.MINUTES).toBe('MINUTES');
-    expect(glue.DateIntervalUnit.SECONDS).toBe('SECONDS');
-  });
-
-  test('has all 7 interval units', () => {
-    const values = Object.values(glue.DateIntervalUnit);
-    expect(values).toHaveLength(7);
-    expect(values).toContain('YEARS');
-    expect(values).toContain('MONTHS');
-    expect(values).toContain('WEEKS');
-    expect(values).toContain('DAYS');
-    expect(values).toContain('HOURS');
-    expect(values).toContain('MINUTES');
-    expect(values).toContain('SECONDS');
-  });
-});
-
-describe('PartitionProjectionConfiguration', () => {
-  describe('Integer', () => {
-    test('creates INTEGER configuration with required fields only', () => {
-      const config = glue.PartitionProjectionConfiguration.integer({
-        min: 0,
-        max: 100,
-      });
-
-      expect(config.type).toBe(glue.PartitionProjectionType.INTEGER);
-      expect(config.integerRange).toEqual([0, 100]);
-      expect(config.interval).toBeUndefined();
-      expect(config.digits).toBeUndefined();
-      expect(config.format).toBeUndefined();
-      expect(config.intervalUnit).toBeUndefined();
-      expect(config.values).toBeUndefined();
+describe('PartitionProjectionConfiguration Validation', () => {
+  describe('INTEGER validation', () => {
+    test.each([
+      [1.5, 10],
+      [1, 10.5],
+    ])('throws when min=%p or max=%p is not an integer', (min, max) => {
+      expect(() => {
+        glue.PartitionProjectionConfiguration.integer({ min, max });
+      }).toThrow(`INTEGER partition projection range must contain integers, but got [${min}, ${max}]`);
     });
 
-    test('creates INTEGER configuration with all fields', () => {
-      const config = glue.PartitionProjectionConfiguration.integer({
-        min: 2020,
-        max: 2023,
-        interval: 1,
-        digits: 4,
-      });
+    test('throws when min > max', () => {
+      expect(() => {
+        glue.PartitionProjectionConfiguration.integer({
+          min: 10,
+          max: 5,
+        });
+      }).toThrow('INTEGER partition projection range must be [min, max] where min <= max, but got [10, 5]');
+    });
 
-      expect(config.type).toBe(glue.PartitionProjectionType.INTEGER);
-      expect(config.integerRange).toEqual([2020, 2023]);
-      expect(config.interval).toBe(1);
-      expect(config.digits).toBe(4);
+    test.each([0, -1, 1.5])('throws when interval=%p is invalid', (interval) => {
+      expect(() => {
+        glue.PartitionProjectionConfiguration.integer({
+          min: 1,
+          max: 10,
+          interval,
+        });
+      }).toThrow(`INTEGER partition projection interval must be a positive integer, but got ${interval}`);
+    });
+
+    test.each([0, -1, 1.5])('throws when digits=%p is invalid', (digits) => {
+      expect(() => {
+        glue.PartitionProjectionConfiguration.integer({
+          min: 1,
+          max: 10,
+          digits,
+        });
+      }).toThrow(`INTEGER partition projection digits must be an integer >= 1, but got ${digits}`);
     });
   });
 
-  describe('Date', () => {
-    test('creates DATE configuration with required fields only', () => {
-      const config = glue.PartitionProjectionConfiguration.date({
-        min: '2020-01-01',
-        max: '2023-12-31',
-        format: 'yyyy-MM-dd',
-      });
-
-      expect(config.type).toBe(glue.PartitionProjectionType.DATE);
-      expect(config.dateRange).toEqual(['2020-01-01', '2023-12-31']);
-      expect(config.format).toBe('yyyy-MM-dd');
-      expect(config.interval).toBeUndefined();
-      expect(config.intervalUnit).toBeUndefined();
+  describe('DATE validation', () => {
+    test.each([
+      ['', '2023-12-31'],
+      ['   ', '2023-12-31'],
+      ['2020-01-01', ''],
+    ])('throws when min=%p or max=%p is empty', (min, max) => {
+      expect(() => {
+        glue.PartitionProjectionConfiguration.date({ min, max, format: 'yyyy-MM-dd' });
+      }).toThrow('DATE partition projection range must not contain empty strings');
     });
 
-    test('creates DATE configuration with all fields', () => {
-      const config = glue.PartitionProjectionConfiguration.date({
-        min: '2020-01-01',
-        max: '2023-12-31',
-        format: 'yyyy-MM-dd',
-        interval: 1,
-        intervalUnit: glue.DateIntervalUnit.WEEKS,
-      });
-
-      expect(config.type).toBe(glue.PartitionProjectionType.DATE);
-      expect(config.dateRange).toEqual(['2020-01-01', '2023-12-31']);
-      expect(config.format).toBe('yyyy-MM-dd');
-      expect(config.interval).toBe(1);
-      expect(config.intervalUnit).toBe(glue.DateIntervalUnit.WEEKS);
+    test.each(['', '   '])('throws when format=%p is empty', (format) => {
+      expect(() => {
+        glue.PartitionProjectionConfiguration.date({
+          min: '2020-01-01',
+          max: '2023-12-31',
+          format,
+        });
+      }).toThrow('DATE partition projection format must be a non-empty string');
     });
 
-    test('accepts DateIntervalUnit enum values', () => {
-      const config = glue.PartitionProjectionConfiguration.date({
-        min: '2020-01-01',
-        max: '2023-12-31',
-        format: 'yyyy-MM-dd',
-        intervalUnit: glue.DateIntervalUnit.DAYS,
-      });
-
-      expect(config.intervalUnit).toBe('DAYS');
-    });
-
-    test('supports NOW relative dates', () => {
-      const config = glue.PartitionProjectionConfiguration.date({
-        min: 'NOW-3YEARS',
-        max: 'NOW',
-        format: 'yyyy-MM-dd',
-      });
-
-      expect(config.dateRange).toEqual(['NOW-3YEARS', 'NOW']);
+    test.each([0, -1, 1.5,])('throws when interval=%p is invalid', (interval) => {
+      expect(() => {
+        glue.PartitionProjectionConfiguration.date({
+          min: '2020-01-01',
+          max: '2023-12-31',
+          format: 'yyyy-MM-dd',
+          interval,
+        });
+      }).toThrow(`DATE partition projection interval must be a positive integer, but got ${interval}`);
     });
   });
 
-  describe('Enum', () => {
-    test('creates ENUM configuration', () => {
-      const config = glue.PartitionProjectionConfiguration.enum({
-        values: ['us-east-1', 'us-west-2', 'eu-west-1'],
-      });
-
-      expect(config.type).toBe(glue.PartitionProjectionType.ENUM);
-      expect(config.values).toEqual(['us-east-1', 'us-west-2', 'eu-west-1']);
-      expect(config.integerRange).toBeUndefined();
-      expect(config.dateRange).toBeUndefined();
-      expect(config.interval).toBeUndefined();
-      expect(config.format).toBeUndefined();
-    });
-  });
-
-  describe('Injected', () => {
-    test('creates INJECTED configuration', () => {
-      const config = glue.PartitionProjectionConfiguration.injected();
-
-      expect(config.type).toBe(glue.PartitionProjectionType.INJECTED);
-      expect(config.integerRange).toBeUndefined();
-      expect(config.dateRange).toBeUndefined();
-      expect(config.interval).toBeUndefined();
-      expect(config.values).toBeUndefined();
-      expect(config.format).toBeUndefined();
-    });
-  });
-
-  describe('renderParameters', () => {
-    test('renders INTEGER parameters with all fields', () => {
-      const config = glue.PartitionProjectionConfiguration.integer({
-        min: 2020,
-        max: 2023,
-        interval: 1,
-        digits: 4,
-      });
-
-      const params = config._renderParameters('year');
-
-      expect(params).toEqual({
-        'projection.year.type': 'integer',
-        'projection.year.range': '2020,2023',
-        'projection.year.interval': '1',
-        'projection.year.digits': '4',
-      });
+  describe('ENUM validation', () => {
+    test('throws when values is empty array', () => {
+      expect(() => {
+        glue.PartitionProjectionConfiguration.enum({
+          values: [],
+        });
+      }).toThrow('ENUM partition projection values must be a non-empty array');
     });
 
-    test('renders INTEGER parameters with required fields only', () => {
-      const config = glue.PartitionProjectionConfiguration.integer({
-        min: 0,
-        max: 100,
-      });
-
-      const params = config._renderParameters('year');
-
-      expect(params).toEqual({
-        'projection.year.type': 'integer',
-        'projection.year.range': '0,100',
-      });
-    });
-
-    test('renders DATE parameters with all fields', () => {
-      const config = glue.PartitionProjectionConfiguration.date({
-        min: '2020-01-01',
-        max: '2023-12-31',
-        format: 'yyyy-MM-dd',
-        interval: 1,
-        intervalUnit: glue.DateIntervalUnit.DAYS,
-      });
-
-      const params = config._renderParameters('date');
-
-      expect(params).toEqual({
-        'projection.date.type': 'date',
-        'projection.date.range': '2020-01-01,2023-12-31',
-        'projection.date.format': 'yyyy-MM-dd',
-        'projection.date.interval': '1',
-        'projection.date.interval.unit': 'DAYS',
-      });
-    });
-
-    test('renders DATE parameters with required fields only', () => {
-      const config = glue.PartitionProjectionConfiguration.date({
-        min: '2020-01-01',
-        max: '2023-12-31',
-        format: 'yyyy-MM-dd',
-      });
-
-      const params = config._renderParameters('date');
-
-      expect(params).toEqual({
-        'projection.date.type': 'date',
-        'projection.date.range': '2020-01-01,2023-12-31',
-        'projection.date.format': 'yyyy-MM-dd',
-      });
-    });
-
-    test('renders ENUM parameters', () => {
-      const config = glue.PartitionProjectionConfiguration.enum({
-        values: ['us-east-1', 'us-west-2'],
-      });
-
-      const params = config._renderParameters('region');
-
-      expect(params).toEqual({
-        'projection.region.type': 'enum',
-        'projection.region.values': 'us-east-1,us-west-2',
-      });
-    });
-
-    test('renders INJECTED parameters', () => {
-      const config = glue.PartitionProjectionConfiguration.injected();
-
-      const params = config._renderParameters('custom');
-
-      expect(params).toEqual({
-        'projection.custom.type': 'injected',
-      });
+    test.each([
+      [['us-east-1', '', 'us-west-2']],
+      [['us-east-1', '   ', 'us-west-2']],
+    ])('throws when values=%p contains empty string', (values) => {
+      expect(() => {
+        glue.PartitionProjectionConfiguration.enum({ values });
+      }).toThrow( 'ENUM partition projection values must not contain empty strings');
     });
   });
 });

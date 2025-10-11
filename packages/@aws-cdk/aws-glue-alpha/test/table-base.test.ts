@@ -605,41 +605,6 @@ describe('Partition Projection', () => {
           min: 2020,
           max: 2023,
           interval: 1,
-        }),
-      },
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
-      TableInput: {
-        Parameters: {
-          'projection.enabled': 'true',
-          'projection.year.type': 'integer',
-          'projection.year.range': '2020,2023',
-          'projection.year.interval': '1',
-        },
-      },
-    });
-  });
-
-  test('creates table with INTEGER partition projection with digits', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-    const database = new glue.Database(stack, 'Database');
-    new glue.S3Table(stack, 'Table', {
-      database,
-      columns: [{
-        name: 'col1',
-        type: glue.Schema.STRING,
-      }],
-      partitionKeys: [{
-        name: 'year',
-        type: glue.Schema.INTEGER,
-      }],
-      dataFormat: glue.DataFormat.JSON,
-      partitionProjection: {
-        year: glue.PartitionProjectionConfiguration.integer({
-          min: 2020,
-          max: 2023,
           digits: 4,
         }),
       },
@@ -651,6 +616,7 @@ describe('Partition Projection', () => {
           'projection.enabled': 'true',
           'projection.year.type': 'integer',
           'projection.year.range': '2020,2023',
+          'projection.year.interval': '1',
           'projection.year.digits': '4',
         },
       },
