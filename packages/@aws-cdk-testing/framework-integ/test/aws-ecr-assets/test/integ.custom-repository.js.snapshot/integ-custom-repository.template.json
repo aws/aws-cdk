@@ -1,0 +1,119 @@
+{
+ "Resources": {
+  "CustomRepo98CFBAD2": {
+   "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "RepositoryName": "cdk-integ-custom-repo"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "CustomRepoName": {
+   "Value": {
+    "Ref": "CustomRepo98CFBAD2"
+   }
+  },
+  "BasicCustomAssetUri": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      {
+       "Fn::Select": [
+        4,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "CustomRepo98CFBAD2",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      ".dkr.ecr.",
+      {
+       "Fn::Select": [
+        3,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "CustomRepo98CFBAD2",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "CustomRepo98CFBAD2"
+      },
+      ":b4832ce0a1531e509c18ed5609b86a4e82164e014280c2fff4c9aa8f4e69a0d9"
+     ]
+    ]
+   }
+  },
+  "TaggedCustomAssetTag": {
+   "Value": "v1.2.3"
+  },
+  "PrefixedCustomAssetTag": {
+   "Value": "branch-main-c24e55557574222c6da8349e74cbf9e20ec94a6397b3848e97903cd13ab627f4"
+  },
+  "DefaultRepoCustomTagTag": {
+   "Value": "custom-tag-v2"
+  },
+  "DefaultRepoPrefixedTag": {
+   "Value": "feature-8edfe7607498bbd5722848a8b2f76ea961ec87deca4159b67a764c643bb7ba5f"
+  },
+  "PrecedenceTestTag": {
+   "Value": "explicit-wins"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

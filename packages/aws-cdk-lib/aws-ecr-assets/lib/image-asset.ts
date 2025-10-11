@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { FingerprintOptions, FollowMode, IAsset } from '../../assets';
 import * as ecr from '../../aws-ecr';
-import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage, CfnResource, Names, ValidationError, UnscopedValidationError } from '../../core';
+import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage, CfnResource, Names, ValidationError, UnscopedValidationError, DockerImageAssetLocation, DockerImageAssetSource } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
@@ -201,6 +201,27 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * releases.
    */
   readonly repositoryName?: string;
+
+  /**
+   * ECR repository where this image should be published
+   *
+   * @default - use the default ECR repository for CDK assets
+   */
+  readonly ecrRepository?: ecr.IRepository;
+
+  /**
+   * Custom Docker image tag
+   *
+   * @default - asset hash will be used as the image tag
+   */
+  readonly imageTag?: string;
+
+  /**
+   * Docker image tag prefix
+   *
+   * @default - no prefix, uses synthesizer default or empty string
+   */
+  readonly imageTagPrefix?: string;
 
   /**
    * Build args to pass to the `docker build` command.
@@ -477,7 +498,7 @@ export class DockerImageAsset extends Construct implements IAsset {
 
     const defaultIgnoreMode = FeatureFlags.of(this).isEnabled(cxapi.DOCKER_IGNORE_SUPPORT)
       ? IgnoreMode.DOCKER : IgnoreMode.GLOB;
-    let ignoreMode = props.ignoreMode ?? defaultIgnoreMode;
+    const ignoreMode = props.ignoreMode ?? defaultIgnoreMode;
 
     let exclude: string[] = props.exclude || [];
 
@@ -518,6 +539,11 @@ export class DockerImageAsset extends Construct implements IAsset {
     if (props.invalidation?.platform !== false && props.platform) { extraHash.platform = props.platform; }
     if (props.invalidation?.outputs !== false && props.outputs) { extraHash.outputs = props.outputs; }
 
+    // Include new custom repository and tagging properties in hash calculation
+    if (props.ecrRepository) { extraHash.ecrRepository = props.ecrRepository.repositoryName; }
+    if (props.imageTag) { extraHash.imageTag = props.imageTag; }
+    if (props.imageTagPrefix) { extraHash.imageTagPrefix = props.imageTagPrefix; }
+
     // add "salt" to the hash in order to invalidate the image in the upgrade to
     // 1.21.0 which removes the AdoptedRepository resource (and will cause the
     // deletion of the ECR repository the app used).
@@ -549,7 +575,9 @@ export class DockerImageAsset extends Construct implements IAsset {
     this.dockerCacheTo = props.cacheTo;
     this.dockerCacheDisabled = props.cacheDisabled;
 
-    const location = stack.synthesizer.addDockerImageAsset({
+    // Handle custom ECR repository or use default synthesizer
+    let location: DockerImageAssetLocation;
+    const locationProps: DockerImageAssetSource = {
       directoryName: this.assetPath,
       assetName: this.assetName,
       dockerBuildArgs: this.dockerBuildArgs,
@@ -565,9 +593,25 @@ export class DockerImageAsset extends Construct implements IAsset {
       dockerCacheTo: this.dockerCacheTo,
       dockerCacheDisabled: this.dockerCacheDisabled,
       displayName: props.displayName ?? props.assetName ?? Names.stackRelativeConstructPath(this),
-    });
+      // Pass custom tag properties to synthesizer (only used if not using custom repository)
+      imageTag: props.ecrRepository ? undefined : props.imageTag,
+      imageTagPrefix: props.ecrRepository ? undefined : props.imageTagPrefix,
+    };
+    if (props.ecrRepository) {
+      // Custom repository: create location manually
+      const customTag = props.imageTag ?? `${props.imageTagPrefix ?? ''}${this.assetHash}`;
+      location = {
+        repositoryName: props.ecrRepository.repositoryName,
+        imageUri: props.ecrRepository.repositoryUriForTag(customTag),
+        imageTag: customTag,
+      };
+      this.repository = props.ecrRepository;
+    } else {
+      // Default repository: use synthesizer (which now respects per-asset imageTag/imageTagPrefix)
+      location = stack.synthesizer.addDockerImageAsset(locationProps);
+      this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
+    }
 
-    this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
     this.imageUri = location.imageUri;
     this.imageTag = location.imageTag ?? this.assetHash;
   }
