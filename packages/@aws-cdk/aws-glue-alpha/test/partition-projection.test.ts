@@ -62,7 +62,7 @@ describe('PartitionProjectionConfiguration Validation', () => {
       }).toThrow('DATE partition projection format must be a non-empty string');
     });
 
-    test.each([0, -1, 1.5,])('throws when interval=%p is invalid', (interval) => {
+    test.each([0, -1, 1.5])('throws when interval=%p is invalid', (interval) => {
       expect(() => {
         glue.PartitionProjectionConfiguration.date({
           min: '2020-01-01',
@@ -89,7 +89,7 @@ describe('PartitionProjectionConfiguration Validation', () => {
     ])('throws when values=%p contains empty string', (values) => {
       expect(() => {
         glue.PartitionProjectionConfiguration.enum({ values });
-      }).toThrow( 'ENUM partition projection values must not contain empty strings');
+      }).toThrow('ENUM partition projection values must not contain empty strings');
     });
   });
 });
