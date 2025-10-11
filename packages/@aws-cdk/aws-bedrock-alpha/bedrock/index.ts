@@ -42,6 +42,12 @@ export * from './inference-profiles/cross-region-inference-profile';
 export * from './inference-profiles/prompt-router';
 
 // ===================================
+// Knowledge Base
+// ===================================
+export * from './knowledge-base/knowledge-base';
+export * from './knowledge-base/perms';
+
+// ===================================
 // Models
 // ===================================
 export * from './models';
