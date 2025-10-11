@@ -369,6 +369,18 @@ export class Distribution extends Resource implements IDistribution {
       }
     }
 
+    // Warn if minimumProtocolVersion and sslSupportMethod are specified without a certificate
+    if (!props.certificate) {
+      if (props.minimumProtocolVersion !== undefined) {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-cloudfront:minimumProtocolVersionRequiresCertificate', 
+          'minimumProtocolVersion can only be specified when using a custom certificate. Without a custom certificate, CloudFront defaults to TLSv1.');
+      }
+      if (props.sslSupportMethod !== undefined) {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-cloudfront:sslSupportMethodRequiresCertificate',
+          'sslSupportMethod can only be specified when using a custom certificate. Without a custom certificate, CloudFront defaults to SNI.');
+      }
+    }
+
     this.httpVersion = props.httpVersion ?? HttpVersion.HTTP2;
     this.validateGrpc(props.defaultBehavior);
 
