@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "AnomalyDetectionAlarmTestStack.assets": {
+    "SyntheticsCanaryRuntimeValidationStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "AnomalyDetectionAlarmTestStack.assets.json",
+        "file": "SyntheticsCanaryRuntimeValidationStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "AnomalyDetectionAlarmTestStack": {
+    "SyntheticsCanaryRuntimeValidationStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "AnomalyDetectionAlarmTestStack.template.json",
+        "templateFile": "SyntheticsCanaryRuntimeValidationStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b8cdfc783e9c20756f3376e3cabc861b35d3c78c1247179407f582a462d9a318.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/95138806a7dd99c00ce6b0e3fc0649800079593906e807412fd387f2a2221407.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "AnomalyDetectionAlarmTestStack.assets"
+          "SyntheticsCanaryRuntimeValidationStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,178 +31,190 @@
         }
       },
       "dependencies": [
-        "AnomalyDetectionAlarmTestStack.assets"
+        "SyntheticsCanaryRuntimeValidationStack.assets"
       ],
       "metadata": {
-        "/AnomalyDetectionAlarmTestStack/DefaultOperatorAnomalyAlarm": [
+        "/SyntheticsCanaryRuntimeValidationStack/Puppeteer11RootCanary": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "metric": {},
-              "stdDevs": "*",
-              "evaluationPeriods": "*",
-              "datapointsToAlarm": "*",
-              "comparisonOperator": "*"
+              "runtime": "*",
+              "test": "*",
+              "memory": "*",
+              "timeout": "*"
             }
-          },
+          }
+        ],
+        "/SyntheticsCanaryRuntimeValidationStack/Puppeteer11RootCanary/ArtifactsBucket": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "metric": {
-                "warnings": "*"
+              "encryption": "KMS_MANAGED",
+              "enforceSSL": true,
+              "lifecycleRules": "*"
+            }
+          }
+        ],
+        "/SyntheticsCanaryRuntimeValidationStack/Puppeteer11RootCanary/ArtifactsBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Puppeteer11RootCanaryArtifactsBucketC312253E"
+          }
+        ],
+        "/SyntheticsCanaryRuntimeValidationStack/Puppeteer11RootCanary/ArtifactsBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
+        "/SyntheticsCanaryRuntimeValidationStack/Puppeteer11RootCanary/ArtifactsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Puppeteer11RootCanaryArtifactsBucketPolicyBB7D5123"
+          }
+        ],
+        "/SyntheticsCanaryRuntimeValidationStack/Puppeteer11RootCanary/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
               },
-              "stdDevs": "*",
-              "evaluationPeriods": "*",
-              "datapointsToAlarm": "*"
+              "inlinePolicies": "*",
+              "managedPolicies": []
             }
           }
         ],
-        "/AnomalyDetectionAlarmTestStack/DefaultOperatorAnomalyAlarm/Resource": [
+        "/SyntheticsCanaryRuntimeValidationStack/Puppeteer11RootCanary/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/SyntheticsCanaryRuntimeValidationStack/Puppeteer11RootCanary/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DefaultOperatorAnomalyAlarm13E81AA2"
+            "data": "Puppeteer11RootCanaryServiceRoleDB811CBF"
           }
         ],
-        "/AnomalyDetectionAlarmTestStack/ExplicitOperatorAnomalyAlarm": [
+        "/SyntheticsCanaryRuntimeValidationStack/Puppeteer11RootCanary/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Puppeteer11RootCanaryD368BA61"
+          }
+        ],
+        "/SyntheticsCanaryRuntimeValidationStack/Puppeteer11NodeModulesCanary": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "metric": {},
-              "stdDevs": "*",
-              "evaluationPeriods": "*",
-              "comparisonOperator": "*"
+              "runtime": "*",
+              "test": "*",
+              "memory": "*",
+              "timeout": "*"
             }
-          },
+          }
+        ],
+        "/SyntheticsCanaryRuntimeValidationStack/Puppeteer11NodeModulesCanary/ArtifactsBucket": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "metric": {
-                "warnings": "*"
+              "encryption": "KMS_MANAGED",
+              "enforceSSL": true,
+              "lifecycleRules": "*"
+            }
+          }
+        ],
+        "/SyntheticsCanaryRuntimeValidationStack/Puppeteer11NodeModulesCanary/ArtifactsBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Puppeteer11NodeModulesCanaryArtifactsBucket1E9D6798"
+          }
+        ],
+        "/SyntheticsCanaryRuntimeValidationStack/Puppeteer11NodeModulesCanary/ArtifactsBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
+        "/SyntheticsCanaryRuntimeValidationStack/Puppeteer11NodeModulesCanary/ArtifactsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Puppeteer11NodeModulesCanaryArtifactsBucketPolicy3496BDE6"
+          }
+        ],
+        "/SyntheticsCanaryRuntimeValidationStack/Puppeteer11NodeModulesCanary/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
               },
-              "stdDevs": "*",
-              "evaluationPeriods": "*",
-              "comparisonOperator": "*"
+              "inlinePolicies": "*",
+              "managedPolicies": []
             }
           }
         ],
-        "/AnomalyDetectionAlarmTestStack/ExplicitOperatorAnomalyAlarm/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExplicitOperatorAnomalyAlarm061F9C2B"
-          }
-        ],
-        "/AnomalyDetectionAlarmTestStack/DescriptiveAnomalyAlarm": [
+        "/SyntheticsCanaryRuntimeValidationStack/Puppeteer11NodeModulesCanary/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "metric": {},
-              "alarmName": "*",
-              "alarmDescription": "*",
-              "comparisonOperator": "*",
-              "datapointsToAlarm": "*",
-              "threshold": "*",
-              "evaluationPeriods": "*",
-              "evaluateLowSampleCountPercentile": "*",
-              "treatMissingData": "*",
-              "actionsEnabled": "*"
-            }
+            "data": "*"
           }
         ],
-        "/AnomalyDetectionAlarmTestStack/DescriptiveAnomalyAlarm/Resource": [
+        "/SyntheticsCanaryRuntimeValidationStack/Puppeteer11NodeModulesCanary/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DescriptiveAnomalyAlarm8B14203E"
+            "data": "Puppeteer11NodeModulesCanaryServiceRole86DFFB6D"
           }
         ],
-        "/AnomalyDetectionAlarmTestStack/CustomPeriodAnomalyAlarm": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "metric": {},
-              "stdDevs": "*",
-              "evaluationPeriods": "*",
-              "comparisonOperator": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "metric": {
-                "warnings": "*"
-              },
-              "stdDevs": "*",
-              "evaluationPeriods": "*",
-              "comparisonOperator": "*"
-            }
-          }
-        ],
-        "/AnomalyDetectionAlarmTestStack/CustomPeriodAnomalyAlarm/Resource": [
+        "/SyntheticsCanaryRuntimeValidationStack/Puppeteer11NodeModulesCanary/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomPeriodAnomalyAlarmD85345B9"
+            "data": "Puppeteer11NodeModulesCanaryC1D05D54"
           }
         ],
-        "/AnomalyDetectionAlarmTestStack/Exports/Output{\"Ref\":\"DefaultOperatorAnomalyAlarm13E81AA2\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefDefaultOperatorAnomalyAlarm13E81AA2E47BFAEC"
-          }
-        ],
-        "/AnomalyDetectionAlarmTestStack/Exports/Output{\"Ref\":\"ExplicitOperatorAnomalyAlarm061F9C2B\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefExplicitOperatorAnomalyAlarm061F9C2BB2D8039E"
-          }
-        ],
-        "/AnomalyDetectionAlarmTestStack/Exports/Output{\"Ref\":\"DescriptiveAnomalyAlarm8B14203E\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefDescriptiveAnomalyAlarm8B14203E100E41DF"
-          }
-        ],
-        "/AnomalyDetectionAlarmTestStack/Exports/Output{\"Ref\":\"CustomPeriodAnomalyAlarmD85345B9\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefCustomPeriodAnomalyAlarmD85345B903D51401"
-          }
-        ],
-        "/AnomalyDetectionAlarmTestStack/BootstrapVersion": [
+        "/SyntheticsCanaryRuntimeValidationStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/AnomalyDetectionAlarmTestStack/CheckBootstrapVersion": [
+        "/SyntheticsCanaryRuntimeValidationStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "AnomalyDetectionAlarmTestStack"
+      "displayName": "SyntheticsCanaryRuntimeValidationStack"
     },
-    "AnomalyDetectionAlarmIntegTestDefaultTestDeployAssert033A4433.assets": {
+    "SyntheticsCanaryRuntimeValidationDefaultTestDeployAssert9B35538B.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "AnomalyDetectionAlarmIntegTestDefaultTestDeployAssert033A4433.assets.json",
+        "file": "SyntheticsCanaryRuntimeValidationDefaultTestDeployAssert9B35538B.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "AnomalyDetectionAlarmIntegTestDefaultTestDeployAssert033A4433": {
+    "SyntheticsCanaryRuntimeValidationDefaultTestDeployAssert9B35538B": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "AnomalyDetectionAlarmIntegTestDefaultTestDeployAssert033A4433.template.json",
+        "templateFile": "SyntheticsCanaryRuntimeValidationDefaultTestDeployAssert9B35538B.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2d9ab528254bdbf23333f9ffbd83fc509281e60c39609de6f3314f3d6329191b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "AnomalyDetectionAlarmIntegTestDefaultTestDeployAssert033A4433.assets"
+          "SyntheticsCanaryRuntimeValidationDefaultTestDeployAssert9B35538B.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -211,140 +223,23 @@
         }
       },
       "dependencies": [
-        "AnomalyDetectionAlarmTestStack",
-        "AnomalyDetectionAlarmIntegTestDefaultTestDeployAssert033A4433.assets"
+        "SyntheticsCanaryRuntimeValidationDefaultTestDeployAssert9B35538B.assets"
       ],
       "metadata": {
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarmsc82210552ef6556c440ecd9c4f587dcb/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarmsc82210552ef6556c440ecd9c4f587dcb/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallCloudWatchdescribeAlarmsc82210552ef6556c440ecd9c4f587dcb"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarmsc82210552ef6556c440ecd9c4f587dcb/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallCloudWatchdescribeAlarmsc82210552ef6556c440ecd9c4f587dcb"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms4ab8a8c4ff46e0c0f66678f15e75e985/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms4ab8a8c4ff46e0c0f66678f15e75e985/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallCloudWatchdescribeAlarms4ab8a8c4ff46e0c0f66678f15e75e985"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms4ab8a8c4ff46e0c0f66678f15e75e985/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallCloudWatchdescribeAlarms4ab8a8c4ff46e0c0f66678f15e75e985"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms6b3d7990c49f09ccae2f6df601115b56/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms6b3d7990c49f09ccae2f6df601115b56/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallCloudWatchdescribeAlarms6b3d7990c49f09ccae2f6df601115b56"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms6b3d7990c49f09ccae2f6df601115b56/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallCloudWatchdescribeAlarms6b3d7990c49f09ccae2f6df601115b56"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/SyntheticsCanaryRuntimeValidation/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/SyntheticsCanaryRuntimeValidation/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert"
+      "displayName": "SyntheticsCanaryRuntimeValidation/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -374,6 +269,10 @@
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "recommendedValue": true,
+            "explanation": "Disable implicit openListener when custom security groups are provided"
           },
           "@aws-cdk/aws-rds:lowercaseDbIdentifier": {
             "recommendedValue": true,
@@ -827,5 +726,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1025.0"
+  "minimumCliVersion": "2.1027.0"
 }

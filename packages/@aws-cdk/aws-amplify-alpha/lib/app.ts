@@ -316,7 +316,9 @@ export class App extends Resource implements IApp, iam.IGrantable {
       name: props.appName || this.node.id,
       oauthToken: sourceCodeProviderOptions?.oauthToken?.unsafeUnwrap(), // Safe usage
       repository: sourceCodeProviderOptions?.repository,
-      customHeaders: props.customResponseHeaders ? renderCustomResponseHeaders(props.customResponseHeaders, this) : undefined,
+      customHeaders: props.customResponseHeaders && props.customResponseHeaders.length > 0
+        ? renderCustomResponseHeaders(props.customResponseHeaders, this)
+        : undefined,
       platform: appPlatform,
       jobConfig: props.buildComputeType ? { buildComputeType: props.buildComputeType } : undefined,
     });
@@ -594,7 +596,21 @@ export interface CustomResponseHeader {
   readonly headers: { [key: string]: string };
 }
 
+/**
+ * Renders custom response headers to YAML format.
+ *
+ * @param customHeaders - Array of custom headers. Must not be empty.
+ * @param scope - Construct scope for error reporting
+ * @returns YAML string representation of custom headers
+ *
+ * @internal
+ */
 function renderCustomResponseHeaders(customHeaders: CustomResponseHeader[], scope: IConstruct): string {
+  // Defensive assertion - should never happen due to call site validation
+  if (customHeaders.length === 0) {
+    throw new ValidationError('renderCustomResponseHeaders called with empty array', scope);
+  }
+
   const hasAppRoot = customHeaders[0].appRoot !== undefined;
   const yaml = [hasAppRoot ? 'applications:' : 'customHeaders:'];
 
