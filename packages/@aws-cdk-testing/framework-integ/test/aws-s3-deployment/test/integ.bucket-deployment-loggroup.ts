@@ -17,13 +17,15 @@ class TestBucketDeployment extends cdk.Stack {
       autoDeleteObjects: true, // needed for integration test cleanup
     });
 
+    const logGroup = new logs.LogGroup(this, 'LogGroup', {
+      retention: logs.RetentionDays.ONE_DAY,
+      removalPolicy: cdk.RemovalPolicy.DESTROY, // cleanup integ test
+    });
+
     new s3deploy.BucketDeployment(this, 'DeployMe', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
       destinationBucket,
-      logGroup: new logs.LogGroup(this, 'LogGroup', {
-        retention: logs.RetentionDays.ONE_DAY,
-        removalPolicy: cdk.RemovalPolicy.DESTROY, // cleanup integ test
-      }),
+      logGroup,
       retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
   }
