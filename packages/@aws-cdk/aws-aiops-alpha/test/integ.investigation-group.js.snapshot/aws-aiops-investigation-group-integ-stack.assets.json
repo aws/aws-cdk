@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "f4e10f3bc811e20862d3239522a4aab647b3ec95f7ed7ae39da790bc893a594e": {
+      "displayName": "aws-aiops-investigation-group-integ-stack Template",
+      "source": {
+        "path": "aws-aiops-investigation-group-integ-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-c332b185": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f4e10f3bc811e20862d3239522a4aab647b3ec95f7ed7ae39da790bc893a594e.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,15 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "AIOpsInvestigationGroupIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-aiops-investigation-group-integ-stack"
+      ],
+      "diffAssets": true,
+      "stackUpdateWorkflow": true,
+      "assertionStack": "AIOpsInvestigationGroupIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AIOpsInvestigationGroupIntegTestDefaultTestDeployAssert431ED458"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
