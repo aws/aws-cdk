@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159": {
-   "Type": "Custom::DeployAssert@SdkCallS3listObjects",
+  "AwsApiCallS3listObjectsV235c62315e3c77e768e4890dc4bd0b9b5": {
+   "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -10,8 +10,8 @@
      ]
     },
     "service": "S3",
-    "api": "listObjects",
-    "expected": "{\"$ObjectLike\":{\"Contents\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Key\":\"403.html\"}},{\"$ObjectLike\":{\"Key\":\"some-key\"}}]}}}",
+    "api": "listObjectsV2",
+    "expected": "{\"$ObjectLike\":{\"Contents\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Key\":{\"$StringLike\":\"^app/frontend/\"}}}]}}}",
     "parameters": {
      "Bucket": {
       "Fn::Join": [
@@ -19,15 +19,16 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "test-bucket-deployments:ExportsOutputRefDestination52A57FAA3531B2DE2"
+         "Fn::ImportValue": "test-bucket-deployment-scoped-permissions:ExportsOutputRefSharedBucket60D199D6BCA6BCBE"
         },
         "\""
        ]
       ]
-     }
+     },
+     "Prefix": "\"app/frontend/\""
     },
     "flattenResponse": "false",
-    "salt": "1759424573753"
+    "salt": "1759436251611"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -60,7 +61,7 @@
        "Statement": [
         {
          "Action": [
-          "s3:ListObjects"
+          "s3:ListObjectsV2"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -70,7 +71,6 @@
         {
          "Effect": "Allow",
          "Action": [
-          "s3:GetObject",
           "s3:ListBucket"
          ],
          "Resource": [
@@ -79,9 +79,36 @@
         },
         {
          "Action": [
-          "cloudformation:DescribeStacks"
+          "s3:ListObjectsV2"
          ],
          "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:ListBucket"
+         ],
          "Resource": [
           "*"
          ]
@@ -120,8 +147,8 @@
     }
    }
   },
-  "AwsApiCallCloudFormationdescribeStacks710fee3716a4f13f0780ff50d5639a00": {
-   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStacks",
+  "AwsApiCallS3listObjectsV2284e4449eb4bb1774deb8ffb68a5507a": {
+   "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -129,37 +156,85 @@
       "Arn"
      ]
     },
-    "service": "CloudFormation",
-    "api": "describeStacks",
-    "expected": "{\"$StringLike\":\"Object Keys are ([0-9a-f])+.zip\"}",
-    "actualPath": "Stacks.0.Outputs.0.OutputValue",
+    "service": "S3",
+    "api": "listObjectsV2",
+    "expected": "{\"$ObjectLike\":{\"Contents\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Key\":{\"$StringLike\":\"^app/backend/\"}}}]}}}",
     "parameters": {
-     "StackName": "\"test-bucket-deployments\""
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployment-scoped-permissions:ExportsOutputRefSharedBucket60D199D6BCA6BCBE"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Prefix": "\"app/backend/\""
     },
-    "flattenResponse": "true",
-    "outputPaths": [
-     "Stacks.0.Outputs.0.OutputKey",
-     "Stacks.0.Outputs.0.OutputValue"
-    ],
-    "salt": "1759424573754"
+    "flattenResponse": "false",
+    "salt": "1759436251612"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV2b2859af6383965e89dbdf9f9eecf7a71": {
+   "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "listObjectsV2",
+    "expected": "{\"$ObjectLike\":{\"Contents\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Key\":\"assets/test.txt\"}}]}}}",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployment-scoped-permissions:ExportsOutputRefSharedBucket60D199D6BCA6BCBE"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Prefix": "\"assets/\""
+    },
+    "flattenResponse": "false",
+    "salt": "1759436251612"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159": {
+  "AssertionResultsAwsApiCallS3listObjectsV235c62315e3c77e768e4890dc4bd0b9b5": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallS3listObjectsda40203e2d2431b9ecea6a43ee9ce159",
+     "AwsApiCallS3listObjectsV235c62315e3c77e768e4890dc4bd0b9b5",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallCloudFormationdescribeStacks710fee3716a4f13f0780ff50d5639a00": {
+  "AssertionResultsAwsApiCallS3listObjectsV2284e4449eb4bb1774deb8ffb68a5507a": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallCloudFormationdescribeStacks710fee3716a4f13f0780ff50d5639a00",
+     "AwsApiCallS3listObjectsV2284e4449eb4bb1774deb8ffb68a5507a",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3listObjectsV2b2859af6383965e89dbdf9f9eecf7a71": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3listObjectsV2b2859af6383965e89dbdf9f9eecf7a71",
      "assertion"
     ]
    }

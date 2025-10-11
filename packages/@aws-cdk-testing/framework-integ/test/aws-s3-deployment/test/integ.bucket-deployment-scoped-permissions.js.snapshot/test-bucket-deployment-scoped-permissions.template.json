@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "Bucket83908E77": {
+  "SharedBucket60D199D6": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
     "Tags": [
@@ -9,7 +9,19 @@
       "Value": "true"
      },
      {
-      "Key": "aws-cdk:cr-owned:deploy/here/:ecfc6640",
+      "Key": "aws-cdk:cr-owned:/assets/:8ae8a58a",
+      "Value": "true"
+     },
+     {
+      "Key": "aws-cdk:cr-owned:8e805c9e",
+      "Value": "true"
+     },
+     {
+      "Key": "aws-cdk:cr-owned:app/backend/:b0812982",
+      "Value": "true"
+     },
+     {
+      "Key": "aws-cdk:cr-owned:app/frontend/:2eabd3ad",
       "Value": "true"
      }
     ]
@@ -17,11 +29,11 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "BucketPolicyE9A3008A": {
+  "SharedBucketPolicyE1D6CD0C": {
    "Type": "AWS::S3::BucketPolicy",
    "Properties": {
     "Bucket": {
-     "Ref": "Bucket83908E77"
+     "Ref": "SharedBucket60D199D6"
     },
     "PolicyDocument": {
      "Statement": [
@@ -44,7 +56,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "Bucket83908E77",
+          "SharedBucket60D199D6",
           "Arn"
          ]
         },
@@ -54,7 +66,7 @@
           [
            {
             "Fn::GetAtt": [
-             "Bucket83908E77",
+             "SharedBucket60D199D6",
              "Arn"
             ]
            },
@@ -69,7 +81,7 @@
     }
    }
   },
-  "BucketAutoDeleteObjectsCustomResourceBAFD23C2": {
+  "SharedBucketAutoDeleteObjectsCustomResource9D645816": {
    "Type": "Custom::S3AutoDeleteObjects",
    "Properties": {
     "ServiceToken": {
@@ -79,11 +91,11 @@
      ]
     },
     "BucketName": {
-     "Ref": "Bucket83908E77"
+     "Ref": "SharedBucket60D199D6"
     }
    },
    "DependsOn": [
-    "BucketPolicyE9A3008A"
+    "SharedBucketPolicyE1D6CD0C"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -143,7 +155,7 @@
       [
        "Lambda function for auto-deleting objects in ",
        {
-        "Ref": "Bucket83908E77"
+        "Ref": "SharedBucket60D199D6"
        },
        " S3 bucket."
       ]
@@ -154,36 +166,7 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
-  "TestSecret16AF87B1": {
-   "Type": "AWS::SecretsManager::Secret",
-   "Properties": {
-    "GenerateSecretString": {
-     "GenerateStringKey": "password",
-     "SecretStringTemplate": "{\"value\":\"test\\\"with\\\"quotes\"}"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "SecretParam0C31D215": {
-   "Type": "AWS::SSM::Parameter",
-   "Properties": {
-    "Type": "String",
-    "Value": {
-     "Fn::Join": [
-      "",
-      [
-       "{{resolve:secretsmanager:",
-       {
-        "Ref": "TestSecret16AF87B1"
-       },
-       ":SecretString:value::}}"
-      ]
-     ]
-    }
-   }
-  },
-  "DeployMeHereAwsCliLayerDDC2FE7D": {
+  "DeployFrontendAwsCliLayerD774ED8F": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
@@ -195,7 +178,7 @@
     "Description": "/opt/awscli/aws"
    }
   },
-  "DeployMeHereCustomResourceE86627A6": {
+  "DeployFrontendCustomResource3E02C3B7": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
     "ServiceToken": {
@@ -207,153 +190,15 @@
     "SourceBucketNames": [
      {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      }
     ],
     "SourceObjectKeys": [
-     "d09271be89b6cb0398f793b40c1531fd9b076aa92ba80b5e436914b1808fe18d.zip",
-     "0f14dedeaf4386031c978375cbda0f65d7b52b29452cabb8873eb8f0d0fa936b.zip",
-     "ef45f69fe7c715abf58a9bda311a5bf7751d8a483d42506d6942dfa8bd3750a0.zip",
-     "939a4ab8b51f1a1cccb59d97f04c318ad41c1d404e666c158ca2810894bc5f5f.zip",
-     "4ba8cfb53da242e91a423f3333c95db70ac0b5c2481a2d7e5c51142e5738403f.zip",
-     "4458891c23c9754723db261b607985ee4fce5a087343fca93e9608fb49e083ba.zip",
-     "c3f91ed893cc759513d80ebd56bcaae5061b08bff3dd8ad10daeb62558bac52e.zip"
-    ],
-    "SourceMarkers": [
-     {},
-     {
-      "<<marker:0xbaba:0>>": {
-       "Ref": "Bucket83908E77"
-      }
-     },
-     {
-      "<<marker:0xbaba:0>>": {
-       "Fn::Join": [
-        "",
-        [
-         "\"",
-         {
-          "Fn::GetAtt": [
-           "Bucket83908E77",
-           "WebsiteURL"
-          ]
-         },
-         "\""
-        ]
-       ]
-      }
-     },
-     {
-      "<<marker:0xbaba:0>>": {
-       "Fn::Join": [
-        "",
-        [
-         "\"",
-         {
-          "Fn::GetAtt": [
-           "Bucket83908E77",
-           "WebsiteURL"
-          ]
-         },
-         "\""
-        ]
-       ]
-      }
-     },
-     {
-      "<<marker:0xbaba:0>>": {
-       "Fn::Join": [
-        "",
-        [
-         "\"",
-         {
-          "Fn::Select": [
-           2,
-           {
-            "Fn::Split": [
-             "/",
-             {
-              "Fn::GetAtt": [
-               "Bucket83908E77",
-               "WebsiteURL"
-              ]
-             }
-            ]
-           }
-          ]
-         },
-         "\""
-        ]
-       ]
-      }
-     },
-     {
-      "<<marker:0xbaba:0>>": {
-       "Fn::Join": [
-        "",
-        [
-         "\"",
-         {
-          "Fn::GetAtt": [
-           "SecretParam0C31D215",
-           "Value"
-          ]
-         },
-         "\""
-        ]
-       ]
-      }
-     },
-     {
-      "<<marker:0xbaba:0>>": {
-       "Fn::Join": [
-        "",
-        [
-         "\"",
-         {
-          "Fn::GetAtt": [
-           "SecretParam0C31D215",
-           "Value"
-          ]
-         },
-         "\""
-        ]
-       ]
-      }
-     }
-    ],
-    "SourceMarkersConfig": [
-     {},
-     {},
-     {},
-     {},
-     {},
-     {
-      "jsonEscape": true
-     },
-     {}
+     "fc4481abf279255619ff7418faa5d24456fef3432ea0da59c95542578ff0222e.zip"
     ],
     "DestinationBucketName": {
-     "Ref": "Bucket83908E77"
+     "Ref": "SharedBucket60D199D6"
     },
-    "DestinationBucketKeyPrefix": "deploy/here/",
+    "DestinationBucketKeyPrefix": "app/frontend/",
     "WaitForDistributionInvalidation": true,
     "RetainOnDelete": false,
     "Prune": true,
@@ -456,7 +301,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "Bucket83908E77",
+          "SharedBucket60D199D6",
           "Arn"
          ]
         },
@@ -466,11 +311,53 @@
           [
            {
             "Fn::GetAtt": [
-             "Bucket83908E77",
+             "SharedBucket60D199D6",
              "Arn"
             ]
            },
-           "/deploy/here/*"
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "SharedBucket60D199D6",
+             "Arn"
+            ]
+           },
+           "/app/backend/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "SharedBucket60D199D6",
+             "Arn"
+            ]
+           },
+           "/app/frontend/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "SharedBucket60D199D6",
+             "Arn"
+            ]
+           },
+           "/assets/*"
           ]
          ]
         }
@@ -504,7 +391,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "DeployMeHereAwsCliLayerDDC2FE7D"
+      "Ref": "DeployFrontendAwsCliLayerD774ED8F"
      }
     ],
     "Role": {
@@ -520,6 +407,134 @@
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
    ]
+  },
+  "DeployBackendAwsCliLayerF1F7665E": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
+    },
+    "Description": "/opt/awscli/aws"
+   }
+  },
+  "DeployBackendCustomResource98C10F89": {
+   "Type": "Custom::CDKBucketDeployment",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
+      "Arn"
+     ]
+    },
+    "SourceBucketNames": [
+     {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     }
+    ],
+    "SourceObjectKeys": [
+     "a94977ede0211fd3b45efa33d6d8d1d7bbe0c5a96d977139d8b16abfa96fe9cb.zip"
+    ],
+    "DestinationBucketName": {
+     "Ref": "SharedBucket60D199D6"
+    },
+    "DestinationBucketKeyPrefix": "app/backend/",
+    "WaitForDistributionInvalidation": true,
+    "RetainOnDelete": false,
+    "Prune": true,
+    "OutputObjectKeys": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DeployAssetsAwsCliLayer986E51B7": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
+    },
+    "Description": "/opt/awscli/aws"
+   }
+  },
+  "DeployAssetsCustomResource49681559": {
+   "Type": "Custom::CDKBucketDeployment",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
+      "Arn"
+     ]
+    },
+    "SourceBucketNames": [
+     {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     }
+    ],
+    "SourceObjectKeys": [
+     "ccb578e1f240da8d98ef5f5d8ba8862827437baf822f492965676f2c6461f36d.zip"
+    ],
+    "SourceMarkers": [
+     {}
+    ],
+    "DestinationBucketName": {
+     "Ref": "SharedBucket60D199D6"
+    },
+    "DestinationBucketKeyPrefix": "/assets/",
+    "WaitForDistributionInvalidation": true,
+    "RetainOnDelete": false,
+    "Prune": true,
+    "OutputObjectKeys": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DeployRootAwsCliLayerFD4BA878": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
+    },
+    "Description": "/opt/awscli/aws"
+   }
+  },
+  "DeployRootCustomResourceE862EFE5": {
+   "Type": "Custom::CDKBucketDeployment",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
+      "Arn"
+     ]
+    },
+    "SourceBucketNames": [
+     {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     }
+    ],
+    "SourceObjectKeys": [
+     "3985cadd7ede6f87b5f72d814c1ac26ec1f4777b5d7c21a0ceeaef6c5ce29262.zip"
+    ],
+    "SourceMarkers": [
+     {}
+    ],
+    "DestinationBucketName": {
+     "Ref": "SharedBucket60D199D6"
+    },
+    "WaitForDistributionInvalidation": true,
+    "RetainOnDelete": false,
+    "Prune": true,
+    "OutputObjectKeys": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Mappings": {
@@ -665,28 +680,53 @@
   }
  },
  "Outputs": {
-  "IsToken": {
-   "Value": "true"
-  },
-  "SecretValue": {
+  "FrontendRoleArn": {
+   "Description": "IAM role for frontend deployment (should have app/frontend/* access)",
    "Value": {
     "Fn::GetAtt": [
-     "SecretParam0C31D215",
-     "Value"
+     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+     "Arn"
+    ]
+   }
+  },
+  "BackendRoleArn": {
+   "Description": "IAM role for backend deployment (should have app/backend/* access)",
+   "Value": {
+    "Fn::GetAtt": [
+     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+     "Arn"
+    ]
+   }
+  },
+  "AssetsRoleArn": {
+   "Description": "IAM role for assets deployment (should have assets/* access)",
+   "Value": {
+    "Fn::GetAtt": [
+     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+     "Arn"
+    ]
+   }
+  },
+  "RootRoleArn": {
+   "Description": "IAM role for root deployment (should have /* access)",
+   "Value": {
+    "Fn::GetAtt": [
+     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+     "Arn"
     ]
    }
   },
   "BucketName": {
    "Value": {
-    "Ref": "Bucket83908E77"
+    "Ref": "SharedBucket60D199D6"
    }
   },
-  "ExportsOutputRefBucket83908E7781C90AC0": {
+  "ExportsOutputRefSharedBucket60D199D6BCA6BCBE": {
    "Value": {
-    "Ref": "Bucket83908E77"
+    "Ref": "SharedBucket60D199D6"
    },
    "Export": {
-    "Name": "TestBucketDeploymentContent:ExportsOutputRefBucket83908E7781C90AC0"
+    "Name": "test-bucket-deployment-scoped-permissions:ExportsOutputRefSharedBucket60D199D6BCA6BCBE"
    }
   }
  },
