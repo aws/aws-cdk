@@ -174,3 +174,21 @@ myTopic.addSubscription(new subscriptions.FirehoseSubscription(stream, {
   rawMessageDelivery: true,
 }));
 ```
+
+## KMS Encryption Considerations
+
+When using encrypted SQS queues with SNS subscriptions:
+
+```
+// ❌ Avoid - causes circular dependency with restrictSqsDescryption flag
+const sharedKey = new kms.Key(this, 'SharedKey');
+const topic = new sns.Topic(this, 'Topic', { masterKey: sharedKey });
+const queue = new sqs.Queue(this, 'Queue', { encryptionMasterKey: sharedKey });
+
+// ✅ Recommended - use separate keys
+const topicKey = new kms.Key(this, 'TopicKey');
+const queueKey = new kms.Key(this, 'QueueKey');
+const topic = new sns.Topic(this, 'Topic', { masterKey: topicKey });
+const queue = new sqs.Queue(this, 'Queue', { encryptionMasterKey: queueKey });
+
+```
