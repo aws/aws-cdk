@@ -1,4 +1,4 @@
-import { IDistribution } from '..';
+import { IDistribution, IMTDistribution } from '..';
 import * as iam from '../../../aws-iam';
 import { Stack } from '../../../core';
 
@@ -59,7 +59,7 @@ const wildcardOnlyActions = [
 /**
  * Format distribution ARN from stack and distribution ID.
  */
-export function formatDistributionArn(dist: IDistribution) {
+export function formatDistributionArn(dist: IDistribution | IMTDistribution) {
   return Stack.of(dist).formatArn({
     service: 'cloudfront',
     region: '',
@@ -72,7 +72,7 @@ export function formatDistributionArn(dist: IDistribution) {
  * Adds an IAM policy statement associated with this distribution to an IAM
  * principal's policy.
  */
-export function grant(dist: IDistribution, grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+export function grant(dist: IDistribution | IMTDistribution, grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
   const wildcardActions = [];
   const resourceLevelSupportedActions = [];
   let wildcardGrant: iam.Grant;
