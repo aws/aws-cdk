@@ -65,7 +65,8 @@ export function respond(
   if (logApiResponseData) {
     console.log('Responding', JSON.stringify(responseObject));
   } else {
-    const { Data, ...filteredResponseObject } = responseObject;
+    // Extract Data property to exclude it from logging (security)
+    const { Data: _data, ...filteredResponseObject } = responseObject;
     console.log('Responding', JSON.stringify(filteredResponseObject));
   }
 
@@ -99,6 +100,11 @@ export function respond(
  * Gets credentials used to make an API call.
  */
 export async function getCredentials(call: AwsSdkCall, physicalResourceId: string): Promise<AwsCredentialIdentityProvider | undefined> {
+  // Validate that externalId requires assumedRoleArn
+  if (call.externalId && !call.assumedRoleArn) {
+    throw new Error('ExternalId can only be provided when assumedRoleArn is specified');
+  }
+
   let credentials;
   if (call.assumedRoleArn) {
     const timestamp = (new Date()).getTime();
@@ -106,6 +112,7 @@ export async function getCredentials(call: AwsSdkCall, physicalResourceId: strin
     const params = {
       RoleArn: call.assumedRoleArn,
       RoleSessionName: `${timestamp}-${physicalResourceId}`.replace(/[^\w+=,.@-]/g, '').substring(0, 64),
+      ExternalId: call.externalId,
     };
 
     const { fromTemporaryCredentials } = await import('@aws-sdk/credential-providers');
