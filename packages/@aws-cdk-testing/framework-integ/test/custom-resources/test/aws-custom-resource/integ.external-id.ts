@@ -9,7 +9,7 @@ import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '
  *
  * This test demonstrates the use of external IDs when assuming roles
  * in cross-account scenarios to prevent "confused deputy" attacks.
- * 
+ *
  * Note: This test may introduce destructive changes to CDK metadata
  * and Lambda function assets due to CDK version updates. These changes
  * are expected and safe for integration testing purposes.
@@ -44,7 +44,7 @@ roleWithExternalId.addToPolicy(
   new iam.PolicyStatement({
     actions: ['sts:GetCallerIdentity'],
     resources: ['*'],
-  })
+  }),
 );
 
 // Test basic external ID usage
