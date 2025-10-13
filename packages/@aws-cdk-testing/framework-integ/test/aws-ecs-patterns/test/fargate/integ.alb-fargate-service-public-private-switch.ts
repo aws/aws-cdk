@@ -35,10 +35,10 @@ new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'PublicALBFargateSe
 new integ.IntegTest(app, 'ALBFargatePublicPrivateSwitchTest', {
   testCases: [stack],
   allowDestroy: [
-    'PrivateALBFargateServiceLB',
-    'PrivateALBFargateServiceTargetGroup', 
-    'PublicALBFargateServiceLB',
-    'PublicALBFargateServiceTargetGroup',
+    'PrivateALBFargateServiceLB3F43693F',
+    'PrivateALBFargateServiceLBPublicListenerECSPrivateGroup81AA5B8B',
+    'PublicALBFargateServiceLBBDD839E7',
+    'PublicALBFargateServiceLBPublicListenerECSGroupD991EA00',
   ],
 });
 
