@@ -50,7 +50,7 @@ jobs:
           aws-region: us-east-1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "lts/*"
           cache: "yarn"
