@@ -153,18 +153,6 @@ This solution collects anonymous operational metrics to help AWS improve the
 quality and features of the CDK. For more information, including how to disable
 this capability, please see the [developer guide](https://docs.aws.amazon.com/cdk/latest/guide/cli.html#version_reporting).
 
-## Feature Flags
-
-The AWS CDK uses feature flags to enable new breaking changes only for new projects. Existing projects continue to use the old behavior until the feature flag is enabled. For more information, see [Feature Flags](https://docs.aws.amazon.com/cdk/latest/guide/featureflags.html) in the CDK Developer Guide.
-
-### ECS Patterns Unique Target Group ID
-
-**Flag:** `@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId`
-
-When enabled, ECS patterns will generate unique target group IDs that include the load balancer name and type (public/private). This prevents CloudFormation conflicts when switching between public and private load balancers.
-
-Without this flag, switching an ApplicationLoadBalancedFargateService from public to private (or vice versa) fails with "target group cannot be associated with more than one load balancer" error.
-
 ## More Resources
 
 * [AWS CDK Immersion Day Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/10141411-0192-4021-afa8-2436f3c66bd8/en-US)
