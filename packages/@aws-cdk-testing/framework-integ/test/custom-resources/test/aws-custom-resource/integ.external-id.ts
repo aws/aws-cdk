@@ -35,7 +35,8 @@ const stack = new cdk.Stack(app, 'aws-custom-resource-external-id-test');
 // Create a role that requires an external ID
 const externalId = 'test-external-id-12345';
 const roleWithExternalId = new iam.Role(stack, 'RoleWithExternalId', {
-  assumedBy: new iam.ArnPrincipal('arn:aws:iam::123456789012:role/TestAssumeRole'),
+  // Use a principal that can be used in integration tests
+  assumedBy: new iam.AccountPrincipal(cdk.Stack.of(stack).account),
   externalIds: [externalId],
 });
 
