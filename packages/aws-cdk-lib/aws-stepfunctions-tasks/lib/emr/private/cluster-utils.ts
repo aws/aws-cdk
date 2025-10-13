@@ -102,6 +102,7 @@ export function InstanceTypeConfigPropertyToJson(property: EmrCreateCluster.Inst
     Configurations: cdk.listMapper(ConfigurationPropertyToJson)(property.configurations),
     EbsConfiguration: property.ebsConfiguration === undefined ? property.ebsConfiguration : EbsConfigurationPropertyToJson(property.ebsConfiguration),
     InstanceType: cdk.stringToCloudFormation(property.instanceType?.valueOf()),
+    Priority: cdk.numberToCloudFormation(property.priority),
     WeightedCapacity: cdk.numberToCloudFormation(property.weightedCapacity),
   };
 }
