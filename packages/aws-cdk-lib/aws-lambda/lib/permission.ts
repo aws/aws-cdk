@@ -88,4 +88,13 @@ export interface Permission {
    * @default - No functionUrlAuthType
    */
   readonly functionUrlAuthType?: FunctionUrlAuthType;
+
+  /**
+   * The condition key for limiting the scope of lambda:InvokeFunction action to Function URL only.
+   * When set to true, it restricts the principal in this policy to perform invokes for the resource only via Function URLs.
+   *
+   * @default - false
+   */
+  readonly invokedViaFunctionUrl?: boolean;
+
 }

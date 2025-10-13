@@ -642,6 +642,15 @@ new CfnOutput(this, 'TheUrl', {
 });
 ```
 
+### Important Function URL Permission Update - Oct 2025
+Starting Oct 2025, Function URL invocation will require two permissions
+- lambda:InvokeFunctionUrl
+- lambda:InvokeFunction (New)
+
+CDK has updated `grantInvokeUrl` and `addFunctionUrl` to add both permission above.
+
+If your existing CDK stack uses `grantInvokeUrl` or `addFunctionUrl`, your next deployment will automatically add the `lambda:InvokeFunction` permission without requiring any code changes. This ensures your Function URLs continue working seamlessly. No additional actions are needed.
+
 ### CORS configuration for Function URLs
 
 If you want your Function URLs to be invokable from a web page in browser, you

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "testCases": {
     "rest-api-origin/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "rest-api-origin/DefaultTest/DeployAssert",
       "assertionStackName": "restapioriginDefaultTestDeployAssert6BBA15BA"
     }
-  }
+  },
+  "minimumCliVersion": "2.1027.0"
 }
