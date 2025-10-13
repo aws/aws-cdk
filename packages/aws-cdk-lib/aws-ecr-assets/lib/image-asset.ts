@@ -539,7 +539,8 @@ export class DockerImageAsset extends Construct implements IAsset {
     if (props.invalidation?.platform !== false && props.platform) { extraHash.platform = props.platform; }
     if (props.invalidation?.outputs !== false && props.outputs) { extraHash.outputs = props.outputs; }
 
-    // Include new custom repository and tagging properties in hash calculation
+    // Include custom repository and tagging properties in hash calculation for deterministic asset naming
+    // While these don't affect image content, they ensure consistent asset identification
     if (props.ecrRepository) { extraHash.ecrRepository = props.ecrRepository.repositoryName; }
     if (props.imageTag) { extraHash.imageTag = props.imageTag; }
     if (props.imageTagPrefix) { extraHash.imageTagPrefix = props.imageTagPrefix; }
