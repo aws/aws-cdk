@@ -2257,6 +2257,14 @@ service.forceNewDeployment(true);
 You can also disable force new deployment by calling the method with `false`:
 
 ```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+});
+
 // Disable force new deployment
 service.forceNewDeployment(false);
 ```
