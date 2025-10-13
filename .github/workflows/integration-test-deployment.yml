@@ -104,7 +104,7 @@ jobs:
         run: npx lerna run build --scope=@aws-cdk-testing/framework-integ 
 
       - name: Run integration tests using integration-test-deployment script
-        run: yarn run deploy-changed-snapshots
+        run: yarn run atmosphere-integ-test
         env:
           CDK_ATMOSPHERE_ENDPOINT: ${{ vars.CDK_ATMOSPHERE_ENDPOINT }}
           CDK_ATMOSPHERE_POOL: ${{ vars.CDK_ATMOSPHERE_POOL}}

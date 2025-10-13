@@ -13,7 +13,7 @@
     "compat": "./scripts/check-api-compatibility.sh",
     "bump": "./bump.sh",
     "build-all": "tsc -b",
-    "deploy-changed-snapshots": "lerna run build --scope @aws-cdk/integration-test-deployment && lerna run integration-test-deployment"
+    "atmosphere-integ-test": "lerna run build --scope @aws-cdk/integration-test-deployment && node tools/@aws-cdk/integration-test-deployment/bin/index.js"
   },
   "devDependencies": {
     "@nx/workspace": "^20",
