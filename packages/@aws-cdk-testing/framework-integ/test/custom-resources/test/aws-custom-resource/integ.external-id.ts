@@ -63,6 +63,7 @@ new AwsCustomResource(stack, 'ExternalIdTest', {
 new IntegTest(app, 'AwsCustomResourceTest', {
   testCases: [stack],
   diffAssets: true,
+  allowDestroy: ['AWS::CDK::Metadata'],
   cdkCommandOptions: {
     deploy: {
       args: {
