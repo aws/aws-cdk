@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
+    "tsconfig": "tsconfig.json",
     "outdir": "dist",
     "targets": {
       "java": {
@@ -32,14 +33,14 @@
         "packageName": "awscdkpipesalpha"
       }
     },
-    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
           "strict": true
         }
       }
-    }
+    },
+    "validateTsconfig": "minimal"
   },
   "repository": {
     "type": "git",
@@ -114,7 +115,7 @@
   },
   "jsiiRosetta": {
     "exampleDependencies": {
-      "@aws-cdk/aws-pipes-sources-alpha":  "^0.0.0"
+      "@aws-cdk/aws-pipes-sources-alpha": "^0.0.0"
     }
   }
 }
