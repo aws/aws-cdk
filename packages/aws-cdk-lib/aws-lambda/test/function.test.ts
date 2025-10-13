@@ -5108,6 +5108,120 @@ describe('telemetry metadata', () => {
   });
 });
 
+describe('L1 Relationships', () => {
+  it('simple union', () => {
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'SomeRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    new lambda.CfnFunction(stack, 'MyLambda', {
+      code: { zipFile: 'foo' },
+      role: role, // Simple Union
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
+      },
+    });
+  });
+
+  it('array of unions', () => {
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'SomeRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    const layer1 = new lambda.LayerVersion(stack, 'LayerVersion1', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+      compatibleRuntimes: [lambda.Runtime.PYTHON_3_13],
+    });
+    const layer2 = new lambda.LayerVersion(stack, 'LayerVersion2', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+      compatibleRuntimes: [lambda.Runtime.PYTHON_3_13],
+    });
+    new lambda.CfnFunction(stack, 'MyLambda', {
+      code: { zipFile: 'foo' },
+      role: role,
+      layers: [layer1, layer2], // Array of Unions
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
+        Layers: [{ Ref: 'LayerVersion139D4D7A8' }, { Ref: 'LayerVersion23E5F3CEA' }],
+      },
+    });
+  });
+
+  it('nested union', () => {
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'SomeRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    new lambda.CfnFunction(stack, 'MyLambda', {
+      code: {
+        s3Bucket: bucket, // Nested union
+      },
+      role: role,
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
+        Code: { S3Bucket: { Ref: 'MyBucketF68F3FF0' } },
+      },
+    });
+  });
+
+  it('deeply nested union', () => {
+    const stack = new cdk.Stack();
+    const topic = new sns.CfnTopic(stack, 'Topic');
+
+    new lambda.CfnEventInvokeConfig(stack, 'EventConfig', {
+      functionName: 'myFunction',
+      qualifier: '$LATEST',
+      destinationConfig: {
+        onFailure: {
+          destination: topic, // Deeply nested: destinationConfig -> onFailure -> destination (union)
+        },
+      },
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::EventInvokeConfig', {
+      Properties: {
+        DestinationConfig: {
+          OnFailure: {
+            Destination: { Ref: 'Topic' },
+          },
+        },
+      },
+    });
+  });
+
+  it('nested array of unions', () => {
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'SomeRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'SG', {
+      vpc: new ec2.Vpc(stack, 'VPC'),
+    });
+    new lambda.CfnFunction(stack, 'MyLambda', {
+      code: { zipFile: 'foo' },
+      role: role,
+      vpcConfig: {
+        securityGroupIds: [securityGroup], // Nested array of union
+      },
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
+        VpcConfig: {
+          SecurityGroupIds: [{ 'Fn::GetAtt': ['SGADB53937', 'GroupId'] }],
+        },
+      },
+    });
+  });
+});
+
 function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),

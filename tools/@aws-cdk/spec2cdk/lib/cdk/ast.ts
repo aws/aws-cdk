@@ -3,6 +3,7 @@ import { Module } from '@cdklabs/typewriter';
 import { AugmentationsModule } from './augmentation-generator';
 import { CannedMetricsModule } from './canned-metrics';
 import { CDK_CORE, CONSTRUCTS, ModuleImportLocations } from './cdk';
+import { SelectiveImport } from './relationship-decider';
 import { ResourceClass } from './resource-class';
 
 /**
@@ -59,7 +60,7 @@ export class AstBuilder<T extends Module> {
     for (const link of resources) {
       ast.addResource(link.entity);
     }
-
+    ast.renderImports();
     return ast;
   }
 
@@ -74,6 +75,7 @@ export class AstBuilder<T extends Module> {
 
     const ast = new AstBuilder(scope, props, aug, metrics);
     ast.addResource(resource);
+    ast.renderImports();
 
     return ast;
   }
@@ -85,6 +87,8 @@ export class AstBuilder<T extends Module> {
   public readonly resources: Record<string, string> = {};
   private nameSuffix?: string;
   private deprecated?: string;
+  public readonly selectiveImports = new Array<SelectiveImport>();
+  private readonly modulesRootLocation: string;
 
   protected constructor(
     public readonly module: T,
@@ -95,6 +99,7 @@ export class AstBuilder<T extends Module> {
     this.db = props.db;
     this.nameSuffix = props.nameSuffix;
     this.deprecated = props.deprecated;
+    this.modulesRootLocation = props.importLocations?.modulesRoot ?? '../..';
 
     CDK_CORE.import(this.module, 'cdk', { fromLocation: props.importLocations?.core });
     CONSTRUCTS.import(this.module, 'constructs');
@@ -111,6 +116,35 @@ export class AstBuilder<T extends Module> {
 
     resourceClass.build();
 
+    this.addImports(resourceClass);
     this.augmentations?.augmentResource(resource, resourceClass);
+  }
+
+  private addImports(resourceClass: ResourceClass) {
+    for (const selectiveImport of resourceClass.imports) {
+      const existingModuleImport = this.selectiveImports.find(
+        (imp) => imp.moduleName === selectiveImport.moduleName,
+      );
+      if (!existingModuleImport) {
+        this.selectiveImports.push(selectiveImport);
+      } else {
+        // We need to avoid importing the same reference multiple times
+        for (const type of selectiveImport.types) {
+          if (!existingModuleImport.types.find((t) =>
+            t.originalType === type.originalType && t.aliasedType === type.aliasedType,
+          )) {
+            existingModuleImport.types.push(type);
+          }
+        }
+      }
+    }
+  }
+
+  public renderImports() {
+    const sortedImports = this.selectiveImports.sort((a, b) => a.moduleName.localeCompare(b.moduleName));
+    for (const selectiveImport of sortedImports) {
+      const sourceModule = new Module(selectiveImport.moduleName);
+      sourceModule.importSelective(this.module, selectiveImport.types.map((t) => `${t.originalType} as ${t.aliasedType}`), { fromLocation: `${this.modulesRootLocation}/${sourceModule.name}` });
+    }
   }
 }
