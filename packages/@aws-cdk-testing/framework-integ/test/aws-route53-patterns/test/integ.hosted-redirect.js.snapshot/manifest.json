@@ -82,7 +82,25 @@
         "/integ-https-redirect/redirect/RedirectDistribution/CFDistribution": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "redirectRedirectDistributionCFDistribution1A4C48E3"
+            "data": "redirectRedirectDistribution5423F951"
+          }
+        ],
+        "/integ-https-redirect/redirect/RedirectAliasRecord700dc5": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "recordName": "*",
+              "zone": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "recordName": "*",
+              "zone": "*",
+              "target": "*"
+            }
           }
         ],
         "/integ-https-redirect/redirect/RedirectAliasRecord700dc5": [
@@ -183,6 +201,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "redirectRedirectDistributionCFDistribution1A4C48E3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "redirectRedirectDistributionCFDistribution1A4C48E3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
