@@ -22,7 +22,7 @@ queue_rules:
       - check-success=validate-pr
       - check-success=build
       - or:
-        - "label~=pr/needs-integration-tests-deployment"
+        - "-label~=pr/needs-integration-tests-deployment"
         - "check-success=integration_test_deployment"
     commit_message_template: |-
       {{ title }} (#{{ number }})
@@ -47,7 +47,7 @@ queue_rules:
       - check-success=validate-pr
       - check-success=build
       - or:
-        - "label~=pr/needs-integration-tests-deployment"
+        - "-label~=pr/needs-integration-tests-deployment"
         - "check-success=integration_test_deployment"
     commit_message_template: |-
       {{ title }} (#{{ number }})
@@ -71,7 +71,7 @@ queue_rules:
       - check-success=validate-pr
       - check-success=build
       - or:
-        - "label~=pr/needs-integration-tests-deployment"
+        - "-label~=pr/needs-integration-tests-deployment"
         - "check-success=integration_test_deployment"
     commit_message_template: |-
       {{ title }} (#{{ number }})
@@ -106,7 +106,7 @@ pull_request_rules:
       - check-success=validate-pr
       - check-success=build
       - or:
-        - "label~=pr/needs-integration-tests-deployment"
+        - "-label~=pr/needs-integration-tests-deployment"
         - "check-success=integration_test_deployment"
   - name: automatic priority merge
     actions:
@@ -130,7 +130,7 @@ pull_request_rules:
       - check-success=validate-pr
       - check-success=build
       - or:
-        - "label~=pr/needs-integration-tests-deployment"
+        - "-label~=pr/needs-integration-tests-deployment"
         - "check-success=integration_test_deployment"
   - name: automatic merge (2+ approvers)
     actions:
@@ -154,7 +154,7 @@ pull_request_rules:
       - check-success=validate-pr
       - check-success=build
       - or:
-        - "label~=pr/needs-integration-tests-deployment"
+        - "-label~=pr/needs-integration-tests-deployment"
         - "check-success=integration_test_deployment"
   - name: automatic merge (no-squash)
     actions:
@@ -178,7 +178,7 @@ pull_request_rules:
       - check-success=validate-pr
       - check-success=build
       - or:
-        - "label~=pr/needs-integration-tests-deployment"
+        - "-label~=pr/needs-integration-tests-deployment"
         - "check-success=integration_test_deployment"
   - name: remove stale reviews
     actions:
@@ -221,7 +221,7 @@ pull_request_rules:
       - check-success=validate-pr
       - check-success=build
       - or:
-        - "label~=pr/needs-integration-tests-deployment"
+        - "-label~=pr/needs-integration-tests-deployment"
         - "check-success=integration_test_deployment"
 priority_rules:
   - name: priority for queue `default-merge`
