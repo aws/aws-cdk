@@ -4,27 +4,6 @@ import * as lambda from '../../aws-lambda';
 import { Fn, ValidationError } from '../../core';
 
 /**
- * Validates that input is a valid JSON object and returns it as a stringified JSON using Fn::ToJsonString
- * @param hookDetails The input to validate (must be a JSON object)
- * @returns The stringified JSON using CloudFormation's Fn::ToJsonString intrinsic function
- * @throws HookDetailsValidationError if the input is not a valid JSON object
- */
-export function stringifyHookDetails(scope: IConstruct, hookDetails: any): string {
-  // Reject arrays
-  if (Array.isArray(hookDetails)) {
-    throw new ValidationError('hookDetails must be a JSON object, got: array', scope);
-  }
-
-  // Check if it's a plain object
-  if (typeof hookDetails === 'object' && hookDetails.constructor === Object) {
-    return Fn.toJsonString(hookDetails);
-  }
-
-  // Everything else is invalid (primitives, functions, dates, etc.)
-  throw new ValidationError(`hookDetails must be a JSON object, got: ${typeof hookDetails}`, scope);
-}
-
-/**
  * Deployment lifecycle stages where hooks can be executed
  */
 export enum DeploymentLifecycleStage {
@@ -123,7 +102,7 @@ export interface DeploymentLifecycleLambdaTargetProps {
    *
    * @default - No custom parameters will be passed
    */
-  readonly hookDetails?: any;
+  readonly hookDetails?: { [key: string]: any };
 }
 
 /**
@@ -158,12 +137,17 @@ export class DeploymentLifecycleLambdaTarget implements IDeploymentLifecycleHook
       this.handler.grantInvoke(this._role);
     }
 
+    // Reject arrays
+    if (Array.isArray(this.props.hookDetails)) {
+      throw new ValidationError('hookDetails must be a JSON object, got: array', scope);
+    }
+
     return {
       targetArn: this.handler.functionArn,
       role: this._role,
       lifecycleStages: this.props.lifecycleStages,
       hookDetails: (this.props.hookDetails === undefined || this.props.hookDetails === null)?
-        this.props.hookDetails : stringifyHookDetails(scope, this.props.hookDetails),
+        this.props.hookDetails: Fn.toJsonString(this.props.hookDetails),
     };
   }
 }
