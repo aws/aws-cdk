@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.220.0](https://github.com/aws/aws-cdk/compare/v2.219.0...v2.220.0) (2025-10-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** 
+L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+- **aws-neptune**: AWS::Neptune::EventSubscription: SnsTopicArn property is now required.  
+- **aws-neptune**: AWS::Neptune::EventSubscription: Id attribute removed.  
+- **aws-servicecatalog**: AWS::ServiceCatalog::PortfolioShare: Id attribute removed.
+- **aws-lex**: AWS::Lex::ResourcePolicy: ResourceArn property is now immutable.
+
+Co-authored-by: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
+* ** 
+### Features
+
+* **batch:** ec2 Managed Compute Environment support default instance classes, deprecate `useOptimalInstanceClasses` ([#35537](https://github.com/aws/aws-cdk/issues/35537)) ([9d59dd8](https://github.com/aws/aws-cdk/commit/9d59dd8676bdfbba6f562d82411a527e1f7b6296)), closes [#35515](https://github.com/aws/aws-cdk/issues/35515)
+* **kinesis:** shard-level metrics for stream ([#34963](https://github.com/aws/aws-cdk/issues/34963)) ([ce9b3a8](https://github.com/aws/aws-cdk/commit/ce9b3a8ddba75b646db54f6b8834067d6f50cea5))
+* **lambda:** refactor Function URL permissions ([#35725](https://github.com/aws/aws-cdk/issues/35725)) ([d38d015](https://github.com/aws/aws-cdk/commit/d38d015dfe752249236224c25946d8acc12448f5))
+* update L1 CloudFormation resource definitions ([#35679](https://github.com/aws/aws-cdk/issues/35679)) ([dec6e6a](https://github.com/aws/aws-cdk/commit/dec6e6a24ae4529b64eebeb529a92772e6a292d7))
+* update L1 CloudFormation resource definitions ([#35695](https://github.com/aws/aws-cdk/issues/35695)) ([8a6cf46](https://github.com/aws/aws-cdk/commit/8a6cf46db1d3821cd2a16f0209dc70b03c1e2485))
+* update L1 CloudFormation resource definitions ([#35712](https://github.com/aws/aws-cdk/issues/35712)) ([27a8760](https://github.com/aws/aws-cdk/commit/27a8760c1905badbc8597926473da01796bc29fa))
+* **amplify:** support build compute type ([#34796](https://github.com/aws/aws-cdk/issues/34796)) ([a02c656](https://github.com/aws/aws-cdk/commit/a02c6565cf0768024de244b96ecfc0d972c89f3d))
+* **cloudfront-origins:** add ipAddressType property to Lambda Function URL origins ([#35458](https://github.com/aws/aws-cdk/issues/35458)) ([6cf6dc8](https://github.com/aws/aws-cdk/commit/6cf6dc800d888fcce1746fd8564fa2e7371a21cc)), closes [#35450](https://github.com/aws/aws-cdk/issues/35450)
+* **ec2:** add BEDROCK_AGENTCORE and BEDROCK_AGENTCORE_GATEWAY to InterfaceVpcEndpointAwsService ([#35667](https://github.com/aws/aws-cdk/issues/35667)) ([6966c03](https://github.com/aws/aws-cdk/commit/6966c03b1a7aece0846f5a91bbeb825cd7491689))
+* **ec2:** support for automatic VPN session reconnect on client VPN endpoint ([#35538](https://github.com/aws/aws-cdk/issues/35538)) ([9536472](https://github.com/aws/aws-cdk/commit/95364728f518c46cd6035dbea3953bdd71839e66))
+* **eks:** add removal policy support for EKS cluster construct ([#35560](https://github.com/aws/aws-cdk/issues/35560)) ([4b4e322](https://github.com/aws/aws-cdk/commit/4b4e3221182fba200c2b1f25043904e9dc1f10fb)), closes [#25544](https://github.com/aws/aws-cdk/issues/25544)
+* **logs:** add parameter to allow metric filter on transformed logs ([#35359](https://github.com/aws/aws-cdk/issues/35359)) ([effa46d](https://github.com/aws/aws-cdk/commit/effa46d0e6edd197fa53f94bb9d3d6fc071afa25))
+* **opensearch:** add OpenSearch 3.1 engine version ([#35477](https://github.com/aws/aws-cdk/issues/35477)) ([3bd7cf9](https://github.com/aws/aws-cdk/commit/3bd7cf944f2ec0b4b0191942682d19b954423536)), closes [#35471](https://github.com/aws/aws-cdk/issues/35471)
+* **route53:** add fromPrivateHostedZoneAttributes function to PrivateHostedZone ([#35552](https://github.com/aws/aws-cdk/issues/35552)) ([c8d7a79](https://github.com/aws/aws-cdk/commit/c8d7a79f204315a2dab1700ce5c358d73aa80756)), closes [#23268](https://github.com/aws/aws-cdk/issues/23268)
+* **synthetics:** allow root level canary scripts files for Puppeteer versions 11 and greater ([#35426](https://github.com/aws/aws-cdk/issues/35426)) ([46fb2dc](https://github.com/aws/aws-cdk/commit/46fb2dc010afd029d318b8c5f033bd94b23a60c4))
+
+
+### Bug Fixes
+
+* **cloudwatch:** metric period in AnomalyDetectionAlarm is not being respected ([#35319](https://github.com/aws/aws-cdk/issues/35319)) ([c7d8004](https://github.com/aws/aws-cdk/commit/c7d80040d0d64858a083757dd4805df70460bc10)), closes [#34614](https://github.com/aws/aws-cdk/issues/34614) [/github.com/aws/aws-cdk/blob/6966c03b1a7aece0846f5a91bbeb825cd7491689/packages/aws-cdk-lib/aws-cloudwatch/lib/private/alarm-options.ts#L16-L18](https://github.com/aws//github.com/aws/aws-cdk/blob/6966c03b1a7aece0846f5a91bbeb825cd7491689/packages/aws-cdk-lib/aws-cloudwatch/lib/private/alarm-options.ts/issues/L16-L18) [/github.com/aws/aws-cdk/blob/86638f6daca6ead382d0b9c1cf65bb04f70d4b3d/packages/aws-cdk-lib/package.json#L32](https://github.com/aws//github.com/aws/aws-cdk/blob/86638f6daca6ead382d0b9c1cf65bb04f70d4b3d/packages/aws-cdk-lib/package.json/issues/L32) [/github.com/aws/aws-cdk/pull/35319#discussion_r2407134489](https://github.com/aws//github.com/aws/aws-cdk/pull/35319/issues/discussion_r2407134489)
+* **ecs:** update task definition validations for managed instances ([#35684](https://github.com/aws/aws-cdk/issues/35684)) ([8638a78](https://github.com/aws/aws-cdk/commit/8638a788e4c4bc482139830b53ca460f490ca322)), closes [#35644](https://github.com/aws/aws-cdk/issues/35644)
+* **lambda-nodejs:** bump bun to 1.2.23 for ARM64 support ([#35702](https://github.com/aws/aws-cdk/issues/35702)) ([3aa186c](https://github.com/aws/aws-cdk/commit/3aa186c7b5c2aba8a84e1cee9278034136cd9d03)), closes [#35534](https://github.com/aws/aws-cdk/issues/35534)
+* **s3:** resolve synthesis error in BucketPolicy.fromCfnBucketPolicy() ([#35633](https://github.com/aws/aws-cdk/issues/35633)) ([d9085cc](https://github.com/aws/aws-cdk/commit/d9085cc851a4fe16419c4c3f5c51e6c1b032e786)), closes [#34322](https://github.com/aws/aws-cdk/issues/34322)
+* **s3tables:** s3 table bucket read access role uses incorrect permission for s3tables:ListNamespaces ([#35420](https://github.com/aws/aws-cdk/issues/35420)) ([eb949bb](https://github.com/aws/aws-cdk/commit/eb949bb13a145c046d096937ce1e9c26d4b84f7b))
+
 ## [2.219.0](https://github.com/aws/aws-cdk/compare/v2.218.0...v2.219.0) (2025-10-01)
 
 
