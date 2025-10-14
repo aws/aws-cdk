@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.220.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.219.0-alpha.0...v2.220.0-alpha.0) (2025-10-14)
+
+
+### Bug Fixes
+
+* **amplify-alpha:** handle empty customResponseHeaders array ([#35700](https://github.com/aws/aws-cdk/issues/35700)) ([57f9068](https://github.com/aws/aws-cdk/commit/57f90687d56ebe2cdc3fd5cff1dc35329c502ee4)), closes [#35693](https://github.com/aws/aws-cdk/issues/35693)
 ## [2.219.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.218.0-alpha.0...v2.219.0-alpha.0) (2025-10-01)
 
 ## [2.218.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.217.0-alpha.0...v2.218.0-alpha.0) (2025-09-29)
