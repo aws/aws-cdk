@@ -28,7 +28,7 @@
      "Key": "{\"id\":{\"S\":\"1\"}}"
     },
     "flattenResponse": "false",
-    "salt": "1757338659132"
+    "salt": "1760034218998"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -108,7 +108,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "53e3ecec991005bc2ddc98d13a897e8eadf082b86dedf53475c933aed3069238.zip"
+     "S3Key": "1bf478116a59c3d8e069e12fe42948c11b5d5233fca90d2f2b3ec9fcd695025b.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -148,7 +148,7 @@
      "Key": "{\"id\":{\"S\":\"1\"}}"
     },
     "flattenResponse": "false",
-    "salt": "1757338659133"
+    "salt": "1760034218999"
    },
    "DependsOn": [
     "AwsApiCallDynamoDBgetItema11c39c31c1a4ed94eac5ae4525a751c"
@@ -184,7 +184,7 @@
      "Key": "{\"id\":{\"S\":\"1\"}}"
     },
     "flattenResponse": "false",
-    "salt": "1757338659133"
+    "salt": "1760034218999"
    },
    "DependsOn": [
     "AwsApiCallDynamoDBgetItem07e988d6f5c0d6f38baf1b39c2dcd982"
