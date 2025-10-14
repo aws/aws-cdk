@@ -147,7 +147,7 @@
     "PayloadFormatVersion": "2.0"
    }
   },
-  "MyHttpApiGETRootIntegratinPermissionCEEEB498": {
+  "MyHttpApiGETApiPermissionAuthorizerInteglambdaFCA5E993AuthorizerIntegMyHttpApiBD909144RootIntegratin59814379": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -364,7 +364,7 @@
     "PayloadFormatVersion": "2.0"
    }
   },
-  "RouteRootIntegrationPermissionC2C15701": {
+  "RouteApiPermissionAuthorizerInteglambdaFCA5E993AuthorizerIntegMyHttpApiWithDefaultAuthorizer355DDEC6RootIntegration71216610": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",

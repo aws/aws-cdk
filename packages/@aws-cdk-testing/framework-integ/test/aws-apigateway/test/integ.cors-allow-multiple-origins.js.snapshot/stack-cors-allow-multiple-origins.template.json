@@ -144,7 +144,7 @@
     }
    }
   },
-  "corsapitestmyresourceGETApiPermissionstackcorsallowmultipleoriginscorsapitestC473FAE8GETmyresourceB82B6C26": {
+  "corsapitestmyresourceGETApiPermissionstackcorsallowmultipleoriginshandler2A0F4220stackcorsallowmultipleoriginscorsapitestC473FAE8GETmyresource4F8A5431": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -185,7 +185,7 @@
     }
    }
   },
-  "corsapitestmyresourceGETApiPermissionTeststackcorsallowmultipleoriginscorsapitestC473FAE8GETmyresource29B41ABB": {
+  "corsapitestmyresourceGETApiPermissionTeststackcorsallowmultipleoriginshandler2A0F4220stackcorsallowmultipleoriginscorsapitestC473FAE8GETmyresourceC1EC759B": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",

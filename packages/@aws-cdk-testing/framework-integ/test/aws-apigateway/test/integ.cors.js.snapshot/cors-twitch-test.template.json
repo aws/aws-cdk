@@ -104,7 +104,7 @@
     }
    }
   },
-  "corsapitesttwitchGETApiPermissioncorstwitchtestcorsapitest1E81FF74GETtwitchDD74718A": {
+  "corsapitesttwitchGETApiPermissioncorstwitchtesthandlerB1644EB3corstwitchtestcorsapitest1E81FF74GETtwitch6FA6AD54": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -145,7 +145,7 @@
     }
    }
   },
-  "corsapitesttwitchGETApiPermissionTestcorstwitchtestcorsapitest1E81FF74GETtwitch730CD01F": {
+  "corsapitesttwitchGETApiPermissionTestcorstwitchtesthandlerB1644EB3corstwitchtestcorsapitest1E81FF74GETtwitchB65CCD86": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -222,7 +222,7 @@
     }
    }
   },
-  "corsapitesttwitchPOSTApiPermissioncorstwitchtestcorsapitest1E81FF74POSTtwitchD6548E1B": {
+  "corsapitesttwitchPOSTApiPermissioncorstwitchtesthandlerB1644EB3corstwitchtestcorsapitest1E81FF74POSTtwitch326F51CD": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -263,7 +263,7 @@
     }
    }
   },
-  "corsapitesttwitchPOSTApiPermissionTestcorstwitchtestcorsapitest1E81FF74POSTtwitch9C9C1E14": {
+  "corsapitesttwitchPOSTApiPermissionTestcorstwitchtesthandlerB1644EB3corstwitchtestcorsapitest1E81FF74POSTtwitch54DF264C": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -340,7 +340,7 @@
     }
    }
   },
-  "corsapitesttwitchDELETEApiPermissioncorstwitchtestcorsapitest1E81FF74DELETEtwitch2AF8A510": {
+  "corsapitesttwitchDELETEApiPermissioncorstwitchtesthandlerB1644EB3corstwitchtestcorsapitest1E81FF74DELETEtwitch5D9EE46D": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -381,7 +381,7 @@
     }
    }
   },
-  "corsapitesttwitchDELETEApiPermissionTestcorstwitchtestcorsapitest1E81FF74DELETEtwitch0CD7A81B": {
+  "corsapitesttwitchDELETEApiPermissionTestcorstwitchtesthandlerB1644EB3corstwitchtestcorsapitest1E81FF74DELETEtwitch2B09DBB9": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",

@@ -241,7 +241,7 @@
     "booksapiAccountDBA98FB9"
    ]
   },
-  "booksapiANYApiPermissionrestapibooksexamplebooksapi4538F335ANY73B3CDDC": {
+  "booksapiANYApiPermissionrestapibooksexampleHello0E2235BArestapibooksexamplebooksapi4538F335ANY1FE15E87": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -282,7 +282,7 @@
     }
    }
   },
-  "booksapiANYApiPermissionTestrestapibooksexamplebooksapi4538F335ANYB0D7D8AC": {
+  "booksapiANYApiPermissionTestrestapibooksexampleHello0E2235BArestapibooksexamplebooksapi4538F335ANYFBF26952": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -377,7 +377,7 @@
     }
    }
   },
-  "booksapibooksGETApiPermissionrestapibooksexamplebooksapi4538F335GETbooks391776D8": {
+  "booksapibooksGETApiPermissionrestapibooksexampleBooksHandler9D11F627restapibooksexamplebooksapi4538F335GETbooks7500D4ED": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -418,7 +418,7 @@
     }
    }
   },
-  "booksapibooksGETApiPermissionTestrestapibooksexamplebooksapi4538F335GETbooks01FB3D1B": {
+  "booksapibooksGETApiPermissionTestrestapibooksexampleBooksHandler9D11F627restapibooksexamplebooksapi4538F335GETbooks984DE1CB": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -495,7 +495,7 @@
     }
    }
   },
-  "booksapibooksPOSTApiPermissionrestapibooksexamplebooksapi4538F335POSTbooksDFEC643F": {
+  "booksapibooksPOSTApiPermissionrestapibooksexampleBooksHandler9D11F627restapibooksexamplebooksapi4538F335POSTbooks52DC2615": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -536,7 +536,7 @@
     }
    }
   },
-  "booksapibooksPOSTApiPermissionTestrestapibooksexamplebooksapi4538F335POSTbooks1C6D24C8": {
+  "booksapibooksPOSTApiPermissionTestrestapibooksexampleBooksHandler9D11F627restapibooksexamplebooksapi4538F335POSTbooks219E5F68": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -625,7 +625,7 @@
     }
    }
   },
-  "booksapibooksbookidGETApiPermissionrestapibooksexamplebooksapi4538F335GETbooksbookidBB91DFBD": {
+  "booksapibooksbookidGETApiPermissionrestapibooksexampleBookHandler94FFFEAFrestapibooksexamplebooksapi4538F335GETbooksbookidFC563FE9": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -666,7 +666,7 @@
     }
    }
   },
-  "booksapibooksbookidGETApiPermissionTestrestapibooksexamplebooksapi4538F335GETbooksbookidA0230B08": {
+  "booksapibooksbookidGETApiPermissionTestrestapibooksexampleBookHandler94FFFEAFrestapibooksexamplebooksapi4538F335GETbooksbookidE6E97984": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -743,7 +743,7 @@
     }
    }
   },
-  "booksapibooksbookidDELETEApiPermissionrestapibooksexamplebooksapi4538F335DELETEbooksbookid76C1C947": {
+  "booksapibooksbookidDELETEApiPermissionrestapibooksexampleBookHandler94FFFEAFrestapibooksexamplebooksapi4538F335DELETEbooksbookid6BDF13C4": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -784,7 +784,7 @@
     }
    }
   },
-  "booksapibooksbookidDELETEApiPermissionTestrestapibooksexamplebooksapi4538F335DELETEbooksbookid09D6CB8A": {
+  "booksapibooksbookidDELETEApiPermissionTestrestapibooksexampleBookHandler94FFFEAFrestapibooksexamplebooksapi4538F335DELETEbooksbookid6CC208A8": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",

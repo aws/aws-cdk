@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "48.0.0",
   "files": {
     "8b7a863f778f5314bab7fdad7a7957ef133c826bb93a8611a3bac36ae684e683": {
       "displayName": "lambda-s3/Code",
@@ -8,23 +8,23 @@
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-c8051f41": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "8b7a863f778f5314bab7fdad7a7957ef133c826bb93a8611a3bac36ae684e683.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "d4c346ade68300fe2cf7e1c962dc40ed3feed98e7e0b27434b58f6f483b3bbf3": {
+    "c334d4604608168dc3dbac74205b5addfb1e4d068bc7fd7c257508f34419ab73": {
       "displayName": "integtest-restapi-with-authorizer-and-proxy Template",
       "source": {
         "path": "integtest-restapi-with-authorizer-and-proxy.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-a2cea78c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d4c346ade68300fe2cf7e1c962dc40ed3feed98e7e0b27434b58f6f483b3bbf3.json",
+          "objectKey": "c334d4604608168dc3dbac74205b5addfb1e4d068bc7fd7c257508f34419ab73.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -33,7 +33,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"status\":200,\"ok\":true,\"body\":\"Hello!\"}}",
     "flattenResponse": "false",
-    "salt": "1748294872929"
+    "salt": "1759998551197"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -76,7 +76,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "530055f7515b3f0a47900f5df37e729ba40ca977b2d07b952bdefa2b8f883f42.zip"
+     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -128,7 +128,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"status\":200,\"ok\":true,\"body\":\"Received body: {\\\"key\\\":\\\"value\\\"}\"}}",
     "flattenResponse": "false",
-    "salt": "1748294872930"
+    "salt": "1759998551197"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -166,7 +166,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"status\":403,\"ok\":false}}",
     "flattenResponse": "false",
-    "salt": "1748294872931"
+    "salt": "1759998551197"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -203,7 +203,7 @@
      }
     },
     "flattenResponse": "true",
-    "salt": "1748294872931"
+    "salt": "1759998551197"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -261,7 +261,7 @@
      ]
     },
     "flattenResponse": "false",
-    "salt": "1748294872931"
+    "salt": "1759998551198"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -280,7 +280,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"status\":200,\"ok\":true,\"body\":{\"url\":\"https://httpbin.org/get?key=value\",\"args\":{\"key\":\"value\"}}}}",
     "flattenResponse": "false",
-    "salt": "1748294872932"
+    "salt": "1759998551198"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -306,7 +306,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"status\":200,\"ok\":true,\"body\":{\"url\":\"https://httpbin.org/post\",\"json\":{\"key\":\"value\"}}}}",
     "flattenResponse": "false",
-    "salt": "1748294872932"
+    "salt": "1759998551198"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -325,7 +325,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"status\":403,\"ok\":false}}",
     "flattenResponse": "false",
-    "salt": "1748294872932"
+    "salt": "1759998551198"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -343,7 +343,7 @@
      "url": "https://httpbin.org/uuid"
     },
     "flattenResponse": "true",
-    "salt": "1748294872932"
+    "salt": "1759998551198"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -389,7 +389,7 @@
      ]
     },
     "flattenResponse": "false",
-    "salt": "1748294872932"
+    "salt": "1759998551198"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -502,6 +502,9 @@
    "ap-southeast-5": {
     "value": "nodejs22.x"
    },
+   "ap-southeast-6": {
+    "value": "nodejs22.x"
+   },
    "ap-southeast-7": {
     "value": "nodejs22.x"
    },
@@ -524,7 +527,7 @@
     "value": "nodejs22.x"
    },
    "eu-isoe-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "eu-north-1": {
     "value": "nodejs22.x"
@@ -542,6 +545,9 @@
     "value": "nodejs22.x"
    },
    "eu-west-3": {
+    "value": "nodejs22.x"
+   },
+   "eusc-de-east-1": {
     "value": "nodejs22.x"
    },
    "il-central-1": {
@@ -572,16 +578,22 @@
     "value": "nodejs22.x"
    },
    "us-iso-east-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "us-iso-west-1": {
-    "value": "nodejs18.x"
+    "value": "nodejs22.x"
    },
    "us-isob-east-1": {
     "value": "nodejs18.x"
    },
    "us-isob-west-1": {
     "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
    },
    "us-west-1": {
     "value": "nodejs22.x"

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/06bb124d6995a1e337b23205c40a7b3ac1530062717fa644d17b54841bb95bea.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4716cef38d8a7899f719249e8adf467ac2f67ed39c4def8fd0e1ee9dac03b5c2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -154,10 +154,10 @@
             "data": "HttpApiPOSTtestLambdaIntegrationE0E30FBE"
           }
         ],
-        "/aws-cdk-pipes-enrichments-lambda/HttpApi/POST--test/LambdaIntegration-Permission": [
+        "/aws-cdk-pipes-enrichments-lambda/HttpApi/POST--test/ApiPermission.awscdkpipesenrichmentslambdaConnectHandler1BCFB96A.awscdkpipesenrichmentslambdaHttpApiC2308A36.LambdaIntegration": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HttpApiPOSTtestLambdaIntegrationPermission04EC2B3D"
+            "data": "HttpApiPOSTtestApiPermissionawscdkpipesenrichmentslambdaConnectHandler1BCFB96AawscdkpipesenrichmentslambdaHttpApiC2308A36LambdaIntegrationE628E0DA"
           }
         ],
         "/aws-cdk-pipes-enrichments-lambda/HttpApi/POST--test/Resource": [
@@ -362,6 +362,15 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "HttpApiPOSTtestLambdaIntegrationPermission04EC2B3D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiPOSTtestLambdaIntegrationPermission04EC2B3D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-cdk-pipes-enrichments-lambda"
@@ -383,7 +392,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bed2f73f7d2f640157532f1f29a98f98fcce6b2ffe3d8ef18cb0fa58694de401.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a79ea470e807c44fc8186c35e9e6f093b87935187a2f5f757d58ee4012464f86.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -400,16 +409,16 @@
         "integtestpipeenrichmentslambdaDefaultTestDeployAssert88DF3044.assets"
       ],
       "metadata": {
-        "/integtest-pipe-enrichments-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagebbd7e6f09d715ce3f52df99f01f82d9f/Default": [
+        "/integtest-pipe-enrichments-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage64c2b39087499d25bdb3de5d7e718171/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/integtest-pipe-enrichments-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagebbd7e6f09d715ce3f52df99f01f82d9f/Default/Default": [
+        "/integtest-pipe-enrichments-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage64c2b39087499d25bdb3de5d7e718171/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSQSsendMessagebbd7e6f09d715ce3f52df99f01f82d9f"
+            "data": "AwsApiCallSQSsendMessage64c2b39087499d25bdb3de5d7e718171"
           }
         ],
         "/integtest-pipe-enrichments-lambda/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
