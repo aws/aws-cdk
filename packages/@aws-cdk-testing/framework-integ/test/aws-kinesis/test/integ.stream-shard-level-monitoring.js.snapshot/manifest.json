@@ -1,28 +1,28 @@
 {
-  "version": "48.0.0",
+  "version": "45.0.0",
   "artifacts": {
-    "aws-cdk-lambda-1.assets": {
+    "kinesis-stream-shard-level-monitoring-stack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-lambda-1.assets.json",
+        "file": "kinesis-stream-shard-level-monitoring-stack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-lambda-1": {
+    "kinesis-stream-shard-level-monitoring-stack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-lambda-1.template.json",
+        "templateFile": "kinesis-stream-shard-level-monitoring-stack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9c36ac081e4bb1335659b797e03d3fbe7bd4bb1b2dcbe9642926f933c2878aea.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bdfe12a28209891263a6ce0f401639d4d64dfe37baa1c942388f93e75685c6df.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-lambda-1.assets"
+          "kinesis-stream-shard-level-monitoring-stack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,317 +31,184 @@
         }
       },
       "dependencies": [
-        "aws-cdk-lambda-1.assets"
+        "kinesis-stream-shard-level-monitoring-stack.assets"
       ],
       "metadata": {
-        "/aws-cdk-lambda-1/MyLambda": [
+        "/kinesis-stream-shard-level-monitoring-stack/ExplicitStream": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
-            }
+            "data": {}
           }
         ],
-        "/aws-cdk-lambda-1/MyLambda/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-lambda-1/MyLambda/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-lambda-1/MyLambda/ServiceRole/Resource": [
+        "/kinesis-stream-shard-level-monitoring-stack/ExplicitStream/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaServiceRole4539ECB6"
+            "data": "ExplicitStream4F8E3AC9"
           }
         ],
-        "/aws-cdk-lambda-1/MyLambda/ServiceRole/DefaultPolicy": [
+        "/kinesis-stream-shard-level-monitoring-stack/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+          }
+        ],
+        "/kinesis-stream-shard-level-monitoring-stack/AllStream": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
+            "data": {}
           }
         ],
-        "/aws-cdk-lambda-1/MyLambda/ServiceRole/DefaultPolicy/Resource": [
+        "/kinesis-stream-shard-level-monitoring-stack/AllStream/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+            "data": "AllStream21BE7EBF"
           }
         ],
-        "/aws-cdk-lambda-1/MyLambda/Resource": [
+        "/kinesis-stream-shard-level-monitoring-stack/Exports/Output{\"Ref\":\"ExplicitStream4F8E3AC9\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCCE802FB"
+            "data": "ExportsOutputRefExplicitStream4F8E3AC9309E615E"
           }
         ],
-        "/aws-cdk-lambda-1/MyLambda/FunctionUrl": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "function": "*"
-            }
-          }
-        ],
-        "/aws-cdk-lambda-1/MyLambda/FunctionUrl/Resource": [
+        "/kinesis-stream-shard-level-monitoring-stack/Exports/Output{\"Ref\":\"AllStream21BE7EBF\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaFunctionUrlC2055677"
+            "data": "ExportsOutputRefAllStream21BE7EBFB28F7444"
           }
         ],
-        "/aws-cdk-lambda-1/MyLambda/CurrentVersion": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "lambda": "*"
-            }
-          }
-        ],
-        "/aws-cdk-lambda-1/MyLambda/CurrentVersion/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionE7A382CC9ce8e408346691aecad19aa25bc70350"
-          }
-        ],
-        "/aws-cdk-lambda-1/Alias": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "aliasName": "*",
-              "version": "*"
-            }
-          }
-        ],
-        "/aws-cdk-lambda-1/Alias/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Alias325C5727"
-          }
-        ],
-        "/aws-cdk-lambda-1/Alias/ScalingRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-lambda-1/Alias/AliasPermission": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AliasAliasPermissionAF30F9E8"
-          }
-        ],
-        "/aws-cdk-lambda-1/Alias/FunctionUrl": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "function": "*",
-              "authType": "NONE"
-            }
-          }
-        ],
-        "/aws-cdk-lambda-1/Alias/FunctionUrl/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AliasFunctionUrlDC6EC566"
-          }
-        ],
-        "/aws-cdk-lambda-1/Alias/invoke-function-url": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Aliasinvokefunctionurl4CA9917B"
-          }
-        ],
-        "/aws-cdk-lambda-1/Alias/invoke-function": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Aliasinvokefunction83AEC4F1"
-          }
-        ],
-        "/aws-cdk-lambda-1/MySnapStartLambda": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "handler": "*",
-              "runtime": "*",
-              "snapStart": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "SnapStart only supports published Lambda versions. Ignore if function already has published versions. [ack: @aws-cdk/aws-lambda:snapStartRequirePublish]"
-          }
-        ],
-        "/aws-cdk-lambda-1/MySnapStartLambda/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-lambda-1/MySnapStartLambda/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-lambda-1/MySnapStartLambda/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MySnapStartLambdaServiceRoleE0F04324"
-          }
-        ],
-        "/aws-cdk-lambda-1/MySnapStartLambda/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MySnapStartLambda8F562E6E"
-          }
-        ],
-        "/aws-cdk-lambda-1/MySnapStartLambdaArm": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "handler": "*",
-              "runtime": "*",
-              "architecture": "*",
-              "snapStart": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "SnapStart only supports published Lambda versions. Ignore if function already has published versions. [ack: @aws-cdk/aws-lambda:snapStartRequirePublish]"
-          }
-        ],
-        "/aws-cdk-lambda-1/MySnapStartLambdaArm/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-lambda-1/MySnapStartLambdaArm/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-lambda-1/MySnapStartLambdaArm/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MySnapStartLambdaArmServiceRole731A8472"
-          }
-        ],
-        "/aws-cdk-lambda-1/MySnapStartLambdaArm/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MySnapStartLambdaArmEDD3F420"
-          }
-        ],
-        "/aws-cdk-lambda-1/BootstrapVersion": [
+        "/kinesis-stream-shard-level-monitoring-stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-lambda-1/CheckBootstrapVersion": [
+        "/kinesis-stream-shard-level-monitoring-stack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ]
+      },
+      "displayName": "kinesis-stream-shard-level-monitoring-stack"
+    },
+    "integkinesisstreamconsumerDefaultTestDeployAssert5861EECB.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integkinesisstreamconsumerDefaultTestDeployAssert5861EECB.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integkinesisstreamconsumerDefaultTestDeployAssert5861EECB": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integkinesisstreamconsumerDefaultTestDeployAssert5861EECB.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4b869b324d0ebe651eb88b3bdf41d3c14cdaf78e002c4b30350ee3655cd28101.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integkinesisstreamconsumerDefaultTestDeployAssert5861EECB.assets"
         ],
-        "MyLambdaCurrentVersionE7A382CC886b1d5a6670b1ccc617b858b07da0e5": [
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "kinesis-stream-shard-level-monitoring-stack",
+        "integkinesisstreamconsumerDefaultTestDeployAssert5861EECB.assets"
+      ],
+      "metadata": {
+        "/integ-kinesis-stream-consumer/DefaultTest/DeployAssert/AwsApiCallKinesisdescribeStream6b68194c10f80df0dcb9c06b60559552/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/integ-kinesis-stream-consumer/DefaultTest/DeployAssert/AwsApiCallKinesisdescribeStream6b68194c10f80df0dcb9c06b60559552/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionE7A382CC886b1d5a6670b1ccc617b858b07da0e5",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
+            "data": "AwsApiCallKinesisdescribeStream6b68194c10f80df0dcb9c06b60559552"
+          }
+        ],
+        "/integ-kinesis-stream-consumer/DefaultTest/DeployAssert/AwsApiCallKinesisdescribeStream6b68194c10f80df0dcb9c06b60559552/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallKinesisdescribeStream6b68194c10f80df0dcb9c06b60559552"
+          }
+        ],
+        "/integ-kinesis-stream-consumer/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/integ-kinesis-stream-consumer/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integ-kinesis-stream-consumer/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integ-kinesis-stream-consumer/DefaultTest/DeployAssert/AwsApiCallKinesisdescribeStreamd9aa1b2f7bfc5bc08d77642a69ed2496/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/integ-kinesis-stream-consumer/DefaultTest/DeployAssert/AwsApiCallKinesisdescribeStreamd9aa1b2f7bfc5bc08d77642a69ed2496/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallKinesisdescribeStreamd9aa1b2f7bfc5bc08d77642a69ed2496"
+          }
+        ],
+        "/integ-kinesis-stream-consumer/DefaultTest/DeployAssert/AwsApiCallKinesisdescribeStreamd9aa1b2f7bfc5bc08d77642a69ed2496/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallKinesisdescribeStreamd9aa1b2f7bfc5bc08d77642a69ed2496"
+          }
+        ],
+        "/integ-kinesis-stream-consumer/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-kinesis-stream-consumer/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-lambda-1"
+      "displayName": "integ-kinesis-stream-consumer/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -354,48 +221,57 @@
       "properties": {
         "module": "aws-cdk-lib",
         "flags": {
-          "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+          "@aws-cdk/core:enableStackNameDuplicates": {
             "recommendedValue": true,
-            "explanation": "Pass signingProfileName to CfnSigningProfile"
+            "explanation": "Allow multiple stacks with the same name"
+          },
+          "aws-cdk:enableDiffNoFail": {
+            "recommendedValue": true,
+            "explanation": "Make `cdk diff` not fail when there are differences"
           },
           "@aws-cdk/core:newStyleStackSynthesis": {
             "recommendedValue": true,
-            "explanation": "Switch to new stack synthesis method which enables CI/CD",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Switch to new stack synthesis method which enables CI/CD"
           },
           "@aws-cdk/core:stackRelativeExports": {
             "recommendedValue": true,
-            "explanation": "Name exports based on the construct paths relative to the stack, rather than the global construct path",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Name exports based on the construct paths relative to the stack, rather than the global construct path"
           },
-          "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+          "@aws-cdk/aws-ecr-assets:dockerIgnoreSupport": {
             "recommendedValue": true,
-            "explanation": "Disable implicit openListener when custom security groups are provided"
+            "explanation": "DockerImageAsset properly supports `.dockerignore` files by default"
+          },
+          "@aws-cdk/aws-secretsmanager:parseOwnedSecretName": {
+            "recommendedValue": true,
+            "explanation": "Fix the referencing of SecretsManager names from ARNs"
+          },
+          "@aws-cdk/aws-kms:defaultKeyPolicies": {
+            "recommendedValue": true,
+            "explanation": "Tighten default KMS key policies"
+          },
+          "@aws-cdk/aws-s3:grantWriteWithoutAcl": {
+            "recommendedValue": true,
+            "explanation": "Remove `PutObjectAcl` from Bucket.grantWrite"
+          },
+          "@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount": {
+            "recommendedValue": true,
+            "explanation": "Do not specify a default DesiredCount for ECS services"
           },
           "@aws-cdk/aws-rds:lowercaseDbIdentifier": {
             "recommendedValue": true,
-            "explanation": "Force lowercasing of RDS Cluster names in CDK",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Force lowercasing of RDS Cluster names in CDK"
           },
           "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": {
             "recommendedValue": true,
-            "explanation": "Allow adding/removing multiple UsagePlanKeys independently",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Allow adding/removing multiple UsagePlanKeys independently"
+          },
+          "@aws-cdk/aws-efs:defaultEncryptionAtRest": {
+            "recommendedValue": true,
+            "explanation": "Enable this feature flag to have elastic file systems encrypted at rest by default."
           },
           "@aws-cdk/aws-lambda:recognizeVersionProps": {
             "recommendedValue": true,
-            "explanation": "Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the  `fn.currentVersion`.",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the  `fn.currentVersion`."
           },
           "@aws-cdk/aws-lambda:recognizeLayerVersion": {
             "userValue": true,
@@ -404,10 +280,7 @@
           },
           "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": {
             "recommendedValue": true,
-            "explanation": "Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default.",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default."
           },
           "@aws-cdk/core:checkSecretUsage": {
             "userValue": true,
@@ -628,10 +501,7 @@
           },
           "@aws-cdk/pipelines:reduceAssetRoleTrustScope": {
             "recommendedValue": true,
-            "explanation": "Remove the root account principal from PipelineAssetsFileRole trust policy",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Remove the root account principal from PipelineAssetsFileRole trust policy"
           },
           "@aws-cdk/aws-eks:nodegroupNameAttribute": {
             "userValue": true,
@@ -660,15 +530,7 @@
           },
           "@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask": {
             "recommendedValue": true,
-            "explanation": "When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model.",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/core:explicitStackTags": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
+            "explanation": "When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model."
           },
           "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
             "userValue": false,
@@ -727,10 +589,7 @@
           },
           "@aws-cdk/core:aspectStabilization": {
             "recommendedValue": true,
-            "explanation": "When enabled, a stabilization loop will be run when invoking Aspects during synthesis.",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "When enabled, a stabilization loop will be run when invoking Aspects during synthesis."
           },
           "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": {
             "userValue": true,
@@ -764,10 +623,7 @@
           },
           "@aws-cdk/pipelines:reduceStageRoleTrustScope": {
             "recommendedValue": true,
-            "explanation": "Remove the root account principal from Stage addActions trust policy",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Remove the root account principal from Stage addActions trust policy"
           },
           "@aws-cdk/aws-events:requireEventBusPolicySid": {
             "userValue": true,
@@ -790,10 +646,7 @@
           },
           "@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope": {
             "recommendedValue": true,
-            "explanation": "When enabled, scopes down the trust policy for the cross-account action role",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "When enabled, scopes down the trust policy for the cross-account action role"
           },
           "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": {
             "userValue": true,
@@ -820,7 +673,7 @@
             "explanation": "When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined."
           },
           "@aws-cdk/aws-lambda:useCdkManagedLogGroup": {
-            "userValue": false,
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           }
@@ -828,5 +681,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1020.2"
 }
