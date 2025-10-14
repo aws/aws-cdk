@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "44.0.0",
   "testCases": {
     "call-rest-api/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "call-rest-api/DefaultTest/DeployAssert",
       "assertionStackName": "callrestapiDefaultTestDeployAssert9913150A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

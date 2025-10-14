@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "44.0.0",
   "testCases": {
     "ApiGatewayVpcEndpointInteg/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "ApiGatewayVpcEndpointInteg/DefaultTest/DeployAssert",
       "assertionStackName": "ApiGatewayVpcEndpointIntegDefaultTestDeployAssert55D396EF"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

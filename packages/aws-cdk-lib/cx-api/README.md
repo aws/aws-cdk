@@ -310,6 +310,20 @@ _cdk.json_
 }
 ```
 
+* `@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal`
+
+Enable grant methods on imported KMS Aliases to apply permissions scoped by the alias using the `kms:ResourceAliases` condition key. When this flag is disabled, grant* methods on `Alias.fromAliasName` remain no-ops to preserve existing behavior.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal": true
+  }
+}
+```
+
 * `@aws-cdk/aws-eks:nodegroupNameAttribute`
 
 When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix.
@@ -747,3 +761,26 @@ _cdk.json_
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true
   }
 }
+```
+
+* `@aws-cdk/aws-signer:signingProfileNamePassedToCfn`
+
+When this feature flag is enabled, the `signingProfileName` property is passed to the L1 `CfnSigningProfile` construct,
+which ensures that the AWS Signer profile is created with the specified name.
+
+When this feature flag is disabled, the `signingProfileName` is not passed to CloudFormation, maintaining backward
+compatibility with existing deployments where CloudFormation auto-generated profile names.
+
+This feature flag is needed because enabling it can cause existing signing profiles to be
+replaced during deployment if a `signingProfileName` was specified but not previously used
+in the CloudFormation template.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": true
+  }
+}
+```

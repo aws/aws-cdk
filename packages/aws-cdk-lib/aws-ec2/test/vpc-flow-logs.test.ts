@@ -1,6 +1,5 @@
 import { Template, Match } from '../../assertions';
 import * as iam from '../../aws-iam';
-import * as firehose from '../../aws-kinesisfirehose';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import { RemovalPolicy, Stack } from '../../core';
@@ -75,8 +74,7 @@ describe('vpc flow logs', () => {
       BucketName: 'testbucket',
     });
   });
-
-  test('with Amazon Data Firehose deliveryStreamArn as the destination, allows use of existing resources', () => {
+  test('with kinesis data firehose as the destination, allows use of existing resources', () => {
     const stack = getTestStack();
 
     const deliveryStreamArn = Stack.of(stack).formatArn({
@@ -95,80 +93,12 @@ describe('vpc flow logs', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
       DestinationOptions: Match.absent(),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
       LogDestinationType: 'kinesis-data-firehose',
-      LogDestination: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':firehose:::deliverystream/testdeliverystream']] },
     });
     Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
     Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 0);
-  });
-
-  test('with Amazon Data Firehose delivery stream as the destination, allows use of existing resources', () => {
-    const stack = getTestStack();
-
-    const bucket = new s3.Bucket(stack, 'Bucket');
-    const deliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
-      destination: new firehose.S3Bucket(bucket, {
-        loggingConfig: new firehose.DisableLogging(),
-      }),
-    });
-    new FlowLog(stack, 'FlowLogs', {
-      resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
-      destination: FlowLogDestination.toFirehose(deliveryStream),
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
-      DestinationOptions: Match.absent(),
-      LogDestinationType: 'kinesis-data-firehose',
-      LogDestination: { 'Fn::GetAtt': ['DeliveryStream58CF96DB', 'Arn'] },
-    });
-    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
-    Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
-  });
-
-  test('with Amazon Data Firehose delivery stream as the destination with cross-account log delivery', () => {
-    const stack = getTestStack();
-
-    const bucket = new s3.Bucket(stack, 'Bucket');
-    const deliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
-      destination: new firehose.S3Bucket(bucket, {
-        loggingConfig: new firehose.DisableLogging(),
-      }),
-    });
-    const role = new iam.Role(stack, 'Role', {
-      assumedBy: new iam.ServicePrincipal('delivery.logs.amazonaws.com'),
-    });
-    new FlowLog(stack, 'FlowLogs', {
-      resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
-      destination: FlowLogDestination.toFirehose(deliveryStream, role),
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
-      DestinationOptions: Match.absent(),
-      LogDestinationType: 'kinesis-data-firehose',
-      LogDestination: { 'Fn::GetAtt': ['DeliveryStream58CF96DB', 'Arn'] },
-      DeliverLogsPermissionArn: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
-    });
-  });
-
-  test('toFirehose() throws when cross-account delivery and iamRole is missing', () => {
-    const stack = getTestStack();
-    const bucket = new s3.Bucket(stack, 'Bucket');
-
-    const crossAccountStack = new Stack(undefined, 'CrossAccountStack', {
-      env: { account: '234567890123', region: 'us-east-1' },
-    });
-    const deliveryStream = new firehose.DeliveryStream(crossAccountStack, 'DeliveryStream', {
-      destination: new firehose.S3Bucket(bucket, {
-        loggingConfig: new firehose.DisableLogging(),
-      }),
-    });
-
-    expect(() => {
-      new FlowLog(stack, 'FlowLogs', {
-        resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
-        destination: FlowLogDestination.toFirehose(deliveryStream),
-      });
-    }).toThrow('The iamRole is required for cross-account log delivery.');
   });
 
   test('with flowLogName, adds Name tag with the name', () => {
@@ -878,3 +808,4 @@ test('with custom log format set custom, it not creates with cloudwatch log dest
     },
   });
 });
+

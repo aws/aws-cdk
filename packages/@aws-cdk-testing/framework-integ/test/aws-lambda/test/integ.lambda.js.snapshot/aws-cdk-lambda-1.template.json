@@ -91,6 +91,9 @@
     "FunctionName": {
      "Ref": "MyLambdaCCE802FB"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "Alias325C5727": {
@@ -142,6 +145,17 @@
      "Ref": "Alias325C5727"
     },
     "FunctionUrlAuthType": "NONE",
+    "Principal": "*"
+   }
+  },
+  "Aliasinvokefunction83AEC4F1": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Ref": "Alias325C5727"
+    },
+    "InvokedViaFunctionUrl": true,
     "Principal": "*"
    }
   },

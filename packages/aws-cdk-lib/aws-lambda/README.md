@@ -281,6 +281,21 @@ const fn = new lambda.Function(this, 'MyFunctionWithFFTrue', {
 cdk.Tags.of(fn).add('env', 'dev'); // the tag is also added to the log group
 ```
 
+### Log removal policy
+
+When using the deprecated `logRetention` property for creating a LogGroup, you can configure log removal policy:
+```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+const fn = new lambda.Function(this, 'MyFunctionWithFFTrue', {
+  runtime: lambda.Runtime.NODEJS_LATEST,
+  handler: 'handler.main',
+  code: lambda.Code.fromAsset('lambda'),
+  logRetention: logs.RetentionDays.INFINITE,
+  logRemovalPolicy: RemovalPolicy.RETAIN,
+});
+```
+
 ## Resource-based Policies
 
 AWS Lambda supports resource-based policies for controlling access to Lambda
@@ -626,6 +641,15 @@ new CfnOutput(this, 'TheUrl', {
   value: fnUrl.url,
 });
 ```
+
+### Important Function URL Permission Update - Oct 2025
+Starting Oct 2025, Function URL invocation will require two permissions
+- lambda:InvokeFunctionUrl
+- lambda:InvokeFunction (New)
+
+CDK has updated `grantInvokeUrl` and `addFunctionUrl` to add both permission above.
+
+If your existing CDK stack uses `grantInvokeUrl` or `addFunctionUrl`, your next deployment will automatically add the `lambda:InvokeFunction` permission without requiring any code changes. This ensures your Function URLs continue working seamlessly. No additional actions are needed.
 
 ### CORS configuration for Function URLs
 
@@ -1162,7 +1186,7 @@ const version = fn.currentVersion;
 You can use Application AutoScaling to automatically configure the provisioned concurrency for your functions. AutoScaling can be set to track utilization or be based on a schedule. To configure AutoScaling on a function alias:
 
 ```ts
-import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
+import * as appscaling from 'aws-cdk-lib/aws-applicationautoscaling';
 
 declare const fn: lambda.Function;
 const alias = fn.addAlias('prod');
@@ -1177,7 +1201,7 @@ as.scaleOnUtilization({
 
 // Configure Scheduled Scaling
 as.scaleOnSchedule('ScaleUpInTheMorning', {
-  schedule: autoscaling.Schedule.cron({ hour: '8', minute: '0'}),
+  schedule: appscaling.Schedule.cron({ hour: '8', minute: '0'}),
   minCapacity: 20,
 });
 ```

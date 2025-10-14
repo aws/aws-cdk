@@ -15,6 +15,110 @@
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-apprunner-alpha/lib/service.ts"
     }
   },
+  "bedrock": {
+    "AgentCollaboratorType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent-collaborator.ts"
+    },
+    "RelayConversationHistoryType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent-collaborator.ts"
+    },
+    "CustomControl": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/api-executor.ts"
+    },
+    "ParameterType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/function-schema.ts"
+    },
+    "RequireConfirmation": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/function-schema.ts"
+    },
+    "MemoryType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/memory.ts"
+    },
+    "OrchestrationType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/orchestration-executor.ts"
+    },
+    "AgentStepType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/prompt-override.ts"
+    },
+    "GuardrailAction": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "TierConfig": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "ContentFilterStrength": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "ModalityType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "ContentFilterType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "ManagedWordFilterType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "ContextualGroundingFilterType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "CrossRegionInferenceProfileRegion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/cross-region-inference-profile.ts"
+    },
+    "InferenceProfileType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/inference-profile.ts"
+    },
+    "VectorType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts"
+    },
+    "ChatMessageRole": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/chat-prompt-variant.ts"
+    },
+    "PromptTemplateType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/prompt-variant.ts"
+    },
+    "ParentActionGroupSignature": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/action-group.ts"
+    },
+    "ActionGroupExecutor": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/api-executor.ts"
+    },
+    "Memory": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/memory.ts"
+    },
+    "Topic": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "GeneralPIIType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "FinancePIIType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "InformationTechnologyPIIType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "USASpecificPIIType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "CanadaSpecificPIIType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "UKSpecificPIIType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts"
+    },
+    "DefaultPromptRouterIdentifier": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/prompt-router.ts"
+    },
+    "BedrockFoundationModel": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts"
+    },
+    "ToolChoice": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/tool-choice.ts"
+    },
+    "FoundationModelIdentifier": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-bedrock/lib/foundation-model.ts"
+    }
+  },
   "cloud9": {
     "ConnectionType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-cloud9-alpha/lib/environment.ts"
@@ -402,6 +506,12 @@
     },
     "TableBucketEncryption": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.ts"
+    },
+    "OpenTableFormat": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table.ts"
+    },
+    "Status": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table.ts"
     }
   },
   "sagemaker": {
@@ -532,6 +642,12 @@
     },
     "PassthroughBehavior": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/integration.ts"
+    },
+    "Period": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/usage-plan.ts"
+    },
+    "UsagePlanKeyType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/usage-plan.ts"
     },
     "PayloadFormatVersion": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.ts"
@@ -810,6 +926,9 @@
     "LogQueryVisualizationType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/log-query.ts"
     },
+    "LogQueryLanguage": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/log-query.ts"
+    },
     "TextWidgetBackground": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/text.ts"
     },
@@ -909,6 +1028,9 @@
     },
     "RevisionType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/codepipeline/invoke-action.ts"
+    },
+    "Ec2InstanceType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/ec2/deploy-action.ts"
     },
     "RegistryType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/ecr/build-and-publish-action.ts"
@@ -1368,6 +1490,45 @@
     "Distribution": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.ts"
     },
+    "TypeConverterType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "DateTimeFormat": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "DelimiterCharacter": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "QuoteCharacter": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "KeyValuePairDelimiter": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "KeyValueDelimiter": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "OCSFSourceType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "OCSFVersion": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "ParserProcessorType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "VendedLogType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "StringMutatorType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "JsonMutatorType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
+    "DataConverterType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/transformer.ts"
+    },
     "DataIdentifier": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/data-protection-policy.ts"
     }
@@ -1390,9 +1551,6 @@
     "InstanceType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.ts"
     },
-    "EngineLifecycleSupport": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts"
-    },
     "DBClusterStorageType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts"
     },
@@ -1407,6 +1565,9 @@
     },
     "NetworkType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.ts"
+    },
+    "EngineLifecycleSupport": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/props.ts"
     },
     "AuroraCapacityUnit": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/serverless-cluster.ts"
@@ -1519,9 +1680,6 @@
     "LambdaInvocationType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses-actions/lib/lambda.ts"
     },
-    "EmailEncoding": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses-actions/lib/sns.ts"
-    },
     "BounceTemplate": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-ses-actions/lib/bounce.ts"
     }
@@ -1597,6 +1755,9 @@
     },
     "EncryptionOption": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/athena/start-query-execution.ts"
+    },
+    "CustomizationType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/bedrock/create-model-customization-job.ts"
     },
     "DynamoMethod": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/dynamodb/private/utils.ts"
@@ -1728,6 +1889,9 @@
     }
   },
   "synthetics": {
+    "BrowserType": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts"
+    },
     "Cleanup": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts"
     },
@@ -1900,11 +2064,6 @@
     },
     "ParameterGroupFamily": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-neptune-alpha/lib/parameter-group.ts"
-    }
-  },
-  "bedrock": {
-    "FoundationModelIdentifier": {
-      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-bedrock/lib/foundation-model.ts"
     }
   },
   "ecr-assets": {

@@ -548,7 +548,7 @@ export interface RepositoryProps {
    * @default - If encryption is set to `KMS` and this property is undefined,
    * an AWS managed KMS key is used.
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKeyRef;
 
   /**
    * Life cycle rules to apply to this registry
@@ -979,7 +979,7 @@ export class Repository extends RepositoryBase {
     if (encryptionType === RepositoryEncryption.KMS) {
       return {
         encryptionType: 'KMS',
-        kmsKey: props.encryptionKey?.keyArn,
+        kmsKey: props.encryptionKey?.keyRef.keyArn,
       };
     }
 
@@ -1091,6 +1091,15 @@ export enum TagMutability {
    */
   IMMUTABLE = 'IMMUTABLE',
 
+  /**
+   * all image tags within the repository will be immutable, while allowing you to define some filters for tags that can be changed.
+   */
+  IMMUTABLE_WITH_EXCLUSION = 'IMMUTABLE_WITH_EXCLUSION',
+
+  /**
+   * allow image tags to be overwritten while allowing you to define some filters for tags that should remain unchanged.
+   */
+  MUTABLE_WITH_EXCLUSION = 'MUTABLE_WITH_EXCLUSION',
 }
 
 /**

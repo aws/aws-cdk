@@ -88,6 +88,19 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     this.node.defaultChild = this._edgeFunction;
   }
 
+  public get versionRef(): lambda.VersionReference {
+    return {
+      functionArn: this.functionArn,
+    };
+  }
+
+  public get functionRef(): lambda.FunctionReference {
+    return {
+      functionArn: this.functionArn,
+      functionName: this.functionName,
+    };
+  }
+
   public get lambda(): lambda.IFunction {
     return this._edgeFunction;
   }
@@ -266,6 +279,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     }
 
     const edgeStackId = stackId ?? `edge-lambda-stack-${this.stack.node.addr}`;
+    const parentStack = Stack.of(this);
     let edgeStack = stage.node.tryFindChild(edgeStackId) as Stack;
     if (!edgeStack) {
       edgeStack = new Stack(stage, edgeStackId, {
@@ -273,6 +287,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
           region: EdgeFunction.EDGE_REGION,
           account: Stack.of(this).account,
         },
+        tags: parentStack.tags.tagValues(),
       });
     }
     this.stack.addDependency(edgeStack);

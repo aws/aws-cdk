@@ -29,14 +29,15 @@
         ]
       }
     },
-    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
           "strict": true
         }
       }
-    }
+    },
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal"
   },
   "repository": {
     "type": "git",
@@ -48,7 +49,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "integ-runner --language javascript",
+    "integ": "integ-runner --unstable=toolkit-lib-engine --language javascript",
     "build+integ": "yarn build && integ-runner --language javascript --verbose --update-on-failed",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
@@ -91,7 +92,7 @@
   },
   "separate-module": false,
   "engines": {
-    "node": ">= 14.15.0"
+    "node": ">= 18.0.0"
   },
   "stability": "experimental",
   "maturity": "experimental",

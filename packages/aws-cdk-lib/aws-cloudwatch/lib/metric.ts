@@ -105,6 +105,27 @@ export interface CommonMetricOptions {
   readonly color?: string;
 
   /**
+   * Unique identifier for this metric when used in dashboard widgets.
+   *
+   * The id can be used as a variable to represent this metric in math expressions.
+   * Valid characters are letters, numbers, and underscore. The first character
+   * must be a lowercase letter.
+   *
+   * @default - No ID
+   */
+  readonly id?: string;
+
+  /**
+   * Whether this metric should be visible in dashboard graphs.
+   *
+   * Setting this to false is useful when you want to hide raw metrics
+   * that are used in math expressions, and show only the expression results.
+   *
+   * @default true
+   */
+  readonly visible?: boolean;
+
+  /**
    * Account which this metric comes from.
    *
    * @default - Deployment account.
@@ -194,7 +215,7 @@ export interface MathExpressionOptions {
   readonly color?: string;
 
   /**
-   * The period over which the expression's statistics are applied.
+   * The period over which the math expression's statistics are applied.
    *
    * This period overrides all periods in the metrics used in this
    * math expression.
@@ -277,6 +298,94 @@ export interface MathExpressionProps extends MathExpressionOptions {
 }
 
 /**
+ * Configurable options for SearchExpressions
+ */
+export interface SearchExpressionOptions {
+  /**
+   * Label for this search expression when added to a Graph in a Dashboard.
+   *
+   * If this expression evaluates to more than one time series,
+   * each time series will appear in the graph using a combination of the
+   * expression label and the individual metric label. Specify the empty
+   * string (`''`) to suppress the expression label and only keep the
+   * metric label.
+   *
+   * You can use [dynamic labels](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/graph-dynamic-labels.html)
+   * to show summary information about the displayed time series
+   * in the legend. For example, if you use:
+   *
+   * ```
+   * [max: ${MAX}] MyMetric
+   * ```
+   *
+   * As the metric label, the maximum value in the visible range will
+   * be shown next to the time series name in the graph's legend. If the
+   * search expression produces more than one time series, the maximum
+   * will be shown for each individual time series produce by this
+   * search expression.
+   *
+   * @default - No label.
+   */
+  readonly label?: string;
+
+  /**
+   * Color for the metric produced by the search expression.
+   *
+   * If the search expression produces more than one time series, the color is assigned to the first one.
+   * Other metrics are assigned colors automatically.
+   *
+   * @default - Automatically assigned.
+   */
+  readonly color?: string;
+
+  /**
+   * The period over which the search expression's statistics are applied.
+   *
+   * This period overrides the period defined within the search expression.
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly period?: cdk.Duration;
+
+  /**
+   * Account to evaluate search expressions within.
+   *
+   * @default - Deployment account.
+   */
+  readonly searchAccount?: string;
+
+  /**
+   * Region to evaluate search expressions within.
+   *
+   * @default - Deployment region.
+   */
+  readonly searchRegion?: string;
+}
+
+/**
+ * Properties for a SearchExpression
+ */
+export interface SearchExpressionProps extends SearchExpressionOptions {
+  /**
+   * The search expression defining the metrics to be retrieved.
+   *
+   * A search expression cannot be used within an Alarm.
+   *
+   * A search expression allows you to retrieve and graph multiple related metrics in a single statement.
+   * It can return up to 500 time series.
+   *
+   * Examples:
+   * - `SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)`
+   * - `SEARCH('{AWS/ApplicationELB,LoadBalancer} RequestCount', 'Sum', 60)`
+   * - `SEARCH('{MyNamespace,ServiceName} Errors', 'Sum')`
+   *
+   * For more information about search expression syntax, see:
+   * https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/search-expression-syntax.html
+   */
+  readonly expression: string;
+}
+
+/**
  * A metric emitted by a service
  *
  * The metric is a combination of a metric identifier (namespace, name and dimensions)
@@ -340,6 +449,10 @@ export class Metric implements IMetric {
   public readonly label?: string;
   /** The hex color code used when this metric is rendered on a graph. */
   public readonly color?: string;
+  /** Unique identifier for this metric when used in dashboard widgets. */
+  public readonly id?: string;
+  /** Whether this metric should be visible in dashboard graphs. */
+  public readonly visible?: boolean;
 
   /** Unit of the metric. */
   public readonly unit?: Unit;
@@ -395,6 +508,8 @@ export class Metric implements IMetric {
 
     this.label = props.label;
     this.color = props.color;
+    this.id = props.id;
+    this.visible = props.visible;
     this.unit = props.unit;
     this.#accountOverride = props.account;
     this.#regionOverride = props.region;
@@ -417,6 +532,8 @@ export class Metric implements IMetric {
     // Short-circuit creating a new object if there would be no effective change
     if ((props.label === undefined || props.label === this.label)
       && (props.color === undefined || props.color === this.color)
+      && (props.id === undefined || props.id === this.id)
+      && (props.visible === undefined || props.visible === this.visible)
       && (props.statistic === undefined || props.statistic === this.statistic)
       && (props.unit === undefined || props.unit === this.unit)
       && (props.account === undefined || props.account === this.#accountOverride)
@@ -440,6 +557,8 @@ export class Metric implements IMetric {
       unit: ifUndefined(props.unit, this.unit),
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color),
+      id: ifUndefined(props.id, this.id),
+      visible: ifUndefined(props.visible, this.visible),
       account: ifUndefined(props.account, this.#accountOverride),
       region: ifUndefined(props.region, this.#regionOverride),
       stackAccount: ifUndefined(props.stackAccount, this.#stackAccount),
@@ -500,6 +619,8 @@ export class Metric implements IMetric {
       renderingProperties: {
         color: this.color,
         label: this.label,
+        id: this.id,
+        visible: this.visible,
       },
     };
   }
@@ -841,8 +962,8 @@ export class MathExpression implements IMetric {
         withStat() {
           // Nothing
         },
-        withExpression(expr) {
-          for (const [id, subMetric] of Object.entries(expr.usingMetrics)) {
+        withMathExpression(mathExpr) {
+          for (const [id, subMetric] of Object.entries(mathExpr.usingMetrics)) {
             const existing = seen.get(id);
             if (existing && metricKey(existing) !== metricKey(subMetric)) {
               throw new cdk.UnscopedValidationError(`The ID '${id}' used for two metrics in the expression: '${subMetric}' and '${existing}'. Rename one.`);
@@ -851,8 +972,153 @@ export class MathExpression implements IMetric {
             visit(subMetric);
           }
         },
+        withSearchExpression(searchExpr) {
+          // search expression should not contain anything inside  `usingMetric
+          if (Object.entries(searchExpr.usingMetrics).length > 0) {
+            throw new cdk.UnscopedValidationError(`Search expression '${searchExpr.expression}' should not contain any 'usingMetrics'.`);
+          }
+        },
       });
     }
+  }
+}
+
+/**
+ * A CloudWatch search expression for dynamically finding and graphing multiple related metrics.
+ *
+ * Search expressions allow you to search for and graph multiple related metrics from a single expression.
+ * This is particularly useful in dynamic environments where the exact metric names or dimensions
+ * may not be known at deployment time.
+ *
+ * Example:
+ * ```ts
+ * const searchExpression = new cloudwatch.SearchExpression({
+ *   expression: "SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)",
+ *   label: 'EC2 CPU Utilization',
+ *   period: Duration.minutes(5),
+ * });
+ * ```
+ *
+ * This class does not represent a resource, so hence is not a construct. Instead,
+ * SearchExpression is an abstraction that makes it easy to specify metrics for use in graphs.
+ */
+export class SearchExpression implements IMetric {
+  /**
+   * The search expression defining the metrics to be retrieved.
+   */
+  public readonly expression: string;
+
+  /**
+   * The label is used as a prefix for the title of each metric returned by the search expression.
+   */
+  public readonly label?: string;
+
+  /**
+   * Hex color code (e.g. '#00ff00'), to use when rendering the resulting metrics in a graph.
+   * If multiple time series are returned, color is assigned to the first metric, color for the other metrics is automatically assigned
+   */
+  public readonly color?: string;
+
+  /**
+   * The aggregation period for the metrics produced by the Search Expression.
+   */
+  public readonly period: cdk.Duration;
+
+  /**
+   * Account to evaluate search expressions within.
+   */
+  public readonly searchAccount?: string;
+
+  /**
+   * Region to evaluate search expressions within.
+   */
+  public readonly searchRegion?: string;
+
+  /**
+   * Warnings generated by this search expression
+   * @deprecated - use warningsV2
+   */
+  public readonly warnings?: string[];
+
+  /**
+   * Warnings generated by this search expression
+   */
+  public readonly warningsV2?: { [id: string]: string };
+
+  constructor(props: SearchExpressionProps) {
+    this.expression = props.expression;
+    this.label = props.label;
+    this.color = props.color;
+    this.period = props.period || cdk.Duration.minutes(5);
+    this.searchAccount = props.searchAccount;
+    this.searchRegion = props.searchRegion;
+
+    const warnings: { [id: string]: string } = {};
+
+    if (Object.keys(warnings).length > 0) {
+      this.warnings = Array.from(Object.values(warnings));
+      this.warningsV2 = warnings;
+    }
+  }
+
+  /**
+   * Return a copy of SearchExpression with properties changed.
+   *
+   * All properties except expression can be changed.
+   *
+   * @param props The set of properties to change.
+   */
+  public with(props: SearchExpressionOptions): SearchExpression {
+    if ((props.label === undefined || props.label === this.label)
+      && (props.color === undefined || props.color === this.color)
+      && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())
+      && (props.searchAccount === undefined || props.searchAccount === this.searchAccount)
+      && (props.searchRegion === undefined || props.searchRegion === this.searchRegion)) {
+      return this;
+    }
+
+    return new SearchExpression({
+      expression: this.expression,
+      label: ifUndefined(props.label, this.label),
+      color: ifUndefined(props.color, this.color),
+      period: ifUndefined(props.period, this.period),
+      searchAccount: ifUndefined(props.searchAccount, this.searchAccount),
+      searchRegion: ifUndefined(props.searchRegion, this.searchRegion),
+    });
+  }
+
+  /**
+   * @deprecated use toMetricConfig()
+   */
+  public toAlarmConfig(): MetricAlarmConfig {
+    throw new cdk.UnscopedValidationError('Using a search expression is not supported in CloudWatch Alarms.');
+  }
+
+  /**
+   * @deprecated use toMetricConfig()
+   */
+  public toGraphConfig(): MetricGraphConfig {
+    throw new cdk.UnscopedValidationError('`toGraphConfig()` is deprecated, use `toMetricConfig()`');
+  }
+
+  public toMetricConfig(): MetricConfig {
+    return {
+      searchExpression: {
+        period: this.period.toSeconds(),
+        expression: this.expression,
+        usingMetrics: {}, // Empty for search expressions as they don't reference other metrics
+        searchAccount: this.searchAccount,
+        searchRegion: this.searchRegion,
+      },
+      renderingProperties: {
+        label: this.label,
+        color: this.color,
+      },
+    };
+  }
+
+  public toString() {
+    return this.label || this.expression;
   }
 }
 
@@ -1001,3 +1267,4 @@ function matchAll(x: string, re: RegExp): RegExpMatchArray[] {
   }
   return ret;
 }
+

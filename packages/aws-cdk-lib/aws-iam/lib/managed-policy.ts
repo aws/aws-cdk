@@ -1,13 +1,19 @@
-import { Construct } from 'constructs';
-import { IGroup } from './group';
-import { CfnManagedPolicy } from './iam.generated';
+import { Construct, Node } from 'constructs';
+import {
+  CfnManagedPolicy,
+  IGroupRef,
+  IManagedPolicyRef,
+  IRoleRef,
+  IUserRef,
+  ManagedPolicyReference,
+} from './iam.generated';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
-import { ArnFormat, Resource, Stack, Arn, Aws, UnscopedValidationError } from '../../core';
+import { Arn, ArnFormat, Aws, Resource, Stack, UnscopedValidationError } from '../../core';
 import { getCustomizeRolesConfig, PolicySynthesizer } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -15,7 +21,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A managed policy
  */
-export interface IManagedPolicy {
+export interface IManagedPolicy extends IManagedPolicyRef {
   /**
    * The ARN of the managed policy
    * @attribute
@@ -79,7 +85,7 @@ export interface ManagedPolicyProps {
    *
    * @default - No groups.
    */
-  readonly groups?: IGroup[];
+  readonly groups?: IGroupRef[];
 
   /**
    * Initial set of permissions to add to this policy document.
@@ -123,6 +129,11 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         resource: 'policy',
         resourceName: managedPolicyName,
       });
+      public get managedPolicyRef(): ManagedPolicyReference {
+        return {
+          policyArn: this.managedPolicyArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -149,6 +160,11 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
   public static fromManagedPolicyArn(scope: Construct, id: string, managedPolicyArn: string): IManagedPolicy {
     class Import extends Resource implements IManagedPolicy {
       public readonly managedPolicyArn = managedPolicyArn;
+      public get managedPolicyRef(): ManagedPolicyReference {
+        return {
+          policyArn: this.managedPolicyArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -172,6 +188,14 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         resource: 'policy',
         resourceName: managedPolicyName,
       });
+      public get managedPolicyRef(): ManagedPolicyReference {
+        return {
+          policyArn: this.managedPolicyArn,
+        };
+      }
+      public get node(): Node {
+        throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
+      }
     }
     return new AwsManagedPolicy();
   }
@@ -211,9 +235,9 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
 
   public readonly grantPrincipal: IPrincipal;
 
-  private readonly roles = new Array<IRole>();
-  private readonly users = new Array<IUser>();
-  private readonly groups = new Array<IGroup>();
+  private readonly roles = new Array<IRoleRef>();
+  private readonly users = new Array<IUserRef>();
+  private readonly groups = new Array<IGroupRef>();
   private readonly _precreatedPolicy?: IManagedPolicy;
 
   constructor(scope: Construct, id: string, props: ManagedPolicyProps = {}) {
@@ -243,9 +267,9 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         managedPolicyName: this.physicalName,
         description: this.description,
         path: this.path,
-        roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
-        users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
-        groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),
+        roles: undefinedIfEmpty(() => this.roles.map(r => r.roleRef.roleName)),
+        users: undefinedIfEmpty(() => this.users.map(u => u.userRef.userName)),
+        groups: undefinedIfEmpty(() => this.groups.map(g => g.groupRef.groupName)),
       });
 
       // arn:aws:iam::123456789012:policy/teststack-CreateTestDBPolicy-16M23YE3CS700
@@ -279,6 +303,12 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
     this.node.addValidation({ validate: () => this.validateManagedPolicy() });
   }
 
+  public get managedPolicyRef(): ManagedPolicyReference {
+    return {
+      policyArn: this.managedPolicyArn,
+    };
+  }
+
   /**
    * Adds a statement to the policy document.
    */
@@ -291,8 +321,8 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    * Attaches this policy to a user.
    */
   @MethodMetadata()
-  public attachToUser(user: IUser) {
-    if (this.users.find(u => u.userArn === user.userArn)) { return; }
+  public attachToUser(user: IUserRef) {
+    if (this.users.find(u => u.userRef.userArn === user.userRef.userArn)) { return; }
     this.users.push(user);
   }
 
@@ -301,7 +331,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    */
   @MethodMetadata()
   public attachToRole(role: IRole) {
-    if (this.roles.find(r => r.roleArn === role.roleArn)) { return; }
+    if (this.roles.find(r => r.roleRef.roleArn === role.roleArn)) { return; }
     this.roles.push(role);
   }
 
@@ -309,8 +339,8 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    * Attaches this policy to a group.
    */
   @MethodMetadata()
-  public attachToGroup(group: IGroup) {
-    if (this.groups.find(g => g.groupArn === group.groupArn)) { return; }
+  public attachToGroup(group: IGroupRef) {
+    if (this.groups.find(g => g.groupRef.groupArn === group.groupRef.groupArn)) { return; }
     this.groups.push(group);
   }
 

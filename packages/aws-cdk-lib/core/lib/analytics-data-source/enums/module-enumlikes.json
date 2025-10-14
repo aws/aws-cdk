@@ -62,6 +62,130 @@
       "NODEJS_22"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/action-group.ts": {
+    "ParentActionGroupSignature": [
+      "USER_INPUT",
+      "CODE_INTERPRETER"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/api-executor.ts": {
+    "ActionGroupExecutor": [
+      "RETURN_CONTROL"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/memory.ts": {
+    "Memory": [
+      "SESSION_SUMMARY"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/guardrails/guardrail-filters.ts": {
+    "Topic": [
+      "FINANCIAL_ADVICE",
+      "INAPPROPRIATE_CONTENT",
+      "LEGAL_ADVICE",
+      "MEDICAL_ADVICE",
+      "POLITICAL_ADVICE"
+    ],
+    "GeneralPIIType": [
+      "ADDRESS",
+      "AGE",
+      "DRIVER_ID",
+      "EMAIL",
+      "LICENSE_PLATE",
+      "NAME",
+      "PASSWORD",
+      "PHONE",
+      "USERNAME",
+      "VEHICLE_IDENTIFICATION_NUMBER"
+    ],
+    "FinancePIIType": [
+      "CREDIT_DEBIT_CARD_CVV",
+      "CREDIT_DEBIT_CARD_EXPIRY",
+      "CREDIT_DEBIT_CARD_NUMBER",
+      "PIN",
+      "SWIFT_CODE",
+      "INTERNATIONAL_BANK_ACCOUNT_NUMBER"
+    ],
+    "InformationTechnologyPIIType": [
+      "URL",
+      "IP_ADDRESS",
+      "MAC_ADDRESS",
+      "AWS_ACCESS_KEY",
+      "AWS_SECRET_KEY"
+    ],
+    "USASpecificPIIType": [
+      "US_BANK_ACCOUNT_NUMBER",
+      "US_BANK_ROUTING_NUMBER",
+      "US_INDIVIDUAL_TAX_IDENTIFICATION_NUMBER",
+      "US_PASSPORT_NUMBER",
+      "US_SOCIAL_SECURITY_NUMBER"
+    ],
+    "CanadaSpecificPIIType": [
+      "CA_HEALTH_NUMBER",
+      "CA_SOCIAL_INSURANCE_NUMBER"
+    ],
+    "UKSpecificPIIType": [
+      "UK_NATIONAL_HEALTH_SERVICE_NUMBER",
+      "UK_NATIONAL_INSURANCE_NUMBER",
+      "UK_UNIQUE_TAXPAYER_REFERENCE_NUMBER"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/inference-profiles/prompt-router.ts": {
+    "DefaultPromptRouterIdentifier": [
+      "ANTHROPIC_CLAUDE_V1",
+      "META_LLAMA_3_1"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/models.ts": {
+    "BedrockFoundationModel": [
+      "AI21_JAMBA_1_5_LARGE_V1",
+      "AI21_JAMBA_1_5_MINI_V1",
+      "AI21_JAMBA_INSTRUCT_V1",
+      "AMAZON_TITAN_TEXT_EXPRESS_V1",
+      "AMAZON_TITAN_PREMIER_V1_0",
+      "AMAZON_NOVA_MICRO_V1",
+      "AMAZON_NOVA_LITE_V1",
+      "AMAZON_NOVA_PRO_V1",
+      "AMAZON_NOVA_PREMIER_V1",
+      "TITAN_EMBED_TEXT_V1",
+      "TITAN_EMBED_TEXT_V2_1024",
+      "TITAN_EMBED_TEXT_V2_512",
+      "TITAN_EMBED_TEXT_V2_256",
+      "ANTHROPIC_CLAUDE_3_7_SONNET_V1_0",
+      "ANTHROPIC_CLAUDE_3_5_SONNET_V2_0",
+      "ANTHROPIC_CLAUDE_3_5_SONNET_V1_0",
+      "ANTHROPIC_CLAUDE_3_5_HAIKU_V1_0",
+      "ANTHROPIC_CLAUDE_OPUS_V1_0",
+      "ANTHROPIC_CLAUDE_SONNET_V1_0",
+      "ANTHROPIC_CLAUDE_HAIKU_V1_0",
+      "ANTHROPIC_CLAUDE_V2_1",
+      "ANTHROPIC_CLAUDE_V2",
+      "ANTHROPIC_CLAUDE_INSTANT_V1_2",
+      "COHERE_EMBED_ENGLISH_V3",
+      "COHERE_EMBED_MULTILINGUAL_V3",
+      "DEEPSEEK_R1_V1",
+      "META_LLAMA_3_1_8B_INSTRUCT_V1",
+      "META_LLAMA_3_1_70B_INSTRUCT_V1",
+      "META_LLAMA_3_2_11B_INSTRUCT_V1",
+      "META_LLAMA_3_2_3B_INSTRUCT_V1",
+      "META_LLAMA_3_2_1B_INSTRUCT_V1",
+      "META_LLAMA_3_3_70B_INSTRUCT_V1",
+      "META_LLAMA_4_MAVERICK_17B_INSTRUCT_V1",
+      "META_LLAMA_4_SCOUT_17B_INSTRUCT_V1",
+      "MISTRAL_7B_INSTRUCT_V0",
+      "MISTRAL_MIXTRAL_8X7B_INSTRUCT_V0",
+      "MISTRAL_SMALL_2402_V1",
+      "MISTRAL_LARGE_2402_V1",
+      "MISTRAL_LARGE_2407_V1",
+      "MISTRAL_PIXTRAL_LARGE_2502_V1"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/tool-choice.ts": {
+    "ToolChoice": [
+      "ANY",
+      "AUTO"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/access-entry.ts": {
     "AccessPolicyArn": [
       "AMAZON_EKS_ADMIN_POLICY",
@@ -123,7 +247,8 @@
       "V1_29",
       "V1_30",
       "V1_31",
-      "V1_32"
+      "V1_32",
+      "V1_33"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/connection.ts": {
@@ -290,7 +415,8 @@
       "V1_4_2_0",
       "V1_4_3_0",
       "V1_4_4_0",
-      "V1_4_5_0"
+      "V1_4_5_0",
+      "V1_4_5_1"
     ],
     "LogType": [
       "AUDIT"
@@ -632,6 +758,7 @@
       "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_28K",
       "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_200K",
       "ANTHROPIC_CLAUDE_OPUS_4_20250514_V1_0",
+      "ANTHROPIC_CLAUDE_OPUS_4_1_20250805_V1_0",
       "ANTHROPIC_CLAUDE_INSTANT_V1",
       "ANTHROPIC_CLAUDE_INSTANT_V1_2_100K",
       "COHERE_COMMAND_V14",
@@ -646,6 +773,9 @@
       "COHERE_EMBED_MULTILINGUAL_V3",
       "COHERE_EMBED_MULTILINGUAL_V3_0_512",
       "DEEP_SEEK_R1_V1_0",
+      "DEEP_SEEK_V3_V1_0",
+      "OPENAI_GPT_OSS_120B_1",
+      "OPENAI_GPT_OSS_20B_1",
       "LUMA_RAY_V2_0",
       "META_LLAMA_2_13B_V1",
       "META_LLAMA_2_13B_V1_0_4K",
@@ -675,6 +805,10 @@
       "MISTRAL_SMALL_V0_1",
       "MISTRAL_LARGE_2_V0_1",
       "MISTRAL_PIXTRAL_LARGE_2502_V1_0",
+      "QWEN_QWEN3_32B_V1_0",
+      "QWEN_QWEN3_235B_A22B_2507_V1_0",
+      "QWEN_QWEN3_CODER_30B_A3B_V1_0",
+      "QWEN_QWEN3_CODER_480B_A35B_V1_0",
       "STABILITY_STABLE_DIFFUSION_XL",
       "STABILITY_STABLE_DIFFUSION_XL_V0",
       "STABILITY_STABLE_DIFFUSION_XL_V1",
@@ -686,7 +820,9 @@
       "STABILITY_STABLE_IMAGE_CORE_V1_0",
       "STABILITY_STABLE_IMAGE_CORE_V1_1",
       "WRITER_PALMYRA_X4_V1_0",
-      "WRITER_PALMYRA_X5_V1_0"
+      "WRITER_PALMYRA_X5_V1_0",
+      "TWELVELABS_MARENGO_EMBED_2_7_V1_0",
+      "TWELVELABS_PEGASUS_1_2_V1_0"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts": {
@@ -1561,6 +1697,7 @@
       "DEVOPS_GURU",
       "DIRECTORY_SERVICE",
       "DIRECTORY_SERVICE_DATA",
+      "DSQL_MANAGEMENT",
       "DYNAMODB",
       "DYNAMODB_FIPS",
       "DYNAMODB_STREAMS",
@@ -1788,10 +1925,13 @@
       "SERVER_MIGRATION_SERVICE_AWSCONNECTOR",
       "SERVERLESS_APPLICATION_REPOSITORY",
       "SES",
+      "SHIELD",
+      "SHIELD_FIPS",
       "SIMSPACE_WEAVER",
       "SNOW_DEVICE_MANAGEMENT",
       "SNS",
       "SQS",
+      "SQS_FIPS",
       "SSM",
       "SSM_FIPS",
       "SSM_MESSAGES",
@@ -1802,6 +1942,7 @@
       "STEP_FUNCTIONS_SYNC",
       "STORAGE_GATEWAY",
       "STS",
+      "STS_FIPS",
       "SUPPLY_CHAIN",
       "SWF",
       "SWF_FIPS",
@@ -1910,7 +2051,9 @@
       "WINDOWS_SERVER_2019_FULL",
       "WINDOWS_SERVER_2022_CORE",
       "WINDOWS_SERVER_2022_FULL",
-      "WINDOWS_SERVER_20H2_CORE"
+      "WINDOWS_SERVER_20H2_CORE",
+      "WINDOWS_SERVER_2025_FULL",
+      "WINDOWS_SERVER_2025_CORE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/access-entry.ts": {
@@ -1985,7 +2128,8 @@
       "V1_29",
       "V1_30",
       "V1_31",
-      "V1_32"
+      "V1_32",
+      "V1_33"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-elasticsearch/lib/domain.ts": {
@@ -2109,7 +2253,9 @@
       "VERSION_1_0_275_0",
       "VERSION_1_0_295_0",
       "VERSION_1_0_317_0",
-      "VERSION_1_0_333_0"
+      "VERSION_1_0_333_0",
+      "VERSION_1_0_391_0",
+      "VERSION_1_0_404_0"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/runtime-management.ts": {
@@ -2164,6 +2310,26 @@
       "PROVIDED_AL2",
       "PROVIDED_AL2023",
       "FROM_IMAGE"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/schema-registry.ts": {
+    "EventRecordFormat": [
+      "JSON",
+      "SOURCE"
+    ],
+    "KafkaSchemaRegistryAccessConfigType": [
+      "BASIC_AUTH",
+      "CLIENT_CERTIFICATE_TLS_AUTH",
+      "SERVER_ROOT_CA_CERTIFICATE",
+      "VIRTUAL_HOST",
+      "SASL_SCRAM_256_AUTH",
+      "SASL_SCRAM_512_AUTH",
+      "VPC_SECURITY_GROUP",
+      "VPC_SUBNET"
+    ],
+    "KafkaSchemaValidationAttribute": [
+      "KEY",
+      "VALUE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/snapstart-config.ts": {
@@ -2426,7 +2592,8 @@
       "VER_3_08_0",
       "VER_3_08_1",
       "VER_3_08_2",
-      "VER_3_09_0"
+      "VER_3_09_0",
+      "VER_3_10_0"
     ],
     "AuroraPostgresEngineVersion": [
       "VER_9_6_8",
@@ -2503,6 +2670,7 @@
       "VER_13_17",
       "VER_13_18",
       "VER_13_20",
+      "VER_13_21",
       "VER_14_3",
       "VER_14_4",
       "VER_14_5",
@@ -2517,6 +2685,7 @@
       "VER_14_14",
       "VER_14_15",
       "VER_14_17",
+      "VER_14_18",
       "VER_15_2",
       "VER_15_3",
       "VER_15_4",
@@ -2527,6 +2696,7 @@
       "VER_15_9",
       "VER_15_10",
       "VER_15_12",
+      "VER_15_13",
       "VER_16_0",
       "VER_16_1",
       "VER_16_2",
@@ -2538,9 +2708,12 @@
       "VER_16_6_LIMITLESS",
       "VER_16_8",
       "VER_16_8_LIMITLESS",
+      "VER_16_9",
+      "VER_16_9_LIMITLESS",
       "VER_17_1",
       "VER_17_2",
-      "VER_17_4"
+      "VER_17_4",
+      "VER_17_5"
     ],
     "DatabaseClusterEngine": [
       "AURORA",
@@ -2627,6 +2800,7 @@
       "VER_10_5_26",
       "VER_10_5_27",
       "VER_10_5_28",
+      "VER_10_5_29",
       "VER_10_6",
       "VER_10_6_5",
       "VER_10_6_7",
@@ -2643,6 +2817,7 @@
       "VER_10_6_19",
       "VER_10_6_20",
       "VER_10_6_21",
+      "VER_10_6_22",
       "VER_10_11",
       "VER_10_11_4",
       "VER_10_11_5",
@@ -2652,9 +2827,12 @@
       "VER_10_11_9",
       "VER_10_11_10",
       "VER_10_11_11",
+      "VER_10_11_13",
       "VER_11_4_3",
       "VER_11_4_4",
-      "VER_11_4_5"
+      "VER_11_4_5",
+      "VER_11_4_7",
+      "VER_11_8_3"
     ],
     "MysqlEngineVersion": [
       "VER_5_5",
@@ -2708,6 +2886,7 @@
       "VER_5_7_44_RDS_20250103",
       "VER_5_7_44_RDS_20250213",
       "VER_5_7_44_RDS_20250508",
+      "VER_5_7_44_RDS_20250818",
       "VER_8_0",
       "VER_8_0_11",
       "VER_8_0_13",
@@ -2735,9 +2914,11 @@
       "VER_8_0_40",
       "VER_8_0_41",
       "VER_8_0_42",
+      "VER_8_0_43",
       "VER_8_4_3",
       "VER_8_4_4",
-      "VER_8_4_5"
+      "VER_8_4_5",
+      "VER_8_4_6"
     ],
     "PostgresEngineVersion": [
       "VER_9_5",
@@ -2830,6 +3011,7 @@
       "VER_11_22_RDS_20240509",
       "VER_11_22_RDS_20240808",
       "VER_11_22_RDS_20241121",
+      "VER_11_22_RDS_20250508",
       "VER_12",
       "VER_12_2",
       "VER_12_3",
@@ -2852,6 +3034,7 @@
       "VER_12_20",
       "VER_12_21",
       "VER_12_22",
+      "VER_12_22_RDS_20250508",
       "VER_13",
       "VER_13_1",
       "VER_13_2",
@@ -2874,6 +3057,7 @@
       "VER_13_19",
       "VER_13_20",
       "VER_13_21",
+      "VER_13_22",
       "VER_14",
       "VER_14_1",
       "VER_14_2",
@@ -2893,6 +3077,7 @@
       "VER_14_16",
       "VER_14_17",
       "VER_14_18",
+      "VER_14_19",
       "VER_15",
       "VER_15_2",
       "VER_15_3",
@@ -2906,6 +3091,7 @@
       "VER_15_11",
       "VER_15_12",
       "VER_15_13",
+      "VER_15_14",
       "VER_16",
       "VER_16_1",
       "VER_16_2",
@@ -2916,12 +3102,14 @@
       "VER_16_7",
       "VER_16_8",
       "VER_16_9",
+      "VER_16_10",
       "VER_17",
       "VER_17_1",
       "VER_17_2",
       "VER_17_3",
       "VER_17_4",
-      "VER_17_5"
+      "VER_17_5",
+      "VER_17_6"
     ],
     "OracleLegacyEngineVersion": [
       "VER_11_2",
@@ -3032,6 +3220,7 @@
       "VER_19_0_0_0_2024_07_R1",
       "VER_19_0_0_0_2024_10_R1",
       "VER_19_0_0_0_2025_01_R1",
+      "VER_19_0_0_0_2025_07_R1",
       "VER_21",
       "VER_21_0_0_0_2022_01_R1",
       "VER_21_0_0_0_2022_04_R1",
@@ -3046,7 +3235,8 @@
       "VER_21_0_0_0_2024_04_R1",
       "VER_21_0_0_0_2024_07_R1",
       "VER_21_0_0_0_2024_10_R1",
-      "VER_21_0_0_0_2025_01_R1"
+      "VER_21_0_0_0_2025_01_R1",
+      "VER_21_0_0_0_2025_07_R1"
     ],
     "SqlServerEngineVersion": [
       "VER_11",
@@ -3088,6 +3278,8 @@
       "VER_13_00_6445_1_V1",
       "VER_13_00_6450_1_V1",
       "VER_13_00_6455_2_V1",
+      "VER_13_00_6460_7_V1",
+      "VER_13_00_6465_1_V1",
       "VER_14",
       "VER_14_00_1000_169_V1",
       "VER_14_00_3015_40_V1",
@@ -3108,6 +3300,8 @@
       "VER_14_00_3475_1_V1",
       "VER_14_00_3480_1_V1",
       "VER_14_00_3485_1_V1",
+      "VER_14_00_3495_9_V1",
+      "VER_14_00_3500_1_V1",
       "VER_15",
       "VER_15_00_4043_16_V1",
       "VER_15_00_4355_3_V1",
@@ -3131,6 +3325,8 @@
       "VER_15_00_4415_2_V1",
       "VER_15_00_4420_2_V1",
       "VER_15_00_4430_1_V1",
+      "VER_15_00_4435_7_V1",
+      "VER_15_00_4440_1_V1",
       "VER_16",
       "VER_16_00_4085_2_V1",
       "VER_16_00_4095_4_V1",
@@ -3144,7 +3340,10 @@
       "VER_16_00_4150_1_V1",
       "VER_16_00_4165_4_V1",
       "VER_16_00_4175_1_V1",
-      "VER_16_00_4185_3_V1"
+      "VER_16_00_4185_3_V1",
+      "VER_16_00_4195_2_V1",
+      "VER_16_00_4205_1_V1",
+      "VER_16_00_4210_1_V1"
     ],
     "DatabaseInstanceEngine": [
       "MARIADB",
@@ -3165,6 +3364,13 @@
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.ts": {
     "SessionPinningFilter": [
       "EXCLUDE_VARIABLE_SETS"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.ts": {
+    "Alpn": [
+      "HTTP1_1",
+      "H2",
+      "H3"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.ts": {
@@ -3281,7 +3487,11 @@
       "SYNTHETICS_NODEJS_PUPPETEER_8_0",
       "SYNTHETICS_NODEJS_PUPPETEER_9_0",
       "SYNTHETICS_NODEJS_PUPPETEER_9_1",
+      "SYNTHETICS_NODEJS_PUPPETEER_10_0",
+      "SYNTHETICS_NODEJS_PUPPETEER_11_0",
       "SYNTHETICS_NODEJS_PLAYWRIGHT_1_0",
+      "SYNTHETICS_NODEJS_PLAYWRIGHT_2_0",
+      "SYNTHETICS_NODEJS_PLAYWRIGHT_3_0",
       "SYNTHETICS_PYTHON_SELENIUM_1_0",
       "SYNTHETICS_PYTHON_SELENIUM_1_1",
       "SYNTHETICS_PYTHON_SELENIUM_1_2",
@@ -3292,7 +3502,8 @@
       "SYNTHETICS_PYTHON_SELENIUM_4_0",
       "SYNTHETICS_PYTHON_SELENIUM_4_1",
       "SYNTHETICS_PYTHON_SELENIUM_5_0",
-      "SYNTHETICS_PYTHON_SELENIUM_5_1"
+      "SYNTHETICS_PYTHON_SELENIUM_5_1",
+      "SYNTHETICS_PYTHON_SELENIUM_6_0"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/cfn-pseudo.ts": {

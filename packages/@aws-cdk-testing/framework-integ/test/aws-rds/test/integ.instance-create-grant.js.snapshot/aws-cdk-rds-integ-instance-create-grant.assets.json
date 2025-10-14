@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "aws-cdk-rds-integ-instance-create-grant/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -8,23 +8,23 @@
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-4416417b": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "eea71590a762b519f0b183ac0d3082919313b73ac8dde1c121049e7dc7a856eb": {
+    "c4ca293826967b52b4e5f2a24fb8bc14ee1c0cf0d11db6a431d41a8c97acef76": {
       "displayName": "aws-cdk-rds-integ-instance-create-grant Template",
       "source": {
         "path": "aws-cdk-rds-integ-instance-create-grant.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-7a3b7cc8": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "eea71590a762b519f0b183ac0d3082919313b73ac8dde1c121049e7dc7a856eb.json",
+          "objectKey": "c4ca293826967b52b4e5f2a24fb8bc14ee1c0cf0d11db6a431d41a8c97acef76.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

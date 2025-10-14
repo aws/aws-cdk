@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8e22484e104d03bb8c381c662bca5f9251022e01bbb67e62d371b418eac0e88d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/13ef444cefc88a2e956fef2e4be4acc6d32b47ab3021352ff595ff7503f2621a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -76,6 +76,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "OrchestrationFunction2F3851C6"
+          }
+        ],
+        "/aws-cdk-bedrock-orchestration-1/OrchestrationFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-orchestration-1/OrchestrationFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OrchestrationFunctionLogGroup07F3FD44"
           }
         ],
         "/aws-cdk-bedrock-orchestration-1/OrchestrationFunction/OrchestrationLambdaInvocationPolicy-c8f49862985034a7": [
@@ -260,5 +274,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1017.1"
+  "minimumCliVersion": "2.1019.2"
 }

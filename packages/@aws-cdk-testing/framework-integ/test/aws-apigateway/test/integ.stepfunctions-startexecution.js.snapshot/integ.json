@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "44.0.0",
   "testCases": {
     "aws-apigateway-stepfunctions-startexecution/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "aws-apigateway-stepfunctions-startexecution/DefaultTest/DeployAssert",
       "assertionStackName": "awsapigatewaystepfunctionsstartexecutionDefaultTestDeployAssert3A9ACD49"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

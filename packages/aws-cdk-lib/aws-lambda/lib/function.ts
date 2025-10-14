@@ -3,7 +3,6 @@ import { AdotInstrumentationConfig, AdotLambdaExecWrapper } from './adot-layers'
 import { AliasOptions, Alias } from './alias';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
-import { ICodeSigningConfig } from './code-signing-config';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FileSystem } from './filesystem';
@@ -12,11 +11,11 @@ import { calculateFunctionHash, trimFromStart } from './function-hash';
 import { Handler } from './handler';
 import { LambdaInsightsVersion } from './lambda-insights';
 import { Version, VersionOptions } from './lambda-version';
-import { CfnFunction } from './lambda.generated';
+import { CfnFunction, ICodeSigningConfigRef } from './lambda.generated';
 import { LayerVersion, ILayerVersion } from './layers';
 import { LogRetentionRetryOptions } from './log-retention';
 import { ParamsAndSecretsLayerVersion } from './params-and-secrets-layers';
-import { Runtime, RuntimeFamily } from './runtime';
+import { determineLatestNodeRuntime, Runtime, RuntimeFamily } from './runtime';
 import { RuntimeManagementMode } from './runtime-management';
 import { SnapStartConf } from './snapstart-config';
 import { addAlias } from './util';
@@ -31,7 +30,7 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import {
   Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy,
-  Names, Size, Stack, Token,
+  Names, RemovalPolicy, Size, Stack, Token,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -456,9 +455,23 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * myLogGroup.logGroupName;
    * ```
    *
+   * @deprecated use `logGroup` instead
    * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
+
+  /**
+   * Determine the removal policy of the log group that is auto-created by this construct.
+   *
+   * Normally you want to retain the log group so you can diagnose issues
+   * from logs even after a deployment that no longer includes the log group.
+   * In that case, use the normal date-based retention policy to age out your
+   * logs.
+   *
+   * @deprecated use `logGroup` instead
+   * @default RemovalPolicy.Retain
+   */
+  readonly logRemovalPolicy?: RemovalPolicy;
 
   /**
    * The IAM role for the Lambda function associated with the custom resource
@@ -510,14 +523,14 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - AWS Lambda creates and uses an AWS managed customer master key (CMK).
    */
-  readonly environmentEncryption?: kms.IKey;
+  readonly environmentEncryption?: kms.IKeyRef;
 
   /**
    * Code signing config associated with this function
    *
    * @default - Not Sign the Code
    */
-  readonly codeSigningConfig?: ICodeSigningConfig;
+  readonly codeSigningConfig?: ICodeSigningConfigRef;
 
   /**
    * DEPRECATED
@@ -1044,6 +1057,8 @@ export class Function extends FunctionBase {
       throw new ValidationError(`Ephemeral storage size must be between 512 and 10240 MB, received ${props.ephemeralStorageSize}.`, this);
     }
 
+    const effectiveRuntime = props.runtime === Runtime.NODEJS_LATEST ? determineLatestNodeRuntime(this) : props.runtime;
+
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
@@ -1059,7 +1074,7 @@ export class Function extends FunctionBase {
       handler: props.handler === Handler.FROM_IMAGE ? undefined : props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
       packageType: props.runtime === Runtime.FROM_IMAGE ? 'Image' : undefined,
-      runtime: props.runtime === Runtime.FROM_IMAGE ? undefined : props.runtime.name,
+      runtime: props.runtime === Runtime.FROM_IMAGE ? undefined : effectiveRuntime.name,
       role: this.role.roleArn,
       // Uncached because calling '_checkEdgeCompatibility', which gets called in the resolve of another
       // Token, actually *modifies* the 'environment' map.
@@ -1076,9 +1091,9 @@ export class Function extends FunctionBase {
         entryPoint: code.image?.entrypoint,
         workingDirectory: code.image?.workingDirectory,
       }),
-      kmsKeyArn: props.environmentEncryption?.keyArn,
+      kmsKeyArn: props.environmentEncryption?.keyRef.keyArn,
       fileSystemConfigs,
-      codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
+      codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigRef.codeSigningConfigArn,
       architectures: this._architecture ? [this._architecture.name] : undefined,
       runtimeManagementConfig: props.runtimeManagementMode?.runtimeManagementConfig,
       snapStart: this.configureSnapStart(props),
@@ -1102,7 +1117,7 @@ export class Function extends FunctionBase {
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
-    this.runtime = props.runtime;
+    this.runtime = effectiveRuntime;
     this.timeout = props.timeout;
 
     this.architecture = props.architecture ?? Architecture.X86_64;
@@ -1120,6 +1135,14 @@ export class Function extends FunctionBase {
     }
 
     // Log retention
+    if (props.logRemovalPolicy) {
+      if (props.logGroup) {
+        throw new ValidationError('Cannot use `logRemovalPolicy` and `logGroup` together. Please set the removal policy on the logGroup directly', this);
+      } else if (FeatureFlags.of(this).isEnabled(USE_CDK_MANAGED_LAMBDA_LOGGROUP)) {
+        throw new ValidationError('Cannot use `logRemovalPolicy` and `@aws-cdk/aws-lambda:useCdkManagedLogGroup` flag together. Please set the removal policy on the automatically created log group directly', this);
+      }
+    }
+
     if (props.logRetention) {
       if (props.logGroup) {
         throw new ValidationError('CDK does not support setting logRetention and logGroup', this);
@@ -1129,6 +1152,7 @@ export class Function extends FunctionBase {
         retention: props.logRetention,
         role: props.logRetentionRole,
         logRetentionRetryOptions: props.logRetentionRetryOptions as logs.LogRetentionRetryOptions,
+        removalPolicy: props.logRemovalPolicy,
       });
       this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
       this._logRetention = logRetention;

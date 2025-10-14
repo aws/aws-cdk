@@ -401,7 +401,11 @@ abstract class SecretBase extends Resource implements ISecret {
     // See https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
     const result = iam.Grant.addToPrincipalOrResource({
       grantee,
-      actions: ['secretsmanager:PutSecretValue', 'secretsmanager:UpdateSecret'],
+      actions: [
+        'secretsmanager:PutSecretValue',
+        'secretsmanager:UpdateSecret',
+        'secretsmanager:UpdateSecretVersionStage',
+      ],
       resourceArns: [this.arnForPolicies],
       resource: this,
     });
@@ -720,7 +724,7 @@ export class Secret extends SecretBase {
    * @param encryptionKey The customer-managed encryption key to use for encrypting the secret value.
    */
   @MethodMetadata()
-  public addReplicaRegion(region: string, encryptionKey?: kms.IKey): void {
+  public addReplicaRegion(region: string, encryptionKey?: kms.IKeyRef): void {
     const stack = Stack.of(this);
     if (!Token.isUnresolved(stack.region) && !Token.isUnresolved(region) && region === stack.region) {
       throw new ValidationError('Cannot add the region where this stack is deployed as a replica region.', this);
@@ -728,7 +732,7 @@ export class Secret extends SecretBase {
 
     this.replicaRegions.push({
       region,
-      kmsKeyId: encryptionKey?.keyArn,
+      kmsKeyId: encryptionKey?.keyRef.keyArn,
     });
   }
 }

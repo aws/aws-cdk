@@ -46,9 +46,7 @@ describe('log retention', () => {
       Runtime: {
         'Fn::FindInMap': [
           'LatestNodeRuntimeMap',
-          {
-            Ref: 'AWS::Region',
-          },
+          { Ref: 'AWS::Region' },
           'value',
         ],
       },

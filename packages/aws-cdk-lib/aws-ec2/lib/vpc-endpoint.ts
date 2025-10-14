@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
-import { CfnVPCEndpoint } from './ec2.generated';
+import { CfnVPCEndpoint, IVPCEndpointRef, VPCEndpointReference } from './ec2.generated';
 import { Peer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
@@ -15,7 +15,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A VPC endpoint.
  */
-export interface IVpcEndpoint extends IResource {
+export interface IVpcEndpoint extends IResource, IVPCEndpointRef {
   /**
    * The VPC endpoint identifier.
    * @attribute
@@ -27,6 +27,12 @@ export abstract class VpcEndpoint extends Resource implements IVpcEndpoint {
   public abstract readonly vpcEndpointId: string;
 
   protected policyDocument?: iam.PolicyDocument;
+
+  public get vpcEndpointRef(): VPCEndpointReference {
+    return {
+      vpcEndpointId: this.vpcEndpointId,
+    };
+  }
 
   /**
    * Adds a statement to the policy document of the VPC endpoint. The statement
@@ -399,6 +405,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly BEDROCK = new InterfaceVpcEndpointAwsService('bedrock');
   public static readonly BEDROCK_AGENT = new InterfaceVpcEndpointAwsService('bedrock-agent');
   public static readonly BEDROCK_AGENT_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-agent-runtime');
+  public static readonly BEDROCK_AGENTCORE = new InterfaceVpcEndpointAwsService('bedrock-agentcore');
+  public static readonly BEDROCK_AGENTCORE_GATEWAY = new InterfaceVpcEndpointAwsService('bedrock-agentcore.gateway');
   public static readonly BEDROCK_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-runtime');
   public static readonly BEDROCK_DATA_AUTOMATION = new InterfaceVpcEndpointAwsService('bedrock-data-automation');
   public static readonly BEDROCK_DATA_AUTOMATION_FIPS = new InterfaceVpcEndpointAwsService('bedrock-data-automation-fips');
@@ -478,6 +486,12 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly DEVOPS_GURU = new InterfaceVpcEndpointAwsService('devops-guru');
   public static readonly DIRECTORY_SERVICE = new InterfaceVpcEndpointAwsService('ds');
   public static readonly DIRECTORY_SERVICE_DATA = new InterfaceVpcEndpointAwsService('ds-data');
+  /**
+    The management endpoint for DSQL.
+    For the Connection endpoint, use `new InterfaceVpcEndpointService(cfnCluster.attrVpcEndpointServiceName)`.
+    See https://docs.aws.amazon.com/aurora-dsql/latest/userguide/privatelink-managing-clusters.html#endpoint-types-dsql for details
+   */
+  public static readonly DSQL_MANAGEMENT = new InterfaceVpcEndpointAwsService('dsql');
   public static readonly DYNAMODB = new InterfaceVpcEndpointAwsService('dynamodb');
   public static readonly DYNAMODB_FIPS = new InterfaceVpcEndpointAwsService('dynamodb-fips');
   public static readonly DYNAMODB_STREAMS = new InterfaceVpcEndpointAwsService('dynamodb-streams');
@@ -708,10 +722,13 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly SERVERLESS_APPLICATION_REPOSITORY = new InterfaceVpcEndpointAwsService('serverlessrepo');
   /** @deprecated - Use InterfaceVpcEndpointAwsService.EMAIL_SMTP instead. */
   public static readonly SES = new InterfaceVpcEndpointAwsService('email-smtp');
+  public static readonly SHIELD = new InterfaceVpcEndpointAwsService('shield');
+  public static readonly SHIELD_FIPS = new InterfaceVpcEndpointAwsService('shield-fips');
   public static readonly SIMSPACE_WEAVER = new InterfaceVpcEndpointAwsService('simspaceweaver');
   public static readonly SNOW_DEVICE_MANAGEMENT = new InterfaceVpcEndpointAwsService('snow-device-management');
   public static readonly SNS = new InterfaceVpcEndpointAwsService('sns');
   public static readonly SQS = new InterfaceVpcEndpointAwsService('sqs');
+  public static readonly SQS_FIPS = new InterfaceVpcEndpointAwsService('sqs-fips');
   public static readonly SSM = new InterfaceVpcEndpointAwsService('ssm');
   public static readonly SSM_FIPS = new InterfaceVpcEndpointAwsService('ssm-fips');
   public static readonly SSM_MESSAGES = new InterfaceVpcEndpointAwsService('ssmmessages');
@@ -722,6 +739,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly STEP_FUNCTIONS_SYNC = new InterfaceVpcEndpointAwsService('sync-states');
   public static readonly STORAGE_GATEWAY = new InterfaceVpcEndpointAwsService('storagegateway');
   public static readonly STS = new InterfaceVpcEndpointAwsService('sts');
+  public static readonly STS_FIPS = new InterfaceVpcEndpointAwsService('sts-fips');
   public static readonly SUPPLY_CHAIN = new InterfaceVpcEndpointAwsService('scn');
   public static readonly SWF = new InterfaceVpcEndpointAwsService('swf');
   public static readonly SWF_FIPS = new InterfaceVpcEndpointAwsService('swf-fips');
@@ -919,6 +937,15 @@ export interface InterfaceVpcEndpointOptions {
    * @default not specified
    */
   readonly privateDnsOnlyForInboundResolverEndpoint?: VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint;
+
+  /**
+   * The region where the VPC endpoint service is located.
+   *
+   * Only needs to be specified for cross-region VPC endpoints.
+   *
+   * @default - Same region as the interface VPC endpoint
+   */
+  readonly serviceRegion?: string;
 }
 
 /**
@@ -962,6 +989,11 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
         defaultPort: Port.tcp(attrs.port),
         securityGroups,
       });
+      public get vpcEndpointRef(): VPCEndpointReference {
+        return {
+          vpcEndpointId: this.vpcEndpointId,
+        };
+      }
     }
 
     return new Import(scope, id);
@@ -1054,6 +1086,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       vpcId: props.vpc.vpcId,
       ipAddressType: props.ipAddressType,
       dnsOptions,
+      ...(props.serviceRegion && { serviceRegion: props.serviceRegion }),
     });
 
     this.vpcEndpointId = endpoint.ref;

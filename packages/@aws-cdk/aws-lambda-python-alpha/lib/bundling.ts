@@ -105,6 +105,7 @@ export class Bundling implements CdkBundlingOptions {
         IMAGE: runtime.bundlingImage.image,
       },
       platform: architecture.dockerPlatform,
+      network: props.network,
     });
     this.command = props.command ?? ['bash', '-c', chain(bundlingCommands)];
     this.entrypoint = props.entrypoint;
@@ -122,15 +123,25 @@ export class Bundling implements CdkBundlingOptions {
     const packaging = Packaging.fromEntry(options.entry, options.poetryIncludeHashes, options.poetryWithoutUrls);
     let bundlingCommands: string[] = [];
     bundlingCommands.push(...options.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? []);
-    const exclusionStr = options.assetExcludes?.map(item => `--exclude='${item}'`).join(' ');
+
+    const excludes = options.assetExcludes ?? [];
+    if (packaging.dependenciesFile == DependenciesFile.UV && !excludes.includes('.python-version')) {
+      excludes.push('.python-version');
+    }
+
+    const exclusionStr = excludes.map(item => `--exclude='${item}'`).join(' ');
     bundlingCommands.push([
       'rsync', '-rLv', exclusionStr ?? '', `${options.inputDir}/`, options.outputDir,
     ].filter(item => item).join(' '));
     bundlingCommands.push(`cd ${options.outputDir}`);
     bundlingCommands.push(packaging.exportCommand ?? '');
-    if (packaging.dependenciesFile) {
+
+    if (packaging.dependenciesFile == DependenciesFile.UV) {
+      bundlingCommands.push(`uv pip install -r ${DependenciesFile.PIP} --target ${options.outputDir}`);
+    } else if (packaging.dependenciesFile) {
       bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${options.outputDir}`);
     }
+
     bundlingCommands.push(...options.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? []);
     return bundlingCommands;
   }

@@ -1,16 +1,26 @@
 import { Construct } from 'constructs';
-import { CfnVpcOrigin } from './cloudfront.generated';
+import { CfnVpcOrigin, IVpcOriginRef, VpcOriginReference } from './cloudfront.generated';
 import { OriginProtocolPolicy, OriginSslPolicy } from '../';
 import { IInstance } from '../../aws-ec2';
 import { IApplicationLoadBalancer, INetworkLoadBalancer } from '../../aws-elasticloadbalancingv2';
-import { ArnFormat, IResource, ITaggableV2, Names, Resource, Stack, TagManager, Token, ValidationError } from '../../core';
+import {
+  ArnFormat,
+  IResource,
+  ITaggableV2,
+  Names,
+  Resource,
+  Stack,
+  TagManager,
+  Token,
+  ValidationError,
+} from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a VPC origin.
  */
-export interface IVpcOrigin extends IResource {
+export interface IVpcOrigin extends IResource, IVpcOriginRef {
   /**
    * The VPC origin ARN.
    * @attribute
@@ -184,6 +194,10 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
       readonly vpcOriginArn = vpcOriginArn;
       readonly vpcOriginId = vpcOriginId!;
       readonly domainName = attrs.domainName;
+      readonly vpcOriginRef = {
+        vpcOriginArn: vpcOriginArn,
+        vpcOriginId: vpcOriginId!,
+      };
     }
 
     return new Import(scope, id);
@@ -203,6 +217,8 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
    * The domain name of the CloudFront VPC origin endpoint configuration.
    */
   readonly domainName?: string;
+
+  readonly vpcOriginRef: VpcOriginReference;
 
   readonly cdkTagManager: TagManager;
 
@@ -225,6 +241,7 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
       },
     });
 
+    this.vpcOriginRef = resource.vpcOriginRef;
     this.vpcOriginArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'cloudfront',
       region: '',

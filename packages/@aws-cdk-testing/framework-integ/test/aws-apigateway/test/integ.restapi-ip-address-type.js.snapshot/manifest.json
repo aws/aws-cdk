@@ -1,5 +1,5 @@
 {
-  "version": "42.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "restapi-ip-address-type-test-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0986b8dec07b02e274b566c21876b97c85b2f3cbe4cbc753c3727758393abf93.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4d9df072142679300639ac5675b246f613313e96e6bfb34de658382f7228b838.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -305,7 +305,8 @@
               "endpointConfiguration": {
                 "types": [
                   "EDGE"
-                ]
+                ],
+                "ipAddressType": "ipv4"
               }
             }
           }
@@ -390,7 +391,8 @@
               "endpointConfiguration": {
                 "types": [
                   "EDGE"
-                ]
+                ],
+                "ipAddressType": "dualstack"
               }
             }
           }
@@ -475,7 +477,8 @@
               "endpointConfiguration": {
                 "types": [
                   "REGIONAL"
-                ]
+                ],
+                "ipAddressType": "ipv4"
               }
             }
           }
@@ -560,7 +563,8 @@
               "endpointConfiguration": {
                 "types": [
                   "REGIONAL"
-                ]
+                ],
+                "ipAddressType": "dualstack"
               }
             }
           }
@@ -645,7 +649,8 @@
               "endpointConfiguration": {
                 "types": [
                   "*"
-                ]
+                ],
+                "ipAddressType": "dualstack"
               }
             }
           },
@@ -809,5 +814,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1006.0"
+  "minimumCliVersion": "2.1018.0"
 }

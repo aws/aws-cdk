@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "44.0.0",
   "testCases": {
     "specrestapi-endpointConfiguration-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "specrestapi-endpointConfiguration-test/DefaultTest/DeployAssert",
       "assertionStackName": "specrestapiendpointConfigurationtestDefaultTestDeployAssert07F4EA8D"
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }
