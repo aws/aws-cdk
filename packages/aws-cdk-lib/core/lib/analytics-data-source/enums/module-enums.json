@@ -15,6 +15,11 @@
     "CacheConfigType": [
       "AMPLIFY_MANAGED",
       "AMPLIFY_MANAGED_NO_COOKIES"
+    ],
+    "BuildComputeType": [
+      "STANDARD_8GB",
+      "LARGE_16GB",
+      "XLARGE_72GB"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-apprunner-alpha/lib/observability-configuration.ts": {
@@ -1734,6 +1739,10 @@
       "BEST_FIT_PROGRESSIVE",
       "SPOT_CAPACITY_OPTIMIZED",
       "SPOT_PRICE_CAPACITY_OPTIMIZED"
+    ],
+    "DefaultInstanceClass": [
+      "default_x86_64",
+      "default_arm64"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts": {
@@ -2083,7 +2092,8 @@
       "BUILD_LAMBDA_4GB",
       "BUILD_LAMBDA_8GB",
       "BUILD_LAMBDA_10GB",
-      "ATTRIBUTE_BASED_COMPUTE"
+      "ATTRIBUTE_BASED_COMPUTE",
+      "CUSTOM_INSTANCE_TYPE"
     ],
     "DockerServerComputeType": [
       "BUILD_GENERAL1_SMALL",
@@ -2117,14 +2127,21 @@
       "BUILD_GENERAL1_LARGE",
       "BUILD_GENERAL1_XLARGE",
       "BUILD_GENERAL1_2XLARGE",
-      "ATTRIBUTE_BASED_COMPUTE"
+      "ATTRIBUTE_BASED_COMPUTE",
+      "CUSTOM_INSTANCE_TYPE"
+    ],
+    "FleetOverflowBehavior": [
+      "QUEUE",
+      "ON_DEMAND"
     ]
   },
-  "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/image-pull-principal-type.ts": {
     "ImagePullPrincipalType": [
       "CODEBUILD",
       "SERVICE_ROLE"
-    ],
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.ts": {
     "WindowsImageType": [
       "WINDOWS_CONTAINER",
       "WINDOWS_SERVER_2019_CONTAINER",
@@ -2564,6 +2581,57 @@
       24
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts": {
+    "AcceleratorType": [
+      "gpu",
+      "fpga",
+      "inference"
+    ],
+    "AcceleratorManufacturer": [
+      "amazon-web-services",
+      "amd",
+      "nvidia",
+      "xilinx"
+    ],
+    "AcceleratorName": [
+      "a100",
+      "k80",
+      "m60",
+      "radeon-pro-v520",
+      "t4",
+      "v100",
+      "vu9p"
+    ],
+    "BareMetal": [
+      "included",
+      "required",
+      "excluded"
+    ],
+    "BurstablePerformance": [
+      "included",
+      "required",
+      "excluded"
+    ],
+    "CpuManufacturer": [
+      "intel",
+      "amd",
+      "amazon-web-services",
+      "apple"
+    ],
+    "InstanceGeneration": [
+      "current",
+      "previous"
+    ],
+    "LocalStorage": [
+      "included",
+      "required",
+      "excluded"
+    ],
+    "LocalStorageType": [
+      "hdd",
+      "ssd"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-types.ts": {
     "InstanceClass": [
       "standard3",
@@ -2708,6 +2776,10 @@
       "c7i",
       "compute7-intel-flex",
       "c7i-flex",
+      "compute8-intel",
+      "c8i",
+      "compute8-intel-flex",
+      "c8i-flex",
       "compute7-amd",
       "c7a",
       "storage2",
@@ -2842,6 +2914,8 @@
       "m7i-flex",
       "standard7-amd",
       "m7a",
+      "standard8-amd",
+      "m8a",
       "high-compute-memory1",
       "z1d",
       "inference1",
@@ -3797,7 +3871,11 @@
       0,
       1,
       2,
-      3
+      3,
+      4,
+      5,
+      6,
+      7
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.ts": {
@@ -3814,6 +3892,14 @@
       "NONE",
       "DEFAULT",
       "OVERRIDE"
+    ],
+    "InstanceMonitoring": [
+      "BASIC",
+      "DETAILED"
+    ],
+    "PropagateManagedInstancesTags": [
+      "CAPACITY_PROVIDER",
+      "NONE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/container-definition.ts": {
@@ -4410,6 +4496,16 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-kinesis/lib/stream.ts": {
+    "ShardLevelMetrics": [
+      "IncomingBytes",
+      "IncomingRecords",
+      "IteratorAgeMilliseconds",
+      "OutgoingBytes",
+      "OutgoingRecords",
+      "ReadProvisionedThroughputExceeded",
+      "WriteProvisionedThroughputExceeded",
+      "ALL"
+    ],
     "StreamEncryption": [
       "NONE",
       "KMS",

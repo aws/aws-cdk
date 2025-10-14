@@ -148,6 +148,17 @@
     "Principal": "*"
    }
   },
+  "Aliasinvokefunction83AEC4F1": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Ref": "Alias325C5727"
+    },
+    "InvokedViaFunctionUrl": true,
+    "Principal": "*"
+   }
+  },
   "MySnapStartLambdaServiceRoleE0F04324": {
    "Type": "AWS::IAM::Role",
    "Properties": {

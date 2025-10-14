@@ -33,14 +33,15 @@
         "packageName": "awscdkiotalpha"
       }
     },
-    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
           "strict": true
         }
       }
-    }
+    },
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal"
   },
   "repository": {
     "type": "git",
@@ -115,7 +116,7 @@
   },
   "jsiiRosetta": {
     "exampleDependencies": {
-      "@aws-cdk/aws-iot-actions-alpha":  "^0.0.0"
+      "@aws-cdk/aws-iot-actions-alpha": "^0.0.0"
     }
   }
 }

@@ -265,6 +265,12 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
         action: 'lambda:InvokeFunctionUrl',
         functionUrlAuthType: props.authType,
       });
+
+      props.function.addPermission('invoke-function', {
+        principal: new iam.AnyPrincipal(),
+        action: 'lambda:InvokeFunction',
+        invokedViaFunctionUrl: true,
+      });
     }
   }
 

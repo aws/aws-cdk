@@ -353,6 +353,18 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
 });
 ```
 
+## Build Compute Type
+
+You can specify the build compute type by setting the `buildComputeType` property.
+
+For more information, see [Configuring the build instance for an Amplify application](https://docs.aws.amazon.com/amplify/latest/userguide/custom-build-instance.html).
+
+```ts
+const amplifyApp = new amplify.App(this, 'MyApp', {
+  buildComputeType: amplify.BuildComputeType.LARGE_16GB,
+});
+```
+
 ## Deploying Assets
 
 `sourceCodeProvider` is optional; when this is not specified the Amplify app can be deployed to using `.zip` packages. The `asset` property can be used to deploy S3 assets to Amplify as part of the CDK:

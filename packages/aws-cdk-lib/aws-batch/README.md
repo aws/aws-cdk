@@ -65,7 +65,18 @@ For stateful or otherwise non-interruption-tolerant workflows, omit `spot` or se
 
 #### Choosing Your Instance Types
 
-Batch allows you to choose the instance types or classes that will run your workload.
+Batch allows you to choose most up-to-date instance classes based on your region.
+This example configures your `ComputeEnvironment` to use only ARM64 instance:
+
+```ts
+const vpc = new ec2.Vpc(this, 'VPC');
+
+new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
+  vpc,
+  defaultInstanceClasses: [batch.DefaultInstanceClass.ARM64],
+});
+```
+
 This example configures your `ComputeEnvironment` to use only the `M5AD.large` instance:
 
 ```ts
@@ -90,6 +101,9 @@ new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
   instanceClasses: [ec2.InstanceClass.R4],
 });
 ```
+
+> [!WARNING] 
+> `useOptimalInstanceClasses` is deprecated! Use `defaultInstanceClasses` instead.
 
 Unless you explicitly specify `useOptimalInstanceClasses: false`, this compute environment will use `'optimal'` instances,
 which tells Batch to pick an instance from the C4, M4, and R4 instance families.

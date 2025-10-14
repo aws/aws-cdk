@@ -6,7 +6,6 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "projectReferences": true,
     "targets": {
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Location.Alpha",
@@ -41,7 +40,9 @@
           "strict": true
         }
       }
-    }
+    },
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal"
   },
   "repository": {
     "type": "git",
