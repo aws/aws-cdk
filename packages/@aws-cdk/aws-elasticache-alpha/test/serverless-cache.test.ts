@@ -84,6 +84,22 @@ describe('serverless cache', () => {
         MajorEngineVersion: Match.absent(),
       });
     });
+
+    test('allow security group ingress with endpoint port', () => {
+      const cache = new ServerlessCache(stack, 'Cache', {
+        vpc,
+      });
+      new SecurityGroup(stack, 'SecurityGroup', { vpc }).connections.allowToDefaultPort(cache);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+        FromPort: {
+          'Fn::GetAtt': ['Cache18F6EE16', 'Endpoint.Port'],
+        },
+        ToPort: {
+          'Fn::GetAtt': ['Cache18F6EE16', 'Endpoint.Port'],
+        },
+      });
+    });
   });
 
   describe('validation errors', () => {
