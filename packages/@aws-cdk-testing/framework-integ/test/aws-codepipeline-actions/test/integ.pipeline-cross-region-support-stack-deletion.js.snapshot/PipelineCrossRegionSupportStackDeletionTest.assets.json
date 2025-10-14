@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "17db78012cadb730970093631db2b3df795042dfa48516f428f8fe8911d09813": {
+      "displayName": "PipelineCrossRegionSupportStackDeletionTest Template",
+      "source": {
+        "path": "PipelineCrossRegionSupportStackDeletionTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "123456789012-us-east-1-3175a8c2": {
+          "bucketName": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "objectKey": "17db78012cadb730970093631db2b3df795042dfa48516f428f8fe8911d09813.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-file-publishing-role-123456789012-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
