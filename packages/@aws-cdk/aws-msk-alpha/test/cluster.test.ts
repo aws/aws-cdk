@@ -980,4 +980,117 @@ describe('MSK Cluster', () => {
       });
     });
   });
+
+  describe('with express broker ', () => {
+    let expressStack: core.Stack;
+    let expressVpc: ec2.Vpc;
+
+    beforeEach(() => {
+      const app = new core.App();
+      expressStack = new core.Stack(app, 'ExpressTestStack', {
+        env: {
+          region: 'us-east-1',
+          account: '123456789012',
+        },
+      });
+      expressVpc = new ec2.Vpc(expressStack, 'ExpressVpc', {
+        maxAzs: 3,
+      });
+    });
+
+    test('create a cluster with express broker', () => {
+      new msk.Cluster(expressStack, 'ExpressCluster', {
+        clusterName: 'express-cluster',
+        kafkaVersion: msk.KafkaVersion.V3_8_X,
+        vpc: expressVpc,
+        instanceType: ec2.InstanceType.of(
+          ec2.InstanceClass.M7G,
+          ec2.InstanceSize.XLARGE,
+        ),
+        express: true,
+      });
+
+      Template.fromStack(expressStack).hasResourceProperties('AWS::MSK::Cluster', {
+        BrokerNodeGroupInfo: { InstanceType: 'express.m7g.xlarge' },
+      });
+    });
+
+    test('fails when instanceType is not specified', () => {
+      expect(() => {
+        new msk.Cluster(expressStack, 'ExpressClusterNoInstanceType', {
+          clusterName: 'express-cluster',
+          kafkaVersion: msk.KafkaVersion.V3_8_X,
+          vpc: expressVpc,
+          express: true,
+        });
+      }).toThrow(
+        '`instanceType` must also be specified when `express` is true.',
+      );
+    });
+
+    test('fails when ebsStorageInfo is specified', () => {
+      expect(() => {
+        new msk.Cluster(expressStack, 'ExpressClusterWithStorage', {
+          clusterName: 'express-cluster',
+          kafkaVersion: msk.KafkaVersion.V3_8_X,
+          vpc: expressVpc,
+          instanceType: ec2.InstanceType.of(
+            ec2.InstanceClass.M7G,
+            ec2.InstanceSize.XLARGE,
+          ),
+          express: true,
+          ebsStorageInfo: { volumeSize: 100 },
+        });
+      }).toThrow('`ebsStorageInfo` is not supported when `express` is true.');
+    });
+
+    test('fails when express is true and storageMode is specified', () => {
+      expect(() => {
+        new msk.Cluster(expressStack, 'ExpressClusterWithStorageMode', {
+          clusterName: 'express-cluster',
+          kafkaVersion: msk.KafkaVersion.V3_8_X,
+          vpc: expressVpc,
+          instanceType: ec2.InstanceType.of(
+            ec2.InstanceClass.M7G,
+            ec2.InstanceSize.XLARGE,
+          ),
+          express: true,
+          storageMode: msk.StorageMode.LOCAL,
+        });
+      }).toThrow('`storageMode` is not supported when `express` is true.');
+    });
+
+    test('fails when express is true and logging is specified', () => {
+      expect(() => {
+        new msk.Cluster(expressStack, 'ExpressClusterWithLogging', {
+          clusterName: 'express-cluster',
+          kafkaVersion: msk.KafkaVersion.V3_8_X,
+          vpc: expressVpc,
+          instanceType: ec2.InstanceType.of(
+            ec2.InstanceClass.M7G,
+            ec2.InstanceSize.XLARGE,
+          ),
+          express: true,
+          logging: {
+            cloudwatchLogGroup: new logs.LogGroup(expressStack, 'LogGroup'),
+          },
+        });
+      }).toThrow('`logging` is not supported when `express` is true.');
+    });
+
+    test('fails when express is true and less than 3 subnets are provided', () => {
+      expect(() => {
+        new msk.Cluster(stack, 'ExpressClusterWithInsufficientSubnets', {
+          clusterName: 'express-cluster',
+          kafkaVersion: msk.KafkaVersion.V3_8_X,
+          vpc,
+          instanceType: ec2.InstanceType.of(
+            ec2.InstanceClass.M7G,
+            ec2.InstanceSize.XLARGE,
+          ),
+          express: true,
+        });
+      }).toThrow('Express cluster requires at least 3 subnets, got 2');
+    });
+  });
 });
