@@ -91,20 +91,38 @@ endpointConfig.addInstanceProductionVariant({
   initialVariantWeight: 2.0,
 });
 
-// Test serverless endpoint configuration
-const serverlessEndpointConfig = new sagemaker.EndpointConfig(stack, 'ServerlessEndpointConfig', {
+// Test serverless endpoint configuration with all properties
+new sagemaker.EndpointConfig(stack, 'ServerlessEndpointConfig', {
   serverlessProductionVariant: {
     model: modelWithoutArtifactAndVpc,
     variantName: 'serverlessVariant',
     maxConcurrency: 10,
     memorySizeInMB: 2048,
     provisionedConcurrency: 5,
+    initialVariantWeight: 1.0,
   },
 });
 
-// Ensure serverless endpoint config is used
-serverlessEndpointConfig.node.addValidation({
-  validate: () => [],
+// Test serverless endpoint configuration with minimal properties
+new sagemaker.EndpointConfig(stack, 'MinimalServerlessEndpointConfig', {
+  serverlessProductionVariant: {
+    model: modelWithoutArtifactAndVpc,
+    variantName: 'minimalServerlessVariant',
+    maxConcurrency: 1,
+    memorySizeInMB: 1024,
+    // No provisionedConcurrency - testing optional property
+  },
+});
+
+// Test serverless endpoint configuration with boundary values
+new sagemaker.EndpointConfig(stack, 'BoundaryServerlessEndpointConfig', {
+  serverlessProductionVariant: {
+    model: modelWithoutArtifactAndVpc,
+    variantName: 'boundaryServerlessVariant',
+    maxConcurrency: 200, // Maximum allowed
+    memorySizeInMB: 6144, // Maximum allowed
+    provisionedConcurrency: 200, // Maximum allowed (equal to maxConcurrency)
+  },
 });
 
 new IntegTest(app, 'integtest-endpointconfig', {
