@@ -12,7 +12,6 @@ import {
   RUNTIME_LOGS_STREAM_ACTIONS,
   RUNTIME_XRAY_ACTIONS,
   RUNTIME_CLOUDWATCH_METRICS_ACTIONS,
-  RUNTIME_WORKLOAD_IDENTITY_ACTIONS,
   RUNTIME_CLOUDWATCH_NAMESPACE,
 } from './perms';
 import { AgentRuntimeArtifact } from './runtime-artifact';
@@ -146,17 +145,19 @@ export class Runtime extends RuntimeBase {
       public readonly agentRuntimeArn = attrs.agentRuntimeArn;
       public readonly agentRuntimeId = attrs.agentRuntimeId;
       public readonly agentRuntimeName = attrs.agentRuntimeName;
-      public readonly role = attrs.role;
       public readonly agentRuntimeVersion = attrs.agentRuntimeVersion;
-      public readonly agentStatus = undefined;
+      public readonly agentStatus = attrs.agentStatus;
       public readonly description = attrs.description;
-      public readonly createdAt = undefined;
-      public readonly lastUpdatedAt = undefined;
-      public readonly grantPrincipal = attrs.role;
+      public readonly createdAt = attrs.createdAt;
+      public readonly lastUpdatedAt = attrs.lastUpdatedAt;
+
+      public readonly role: iam.IRole;
+      public readonly grantPrincipal: iam.IPrincipal;
 
       constructor(s: Construct, i: string) {
         super(s, i);
-        // Add connections support for imported runtimes
+        this.role = iam.Role.fromRoleArn(this, 'Role', attrs.roleArn);
+        this.grantPrincipal = this.role;
         if (attrs.securityGroups) {
           this._connections = new ec2.Connections({
             securityGroups: attrs.securityGroups,
@@ -331,10 +332,6 @@ export class Runtime extends RuntimeBase {
     const region = Stack.of(this).region;
     const account = Stack.of(this).account;
 
-    // Skipping  ECR Image Access (RUNTIME_ECR_IMAGE_ACTIONS)
-    // and ECR Token Access (RUNTIME_ECR_TOKEN_ACTIONS) permission
-    // because these are set by runtime-artifact (grantPull) with the bind function
-
     // CloudWatch Logs - Log Group operations
     role.addToPolicy(new iam.PolicyStatement({
       sid: 'LogGroupAccess',
@@ -380,17 +377,29 @@ export class Runtime extends RuntimeBase {
       },
     }));
 
-    // Bedrock AgentCore Workload Identity Access
-    // Note: The agent name will be determined at runtime, so we use a wildcard pattern
+    // Service-linked role creation permission
+    // Required for creating service-linked roles for network and identity management
+    // These roles are created automatically when needed (as of October 13, 2025)
     role.addToPolicy(new iam.PolicyStatement({
-      sid: 'GetAgentAccessToken',
+      sid: 'CreateServiceLinkedRoles',
       effect: iam.Effect.ALLOW,
-      actions: RUNTIME_WORKLOAD_IDENTITY_ACTIONS,
+      actions: ['iam:CreateServiceLinkedRole'],
       resources: [
-        `arn:${Stack.of(this).partition}:bedrock-agentcore:${region}:${account}:workload-identity-directory/default`,
-        `arn:${Stack.of(this).partition}:bedrock-agentcore:${region}:${account}:workload-identity-directory/default/workload-identity/*`,
+        `arn:${Stack.of(this).partition}:iam::*:role/aws-service-role/network.bedrock-agentcore.amazonaws.com/AWSServiceRoleForBedrockAgentCoreNetwork`,
+        `arn:${Stack.of(this).partition}:iam::*:role/aws-service-role/runtime-identity.bedrock-agentcore.amazonaws.com/AWSServiceRoleForBedrockAgentCoreRuntimeIdentity`,
       ],
+      conditions: {
+        StringEquals: {
+          'iam:AWSServiceName': [
+            'network.bedrock-agentcore.amazonaws.com',
+            'runtime-identity.bedrock-agentcore.amazonaws.com',
+          ],
+        },
+      },
     }));
+
+    // Note: Workload identity permissions are now handled by the service-linked role
+    // AWSServiceRoleForBedrockAgentCoreRuntimeIdentity (as of October 13, 2025)
 
     // Note: Bedrock model invocation permissions are NOT included by default.
     // Users should grant these permissions  explicitly using model IBedrockInvokable interface

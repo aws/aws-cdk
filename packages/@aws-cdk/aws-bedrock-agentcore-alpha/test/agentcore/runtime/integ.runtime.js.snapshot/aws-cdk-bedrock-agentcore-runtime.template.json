@@ -128,11 +128,15 @@
        "Sid": "CloudWatchMetrics"
       },
       {
-       "Action": [
-        "bedrock-agentcore:GetWorkloadAccessToken",
-        "bedrock-agentcore:GetWorkloadAccessTokenForJWT",
-        "bedrock-agentcore:GetWorkloadAccessTokenForUserId"
-       ],
+       "Action": "iam:CreateServiceLinkedRole",
+       "Condition": {
+        "StringEquals": {
+         "iam:AWSServiceName": [
+          "network.bedrock-agentcore.amazonaws.com",
+          "runtime-identity.bedrock-agentcore.amazonaws.com"
+         ]
+        }
+       },
        "Effect": "Allow",
        "Resource": [
         {
@@ -143,15 +147,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":bedrock-agentcore:",
-           {
-            "Ref": "AWS::Region"
-           },
-           ":",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":workload-identity-directory/default"
+           ":iam::*:role/aws-service-role/network.bedrock-agentcore.amazonaws.com/AWSServiceRoleForBedrockAgentCoreNetwork"
           ]
          ]
         },
@@ -163,20 +159,12 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":bedrock-agentcore:",
-           {
-            "Ref": "AWS::Region"
-           },
-           ":",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":workload-identity-directory/default/workload-identity/*"
+           ":iam::*:role/aws-service-role/runtime-identity.bedrock-agentcore.amazonaws.com/AWSServiceRoleForBedrockAgentCoreRuntimeIdentity"
           ]
          ]
         }
        ],
-       "Sid": "GetAgentAccessToken"
+       "Sid": "CreateServiceLinkedRoles"
       },
       {
        "Action": [

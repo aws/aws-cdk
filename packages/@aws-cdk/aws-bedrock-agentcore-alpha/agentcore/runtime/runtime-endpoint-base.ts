@@ -116,4 +116,40 @@ export interface RuntimeEndpointAttributes {
    * @default - No description
    */
   readonly description?: string;
+
+  /**
+   * The current status of the runtime endpoint
+   * @default - Status not available
+   */
+  readonly status?: string;
+
+  /**
+   * The live version of the agent runtime that is currently serving requests
+   * @default - Live version not available
+   */
+  readonly liveVersion?: string;
+
+  /**
+   * The target version the endpoint is transitioning to (during updates)
+   * @default - Target version not available
+   */
+  readonly targetVersion?: string;
+
+  /**
+   * When the endpoint was created
+   * @default - Creation time not available
+   */
+  readonly createdAt?: string;
+
+  /**
+   * When the endpoint was last updated
+   * @default - Last update time not available
+   */
+  readonly lastUpdatedAt?: string;
+
+  /**
+   * The unique identifier of the runtime endpoint
+   * @default - Endpoint ID not available
+   */
+  readonly endpointId?: string;
 }

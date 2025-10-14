@@ -88,10 +88,12 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
       public readonly endpointName = attrs.endpointName;
       public readonly agentRuntimeArn = attrs.agentRuntimeArn;
       public readonly description = attrs.description;
-      public readonly status: string | undefined = undefined;
-      public readonly liveVersion: string | undefined = undefined;
-      public readonly targetVersion: string | undefined = undefined;
-      public readonly createdAt: string | undefined = undefined;
+      public readonly status = attrs.status;
+      public readonly liveVersion = attrs.liveVersion;
+      public readonly targetVersion = attrs.targetVersion;
+      public readonly createdAt = attrs.createdAt;
+      public readonly endpointId = attrs.endpointId;
+      public readonly lastUpdatedAt = attrs.lastUpdatedAt;
     }
 
     return new ImportedBedrockAgentRuntimeEndpoint(scope, id);

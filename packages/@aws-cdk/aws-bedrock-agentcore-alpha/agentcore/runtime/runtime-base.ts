@@ -22,7 +22,7 @@ import {
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
-import { RUNTIME_INVOKE_PERMS } from './perms';
+import { RUNTIME_INVOKE_PERMS, RUNTIME_INVOKE_USER_PERMS } from './perms';
 import { ValidationError } from './validation-helpers';
 
 /******************************************************************************
@@ -55,7 +55,7 @@ export interface IBedrockAgentRuntime extends IResource, iam.IGrantable, ec2.ICo
   readonly agentRuntimeName: string;
 
   /**
-   * The IAM role ARN that provides permissions for the agent runtime
+   * The IAM role that provides permissions for the agent runtime
    *
    */
   readonly role: iam.IRole;
@@ -158,6 +158,28 @@ export interface IBedrockAgentRuntime extends IResource, iam.IGrantable, ec2.ICo
    * @returns The runtime instance for chaining
    */
   addToRolePolicy(statement: iam.PolicyStatement): IBedrockAgentRuntime;
+
+  /**
+   * Permits an IAM principal to invoke this runtime
+   * Grants the bedrock-agentcore:InvokeAgentRuntime permission
+   * @param grantee The principal to grant access to
+   */
+  grantInvokeRuntime(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Permits an IAM principal to invoke this runtime on behalf of a user
+   * Grants the bedrock-agentcore:InvokeAgentRuntimeForUser permission
+   * Required when using the X-Amzn-Bedrock-AgentCore-Runtime-User-Id header
+   * @param grantee The principal to grant access to
+   */
+  grantInvokeRuntimeForUser(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Permits an IAM principal to invoke this runtime both directly and on behalf of users
+   * Grants both bedrock-agentcore:InvokeAgentRuntime and bedrock-agentcore:InvokeAgentRuntimeForUser permissions
+   * @param grantee The principal to grant access to
+   */
+  grantInvoke(grantee: iam.IGrantable): iam.Grant;
 }
 
 /******************************************************************************
@@ -238,12 +260,40 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
 
   /**
    * Permits an IAM principal to invoke this runtime
+   * Grants the bedrock-agentcore:InvokeAgentRuntime permission
    * @param grantee The principal to grant access to
    */
-  public grantInvoke(grantee: iam.IGrantable) {
+  public grantInvokeRuntime(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,
       actions: RUNTIME_INVOKE_PERMS,
+      resourceArns: [this.agentRuntimeArn],
+    });
+  }
+
+  /**
+   * Permits an IAM principal to invoke this runtime on behalf of a user
+   * Grants the bedrock-agentcore:InvokeAgentRuntimeForUser permission
+   * Required when using the X-Amzn-Bedrock-AgentCore-Runtime-User-Id header
+   * @param grantee The principal to grant access to
+   */
+  public grantInvokeRuntimeForUser(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: RUNTIME_INVOKE_USER_PERMS,
+      resourceArns: [this.agentRuntimeArn],
+    });
+  }
+
+  /**
+   * Permits an IAM principal to invoke this runtime both directly and on behalf of users
+   * Grants both bedrock-agentcore:InvokeAgentRuntime and bedrock-agentcore:InvokeAgentRuntimeForUser permissions
+   * @param grantee The principal to grant access to
+   */
+  public grantInvoke(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: [...RUNTIME_INVOKE_PERMS, ...RUNTIME_INVOKE_USER_PERMS],
       resourceArns: [this.agentRuntimeArn],
     });
   }
@@ -367,7 +417,7 @@ export interface AgentRuntimeAttributes {
   /**
    * The IAM role ARN
    */
-  readonly role: iam.IRole;
+  readonly roleArn: string;
 
   /**
    * The version of the agent runtime
@@ -388,4 +438,22 @@ export interface AgentRuntimeAttributes {
    * @default - By default, the runtime is not in a VPC.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * The current status of the agent runtime
+   * @default - Status not available
+   */
+  readonly agentStatus?: string;
+
+  /**
+   * The time at which the runtime was created
+   * @default - Creation time not available
+   */
+  readonly createdAt?: string;
+
+  /**
+   * The time at which the runtime was last updated
+   * @default - Last update time not available
+   */
+  readonly lastUpdatedAt?: string;
 }

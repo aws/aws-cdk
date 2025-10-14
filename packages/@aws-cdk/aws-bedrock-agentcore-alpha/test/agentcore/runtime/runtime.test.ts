@@ -769,7 +769,7 @@ describe('Runtime static methods tests', () => {
       agentRuntimeArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id',
       agentRuntimeId: 'test-runtime-id',
       agentRuntimeName: 'test-runtime',
-      role: role,
+      roleArn: role.roleArn,
       agentRuntimeVersion: '1',
       description: 'Imported runtime',
     });
@@ -777,12 +777,35 @@ describe('Runtime static methods tests', () => {
     expect(imported.agentRuntimeArn).toBe('arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id');
     expect(imported.agentRuntimeId).toBe('test-runtime-id');
     expect(imported.agentRuntimeName).toBe('test-runtime');
-    expect(imported.role).toBe(role);
+    // Since we create the role from ARN, check the ARN instead of object reference
+    expect(imported.role.roleArn).toBe(role.roleArn);
     expect(imported.agentRuntimeVersion).toBe('1');
     // description is optional and may not exist on the interface
     expect(imported.agentStatus).toBeUndefined();
     expect(imported.createdAt).toBeUndefined();
     expect(imported.lastUpdatedAt).toBeUndefined();
+  });
+
+  test('Should import runtime with optional attributes', () => {
+    const imported = Runtime.fromAgentRuntimeAttributes(stack, 'ImportedRuntimeOptional', {
+      agentRuntimeArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id',
+      agentRuntimeId: 'test-runtime-id',
+      agentRuntimeName: 'test-runtime',
+      roleArn: 'arn:aws:iam::123456789012:role/test-role',
+      agentRuntimeVersion: '2',
+      agentStatus: 'ACTIVE',
+      createdAt: '2024-01-15T10:30:00Z',
+      lastUpdatedAt: '2024-01-15T14:45:00Z',
+    });
+
+    expect(imported.agentRuntimeArn).toBe('arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id');
+    expect(imported.agentRuntimeId).toBe('test-runtime-id');
+    expect(imported.agentRuntimeName).toBe('test-runtime');
+    expect(imported.role.roleArn).toBe('arn:aws:iam::123456789012:role/test-role');
+    expect(imported.agentRuntimeVersion).toBe('2');
+    expect(imported.agentStatus).toBe('ACTIVE');
+    expect(imported.createdAt).toBe('2024-01-15T10:30:00Z');
+    expect(imported.lastUpdatedAt).toBe('2024-01-15T14:45:00Z');
   });
 });
 
@@ -1250,6 +1273,24 @@ describe('Runtime metrics and grant methods tests', () => {
     expect(grant).toBeDefined();
   });
 
+  test('Should grant invoke for user permissions', () => {
+    const grantee = new iam.Role(stack, 'GranteeRoleForUser', {
+      assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
+    });
+
+    const grant = runtime.grantInvokeRuntimeForUser(grantee);
+    expect(grant).toBeDefined();
+  });
+
+  test('Should grant all invoke permissions', () => {
+    const grantee = new iam.Role(stack, 'GranteeRoleAll', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    const grant = runtime.grantInvoke(grantee);
+    expect(grant).toBeDefined();
+  });
+
   test('Should grant custom actions to runtime role', () => {
     const grant = runtime.grant(['bedrock:InvokeRuntime'], ['arn:aws:bedrock:*:*:*']);
     expect(grant).toBeDefined();
@@ -1274,7 +1315,7 @@ describe('Runtime metrics and grant methods tests', () => {
       agentRuntimeArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id',
       agentRuntimeId: 'test-runtime-id',
       agentRuntimeName: 'test-runtime',
-      role: importedRole,
+      roleArn: importedRole.roleArn,
       agentRuntimeVersion: '1',
     });
 
@@ -1345,7 +1386,7 @@ describe('Runtime with VPC network configuration tests', () => {
       agentRuntimeArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id',
       agentRuntimeId: 'test-runtime-id',
       agentRuntimeName: 'test-runtime',
-      role: role,
+      roleArn: role.roleArn,
       agentRuntimeVersion: '1',
       securityGroups: [sg],
     });
