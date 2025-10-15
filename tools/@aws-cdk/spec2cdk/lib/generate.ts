@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as path from 'node:path';
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
 import { DatabaseBuilder } from '@aws-cdk/service-spec-importers';
 import { SpecDatabase } from '@aws-cdk/service-spec-types';
@@ -69,6 +69,19 @@ export interface GenerateOptions extends Pick<AstBuilderProps, 'filePatterns' | 
    * @default false
    */
   readonly debug?: boolean;
+
+  /**
+   * A function that returns an AstBuilder instance.
+   * @default - The default AstBuilder is constructed
+   */
+  readonly astBuilder?: (props: AstBuilderProps) => AstBuilder;
+
+  /**
+   * Provide an already loaded spec database.
+   *
+   * @default - load the patched spec db
+   */
+  readonly db?: SpecDatabase;
 }
 
 export interface GenerateModuleMap {
@@ -98,7 +111,7 @@ export interface GeneratedServiceInfo {
  */
 export async function generate(modules: GenerateModuleMap, options: GenerateOptions) {
   enableDebug(options);
-  const db = await loadPatchedSpec();
+  const db = options.db ?? await loadPatchedSpec();
   return generator(db, modules, options);
 }
 
@@ -165,7 +178,8 @@ async function generator(
     fs.removeSync(outputPath);
   }
 
-  const ast = new AstBuilder({
+  const createAst = options.astBuilder ?? ((props: AstBuilderProps) => new AstBuilder(props));
+  const ast = createAst({
     db,
     filePatterns: {
       ...DEFAULT_FILE_PATTERNS,

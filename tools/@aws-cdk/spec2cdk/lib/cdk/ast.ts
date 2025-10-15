@@ -43,6 +43,16 @@ export interface AstBuilderProps {
    * This affects the generated import paths.
    */
   readonly inCdkLib?: boolean;
+
+  /**
+   * Enable extensions for the module
+   * @default - all extensions are enabled
+   */
+  readonly extensions?: {
+    readonly augmentations?: boolean;
+    readonly cannedMetrics?: boolean;
+    readonly interfaces?: boolean;
+  };
 }
 
 export interface GenerateFilePatterns {
@@ -105,12 +115,13 @@ export class AstBuilder {
 
   public readonly serviceSubmodules = new Map<string, ServiceSubmodule>();
   private readonly filePatterns: GenerateFilePatterns;
-  private readonly interfacesEntry: LocatedModule<Module>;
   private readonly inCdkLib: boolean;
 
-  constructor(
-    props: AstBuilderProps,
-  ) {
+  private readonly createInterfaces: boolean;
+  private readonly createAugmentations: boolean;
+  private readonly createCannedMetrics: boolean;
+
+  public constructor(props: AstBuilderProps) {
     this.db = props.db;
     this.filePatterns = {
       ...DEFAULT_FILE_PATTERNS,
@@ -122,10 +133,9 @@ export class AstBuilder {
       throw new Error(`interfacesEntry may not contain placeholders, got: ${this.filePatterns.interfacesEntry}`);
     }
 
-    this.interfacesEntry = this.rememberModule({
-      module: new Module('interfaces/index'),
-      filePath: this.filePatterns.interfacesEntry,
-    });
+    this.createInterfaces = props?.extensions?.interfaces ?? true;
+    this.createAugmentations = props?.extensions?.augmentations ?? true;
+    this.createCannedMetrics = props?.extensions?.cannedMetrics ?? true;
   }
 
   /**
@@ -191,26 +201,26 @@ export class AstBuilder {
     return ret;
   }
 
-  private addResourceToSubmodule(submodule: ServiceSubmodule, resource: Resource, props?: AddServiceProps) {
+  protected addResourceToSubmodule(submodule: ServiceSubmodule, resource: Resource, props?: AddServiceProps) {
     const resourceModule = submodule.resourcesMod.module;
 
     const resourceClass = new ResourceClass(resourceModule, this.db, resource, {
       suffix: props?.nameSuffix,
       deprecated: props?.deprecated,
-      interfacesModule: {
-        module: submodule.interfaces.module,
+      interfacesModule: submodule.interfaces ? {
+        module: submodule.interfaces?.module,
         importLocation: relativeImportPath(submodule.resourcesMod, submodule.interfaces),
-      },
+      } : undefined,
     });
     submodule.resources[resource.cloudFormationType] = resourceClass.spec.name;
 
     resourceClass.build();
 
     this.addSelectiveImports(submodule, resourceClass.imports);
-    submodule.augmentations.module.augmentResource(resource, resourceClass);
+    submodule.augmentations?.module.augmentResource(resource, resourceClass);
   }
 
-  private addSelectiveImports(submodule: ServiceSubmodule, imports: SelectiveImport[]) {
+  protected addSelectiveImports(submodule: ServiceSubmodule, imports: SelectiveImport[]) {
     for (const selectiveImport of imports) {
       const existingModuleImport = submodule.selectiveImports.find(
         (imp) => imp.moduleName === selectiveImport.moduleName,
@@ -246,11 +256,11 @@ export class AstBuilder {
     }
 
     // Add an import for the interfaces file to the entry point file (make sure not to do it twice)
-    if (shouldRender(submodule.interfaces.module) && submodule.didCreateInterfaceModule) {
+    if (shouldRender(submodule.interfaces?.module) && submodule.interfacesEntry && submodule.didCreateInterfaceModule) {
       const exportName = submoduleSymbolFromName(submodule.service.name);
-      const importLocation = relativeImportPath(this.interfacesEntry, submodule.interfaces);
+      const importLocation = relativeImportPath(submodule.interfacesEntry, submodule.interfaces);
 
-      this.interfacesEntry.module.addInitialization(stmt.directCode(
+      submodule.interfacesEntry.module.addInitialization(stmt.directCode(
         `export * as ${exportName} from '${importLocation}'`,
       ));
     }
@@ -267,9 +277,26 @@ export class AstBuilder {
 
     // ResourceModule and AugmentationsModule starts out empty and needs to be filled on a resource-by-resource basis
     const resourcesMod = this.rememberModule(this.createResourceModule(submoduleName, service));
-    const augmentations = this.rememberModule(this.createAugmentationsModule(submoduleName, service));
-    const cannedMetrics = this.rememberModule(this.createCannedMetricsModule(submoduleName, service));
-    const [interfaces, didCreateInterfaceModule] = this.obtainInterfaceModule(service);
+
+    let augmentations = undefined;
+    if (this.createAugmentations) {
+      augmentations = this.rememberModule(this.createAugmentationsModule(submoduleName, service));
+    }
+
+    let cannedMetrics = undefined;
+    if (this.createCannedMetrics) {
+      cannedMetrics = this.rememberModule(this.createCannedMetricsModule(submoduleName, service));
+    }
+
+    let interfaces, interfacesEntry = undefined;
+    let didCreateInterfaceModule = false;
+    if (this.createInterfaces) {
+      [interfaces, didCreateInterfaceModule] = this.obtainInterfaceModule(service);
+      interfacesEntry = this.rememberModule({
+        module: new Module('interfaces/index'),
+        filePath: this.filePatterns.interfacesEntry,
+      });
+    }
 
     const ret: ServiceSubmodule = {
       service,
@@ -278,6 +305,7 @@ export class AstBuilder {
       augmentations,
       cannedMetrics,
       interfaces,
+      interfacesEntry,
       didCreateInterfaceModule,
       selectiveImports: [],
       resources: {},
@@ -405,9 +433,10 @@ export interface ServiceSubmodule {
   readonly service: Service;
 
   readonly resourcesMod: LocatedModule<Module>;
-  readonly augmentations: LocatedModule<AugmentationsModule>;
-  readonly cannedMetrics: LocatedModule<CannedMetricsModule>;
-  readonly interfaces: LocatedModule<Module>;
+  readonly augmentations?: LocatedModule<AugmentationsModule>;
+  readonly cannedMetrics?: LocatedModule<CannedMetricsModule>;
+  readonly interfaces?: LocatedModule<Module>;
+  readonly interfacesEntry?: LocatedModule<Module>;
 
   readonly didCreateInterfaceModule: boolean;
   readonly selectiveImports: Array<SelectiveImport>;
@@ -433,14 +462,17 @@ function noUndefined<A extends object>(x: A | undefined): A | undefined {
 export function submoduleFiles(x: ServiceSubmodule): string[] {
   const ret = [];
   for (const mod of [x.resourcesMod, x.augmentations, x.cannedMetrics]) {
-    if (shouldRender(mod.module)) {
+    if (shouldRender(mod?.module)) {
       ret.push(mod.filePath);
     }
   }
   return ret;
 }
 
-function shouldRender(m: Module) {
+function shouldRender(m?: Module): m is Module {
+  if (!m) {
+    return false;
+  }
   return m.types.length > 0 || m.initialization.length > 0;
 }
 
@@ -458,7 +490,7 @@ function relativeImportPath(source: LocatedModule<any> | string, target: Located
   return ret.startsWith('.') ? ret : './' + ret;
 }
 
-interface ImportPaths {
+export interface ImportPaths {
   /**
    * The import name used import the core module
    */
