@@ -777,3 +777,41 @@ _cdk.json
   }
 }
 ```
+
+* `@aws-cdk/aws-signer:signingProfileNamePassedToCfn`
+
+When this feature flag is enabled, the `signingProfileName` property is passed to the L1 `CfnSigningProfile` construct,
+which ensures that the AWS Signer profile is created with the specified name.
+
+When this feature flag is disabled, the `signingProfileName` is not passed to CloudFormation, maintaining backward
+compatibility with existing deployments where CloudFormation auto-generated profile names.
+
+This feature flag is needed because enabling it can cause existing signing profiles to be
+replaced during deployment if a `signingProfileName` was specified but not previously used
+in the CloudFormation template.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": true
+  }
+}
+```
+
+* `@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId`
+
+When enabled, ECS patterns will generate unique target group IDs that include the load balancer name and type (public/private). This prevents CloudFormation conflicts when switching between public and private load balancers.
+
+Without this flag, switching an ApplicationLoadBalancedFargateService from public to private (or vice versa) fails with "target group cannot be associated with more than one load balancer" error.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true
+  }
+}
+```

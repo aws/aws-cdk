@@ -17,7 +17,9 @@ By default, `TableV2` will create a single table in the main deployment region r
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
-  contributorInsights: true,
+  contributorInsightsSpecification: {
+    enabled: true,
+  },
   tableClass: dynamodb.TableClass.STANDARD_INFREQUENT_ACCESS,
   pointInTimeRecoverySpecification: {
     pointInTimeRecoveryEnabled: true,
@@ -66,12 +68,12 @@ globalTable.addReplica({ region: 'us-east-2', deletionProtection: true });
 ```
 
 The following properties are configurable on a per-replica basis, but will be inherited from the `TableV2` properties if not specified:
-* contributorInsights
+* contributorInsightsSpecification
 * deletionProtection
 * pointInTimeRecoverySpecification
 * tableClass
 * readCapacity (only configurable if the `TableV2` billing mode is `PROVISIONED`)
-* globalSecondaryIndexes (only `contributorInsights` and `readCapacity`)
+* globalSecondaryIndexes (only `contributorInsightsSpecification` and `readCapacity`)
 
 The following example shows how to define properties on a per-replica basis:
 
@@ -83,7 +85,9 @@ const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
 
 const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
-  contributorInsights: true,
+  contributorInsightsSpecification: {
+    enabled: true,
+  },
   pointInTimeRecoverySpecification: {
       pointInTimeRecoveryEnabled: true,
   },
@@ -97,7 +101,9 @@ const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
     },
     {
       region: 'us-east-2',
-      contributorInsights: false,
+      contributorInsightsSpecification: {
+        enabled: false,
+      },
     },
   ],
 });
@@ -149,6 +155,68 @@ const barStack = new BarStack(app, 'BarStack', {
 ```
 
 Note: You can create an instance of the `TableV2` construct with as many `replicas` as needed as long as there is only one replica per region. After table creation you can add or remove `replicas`, but you can only add or remove a single replica in each update.
+
+## Multi-Region Strong Consistency (MRSC)
+
+By default, DynamoDB global tables provide eventual consistency across regions. For applications requiring strong consistency across regions, you can configure Multi-Region Strong Consistency (MRSC) using the `multiRegionConsistency` property.
+
+MRSC global tables can be configured in two ways:
+* **Three replicas**: Deploy your table across three regions within the same region set
+* **Two replicas + one witness**: Deploy your table across two regions with a witness region for consensus
+
+### Region Sets
+
+MRSC global tables must be deployed within the same region set. The supported region sets are:
+
+* **US Region set**: `us-east-1`, `us-east-2`, `us-west-2`
+* **EU Region set**: `eu-west-1`, `eu-west-2`, `eu-west-3`, `eu-central-1`  
+* **AP Region set**: `ap-northeast-1`, `ap-northeast-2`, `ap-northeast-3`
+
+### Three Replicas Configuration
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+
+const mrscTable = new dynamodb.TableV2(stack, 'MRSCTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  multiRegionConsistency: dynamodb.MultiRegionConsistency.STRONG,
+  replicas: [
+    { region: 'us-east-1' },
+    { region: 'us-east-2' },
+  ],
+});
+```
+
+### Two Replicas + Witness Configuration
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
+
+const mrscTable = new dynamodb.TableV2(stack, 'MRSCTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  multiRegionConsistency: dynamodb.MultiRegionConsistency.STRONG,
+  replicas: [
+    { region: 'us-east-1' },
+  ],
+  witnessRegion: 'us-east-2',
+});
+```
+
+### Important Considerations
+
+* **Witness regions** can only be used with `MultiRegionConsistency.STRONG`. Attempting to specify a witness region with eventual consistency will result in a validation error.
+* **Region validation**: All regions (primary, replicas, and witness) must be within the same region set.
+* **Replica count**: When using a witness region, you must have exactly 2 replicas (including the primary). Without a witness region, you must have exactly 3 replicas.
+* **Performance**: MRSC provides strong consistency but may have higher latency compared to eventual consistency.
+
+Further reading:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2globaltables_HowItWorks.html#V2globaltables_HowItWorks.consistency-modes-mrsc
 
 ## Billing
 
@@ -381,7 +449,7 @@ const table = new dynamodb.TableV2(this, 'Table', {
 });
 ```
 
-All `globalSecondaryIndexes` for replica tables are inherited from the primary table. You can configure `contributorInsights` and `readCapacity` for each `globalSecondaryIndex` on a per-replica basis:
+All `globalSecondaryIndexes` for replica tables are inherited from the primary table. You can configure `contributorInsightsSpecification` and `readCapacity` for each `globalSecondaryIndex` on a per-replica basis:
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
@@ -391,7 +459,9 @@ const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
 
 const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
-  contributorInsights: true,
+  contributorInsightsSpecification: {
+    enabled: true,
+  },
   billing: dynamodb.Billing.provisioned({
     readCapacity: dynamodb.Capacity.fixed(10),
     writeCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 10 }),
@@ -422,7 +492,9 @@ const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
       region: 'us-east-2',
       globalSecondaryIndexOptions: {
         gsi2: {
-          contributorInsights: false,
+          contributorInsightsSpecification: {
+            enabled: false,
+          },
         },
       },
     },
@@ -543,25 +615,40 @@ const table = new dynamodb.TableV2(this, 'Table', {
 
 ## Contributor Insights
 
-Enabling `contributorInsights` for `TableV2` will provide information about the most accessed and throttled items in a table or `globalSecondaryIndex`. DynamoDB delivers this information to you via CloudWatch Contributor Insights rules, reports, and graphs of report data.
+Enabling `contributorInsightSpecification` for `TableV2` will provide information about the most accessed and throttled or throttled only items in a table or `globalSecondaryIndex`. DynamoDB delivers this information to you via CloudWatch Contributor Insights rules, reports, and graphs of report data.
+
+By default, Contributor Insights for DynamoDB monitors all requests, including both the most accessed and most throttled items.  
+To limit the scope to only the most accessed or only the most throttled items, use the optional `mode` parameter.
+
+- To monitor all traffic on a table or index, set `mode` to `ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS`.
+- To monitor only throttled traffic on a table or index, set `mode` to `ContributorInsightsMode.THROTTLED_KEYS`. 
+
 
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
-  contributorInsights: true,
+  contributorInsightsSpecification: {
+    enabled: true,
+    mode: dynamodb.ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+  },
 });
 ```
 
-When you use `Table`, you can enable contributor insights for a table or specific global secondary index by setting `contributorInsightsEnabled` to `true`.
+When you use `Table`, you can enable contributor insights for a table or specific global secondary index by setting `contributorInsightsSpecification` parameter `enabled` to `true`.
 
 ```ts
 const table = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
-  contributorInsightsEnabled: true, // for a table
+  contributorInsightsSpecification: { // for a table
+    enabled: true,
+    mode: dynamodb.ContributorInsightsMode.THROTTLED_KEYS, // only emit throttling events
+  },
 });
 
 table.addGlobalSecondaryIndex({
-  contributorInsightsEnabled: true, // for a specific global secondary index
+  contributorInsightsSpecification: { // for a specific global secondary index
+    enabled: true,
+  },
   indexName: 'gsi',
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
 });

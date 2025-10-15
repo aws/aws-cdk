@@ -116,7 +116,7 @@ export class Runtime {
    * The latest NodeJS version currently available in ALL regions (not necessarily the latest NodeJS version
    * available in YOUR region).
    */
-  public static readonly NODEJS_LATEST = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
+  public static readonly NODEJS_LATEST = new Runtime('nodejs22.x', RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
 
   /**
    * The NodeJS 22.x runtime (nodejs22.x)
@@ -338,6 +338,15 @@ export class Runtime {
   public static readonly FROM_IMAGE = new Runtime('FROM_IMAGE');
 
   /**
+   * The latest Python version currently available
+   */
+  // Will ignore the fact that scope is not yet being used, but it will be
+  // @ts-ignore
+  public static determineLatestPythonRuntime(scope: Construct): Runtime {
+    return this.PYTHON_3_13;
+  }
+
+  /**
    * The name of this runtime, as expected by the Lambda resource.
    */
   public readonly name: string;
@@ -414,3 +423,4 @@ export function determineLatestNodeRuntime(scope: Construct): Runtime {
   const runtimeName = Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, Runtime.NODEJS_18_X.name);
   return new Runtime(runtimeName, RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
 }
+
