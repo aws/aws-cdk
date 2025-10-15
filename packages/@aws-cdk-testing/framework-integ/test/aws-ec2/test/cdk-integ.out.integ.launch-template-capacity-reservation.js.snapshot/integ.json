@@ -3,9 +3,8 @@
   "testCases": {
     "LaunchTemplateCapacityReservationTest/DefaultTest": {
       "stacks": [
-        "aws-cdk-ec2-lt-capacity-reservation"
+        "LaunchTemplateCapacityReservationStack"
       ],
-      "diffAssets": true,
       "assertionStack": "LaunchTemplateCapacityReservationTest/DefaultTest/DeployAssert",
       "assertionStackName": "LaunchTemplateCapacityReservationTestDefaultTestDeployAssert86A66D95"
     }

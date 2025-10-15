@@ -19,6 +19,7 @@ import {
   AmazonLinuxImage,
   BlockDevice,
   BlockDeviceVolume,
+  CapacityReservation,
   CapacityReservationPreference,
   CpuCredits,
   EbsDeviceVolumeType,
@@ -1251,27 +1252,13 @@ describe('LaunchTemplate metadataOptions', () => {
     });
   });
 });
-describe('LaunchTemplate capacityReservationSpecification', () => {
+describe('LaunchTemplate Capacity Reservation', () => {
   let app: App;
   let stack: Stack;
 
   beforeEach(() => {
     app = new App();
     stack = new Stack(app);
-  });
-
-  test('given empty capacityReservationSpecification', () => {
-    // WHEN
-    new LaunchTemplate(stack, 'Template', {
-      capacityReservationSpecification: {},
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
-      LaunchTemplateData: {
-        CapacityReservationSpecification: {},
-      },
-    });
   });
 
   test.each([
@@ -1281,9 +1268,7 @@ describe('LaunchTemplate capacityReservationSpecification', () => {
   ])('given capacityReservationPreference %p', (given: CapacityReservationPreference, expected: string) => {
     // WHEN
     new LaunchTemplate(stack, 'Template', {
-      capacityReservationSpecification: {
-        capacityReservationPreference: given,
-      },
+      capacityReservationPreference: given,
     });
 
     // THEN
@@ -1296,14 +1281,10 @@ describe('LaunchTemplate capacityReservationSpecification', () => {
     });
   });
 
-  test('given capacityReservationTarget with capacityReservationId', () => {
+  test('given capacityReservation with ID', () => {
     // WHEN
     new LaunchTemplate(stack, 'Template', {
-      capacityReservationSpecification: {
-        capacityReservationTarget: {
-          capacityReservationId: 'cr-1234567890abcdef0',
-        },
-      },
+      capacityReservation: CapacityReservation.fromId('cr-1234567890abcdef0'),
     });
 
     // THEN
@@ -1318,14 +1299,10 @@ describe('LaunchTemplate capacityReservationSpecification', () => {
     });
   });
 
-  test('given capacityReservationTarget with capacityReservationResourceGroupArn', () => {
+  test('given capacityReservation with resource group ARN', () => {
     // WHEN
     new LaunchTemplate(stack, 'Template', {
-      capacityReservationSpecification: {
-        capacityReservationTarget: {
-          capacityReservationResourceGroupArn: 'arn:aws:resource-groups:us-west-2:123456789012:group/my-group',
-        },
-      },
+      capacityReservation: CapacityReservation.fromResourceGroupArn('arn:aws:resource-groups:us-west-2:123456789012:group/my-group'),
     });
 
     // THEN
@@ -1340,16 +1317,11 @@ describe('LaunchTemplate capacityReservationSpecification', () => {
     });
   });
 
-  test('given complete capacityReservationSpecification', () => {
+  test('given both capacityReservation and preference', () => {
     // WHEN
     new LaunchTemplate(stack, 'Template', {
-      capacityReservationSpecification: {
-        capacityReservationPreference: CapacityReservationPreference.OPEN,
-        capacityReservationTarget: {
-          capacityReservationId: 'cr-1234567890abcdef0',
-          capacityReservationResourceGroupArn: 'arn:aws:resource-groups:us-west-2:123456789012:group/my-group',
-        },
-      },
+      capacityReservation: CapacityReservation.fromId('cr-1234567890abcdef0'),
+      capacityReservationPreference: CapacityReservationPreference.OPEN,
     });
 
     // THEN
@@ -1359,7 +1331,6 @@ describe('LaunchTemplate capacityReservationSpecification', () => {
           CapacityReservationPreference: 'open',
           CapacityReservationTarget: {
             CapacityReservationId: 'cr-1234567890abcdef0',
-            CapacityReservationResourceGroupArn: 'arn:aws:resource-groups:us-west-2:123456789012:group/my-group',
           },
         },
       },

@@ -2613,52 +2613,31 @@ Please note this feature does not support Launch Configurations.
 
 You can specify [EC2 Capacity Reservations](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html) for your launch template to ensure that EC2 capacity is reserved for your instances:
 
-```ts fixture=with-vpc
-declare const instanceType: ec2.InstanceType;
-
+```ts
 new ec2.LaunchTemplate(this, 'LaunchTemplate', {
-  instanceType,
   machineImage: ec2.MachineImage.latestAmazonLinux2023(),
-  capacityReservationSpecification: {
-    capacityReservationPreference: ec2.CapacityReservationPreference.OPEN,
-    capacityReservationTarget: {
-      capacityReservationId: 'cr-1234567890abcdef0',
-    },
-  },
+  capacityReservation: ec2.CapacityReservation.fromId('cr-1234567890abcdef0'),
+  capacityReservationPreference: ec2.CapacityReservationPreference.OPEN,
 });
 ```
 
 You can also target a Capacity Reservation resource group:
 
-```ts fixture=with-vpc
-declare const instanceType: ec2.InstanceType;
-
+```ts
 new ec2.LaunchTemplate(this, 'LaunchTemplate', {
-  instanceType,
   machineImage: ec2.MachineImage.latestAmazonLinux2023(),
-  capacityReservationSpecification: {
-    capacityReservationPreference: ec2.CapacityReservationPreference.OPEN,
-    capacityReservationTarget: {
-      capacityReservationResourceGroupArn: 'arn:aws:resource-groups:us-west-2:123456789012:group/my-group',
-    },
-  },
+  capacityReservation: ec2.CapacityReservation.fromResourceGroupArn('arn:aws:resource-groups:us-west-2:123456789012:group/my-group'),
+  capacityReservationPreference: ec2.CapacityReservationPreference.OPEN,
 });
 ```
 
 To ensure instances only launch into Capacity Reservations, use the `CAPACITY_RESERVATIONS_ONLY` preference:
 
-```ts fixture=with-vpc
-declare const instanceType: ec2.InstanceType;
-
+```ts
 new ec2.LaunchTemplate(this, 'LaunchTemplate', {
-  instanceType,
   machineImage: ec2.MachineImage.latestAmazonLinux2023(),
-  capacityReservationSpecification: {
-    capacityReservationPreference: ec2.CapacityReservationPreference.CAPACITY_RESERVATIONS_ONLY,
-    capacityReservationTarget: {
-      capacityReservationId: 'cr-1234567890abcdef0',
-    },
-  },
+  capacityReservation: ec2.CapacityReservation.fromId('cr-1234567890abcdef0'),
+  capacityReservationPreference: ec2.CapacityReservationPreference.CAPACITY_RESERVATIONS_ONLY,
 });
 ```
 
