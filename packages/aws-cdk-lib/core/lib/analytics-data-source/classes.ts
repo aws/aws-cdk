@@ -71,6 +71,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
+      'buildComputeType': 'BuildComputeType',
       'addCustomRule': [
         '*'
       ],
@@ -8898,6 +8899,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'JobQueue': {},
     'ManagedEc2EcsComputeEnvironment': {
+      'defaultInstanceClasses': 'DefaultInstanceClass',
       'useOptimalInstanceClasses': 'boolean',
       'images': {
         'imageType': 'EcsMachineImageType',
@@ -9115,6 +9117,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'prune': 'boolean',
         'authenticationMode': 'AuthenticationMode'
       },
+      'defaultInstanceClasses': 'DefaultInstanceClass',
       'useOptimalInstanceClasses': 'boolean',
       'images': {
         'imageType': 'EksMachineImageType',
@@ -10523,7 +10526,84 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'computeConfiguration': {
         'disk': '*',
         'machineType': 'MachineType',
-        'vCpu': '*'
+        'vCpu': '*',
+        'instanceType': '*'
+      },
+      'overflowBehavior': 'FleetOverflowBehavior',
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'vpc': {
+        'vpcId': '*',
+        'vpcArn': '*',
+        'vpcCidrBlock': '*',
+        'publicSubnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          },
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        },
+        'availabilityZones': '*',
+        'vpnGatewayId': '*'
+      },
+      'subnetSelection': {
+        'subnetType': 'SubnetType',
+        'availabilityZones': '*',
+        'subnetGroupName': '*',
+        'subnetName': '*',
+        'onePerAz': 'boolean',
+        'subnetFilters': '*',
+        'subnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          },
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        }
+      },
+      'securityGroups': {
+        'securityGroupId': '*',
+        'allowAllOutbound': 'boolean',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*',
+        'canInlineRule': 'boolean',
+        'uniqueId': '*',
+        'connections': '*'
       }
     },
     'PipelineProject': {},
@@ -10620,7 +10700,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'fleetArn': '*',
           'fleetName': '*',
           'computeType': 'FleetComputeType',
-          'environmentType': 'EnvironmentType'
+          'environmentType': 'EnvironmentType',
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
         },
         'privileged': 'boolean',
         'certificate': {
@@ -12548,6 +12633,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'authorizeAllUsersToVpcCidr': 'boolean',
       'sessionTimeout': 'ClientVpnSessionTimeout',
+      'disconnectOnSessionTimeout': 'boolean',
       'clientLoginBanner': '*',
       'clientRouteEnforcementOptions': {
         'enforced': 'boolean'
@@ -13881,6 +13967,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'machineImageType': 'MachineImageType'
         }
       ],
+      'addManagedInstancesCapacityProvider': [
+        '*'
+      ],
       'addAutoScalingGroup': [
         '*',
         {
@@ -14537,6 +14626,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'remotePodNetworks': {
         'cidrs': '*'
       },
+      'removalPolicy': 'RemovalPolicy',
       'vpc': {
         'vpcId': '*',
         'vpcArn': '*',
@@ -15121,6 +15211,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'remotePodNetworks': {
         'cidrs': '*'
       },
+      'removalPolicy': 'RemovalPolicy',
       'vpc': {
         'vpcId': '*',
         'vpcArn': '*',
@@ -16499,7 +16590,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'node': '*'
       },
       'streamMode': 'StreamMode',
-      'removalPolicy': 'RemovalPolicy'
+      'removalPolicy': 'RemovalPolicy',
+      'shardLevelMetrics': 'ShardLevelMetrics'
     }
   },
   'aws-cdk-lib.aws-kinesisfirehose': {
@@ -17820,7 +17912,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'sourceAccount': '*',
           'sourceArn': '*',
           'organizationId': '*',
-          'functionUrlAuthType': 'FunctionUrlAuthType'
+          'functionUrlAuthType': 'FunctionUrlAuthType',
+          'invokedViaFunctionUrl': 'boolean'
         }
       ],
       'addDependency': [
@@ -18187,6 +18280,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'dimensions': '*',
       'unit': 'Unit',
       'filterName': '*',
+      'applyOnTransformedLogs': 'boolean',
       'metric': [
         {
           'period': '*',
@@ -21516,6 +21610,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'replicationRoleArn': '*'
       },
       'removalPolicy': 'RemovalPolicy',
+      'document': '*',
       'applyRemovalPolicy': [
         'RemovalPolicy'
       ]
@@ -25522,7 +25617,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'sourceAccount': '*',
           'sourceArn': '*',
           'organizationId': '*',
-          'functionUrlAuthType': 'FunctionUrlAuthType'
+          'functionUrlAuthType': 'FunctionUrlAuthType',
+          'invokedViaFunctionUrl': 'boolean'
         }
       ],
       'addToRolePolicy': [

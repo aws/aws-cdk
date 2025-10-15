@@ -784,3 +784,19 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId`
+
+When enabled, ECS patterns will generate unique target group IDs that include the load balancer name and type (public/private). This prevents CloudFormation conflicts when switching between public and private load balancers.
+
+Without this flag, switching an ApplicationLoadBalancedFargateService from public to private (or vice versa) fails with "target group cannot be associated with more than one load balancer" error.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true
+  }
+}
+```
