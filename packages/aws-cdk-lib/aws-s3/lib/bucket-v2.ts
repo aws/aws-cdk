@@ -1,11 +1,11 @@
 import { IConstruct } from 'constructs';
 import { BucketProps, BucketEncryption, BlockPublicAccess, RedirectTarget, RoutingRule, TransitionDefaultMinimumObjectSize, ObjectLockRetention, IBucket, TargetObjectKeyFormat, CorsRule, Inventory, BucketMetrics, ReplicationRule, IntelligentTieringConfiguration, ObjectOwnership, BucketAccessControl } from './bucket';
-import { Mixin } from './mixin';
+import { HasResourcePolicy, Mixin } from './mixin';
 import { LifecycleRule } from './rule';
 import { CfnBucket } from './s3.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { Resource } from '../../core';
+import { CfnResource, IResource, Resource } from '../../core';
 import { validateAllProps, ValidationRule } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -393,7 +393,7 @@ export interface MetadataMixinProps {
  *
  * @todo how to expose encryptionKey?
  */
-export class EncryptionMixin implements Mixin<CfnBucket, CfnBucket, EncryptionMixinProps> {
+export class EncryptionMixin implements Mixin<CfnBucket, CfnBucket> {
   /**
    * The encryption properties for this mixin
    */
@@ -513,7 +513,7 @@ export class EncryptionMixin implements Mixin<CfnBucket, CfnBucket, EncryptionMi
 /**
  * Mixin for bucket public access configuration
  */
-export class PublicAccessMixin implements Mixin<CfnBucket, CfnBucket, PublicAccessMixinProps> {
+export class PublicAccessMixin implements Mixin<CfnBucket, CfnBucket> {
   /**
    * The public access properties for this mixin
    */
@@ -563,7 +563,7 @@ export class PublicAccessMixin implements Mixin<CfnBucket, CfnBucket, PublicAcce
 /**
  * Mixin for bucket website configuration
  */
-export class WebsiteMixin implements Mixin<CfnBucket, CfnBucket, WebsiteMixinProps> {
+export class WebsiteMixin implements Mixin<CfnBucket, CfnBucket> {
   /**
    * The website properties for this mixin
    */
@@ -626,7 +626,7 @@ export class WebsiteMixin implements Mixin<CfnBucket, CfnBucket, WebsiteMixinPro
 /**
  * Mixin for bucket lifecycle configuration
  */
-export class LifecycleMixin implements Mixin<CfnBucket, CfnBucket, LifecycleMixinProps> {
+export class LifecycleMixin implements Mixin<CfnBucket, CfnBucket> {
   /**
    * The lifecycle properties for this mixin
    */
@@ -740,7 +740,7 @@ export class LifecycleMixin implements Mixin<CfnBucket, CfnBucket, LifecycleMixi
 /**
  * Mixin for bucket versioning configuration
  */
-export class VersioningMixin implements Mixin<CfnBucket, CfnBucket, VersioningMixinProps> {
+export class VersioningMixin implements Mixin<CfnBucket, CfnBucket> {
   /**
    * The versioning properties for this mixin
    */
@@ -796,7 +796,7 @@ export class VersioningMixin implements Mixin<CfnBucket, CfnBucket, VersioningMi
 /**
  * Mixin for bucket logging configuration
  */
-export class LoggingMixin implements Mixin<CfnBucket, CfnBucket, LoggingMixinProps> {
+export class LoggingMixin implements Mixin<CfnBucket, CfnBucket> {
   /**
    * The logging properties for this mixin
    */
@@ -838,7 +838,7 @@ export class LoggingMixin implements Mixin<CfnBucket, CfnBucket, LoggingMixinPro
 /**
  * Mixin for bucket notification configuration
  */
-export class NotificationMixin implements Mixin<CfnBucket, CfnBucket, NotificationMixinProps> {
+export class NotificationMixin implements Mixin<CfnBucket, CfnBucket> {
   /**
    * The notification properties for this mixin
    */
@@ -880,7 +880,7 @@ export class NotificationMixin implements Mixin<CfnBucket, CfnBucket, Notificati
 /**
  * Mixin for bucket CORS configuration
  */
-export class CORSMixin implements Mixin<CfnBucket, CfnBucket, CORSMixinProps> {
+export class CORSMixin implements Mixin<CfnBucket, CfnBucket> {
   /**
    * The CORS properties for this mixin
    */
@@ -927,7 +927,7 @@ export class CORSMixin implements Mixin<CfnBucket, CfnBucket, CORSMixinProps> {
 /**
  * Mixin for bucket inventory configuration
  */
-export class InventoryMixin implements Mixin<CfnBucket, CfnBucket, InventoryMixinProps> {
+export class InventoryMixin implements Mixin<CfnBucket, CfnBucket> {
   /**
    * The inventory properties for this mixin
    */
@@ -983,7 +983,7 @@ export class InventoryMixin implements Mixin<CfnBucket, CfnBucket, InventoryMixi
 /**
  * Mixin for bucket metrics configuration
  */
-export class MetricsMixin implements Mixin<CfnBucket, CfnBucket, MetricsMixinProps> {
+export class MetricsMixin implements Mixin<CfnBucket, CfnBucket> {
   /**
    * The metrics properties for this mixin
    */
@@ -1028,7 +1028,7 @@ export class MetricsMixin implements Mixin<CfnBucket, CfnBucket, MetricsMixinPro
 /**
  * Mixin for bucket replication configuration
  */
-export class ReplicationMixin implements Mixin<CfnBucket, CfnBucket, ReplicationMixinProps> {
+export class ReplicationMixin implements Mixin<CfnBucket, CfnBucket> {
   /**
    * The replication properties for this mixin
    */
@@ -1131,7 +1131,7 @@ export class ReplicationMixin implements Mixin<CfnBucket, CfnBucket, Replication
 /**
  * Mixin for bucket intelligent tiering configuration
  */
-export class IntelligentTieringMixin implements Mixin<CfnBucket, CfnBucket, IntelligentTieringMixinProps> {
+export class IntelligentTieringMixin implements Mixin<CfnBucket, CfnBucket> {
   /**
    * The intelligent tiering properties for this mixin
    */
@@ -1190,7 +1190,7 @@ export class IntelligentTieringMixin implements Mixin<CfnBucket, CfnBucket, Inte
 /**
  * Mixin for bucket ownership configuration
  */
-export class OwnershipMixin implements Mixin<CfnBucket, CfnBucket, OwnershipMixinProps> {
+export class OwnershipMixin implements Mixin<CfnBucket, CfnBucket> {
   /**
    * The ownership properties for this mixin
    */
@@ -1247,7 +1247,7 @@ export class OwnershipMixin implements Mixin<CfnBucket, CfnBucket, OwnershipMixi
 /**
  * Mixin for bucket transfer acceleration configuration
  */
-export class TransferAccelerationMixin implements Mixin<CfnBucket, CfnBucket, TransferAccelerationMixinProps> {
+export class TransferAccelerationMixin implements Mixin<CfnBucket, CfnBucket> {
   /**
    * The transfer acceleration properties for this mixin
    */
@@ -1287,7 +1287,7 @@ export class TransferAccelerationMixin implements Mixin<CfnBucket, CfnBucket, Tr
 /**
  * Mixin for bucket secure access configuration
  */
-export class SecureAccessMixin implements Mixin<CfnBucket, CfnBucket, SecureAccessMixinProps> {
+export class SecureAccessMixin implements Mixin<CfnBucket & HasResourcePolicy, CfnBucket & HasResourcePolicy> {
   /**
    * The secure access properties for this mixin
    */
@@ -1318,7 +1318,7 @@ export class SecureAccessMixin implements Mixin<CfnBucket, CfnBucket, SecureAcce
    * @param resource - The CfnBucket resource to configure
    * @returns The configured CfnBucket resource
    */
-  public apply(resource: CfnBucket): CfnBucket {
+  public apply(resource: CfnBucket & HasResourcePolicy): CfnBucket & HasResourcePolicy {
     // @todo
     // Note: SSL enforcement and minimum TLS version are typically handled via bucket policy
     // This mixin would need access to the bucket policy to implement these features
@@ -1330,7 +1330,7 @@ export class SecureAccessMixin implements Mixin<CfnBucket, CfnBucket, SecureAcce
 /**
  * Mixin for bucket analytics configuration
  */
-export class AnalyticsMixin implements Mixin<CfnBucket, CfnBucket, AnalyticsMixinProps> {
+export class AnalyticsMixin implements Mixin<CfnBucket, CfnBucket> {
   /**
    * The analytics properties for this mixin
    */
@@ -1384,7 +1384,7 @@ export class AnalyticsMixin implements Mixin<CfnBucket, CfnBucket, AnalyticsMixi
 /**
  * Mixin for bucket auto-delete objects configuration
  */
-export class AutoDeleteObjectsMixin implements Mixin<CfnBucket, CfnBucket, AutoDeleteObjectsMixinProps> {
+export class AutoDeleteObjectsMixin implements Mixin<CfnBucket, CfnBucket> {
   /**
    * The auto-delete objects properties for this mixin
    */
@@ -1422,7 +1422,7 @@ export class AutoDeleteObjectsMixin implements Mixin<CfnBucket, CfnBucket, AutoD
 /**
  * Mixin for bucket metadata configuration
  */
-export class MetadataMixin implements Mixin<CfnBucket, CfnBucket, MetadataMixinProps> {
+export class MetadataMixin implements Mixin<CfnBucket, CfnBucket> {
   /**
    * The metadata properties for this mixin
    */
@@ -1497,6 +1497,8 @@ export class Bucket extends Resource implements ICfnBucket {
   public readonly attrArn: string;
   public readonly attrBucketName: string;
 
+  // @todo reflections?
+
   private readonly props: BucketProps;
 
   public constructor(scope: IConstruct, id: string, props: BucketProps = {}) {
@@ -1513,7 +1515,7 @@ export class Bucket extends Resource implements ICfnBucket {
     this.attrBucketName = this.cfn.ref;
 
     // Features
-    this.with(
+    const mixins = [
       new EncryptionMixin(props),
       new PublicAccessMixin(props),
       new WebsiteMixin(props),
@@ -1532,12 +1534,17 @@ export class Bucket extends Resource implements ICfnBucket {
       new AutoDeleteObjectsMixin(props),
       // new AnalyticsMixin({}),
       // new MetadataMixin(props),
-    );
+    ];
+
+    validateAllProps(this, this.constructor.name, this.props, mixins.map(m => m.validations).flat());
+    mixins.forEach(mixin => mixin.apply(this.cfn));
+
+    this.with(new EncryptionMixin(props));
+    this.with(new SecureAccessMixin(props));
   }
 
-  private with(...mixins: Mixin<CfnBucket, any, BucketProps>[]): this {
-    validateAllProps(this, this.constructor.name, this.props, mixins.flatMap(m => m.validations));
-    mixins.forEach(mixin => mixin.apply(this.cfn));
-    return this;
+  private with<Out extends typeof this.cfn>(mixin: Mixin<typeof this.cfn, Out>) {
+    return mixin.apply(this.cfn);
   }
 }
+
