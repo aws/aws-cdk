@@ -145,8 +145,7 @@ export class DeploymentLifecycleLambdaTarget implements IDeploymentLifecycleHook
       targetArn: this.handler.functionArn,
       role: this._role,
       lifecycleStages: this.props.lifecycleStages,
-      hookDetails: (this.props.hookDetails === undefined || this.props.hookDetails === null)?
-        this.props.hookDetails: Fn.toJsonString(this.props.hookDetails),
+      hookDetails: this.props.hookDetails ? Fn.toJsonString(this.props.hookDetails) : undefined,
     };
   }
 }
