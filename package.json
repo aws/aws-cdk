@@ -12,7 +12,8 @@
     "pack": "./pack.sh",
     "compat": "./scripts/check-api-compatibility.sh",
     "bump": "./bump.sh",
-    "build-all": "tsc -b"
+    "build-all": "tsc -b",
+    "atmosphere-integ-test": "lerna run build --scope @aws-cdk/integration-test-deployment && node tools/@aws-cdk/integration-test-deployment/bin/index.js"
   },
   "devDependencies": {
     "@nx/workspace": "^20",

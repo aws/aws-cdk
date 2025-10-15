@@ -8,6 +8,7 @@ export const deployInegTestsWithAtmosphere = async ({ endpoint, pool }: {endpoin
 
   try {
     const env = {
+      PATH: process.env.PATH, // Allows the spawn process to find the yarn binary.
       AWS_ACCESS_KEY_ID: allocation.allocation.credentials.accessKeyId,
       AWS_SECRET_ACCESS_KEY: allocation.allocation.credentials.secretAccessKey,
       AWS_SESSION_TOKEN: allocation.allocation.credentials.sessionToken,

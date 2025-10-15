@@ -23,6 +23,5 @@
     "ts-jest": "^29.4.1",
     "typescript": "~5.5.4"
   },
-  "main": "bin/project-sync.js",
   "license": "Apache-2.0"
 }
