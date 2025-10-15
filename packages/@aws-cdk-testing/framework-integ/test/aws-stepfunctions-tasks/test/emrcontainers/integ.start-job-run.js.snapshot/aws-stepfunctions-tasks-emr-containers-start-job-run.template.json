@@ -1066,7 +1066,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/bed62657ec300bde63557bc075ff0afa8f45b513d8b64a90e1ebf69c8dd3b2d1.json"
+       "/554cb4979f3f3770b14571ef3eef6db7b73d3959dd81cb0a44ab9a1783177b35.json"
       ]
      ]
     }
@@ -1116,7 +1116,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/38f8b18d55fb873df329597b243bd128a2e1aec5b1d22d962236a9a5050fbb20.json"
+       "/8af9cee1180a9bc5ec929aae66883f54306a27d935cdcbdd121fdb4acd210023.json"
       ]
      ]
     }
@@ -1474,7 +1474,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4e81d1590504dce642b87042b0999db745220956ae69e7441a66475972723162.zip"
+     "S3Key": "a73ebb32184d4a847fd87c0def742ac63ae3716c77d7d75f37ffe720d056adc6.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -1906,6 +1906,12 @@
    },
    "us-isob-west-1": {
     "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
    },
    "us-west-1": {
     "value": "nodejs22.x"

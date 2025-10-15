@@ -1146,7 +1146,7 @@
   "InstanceRotationSingleUserSARMappingFEA0C86E": {
    "aws": {
     "applicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSOracleRotationSingleUser",
-    "semanticVersion": "1.1.367"
+    "semanticVersion": "1.1.618"
    },
    "aws-cn": {
     "applicationId": "arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/SecretsManagerRDSOracleRotationSingleUser",
@@ -1283,6 +1283,12 @@
    },
    "us-isob-west-1": {
     "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
    },
    "us-west-1": {
     "value": "nodejs22.x"

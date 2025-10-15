@@ -30,7 +30,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756993028552"
+    "salt": "1757338570559"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -584,7 +584,7 @@
      "Body": "\"a,b,c\\n1,2,3\\n4,5,6\""
     },
     "flattenResponse": "false",
-    "salt": "1756993028555"
+    "salt": "1757338570562"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa",
@@ -625,7 +625,7 @@
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1756993028555"
+    "salt": "1757338570562"
    },
    "DependsOn": [
     "AwsApiCallS3putObject9f7ed865afc47100b3c2a9fea2cf51ee"
@@ -666,7 +666,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756993028556"
+    "salt": "1757338570563"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa"
@@ -829,7 +829,7 @@
      "Body": "\"\""
     },
     "flattenResponse": "false",
-    "salt": "1756993028557"
+    "salt": "1757338570563"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868",
@@ -870,7 +870,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756993028557"
+    "salt": "1757338570564"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectd9ccc438e1c22709962ae68cdce8fc4f"
@@ -911,7 +911,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756993028557"
+    "salt": "1757338570564"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsredriveExecution7e7cfa5e3c60aef760b5fbff9448d868"
@@ -1076,7 +1076,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756993028558"
+    "salt": "1757338570565"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1226,7 +1226,7 @@
      "Body": "\"a,b,c\\n1,2,3\\n4,5,6\""
     },
     "flattenResponse": "false",
-    "salt": "1756993028559"
+    "salt": "1757338570565"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa1",
@@ -1267,7 +1267,7 @@
     "outputPaths": [
      "executionArn"
     ],
-    "salt": "1756993028559"
+    "salt": "1757338570566"
    },
    "DependsOn": [
     "AwsApiCallS3putObject9f7ed865afc47100b3c2a9fea2cf51ee1"
@@ -1308,7 +1308,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756993028559"
+    "salt": "1757338570566"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa1"
@@ -1471,7 +1471,7 @@
      "Body": "\"\""
     },
     "flattenResponse": "false",
-    "salt": "1756993028560"
+    "salt": "1757338570566"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsdescribeExecutionee869597c94116ebec1f72c1bdc4d33c",
@@ -1512,7 +1512,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756993028560"
+    "salt": "1757338570567"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectd9ccc438e1c22709962ae68cdce8fc4f1"
@@ -1553,7 +1553,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1756993028560"
+    "salt": "1757338570567"
    },
    "DependsOn": [
     "AwsApiCallStepFunctionsredriveExecutionee869597c94116ebec1f72c1bdc4d33c"
@@ -1866,6 +1866,12 @@
    },
    "us-isob-west-1": {
     "value": "nodejs18.x"
+   },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
    },
    "us-west-1": {
     "value": "nodejs22.x"
