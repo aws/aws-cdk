@@ -1687,6 +1687,9 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICap
   propagateTags: ecs.PropagateManagedInstancesTags.CAPACITY_PROVIDER,
 });
 
+// Optionally configure security group rules using IConnectable interface
+miCapacityProvider.connections.allowFrom(ec2.Peer.ipv4(vpc.vpcCidrBlock), ec2.Port.tcp(80));
+
 // Add the capacity provider to the cluster
 cluster.addManagedInstancesCapacityProvider(miCapacityProvider);
 
