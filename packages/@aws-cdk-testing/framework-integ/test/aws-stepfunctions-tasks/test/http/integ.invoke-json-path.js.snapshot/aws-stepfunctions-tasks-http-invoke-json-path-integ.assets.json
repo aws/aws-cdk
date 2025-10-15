@@ -1,28 +1,30 @@
 {
-  "version": "39.0.0",
+  "version": "48.0.0",
   "files": {
     "c071afed018660f87ece6db422ff34407d45f6940181746b4c7f99af8f032a98": {
+      "displayName": "AuthorizerHandler/Code",
       "source": {
         "path": "asset.c071afed018660f87ece6db422ff34407d45f6940181746b4c7f99af8f032a98",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-bc108962": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "c071afed018660f87ece6db422ff34407d45f6940181746b4c7f99af8f032a98.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "04782599a61c362f7eef091efba663ed0043c198ef94bd359dee3a6b089fddb6": {
+    "b3fe573981c2b0f87b1b1b100d6942d4dd2900fbb8d76a5053ab7117f17dacfd": {
+      "displayName": "aws-stepfunctions-tasks-http-invoke-json-path-integ Template",
       "source": {
         "path": "aws-stepfunctions-tasks-http-invoke-json-path-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-83b189c1": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "04782599a61c362f7eef091efba663ed0043c198ef94bd359dee3a6b089fddb6.json",
+          "objectKey": "b3fe573981c2b0f87b1b1b100d6942d4dd2900fbb8d76a5053ab7117f17dacfd.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -47,11 +47,30 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "AuthorizerHandlerServiceRole5F40A014"
    ]
+  },
+  "AuthorizerHandlerLogGroup19D4FC4C": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "AuthorizerHandler0112B303"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "AuthorizerHandlerawsstepfunctionstaskshttpinvokejsonpathintegAuthorizer0A0EA200PermissionsAC1581B9": {
    "Type": "AWS::Lambda::Permission",
@@ -172,7 +191,10 @@
     "AuthorizerBD825682",
     "IntegRestApitestjsonpathGETEA421C58",
     "IntegRestApitestjsonpath7AE2D560"
-   ]
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   },
   "IntegRestApiDeploymentStageprod29E2686A": {
    "Type": "AWS::ApiGateway::Stage",
