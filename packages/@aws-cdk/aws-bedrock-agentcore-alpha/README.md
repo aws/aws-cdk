@@ -147,41 +147,84 @@ allowing you to maintain different versions for different environments or gradua
 
 #### Managing Endpoints and Versions
 
-Amazon Bedrock AgentCore automatically manages runtime versioning. Here's how versions are created and how to manage endpoints:
+Amazon Bedrock AgentCore automatically manages runtime versioning to provide safe deployments and rollback capabilities. You can follow
+the steps below to understand how to use versioning with runtime for controlled deployments across different environments.
+
+##### Step 1: Initial Deployment
+
+When you first create an agent runtime, AgentCore automatically creates Version 1 of your runtime. At this point, a DEFAULT endpoint is
+automatically created that points to Version 1. This DEFAULT endpoint serves as the main access point for your runtime.
+
+##### Step 2: Creating Custom Endpoints
+
+After the initial deployment, you can create additional endpoints for different environments. For example, you might create a "production"
+endpoint that explicitly points to Version 1. This allows you to maintain stable access points for specific environments while keeping the
+flexibility to test newer versions elsewhere.
+
+##### Step 3: Runtime Update Deployment
+
+When you update the runtime configuration (such as updating the container image, modifying network settings, or changing protocol
+configurations), AgentCore automatically creates a new version (Version 2). Upon this update:
+
+- Version 2 is created automatically with the new configuration
+- The DEFAULT endpoint automatically updates to point to Version 2
+- Any explicitly pinned endpoints (like the production endpoint) remain on their specified versions
+
+##### Step 4: Testing with Staging Endpoints
+
+Once Version 2 exists, you can create a staging endpoint that points to the new version. This staging endpoint allows you to test the
+new version in a controlled environment before promoting it to production. This separation ensures that production traffic continues
+to use the stable version while you validate the new version.
+
+##### Step 5: Promoting to Production
+
+After thoroughly testing the new version through the staging endpoint, you can update the production endpoint to point to Version 2.
+This controlled promotion process ensures that you can validate changes before they affect production traffic.
 
 ```typescript
+// Initial version
 const repository = new ecr.Repository(this, "TestRepository", {
   repositoryName: "test-agent-runtime",
 });
 
-//Initial Deployment - Automatically creates Version 1
+const agentcoreArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0")
+
 const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
-  agentRuntimeArtifact: agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0"),
+  agentRuntimeArtifact: agentcoreArtifact,
 });
-// At this point: A DEFAULT endpoint is created which points to version 1
 
-// You can create a new endpoint (production) which points to version1
 const prodEndpoint = runtime.addEndpoint("production", {
   version: "1",
   description: "Stable production endpoint - pinned to v1"
 });
+```
 
-// When you update the runtime configuration e.g. new container image, protocol change, network settings
-// a new version (Version 2) is automatically created
+Update the agentcore artifact for new runtime version.
 
-// After update: Version 2 is created automatically
-// DEFAULT endpoint automatically updates to Version 2
-// Production endpoint remains on Version 1 (explicitly pinned)
+```typescript
+// New version
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
 
-// Now that Version 2 exists, create a staging endpoint for testing
+const agentcoreArtifactNew = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v2.0.0")
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentcoreArtifactNew,
+});
+
 const stagingEndpoint = runtime.addEndpoint("staging", {
   version: "2",
   description: "Staging environment for testing new version"
 });
 
-// Staging endpoint: Points to Version 2 (testing)
-// After testing, you can update production endpoint to Version 2 using the AWS Console or APIs
+runtime.addEndpoint("production", {
+  version: "2",  // New version added here
+  description: "Stable production endpoint"
+});
+
 ```
 
 ### Creating Standalone Runtime Endpoints
