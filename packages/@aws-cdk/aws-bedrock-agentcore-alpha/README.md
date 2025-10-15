@@ -24,6 +24,8 @@
 
 This construct library facilitates the deployment of Bedrock AgentCore primitives, enabling you to create sophisticated AI applications that can interact with your systems and data sources.
 
+> **Note:** Users need to ensure their CDK deployment role has the `iam:CreateServiceLinkedRole` permission for AgentCore service-linked roles.
+
 ## Table of contents
 
 - [AgentCore Runtime](#agentcore-runtime)

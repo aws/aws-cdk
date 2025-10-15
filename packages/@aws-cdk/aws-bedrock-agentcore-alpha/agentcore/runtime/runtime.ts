@@ -13,6 +13,7 @@ import {
   RUNTIME_XRAY_ACTIONS,
   RUNTIME_CLOUDWATCH_METRICS_ACTIONS,
   RUNTIME_CLOUDWATCH_NAMESPACE,
+  RUNTIME_WORKLOAD_IDENTITY_ACTIONS,
 } from './perms';
 import { AgentRuntimeArtifact } from './runtime-artifact';
 import { RuntimeAuthorizerConfiguration } from './runtime-authorizer-configuration';
@@ -377,33 +378,17 @@ export class Runtime extends RuntimeBase {
       },
     }));
 
-    // Service-linked role creation permission
-    // Required for creating service-linked roles for network and identity management
-    // These roles are created automatically when needed (as of October 13, 2025)
+    // Bedrock AgentCore Workload Identity Access
+    // Note: The agent name will be determined at runtime, so we use a wildcard pattern
     role.addToPolicy(new iam.PolicyStatement({
-      sid: 'CreateServiceLinkedRoles',
+      sid: 'GetAgentAccessToken',
       effect: iam.Effect.ALLOW,
-      actions: ['iam:CreateServiceLinkedRole'],
+      actions: RUNTIME_WORKLOAD_IDENTITY_ACTIONS,
       resources: [
-        `arn:${Stack.of(this).partition}:iam::*:role/aws-service-role/network.bedrock-agentcore.amazonaws.com/AWSServiceRoleForBedrockAgentCoreNetwork`,
-        `arn:${Stack.of(this).partition}:iam::*:role/aws-service-role/runtime-identity.bedrock-agentcore.amazonaws.com/AWSServiceRoleForBedrockAgentCoreRuntimeIdentity`,
+        `arn:${Stack.of(this).partition}:bedrock-agentcore:${region}:${account}:workload-identity-directory/default`,
+        `arn:${Stack.of(this).partition}:bedrock-agentcore:${region}:${account}:workload-identity-directory/default/workload-identity/*`,
       ],
-      conditions: {
-        StringEquals: {
-          'iam:AWSServiceName': [
-            'network.bedrock-agentcore.amazonaws.com',
-            'runtime-identity.bedrock-agentcore.amazonaws.com',
-          ],
-        },
-      },
     }));
-
-    // Note: Workload identity permissions are now handled by the service-linked role
-    // AWSServiceRoleForBedrockAgentCoreRuntimeIdentity (as of October 13, 2025)
-
-    // Note: Bedrock model invocation permissions are NOT included by default.
-    // Users should grant these permissions  explicitly using model IBedrockInvokable interface
-
     return role;
   }
 

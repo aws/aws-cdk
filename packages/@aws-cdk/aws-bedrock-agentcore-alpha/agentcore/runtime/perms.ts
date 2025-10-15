@@ -93,6 +93,15 @@ export const RUNTIME_XRAY_ACTIONS = [
 export const RUNTIME_CLOUDWATCH_METRICS_ACTIONS = ['cloudwatch:PutMetricData'];
 
 /**
+ * Bedrock AgentCore workload identity permissions
+ * Used to obtain access tokens for workload identity
+ */
+export const RUNTIME_WORKLOAD_IDENTITY_ACTIONS = [
+  'bedrock-agentcore:GetWorkloadAccessToken',
+  'bedrock-agentcore:GetWorkloadAccessTokenForJWT',
+  'bedrock-agentcore:GetWorkloadAccessTokenForUserId',
+];
+/**
  * CloudWatch namespace for metrics
  * Used as a condition for CloudWatch metrics permissions
  */
