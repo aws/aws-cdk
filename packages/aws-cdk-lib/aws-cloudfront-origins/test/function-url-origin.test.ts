@@ -562,63 +562,6 @@ describe('ipAddressType', () => {
     });
   });
 
-  test('Correctly sets ipAddressType with OAC', () => {
-    const fn = new lambda.Function(stack, 'MyFunction', {
-      code: lambda.Code.fromInline('exports.handler = async () => {};'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
-    });
-
-    const fnUrl = fn.addFunctionUrl({
-      authType: lambda.FunctionUrlAuthType.AWS_IAM,
-    });
-
-    new cloudfront.Distribution(stack, 'MyDistribution', {
-      defaultBehavior: {
-        origin: FunctionUrlOrigin.withOriginAccessControl(fnUrl, {
-          ipAddressType: OriginIpAddressType.DUALSTACK,
-        }),
-      },
-    });
-
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::CloudFront::Distribution', {
-      DistributionConfig: {
-        Origins: Match.arrayWith([
-          Match.objectLike({
-            CustomOriginConfig: Match.objectLike({
-              IpAddressType: OriginIpAddressType.DUALSTACK,
-            }),
-          }),
-        ]),
-      },
-    });
-  });
-});
-
-describe('feature flag: functionUrlOriginDualStackDefault', () => {
-  test('defaults to IPv4-only when feature flag is disabled', () => {
-    const testStack = new Stack();
-    testStack.node.setContext(cxapi.CLOUDFRONT_ORIGINS_FUNCTION_URL_DUALSTACK_DEFAULT, false);
-
-    const fn = new lambda.Function(testStack, 'MyFunction', {
-      code: lambda.Code.fromInline('exports.handler = async () => {};'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
-    });
-
-    const fnUrl = fn.addFunctionUrl({
-      authType: lambda.FunctionUrlAuthType.NONE,
-    });
-
-    const origin = new FunctionUrlOrigin(fnUrl);
-    const originBindConfig = origin.bind(testStack, { originId: 'StackOriginLambdaFunctionURL' });
-
-    const resolved = stack.resolve(originBindConfig.originProperty);
-    expect(resolved.customOriginConfig).toBeDefined();
-    expect(resolved.customOriginConfig.ipAddressType).toBeUndefined(); // Should be undefined (IPv4 default)
-  });
-
   test('defaults to dual-stack when feature flag is enabled', () => {
     const testStack = new Stack();
     testStack.node.setContext(cxapi.CLOUDFRONT_ORIGINS_FUNCTION_URL_DUALSTACK_DEFAULT, true);
@@ -669,37 +612,8 @@ describe('feature flag: functionUrlOriginDualStackDefault', () => {
     });
   });
 
-  test('explicit ipAddressType overrides feature flag when flag is disabled', () => {
-    const testStack = new Stack();
-    testStack.node.setContext(cxapi.CLOUDFRONT_ORIGINS_FUNCTION_URL_DUALSTACK_DEFAULT, false);
-
-    const fn = new lambda.Function(testStack, 'MyFunction', {
-      code: lambda.Code.fromInline('exports.handler = async () => {};'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_20_X,
-    });
-
-    const fnUrl = fn.addFunctionUrl({
-      authType: lambda.FunctionUrlAuthType.NONE,
-    });
-
-    const origin = new FunctionUrlOrigin(fnUrl, {
-      ipAddressType: OriginIpAddressType.DUALSTACK,
-    });
-    const originBindConfig = origin.bind(testStack, { originId: 'StackOriginLambdaFunctionURL' });
-
-    expect(testStack.resolve(originBindConfig.originProperty)).toMatchObject({
-      customOriginConfig: {
-        ipAddressType: OriginIpAddressType.DUALSTACK, // Explicit value should override flag
-      },
-    });
-  });
-
-  test('FunctionUrlOriginWithOAC defaults to IPv4-only when feature flag is disabled', () => {
-    const testStack = new Stack();
-    testStack.node.setContext(cxapi.CLOUDFRONT_ORIGINS_FUNCTION_URL_DUALSTACK_DEFAULT, false);
-
-    const fn = new lambda.Function(testStack, 'MyFunction', {
+  test('Correctly sets ipAddressType with OAC', () => {
+    const fn = new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_20_X,
@@ -709,12 +623,26 @@ describe('feature flag: functionUrlOriginDualStackDefault', () => {
       authType: lambda.FunctionUrlAuthType.AWS_IAM,
     });
 
-    const origin = FunctionUrlOrigin.withOriginAccessControl(fnUrl);
-    const originBindConfig = origin.bind(testStack, { originId: 'StackOriginLambdaFunctionURL' });
+    new cloudfront.Distribution(stack, 'MyDistribution', {
+      defaultBehavior: {
+        origin: FunctionUrlOrigin.withOriginAccessControl(fnUrl, {
+          ipAddressType: OriginIpAddressType.DUALSTACK,
+        }),
+      },
+    });
 
-    const resolved = testStack.resolve(originBindConfig.originProperty);
-    expect(resolved.customOriginConfig).toBeDefined();
-    expect(resolved.customOriginConfig.ipAddressType).toBeUndefined(); // Should be undefined (IPv4 default)
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Origins: Match.arrayWith([
+          Match.objectLike({
+            CustomOriginConfig: Match.objectLike({
+              IpAddressType: OriginIpAddressType.DUALSTACK,
+            }),
+          }),
+        ]),
+      },
+    });
   });
 
   test('FunctionUrlOriginWithOAC defaults to dual-stack when feature flag is enabled', () => {
