@@ -6,6 +6,7 @@ import { MachineImage } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import { AsgCapacityProvider } from '../../../aws-ecs';
 import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer, SslPolicy } from '../../../aws-elasticloadbalancingv2';
+import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
 import * as route53 from '../../../aws-route53';
 import * as cloudmap from '../../../aws-servicediscovery';
@@ -2447,5 +2448,260 @@ describe('NetworkLoadBalancedFargateService', () => {
         Ref: 'Vpc8378EB38',
       },
     });
+  });
+
+  test('blue/green deployment configuration', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // Create alternate target group
+    const alternateTargetGroup = new ApplicationLoadBalancer(stack, 'AlternateLB', { vpc })
+      .addListener('AlternateListener', { port: 8080, defaultAction: elbv2.ListenerAction.fixedResponse(404) })
+      .addTargets('AlternateTargets', { port: 8080 });
+
+    // Create listener rule configuration
+    const productionLB = new ApplicationLoadBalancer(stack, 'ProductionLB', { vpc });
+    const productionListenerObj = productionLB.addListener('ProductionListener', {
+      port: 80,
+      defaultAction: elbv2.ListenerAction.fixedResponse(404),
+    });
+    const productionRule = new elbv2.ApplicationListenerRule(stack, 'ProductionRule', {
+      listener: productionListenerObj,
+      priority: 100,
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/production/*'])],
+      action: elbv2.ListenerAction.fixedResponse(200),
+    });
+    const productionListener = ecs.ListenerRuleConfiguration.applicationListenerRule(productionRule);
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        containerName: 'web',
+        containerPort: 80,
+      },
+      blueGreenDeployment: {
+        alternateTargetGroup,
+        productionListener,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      LoadBalancers: [
+        {
+          ContainerName: 'web',
+          ContainerPort: 80,
+          TargetGroupArn: {
+            Ref: Match.stringLikeRegexp('ServiceLBPublicListenerECSGroup.*'),
+          },
+          AdvancedConfiguration: {
+            AlternateTargetGroupArn: {
+              Ref: Match.stringLikeRegexp('AlternateLBAlternateListenerAlternateTargets.*'),
+            },
+            RoleArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('ServiceBlueGreenTargetRole.*'),
+                'Arn',
+              ],
+            },
+            ProductionListenerRule: {
+              Ref: Match.stringLikeRegexp('ProductionRule.*'),
+            },
+          },
+        },
+      ],
+    });
+  });
+
+  test('blue/green deployment with test listener', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // Create alternate target group
+    const alternateTargetGroup = new ApplicationLoadBalancer(stack, 'AlternateLB', { vpc })
+      .addListener('AlternateListener', { port: 8080, defaultAction: elbv2.ListenerAction.fixedResponse(404) })
+      .addTargets('AlternateTargets', { port: 8080 });
+
+    // Create listener rule configurations
+    const productionLB = new ApplicationLoadBalancer(stack, 'ProductionLB', { vpc });
+    const productionListenerObj = productionLB.addListener('ProductionListener', {
+      port: 80,
+      defaultAction: elbv2.ListenerAction.fixedResponse(404),
+    });
+    const productionRule = new elbv2.ApplicationListenerRule(stack, 'ProductionRule', {
+      listener: productionListenerObj,
+      priority: 100,
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/production/*'])],
+      action: elbv2.ListenerAction.fixedResponse(200),
+    });
+    const productionListener = ecs.ListenerRuleConfiguration.applicationListenerRule(productionRule);
+
+    const testLB = new ApplicationLoadBalancer(stack, 'TestLB', { vpc });
+    const testListenerObj = testLB.addListener('TestListener', {
+      port: 8080,
+      defaultAction: elbv2.ListenerAction.fixedResponse(404),
+    });
+    const testRule = new elbv2.ApplicationListenerRule(stack, 'TestRule', {
+      listener: testListenerObj,
+      priority: 200,
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/test/*'])],
+      action: elbv2.ListenerAction.fixedResponse(200),
+    });
+    const testListener = ecs.ListenerRuleConfiguration.applicationListenerRule(testRule);
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        containerName: 'web',
+        containerPort: 80,
+      },
+      blueGreenDeployment: {
+        alternateTargetGroup,
+        productionListener,
+        testListener,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      LoadBalancers: [
+        {
+          ContainerName: 'web',
+          ContainerPort: 80,
+          TargetGroupArn: {
+            Ref: Match.stringLikeRegexp('ServiceLBPublicListenerECSGroup.*'),
+          },
+          AdvancedConfiguration: {
+            AlternateTargetGroupArn: {
+              Ref: Match.stringLikeRegexp('AlternateLBAlternateListenerAlternateTargets.*'),
+            },
+            RoleArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('ServiceBlueGreenTargetRole.*'),
+                'Arn',
+              ],
+            },
+            ProductionListenerRule: {
+              Ref: Match.stringLikeRegexp('ProductionRule.*'),
+            },
+            TestListenerRule: {
+              Ref: Match.stringLikeRegexp('TestRule.*'),
+            },
+          },
+        },
+      ],
+    });
+  });
+
+  test('blue/green deployment with custom role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    const customRole = new iam.Role(stack, 'CustomRole', {
+      assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+    });
+
+    // Create alternate target group
+    const alternateTargetGroup = new ApplicationLoadBalancer(stack, 'AlternateLB', { vpc })
+      .addListener('AlternateListener', { port: 8080, defaultAction: elbv2.ListenerAction.fixedResponse(404) })
+      .addTargets('AlternateTargets', { port: 8080 });
+
+    // Create listener rule configuration
+    const productionLB = new ApplicationLoadBalancer(stack, 'ProductionLB', { vpc });
+    const productionListenerObj = productionLB.addListener('ProductionListener', {
+      port: 80,
+      defaultAction: elbv2.ListenerAction.fixedResponse(404),
+    });
+    const productionRule = new elbv2.ApplicationListenerRule(stack, 'ProductionRule', {
+      listener: productionListenerObj,
+      priority: 100,
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/production/*'])],
+      action: elbv2.ListenerAction.fixedResponse(200),
+    });
+    const productionListener = ecs.ListenerRuleConfiguration.applicationListenerRule(productionRule);
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        containerName: 'web',
+        containerPort: 80,
+      },
+      blueGreenDeployment: {
+        alternateTargetGroup,
+        productionListener,
+        role: customRole,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      LoadBalancers: [
+        {
+          ContainerName: 'web',
+          ContainerPort: 80,
+          TargetGroupArn: {
+            Ref: Match.stringLikeRegexp('ServiceLBPublicListenerECSGroup.*'),
+          },
+          AdvancedConfiguration: {
+            AlternateTargetGroupArn: {
+              Ref: Match.stringLikeRegexp('AlternateLBAlternateListenerAlternateTargets.*'),
+            },
+            RoleArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('CustomRole.*'),
+                'Arn',
+              ],
+            },
+            ProductionListenerRule: {
+              Ref: Match.stringLikeRegexp('ProductionRule.*'),
+            },
+          },
+        },
+      ],
+    });
+  });
+
+  test('service without blue/green deployment works as before', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+    });
+
+    // THEN - should not have AdvancedConfiguration
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      LoadBalancers: [
+        {
+          ContainerName: 'web',
+          ContainerPort: 80,
+          TargetGroupArn: {
+            Ref: Match.stringLikeRegexp('ServiceLBPublicListenerECSGroup.*'),
+          },
+          // Should not have AdvancedConfiguration
+        },
+      ],
+    });
+
+    // Verify AdvancedConfiguration is not present
+    const template = Template.fromStack(stack);
+    const services = template.findResources('AWS::ECS::Service');
+    const serviceResource = Object.values(services)[0];
+    expect(serviceResource.Properties.LoadBalancers[0].AdvancedConfiguration).toBeUndefined();
   });
 });

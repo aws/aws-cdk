@@ -3,12 +3,12 @@ import { Certificate, CertificateValidation, ICertificate } from '../../../aws-c
 import { IVpc } from '../../../aws-ec2';
 import {
   AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
-  ICluster, LogDriver, PropagatedTagSource, Secret, CapacityProviderStrategy,
+  ICluster, LogDriver, PropagatedTagSource, Secret, CapacityProviderStrategy, AlternateTarget, ListenerRuleConfiguration,
 } from '../../../aws-ecs';
 import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
   IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps, SslPolicy,
-  IpAddressType,
+  IpAddressType, ITargetGroup,
   ApplicationLoadBalancerProps,
 } from '../../../aws-elasticloadbalancingv2';
 import { IRole } from '../../../aws-iam';
@@ -33,6 +33,33 @@ export enum ApplicationLoadBalancedServiceRecordType {
    * Do not create any DNS records
    */
   NONE,
+}
+
+/**
+ * Configuration for blue/green deployments with alternate target groups
+ */
+export interface BlueGreenDeploymentConfiguration {
+  /**
+   * The alternate target group for blue/green deployments
+   */
+  readonly alternateTargetGroup: ITargetGroup;
+
+  /**
+   * The production listener rule (ALB) or listener (NLB) for blue/green deployments
+   */
+  readonly productionListener: ListenerRuleConfiguration;
+
+  /**
+   * The test listener rule (ALB) or listener (NLB) for blue/green deployments
+   * @default - No test listener
+   */
+  readonly testListener?: ListenerRuleConfiguration;
+
+  /**
+   * The IAM role for blue/green deployment configuration
+   * @default - A new role will be created
+   */
+  readonly role?: IRole;
 }
 
 /**
@@ -285,6 +312,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - IpAddressType.IPV4
    */
   readonly ipAddressType?: IpAddressType;
+
+  /**
+   * Configuration for blue/green deployments with alternate target groups
+   *
+   * @default - No blue/green deployment configuration
+   */
+  readonly blueGreenDeployment?: BlueGreenDeploymentConfiguration;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -454,12 +488,15 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
   public readonly cluster: ICluster;
 
   private readonly _applicationLoadBalancer?: ApplicationLoadBalancer;
+  private readonly props: ApplicationLoadBalancedServiceBaseProps;
 
   /**
    * Constructs a new instance of the ApplicationLoadBalancedServiceBase class.
    */
   constructor(scope: Construct, id: string, props: ApplicationLoadBalancedServiceBaseProps = {}) {
     super(scope, id);
+
+    this.props = props;
 
     if (props.cluster && props.vpc) {
       throw new ValidationError('You can only specify either vpc or cluster. Alternatively, you can leave both blank', this);
@@ -605,7 +642,24 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
    * Adds service as a target of the target group.
    */
   protected addServiceAsTarget(service: BaseService) {
-    this.targetGroup.addTarget(service);
+    if (this.props.blueGreenDeployment) {
+      const alternateTarget = new AlternateTarget('BlueGreenTarget', {
+        alternateTargetGroup: this.props.blueGreenDeployment.alternateTargetGroup,
+        productionListener: this.props.blueGreenDeployment.productionListener,
+        testListener: this.props.blueGreenDeployment.testListener,
+        role: this.props.blueGreenDeployment.role,
+      });
+
+      const target = service.loadBalancerTarget({
+        containerName: this.props.taskImageOptions?.containerName || 'web',
+        containerPort: this.props.taskImageOptions?.containerPort || 80,
+        alternateTarget,
+      });
+
+      this.targetGroup.addTarget(target);
+    } else {
+      this.targetGroup.addTarget(service);
+    }
   }
 
   protected createAWSLogDriver(prefix: string): AwsLogDriver {
