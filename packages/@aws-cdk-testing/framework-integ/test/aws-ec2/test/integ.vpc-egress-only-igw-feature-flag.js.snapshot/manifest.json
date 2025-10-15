@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7509e0c65241315e9345c9d8381abebd0961353c0ee5ace585afa07cf566385c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2958902c214f6b16599d6e09c7756b730c45916523f8e5ce987fbb3d215a1fac.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -216,12 +216,6 @@
             "data": "VpcEnabledRestrictDefaultSecurityGroupCustomResourceE1A22CF9"
           }
         ],
-        "/VpcMigrationFeatureFlagEnabledStack/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
         "/VpcMigrationFeatureFlagEnabledStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
           {
             "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
@@ -272,7 +266,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/415b42151a1bc4a0945e1defd1c8a4461d653c0ff263a3dfb6169ddd4bc5b1ff.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b29705423ee6d662a6f900a939d152b78f602b6bb45fbe9e1be16d4671303a9d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -474,12 +468,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcDisabledRestrictDefaultSecurityGroupCustomResource9700595D"
-          }
-        ],
-        "/VpcMigrationFeatureFlagDisabledStack/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/VpcMigrationFeatureFlagDisabledStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [

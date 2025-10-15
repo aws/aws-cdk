@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dff3c6de1999d7c983d6a5473c0b85ba180e01bf2996b0a14ed3aea28e0a523a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ae78d779b3a6a7711e7438a669022e21d59e02001254ba81f28f9ac2afe385cd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -298,12 +298,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
-          }
-        ],
-        "/EksClusterWithAddonStack/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/EksClusterWithAddonStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
@@ -895,12 +889,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "NodeProxyAgentLayer924C1971"
-          }
-        ],
-        "/EksClusterWithAddonStack/@aws-cdk--aws-eks.ClusterResourceProvider/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/EksClusterWithAddonStack/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler": [
@@ -1968,12 +1956,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEvent83C1D0A7"
-          }
-        ],
-        "/EksClusterWithAddonStack/@aws-cdk--aws-eks.KubectlProvider/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/EksClusterWithAddonStack/@aws-cdk--aws-eks.KubectlProvider/EksClusterWithAddonStackawscdkawseksKubectlProviderframeworkonEventE32F3356Arn": [

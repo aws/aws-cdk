@@ -55,15 +55,7 @@ describe('function', () => {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
       },
       DependsOn: ['MyLambdaServiceRole4539ECB6'],
     });
@@ -116,15 +108,7 @@ describe('function', () => {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
       },
       DependsOn: ['MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6'],
     });
@@ -919,15 +903,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
         DeadLetterConfig: {
           TargetArn: {
             'Fn::GetAtt': [
@@ -1023,15 +999,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
         DeadLetterConfig: {
           TargetArn: {
             'Fn::GetAtt': [
@@ -1096,15 +1064,7 @@ describe('function', () => {
           'Arn',
         ],
       },
-      Runtime: {
-        'Fn::FindInMap': [
-          'LatestNodeRuntimeMap',
-          {
-            Ref: 'AWS::Region',
-          },
-          'value',
-        ],
-      },
+      Runtime: 'nodejs22.x',
     });
   });
 
@@ -1343,15 +1303,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
         TracingConfig: {
           Mode: 'Active',
         },
@@ -1411,15 +1363,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
         TracingConfig: {
           Mode: 'Active',
         },
@@ -1480,15 +1424,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
         TracingConfig: {
           Mode: 'PassThrough',
         },
@@ -1548,15 +1484,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
         TracingConfig: {
           Mode: 'PassThrough',
         },
@@ -1592,15 +1520,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
       },
       DependsOn: [
         'MyLambdaServiceRole4539ECB6',
@@ -4005,15 +3925,7 @@ describe('function', () => {
         {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
-          Runtime: {
-            'Fn::FindInMap': [
-              'LatestNodeRuntimeMap',
-              {
-                Ref: 'AWS::Region',
-              },
-              'value',
-            ],
-          },
+          Runtime: 'nodejs22.x',
           RecursiveLoop: 'Terminate',
         },
       });
@@ -4033,15 +3945,7 @@ describe('function', () => {
         {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
-          Runtime: {
-            'Fn::FindInMap': [
-              'LatestNodeRuntimeMap',
-              {
-                Ref: 'AWS::Region',
-              },
-              'value',
-            ],
-          },
+          Runtime: 'nodejs22.x',
           RecursiveLoop: 'Allow',
         },
       });
@@ -4060,15 +3964,7 @@ describe('function', () => {
         {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
-          Runtime: {
-            'Fn::FindInMap': [
-              'LatestNodeRuntimeMap',
-              {
-                Ref: 'AWS::Region',
-              },
-              'value',
-            ],
-          },
+          Runtime: 'nodejs22.x',
           // for default, if the property is not set up in stack it doesn't show up in the template.
         },
       });
@@ -4332,15 +4228,7 @@ test('set ephemeral storage to desired size', () => {
     {
       Code: { ZipFile: 'foo' },
       Handler: 'bar',
-      Runtime: {
-        'Fn::FindInMap': [
-          'LatestNodeRuntimeMap',
-          {
-            Ref: 'AWS::Region',
-          },
-          'value',
-        ],
-      },
+      Runtime: 'nodejs22.x',
       EphemeralStorage: {
         Size: 1024,
       },
@@ -4377,15 +4265,7 @@ test('FunctionVersionUpgrade adds new description to function', () => {
     {
       Code: { ZipFile: 'foo' },
       Handler: 'bar',
-      Runtime: {
-        'Fn::FindInMap': [
-          'LatestNodeRuntimeMap',
-          {
-            Ref: 'AWS::Region',
-          },
-          'value',
-        ],
-      },
+      Runtime: 'nodejs22.x',
       Description: Match.stringLikeRegexp('my description version-hash'),
     },
   });
@@ -4746,15 +4626,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
       },
     });
   });

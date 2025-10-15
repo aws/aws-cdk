@@ -164,12 +164,6 @@
             "data": "DomainAccessPolicyCustomResourcePolicyE61F1845"
           }
         ],
-        "/cdk-integ-opensearch-custom-kms-key/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
         "/cdk-integ-opensearch-custom-kms-key/AWS679f53fac002430cb0da5b7982bd2287": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -388,12 +382,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/OpenSearchCustomKmsInteg/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/OpenSearchCustomKmsInteg/DefaultTest/DeployAssert/BootstrapVersion": [

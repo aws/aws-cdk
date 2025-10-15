@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/691a9a28ed89db88c2eecc01058bdcce2004906c0f1e8b562b12a6bc3df56836.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/344f1be1a91ad39a010b6e4bc24fdc413febd80c2aea8072b15b280af3e6d263.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -71,12 +71,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/integ-cloudfront-vpc-origin/cloudfront-vpc-origin-test/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/integ-cloudfront-vpc-origin/cloudfront-vpc-origin-test/DefaultTest/DeployAssert/HttpApiCallf9aefc220d9bcb58923ae4a5d54ca207/Default": [
@@ -163,7 +157,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7759b6722ca926360b02bca9bb3bb669b15feb95134ec6a78712153f48b4056b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8aa58fc4745d1fc0b8eb9b6b809c199161ab1eb123d97605f5bbf893777634bf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -544,12 +538,6 @@
             "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
           }
         ],
-        "/integ-cloudfront-vpc-origin/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
         "/integ-cloudfront-vpc-origin/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
           {
             "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
@@ -856,12 +844,8 @@
             "data": {
               "defaultBehavior": {
                 "origin": "*",
-                "cachePolicy": {
-                  "cachePolicyId": "*"
-                },
-                "originRequestPolicy": {
-                  "originRequestPolicyId": "*"
-                }
+                "cachePolicy": "*",
+                "originRequestPolicy": "*"
               },
               "additionalBehaviors": "*"
             }
@@ -873,12 +857,8 @@
                 "*",
                 {},
                 {
-                  "cachePolicy": {
-                    "cachePolicyId": "*"
-                  },
-                  "originRequestPolicy": {
-                    "originRequestPolicyId": "*"
-                  }
+                  "cachePolicy": "*",
+                  "originRequestPolicy": "*"
                 }
               ]
             }
@@ -890,12 +870,8 @@
                 "*",
                 {},
                 {
-                  "cachePolicy": {
-                    "cachePolicyId": "*"
-                  },
-                  "originRequestPolicy": {
-                    "originRequestPolicyId": "*"
-                  }
+                  "cachePolicy": "*",
+                  "originRequestPolicy": "*"
                 }
               ]
             }

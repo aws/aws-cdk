@@ -467,13 +467,7 @@ describe('latest Lambda node runtime', () => {
     // the CDK optimizes by using the literal value instead of creating a mapping
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            { Ref: 'AWS::Region' },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
       },
     });
   });

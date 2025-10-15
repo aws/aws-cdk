@@ -685,12 +685,6 @@
             "data": "EndpointDomainStartVerificationCustomResourcePolicyD2BAC9A6"
           }
         ],
-        "/aws-cdk-vpc-endpoint-dns-integ/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
         "/aws-cdk-vpc-endpoint-dns-integ/AWS679f53fac002430cb0da5b7982bd2287": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -881,12 +875,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/AwsCdkVpcEndpointDnsIntegTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/AwsCdkVpcEndpointDnsIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [

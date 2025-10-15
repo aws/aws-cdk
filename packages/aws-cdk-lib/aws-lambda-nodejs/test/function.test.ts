@@ -366,15 +366,7 @@ describe('Node 18+ runtimes', () => {
     new NodejsFunction(stackFF, 'handler1');
 
     Template.fromStack(stackFF).hasResourceProperties('AWS::Lambda::Function', {
-      Runtime: {
-        'Fn::FindInMap': [
-          'LatestNodeRuntimeMap',
-          {
-            Ref: 'AWS::Region',
-          },
-          'value',
-        ],
-      },
+      Runtime: 'nodejs22.x',
     });
   });
 
