@@ -1,0 +1,28 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "EcrSynthesizerDualStackIntegTest/DefaultTest": {
+      "stacks": [
+        "EcrSynthesizerIpv4Stack",
+        "EcrSynthesizerDualStackStack"
+      ],
+      "diffAssets": true,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": false
+          }
+        },
+        "destroy": {
+          "args": {
+            "force": true
+          }
+        }
+      },
+      "stackUpdateWorkflow": true,
+      "assertionStack": "EcrSynthesizerDualStackIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EcrSynthesizerDualStackIntegTestDefaultTestDeployAssert22320F07"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}
