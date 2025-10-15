@@ -374,6 +374,8 @@ export interface PipelineProps {
    * The method that the pipeline will use to handle multiple executions.
    *
    * @default - ExecutionMode.SUPERSEDED
+   *
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/concepts-how-it-works.html
    */
   readonly executionMode?: ExecutionMode;
 
