@@ -726,19 +726,6 @@ export class BrowserCustom extends BrowserCustomBase {
       this._connections = this.networkConfiguration.connections;
     }
 
-    // if recording is configured, add permissions to the execution role
-    if (this.recordingConfig && this.recordingConfig.s3Location) {
-      if (!Token.isUnresolved(this.recordingConfig.s3Location.bucketName)) {
-        Stack.of(this).resolve(this.recordingConfig.s3Location.bucketName);
-      }
-      const bucket = s3.Bucket.fromBucketName(
-        this,
-        `${this.name}RecordingBucket`,
-        this.recordingConfig.s3Location.bucketName,
-      );
-      bucket.grantReadWrite(this.executionRole);
-    }
-
     // ------------------------------------------------------
     // CFN Props - With Lazy support
     // ------------------------------------------------------
@@ -761,6 +748,21 @@ export class BrowserCustom extends BrowserCustomBase {
     this.createdAt = this.__resource.attrCreatedAt;
     this.lastUpdatedAt = this.__resource.attrLastUpdatedAt;
     this.failureReason = this.__resource.attrFailureReason;
+
+    // if recording is configured, add permissions to the execution role
+    if (this.recordingConfig && this.recordingConfig.s3Location) {
+      if (!Token.isUnresolved(this.recordingConfig.s3Location.bucketName)) {
+        Stack.of(this).resolve(this.recordingConfig.s3Location.bucketName);
+      }
+      const bucket = s3.Bucket.fromBucketName(
+        this,
+        `${this.name}RecordingBucket`,
+        this.recordingConfig.s3Location.bucketName,
+      );
+      // Ensure the policy is applied before the browser resource is created
+      const grant = bucket.grantReadWrite(this.executionRole);
+      grant.applyBefore(this.__resource);
+    }
   }
 
   /**

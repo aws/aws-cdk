@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/930b55407cb2ef97b29b322fb5c721a7c99e9fdfc4107ef6ec6f81d4b2820f91.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8bb6604d9ee2c2048ac31bfaa173f799046402c82325867059ec25f8bfec8518.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -74,7 +74,8 @@
             "type": "aws:cdk:analytics:construct",
             "data": {
               "bucketName": "*",
-              "removalPolicy": "destroy"
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
             }
           }
         ],
@@ -82,6 +83,56 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "RecordingBucket03AEF6D2"
+          }
+        ],
+        "/aws-cdk-bedrock-agentcore-browser-1/RecordingBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-agentcore-browser-1/RecordingBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RecordingBucketPolicyE50392DB"
+          }
+        ],
+        "/aws-cdk-bedrock-agentcore-browser-1/RecordingBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-bedrock-agentcore-browser-1/RecordingBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RecordingBucketAutoDeleteObjectsCustomResource2688253B"
+          }
+        ],
+        "/aws-cdk-bedrock-agentcore-browser-1/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/aws-cdk-bedrock-agentcore-browser-1/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/aws-cdk-bedrock-agentcore-browser-1/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/aws-cdk-bedrock-agentcore-browser-1/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
         "/aws-cdk-bedrock-agentcore-browser-1/BrowserWithRecording": [

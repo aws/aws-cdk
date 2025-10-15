@@ -21,6 +21,7 @@ new agentcore.BrowserCustom(stack, 'Browser', {
 const recordingBucket = new s3.Bucket(stack, 'RecordingBucket', {
   bucketName: 'test-browser-recordings',
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
 });
 
 // Create a browser with recording configuration
