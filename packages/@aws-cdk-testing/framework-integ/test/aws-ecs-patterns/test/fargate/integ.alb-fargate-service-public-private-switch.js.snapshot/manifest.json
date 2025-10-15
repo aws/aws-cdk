@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "TestStack.assets": {
+    "aws-ecs-integ-alb-fargate-public-private-switch.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "TestStack.assets.json",
+        "file": "aws-ecs-integ-alb-fargate-public-private-switch.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "TestStack": {
+    "aws-ecs-integ-alb-fargate-public-private-switch": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "TestStack.template.json",
+        "templateFile": "aws-ecs-integ-alb-fargate-public-private-switch.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a9e5c98b6640f8f86487b9abf375441221e1b5ae855e39b82aad744106b9d117.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4acee6fbd77c9230804c69f35cebd32c7a1e8fffb3020981fb47edde4d5ec8a7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "TestStack.assets"
+          "aws-ecs-integ-alb-fargate-public-private-switch.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,26 +31,25 @@
         }
       },
       "dependencies": [
-        "TestStack.assets"
+        "aws-ecs-integ-alb-fargate-public-private-switch.assets"
       ],
       "metadata": {
-        "/TestStack/Vpc": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "maxAzs": "*",
-              "natGateways": "*",
               "restrictDefaultSecurityGroup": false
             }
           }
         ],
-        "/TestStack/Vpc/Resource": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet1": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -86,43 +85,43 @@
             }
           }
         ],
-        "/TestStack/Vpc/PublicSubnet1/Subnet": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet1/RouteTable": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTable6C95E38E"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet1/RouteTableAssociation": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTableAssociation97140677"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet1/DefaultRoute": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet1/EIP": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1EIPD7E02669"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet1/NATGateway": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet2": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -148,33 +147,53 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
-        "/TestStack/Vpc/PublicSubnet2/Subnet": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2Subnet691E08A3"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet2/RouteTable": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTable94F7E489"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet2/RouteTableAssociation": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
           }
         ],
-        "/TestStack/Vpc/PublicSubnet2/DefaultRoute": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
-        "/TestStack/Vpc/PrivateSubnet1": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2EIP3C605A87"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2NATGateway9182C01D"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -202,31 +221,31 @@
             "data": {}
           }
         ],
-        "/TestStack/Vpc/PrivateSubnet1/Subnet": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1Subnet536B997A"
           }
         ],
-        "/TestStack/Vpc/PrivateSubnet1/RouteTable": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableB2C5B500"
           }
         ],
-        "/TestStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
           }
         ],
-        "/TestStack/Vpc/PrivateSubnet1/DefaultRoute": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
           }
         ],
-        "/TestStack/Vpc/PrivateSubnet2": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PrivateSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -254,90 +273,57 @@
             "data": {}
           }
         ],
-        "/TestStack/Vpc/PrivateSubnet2/Subnet": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2Subnet3788AAA1"
           }
         ],
-        "/TestStack/Vpc/PrivateSubnet2/RouteTable": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableA678073B"
           }
         ],
-        "/TestStack/Vpc/PrivateSubnet2/RouteTableAssociation": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
           }
         ],
-        "/TestStack/Vpc/PrivateSubnet2/DefaultRoute": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2DefaultRoute060D2087"
           }
         ],
-        "/TestStack/Vpc/IGW": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcIGWD7BA715C"
           }
         ],
-        "/TestStack/Vpc/VPCGW": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/Vpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/TestStack/Task": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/TestStack/Task/TaskRole": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/FargateCluster": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
+              "vpc": "*"
             }
           }
         ],
-        "/TestStack/Task/TaskRole/ImportTaskRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/TestStack/Task/TaskRole/Resource": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/FargateCluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskTaskRoleE98524A1"
+            "data": "FargateCluster7CCD5F93"
           }
         ],
-        "/TestStack/Task/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Task79114B6B"
-          }
-        ],
-        "/TestStack/Service/LB": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/LB": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -347,13 +333,13 @@
             "data": "*"
           }
         ],
-        "/TestStack/Service/LB/Resource": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/LB/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ServiceLBE9A1ADBC"
+            "data": "PrivateALBFargateServiceLB3F43693F"
           }
         ],
-        "/TestStack/Service/LB/SecurityGroup": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/LB/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -389,19 +375,19 @@
             }
           }
         ],
-        "/TestStack/Service/LB/SecurityGroup/Resource": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/LB/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ServiceLBSecurityGroupF7435A5C"
+            "data": "PrivateALBFargateServiceLBSecurityGroupE686114D"
           }
         ],
-        "/TestStack/Service/LB/SecurityGroup/to TestStackServiceSecurityGroup59159BDD:80": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/LB/SecurityGroup/to awsecsintegalbfargatepublicprivateswitchPrivateALBFargateServiceSecurityGroup34DD7BA8:80": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ServiceLBSecurityGrouptoTestStackServiceSecurityGroup59159BDD804A6BA8AC"
+            "data": "PrivateALBFargateServiceLBSecurityGrouptoawsecsintegalbfargatepublicprivateswitchPrivateALBFargateServiceSecurityGroup34DD7BA8805A1548BC"
           }
         ],
-        "/TestStack/Service/LB/PublicListener": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/LB/PublicListener": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -419,31 +405,180 @@
             "data": "*"
           }
         ],
-        "/TestStack/Service/LB/PublicListener/Resource": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/LB/PublicListener/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ServiceLBPublicListener46709EAA"
+            "data": "PrivateALBFargateServiceLBPublicListener0B0F0B97"
           }
         ],
-        "/TestStack/Service/LB/PublicListener/ECSPrivateGroup/Resource": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/LB/PublicListener/ECSPrivateGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ServiceLBPublicListenerECSPrivateGroup93D5832E"
+            "data": "PrivateALBFargateServiceLBPublicListenerECSPrivateGroup81AA5B8B"
           }
         ],
-        "/TestStack/Service/LoadBalancerDNS": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/LoadBalancerDNS": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ServiceLoadBalancerDNSEC5B149E"
+            "data": "PrivateALBFargateServiceLoadBalancerDNSF1F04A03"
           }
         ],
-        "/TestStack/Service/ServiceURL": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/ServiceURL": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ServiceServiceURL250C0FB6"
+            "data": "PrivateALBFargateServiceServiceURL977B4D9D"
           }
         ],
-        "/TestStack/Service/Service": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/TaskDef": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/TaskDef/TaskRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/TaskDef/TaskRole/ImportTaskRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateALBFargateServiceTaskDefTaskRole00F16D72"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateALBFargateServiceTaskDef3EEE16CB"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/TaskDef/web/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "retention": "*"
+            }
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/TaskDef/web/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateALBFargateServiceTaskDefwebLogGroupB4E3C449"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/TaskDef/ExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "roleName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/TaskDef/ExecutionRole/ImportExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/TaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateALBFargateServiceTaskDefExecutionRole946533BE"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/TaskDef/ExecutionRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateALBFargateServiceTaskDefExecutionRoleDefaultPolicy97ADB212"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/Service": [
           {
             "type": "aws:cdk:warning",
             "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]"
@@ -453,13 +588,13 @@
             "data": "*"
           }
         ],
-        "/TestStack/Service/Service/Service": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/Service/Service": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Service9571FDD8"
+            "data": "PrivateALBFargateServiceF2248791"
           }
         ],
-        "/TestStack/Service/Service/SecurityGroup": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/Service/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -478,94 +613,382 @@
             }
           }
         ],
-        "/TestStack/Service/Service/SecurityGroup/Resource": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/Service/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ServiceSecurityGroupEEA09B68"
+            "data": "PrivateALBFargateServiceSecurityGroup4470C11F"
           }
         ],
-        "/TestStack/Service/Service/SecurityGroup/from TestStackServiceLBSecurityGroup76260E3B:80": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PrivateALBFargateService/Service/SecurityGroup/from awsecsintegalbfargatepublicprivateswitchPrivateALBFargateServiceLBSecurityGroup7FC4BF92:80": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ServiceSecurityGroupfromTestStackServiceLBSecurityGroup76260E3B8004FB511A"
+            "data": "PrivateALBFargateServiceSecurityGroupfromawsecsintegalbfargatepublicprivateswitchPrivateALBFargateServiceLBSecurityGroup7FC4BF9280EC02C625"
           }
         ],
-        "/TestStack/EcsDefaultClusterMnL3mNNYNVpc": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/LB": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/LB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicALBFargateServiceLBBDD839E7"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/LB/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "description": "*",
+              "allowAllOutbound": false
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                {
+                  "canInlineRule": true,
+                  "connections": "*",
+                  "uniqueId": "*"
+                },
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/LB/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicALBFargateServiceLBSecurityGroup70C230FD"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/LB/SecurityGroup/to awsecsintegalbfargatepublicprivateswitchPublicALBFargateServiceSecurityGroup9D254AE2:80": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicALBFargateServiceLBSecurityGrouptoawsecsintegalbfargatepublicprivateswitchPublicALBFargateServiceSecurityGroup9D254AE28063070DB7"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/LB/PublicListener": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/LB/PublicListener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicALBFargateServiceLBPublicListenerB37A9E4A"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/LB/PublicListener/ECSGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicALBFargateServiceLBPublicListenerECSGroupD991EA00"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/LoadBalancerDNS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicALBFargateServiceLoadBalancerDNSBE85AD64"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/ServiceURL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicALBFargateServiceServiceURL367DF774"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/TaskDef": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/TaskDef/TaskRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/TaskDef/TaskRole/ImportTaskRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicALBFargateServiceTaskDefTaskRole372A6750"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicALBFargateServiceTaskDef11A29312"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/TaskDef/web/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "retention": "*"
+            }
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/TaskDef/web/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicALBFargateServiceTaskDefwebLogGroupA74781A6"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/TaskDef/ExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "roleName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/TaskDef/ExecutionRole/ImportExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/TaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicALBFargateServiceTaskDefExecutionRole1140586F"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/TaskDef/ExecutionRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicALBFargateServiceTaskDefExecutionRoleDefaultPolicy3CC501BF"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/Service": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/Service/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PublicALBFargateServiceCF0E8817"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/Service/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "vpc": "*"
             }
-          }
-        ],
-        "/TestStack/EcsDefaultClusterMnL3mNNYNVpc/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsDefaultClusterMnL3mNNYNVpc18E0451A"
-          }
-        ],
-        "/TestStack/Nlb": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
           }
         ],
-        "/TestStack/Nlb/Resource": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/Service/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "NlbBCDB97FE"
+            "data": "PublicALBFargateServiceSecurityGroup68BF5FCB"
           }
         ],
-        "/TestStack/Nlb/listener": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/TestStack/Nlb/listener/Resource": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/PublicALBFargateService/Service/SecurityGroup/from awsecsintegalbfargatepublicprivateswitchPublicALBFargateServiceLBSecurityGroupB0928942:80": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "NlblistenerBE297616"
+            "data": "PublicALBFargateServiceSecurityGroupfromawsecsintegalbfargatepublicprivateswitchPublicALBFargateServiceLBSecurityGroupB09289428049553A59"
           }
         ],
-        "/TestStack/Nlb/listener/TargetsGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NlblistenerTargetsGroupDD2A3CB0"
-          }
-        ],
-        "/TestStack/NlbEndpoint": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NlbEndpoint"
-          }
-        ],
-        "/TestStack/BootstrapVersion": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/TestStack/CheckBootstrapVersion": [
+        "/aws-ecs-integ-alb-fargate-public-private-switch/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "TestStack"
+      "displayName": "aws-ecs-integ-alb-fargate-public-private-switch"
+    },
+    "ALBFargatePublicPrivateSwitchTestDefaultTestDeployAssertFC4585A1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ALBFargatePublicPrivateSwitchTestDefaultTestDeployAssertFC4585A1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ALBFargatePublicPrivateSwitchTestDefaultTestDeployAssertFC4585A1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ALBFargatePublicPrivateSwitchTestDefaultTestDeployAssertFC4585A1.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ALBFargatePublicPrivateSwitchTestDefaultTestDeployAssertFC4585A1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ALBFargatePublicPrivateSwitchTestDefaultTestDeployAssertFC4585A1.assets"
+      ],
+      "metadata": {
+        "/ALBFargatePublicPrivateSwitchTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ALBFargatePublicPrivateSwitchTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ALBFargatePublicPrivateSwitchTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

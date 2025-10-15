@@ -10,6 +10,7 @@ import * as iam from '../../../aws-iam';
 import * as route53 from '../../../aws-route53';
 import * as cloudmap from '../../../aws-servicediscovery';
 import * as cdk from '../../../core';
+import * as cxapi from '../../../cx-api';
 import * as ecsPatterns from '../../lib';
 
 describe('ApplicationLoadBalancedFargateService', () => {
@@ -2446,6 +2447,158 @@ describe('NetworkLoadBalancedFargateService', () => {
       VpcId: {
         Ref: 'Vpc8378EB38',
       },
+    });
+  });
+
+  test('target group has different logical ID for public vs private load balancer', () => {
+    // GIVEN
+    const stack1 = new cdk.Stack();
+    const stack2 = new cdk.Stack();
+
+    // WHEN - Create public load balancer service
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack1, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      publicLoadBalancer: true,
+    });
+
+    // WHEN - Create private load balancer service
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack2, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      publicLoadBalancer: false,
+    });
+
+    // THEN - Target groups should have different logical IDs
+    const template1 = Template.fromStack(stack1);
+    const template2 = Template.fromStack(stack2);
+
+    // Public load balancer should create target group with 'ECS' suffix
+    template1.hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 80,
+      Protocol: 'HTTP',
+      TargetType: 'ip',
+    });
+
+    // Private load balancer should create target group with 'ECSPrivate' suffix
+    template2.hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 80,
+      Protocol: 'HTTP',
+      TargetType: 'ip',
+    });
+
+    // Verify the logical IDs are different by checking the generated CloudFormation
+    const resources1 = template1.toJSON().Resources;
+    const resources2 = template2.toJSON().Resources;
+
+    const targetGroup1Keys = Object.keys(resources1).filter(key =>
+      resources1[key].Type === 'AWS::ElasticLoadBalancingV2::TargetGroup',
+    );
+    const targetGroup2Keys = Object.keys(resources2).filter(key =>
+      resources2[key].Type === 'AWS::ElasticLoadBalancingV2::TargetGroup',
+    );
+
+    // Should have exactly one target group each
+    expect(targetGroup1Keys).toHaveLength(1);
+    expect(targetGroup2Keys).toHaveLength(1);
+
+    // The logical IDs should be different
+    expect(targetGroup1Keys[0]).not.toEqual(targetGroup2Keys[0]);
+
+    // Public should contain 'ECS' but not 'ECSPrivate'
+    expect(targetGroup1Keys[0]).toContain('ECS');
+    expect(targetGroup1Keys[0]).not.toContain('ECSPrivate');
+
+    // Private should contain 'ECSPrivate'
+    expect(targetGroup2Keys[0]).toContain('ECSPrivate');
+  });
+
+  describe('ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID feature flag', () => {
+    test('with feature flag enabled - generates unique target group IDs', () => {
+      // GIVEN
+      const featureFlag = { [cxapi.ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID]: true };
+      const app = new cdk.App({
+        context: featureFlag,
+      });
+      const stack = new cdk.Stack(app, 'TestStack');
+
+      // WHEN
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'PublicService', {
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        },
+        publicLoadBalancer: true,
+      });
+
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'PrivateService', {
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        },
+        publicLoadBalancer: false,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      const resources = template.toJSON().Resources;
+      const targetGroupKeys = Object.keys(resources).filter(key =>
+        resources[key].Type === 'AWS::ElasticLoadBalancingV2::TargetGroup',
+      );
+
+      // Should have two different target groups
+      expect(targetGroupKeys).toHaveLength(2);
+      expect(targetGroupKeys[0]).not.toEqual(targetGroupKeys[1]);
+    });
+
+    test('with feature flag disabled - uses legacy target group naming', () => {
+      // GIVEN
+      const featureFlag = { [cxapi.ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID]: false };
+      const app = new cdk.App({
+        context: featureFlag,
+      });
+      const stack = new cdk.Stack(app, 'TestStack');
+
+      // WHEN
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        },
+        publicLoadBalancer: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      const resources = template.toJSON().Resources;
+      const targetGroupKeys = Object.keys(resources).filter(key =>
+        resources[key].Type === 'AWS::ElasticLoadBalancingV2::TargetGroup',
+      );
+
+      // Should use legacy naming (contains 'ECS' but not unique identifier)
+      expect(targetGroupKeys).toHaveLength(1);
+      expect(targetGroupKeys[0]).toContain('ECS');
+    });
+
+    test('without feature flag - uses default behavior', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack');
+
+      // WHEN
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        },
+        publicLoadBalancer: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+        Port: 80,
+        Protocol: 'HTTP',
+        TargetType: 'ip',
+      });
     });
   });
 });
