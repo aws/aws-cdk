@@ -507,14 +507,14 @@ You can import existing groups by ARN or name:
 
 ```ts
 // Import by ARN
-const importedGroup = synthetics.Group.fromGroupArn(
+const importedGroupByArn = synthetics.Group.fromGroupArn(
   this,
   'ImportedGroup',
   'arn:aws:synthetics:us-east-1:123456789012:group:my-group'
 );
 
 // Import by name
-const importedGroup = synthetics.Group.fromGroupName(
+const importedGroupByName = synthetics.Group.fromGroupName(
   this,
   'ImportedGroup',
   'my-group'
