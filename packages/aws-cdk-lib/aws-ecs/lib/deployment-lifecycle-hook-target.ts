@@ -97,7 +97,7 @@ export interface DeploymentLifecycleLambdaTargetProps {
    * This field accepts JSON objects only
    *
    * @example
-   * hookDetails: {environment:"production",timeout:300};
+   * {environment:"production",timeout:300};
    *
    * @default - No custom parameters will be passed
    */
