@@ -273,6 +273,28 @@
                   "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                   "version": "0.0.0"
                 }
+              },
+              "invoke-function": {
+                "id": "invoke-function",
+                "path": "Stack1/NoAuthFunctionUrls/invoke-function",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "NoAuthFunctionUrls65ABC157",
+                        "Arn"
+                      ]
+                    },
+                    "invokedViaFunctionUrl": true,
+                    "principal": "*"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -432,6 +454,28 @@
                   "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                   "version": "0.0.0"
                 }
+              },
+              "invoke-function": {
+                "id": "invoke-function",
+                "path": "Stack1/CorsFunctionUrls/invoke-function",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "CorsFunctionUrlsD81CF424",
+                        "Arn"
+                      ]
+                    },
+                    "invokedViaFunctionUrl": true,
+                    "principal": "*"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -584,6 +628,28 @@
                   "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                   "version": "0.0.0"
                 }
+              },
+              "invoke-function": {
+                "id": "invoke-function",
+                "path": "Stack1/StreamFunctionUrls/invoke-function",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "StreamFunctionUrlsAAB55C9C",
+                        "Arn"
+                      ]
+                    },
+                    "invokedViaFunctionUrl": true,
+                    "principal": "*"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -634,7 +700,7 @@
                 "path": "IntegTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.4.2"
                 }
               },
               "DeployAssert": {
@@ -680,7 +746,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.4.2"
         }
       }
     },
