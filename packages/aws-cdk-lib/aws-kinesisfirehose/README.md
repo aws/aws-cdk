@@ -194,7 +194,7 @@ Example of a custom Parquet OutputFormat, with all values changed from the defau
 ```ts
 const outputFormat = new firehose.ParquetOutputFormat({
   blockSize: Size.mebibytes(512),
-  compression: firehose.Compression.UNCOMPRESSED,
+  compression: firehose.ParquetCompression.UNCOMPRESSED,
   enableDictionaryCompression: true,
   maxPadding: Size.bytes(10),
   pageSize: Size.mebibytes(2),
@@ -210,7 +210,7 @@ Example creation of custom ORC OutputFormat, with all values changed from the de
 const outputFormat = new firehose.OrcOutputFormat({
   formatVersion: firehose.OrcFormatVersion.V0_11,
   blockSize: Size.mebibytes(256),
-  compression: firehose.Compression.UNCOMPRESSED,
+  compression: firehose.OrcCompression.NONE,
   bloomFilterColumns: ['columnA'],
   bloomFilterFalsePositiveProbability: 0.1,
   dictionaryKeyThreshold: 0.7,
