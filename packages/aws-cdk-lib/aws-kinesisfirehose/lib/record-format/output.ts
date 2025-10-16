@@ -131,7 +131,6 @@ export interface ParquetOutputFormatProps {
  * You should only need to specify an instance of this class if the default configuration does not suit your needs.
  */
 export class ParquetOutputFormat implements IOutputFormat {
-
   /**
    * Properties for the Parquet output format
    */
