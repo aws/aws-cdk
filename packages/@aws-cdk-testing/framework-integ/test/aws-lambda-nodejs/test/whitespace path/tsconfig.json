@@ -8,7 +8,7 @@
     "experimentalDecorators": true,
     "incremental": true,
     "lib": [
-      "es2020",
+      "es2022",
       "dom"
     ],
     "module": "CommonJS",
@@ -26,7 +26,7 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "stripInternal": false,
-    "target": "ES2020",
+    "target": "ES2022",
     "composite": true,
     "tsBuildInfoFile": "tsconfig.tsbuildinfo"
   },

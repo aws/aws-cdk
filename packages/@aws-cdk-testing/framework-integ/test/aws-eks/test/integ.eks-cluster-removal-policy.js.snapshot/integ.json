@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "eks-cluster-removal-policy-integ/DefaultTest": {
+      "stacks": [
+        "EksClusterRemovalPolicyStack"
+      ],
+      "diffAssets": false,
+      "assertionStack": "eks-cluster-removal-policy-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "eksclusterremovalpolicyintegDefaultTestDeployAssertC54E19AC"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

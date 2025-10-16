@@ -325,3 +325,16 @@ test('throws without authentication options', () => {
     serverCertificateArn: 'server-certificate-arn',
   })).toThrow(/A client VPN endpoint must use at least one authentication option/);
 });
+
+test.each([true, false])('client vpn endpoint with disconnectOnSessionTimeout set to %p', (disconnectOnSessionTimeout) => {
+  vpc.addClientVpnEndpoint('Endpoint', {
+    cidr: '10.100.0.0/16',
+    serverCertificateArn: 'server-certificate-arn',
+    clientCertificateArn: 'client-certificate-arn',
+    disconnectOnSessionTimeout,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnEndpoint', {
+    DisconnectOnSessionTimeout: disconnectOnSessionTimeout,
+  });
+});
