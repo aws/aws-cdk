@@ -3,7 +3,7 @@
   "testCases": {
     "RecordFormatConversionTest/DefaultTest": {
       "stacks": [
-        "FirehoseDeliveryStreamRecordFormatConversion"
+        "RecordFormatConversion"
       ],
       "assertionStack": "RecordFormatConversionTest/DefaultTest/DeployAssert",
       "assertionStackName": "RecordFormatConversionTestDefaultTestDeployAssertB0D79510"

@@ -9,7 +9,7 @@ export interface IInputFormat {
   /**
    * Renders the cloudformation properties for the input format.
    */
-  render(): CfnDeliveryStream.InputFormatConfigurationProperty;
+  createInputFormatConfig(): CfnDeliveryStream.InputFormatConfigurationProperty;
 }
 
 /**
@@ -67,7 +67,7 @@ export class OpenXJsonInputFormat implements IInputFormat {
     } : {};
   }
 
-  public render(): CfnDeliveryStream.InputFormatConfigurationProperty {
+  public createInputFormatConfig(): CfnDeliveryStream.InputFormatConfigurationProperty {
     return {
       deserializer: {
         openXJsonSerDe: this.createOpenXJsonSerde(),
@@ -156,7 +156,7 @@ export class HiveJsonInputFormat implements IInputFormat {
     } : {};
   }
 
-  public render(): CfnDeliveryStream.InputFormatConfigurationProperty {
+  public createInputFormatConfig(): CfnDeliveryStream.InputFormatConfigurationProperty {
     return {
       deserializer: {
         hiveJsonSerDe: this.createHiveJsonSerde(),

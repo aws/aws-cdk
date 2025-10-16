@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { BackupMode, CommonDestinationProps, CommonDestinationS3Props } from './common';
 import { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
-import { Schema, IInputFormat, IOutputFormat } from './record-format';
+import { IInputFormat, IOutputFormat, SchemaConfiguration } from './record-format';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
@@ -32,7 +32,7 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
   readonly timeZone?: cdk.TimeZone;
 
   /**
-   * The input format, output format, and schema for converting data from the JSON format to the Parquet or ORC format before writing it to Amazon S3.
+   * The input format, output format, and schema config for converting data from the JSON format to the Parquet or ORC format before writing to Amazon S3.
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-extendeds3destinationconfiguration.html#cfn-kinesisfirehose-deliverystream-extendeds3destinationconfiguration-dataformatconversionconfiguration
    *
    * @default no data format conversion is done
@@ -47,9 +47,16 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
 export interface DataFormatConversionProps {
 
   /**
-   * The schema to use in converting the input format to output format
+   * Whether data format conversion is enabled or not.
+   *
+   * @default `true`
    */
-  readonly schema: Schema;
+  readonly enabled?: boolean;
+
+  /**
+   * The schema configuration to use in converting the input format to output format
+   */
+  readonly schemaConfiguration: SchemaConfiguration;
 
   /**
    * The input format to convert from for record format conversion
@@ -104,10 +111,10 @@ export class S3Bucket implements IDestination {
     const dataFormatConfig = this.props.dataFormatConversion;
 
     const dataFormatConversionConfiguration = dataFormatConfig ? {
-      enabled: true,
-      schemaConfiguration: dataFormatConfig.schema.bind(scope, { role: role }),
-      inputFormatConfiguration: dataFormatConfig.inputFormat.render(),
-      outputFormatConfiguration: dataFormatConfig.outputFormat.render(),
+      enabled: dataFormatConfig.enabled ?? true,
+      schemaConfiguration: dataFormatConfig.schemaConfiguration.bind(scope, { role: role }),
+      inputFormatConfiguration: dataFormatConfig.inputFormat.createInputFormatConfig(),
+      outputFormatConfiguration: dataFormatConfig.outputFormat.createOutputFormatConfig(),
     } : undefined;
 
     return {
@@ -117,7 +124,7 @@ export class S3Bucket implements IDestination {
         roleArn: role.roleArn,
         s3BackupConfiguration: backupConfig,
         s3BackupMode: this.getS3BackupMode(),
-        bufferingHints: createBufferingHints(scope, this.props.bufferingInterval, this.props.bufferingSize, this.props.dataFormatConversion),
+        bufferingHints: createBufferingHints(scope, this.props.bufferingInterval, this.props.bufferingSize, dataFormatConversionConfiguration),
         bucketArn: this.bucket.bucketArn,
         dataFormatConversionConfiguration: dataFormatConversionConfiguration,
         compressionFormat: this.props.compression?.value,

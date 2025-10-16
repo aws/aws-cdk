@@ -2,7 +2,7 @@
   "version": "48.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
-      "displayName": "FirehoseDeliveryStreamRecordFormatConversion/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "displayName": "RecordFormatConversion/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
       "source": {
         "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
         "packaging": "zip"
@@ -15,16 +15,16 @@
         }
       }
     },
-    "32647784ec4b285e352bb19ffc9cf45342a2c861a31f3e272bf63b3aa75baf66": {
-      "displayName": "FirehoseDeliveryStreamRecordFormatConversion Template",
+    "f0234b89b3f847dfc785af4e9f90145279c8ce295848b79b07f31ba0ea2ff58f": {
+      "displayName": "RecordFormatConversion Template",
       "source": {
-        "path": "FirehoseDeliveryStreamRecordFormatConversion.template.json",
+        "path": "RecordFormatConversion.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-f1ffe866": {
+        "current_account-current_region-b04a2b6c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "32647784ec4b285e352bb19ffc9cf45342a2c861a31f3e272bf63b3aa75baf66.json",
+          "objectKey": "f0234b89b3f847dfc785af4e9f90145279c8ce295848b79b07f31ba0ea2ff58f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

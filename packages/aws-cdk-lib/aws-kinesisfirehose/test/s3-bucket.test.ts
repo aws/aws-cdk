@@ -702,7 +702,7 @@ describe('S3 destination', () => {
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
         destination: new firehose.S3Bucket(bucket, {
           dataFormatConversion: {
-            schema: firehose.Schema.fromCfnTable(table),
+            schemaConfiguration: firehose.SchemaConfiguration.fromCfnTable(table),
             inputFormat: firehose.InputFormat.OPENX_JSON,
             outputFormat: firehose.OutputFormat.PARQUET,
           },
@@ -727,7 +727,7 @@ describe('S3 destination', () => {
           destination: new firehose.S3Bucket(bucket, {
             compression: firehose.Compression.SNAPPY,
             dataFormatConversion: {
-              schema: firehose.Schema.fromCfnTable(table),
+              schemaConfiguration: firehose.SchemaConfiguration.fromCfnTable(table),
               inputFormat: firehose.InputFormat.OPENX_JSON,
               outputFormat: firehose.OutputFormat.ORC,
             },
@@ -742,13 +742,41 @@ describe('S3 destination', () => {
           destination: new firehose.S3Bucket(bucket, {
             bufferingSize: cdk.Size.mebibytes(63),
             dataFormatConversion: {
-              schema: firehose.Schema.fromCfnTable(table),
+              schemaConfiguration: firehose.SchemaConfiguration.fromCfnTable(table),
               inputFormat: firehose.InputFormat.OPENX_JSON,
               outputFormat: firehose.OutputFormat.ORC,
             },
           }),
         });
       }).toThrow(cdk.ValidationError);
+    });
+
+    it('default buffer size is set to 128 MiB', () => {
+      new firehose.DeliveryStream(stack, 'Delivery Stream', {
+        destination: new firehose.S3Bucket(bucket, {
+          bufferingInterval: cdk.Duration.seconds(5),
+          dataFormatConversion: {
+            schemaConfiguration: firehose.SchemaConfiguration.fromCfnTable(table),
+            inputFormat: firehose.InputFormat.OPENX_JSON,
+            outputFormat: firehose.OutputFormat.ORC,
+          },
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          BufferingHints: {
+            IntervalInSeconds: 5,
+            SizeInMBs: 128,
+          },
+          DataFormatConversionConfiguration: {
+            Enabled: true,
+            SchemaConfiguration: {},
+            InputFormatConfiguration: {},
+            OutputFormatConfiguration: {},
+          },
+        },
+      });
     });
   });
 });

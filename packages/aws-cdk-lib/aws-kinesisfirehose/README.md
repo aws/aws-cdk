@@ -140,12 +140,15 @@ declare const bucket: s3.Bucket;
 declare const schemaGlueTable: glue.CfnTable;
 const s3Destination = new firehose.S3Bucket(bucket, {
   dataFormatConversion: {
-    schema: firehose.Schema.fromCfnTable(schemaGlueTable),
+    schemaConfiguration: firehose.SchemaConfiguration.fromCfnTable(schemaGlueTable),
     inputFormat: firehose.InputFormat.OPENX_JSON,
     outputFormat: firehose.OutputFormat.PARQUET,
   }
 });
 ```
+
+When data format conversion is enabled, the Delivery Stream's buffering size must be at least 64 MiB. 
+Additionally, the default buffering size is changed from 5 MiB to 128 MiB. This mirrors the Cloudformation behavior.
 
 You can only parse JSON and transform it into either Parquet or ORC:
 - to read JSON using OpenX parser, choose `InputFormat.OPENX_JSON`.

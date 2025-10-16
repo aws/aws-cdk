@@ -5,59 +5,12 @@ import * as cdk from '../../../core';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
 
 /**
- * Options for creating a Schema to use in record format conversion
+ * Options when binding a SchemaConfig to a Destination
  */
-export interface SchemaConfiguration {
+export interface SchemaConfigurationBindOptions {
 
   /**
-   * Specifies the name of the AWS Glue database that contains the schema for the output data.
-   *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-schemaconfiguration.html#cfn-kinesisfirehose-deliverystream-schemaconfiguration-databasename
-   */
-  readonly databaseName: string;
-
-  /**
-   * The name of the AWS Glue table that contains the column information that constitutes your data schema.
-   *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-schemaconfiguration.html#cfn-kinesisfirehose-deliverystream-schemaconfiguration-tablename
-   */
-  readonly tableName: string;
-
-  /**
-   * The ID of the AWS Glue Data Catalog.
-   *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-schemaconfiguration.html#cfn-kinesisfirehose-deliverystream-schemaconfiguration-catalogid
-   * @default the AWS account ID of the Firehose
-   */
-  readonly catalogId?: string;
-
-  /**
-   * If you don't specify an AWS Region, the default is the current Region.
-   *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-schemaconfiguration.html#cfn-kinesisfirehose-deliverystream-schemaconfiguration-region
-   *
-   * @default current region of the Firehose
-   */
-  readonly databaseRegion?: string;
-
-  /**
-   * Specifies the table version for the output data schema.
-   *
-   * if set to `LATEST`, Firehose uses the most recent table version. This means that any updates to the table are automatically picked up.
-   *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-schemaconfiguration.html#cfn-kinesisfirehose-deliverystream-schemaconfiguration-versionid
-   * @default `LATEST`
-   */
-  readonly versionId?: string;
-}
-
-/**
- * Options when binding a Schema to a Destination
- */
-export interface SchemaBindOptions {
-
-  /**
-   * The IAM Role to grant permissions to read the glue table schema to
+   * The IAM Role that will be used by the Delivery Stream for access to the Glue data catalog for record format conversion.
    */
   readonly role: iam.IRole;
 }
@@ -65,7 +18,7 @@ export interface SchemaBindOptions {
 /**
  * Options for creating a Schema for record format conversion from a `glue.CfnTable`
  */
-export interface SchemaFromCfnTableProps {
+export interface SchemaConfigurationFromCfnTableProps {
 
   /**
    * Specifies the table version for the output data schema.
@@ -78,7 +31,7 @@ export interface SchemaFromCfnTableProps {
   readonly versionId?: string;
 
   /**
-   * The region of the database.
+   * The region of the database the table is in.
    *
    * @default the region of the stack that contains the table reference is used
    */
@@ -86,68 +39,63 @@ export interface SchemaFromCfnTableProps {
 }
 
 /**
- * Represents a schema for Firehose S3 data record format conversion.
+ * Represents a schema configuration for Firehose S3 data record format conversion.
  *
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-dataformatconversionconfiguration.html#cfn-kinesisfirehose-deliverystream-dataformatconversionconfiguration-schemaconfiguration
  */
-export class Schema {
+export class SchemaConfiguration {
   /**
-   * Obtain schema for data record format conversion from an `aws_glue.CfnTable`
+   * Obtain schema configuration for data record format conversion from an `aws_glue.CfnTable`
    */
-  static fromCfnTable(table: glue.CfnTable, props?: SchemaFromCfnTableProps) {
+  public static fromCfnTable(table: glue.CfnTable, props?: SchemaConfigurationFromCfnTableProps) {
     const stack = cdk.Stack.of(table);
-    return new Schema({
-      tableName: table.ref,
-      databaseName: table.databaseName,
-      databaseRegion: props?.region ?? stack.region,
-      catalogId: table.catalogId,
-      versionId: props?.versionId ?? 'LATEST',
-    });
+    return new SchemaConfiguration(
+      table.databaseName,
+      table.ref,
+      table.catalogId,
+      props?.region ?? stack.region,
+      props?.versionId ?? 'LATEST',
+    );
   }
 
-  // Once Glue L2 constructs are stable, we can do something like the following to support it
-  // static fromTable(table: glue.Table) {}
-
-  /**
-   * Configuration for creation of a Schema.
-   */
-  readonly config: SchemaConfiguration;
-
-  public constructor(config: SchemaConfiguration) {
-    this.config = config;
-  }
+  private constructor(
+    private readonly databaseName: string,
+    private readonly tableName: string,
+    private readonly catalogId: string,
+    private readonly databaseRegion: string,
+    private readonly versionId: string,
+  ) {}
 
   /**
    * Binds this Schema to the Destination, adding the necessary permissions to the Destination role.
    */
   public bind(
     scope: Construct,
-    options: SchemaBindOptions,
+    options: SchemaConfigurationBindOptions,
   ): CfnDeliveryStream.SchemaConfigurationProperty {
     const stack = cdk.Stack.of(scope);
-    const region = this.config.databaseRegion ?? stack.region;
 
     const catalogArn = stack.formatArn({
       service: 'glue',
       resource: 'catalog',
-      region: region,
-      account: this.config.catalogId,
+      region: this.databaseRegion,
+      account: this.catalogId,
     });
 
     const databaseArn = stack.formatArn({
       service: 'glue',
       resource: 'database',
-      resourceName: this.config.databaseName,
-      region: region,
-      account: this.config.catalogId,
+      resourceName: this.databaseName,
+      region: this.databaseRegion,
+      account: this.catalogId,
     });
 
     const tableArn = stack.formatArn({
       service: 'glue',
       resource: 'table',
-      resourceName: `${this.config.databaseName}/${this.config.tableName}`,
-      region: region,
-      account: this.config.catalogId,
+      resourceName: `${this.databaseName}/${this.tableName}`,
+      region: this.databaseRegion,
+      account: this.catalogId,
     });
 
     iam.Grant.addToPrincipal({
@@ -164,11 +112,11 @@ export class Schema {
 
     return {
       roleArn: options.role.roleArn,
-      region: region,
-      tableName: this.config.tableName,
-      databaseName: this.config.databaseName,
-      versionId: this.config.versionId,
-      catalogId: this.config.catalogId,
+      region: this.databaseRegion,
+      tableName: this.tableName,
+      databaseName: this.databaseName,
+      versionId: this.versionId,
+      catalogId: this.catalogId,
     };
   }
 }

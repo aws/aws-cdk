@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "FirehoseDeliveryStreamRecordFormatConversion.assets": {
+    "RecordFormatConversion.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "FirehoseDeliveryStreamRecordFormatConversion.assets.json",
+        "file": "RecordFormatConversion.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "FirehoseDeliveryStreamRecordFormatConversion": {
+    "RecordFormatConversion": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "FirehoseDeliveryStreamRecordFormatConversion.template.json",
+        "templateFile": "RecordFormatConversion.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/32647784ec4b285e352bb19ffc9cf45342a2c861a31f3e272bf63b3aa75baf66.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f0234b89b3f847dfc785af4e9f90145279c8ce295848b79b07f31ba0ea2ff58f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "FirehoseDeliveryStreamRecordFormatConversion.assets"
+          "RecordFormatConversion.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,88 +31,88 @@
         }
       },
       "dependencies": [
-        "FirehoseDeliveryStreamRecordFormatConversion.assets"
+        "RecordFormatConversion.assets"
       ],
       "metadata": {
-        "/FirehoseDeliveryStreamRecordFormatConversion/Database": [
+        "/RecordFormatConversion/Database": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Database"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/SchemaTable": [
+        "/RecordFormatConversion/SchemaTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SchemaTable"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/Bucket": [
+        "/RecordFormatConversion/Bucket": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/Bucket/Resource": [
+        "/RecordFormatConversion/Bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Bucket83908E77"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/Bucket/Policy": [
+        "/RecordFormatConversion/Bucket/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/Bucket/Policy/Resource": [
+        "/RecordFormatConversion/Bucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketPolicyE9A3008A"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/Bucket/AutoDeleteObjectsCustomResource": [
+        "/RecordFormatConversion/Bucket/AutoDeleteObjectsCustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/Bucket/AutoDeleteObjectsCustomResource/Default": [
+        "/RecordFormatConversion/Bucket/AutoDeleteObjectsCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/LatestNodeRuntimeMap": [
+        "/RecordFormatConversion/LatestNodeRuntimeMap": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+        "/RecordFormatConversion/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
           {
             "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
             "data": true
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+        "/RecordFormatConversion/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+        "/RecordFormatConversion/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream1": [
+        "/RecordFormatConversion/CustomHiveJson": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream1/S3 Destination Role": [
+        "/RecordFormatConversion/CustomHiveJson/S3 Destination Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -142,19 +142,19 @@
             "data": "*"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream1/S3 Destination Role/ImportS3 Destination Role": [
+        "/RecordFormatConversion/CustomHiveJson/S3 Destination Role/ImportS3 Destination Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream1/S3 Destination Role/Resource": [
+        "/RecordFormatConversion/CustomHiveJson/S3 Destination Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStream1S3DestinationRole2BD1BB63"
+            "data": "CustomHiveJsonS3DestinationRole9C57602D"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream1/S3 Destination Role/DefaultPolicy": [
+        "/RecordFormatConversion/CustomHiveJson/S3 Destination Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -184,97 +184,55 @@
             "data": "*"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream1/S3 Destination Role/DefaultPolicy/Resource": [
+        "/RecordFormatConversion/CustomHiveJson/S3 Destination Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStream1S3DestinationRoleDefaultPolicy2DA8067A"
+            "data": "CustomHiveJsonS3DestinationRoleDefaultPolicyACED2367"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream1/LogGroup": [
+        "/RecordFormatConversion/CustomHiveJson/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream1/LogGroup/Resource": [
+        "/RecordFormatConversion/CustomHiveJson/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStream1LogGroupBAEE197A"
+            "data": "CustomHiveJsonLogGroupB373D61F"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream1/LogGroup/S3Destination": [
+        "/RecordFormatConversion/CustomHiveJson/LogGroup/S3Destination": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream1/LogGroup/S3Destination/Resource": [
+        "/RecordFormatConversion/CustomHiveJson/LogGroup/S3Destination/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStream1LogGroupS3Destination717B3698"
+            "data": "CustomHiveJsonLogGroupS3DestinationD213FD89"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream1/Resource": [
+        "/RecordFormatConversion/CustomHiveJson/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStream1D45D4D6F"
+            "data": "CustomHiveJsonEF2911B4"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
+        "/RecordFormatConversion/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkawskinesisfirehoseCidrBlocks"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream2": [
+        "/RecordFormatConversion/CustomOpenXJson": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream2/S3 Destination Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream2/S3 Destination Role/ImportS3 Destination Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream2/S3 Destination Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStream2S3DestinationRole9EF5D926"
-          }
-        ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream2/S3 Destination Role/DefaultPolicy": [
+        "/RecordFormatConversion/CustomOpenXJson/S3 Destination Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -304,49 +262,19 @@
             "data": "*"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream2/S3 Destination Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStream2S3DestinationRoleDefaultPolicy27CAF5A9"
-          }
-        ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream2/LogGroup": [
+        "/RecordFormatConversion/CustomOpenXJson/S3 Destination Role/ImportS3 Destination Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream2/LogGroup/Resource": [
+        "/RecordFormatConversion/CustomOpenXJson/S3 Destination Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStream2LogGroup3F1E1B76"
+            "data": "CustomOpenXJsonS3DestinationRole07AAE423"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream2/LogGroup/S3Destination": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream2/LogGroup/S3Destination/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStream2LogGroupS3Destination2C183EBB"
-          }
-        ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStream2372815F1"
-          }
-        ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream3": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream3/S3 Destination Role": [
+        "/RecordFormatConversion/CustomOpenXJson/S3 Destination Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -376,19 +304,49 @@
             "data": "*"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream3/S3 Destination Role/ImportS3 Destination Role": [
+        "/RecordFormatConversion/CustomOpenXJson/S3 Destination Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomOpenXJsonS3DestinationRoleDefaultPolicy83F691AA"
+          }
+        ],
+        "/RecordFormatConversion/CustomOpenXJson/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream3/S3 Destination Role/Resource": [
+        "/RecordFormatConversion/CustomOpenXJson/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStream3S3DestinationRoleE1995CFB"
+            "data": "CustomOpenXJsonLogGroup22FF7B23"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream3/S3 Destination Role/DefaultPolicy": [
+        "/RecordFormatConversion/CustomOpenXJson/LogGroup/S3Destination": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/CustomOpenXJson/LogGroup/S3Destination/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomOpenXJsonLogGroupS3Destination672CF942"
+          }
+        ],
+        "/RecordFormatConversion/CustomOpenXJson/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomOpenXJsonEA227FEF"
+          }
+        ],
+        "/RecordFormatConversion/CustomOrc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/CustomOrc/S3 Destination Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -418,86 +376,488 @@
             "data": "*"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream3/S3 Destination Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStream3S3DestinationRoleDefaultPolicyE613F4C4"
-          }
-        ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream3/LogGroup": [
+        "/RecordFormatConversion/CustomOrc/S3 Destination Role/ImportS3 Destination Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream3/LogGroup/Resource": [
+        "/RecordFormatConversion/CustomOrc/S3 Destination Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStream3LogGroupCB6BEA94"
+            "data": "CustomOrcS3DestinationRoleE1E7001A"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream3/LogGroup/S3Destination": [
+        "/RecordFormatConversion/CustomOrc/S3 Destination Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/CustomOrc/S3 Destination Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomOrcS3DestinationRoleDefaultPolicy5A89ECB3"
+          }
+        ],
+        "/RecordFormatConversion/CustomOrc/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream3/LogGroup/S3Destination/Resource": [
+        "/RecordFormatConversion/CustomOrc/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStream3LogGroupS3DestinationBE909086"
+            "data": "CustomOrcLogGroup0ECA964A"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/DeliveryStream3/Resource": [
+        "/RecordFormatConversion/CustomOrc/LogGroup/S3Destination": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/CustomOrc/LogGroup/S3Destination/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryStream323271777"
+            "data": "CustomOrcLogGroupS3DestinationD3E81901"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/Exports/Output{\"Ref\":\"DeliveryStream1D45D4D6F\"}": [
+        "/RecordFormatConversion/CustomOrc/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefDeliveryStream1D45D4D6F4B48332A"
+            "data": "CustomOrc77119986"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/Exports/Output{\"Ref\":\"DeliveryStream2372815F1\"}": [
+        "/RecordFormatConversion/CustomParquet": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/CustomParquet/S3 Destination Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/CustomParquet/S3 Destination Role/ImportS3 Destination Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/CustomParquet/S3 Destination Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefDeliveryStream2372815F1621A5CAB"
+            "data": "CustomParquetS3DestinationRole22BF6D43"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/Exports/Output{\"Ref\":\"DeliveryStream323271777\"}": [
+        "/RecordFormatConversion/CustomParquet/S3 Destination Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/CustomParquet/S3 Destination Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefDeliveryStream32327177777D431B1"
+            "data": "CustomParquetS3DestinationRoleDefaultPolicyC988AB56"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/Exports/Output{\"Ref\":\"Bucket83908E77\"}": [
+        "/RecordFormatConversion/CustomParquet/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/CustomParquet/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomParquetLogGroup676E9A45"
+          }
+        ],
+        "/RecordFormatConversion/CustomParquet/LogGroup/S3Destination": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/CustomParquet/LogGroup/S3Destination/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomParquetLogGroupS3Destination57EC9E48"
+          }
+        ],
+        "/RecordFormatConversion/CustomParquet/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomParquet17BE2343"
+          }
+        ],
+        "/RecordFormatConversion/DefaultHiveJsonOrc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/DefaultHiveJsonOrc/S3 Destination Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/DefaultHiveJsonOrc/S3 Destination Role/ImportS3 Destination Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/DefaultHiveJsonOrc/S3 Destination Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultHiveJsonOrcS3DestinationRole0A77EF4A"
+          }
+        ],
+        "/RecordFormatConversion/DefaultHiveJsonOrc/S3 Destination Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/DefaultHiveJsonOrc/S3 Destination Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultHiveJsonOrcS3DestinationRoleDefaultPolicy3385F735"
+          }
+        ],
+        "/RecordFormatConversion/DefaultHiveJsonOrc/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/DefaultHiveJsonOrc/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultHiveJsonOrcLogGroupE45B2BEC"
+          }
+        ],
+        "/RecordFormatConversion/DefaultHiveJsonOrc/LogGroup/S3Destination": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/DefaultHiveJsonOrc/LogGroup/S3Destination/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultHiveJsonOrcLogGroupS3Destination51B88CDA"
+          }
+        ],
+        "/RecordFormatConversion/DefaultHiveJsonOrc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultHiveJsonOrc16EE3C90"
+          }
+        ],
+        "/RecordFormatConversion/DefaultOpenXJsonParquet": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/DefaultOpenXJsonParquet/S3 Destination Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/DefaultOpenXJsonParquet/S3 Destination Role/ImportS3 Destination Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/DefaultOpenXJsonParquet/S3 Destination Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultOpenXJsonParquetS3DestinationRole11E1A1BD"
+          }
+        ],
+        "/RecordFormatConversion/DefaultOpenXJsonParquet/S3 Destination Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/DefaultOpenXJsonParquet/S3 Destination Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultOpenXJsonParquetS3DestinationRoleDefaultPolicy87714BCD"
+          }
+        ],
+        "/RecordFormatConversion/DefaultOpenXJsonParquet/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/DefaultOpenXJsonParquet/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultOpenXJsonParquetLogGroupEBB4026F"
+          }
+        ],
+        "/RecordFormatConversion/DefaultOpenXJsonParquet/LogGroup/S3Destination": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversion/DefaultOpenXJsonParquet/LogGroup/S3Destination/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultOpenXJsonParquetLogGroupS3Destination368F89E9"
+          }
+        ],
+        "/RecordFormatConversion/DefaultOpenXJsonParquet/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultOpenXJsonParquetEB3F4442"
+          }
+        ],
+        "/RecordFormatConversion/Exports/Output{\"Ref\":\"CustomHiveJsonEF2911B4\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefCustomHiveJsonEF2911B48EFEE2C6"
+          }
+        ],
+        "/RecordFormatConversion/Exports/Output{\"Ref\":\"CustomOpenXJsonEA227FEF\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefCustomOpenXJsonEA227FEF3789EDDA"
+          }
+        ],
+        "/RecordFormatConversion/Exports/Output{\"Ref\":\"CustomOrc77119986\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefCustomOrc771199861FB3EAC4"
+          }
+        ],
+        "/RecordFormatConversion/Exports/Output{\"Ref\":\"CustomParquet17BE2343\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefCustomParquet17BE234326AD3637"
+          }
+        ],
+        "/RecordFormatConversion/Exports/Output{\"Ref\":\"DefaultHiveJsonOrc16EE3C90\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefDefaultHiveJsonOrc16EE3C9068BF05B1"
+          }
+        ],
+        "/RecordFormatConversion/Exports/Output{\"Ref\":\"DefaultOpenXJsonParquetEB3F4442\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefDefaultOpenXJsonParquetEB3F4442D7D23EB5"
+          }
+        ],
+        "/RecordFormatConversion/Exports/Output{\"Ref\":\"Bucket83908E77\"}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputRefBucket83908E7781C90AC0"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/Exports/Output{\"Fn::GetAtt\":[\"Bucket83908E77\",\"Arn\"]}": [
+        "/RecordFormatConversion/Exports/Output{\"Fn::GetAtt\":[\"Bucket83908E77\",\"Arn\"]}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputFnGetAttBucket83908E77Arn063C8555"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/BootstrapVersion": [
+        "/RecordFormatConversion/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/FirehoseDeliveryStreamRecordFormatConversion/CheckBootstrapVersion": [
+        "/RecordFormatConversion/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "FirehoseDeliveryStreamRecordFormatConversion"
+      "displayName": "RecordFormatConversion"
     },
     "RecordFormatConversionTestDefaultTestDeployAssertB0D79510.assets": {
       "type": "cdk:asset-manifest",
@@ -516,7 +876,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e8817cc34af14753f82532ab30b4e549a2dc2a2ffd67434b5eb57704f6237a86.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/067d6a75936d4b68df63fd131b326fe3c95cdc0804dbd2dd19c3a84105c60e8d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -529,20 +889,34 @@
         }
       },
       "dependencies": [
-        "FirehoseDeliveryStreamRecordFormatConversion",
+        "RecordFormatConversion",
         "RecordFormatConversionTestDefaultTestDeployAssertB0D79510.assets"
       ],
       "metadata": {
-        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord5cc1f581ba4ddad32ee5ecf036a387c2/Default": [
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehosedescribeDeliveryStream1f633a3cab72011e76e59275f2cbb595/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
-        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord5cc1f581ba4ddad32ee5ecf036a387c2/Default/Default": [
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehosedescribeDeliveryStream1f633a3cab72011e76e59275f2cbb595/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallFirehoseputRecord5cc1f581ba4ddad32ee5ecf036a387c2"
+            "data": "AwsApiCallFirehosedescribeDeliveryStream1f633a3cab72011e76e59275f2cbb595"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehosedescribeDeliveryStream1f633a3cab72011e76e59275f2cbb595/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallFirehosedescribeDeliveryStream1f633a3cab72011e76e59275f2cbb595"
           }
         ],
         "/RecordFormatConversionTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -563,28 +937,206 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord129136de82dcc03d12307ae5157bf9e8/Default": [
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord129136de82dcc03d12307ae5157bf9e8/Default/Default": [
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallFirehoseputRecord129136de82dcc03d12307ae5157bf9e8"
+            "data": "AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723"
           }
         ],
-        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecorde58094d5d7fc9fe76acc13ad684ed9f5/Default": [
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehosedescribeDeliveryStream429b2496ec1bb3c217e799457b01c838/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehosedescribeDeliveryStream429b2496ec1bb3c217e799457b01c838/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallFirehosedescribeDeliveryStream429b2496ec1bb3c217e799457b01c838"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehosedescribeDeliveryStream429b2496ec1bb3c217e799457b01c838/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallFirehosedescribeDeliveryStream429b2496ec1bb3c217e799457b01c838"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecorde58094d5d7fc9fe76acc13ad684ed9f5/Default/Default": [
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallFirehoseputRecorde58094d5d7fc9fe76acc13ad684ed9f5"
+            "data": "AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehosedescribeDeliveryStream80ff3183e5eb6b5c7dadb7fc094e741d/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehosedescribeDeliveryStream80ff3183e5eb6b5c7dadb7fc094e741d/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallFirehosedescribeDeliveryStream80ff3183e5eb6b5c7dadb7fc094e741d"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehosedescribeDeliveryStream80ff3183e5eb6b5c7dadb7fc094e741d/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallFirehosedescribeDeliveryStream80ff3183e5eb6b5c7dadb7fc094e741d"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehosedescribeDeliveryStream77751255b283a1ea1a4bd3c711269900/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehosedescribeDeliveryStream77751255b283a1ea1a4bd3c711269900/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallFirehosedescribeDeliveryStream77751255b283a1ea1a4bd3c711269900"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehosedescribeDeliveryStream77751255b283a1ea1a4bd3c711269900/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallFirehosedescribeDeliveryStream77751255b283a1ea1a4bd3c711269900"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehosedescribeDeliveryStreamb0d4cd9ba478423252d4278aa95b0414/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehosedescribeDeliveryStreamb0d4cd9ba478423252d4278aa95b0414/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallFirehosedescribeDeliveryStreamb0d4cd9ba478423252d4278aa95b0414"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehosedescribeDeliveryStreamb0d4cd9ba478423252d4278aa95b0414/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallFirehosedescribeDeliveryStreamb0d4cd9ba478423252d4278aa95b0414"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord7d0453eb6f4a193758747fd8ef3cfb72/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord7d0453eb6f4a193758747fd8ef3cfb72/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallFirehoseputRecord7d0453eb6f4a193758747fd8ef3cfb72"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehosedescribeDeliveryStreamc49aeb8fbb93c449cb71bf766f7246b7/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehosedescribeDeliveryStreamc49aeb8fbb93c449cb71bf766f7246b7/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallFirehosedescribeDeliveryStreamc49aeb8fbb93c449cb71bf766f7246b7"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehosedescribeDeliveryStreamc49aeb8fbb93c449cb71bf766f7246b7/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallFirehosedescribeDeliveryStreamc49aeb8fbb93c449cb71bf766f7246b7"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord1deac183d8f22b5b2d8e923c366d5bd1/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecord1deac183d8f22b5b2d8e923c366d5bd1/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallFirehoseputRecord1deac183d8f22b5b2d8e923c366d5bd1"
           }
         ],
         "/RecordFormatConversionTest/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5b/Default": [

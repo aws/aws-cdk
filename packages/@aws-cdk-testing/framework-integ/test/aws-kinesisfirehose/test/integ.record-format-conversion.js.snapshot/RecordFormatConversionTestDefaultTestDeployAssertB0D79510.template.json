@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallFirehoseputRecord5cc1f581ba4ddad32ee5ecf036a387c2": {
-   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
+  "AwsApiCallFirehosedescribeDeliveryStream1f633a3cab72011e76e59275f2cbb595": {
+   "Type": "Custom::DeployAssert@SdkCallFirehosedescribeDeliveryStream",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -10,7 +10,8 @@
      ]
     },
     "service": "Firehose",
-    "api": "putRecord",
+    "api": "describeDeliveryStream",
+    "expected": "{\"$ObjectLike\":{\"DeliveryStreamDescription\":{\"Destinations\":[{\"ExtendedS3DestinationDescription\":{\"DataFormatConversionConfiguration\":{\"InputFormatConfiguration\":{\"Deserializer\":{\"HiveJsonSerDe\":{\"TimestampFormats\":[\"millis\",\"yyyy-MM-dd\"]}}}}}}]}}}",
     "parameters": {
      "DeliveryStreamName": {
       "Fn::Join": [
@@ -18,16 +19,15 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "FirehoseDeliveryStreamRecordFormatConversion:ExportsOutputRefDeliveryStream1D45D4D6F4B48332A"
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomHiveJsonEF2911B48EFEE2C6"
         },
         "\""
        ]
       ]
-     },
-     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
+     }
     },
     "flattenResponse": "false",
-    "salt": "1757347379711"
+    "salt": "1760594676340"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -60,7 +60,7 @@
        "Statement": [
         {
          "Action": [
-          "firehose:PutRecord"
+          "firehose:DescribeDeliveryStream"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -70,6 +70,87 @@
         {
          "Action": [
           "firehose:PutRecord"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "firehose:DescribeDeliveryStream"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "firehose:PutRecord"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "firehose:DescribeDeliveryStream"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "firehose:PutRecord"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "firehose:DescribeDeliveryStream"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "firehose:PutRecord"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "firehose:DescribeDeliveryStream"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "firehose:PutRecord"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "firehose:DescribeDeliveryStream"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -125,7 +206,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "53e3ecec991005bc2ddc98d13a897e8eadf082b86dedf53475c933aed3069238.zip"
+     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -137,7 +218,7 @@
     }
    }
   },
-  "AwsApiCallFirehoseputRecord129136de82dcc03d12307ae5157bf9e8": {
+  "AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723": {
    "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
    "Properties": {
     "ServiceToken": {
@@ -155,7 +236,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "FirehoseDeliveryStreamRecordFormatConversion:ExportsOutputRefDeliveryStream2372815F1621A5CAB"
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomHiveJsonEF2911B48EFEE2C6"
         },
         "\""
        ]
@@ -164,12 +245,47 @@
      "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
     },
     "flattenResponse": "false",
-    "salt": "1757347379711"
+    "salt": "1760594676341"
+   },
+   "DependsOn": [
+    "AwsApiCallFirehosedescribeDeliveryStream1f633a3cab72011e76e59275f2cbb595"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallFirehosedescribeDeliveryStream429b2496ec1bb3c217e799457b01c838": {
+   "Type": "Custom::DeployAssert@SdkCallFirehosedescribeDeliveryStream",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "describeDeliveryStream",
+    "expected": "{\"$ObjectLike\":{\"DeliveryStreamDescription\":{\"Destinations\":[{\"ExtendedS3DestinationDescription\":{\"DataFormatConversionConfiguration\":{\"InputFormatConfiguration\":{\"Deserializer\":{\"OpenXJsonSerDe\":{\"CaseInsensitive\":false,\"ColumnToJsonKeyMappings\":{\"column_yay\":\"Column_A\"},\"ConvertDotsInJsonKeysToUnderscores\":true}}}}}}]}}}",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomOpenXJsonEA227FEF3789EDDA"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1760594676352"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallFirehoseputRecorde58094d5d7fc9fe76acc13ad684ed9f5": {
+  "AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118": {
    "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
    "Properties": {
     "ServiceToken": {
@@ -187,7 +303,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "FirehoseDeliveryStreamRecordFormatConversion:ExportsOutputRefDeliveryStream32327177777D431B1"
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomOpenXJsonEA227FEF3789EDDA"
         },
         "\""
        ]
@@ -196,8 +312,279 @@
      "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
     },
     "flattenResponse": "false",
-    "salt": "1757347379711"
+    "salt": "1760594676352"
    },
+   "DependsOn": [
+    "AwsApiCallFirehosedescribeDeliveryStream429b2496ec1bb3c217e799457b01c838"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallFirehosedescribeDeliveryStream80ff3183e5eb6b5c7dadb7fc094e741d": {
+   "Type": "Custom::DeployAssert@SdkCallFirehosedescribeDeliveryStream",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "describeDeliveryStream",
+    "expected": "{\"$ObjectLike\":{\"DeliveryStreamDescription\":{\"Destinations\":[{\"ExtendedS3DestinationDescription\":{\"DataFormatConversionConfiguration\":{\"OutputFormatConfiguration\":{\"Serializer\":{\"OrcSerDe\":{\"BlockSizeBytes\":268435456,\"BloomFilterColumns\":[\"column_a\"],\"BloomFilterFalsePositiveProbability\":0.5,\"Compression\":\"NONE\",\"DictionaryKeyThreshold\":0.3,\"FormatVersion\":\"V0_11\",\"EnablePadding\":true,\"PaddingTolerance\":0.4,\"RowIndexStride\":5000,\"StripeSizeBytes\":33554432}}}}}}]}}}",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomOrc771199861FB3EAC4"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1760594676352"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c": {
+   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "putRecord",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomOrc771199861FB3EAC4"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
+    },
+    "flattenResponse": "false",
+    "salt": "1760594676353"
+   },
+   "DependsOn": [
+    "AwsApiCallFirehosedescribeDeliveryStream80ff3183e5eb6b5c7dadb7fc094e741d"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallFirehosedescribeDeliveryStream77751255b283a1ea1a4bd3c711269900": {
+   "Type": "Custom::DeployAssert@SdkCallFirehosedescribeDeliveryStream",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "describeDeliveryStream",
+    "expected": "{\"$ObjectLike\":{\"DeliveryStreamDescription\":{\"Destinations\":[{\"ExtendedS3DestinationDescription\":{\"DataFormatConversionConfiguration\":{\"OutputFormatConfiguration\":{\"Serializer\":{\"ParquetSerDe\":{\"BlockSizeBytes\":134217728,\"PageSizeBytes\":2097152,\"Compression\":\"GZIP\",\"WriterVersion\":\"V2\",\"EnableDictionaryCompression\":true,\"MaxPaddingBytes\":100}}}}}}]}}}",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomParquet17BE234326AD3637"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1760594676353"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638": {
+   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "putRecord",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomParquet17BE234326AD3637"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
+    },
+    "flattenResponse": "false",
+    "salt": "1760594676353"
+   },
+   "DependsOn": [
+    "AwsApiCallFirehosedescribeDeliveryStream77751255b283a1ea1a4bd3c711269900"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallFirehosedescribeDeliveryStreamb0d4cd9ba478423252d4278aa95b0414": {
+   "Type": "Custom::DeployAssert@SdkCallFirehosedescribeDeliveryStream",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "describeDeliveryStream",
+    "expected": "{\"$ObjectLike\":{\"DeliveryStreamDescription\":{\"Destinations\":[{\"ExtendedS3DestinationDescription\":{\"DataFormatConversionConfiguration\":{\"InputFormatConfiguration\":{\"Deserializer\":{\"HiveJsonSerDe\":{}}},\"OutputFormatConfiguration\":{\"Serializer\":{\"OrcSerDe\":{}}}}}}]}}}",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefDefaultHiveJsonOrc16EE3C9068BF05B1"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1760594676353"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallFirehoseputRecord7d0453eb6f4a193758747fd8ef3cfb72": {
+   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "putRecord",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefDefaultHiveJsonOrc16EE3C9068BF05B1"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
+    },
+    "flattenResponse": "false",
+    "salt": "1760594676354"
+   },
+   "DependsOn": [
+    "AwsApiCallFirehosedescribeDeliveryStreamb0d4cd9ba478423252d4278aa95b0414"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallFirehosedescribeDeliveryStreamc49aeb8fbb93c449cb71bf766f7246b7": {
+   "Type": "Custom::DeployAssert@SdkCallFirehosedescribeDeliveryStream",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "describeDeliveryStream",
+    "expected": "{\"$ObjectLike\":{\"DeliveryStreamDescription\":{\"Destinations\":[{\"ExtendedS3DestinationDescription\":{\"DataFormatConversionConfiguration\":{\"InputFormatConfiguration\":{\"Deserializer\":{\"OpenXJsonSerDe\":{}}},\"OutputFormatConfiguration\":{\"Serializer\":{\"ParquetSerDe\":{}}}}}}]}}}",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefDefaultOpenXJsonParquetEB3F4442D7D23EB5"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1760594676354"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallFirehoseputRecord1deac183d8f22b5b2d8e923c366d5bd1": {
+   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "putRecord",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefDefaultOpenXJsonParquetEB3F4442D7D23EB5"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
+    },
+    "flattenResponse": "false",
+    "salt": "1760594676354"
+   },
+   "DependsOn": [
+    "AwsApiCallFirehosedescribeDeliveryStreamc49aeb8fbb93c449cb71bf766f7246b7"
+   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -212,7 +599,7 @@
     },
     "service": "S3",
     "api": "listObjectsV2",
-    "expected": "{\"$ObjectLike\":{\"KeyCount\":3}}",
+    "expected": "{\"$ObjectLike\":{\"KeyCount\":6}}",
     "stateMachineArn": {
      "Ref": "AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5bWaitForB7FE0DC9"
     },
@@ -223,7 +610,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "FirehoseDeliveryStreamRecordFormatConversion:ExportsOutputRefBucket83908E7781C90AC0"
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefBucket83908E7781C90AC0"
         },
         "\""
        ]
@@ -232,12 +619,15 @@
      "Prefix": "\"success\""
     },
     "flattenResponse": "false",
-    "salt": "1757347379712"
+    "salt": "1760594676354"
    },
    "DependsOn": [
-    "AwsApiCallFirehoseputRecord129136de82dcc03d12307ae5157bf9e8",
-    "AwsApiCallFirehoseputRecord5cc1f581ba4ddad32ee5ecf036a387c2",
-    "AwsApiCallFirehoseputRecorde58094d5d7fc9fe76acc13ad684ed9f5"
+    "AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723",
+    "AwsApiCallFirehoseputRecord1deac183d8f22b5b2d8e923c366d5bd1",
+    "AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638",
+    "AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c",
+    "AwsApiCallFirehoseputRecord7d0453eb6f4a193758747fd8ef3cfb72",
+    "AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -260,9 +650,12 @@
     }
    },
    "DependsOn": [
-    "AwsApiCallFirehoseputRecord129136de82dcc03d12307ae5157bf9e8",
-    "AwsApiCallFirehoseputRecord5cc1f581ba4ddad32ee5ecf036a387c2",
-    "AwsApiCallFirehoseputRecorde58094d5d7fc9fe76acc13ad684ed9f5"
+    "AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723",
+    "AwsApiCallFirehoseputRecord1deac183d8f22b5b2d8e923c366d5bd1",
+    "AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638",
+    "AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c",
+    "AwsApiCallFirehoseputRecord7d0453eb6f4a193758747fd8ef3cfb72",
+    "AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118"
    ]
   },
   "AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5bWaitForTimeoutProviderInvokeB30CEE76": {
@@ -283,9 +676,12 @@
     }
    },
    "DependsOn": [
-    "AwsApiCallFirehoseputRecord129136de82dcc03d12307ae5157bf9e8",
-    "AwsApiCallFirehoseputRecord5cc1f581ba4ddad32ee5ecf036a387c2",
-    "AwsApiCallFirehoseputRecorde58094d5d7fc9fe76acc13ad684ed9f5"
+    "AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723",
+    "AwsApiCallFirehoseputRecord1deac183d8f22b5b2d8e923c366d5bd1",
+    "AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638",
+    "AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c",
+    "AwsApiCallFirehoseputRecord7d0453eb6f4a193758747fd8ef3cfb72",
+    "AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118"
    ]
   },
   "AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5bWaitForRole16B5DE5E": {
@@ -333,9 +729,12 @@
     ]
    },
    "DependsOn": [
-    "AwsApiCallFirehoseputRecord129136de82dcc03d12307ae5157bf9e8",
-    "AwsApiCallFirehoseputRecord5cc1f581ba4ddad32ee5ecf036a387c2",
-    "AwsApiCallFirehoseputRecorde58094d5d7fc9fe76acc13ad684ed9f5"
+    "AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723",
+    "AwsApiCallFirehoseputRecord1deac183d8f22b5b2d8e923c366d5bd1",
+    "AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638",
+    "AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c",
+    "AwsApiCallFirehoseputRecord7d0453eb6f4a193758747fd8ef3cfb72",
+    "AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118"
    ]
   },
   "AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5bWaitForB7FE0DC9": {
@@ -371,9 +770,12 @@
     }
    },
    "DependsOn": [
-    "AwsApiCallFirehoseputRecord129136de82dcc03d12307ae5157bf9e8",
-    "AwsApiCallFirehoseputRecord5cc1f581ba4ddad32ee5ecf036a387c2",
-    "AwsApiCallFirehoseputRecorde58094d5d7fc9fe76acc13ad684ed9f5",
+    "AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723",
+    "AwsApiCallFirehoseputRecord1deac183d8f22b5b2d8e923c366d5bd1",
+    "AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638",
+    "AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c",
+    "AwsApiCallFirehoseputRecord7d0453eb6f4a193758747fd8ef3cfb72",
+    "AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118",
     "AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5bWaitForRole16B5DE5E"
    ]
   },
@@ -419,7 +821,7 @@
          "Effect": "Allow",
          "Resource": [
           {
-           "Fn::ImportValue": "FirehoseDeliveryStreamRecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+           "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
           }
          ]
         },
@@ -434,7 +836,7 @@
             "",
             [
              {
-              "Fn::ImportValue": "FirehoseDeliveryStreamRecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+              "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
              },
              "/*"
             ]
@@ -464,7 +866,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "53e3ecec991005bc2ddc98d13a897e8eadf082b86dedf53475c933aed3069238.zip"
+     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -514,7 +916,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "53e3ecec991005bc2ddc98d13a897e8eadf082b86dedf53475c933aed3069238.zip"
+     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -524,6 +926,64 @@
       "Arn"
      ]
     }
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallFirehosedescribeDeliveryStream1f633a3cab72011e76e59275f2cbb595": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallFirehosedescribeDeliveryStream1f633a3cab72011e76e59275f2cbb595",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallFirehosedescribeDeliveryStream429b2496ec1bb3c217e799457b01c838": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallFirehosedescribeDeliveryStream429b2496ec1bb3c217e799457b01c838",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallFirehosedescribeDeliveryStream80ff3183e5eb6b5c7dadb7fc094e741d": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallFirehosedescribeDeliveryStream80ff3183e5eb6b5c7dadb7fc094e741d",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallFirehosedescribeDeliveryStream77751255b283a1ea1a4bd3c711269900": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallFirehosedescribeDeliveryStream77751255b283a1ea1a4bd3c711269900",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallFirehosedescribeDeliveryStreamb0d4cd9ba478423252d4278aa95b0414": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallFirehosedescribeDeliveryStreamb0d4cd9ba478423252d4278aa95b0414",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallFirehosedescribeDeliveryStreamc49aeb8fbb93c449cb71bf766f7246b7": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallFirehosedescribeDeliveryStreamc49aeb8fbb93c449cb71bf766f7246b7",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5b": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5b",
+     "assertion"
+    ]
    }
   }
  },
@@ -655,21 +1115,17 @@
    "us-isob-west-1": {
     "value": "nodejs18.x"
    },
+   "us-isof-east-1": {
+    "value": "nodejs22.x"
+   },
+   "us-isof-south-1": {
+    "value": "nodejs22.x"
+   },
    "us-west-1": {
     "value": "nodejs22.x"
    },
    "us-west-2": {
     "value": "nodejs22.x"
-   }
-  }
- },
- "Outputs": {
-  "AssertionResultsAwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5b": {
-   "Value": {
-    "Fn::GetAtt": [
-     "AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5b",
-     "assertion"
-    ]
    }
   }
  },

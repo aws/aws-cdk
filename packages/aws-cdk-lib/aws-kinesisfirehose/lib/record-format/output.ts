@@ -1,5 +1,4 @@
 import * as cdk from '../../../core';
-import { Compression } from '../common';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
 
 /**
@@ -10,7 +9,39 @@ export interface IOutputFormat {
   /**
    * Renders the cloudformation properties for the output format.
    */
-  render(): CfnDeliveryStream.OutputFormatConfigurationProperty;
+  createOutputFormatConfig(): CfnDeliveryStream.OutputFormatConfigurationProperty;
+}
+
+/**
+ * Possible compression options available for Parquet OutputFormat
+ */
+export class ParquetCompression {
+  /**
+   * Gzip
+   */
+  public static readonly GZIP = new ParquetCompression('GZIP');
+
+  /**
+   * Snappy
+   */
+  public static readonly SNAPPY = new ParquetCompression('SNAPPY');
+
+  /**
+   * Uncompressed
+   */
+  public static readonly UNCOMPRESSED = new ParquetCompression('UNCOMPRESSED');
+
+  /**
+   * Creates a new ParquetCompression instance with a custom value.
+   */
+  public static of(value: string): ParquetCompression {
+    return new ParquetCompression(value);
+  }
+
+  /**
+   * @param value the string value of the Serde Compression.
+   */
+  private constructor(public readonly value: string) { }
 }
 
 /**
@@ -50,15 +81,15 @@ export interface ParquetOutputFormatProps {
    * The possible values are `UNCOMPRESSED` , `SNAPPY` , and `GZIP`.
    * Use `SNAPPY` for higher decompression speed.
    * Use `GZIP` if the compression ratio is more important than speed.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-compression
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-compression
    * @default `SNAPPY`
    */
-  readonly compression?: Compression;
+  readonly compression?: ParquetCompression;
 
   /**
    * Indicates whether to enable dictionary compression.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-enabledictionarycompression
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-enabledictionarycompression
    * @default `false`
    */
   readonly enableDictionaryCompression?: boolean;
@@ -67,7 +98,7 @@ export interface ParquetOutputFormatProps {
    * The maximum amount of padding to apply.
    *
    * This is useful if you intend to copy the data from Amazon S3 to HDFS before querying.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-maxpaddingbytes
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-maxpaddingbytes
    * @default no padding is applied
    */
   readonly maxPadding?: cdk.Size;
@@ -76,7 +107,7 @@ export interface ParquetOutputFormatProps {
    * The Parquet page size.
    *
    * Column chunks are divided into pages. A page is conceptually an indivisible unit (in terms of compression and encoding). The minimum value is 64 KiB and the default is 1 MiB.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-pagesizebytes
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-pagesizebytes
    *
    * @minimum `Size.kibibytes(64)`
    * @default `Size.mebibytes(1)`
@@ -87,7 +118,7 @@ export interface ParquetOutputFormatProps {
    * Indicates the version of Parquet to output.
    *
    * The possible values are `V1` and `V2`
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-writerversion
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-writerversion
    *
    * @default `V1`
    */
@@ -100,7 +131,6 @@ export interface ParquetOutputFormatProps {
  * You should only need to specify an instance of this class if the default configuration does not suit your needs.
  */
 export class ParquetOutputFormat implements IOutputFormat {
-  private static readonly VALID_COMPRESSIONS = [Compression.SNAPPY, Compression.UNCOMPRESSED, Compression.GZIP].map(compression => compression.value);
 
   /**
    * Properties for the Parquet output format
@@ -115,10 +145,6 @@ export class ParquetOutputFormat implements IOutputFormat {
   private validateProps(props?: ParquetOutputFormatProps) {
     if (!props) {
       return;
-    }
-
-    if (props.compression !== undefined && !ParquetOutputFormat.VALID_COMPRESSIONS.includes(props.compression.value)) {
-      throw new cdk.UnscopedValidationError(`Compression ${props.compression} is invalid, it must be one of ${ParquetOutputFormat.VALID_COMPRESSIONS}`);
     }
 
     if (props.blockSize !== undefined && props.blockSize.toMebibytes() < 64) {
@@ -142,13 +168,45 @@ export class ParquetOutputFormat implements IOutputFormat {
     } : {};
   }
 
-  public render(): CfnDeliveryStream.OutputFormatConfigurationProperty {
+  public createOutputFormatConfig(): CfnDeliveryStream.OutputFormatConfigurationProperty {
     return {
       serializer: {
         parquetSerDe: this.createParquetSerDeProps(),
       },
     };
   }
+}
+
+/**
+ * Possible compression options available for ORC OutputFormat
+ */
+export class OrcCompression {
+  /**
+   * Gzip
+   */
+  public static readonly ZLIB = new OrcCompression('ZLIB');
+
+  /**
+   * Snappy
+   */
+  public static readonly SNAPPY = new OrcCompression('SNAPPY');
+
+  /**
+   * Uncompressed
+   */
+  public static readonly NONE = new OrcCompression('NONE');
+
+  /**
+   * Creates a new OrcCompression instance with a custom value.
+   */
+  public static of(value: string): OrcCompression {
+    return new OrcCompression(value);
+  }
+
+  /**
+   * @param value the string value of the Serde Compression.
+   */
+  private constructor(public readonly value: string) { }
 }
 
 /**
@@ -185,18 +243,18 @@ export interface OrcOutputFormatProps {
   /**
    * The compression code to use over data blocks.
    *
-   * The possible values are `UNCOMPRESSED` , `SNAPPY` , and `GZIP`.
+   * The possible values are `NONE` , `SNAPPY` , and `ZLIB`.
    * Use `SNAPPY` for higher decompression speed.
    * Use `GZIP` if the compression ratio is more important than speed.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-compression
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-compression
    * @default `SNAPPY`
    */
-  readonly compression?: Compression;
+  readonly compression?: OrcCompression;
 
   /**
    * The column names for which you want Firehose to create bloom filters.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-bloomfiltercolumns
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-bloomfiltercolumns
    *
    * @default no bloom filters are created
    */
@@ -206,7 +264,7 @@ export interface OrcOutputFormatProps {
    * The Bloom filter false positive probability (FPP).
    *
    * The lower the FPP, the bigger the bloom filter.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-bloomfilterfalsepositiveprobability
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-bloomfilterfalsepositiveprobability
    *
    * @minimum `0`
    * @maximum `1`
@@ -220,7 +278,7 @@ export interface OrcOutputFormatProps {
    * If the number of distinct keys (unique values) in a column exceeds this fraction of the total non-null rows in that column, dictionary encoding will be turned off for that specific column.
    *
    * To turn off dictionary encoding, set this threshold to 0. To always use dictionary encoding, set this threshold to 1.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-dictionarykeythreshold
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-dictionarykeythreshold
    *
    * @minimum `0`
    * @maximum `1`
@@ -232,7 +290,7 @@ export interface OrcOutputFormatProps {
    * Set this to `true` to indicate that you want stripes to be padded to the HDFS block boundaries.
    *
    * This is useful if you intend to copy the data from Amazon S3 to HDFS before querying.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-enablepadding
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-enablepadding
    *
    * @default `false`
    */
@@ -242,7 +300,7 @@ export interface OrcOutputFormatProps {
    * The version of the ORC format to write.
    *
    * The possible values are `V0_11` and `V0_12`.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-formatversion
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-formatversion
    *
    * @default `V0_12`
    */
@@ -258,7 +316,7 @@ export interface OrcOutputFormatProps {
    * This ensures that no stripe crosses block boundaries and causes remote reads within a node-local task.
    *
    * Kinesis Data Firehose ignores this parameter when `EnablePadding` is `false` .
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-paddingtolerance
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-paddingtolerance
    *
    * @default `0.05` if `enablePadding` is `true`
    */
@@ -267,7 +325,7 @@ export interface OrcOutputFormatProps {
   /**
    * The number of rows between index entries.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-rowindexstride
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-rowindexstride
    *
    * @minimum 1000
    * @default 10000
@@ -278,7 +336,7 @@ export interface OrcOutputFormatProps {
    * The number of bytes in each stripe.
    *
    * The default is 64 MiB and the minimum is 8 MiB.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-stripesizebytes
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-stripesizebytes
    *
    * @minimum `Size.mebibytes(8)`
    * @default `Size.mebibytes(64)`
@@ -292,8 +350,6 @@ export interface OrcOutputFormatProps {
  * You should only need to specify an instance of this class if the default configuration does not suit your needs.
  */
 export class OrcOutputFormat implements IOutputFormat {
-  private static readonly VALID_COMPRESSIONS = [Compression.SNAPPY, Compression.UNCOMPRESSED, Compression.GZIP].map(compression => compression.value);
-
   /**
    * Properties for the ORC output format
    */
@@ -311,10 +367,6 @@ export class OrcOutputFormat implements IOutputFormat {
   private validateProps(props?: OrcOutputFormatProps) {
     if (!props) {
       return;
-    }
-
-    if (props.compression !== undefined && !OrcOutputFormat.VALID_COMPRESSIONS.includes(props.compression.value)) {
-      throw new cdk.UnscopedValidationError(`Compression ${props.compression} is invalid, it must be one of ${OrcOutputFormat.VALID_COMPRESSIONS}`);
     }
 
     if (props.blockSize !== undefined && props.blockSize.toMebibytes() < 64) {
@@ -358,7 +410,7 @@ export class OrcOutputFormat implements IOutputFormat {
     } : {};
   }
 
-  public render(): CfnDeliveryStream.OutputFormatConfigurationProperty {
+  public createOutputFormatConfig(): CfnDeliveryStream.OutputFormatConfigurationProperty {
     return {
       serializer: {
         orcSerDe: this.createOrcSerDeProps(),
