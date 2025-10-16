@@ -166,12 +166,6 @@
             "data": "DomainAccessPolicyCustomResourcePolicyE61F1845"
           }
         ],
-        "/cdk-integ-opensearch-unsignedbasicauth/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
         "/cdk-integ-opensearch-unsignedbasicauth/AWS679f53fac002430cb0da5b7982bd2287": [
           {
             "type": "aws:cdk:analytics:construct",
