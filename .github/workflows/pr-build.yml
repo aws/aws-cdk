@@ -25,6 +25,7 @@ jobs:
 
     env:
       PR_BUILD: true
+      JSII_SILENCE_WARNING_DEPRECATED_NODE_VERSION: true
 
     steps:
       - name: Checkout code
