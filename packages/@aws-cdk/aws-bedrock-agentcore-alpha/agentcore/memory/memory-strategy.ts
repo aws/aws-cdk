@@ -160,7 +160,7 @@ export class MemoryStrategy {
    */
   public static usingBuiltInSummarization(): BuiltInMemoryStrategy {
     return new BuiltInMemoryStrategy(MemoryStrategyType.SUMMARIZATION, {
-      name: 'summary_builtin_cdkGen0001',
+      name: `summary_builtin_${this._generateRandomSuffix()}`,
       description: 'Summarize interactions to preserve critical context and key insights',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
     });
@@ -173,7 +173,7 @@ export class MemoryStrategy {
    */
   public static usingBuiltInSemantic(): BuiltInMemoryStrategy {
     return new BuiltInMemoryStrategy(MemoryStrategyType.SEMANTIC, {
-      name: 'memory_semantic_cdkGen0001',
+      name: `semantic_builtin_${this._generateRandomSuffix()}`,
       description:
       'Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
@@ -187,7 +187,7 @@ export class MemoryStrategy {
    */
   public static usingBuiltInUserPreference(): BuiltInMemoryStrategy {
     return new BuiltInMemoryStrategy(MemoryStrategyType.USER_PREFERENCE, {
-      name: 'memory_preference_cdkGen0001',
+      name: `preference_builtin_${this._generateRandomSuffix()}`,
       description: 'Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
     });
@@ -254,5 +254,18 @@ export class MemoryStrategy {
    */
   public static usingSummarizationOverride(config: OverrideStrategyProps): OverrideMemoryStrategy {
     return new OverrideMemoryStrategy(MemoryStrategyType.SUMMARIZATION, config);
+  }
+  /**
+   * Generates a random 5-character suffix using [a-z, A-Z, 0-9]
+   * @returns A random 5-character suffix
+   * @internal
+   */
+  private static _generateRandomSuffix(): string {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 5; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
   }
 }

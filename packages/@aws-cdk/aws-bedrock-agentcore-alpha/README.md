@@ -139,6 +139,14 @@ const memory = new agentcore.Memory(this, "MyMemory", {
 });
 ```
 
+The name generated for each built in memory strategy the followin pattern:
+
+- For Summarization: `summary_builtin_<suffix>`
+- For Semantic:`semantic_builtin_<suffix>`
+- For User Preferences: `preference_builtin_<suffix>`
+
+Where the suffix is a 5 characters string ([a-z, A-Z, 0-9]).
+
 ### Memory with Built-in Strategies - Custom Namespace
 
 With Long-Term Memory, organization is managed through Namespaces.

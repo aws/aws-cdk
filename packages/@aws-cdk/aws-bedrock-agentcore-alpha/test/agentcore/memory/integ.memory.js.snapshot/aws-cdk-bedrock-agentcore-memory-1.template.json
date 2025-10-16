@@ -62,7 +62,7 @@
      {
       "SummaryMemoryStrategy": {
        "Description": "Summarize interactions to preserve critical context and key insights",
-       "Name": "summary_builtin_cdkGen0001",
+       "Name": "summary_builtin_MjXPM",
        "Namespaces": [
         "/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}"
        ],
@@ -72,7 +72,7 @@
      {
       "SemanticMemoryStrategy": {
        "Description": "Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.",
-       "Name": "memory_semantic_cdkGen0001",
+       "Name": "semantic_builtin_mtHd8",
        "Namespaces": [
         "/strategies/{memoryStrategyId}/actors/{actorId}"
        ],
@@ -82,7 +82,7 @@
      {
       "UserPreferenceMemoryStrategy": {
        "Description": "Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.",
-       "Name": "memory_preference_cdkGen0001",
+       "Name": "preference_builtin_sNmg5",
        "Namespaces": [
         "/strategies/{memoryStrategyId}/actors/{actorId}"
        ],

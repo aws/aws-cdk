@@ -171,7 +171,7 @@ describe('Memory with built-in strategies tests', () => {
       MemoryStrategies: [
         {
           SummaryMemoryStrategy: {
-            Name: 'summary_builtin_cdkGen0001',
+            Name: Match.stringLikeRegexp('summary_builtin_.*'),
             Description: 'Summarize interactions to preserve critical context and key insights',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
             Type: 'SUMMARIZATION',
@@ -179,7 +179,7 @@ describe('Memory with built-in strategies tests', () => {
         },
         {
           SemanticMemoryStrategy: {
-            Name: 'memory_semantic_cdkGen0001',
+            Name: Match.stringLikeRegexp('semantic_builtin_.*'),
             Description: 'Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
             Type: 'SEMANTIC',
@@ -187,7 +187,7 @@ describe('Memory with built-in strategies tests', () => {
         },
         {
           UserPreferenceMemoryStrategy: {
-            Name: 'memory_preference_cdkGen0001',
+            Name: Match.stringLikeRegexp('preference_builtin_.*'),
             Description: 'Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
             Type: 'USER_PREFERENCE',
@@ -702,7 +702,7 @@ describe('Memory with mixed built-in and custom strategies tests', () => {
         // Built-in summarization
         {
           SummaryMemoryStrategy: {
-            Name: 'summary_builtin_cdkGen0001',
+            Name: Match.stringLikeRegexp('summary_builtin_.*'),
             Description: 'Summarize interactions to preserve critical context and key insights',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
             Type: 'SUMMARIZATION',
@@ -711,7 +711,7 @@ describe('Memory with mixed built-in and custom strategies tests', () => {
         // Built-in semantic
         {
           SemanticMemoryStrategy: {
-            Name: 'memory_semantic_cdkGen0001',
+            Name: Match.stringLikeRegexp('semantic_builtin_.*'),
             Description: 'Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
             Type: 'SEMANTIC',
@@ -810,7 +810,7 @@ describe('Memory with addMemoryStrategy method tests', () => {
       MemoryStrategies: [
         {
           SummaryMemoryStrategy: {
-            Name: 'summary_builtin_cdkGen0001',
+            Name: Match.stringLikeRegexp('summary_builtin_.*'),
             Description: 'Summarize interactions to preserve critical context and key insights',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
             Type: 'SUMMARIZATION',
@@ -818,7 +818,7 @@ describe('Memory with addMemoryStrategy method tests', () => {
         },
         {
           SemanticMemoryStrategy: {
-            Name: 'memory_semantic_cdkGen0001',
+            Name: Match.stringLikeRegexp('semantic_builtin_.*'),
             Description: 'Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
             Type: 'SEMANTIC',
@@ -863,8 +863,8 @@ describe('Memory with addMemoryStrategy method tests', () => {
       },
     );
 
-    expect(strategyNames).toContain('summary_builtin_cdkGen0001');
-    expect(strategyNames).toContain('memory_semantic_cdkGen0001');
+    expect(strategyNames.some((name: string) => /summary_builtin_.*/.test(name))).toBe(true);
+    expect(strategyNames.some((name: string) => /semantic_builtin_.*/.test(name))).toBe(true);
     expect(strategyNames).toContain('added_custom_strategy');
   });
 
@@ -875,8 +875,8 @@ describe('Memory with addMemoryStrategy method tests', () => {
       strategy.name || strategy.name,
     );
 
-    expect(strategyNames).toContain('summary_builtin_cdkGen0001');
-    expect(strategyNames).toContain('memory_semantic_cdkGen0001');
+    expect(strategyNames.some((name: string) => /summary_builtin_.*/.test(name))).toBe(true);
+    expect(strategyNames.some((name: string) => /semantic_builtin_.*/.test(name))).toBe(true);
     expect(strategyNames).toContain('added_custom_strategy');
   });
 });
@@ -939,7 +939,7 @@ describe('Memory with dynamic strategy addition tests', () => {
         // Initial strategy
         {
           UserPreferenceMemoryStrategy: {
-            Name: 'memory_preference_cdkGen0001',
+            Name: Match.stringLikeRegexp('preference_builtin_.*'),
             Description: 'Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
             Type: 'USER_PREFERENCE',
@@ -948,7 +948,7 @@ describe('Memory with dynamic strategy addition tests', () => {
         // Dynamically added strategies
         {
           SummaryMemoryStrategy: {
-            Name: 'summary_builtin_cdkGen0001',
+            Name: Match.stringLikeRegexp('summary_builtin_.*'),
             Description: 'Summarize interactions to preserve critical context and key insights',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
             Type: 'SUMMARIZATION',
@@ -1171,7 +1171,7 @@ describe('BuiltInMemoryStrategy unit tests', () => {
   test('Should create BuiltInMemoryStrategy with valid properties', () => {
     const strategy = MemoryStrategy.usingBuiltInSummarization();
 
-    expect(strategy.name).toBe('summary_builtin_cdkGen0001');
+    expect(strategy.name).toMatch(/^summary_builtin_[a-zA-Z0-9]{5}$/);
     expect(strategy.description).toBe('Summarize interactions to preserve critical context and key insights');
     expect(strategy.namespaces).toEqual(['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}']);
     expect(strategy.strategyType).toBe('SUMMARIZATION');
@@ -1181,7 +1181,7 @@ describe('BuiltInMemoryStrategy unit tests', () => {
   test('Should create semantic BuiltInMemoryStrategy with valid properties', () => {
     const strategy = MemoryStrategy.usingBuiltInSemantic();
 
-    expect(strategy.name).toBe('memory_semantic_cdkGen0001');
+    expect(strategy.name).toMatch(/^semantic_builtin_[a-zA-Z0-9]{5}$/);
     expect(strategy.description).toBe('Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.');
     expect(strategy.namespaces).toEqual(['/strategies/{memoryStrategyId}/actors/{actorId}']);
     expect(strategy.strategyType).toBe('SEMANTIC');
@@ -1191,7 +1191,7 @@ describe('BuiltInMemoryStrategy unit tests', () => {
   test('Should create user preference BuiltInMemoryStrategy with valid properties', () => {
     const strategy = MemoryStrategy.usingBuiltInUserPreference();
 
-    expect(strategy.name).toBe('memory_preference_cdkGen0001');
+    expect(strategy.name).toMatch(/^preference_builtin_[a-zA-Z0-9]{5}$/);
     expect(strategy.description).toBe('Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.');
     expect(strategy.namespaces).toEqual(['/strategies/{memoryStrategyId}/actors/{actorId}']);
     expect(strategy.strategyType).toBe('USER_PREFERENCE');
@@ -1203,8 +1203,8 @@ describe('BuiltInMemoryStrategy unit tests', () => {
     const rendered = strategy.render();
 
     expect(rendered).toHaveProperty('summaryMemoryStrategy');
-    expect(rendered.summaryMemoryStrategy).toEqual({
-      name: 'summary_builtin_cdkGen0001',
+    expect(rendered.summaryMemoryStrategy).toMatchObject({
+      name: expect.stringMatching(/^summary_builtin_[a-zA-Z0-9]{5}$/),
       description: 'Summarize interactions to preserve critical context and key insights',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
       type: 'SUMMARIZATION',
@@ -1216,8 +1216,8 @@ describe('BuiltInMemoryStrategy unit tests', () => {
     const rendered = strategy.render();
 
     expect(rendered).toHaveProperty('semanticMemoryStrategy');
-    expect(rendered.semanticMemoryStrategy).toEqual({
-      name: 'memory_semantic_cdkGen0001',
+    expect(rendered.semanticMemoryStrategy).toMatchObject({
+      name: expect.stringMatching(/^semantic_builtin_[a-zA-Z0-9]{5}$/),
       description: 'Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
       type: 'SEMANTIC',
@@ -1229,8 +1229,8 @@ describe('BuiltInMemoryStrategy unit tests', () => {
     const rendered = strategy.render();
 
     expect(rendered).toHaveProperty('userPreferenceMemoryStrategy');
-    expect(rendered.userPreferenceMemoryStrategy).toEqual({
-      name: 'memory_preference_cdkGen0001',
+    expect(rendered.userPreferenceMemoryStrategy).toMatchObject({
+      name: expect.stringMatching(/^preference_builtin_[a-zA-Z0-9]{5}$/),
       description: 'Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
       type: 'USER_PREFERENCE',

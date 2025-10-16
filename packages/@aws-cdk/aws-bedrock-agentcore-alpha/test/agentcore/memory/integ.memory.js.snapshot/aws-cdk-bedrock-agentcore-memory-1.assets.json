@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "85076084e16ef4e35a54979bab1cf2fd00c8e17f1be71aec83bd5fa4171593d2": {
+    "a80c36ba7004b61575343ed5a7e927500dd2158dc49759196d6b4e611b63cb1f": {
       "displayName": "aws-cdk-bedrock-agentcore-memory-1 Template",
       "source": {
         "path": "aws-cdk-bedrock-agentcore-memory-1.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-7870772f": {
+        "current_account-current_region-cebb4180": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "85076084e16ef4e35a54979bab1cf2fd00c8e17f1be71aec83bd5fa4171593d2.json",
+          "objectKey": "a80c36ba7004b61575343ed5a7e927500dd2158dc49759196d6b4e611b63cb1f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
