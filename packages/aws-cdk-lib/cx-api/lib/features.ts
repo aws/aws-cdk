@@ -1738,10 +1738,9 @@ export const FLAGS: Record<string, FlagInfo> = {
       Users can still explicitly set ipAddressType to override the default behavior.`,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
-    unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Pass `ipAddressType: OriginIpAddressType.IPV4` explicitly to maintain IPv4-only behavior.',
   },
- 
+
   //////////////////////////////////////////////////////////////////////
   [STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT]: {
     type: FlagType.BugFix,
