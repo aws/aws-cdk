@@ -146,6 +146,7 @@ export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-c
 export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
 export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
+export const STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT = '@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1720,6 +1721,19 @@ export const FLAGS: Record<string, FlagInfo> = {
     unconfiguredBehavesLike: { v2: false },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.',
+    detailsMd: `
+      When this feature flag is enabled, the JSONPath apiEndpoint value will be resolved dynamically at runtime, while slightly increasing the size of the state machine definition.
+      When disabled, the JSONPath apiEndpoint property will only support a static string value.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    unconfiguredBehavesLike: { v2: true },
+    recommendedValue: true,
   },
 
   //////////////////////////////////////////////////////////////////////

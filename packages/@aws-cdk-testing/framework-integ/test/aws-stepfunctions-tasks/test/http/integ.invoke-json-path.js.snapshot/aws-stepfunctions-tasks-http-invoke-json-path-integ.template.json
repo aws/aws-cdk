@@ -53,7 +53,26 @@
     "AuthorizerHandlerServiceRole5F40A014"
    ]
   },
-  "AuthorizerHandlerawsstepfunctionstaskshttpinvokeintegAuthorizerECFD3F1CPermissions7F5D78AD": {
+  "AuthorizerHandlerLogGroup19D4FC4C": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "AuthorizerHandler0112B303"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AuthorizerHandlerawsstepfunctionstaskshttpinvokejsonpathintegAuthorizer0A0EA200PermissionsAC1581B9": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -147,7 +166,7 @@
      ]
     },
     "IdentitySource": "method.request.header.Authorization",
-    "Name": "awsstepfunctionstaskshttpinvokeintegAuthorizerECFD3F1C",
+    "Name": "awsstepfunctionstaskshttpinvokejsonpathintegAuthorizer0A0EA200",
     "RestApiId": {
      "Ref": "IntegRestApiF8B59B0D"
     },
@@ -160,7 +179,7 @@
     "Name": "IntegRestApi"
    }
   },
-  "IntegRestApiDeploymentD67E59EC852098a1c127ca9d7d16d22086273910": {
+  "IntegRestApiDeploymentD67E59ECc0bae562047b64e07eb861eb93111562": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -170,8 +189,8 @@
    },
    "DependsOn": [
     "AuthorizerBD825682",
-    "IntegRestApitestGET52631013",
-    "IntegRestApitest58FEA9C5"
+    "IntegRestApitestjsonpathGETEA421C58",
+    "IntegRestApitestjsonpath7AE2D560"
    ],
    "Metadata": {
     "aws:cdk:do-not-refactor": true
@@ -181,7 +200,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "IntegRestApiDeploymentD67E59EC852098a1c127ca9d7d16d22086273910"
+     "Ref": "IntegRestApiDeploymentD67E59ECc0bae562047b64e07eb861eb93111562"
     },
     "RestApiId": {
      "Ref": "IntegRestApiF8B59B0D"
@@ -189,7 +208,7 @@
     "StageName": "prod"
    }
   },
-  "IntegRestApitest58FEA9C5": {
+  "IntegRestApitestjsonpath7AE2D560": {
    "Type": "AWS::ApiGateway::Resource",
    "Properties": {
     "ParentId": {
@@ -198,13 +217,13 @@
       "RootResourceId"
      ]
     },
-    "PathPart": "test",
+    "PathPart": "test-json-path",
     "RestApiId": {
      "Ref": "IntegRestApiF8B59B0D"
     }
    }
   },
-  "IntegRestApitestGET52631013": {
+  "IntegRestApitestjsonpathGETEA421C58": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
     "AuthorizationType": "CUSTOM",
@@ -233,7 +252,7 @@
      }
     ],
     "ResourceId": {
-     "Ref": "IntegRestApitest58FEA9C5"
+     "Ref": "IntegRestApitestjsonpath7AE2D560"
     },
     "RestApiId": {
      "Ref": "IntegRestApiF8B59B0D"
@@ -368,7 +387,7 @@
        {
         "Ref": "IntegRestApiDeploymentStageprod29E2686A"
        },
-       "/', '/test')\",\"Authentication\":{\"ConnectionArn\":\"",
+       "/', $.endpointPath)\",\"Authentication\":{\"ConnectionArn\":\"",
        {
         "Fn::GetAtt": [
          "Connection07624BCD",
@@ -426,7 +445,7 @@
     "Ref": "StateMachine2E01A3A5"
    },
    "Export": {
-    "Name": "aws-stepfunctions-tasks-http-invoke-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
+    "Name": "aws-stepfunctions-tasks-http-invoke-json-path-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
    }
   }
  },
