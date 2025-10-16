@@ -485,7 +485,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/165a6007902e81f81f578d510c203145685834eb2bfc29e3e5923d54d56188ae.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/01241ef68d09947307b7b96214abb79083677a0e1e8df96c6a59ce5642e7b384.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -798,6 +798,117 @@
             "data": "VPCFlowLogsS3FlowLogB5256CFF"
           }
         ],
+        "/FlowLogsTestStack/VPC/FlowLogsCloudwatch": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resourceType": "*",
+              "destination": "*"
+            }
+          }
+        ],
+        "/FlowLogsTestStack/VPC/FlowLogsCloudwatch/IAMRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/FlowLogsTestStack/VPC/FlowLogsCloudwatch/IAMRole/ImportIAMRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/FlowLogsTestStack/VPC/FlowLogsCloudwatch/IAMRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCFlowLogsCloudwatchIAMRoleCC43FEF5"
+          }
+        ],
+        "/FlowLogsTestStack/VPC/FlowLogsCloudwatch/IAMRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/FlowLogsTestStack/VPC/FlowLogsCloudwatch/IAMRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCFlowLogsCloudwatchIAMRoleDefaultPolicyA420C416"
+          }
+        ],
+        "/FlowLogsTestStack/VPC/FlowLogsCloudwatch/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/FlowLogsTestStack/VPC/FlowLogsCloudwatch/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCFlowLogsCloudwatchLogGroupACA08DD5"
+          }
+        ],
+        "/FlowLogsTestStack/VPC/FlowLogsCloudwatch/FlowLog": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCFlowLogsCloudwatchFlowLog3A58840F"
+          }
+        ],
         "/FlowLogsTestStack/VPC/FlowLogsS3KeyPrefix": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -856,14 +967,6 @@
                 "*"
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
           }
         ],
         "/FlowLogsTestStack/FlowLogsCW/IAMRole/ImportIAMRole": [
@@ -896,14 +999,6 @@
             "data": {
               "attachToRole": [
                 "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
               ]
             }
           },
@@ -1407,7 +1502,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7fa6271a71f8a661102791537ba90b02c5cd2f9451ed5e02cef84c2dd39ce760.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/45225300964ffd52c58304ee5fed12b27cd5d3ada103fda7342082ea21fad58b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1957,6 +2052,10 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           }
         }
       }
