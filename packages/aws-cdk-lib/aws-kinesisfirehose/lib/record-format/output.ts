@@ -14,6 +14,8 @@ export interface IOutputFormat {
 
 /**
  * Possible compression options available for Parquet OutputFormat
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-compression
  */
 export class ParquetCompression {
   /**
@@ -178,6 +180,8 @@ export class ParquetOutputFormat implements IOutputFormat {
 
 /**
  * Possible compression options available for ORC OutputFormat
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-compression
  */
 export class OrcCompression {
   /**

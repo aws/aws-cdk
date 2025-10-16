@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1760594676340"
+    "salt": "1760602435956"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -193,15 +193,7 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs22.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
@@ -245,7 +237,7 @@
      "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
     },
     "flattenResponse": "false",
-    "salt": "1760594676341"
+    "salt": "1760602435957"
    },
    "DependsOn": [
     "AwsApiCallFirehosedescribeDeliveryStream1f633a3cab72011e76e59275f2cbb595"
@@ -280,7 +272,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1760594676352"
+    "salt": "1760602435957"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -312,7 +304,7 @@
      "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
     },
     "flattenResponse": "false",
-    "salt": "1760594676352"
+    "salt": "1760602435957"
    },
    "DependsOn": [
     "AwsApiCallFirehosedescribeDeliveryStream429b2496ec1bb3c217e799457b01c838"
@@ -347,7 +339,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1760594676352"
+    "salt": "1760602435958"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -379,7 +371,7 @@
      "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
     },
     "flattenResponse": "false",
-    "salt": "1760594676353"
+    "salt": "1760602435958"
    },
    "DependsOn": [
     "AwsApiCallFirehosedescribeDeliveryStream80ff3183e5eb6b5c7dadb7fc094e741d"
@@ -414,7 +406,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1760594676353"
+    "salt": "1760602435958"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -446,7 +438,7 @@
      "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
     },
     "flattenResponse": "false",
-    "salt": "1760594676353"
+    "salt": "1760602435958"
    },
    "DependsOn": [
     "AwsApiCallFirehosedescribeDeliveryStream77751255b283a1ea1a4bd3c711269900"
@@ -481,7 +473,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1760594676353"
+    "salt": "1760602435959"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -513,7 +505,7 @@
      "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
     },
     "flattenResponse": "false",
-    "salt": "1760594676354"
+    "salt": "1760602435959"
    },
    "DependsOn": [
     "AwsApiCallFirehosedescribeDeliveryStreamb0d4cd9ba478423252d4278aa95b0414"
@@ -548,7 +540,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1760594676354"
+    "salt": "1760602435959"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -580,7 +572,7 @@
      "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
     },
     "flattenResponse": "false",
-    "salt": "1760594676354"
+    "salt": "1760602435960"
    },
    "DependsOn": [
     "AwsApiCallFirehosedescribeDeliveryStreamc49aeb8fbb93c449cb71bf766f7246b7"
@@ -619,7 +611,7 @@
      "Prefix": "\"success\""
     },
     "flattenResponse": "false",
-    "salt": "1760594676354"
+    "salt": "1760602435960"
    },
    "DependsOn": [
     "AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723",
@@ -853,15 +845,7 @@
   "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs22.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
@@ -903,15 +887,7 @@
   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs22.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
@@ -984,148 +960,6 @@
      "AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5b",
      "assertion"
     ]
-   }
-  }
- },
- "Mappings": {
-  "LatestNodeRuntimeMap": {
-   "af-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-4": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-5": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-6": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-7": {
-    "value": "nodejs22.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs22.x"
-   },
-   "ca-west-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-isoe-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs22.x"
-   },
-   "eusc-de-east-1": {
-    "value": "nodejs22.x"
-   },
-   "il-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-south-1": {
-    "value": "nodejs22.x"
-   },
-   "mx-central-1": {
-    "value": "nodejs22.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-2": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isof-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-isof-south-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-2": {
-    "value": "nodejs22.x"
    }
   }
  },
