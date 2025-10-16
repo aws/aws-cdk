@@ -55,7 +55,7 @@ describe('function', () => {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-        Runtime: lambda.Runtime.NODEJS_LATEST.name,
+        Runtime: 'nodejs22.x',
       },
       DependsOn: ['MyLambdaServiceRole4539ECB6'],
     });
@@ -108,7 +108,7 @@ describe('function', () => {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-        Runtime: lambda.Runtime.NODEJS_LATEST.name,
+        Runtime: 'nodejs22.x',
       },
       DependsOn: ['MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6'],
     });
@@ -903,7 +903,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: lambda.Runtime.NODEJS_LATEST.name,
+        Runtime: 'nodejs22.x',
         DeadLetterConfig: {
           TargetArn: {
             'Fn::GetAtt': [
@@ -999,7 +999,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: lambda.Runtime.NODEJS_LATEST.name,
+        Runtime: 'nodejs22.x',
         DeadLetterConfig: {
           TargetArn: {
             'Fn::GetAtt': [
@@ -1064,7 +1064,7 @@ describe('function', () => {
           'Arn',
         ],
       },
-      Runtime: lambda.Runtime.NODEJS_LATEST.name,
+      Runtime: 'nodejs22.x',
     });
   });
 
@@ -1303,7 +1303,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: lambda.Runtime.NODEJS_LATEST.name,
+        Runtime: 'nodejs22.x',
         TracingConfig: {
           Mode: 'Active',
         },
@@ -1363,7 +1363,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: lambda.Runtime.NODEJS_LATEST.name,
+        Runtime: 'nodejs22.x',
         TracingConfig: {
           Mode: 'Active',
         },
@@ -1424,7 +1424,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: lambda.Runtime.NODEJS_LATEST.name,
+        Runtime: 'nodejs22.x',
         TracingConfig: {
           Mode: 'PassThrough',
         },
@@ -1484,7 +1484,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: lambda.Runtime.NODEJS_LATEST.name,
+        Runtime: 'nodejs22.x',
         TracingConfig: {
           Mode: 'PassThrough',
         },
@@ -1520,7 +1520,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: lambda.Runtime.NODEJS_LATEST.name,
+        Runtime: 'nodejs22.x',
       },
       DependsOn: [
         'MyLambdaServiceRole4539ECB6',
@@ -2066,7 +2066,7 @@ describe('function', () => {
     const code = new lambda.S3Code(bucket, 'ObjectKey');
 
     const fn = new lambda.Function(stack, 'fn', {
-      runtime: lambda.Runtime.NODEJS_LATEST,
+      runtime: lambda.Runtime.NODEJS_22_X,
       code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
       handler: 'index.main',
     });
@@ -2076,7 +2076,7 @@ describe('function', () => {
     // WHEN
     const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NODEJS_LATEST],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_22_X],
     });
 
     fn.addLayers(layer);
@@ -2094,12 +2094,12 @@ describe('function', () => {
     const code = new lambda.S3Code(bucket, 'ObjectKey');
     const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NODEJS_LATEST],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_22_X],
     });
 
     // function with layer
     const fn = new lambda.Function(stack, 'fn', {
-      runtime: lambda.Runtime.NODEJS_LATEST,
+      runtime: lambda.Runtime.NODEJS_22_X,
       code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
       handler: 'index.main',
       layers: [layer],
@@ -2146,13 +2146,13 @@ describe('function', () => {
     const stack = new cdk.Stack(undefined, 'TestStack');
     const layers = new Array(6).fill(lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
-      compatibleRuntimes: [lambda.Runtime.NODEJS_LATEST],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_22_X],
     }));
 
     // THEN
     expect(() => new lambda.Function(stack, 'Function', {
       layers,
-      runtime: lambda.Runtime.NODEJS_LATEST,
+      runtime: lambda.Runtime.NODEJS_22_X,
       code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
       handler: 'index.main',
     })).toThrow(/Unable to add layer:/);
@@ -2682,6 +2682,21 @@ describe('function', () => {
     expect(version1).toEqual(version2);
     expect(stack.resolve(version1.functionArn)).toEqual(expectedArn);
     expect(stack.resolve(version2.functionArn)).toEqual(expectedArn);
+  });
+
+  test('latestVersion functionRef ARN is the version ARN, not the plain ARN', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    });
+
+    // THEN
+    expect(fn.latestVersion.functionRef.functionArn).toEqual(fn.latestVersion.functionArn);
   });
 
   test('default function with kmsKeyArn, environmentEncryption passed as props', () => {
@@ -3753,6 +3768,21 @@ describe('function', () => {
                 ],
               },
             },
+            {
+              Action: 'lambda:InvokeFunction',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'MyLambdaCCE802FB',
+                  'Arn',
+                ],
+              },
+              Condition: {
+                Bool: {
+                  'lambda:InvokedViaFunctionUrl': true,
+                },
+              },
+            },
           ],
         },
       });
@@ -3895,7 +3925,7 @@ describe('function', () => {
         {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
-          Runtime: lambda.Runtime.NODEJS_LATEST.name,
+          Runtime: 'nodejs22.x',
           RecursiveLoop: 'Terminate',
         },
       });
@@ -3915,7 +3945,7 @@ describe('function', () => {
         {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
-          Runtime: lambda.Runtime.NODEJS_LATEST.name,
+          Runtime: 'nodejs22.x',
           RecursiveLoop: 'Allow',
         },
       });
@@ -3934,7 +3964,7 @@ describe('function', () => {
         {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
-          Runtime: lambda.Runtime.NODEJS_LATEST.name,
+          Runtime: 'nodejs22.x',
           // for default, if the property is not set up in stack it doesn't show up in the template.
         },
       });
@@ -4198,7 +4228,7 @@ test('set ephemeral storage to desired size', () => {
     {
       Code: { ZipFile: 'foo' },
       Handler: 'bar',
-      Runtime: lambda.Runtime.NODEJS_LATEST.name,
+      Runtime: 'nodejs22.x',
       EphemeralStorage: {
         Size: 1024,
       },
@@ -4235,7 +4265,7 @@ test('FunctionVersionUpgrade adds new description to function', () => {
     {
       Code: { ZipFile: 'foo' },
       Handler: 'bar',
-      Runtime: lambda.Runtime.NODEJS_LATEST.name,
+      Runtime: 'nodejs22.x',
       Description: Match.stringLikeRegexp('my description version-hash'),
     },
   });

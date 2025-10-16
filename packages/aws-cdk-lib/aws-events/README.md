@@ -357,3 +357,20 @@ const archive = new Archive(stack, 'Archive', {
 
 To enable archives or schema discovery on an event bus, customers has the choice of using either an AWS owned key or a customer managed key.
 For more information, see [KMS key options for event bus encryption](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-at-rest-key-options.html).
+
+## Configuring logging
+
+To configure logging for an Event Bus, leverage the LogConfig property. It allows different level of logging (NONE, INFO, TRACE, ERROR) and wether to include details or not.
+
+```ts
+import { EventBus, IncludeDetail, Level } from 'aws-cdk-lib/aws-events';
+
+const bus =  new EventBus(this, 'Bus', {
+      logConfig: {
+        includeDetail: IncludeDetail.FULL,
+        level: Level.TRACE,
+      },
+    });
+```
+
+See more [Specifying event bus log level](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus-logs.html#eb-event-bus-logs-level)

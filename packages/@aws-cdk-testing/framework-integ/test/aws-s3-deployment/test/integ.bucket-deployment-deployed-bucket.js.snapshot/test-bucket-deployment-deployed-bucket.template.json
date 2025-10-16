@@ -531,6 +531,12 @@
    "us-isob-west-1": {
     "endpoint": "s3-website.us-isob-west-1.sc2s.sgov.gov"
    },
+   "us-isof-east-1": {
+    "endpoint": "s3-website.us-isof-east-1.csp.hci.ic.gov"
+   },
+   "us-isof-south-1": {
+    "endpoint": "s3-website.us-isof-south-1.csp.hci.ic.gov"
+   },
    "us-west-1": {
     "endpoint": "s3-website-us-west-1.amazonaws.com"
    },

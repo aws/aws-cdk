@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "17f11fcd08888571765fa70b9736c3bbb0d5098be088eadfa080ecba1f52b09b": {
       "displayName": "TargetLambdaFunction/Code",
