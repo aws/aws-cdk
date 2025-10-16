@@ -846,6 +846,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
         ? new ParameterGroup(this, 'ParameterGroup', {
           engine: props.engine,
           parameters: props.parameters,
+          removalPolicy: helperRemovalPolicy(props.removalPolicy),
         })
         : undefined
     );
