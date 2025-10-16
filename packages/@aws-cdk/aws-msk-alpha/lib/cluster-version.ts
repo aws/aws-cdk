@@ -233,6 +233,13 @@ export class KafkaVersion {
   public static readonly V4_0_X_KRAFT = KafkaVersion.of('4.0.x.kraft', { tieredStorage: true });
 
   /**
+   * Kafka version 4.1.x with KRaft (Apache Kafka Raft) metadata mode support
+   *
+   * @see https://docs.aws.amazon.com/msk/latest/developerguide/metadata-management.html#kraft-intro
+   */
+  public static readonly V4_1_X_KRAFT = KafkaVersion.of('4.1.x.kraft', { tieredStorage: true });
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
