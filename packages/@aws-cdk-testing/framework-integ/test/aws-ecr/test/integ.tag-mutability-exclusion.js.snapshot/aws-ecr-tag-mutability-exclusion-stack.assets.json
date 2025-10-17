@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "1e1b7d4fbe39bd8e169ce50134668db95bf1bea656864c77ad9b331eccf8bbfb": {
+      "displayName": "aws-ecr-tag-mutability-exclusion-stack Template",
+      "source": {
+        "path": "aws-ecr-tag-mutability-exclusion-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-d0b67725": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1e1b7d4fbe39bd8e169ce50134668db95bf1bea656864c77ad9b331eccf8bbfb.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
