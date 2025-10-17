@@ -367,6 +367,13 @@ export class Distribution extends Resource implements IDistribution {
       if ((props.domainNames ?? []).length === 0) {
         Annotations.of(this).addWarningV2('@aws-cdk/aws-cloudfront:emptyDomainNames', 'No domain names are specified. You will need to specify it after running associate-alias CLI command manually. See the "Moving an alternate domain name to a different distribution" section of module\'s README for more info.');
       }
+    } else {
+      if (props.minimumProtocolVersion !== undefined) {
+        throw new ValidationError('minimumProtocolVersion can only be specified when using a custom certificate.', this);
+      }
+      if (props.sslSupportMethod !== undefined) {
+        throw new ValidationError('sslSupportMethod can only be specified when using a custom certificate.', this);
+      }
     }
 
     this.httpVersion = props.httpVersion ?? HttpVersion.HTTP2;

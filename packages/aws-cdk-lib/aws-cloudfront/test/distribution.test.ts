@@ -531,6 +531,26 @@ describe('certificates', () => {
       },
     });
   });
+
+  test('throw when minimumProtocolVersion specified without certificate', () => {
+    const origin = defaultOrigin();
+    expect(() => {
+      new Distribution(stack, 'Dist', {
+        defaultBehavior: { origin },
+        minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2016,
+      });
+    }).toThrow(/minimumProtocolVersion can only be specified when using a custom certificate/);
+  });
+
+  test('throw when sslSupportMethod specified without certificate', () => {
+    const origin = defaultOrigin();
+    expect(() => {
+      new Distribution(stack, 'Dist', {
+        defaultBehavior: { origin },
+        sslSupportMethod: SSLMethod.STATIC_IP,
+      });
+    }).toThrow(/sslSupportMethod can only be specified when using a custom certificate/);
+  });
 });
 
 describe('custom error responses', () => {
