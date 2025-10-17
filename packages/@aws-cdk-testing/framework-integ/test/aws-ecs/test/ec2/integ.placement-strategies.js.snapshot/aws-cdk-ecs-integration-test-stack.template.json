@@ -968,6 +968,28 @@
    "DependsOn": [
     "TaskDefTaskRole1EDB4A67"
    ]
+  },
+  "TestEmptyService1DB8D95A": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Ref": "EcsCluster97242B84"
+    },
+    "DeploymentConfiguration": {
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
+    },
+    "EnableECSManagedTags": false,
+    "LaunchType": "EC2",
+    "PlacementStrategies": [],
+    "SchedulingStrategy": "REPLICA",
+    "TaskDefinition": {
+     "Ref": "TaskDef54694570"
+    }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
   }
  },
  "Parameters": {
