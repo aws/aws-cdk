@@ -28,385 +28,645 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
 
 ## Table of contents
 
-- [AgentCore Runtime](#agentcore-runtime)
-  - [Runtime Versioning](#runtime-versioning)
-  - [Runtime Endpoints](#runtime-endpoints)
-  - [AgentCore Runtime Properties](#agentcore-runtime-properties)
-  - [Runtime Endpoint Properties](#runtime-endpoint-properties)
-  - [Creating a Runtime](#creating-a-runtime)
-    - [Option 1: Use an existing image in ECR](#option-1-use-an-existing-image-in-ecr)
-    - [Managing Endpoints and Versions](#managing-endpoints-and-versions)
-    - [Option 2: Use a local asset](#option-2-use-a-local-asset)
 
-## AgentCore Runtime
+## Gateway
 
-The AgentCore Runtime construct enables you to deploy containerized agents on Amazon Bedrock AgentCore.
-This L2 construct simplifies runtime creation just pass your ECR repository name
-and the construct handles all the configuration with sensible defaults.
+The Gateway construct provides a way to create Amazon Bedrock Agent Core Gateways, which serve as integration points between agents and external services.
 
-### Runtime Endpoints
-
-Endpoints provide a stable way to invoke specific versions of your agent runtime, enabling controlled deployments across different environments.
-When you create an agent runtime, Amazon Bedrock AgentCore automatically creates a "DEFAULT" endpoint which always points to the latest version
-of runtime.
-
-You can create additional endpoints in two ways:
-
-1. **Using Runtime.addEndpoint()** - Convenient method when creating endpoints alongside the runtime.
-2. **Using RuntimeEndpoint** - Flexible approach for existing runtimes.
-
-For example, you might keep a "production" endpoint on a stable version while testing newer versions
-through a "staging" endpoint. This separation allows you to test changes thoroughly before promoting them
-to production by simply updating the endpoint to point to the newer version.
-
-### AgentCore Runtime Properties
+### Gateway Properties
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `runtimeName` | `string` | Yes | The name of the agent runtime. Valid characters are a-z, A-Z, 0-9, _ (underscore). Must start with a letter and can be up to 48 characters long |
-| `agentRuntimeArtifact` | `AgentRuntimeArtifact` | Yes | The artifact configuration for the agent runtime containing the container configuration with ECR URI |
-| `executionRole` | `iam.IRole` | No | The IAM role that provides permissions for the agent runtime. If not provided, a role will be created automatically |
-| `networkConfiguration` | `NetworkConfiguration` | No | Network configuration for the agent runtime. Defaults to `{ networkMode: NetworkMode.PUBLIC }` |
-| `description` | `string` | No | Optional description for the agent runtime |
-| `protocolConfiguration` | `ProtocolType` | No | Protocol configuration for the agent runtime. Defaults to `ProtocolType.HTTP` |
-| `authorizerConfiguration` | `RuntimeAuthorizerConfiguration` | No | Authorizer configuration for the agent runtime. Use `RuntimeAuthorizerConfiguration` static methods to create configurations for IAM, Cognito, JWT, or OAuth authentication |
-| `environmentVariables` | `{ [key: string]: string }` | No | Environment variables for the agent runtime. Maximum 50 environment variables |
-| `tags` | `{ [key: string]: string }` | No | Tags for the agent runtime. A list of key:value pairs of tags to apply to this Runtime resource |
+| `name` | `string` | Yes | The name of the gateway. Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen). Maximum 100 characters |
+| `description` | `string` | No | Optional description for the gateway. Maximum 200 characters |
+| `protocolConfiguration` | `IGatewayProtocol` | No | The protocol configuration for the gateway. Defaults to MCP protocol |
+| `authorizerConfiguration` | `IGatewayAuthorizer` | No | The authorizer configuration for the gateway. Defaults to Cognito |
+| `exceptionLevel` | `GatewayExceptionLevel` | No | The verbosity of exception messages. Use DEBUG mode to see granular exception messages |
+| `kmsKeyArn` | `string` | No | The AWS KMS key ARN used to encrypt data associated with the gateway |
+| `roleArn` | `string` | No | The IAM role ARN that provides permissions for the gateway to access AWS services. A new role will be created if not provided |
+| `tags` | `{ [key: string]: string }` | No | Tags for the gateway. A list of key:value pairs of tags to apply to this Gateway resource |
 
-### Runtime Endpoint Properties
+### Basic Gateway Creation
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `endpointName` | `string` | Yes | The name of the runtime endpoint. Valid characters are a-z, A-Z, 0-9, _ (underscore). Must start with a letter and can be up to 48 characters long |
-| `agentRuntimeId` | `string` | Yes | The Agent Runtime ID for this endpoint |
-| `agentRuntimeVersion` | `string` | Yes | The Agent Runtime version for this endpoint. Must be between 1 and 5 characters long.|
-| `description` | `string` | No | Optional description for the runtime endpoint |
-| `tags` | `{ [key: string]: string }` | No | Tags for the runtime endpoint |
+If not provided, the protocol configuration defaults to MCP and the inbound auth configuration uses Cognito (it is automatically created on your behalf).
 
-### Creating a Runtime
-
-#### Option 1: Use an existing image in ECR
-
-Reference an image available within ECR.
-
-```typescript
-const repository = new ecr.Repository(this, "TestRepository", {
-  repositoryName: "test-agent-runtime",
-});
-
-// The runtime by default create ECR permission only for the repository available in the account the stack is being deployed
-const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
-
-// Create runtime using the built image
-const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
-  runtimeName: "myAgent",
-  agentRuntimeArtifact: agentRuntimeArtifact
+```typescript fixture=default
+// Create a basic gateway with default MCP protocol and Cognito authorizer
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  name: "my-gateway",
 });
 ```
 
-To grant the runtime permission to invoke a Bedrock model or inference profile:
-
-```text
-// Note: This example uses @aws-cdk/aws-bedrock-alpha which must be installed separately
-import * as bedrock from '@aws-cdk/aws-bedrock-alpha';
-
-// Create a cross-region inference profile for Claude 3.7 Sonnet
-const inferenceProfile = bedrock.CrossRegionInferenceProfile.fromConfig({
-  geoRegion: bedrock.CrossRegionInferenceProfileRegion.US,
-  model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_7_SONNET_V1_0
-});
-
-// Grant the runtime permission to invoke the inference profile
-inferenceProfile.grantInvoke(runtime);
-```
-
-#### Option 2: Use a local asset
-
-Reference a local directory containing a Dockerfile.
-Images are built from a local Docker context directory (with a Dockerfile), uploaded to Amazon Elastic Container Registry (ECR)
-by the CDK toolkit,and can be naturally referenced in your CDK app .
-
-```typescript
-const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
-  path.join(__dirname, "path to agent dockerfile directory")
-);
-
-const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
-  runtimeName: "myAgent",
-  agentRuntimeArtifact: agentRuntimeArtifact,
-});
-```
-
-### Runtime Versioning
-
-Amazon Bedrock AgentCore automatically manages runtime versioning to ensure safe deployments and rollback capabilities.
-When you create an agent runtime, AgentCore automatically creates version 1 (V1). Each subsequent update to the
-runtime configuration (such as updating the container image, modifying network settings, or changing protocol configurations)
-creates a new immutable version. These versions contain complete, self-contained configurations that can be referenced by endpoints,
-allowing you to maintain different versions for different environments or gradually roll out updates.
-
-#### Managing Endpoints and Versions
-
-Amazon Bedrock AgentCore automatically manages runtime versioning to provide safe deployments and rollback capabilities. You can follow
-the steps below to understand how to use versioning with runtime for controlled deployments across different environments.
-
-##### Step 1: Initial Deployment
-
-When you first create an agent runtime, AgentCore automatically creates Version 1 of your runtime. At this point, a DEFAULT endpoint is
-automatically created that points to Version 1. This DEFAULT endpoint serves as the main access point for your runtime.
-
-##### Step 2: Creating Custom Endpoints
-
-After the initial deployment, you can create additional endpoints for different environments. For example, you might create a "production"
-endpoint that explicitly points to Version 1. This allows you to maintain stable access points for specific environments while keeping the
-flexibility to test newer versions elsewhere.
-
-##### Step 3: Runtime Update Deployment
-
-When you update the runtime configuration (such as updating the container image, modifying network settings, or changing protocol
-configurations), AgentCore automatically creates a new version (Version 2). Upon this update:
-
-- Version 2 is created automatically with the new configuration
-- The DEFAULT endpoint automatically updates to point to Version 2
-- Any explicitly pinned endpoints (like the production endpoint) remain on their specified versions
-
-##### Step 4: Testing with Staging Endpoints
-
-Once Version 2 exists, you can create a staging endpoint that points to the new version. This staging endpoint allows you to test the
-new version in a controlled environment before promoting it to production. This separation ensures that production traffic continues
-to use the stable version while you validate the new version.
-
-##### Step 5: Promoting to Production
-
-After thoroughly testing the new version through the staging endpoint, you can update the production endpoint to point to Version 2.
-This controlled promotion process ensures that you can validate changes before they affect production traffic.
-
-```typescript
-// Initial version
-const repository = new ecr.Repository(this, "TestRepository", {
-  repositoryName: "test-agent-runtime",
-});
-
-const agentcoreArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0")
-
-const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
-  runtimeName: "myAgent",
-  agentRuntimeArtifact: agentcoreArtifact,
-});
-
-const prodEndpoint = runtime.addEndpoint("production", {
-  version: "1",
-  description: "Stable production endpoint - pinned to v1"
-});
-```
-
-Update the agentcore artifact for new runtime version.
-
-```typescript
-// New version
-const repository = new ecr.Repository(this, "TestRepository", {
-  repositoryName: "test-agent-runtime",
-});
-
-const agentcoreArtifactNew = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v2.0.0")
-
-const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
-  runtimeName: "myAgent",
-  agentRuntimeArtifact: agentcoreArtifactNew,
-});
-
-const stagingEndpoint = runtime.addEndpoint("staging", {
-  version: "2",
-  description: "Staging environment for testing new version"
-});
-
-runtime.addEndpoint("production", {
-  version: "2",  // New version added here
-  description: "Stable production endpoint"
-});
-
-```
-
-### Creating Standalone Runtime Endpoints
-
-RuntimeEndpoint can also be created as a standalone resource.
-
-#### Example: Creating an endpoint for an existing runtime
-
-```typescript
-// Reference an existing runtime by its ID
-const existingRuntimeId = "abc123-runtime-id"; // The ID of an existing runtime
-
-// Create a standalone endpoint
-const endpoint = new agentcore.RuntimeEndpoint(this, "MyEndpoint", {
-  endpointName: "production",
-  agentRuntimeId: existingRuntimeId,
-  agentRuntimeVersion: "1", // Specify which version to use
-  description: "Production endpoint for existing runtime"
-});
-```
-
-### Runtime Authentication Configuration
-
-The AgentCore Runtime supports multiple authentication modes to secure access to your agent endpoints. Authentication is configured during runtime creation using the `RuntimeAuthorizerConfiguration` class's static factory methods.
-
-#### IAM Authentication (Default)
-
-IAM authentication is the default mode, when no authorizerConfiguration is set then the underlying service use IAM.
-
-#### Cognito Authentication
-
-To configure AWS Cognito User Pool authentication:
-
-```typescript
-const repository = new ecr.Repository(this, "TestRepository", {
-  repositoryName: "test-agent-runtime",
-});
-const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
-
-const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
-  runtimeName: "myAgent",
-  agentRuntimeArtifact: agentRuntimeArtifact,
-  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingCognito(
-    "us-west-2_ABC123",  // User Pool ID (required)
-    "client123",         // Client ID (required)
-    "us-west-2"         // Region (optional, defaults to stack region)
-  ),
-});
-```
-
-#### JWT Authentication
-
-To configure custom JWT authentication with your own OpenID Connect (OIDC) provider:
-
-```typescript
-const repository = new ecr.Repository(this, "TestRepository", {
-  repositoryName: "test-agent-runtime",
-});
-const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
-
-const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
-  runtimeName: "myAgent",
-  agentRuntimeArtifact: agentRuntimeArtifact,
-  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingJWT(
-    "https://example.com/.well-known/openid-configuration",  // Discovery URL (required)
-    ["client1", "client2"],  // Allowed Client IDs (optional)
-    ["audience1"]           // Allowed Audiences (optional)
-  ),
-});
-```
-
-**Note**: The discovery URL must end with `/.well-known/openid-configuration`.
-
-#### OAuth Authentication
-
-To configure OAuth 2.0 authentication:
-
-```typescript
-const repository = new ecr.Repository(this, "TestRepository", {
-  repositoryName: "test-agent-runtime",
-});
-const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
-
-const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
-  runtimeName: "myAgent",
-  agentRuntimeArtifact: agentRuntimeArtifact,
-  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingOAuth(
-    "https://github.com/.well-known/openid-configuration",  
-    "oauth_client_123",  
-  ),
-});
-```
-
-#### Using a Custom IAM Role
-
-Instead of using the auto-created execution role, you can provide your own IAM role with specific permissions:
-The auto-created role includes all necessary baseline permissions for ECR access, CloudWatch logging, and X-Ray tracing. When providing a custom role, ensure these permissions are included.
-
-### Runtime Network Configuration
-
-The AgentCore Runtime supports two network modes for deployment:
-
-#### Public Network Mode (Default)
-
-By default, runtimes are deployed in PUBLIC network mode, which provides internet access suitable for less sensitive or open-use scenarios:
-
-```typescript
-const repository = new ecr.Repository(this, "TestRepository", {
-  repositoryName: "test-agent-runtime",
-});
-const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
-
-// Explicitly using public network (this is the default)
-const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
-  runtimeName: "myAgent",
-  agentRuntimeArtifact: agentRuntimeArtifact,
-  networkConfiguration: agentcore.RuntimeNetworkConfiguration.usingPublicNetwork(),
-});
-```
-
-#### VPC Network Mode
-
-For enhanced security and network isolation, you can deploy your runtime within a VPC:
-
-```typescript
-const repository = new ecr.Repository(this, "TestRepository", {
-  repositoryName: "test-agent-runtime",
-});
-const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
-
-// Create or use an existing VPC
-const vpc = new ec2.Vpc(this, 'MyVpc', {
-  maxAzs: 2,
-});
-
-// Configure runtime with VPC
-const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
-  runtimeName: "myAgent",
-  agentRuntimeArtifact: agentRuntimeArtifact,
-  networkConfiguration: agentcore.RuntimeNetworkConfiguration.usingVpc(this, {
-    vpc: vpc,
-    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
-    // Optionally specify security groups, or one will be created automatically
-    // securityGroups: [mySecurityGroup],
+### Protocol configuration
+
+Currently MCP is the only protocol available. To configure it, use the `protocol` property with `McpProtocolConfiguration`:
+
+- Instructions: provides the instructions for using the Model Context Protocol gateway. These instructions provide guidance on how to interact with the gateway.
+- Semantic search: enables intelligent tool discovery so that we are not limited by typical list tools limits (typically 100 or so). Our semantic search capability delivers contextually relevant tool subsets, significantly improving tool selection accuracy through focused, relevant results, inference performance with reduced token processing and overall orchestration efficiency and response times.
+- Supported versions: The supported versions of the Model Context Protocol. This field specifies which versions of the protocol the gateway can use.
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  name: "my-gateway",
+  protocolConfiguration: new agentcore.McpProtocolConfiguration({
+    instructions: "Use this gateway to connect to external MCP tools",
+    searchType: agentcore.McpGatewaySearchType.SEMANTIC,
+    supportedVersions: [agentcore.MCPProtocolVersion.MCP_2025_03_26],
   }),
 });
 ```
 
-#### Managing Security Groups with VPC Configuration
+### Inbound authorization
 
-When using VPC mode, the Runtime implements `ec2.IConnectable`, allowing you to manage network access using the `connections` property:
+Inbound authorization works with OAuth authorization, where the client application must authenticate with the OAuth authorizer before using the Gateway. Your client would receive an access token which is used at runtime.
 
-```typescript
+Before creating your Gateway, you need to set up inbound authorization to validate callers attempting to access targets through your Amazon Bedrock AgentCore Gateway. By default, if not provided, the construct will create and configure Cognito as the default identity provider (inbound Auth setup).
 
-const vpc = new ec2.Vpc(this, 'MyVpc', {
-  maxAzs: 2,
+You can configure a custom authorization provider using the `inboundAuthorizer` property with `GatewayAuthorizer.usingCustomJwt()`. You need to specify an OAuth discovery server and client IDs/audiences when you create the gateway. You can specify the following:
+
+- Discovery Url — String that must match the pattern ^.+/\.well-known/openid-configuration$ for OpenID Connect discovery URLs
+- At least one of the below options depending on the chosen identity provider.
+- Allowed audiences — List of allowed audiences for JWT tokens
+- Allowed clients — List of allowed client identifiers
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  name: "my-gateway",
+  authorizerConfiguration: agentcore.GatewayAuthorizer.usingCustomJwt({
+    discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
+    allowedAudience: ["my-app"],
+    allowedClients: ["my-client-id"],
+  }),
+});
+```
+
+### Gateway with KMS Encryption
+
+You can provide a KMS key, and configure the authorizer as well as the protocol configuration.
+
+```typescript fixture=default
+// Create a KMS key for encryption
+const encryptionKey = new kms.Key(this, "GatewayEncryptionKey", {
+  enableKeyRotation: true,
+  description: "KMS key for gateway encryption",
 });
 
-const repository = new ecr.Repository(this, "TestRepository", {
-  repositoryName: "test-agent-runtime",
+// Create gateway with KMS encryption
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  name: "my-encrypted-gateway",
+  description: "Gateway with KMS encryption",
+  protocolConfiguration: new agentcore.McpProtocolConfiguration({
+    instructions: "Use this gateway to connect to external MCP tools",
+    searchType: agentcore.McpGatewaySearchType.SEMANTIC,
+    supportedVersions: [agentcore.MCPProtocolVersion.MCP_2025_03_26],
+  }),
+  authorizerConfiguration: agentcore.GatewayAuthorizer.usingCustomJwt({
+    discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
+    allowedAudience: ["my-app"],
+    allowedClients: ["my-client-id"],
+  }),
+  kmsKeyArn: encryptionKey.keyArn,
+  exceptionLevel: agentcore.GatewayExceptionLevel.DEBUG,
 });
-const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+```
 
-// Create runtime with VPC configuration
-const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
-  runtimeName: "myAgent",
-  agentRuntimeArtifact: agentRuntimeArtifact,
-  networkConfiguration: agentcore.RuntimeNetworkConfiguration.usingVpc(this, {
-    vpc: vpc,
-    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+### Gateway with Custom Execution Role
+
+```typescript fixture=default
+// Create a custom execution role
+const executionRole = new iam.Role(this, "GatewayExecutionRole", {
+  assumedBy: new iam.ServicePrincipal("bedrock-agentcore.amazonaws.com"),
+  managedPolicies: [
+    iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonBedrockAgentCoreGatewayExecutionRolePolicy"),
+  ],
+});
+
+// Create gateway with custom execution role
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  name: "my-gateway",
+  description: "Gateway with custom execution role",
+  protocolConfiguration: new agentcore.McpProtocolConfiguration({
+    instructions: "Use this gateway to connect to external MCP tools",
+    searchType: agentcore.McpGatewaySearchType.SEMANTIC,
+    supportedVersions: [agentcore.MCPProtocolVersion.MCP_2025_03_26],
+  }),
+  authorizerConfiguration: agentcore.GatewayAuthorizer.usingCustomJwt({
+    discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
+    allowedAudience: ["my-app"],
+    allowedClients: ["my-client-id"],
+  }),
+  roleArn: executionRole.roleArn,
+});
+```
+
+### Gateway IAM Permissions
+
+The Gateway construct provides convenient methods for granting IAM permissions:
+
+```typescript fixture=default
+// Create a gateway
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  name: "my-gateway",
+  description: "Gateway for external service integration",
+  protocolConfiguration: new agentcore.McpProtocolConfiguration({
+    instructions: "Use this gateway to connect to external MCP tools",
+    searchType: agentcore.McpGatewaySearchType.SEMANTIC,
+    supportedVersions: [agentcore.MCPProtocolVersion.MCP_2025_03_26],
+  }),
+  authorizerConfiguration: agentcore.GatewayAuthorizer.usingCustomJwt({
+    discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
+    allowedAudience: ["my-app"],
+    allowedClients: ["my-client-id"],
   }),
 });
 
-// Now you can manage network access using the connections property
-// Allow inbound HTTPS traffic from a specific security group
-const webServerSecurityGroup = new ec2.SecurityGroup(this, 'WebServerSG', { vpc });
-runtime.connections.allowFrom(webServerSecurityGroup, ec2.Port.tcp(443), 'Allow HTTPS from web servers');
+// Create a role that needs access to the gateway
+const userRole = new iam.Role(this, "UserRole", {
+  assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
+});
 
-// Allow outbound connections to a database
-const databaseSecurityGroup = new ec2.SecurityGroup(this, 'DatabaseSG', { vpc });
-runtime.connections.allowTo(databaseSecurityGroup, ec2.Port.tcp(5432), 'Allow PostgreSQL connection');
+// Grant read permissions (Get and List actions)
+gateway.grantRead(userRole);
 
-// Allow outbound HTTPS to anywhere (for external API calls)
-runtime.connections.allowToAnyIpv4(ec2.Port.tcp(443), 'Allow HTTPS outbound');
+// Grant manage permissions (Create, Update, Delete actions)
+gateway.grantManage(userRole);
+
+// Grant specific custom permissions
+gateway.grant(userRole, "bedrock-agentcore:GetGateway");
 ```
+
+## Gateway Target
+
+After Creating gateways, you can add targets which define the tools that your gateway will host. Gateway supports multiple target types including Lambda functions and API specifications (either OpenAPI schemas or Smithy models). Gateway allows you to attach multiple targets to a Gateway and you can change the targets / tools attached to a gateway at any point. Each target can have its own credential provider attached enabling you to securely access targets whether they need IAM, API Key, or OAuth credentials. Note: the authorization grant flow (three-legged OAuth) is not supported as a target credential type.
+
+### Gateway Target Properties
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `string` | Yes | The name of the gateway target. Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen) |
+| `description` | `string` | No | Optional description for the gateway target. Maximum 200 characters |
+| `gateway` | `IGateway` | Yes | The gateway this target belongs to |
+| `targetConfiguration` | `ITargetConfiguration` | Yes | The target configuration (Lambda, OpenAPI, or Smithy). Use `LambdaTargetConfiguration.create()`, `OpenApiTargetConfiguration.create()`, or `SmithyTargetConfiguration.create()` |
+| `credentialProviderConfigurations` | `IGatewayCredentialProvider[]` | No | Credential providers for authentication. Defaults to `[GatewayCredentialProvider.iamRole()]`. Use `GatewayCredentialProvider.apiKey()`, `GatewayCredentialProvider.oauth()`, or `GatewayCredentialProvider.iamRole()` |
+
+With this, Gateway becomes a single MCP URL enabling access to all of the relevant tools for an agent across myriad APIs. Let’s dive deeper into how to define each of the target types.
+
+### Targets types
+
+You can create the following targets types:
+
+- Lambda: targets allow you to connect your gateway to AWS Lambda functions that implement your tools. This is useful when you want to execute custom code in response to tool invocations.
+- OpenAPI (formerly known as Swagger): widely used standard for describing RESTful APIs. Gateway supports OpenAPI 3.0 specifications for defining API targets.
+- Smithy: language for defining services and SDKs that works well with Gateway. Smithy models provide a more structured approach to defining APIs compared to OpenAPI, and are particularly useful for connecting to AWS services. AgentCore Gateway supports built-in AWS service models only. Smithy models are restricted to AWS services and custom Smithy models for non-AWS services are not supported.
+
+> Note: For Smithy model targets that access AWS services, your Gateway's execution role needs permissions to access those services. For example, for a DynamoDB target, your execution role needs permissions to perform DynamoDB operations. This is not managed by the construct due to the large number of options.
+
+### Outbound auth
+
+Outbound authorization lets Amazon Bedrock AgentCore gateways securely access gateway targets on behalf of users authenticated and authorized during Inbound Auth.
+
+Similar to AWS resources or Lambda functions, you authenticate by using IAM credentials. With other resources, you can use OAuth 2LO or API keys. OAuth 2LO is a type of OAuth 2.0 where a client application accesses resources on it's behalf, instead of on behalf of the user. For more information, see OAuth 2LO.
+
+First, you register your client application with third-party providers and then create an outbound authorization with the client ID and secret. Then configure a gateway target with the outbound authorization that you created.
+
+To create an outbound auth, refer to the [Identity](#identity-1) section to create either an API Key identity or OAuth identity.
+
+### Api schema
+
+If you select a target of type OpenAPI or Smithy, there are three ways to provide an API schema for your target:
+
+- From a local asset file (requires binding to scope):
+
+```typescript fixture=default
+// When using ApiSchema.fromLocalAsset, you must bind the schema to a scope
+const schema = agentcore.ApiSchema.fromLocalAsset(path.join(__dirname, "mySchema.yml"));
+schema.bind(this);
+```
+
+- From an inline schema:
+
+```typescript fixture=default
+const inlineSchema = agentcore.ApiSchema.fromInline(`
+openapi: 3.0.3
+info:
+  title: Library API
+  version: 1.0.0
+paths:
+  /search:
+    get:
+      summary: Search for books
+      operationId: searchBooks
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+`);
+```
+
+- From an existing S3 file:
+
+```typescript fixture=default
+const bucket = s3.Bucket.fromBucketName(this, "ExistingBucket", "my-schema-bucket");
+const s3Schema = agentcore.ApiSchema.fromS3File(bucket, "schemas/action-group.yaml");
+```
+
+### Basic Gateway Target Creation
+
+You can create targets in two ways: using the static factory methods on `GatewayTarget` or using the convenient `addTarget` methods on the gateway instance.
+
+#### Using addTarget methods (Recommended)
+
+```typescript fixture=default
+// Create a gateway first
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  name: "my-gateway",
+  protocolConfiguration: new agentcore.McpProtocolConfiguration({
+    instructions: "Use this gateway to connect to external MCP tools",
+    searchType: agentcore.McpGatewaySearchType.SEMANTIC,
+    supportedVersions: [agentcore.MCPProtocolVersion.MCP_2025_03_26],
+  }),
+  authorizerConfiguration: agentcore.GatewayAuthorizer.usingCustomJwt({
+    discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
+    allowedAudience: ["my-app"],
+    allowedClients: ["my-client-id"],
+  }),
+});
+
+const apiKeyIdentityArn = "your-idp-arn"
+
+const bucket = s3.Bucket.fromBucketName(this, "ExistingBucket", "my-schema-bucket");
+const s3Schema = agentcore.ApiSchema.fromS3File(bucket, "schemas/myschema.yaml");
+
+// Add an OpenAPI target directly to the gateway
+const target = gateway.addOpenApiTarget("MyTarget", {
+  name: "my-api-target",
+  description: "Target for external API integration",
+  apiSchema: s3Schema,
+  credentialProviderConfigurations: [
+    agentcore.GatewayCredentialProvider.apiKey({
+      providerArn: apiKeyIdentityArn,
+      credentialLocation: agentcore.ApiKeyCredentialLocation.header({
+        credentialParameterName: "X-API-Key",
+      }),
+    }),
+  ],
+});
+
+// Add a Lambda target
+const lambdaFunction = new lambda.Function(this, "MyFunction", {
+  runtime: lambda.Runtime.NODEJS_22_X,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+    exports.handler = async (event) => {
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: 'Hello from Lambda!' })
+      };
+    };
+  `),
+});
+
+const lambdaTarget = gateway.addLambdaTarget("MyLambdaTarget", {
+  name: "my-lambda-target",
+  description: "Lambda function target",
+  lambdaFunction: lambdaFunction,
+  toolSchema: agentcore.ToolSchema.fromInline([
+    {
+      name: "hello_world",
+      description: "A simple hello world tool",
+      inputSchema: {
+        type: agentcore.SchemaDefinitionType.OBJECT,
+        properties: {
+          name: {
+            type: agentcore.SchemaDefinitionType.STRING,
+            description: "The name to greet",
+          },
+        },
+        required: ["name"],
+      },
+    },
+  ]),
+});
+
+// Add a Smithy target
+const smithySchema = agentcore.ApiSchema.fromS3File(bucket, "schemas/mymodel.json");
+const smithyTarget = gateway.addSmithyTarget("MySmithyTarget", {
+  name: "my-smithy-target",
+  description: "Smithy model target",
+  smithyModel: smithySchema,
+  credentialProviderConfigurations: [
+    agentcore.GatewayCredentialProvider.iamRole(),
+  ],
+});
+```
+
+#### Using static factory methods
+
+```typescript fixture=default
+// Create a gateway first
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  name: "my-gateway",
+});
+
+const apiKeyIdentityArn = "your-idp-arn"
+
+const bucket = s3.Bucket.fromBucketName(this, "ExistingBucket", "my-schema-bucket");
+const s3Schema = agentcore.ApiSchema.fromS3File(bucket, "schemas/myschema.yaml");
+
+// Create a gateway target with OpenAPI Schema 
+const target = agentcore.GatewayTarget.forOpenApi(this, "MyTarget", {
+  name: "my-api-target",
+  description: "Target for external API integration",
+  gateway: gateway,  // Note: you need to pass the gateway reference
+  apiSchema: s3Schema,
+  credentialProviderConfigurations: [
+    agentcore.GatewayCredentialProvider.apiKey({
+     providerArn: apiKeyIdentityArn,
+      credentialLocation: agentcore.ApiKeyCredentialLocation.header({
+        credentialParameterName: "X-API-Key",
+      }),
+    }),
+  ],
+});
+```
+
+### Lambda Target with Tool Scheman
+
+```typescript fixture=default
+// Create a gateway first
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  name: "my-gateway",
+  protocolConfiguration: new agentcore.McpProtocolConfiguration({
+    instructions: "Use this gateway to connect to external MCP tools",
+    searchType: agentcore.McpGatewaySearchType.SEMANTIC,
+    supportedVersions: [agentcore.MCPProtocolVersion.MCP_2025_03_26],
+  }),
+  authorizerConfiguration: agentcore.GatewayAuthorizer.usingCustomJwt({
+    discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
+    allowedAudience: ["my-app"],
+    allowedClients: ["my-client-id"],
+  }),
+});
+
+// Create a Lambda function
+const lambdaFunction = new lambda.Function(this, "MyFunction", {
+  runtime: lambda.Runtime.NODEJS_22_X,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+        exports.handler = async (event) => {
+            return {
+                statusCode: 200,
+                body: JSON.stringify({ message: 'Hello from Lambda!' })
+            };
+        };
+    `),
+});
+
+// Create a gateway target with Lambda and tool schema 
+const target = agentcore.GatewayTarget.forLambda(this, "MyLambdaTarget", {
+  name: "my-lambda-target",
+  description: "Target for Lambda function integration",
+  gateway: gateway,
+  lambdaFunction: lambdaFunction,
+  toolSchema: agentcore.ToolSchema.fromInline([
+    {
+      name: "hello_world",
+      description: "A simple hello world tool",
+      inputSchema: {
+        type: agentcore.SchemaDefinitionType.OBJECT,
+        description: "Input schema for hello world tool",
+        properties: {
+          name: {
+            type: agentcore.SchemaDefinitionType.STRING,
+            description: "The name to greet",
+          },
+        },
+        required: ["name"],
+      },
+      outputSchema: {
+        type: agentcore.SchemaDefinitionType.OBJECT,
+        description: "Output schema for hello world tool",
+        properties: {
+          message: {
+            type: agentcore.SchemaDefinitionType.STRING,
+            description: "The greeting message",
+          },
+        },
+      },
+    },
+  ]),
+  credentialProviderConfigurations: [agentcore.GatewayCredentialProvider.iamRole()],
+});
+```
+
+### Smithy Model Target with OAuth
+
+```typescript fixture=default
+// Create a gateway first
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  name: "my-gateway",
+  protocolConfiguration: new agentcore.McpProtocolConfiguration({
+    instructions: "Use this gateway to connect to external MCP tools",
+    searchType: agentcore.McpGatewaySearchType.SEMANTIC,
+    supportedVersions: [agentcore.MCPProtocolVersion.MCP_2025_03_26],
+  }),
+  authorizerConfiguration: agentcore.GatewayAuthorizer.usingCustomJwt({
+    discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
+    allowedAudience: ["my-app"],
+    allowedClients: ["my-client-id"],
+  }),
+});
+
+// Create an OAuth identity
+const oauthIdentityArn = "oauth-idp-arn"
+
+const bucket = s3.Bucket.fromBucketName(this, "ExistingBucket", "my-schema-bucket");
+// A Smithy model in JSON AST format
+const s3Schema = agentcore.ApiSchema.fromS3File(bucket, "schemas/myschema.json");
+
+// Create a gateway target with Smithy Model and OAuth 
+const target = agentcore.GatewayTarget.forSmithy(this, "MySmithyTarget", {
+  name: "my-smithy-target",
+  description: "Target for Smithy model integration",
+  gateway: gateway,
+  smithyModel: s3Schema,
+  credentialProviderConfigurations: [
+    agentcore.GatewayCredentialProvider.oauth({
+      providerArn: oauthIdentityArn,
+      scopes: ["read", "write"],
+      customParameters: {
+        audience: "https://api.example.com",
+        response_type: "code",
+      },
+    }),
+  ],
+});
+```
+
+### Complex Lambda Target with S3 Tool Schema
+
+```typescript fixture=default
+// Create a gateway first
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  name: "my-gateway",
+  protocolConfiguration: new agentcore.McpProtocolConfiguration({
+    instructions: "Use this gateway to connect to external MCP tools",
+    searchType: agentcore.McpGatewaySearchType.SEMANTIC,
+    supportedVersions: [agentcore.MCPProtocolVersion.MCP_2025_03_26],
+  }),
+  authorizerConfiguration: agentcore.GatewayAuthorizer.usingCustomJwt({
+    discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
+    allowedAudience: ["my-app"],
+    allowedClients: ["my-client-id"],
+  }),
+});
+
+// Create a Lambda function
+const lambdaFunction = new lambda.Function(this, "MyComplexFunction", {
+  runtime: lambda.Runtime.NODEJS_22_X,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+        exports.handler = async (event) => {
+            return {
+                statusCode: 200,
+                body: JSON.stringify({ result: 'Complex operation completed' })
+            };
+        };
+    `),
+});
+
+// Create a gateway target with Lambda and S3 tool schema 
+const target = agentcore.GatewayTarget.forLambda(this, "MyComplexLambdaTarget", {
+  name: "my-complex-lambda-target",
+  description: "Target for complex Lambda function integration",
+  gateway: gateway,
+  lambdaFunction: lambdaFunction,
+  toolSchema: agentcore.ToolSchema.fromS3File(
+    s3.Bucket.fromBucketName(this, "SchemasBucket", "my-schemas-bucket"),
+    "tools/complex-tool-schema.json",
+    "123456789012"
+  ),
+  credentialProviderConfigurations: [agentcore.GatewayCredentialProvider.iamRole()],
+});
+```
+
+### Lambda Target with Local Asset Tool Schema
+
+```typescript fixture=default
+// Create a gateway first
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  name: "my-gateway",
+  protocolConfiguration: new agentcore.McpProtocolConfiguration({
+    instructions: "Use this gateway to connect to external MCP tools",
+    searchType: agentcore.McpGatewaySearchType.SEMANTIC,
+    supportedVersions: [agentcore.MCPProtocolVersion.MCP_2025_03_26],
+  }),
+  authorizerConfiguration: agentcore.GatewayAuthorizer.usingCustomJwt({
+    discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
+    allowedAudience: ["my-app"],
+  }),
+});
+
+// Create a Lambda function
+const lambdaFunction = new lambda.Function(this, "MyLambdaFunction", {
+  runtime: lambda.Runtime.NODEJS_22_X,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+    exports.handler = async (event) => {
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: "Hello from Lambda!" })
+      };
+    };
+  `),
+});
+
+// Create a target with local asset tool schema 
+const target = agentcore.GatewayTarget.forLambda(this, "MyLocalAssetLambdaTarget", {
+  name: "my-local-asset-lambda-target",
+  description: "Target for Lambda function with local asset tool schema",
+  gateway: gateway,
+  lambdaFunction: lambdaFunction,
+  toolSchema: agentcore.ToolSchema.fromLocalAsset(
+    path.join(__dirname, "schemas", "my-tool-schema.json")
+  ),
+  credentialProviderConfigurations: [agentcore.GatewayCredentialProvider.iamRole()],
+});
+```
+
+### Gateway Target IAM Permissions
+
+The Gateway Target construct provides convenient methods for granting IAM permissions:
+
+```typescript fixture=default
+// Create a gateway and target
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  name: "my-gateway",
+  protocolConfiguration: new agentcore.McpProtocolConfiguration({
+    instructions: "Use this gateway to connect to external MCP tools",
+    searchType: agentcore.McpGatewaySearchType.SEMANTIC,
+    supportedVersions: [agentcore.MCPProtocolVersion.MCP_2025_03_26],
+  }),
+  authorizerConfiguration: agentcore.GatewayAuthorizer.usingCustomJwt({
+    discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
+    allowedAudience: ["my-app"],
+    allowedClients: ["my-client-id"],
+  }),
+});
+
+const apiKeyIdentityArn = "your-idp-arn"
+
+const bucket = s3.Bucket.fromBucketName(this, "ExistingBucket", "my-schema-bucket");
+const s3Schema = agentcore.ApiSchema.fromS3File(bucket, "schemas/myschema.yaml");
+
+const target = agentcore.GatewayTarget.forOpenApi(this, "MyTarget", {
+  name: "my-target",
+  gateway: gateway,
+  apiSchema: s3Schema,
+  credentialProviderConfigurations: [
+    agentcore.GatewayCredentialProvider.apiKey({
+     providerArn: apiKeyIdentityArn,
+      credentialLocation: agentcore.ApiKeyCredentialLocation.header({
+        credentialParameterName: "X-API-Key",
+      }),
+    }),
+  ],
+});
+
+// Create a role that needs access to the gateway target
+const userRole = new iam.Role(this, "UserRole", {
+  assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
+});
+
+// Grant read permissions (Get and List actions)
+target.grantRead(userRole);
+
+// Grant manage permissions (Create, Update, Delete actions)
+target.grantManage(userRole);
+
+// Grant specific custom permissions
+target.grant(userRole, "bedrock-agentcore:GetGatewayTarget");
+```
+
+### Target Configuration Types
+
+The Gateway Target construct supports three MCP target configuration types:
+
+1. **OpenAPI Schema Target** (`OpenApiSchemaMcpTargetConfiguration`)
+
+   - Connects to REST APIs using OpenAPI specifications
+   - Supports OAUTH and API_KEY credential providers
+   - Ideal for integrating with external REST services
+
+2. **Smithy Model Target** (`SmithyModelMcpTargetConfiguration`)
+
+   - Connects to services using Smithy model definitions
+   - Supports OAUTH and API_KEY credential providers
+   - Ideal for AWS service integrations
+
+3. **Lambda Target** (`LambdaMcpTargetConfiguration`)
+   - Connects to AWS Lambda functions
+   - Supports GATEWAY_IAM_ROLE credential provider only
+   - Ideal for custom serverless function integration
