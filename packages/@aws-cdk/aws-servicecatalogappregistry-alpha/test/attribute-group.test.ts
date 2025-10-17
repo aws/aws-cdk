@@ -16,12 +16,14 @@ describe('Attribute Group', () => {
   });
 
   test('default attribute group creation', () => {
-    new appreg.AttributeGroup(stack, 'MyAttributeGroup', {
+    const attributeGroup = new appreg.AttributeGroup(stack, 'MyAttributeGroup', {
       attributeGroupName: 'testAttributeGroup',
       attributes: {
         key: 'value',
       },
     });
+
+    expect(attributeGroup.attributes).toEqual({ key: 'value' });
 
     Template.fromStack(stack).templateMatches({
       Resources: {
@@ -76,6 +78,21 @@ describe('Attribute Group', () => {
     const attributeGroup = appreg.AttributeGroup.fromAttributeGroupArn(stack, 'MyAttributeGroup',
       'arn:aws:servicecatalog:us-east-1:123456789012:/attribute-groups/0aqmvxvgmry0ecc4mjhwypun6i');
     expect(attributeGroup.attributeGroupId).toEqual('0aqmvxvgmry0ecc4mjhwypun6i');
+  }),
+
+  test('for an attribute group imported by ARN with attributes', () => {
+    const attributes = { key1: 'value1', key2: 'value2' };
+    const attributeGroup = appreg.AttributeGroup.fromAttributeGroupArn(stack, 'MyAttributeGroup',
+      'arn:aws:servicecatalog:us-east-1:123456789012:/attribute-groups/0aqmvxvgmry0ecc4mjhwypun6i', attributes);
+    expect(attributeGroup.attributeGroupId).toEqual('0aqmvxvgmry0ecc4mjhwypun6i');
+    expect(attributeGroup.attributes).toEqual(attributes);
+  }),
+
+  test('for an attribute group imported by ARN without attributes', () => {
+    const attributeGroup = appreg.AttributeGroup.fromAttributeGroupArn(stack, 'MyAttributeGroup',
+      'arn:aws:servicecatalog:us-east-1:123456789012:/attribute-groups/0aqmvxvgmry0ecc4mjhwypun6i');
+    expect(attributeGroup.attributeGroupId).toEqual('0aqmvxvgmry0ecc4mjhwypun6i');
+    expect(attributeGroup.attributes).toBeUndefined();
   }),
 
   test('Associate an application to an imported attribute group', () => {
