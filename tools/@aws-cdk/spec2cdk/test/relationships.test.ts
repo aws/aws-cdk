@@ -272,3 +272,60 @@ test('resource with nested relationship with type history', () => {
 
   expect(rendered).toMatchSnapshot();
 });
+
+test('relationship have arns appear first in the constructor chain', () => {
+  // Target resource
+  const roleResource = db.allocate('resource', {
+    name: 'Role',
+    primaryIdentifier: ['RoleName', 'OtherPrimaryId'],
+    attributes: {
+      RoleArn: {
+        type: { type: 'string' },
+      },
+    },
+    properties: {},
+    cloudFormationType: 'AWS::IAM::Role',
+  });
+  db.link('hasResource', service, roleResource);
+
+  // Type definition with relationship
+  const configType = db.allocate('typeDefinition', {
+    name: 'ExecutionConfig',
+    properties: {
+      RoleArn: {
+        type: { type: 'string' },
+        relationshipRefs: [{
+          cloudFormationType: 'AWS::IAM::Role',
+          propertyName: 'RoleName',
+        }, {
+          cloudFormationType: 'AWS::IAM::Role',
+          propertyName: 'RoleArn',
+        }, {
+          cloudFormationType: 'AWS::IAM::Role',
+          propertyName: 'OtherPrimaryId',
+        }],
+      },
+    },
+  });
+
+  // Source resource with nested property
+  const taskResource = db.allocate('resource', {
+    name: 'Task',
+    attributes: {},
+    properties: {
+      ExecutionConfig: {
+        type: { type: 'ref', reference: { $ref: configType.$id } },
+      },
+    },
+    cloudFormationType: 'AWS::IAM::Task',
+  });
+  db.link('hasResource', service, taskResource);
+  db.link('usesType', taskResource, configType);
+
+  const ast = AstBuilder.forService(service, { db });
+  const rendered = renderer.render(ast.module);
+
+  const chain = '"roleArn": (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? (props.roleArn as IRoleRef)?.roleRef?.roleName ?? (props.roleArn as IRoleRef)?.roleRef?.otherPrimaryId ?? props.roleArn';
+
+  expect(rendered).toContain(chain);
+});
