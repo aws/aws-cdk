@@ -41,6 +41,18 @@ export interface IHostedZone extends IResource {
 }
 
 /**
+ * Options for the delegation permissions granted
+ */
+export interface GrantDelegationOptions {
+  /**
+   * List of hosted zone names to allow delegation to in the grant permissions.
+   *
+   * @default the grant allows delegation to any hosted zone
+   */
+  readonly delegatedZoneNames?: string[];
+}
+
+/**
  * Reference to a hosted zone
  */
 export interface HostedZoneAttributes {
@@ -61,13 +73,6 @@ export interface HostedZoneAttributes {
 export interface PublicHostedZoneAttributes extends HostedZoneAttributes { }
 
 /**
- * Options for the delegation permissions granted
+ * Reference to a private hosted zone
  */
-export interface GrantDelegationOptions {
-  /**
-   * List of hosted zone names to allow delegation to in the grant permissions.
-   *
-   * @default the grant allows delegation to any hosted zone
-   */
-  readonly delegatedZoneNames?: string[];
-}
+export interface PrivateHostedZoneAttributes extends HostedZoneAttributes { }

@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "9c289d60470f68875668a8e9e273c09b19510554e6a5d404bf2addff843aeb85": {
+      "displayName": "integ-cloudfront-response-completion-timeout Template",
+      "source": {
+        "path": "integ-cloudfront-response-completion-timeout.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-24f2f588": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9c289d60470f68875668a8e9e273c09b19510554e6a5d404bf2addff843aeb85.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
