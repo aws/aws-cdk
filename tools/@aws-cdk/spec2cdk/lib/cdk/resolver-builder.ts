@@ -77,8 +77,13 @@ export class ResolverBuilder {
     // Generates code like:
     // For single value: (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? (props.roleArn as IUserRef)?.userRef?.userArn ?? props.roleArn
     // For array: props.roleArns?.map((item: any) => (item as IRoleRef)?.roleRef?.roleArn ?? (item as IUserRef)?.userRef?.userArn ?? item)
+    // Ensures that arn properties always appear first in the chain as they are more general
+    const arnRels = relationships.filter(r => r.propName.toLowerCase().endsWith('arn'));
+    const otherRels = relationships.filter(r => !r.propName.toLowerCase().endsWith('arn'));
+
     const buildChain = (itemName: string) => [
-      ...relationships.map(r => `(${itemName} as ${r.referenceType})?.${r.referenceName}?.${r.propName}`),
+      ...[...arnRels, ...otherRels]
+        .map(r => `(${itemName} as ${r.referenceType})?.${r.referenceName}?.${r.propName}`),
       itemName,
     ].join(' ?? ');
     const resolver = (_: Expression) => {
