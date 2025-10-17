@@ -7,6 +7,7 @@
   - [HTTP Proxy Integration](#http-proxy)
   - [StepFunctions Integration](#stepfunctions-integration)
   - [SQS Integration](#sqs-integration)
+  - [EventBridge Integration](#eventbridge-integration)
   - [Private Integration](#private-integration)
   - [Request Parameters](#request-parameters)
 - [WebSocket APIs](#websocket-apis)
@@ -212,6 +213,58 @@ new apigwv2.ParameterMapping()
 // SQS_PURGE_QUEUE
 new apigwv2.ParameterMapping()
   .custom('QueueUrl', queue.queueUrl);
+```
+
+### EventBridge Integration
+
+EventBridge integrations enable integrating an HTTP API route with Amazon EventBridge using the PutEvents API.
+This allows the HTTP API to forward requests as events to an EventBridge event bus.
+
+The following code configures EventBridge integrations:
+
+```ts
+import * as events from 'aws-cdk-lib/aws-events';
+import { HttpEventBridgeIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+
+declare const bus: events.IEventBus;
+declare const httpApi: apigwv2.HttpApi;
+
+// default integration (PutEvents)
+httpApi.addRoutes({
+  path: '/default',
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpEventBridgeIntegration('DefaultEventBridgeIntegration', {
+    eventBus: bus,
+  }),
+});
+
+// explicit subtype
+httpApi.addRoutes({
+  path: '/put-events',
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpEventBridgeIntegration('ExplicitSubtypeIntegration', {
+    eventBus: bus,
+    subtype: apigwv2.HttpIntegrationSubtype.EVENTBRIDGE_PUT_EVENTS,
+  }),
+});
+```
+
+#### EventBridge integration parameter mappings
+
+You can configure the custom parameter mappings of the EventBridge integration using the `parameterMapping` property of the `HttpEventBridgeIntegration` object.
+
+By default, the integration expects the request body to contain `Detail`, `DetailType`, and `Source` fields. The `EventBusName` is derived from the provided event bus.
+
+```ts
+import * as events from 'aws-cdk-lib/aws-events';
+declare const bus: events.IEventBus;
+
+new apigwv2.ParameterMapping()
+  .custom('EventBusName', bus.eventBusName)
+  // These fields are expected to be present in the request body
+  .custom('Detail', '$request.body.Detail')
+  .custom('DetailType', '$request.body.DetailType')
+  .custom('Source', '$request.body.Source');
 ```
 
 ### Private Integration
