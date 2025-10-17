@@ -1,41 +1,5 @@
 {
  "Resources": {
-  "Database": {
-   "Type": "AWS::Glue::Database",
-   "Properties": {
-    "CatalogId": {
-     "Ref": "AWS::AccountId"
-    },
-    "DatabaseInput": {
-     "Description": "My database"
-    }
-   }
-  },
-  "SchemaTable": {
-   "Type": "AWS::Glue::Table",
-   "Properties": {
-    "CatalogId": {
-     "Ref": "AWS::AccountId"
-    },
-    "DatabaseName": {
-     "Ref": "Database"
-    },
-    "TableInput": {
-     "StorageDescriptor": {
-      "Columns": [
-       {
-        "Name": "column_a",
-        "Type": "string"
-       },
-       {
-        "Name": "column_b",
-        "Type": "string"
-       }
-      ]
-     }
-    }
-   }
-  },
   "Bucket83908E77": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
@@ -177,6 +141,88 @@
    "DependsOn": [
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
+  },
+  "Database": {
+   "Type": "AWS::Glue::Database",
+   "Properties": {
+    "CatalogId": {
+     "Ref": "AWS::AccountId"
+    },
+    "DatabaseInput": {
+     "Description": "My database"
+    }
+   }
+  },
+  "SchemaRegistry": {
+   "Type": "AWS::Glue::Registry",
+   "Properties": {
+    "Name": "my_schema_registry"
+   }
+  },
+  "InlineSchemaTable": {
+   "Type": "AWS::Glue::Table",
+   "Properties": {
+    "CatalogId": {
+     "Ref": "AWS::AccountId"
+    },
+    "DatabaseName": {
+     "Ref": "Database"
+    },
+    "TableInput": {
+     "StorageDescriptor": {
+      "Columns": [
+       {
+        "Name": "column_a",
+        "Type": "string"
+       },
+       {
+        "Name": "column_b",
+        "Type": "string"
+       }
+      ]
+     }
+    }
+   }
+  },
+  "Schema": {
+   "Type": "AWS::Glue::Schema",
+   "Properties": {
+    "Compatibility": "NONE",
+    "DataFormat": "AVRO",
+    "Name": "my_schema",
+    "Registry": {
+     "Arn": {
+      "Fn::GetAtt": [
+       "SchemaRegistry",
+       "Arn"
+      ]
+     }
+    },
+    "SchemaDefinition": "{\"type\":\"record\",\"name\":\"MyRecord\",\"fields\":[{\"name\":\"column_a\",\"type\":\"string\"},{\"name\":\"column_b\",\"type\":\"string\"}]}"
+   }
+  },
+  "RegistrySchemaTable": {
+   "Type": "AWS::Glue::Table",
+   "Properties": {
+    "CatalogId": {
+     "Ref": "AWS::AccountId"
+    },
+    "DatabaseName": {
+     "Ref": "Database"
+    },
+    "TableInput": {
+     "StorageDescriptor": {
+      "SchemaReference": {
+       "SchemaVersionId": {
+        "Fn::GetAtt": [
+         "Schema",
+         "InitialSchemaVersionId"
+        ]
+       }
+      }
+     }
+    }
+   }
   },
   "CustomHiveJsonS3DestinationRole9C57602D": {
    "Type": "AWS::IAM::Role",
@@ -323,7 +369,7 @@
            },
            "/",
            {
-            "Ref": "SchemaTable"
+            "Ref": "InlineSchemaTable"
            }
           ]
          ]
@@ -422,13 +468,13 @@
         ]
        },
        "TableName": {
-        "Ref": "SchemaTable"
+        "Ref": "InlineSchemaTable"
        },
        "VersionId": "LATEST"
       }
      },
-     "ErrorOutputPrefix": "error/",
-     "Prefix": "success/",
+     "ErrorOutputPrefix": "error/CustomHiveJson/",
+     "Prefix": "success/CustomHiveJson/",
      "RoleARN": {
       "Fn::GetAtt": [
        "CustomHiveJsonS3DestinationRole9C57602D",
@@ -586,7 +632,7 @@
            },
            "/",
            {
-            "Ref": "SchemaTable"
+            "Ref": "InlineSchemaTable"
            }
           ]
          ]
@@ -686,13 +732,13 @@
         ]
        },
        "TableName": {
-        "Ref": "SchemaTable"
+        "Ref": "InlineSchemaTable"
        },
        "VersionId": "LATEST"
       }
      },
-     "ErrorOutputPrefix": "error/",
-     "Prefix": "success/",
+     "ErrorOutputPrefix": "error/CustomOpenXJson/",
+     "Prefix": "success/CustomOpenXJson/",
      "RoleARN": {
       "Fn::GetAtt": [
        "CustomOpenXJsonS3DestinationRole07AAE423",
@@ -850,7 +896,7 @@
            },
            "/",
            {
-            "Ref": "SchemaTable"
+            "Ref": "InlineSchemaTable"
            }
           ]
          ]
@@ -957,13 +1003,13 @@
         ]
        },
        "TableName": {
-        "Ref": "SchemaTable"
+        "Ref": "InlineSchemaTable"
        },
        "VersionId": "LATEST"
       }
      },
-     "ErrorOutputPrefix": "error/",
-     "Prefix": "success/",
+     "ErrorOutputPrefix": "error/CustomOrc/",
+     "Prefix": "success/CustomOrc/",
      "RoleARN": {
       "Fn::GetAtt": [
        "CustomOrcS3DestinationRoleE1E7001A",
@@ -974,6 +1020,527 @@
    },
    "DependsOn": [
     "CustomOrcS3DestinationRoleDefaultPolicy5A89ECB3"
+   ]
+  },
+  "CustomOrcZlibS3DestinationRoleE46A456E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "firehose.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "CustomOrcZlibS3DestinationRoleDefaultPolicyE3B696C4": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Bucket83908E77",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Bucket83908E77",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "CustomOrcZlibLogGroup87CF80F5",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "glue:GetTable",
+        "glue:GetTableVersion",
+        "glue:GetTableVersions"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":catalog"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":database/",
+           {
+            "Ref": "Database"
+           }
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":table/",
+           {
+            "Ref": "Database"
+           },
+           "/",
+           {
+            "Ref": "InlineSchemaTable"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "glue:GetSchemaVersion",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomOrcZlibS3DestinationRoleDefaultPolicyE3B696C4",
+    "Roles": [
+     {
+      "Ref": "CustomOrcZlibS3DestinationRoleE46A456E"
+     }
+    ]
+   }
+  },
+  "CustomOrcZlibLogGroup87CF80F5": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "CustomOrcZlibLogGroupS3Destination870D296F": {
+   "Type": "AWS::Logs::LogStream",
+   "Properties": {
+    "LogGroupName": {
+     "Ref": "CustomOrcZlibLogGroup87CF80F5"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "CustomOrcZlibAAA13E0C": {
+   "Type": "AWS::KinesisFirehose::DeliveryStream",
+   "Properties": {
+    "DeliveryStreamType": "DirectPut",
+    "ExtendedS3DestinationConfiguration": {
+     "BucketARN": {
+      "Fn::GetAtt": [
+       "Bucket83908E77",
+       "Arn"
+      ]
+     },
+     "BufferingHints": {
+      "IntervalInSeconds": 0,
+      "SizeInMBs": 128
+     },
+     "CloudWatchLoggingOptions": {
+      "Enabled": true,
+      "LogGroupName": {
+       "Ref": "CustomOrcZlibLogGroup87CF80F5"
+      },
+      "LogStreamName": {
+       "Ref": "CustomOrcZlibLogGroupS3Destination870D296F"
+      }
+     },
+     "DataFormatConversionConfiguration": {
+      "Enabled": true,
+      "InputFormatConfiguration": {
+       "Deserializer": {
+        "OpenXJsonSerDe": {}
+       }
+      },
+      "OutputFormatConfiguration": {
+       "Serializer": {
+        "OrcSerDe": {
+         "Compression": "ZLIB",
+         "FormatVersion": "V0_12"
+        }
+       }
+      },
+      "SchemaConfiguration": {
+       "CatalogId": {
+        "Ref": "AWS::AccountId"
+       },
+       "DatabaseName": {
+        "Ref": "Database"
+       },
+       "Region": {
+        "Ref": "AWS::Region"
+       },
+       "RoleARN": {
+        "Fn::GetAtt": [
+         "CustomOrcZlibS3DestinationRoleE46A456E",
+         "Arn"
+        ]
+       },
+       "TableName": {
+        "Ref": "InlineSchemaTable"
+       },
+       "VersionId": "LATEST"
+      }
+     },
+     "ErrorOutputPrefix": "error/CustomOrcZlib/",
+     "Prefix": "success/CustomOrcZlib/",
+     "RoleARN": {
+      "Fn::GetAtt": [
+       "CustomOrcZlibS3DestinationRoleE46A456E",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "DependsOn": [
+    "CustomOrcZlibS3DestinationRoleDefaultPolicyE3B696C4"
+   ]
+  },
+  "CustomOrcSnappyS3DestinationRole995AB685": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "firehose.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "CustomOrcSnappyS3DestinationRoleDefaultPolicyF25E97AE": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Bucket83908E77",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Bucket83908E77",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "CustomOrcSnappyLogGroup4F6B90CA",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "glue:GetTable",
+        "glue:GetTableVersion",
+        "glue:GetTableVersions"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":catalog"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":database/",
+           {
+            "Ref": "Database"
+           }
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":table/",
+           {
+            "Ref": "Database"
+           },
+           "/",
+           {
+            "Ref": "InlineSchemaTable"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "glue:GetSchemaVersion",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomOrcSnappyS3DestinationRoleDefaultPolicyF25E97AE",
+    "Roles": [
+     {
+      "Ref": "CustomOrcSnappyS3DestinationRole995AB685"
+     }
+    ]
+   }
+  },
+  "CustomOrcSnappyLogGroup4F6B90CA": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "CustomOrcSnappyLogGroupS3Destination7CFC2383": {
+   "Type": "AWS::Logs::LogStream",
+   "Properties": {
+    "LogGroupName": {
+     "Ref": "CustomOrcSnappyLogGroup4F6B90CA"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "CustomOrcSnappy0596CCDA": {
+   "Type": "AWS::KinesisFirehose::DeliveryStream",
+   "Properties": {
+    "DeliveryStreamType": "DirectPut",
+    "ExtendedS3DestinationConfiguration": {
+     "BucketARN": {
+      "Fn::GetAtt": [
+       "Bucket83908E77",
+       "Arn"
+      ]
+     },
+     "BufferingHints": {
+      "IntervalInSeconds": 0,
+      "SizeInMBs": 128
+     },
+     "CloudWatchLoggingOptions": {
+      "Enabled": true,
+      "LogGroupName": {
+       "Ref": "CustomOrcSnappyLogGroup4F6B90CA"
+      },
+      "LogStreamName": {
+       "Ref": "CustomOrcSnappyLogGroupS3Destination7CFC2383"
+      }
+     },
+     "DataFormatConversionConfiguration": {
+      "Enabled": true,
+      "InputFormatConfiguration": {
+       "Deserializer": {
+        "OpenXJsonSerDe": {}
+       }
+      },
+      "OutputFormatConfiguration": {
+       "Serializer": {
+        "OrcSerDe": {
+         "Compression": "SNAPPY"
+        }
+       }
+      },
+      "SchemaConfiguration": {
+       "CatalogId": {
+        "Ref": "AWS::AccountId"
+       },
+       "DatabaseName": {
+        "Ref": "Database"
+       },
+       "Region": {
+        "Ref": "AWS::Region"
+       },
+       "RoleARN": {
+        "Fn::GetAtt": [
+         "CustomOrcSnappyS3DestinationRole995AB685",
+         "Arn"
+        ]
+       },
+       "TableName": {
+        "Ref": "InlineSchemaTable"
+       },
+       "VersionId": "LATEST"
+      }
+     },
+     "ErrorOutputPrefix": "error/CustomOrcSnappy/",
+     "Prefix": "success/CustomOrcSnappy/",
+     "RoleARN": {
+      "Fn::GetAtt": [
+       "CustomOrcSnappyS3DestinationRole995AB685",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "DependsOn": [
+    "CustomOrcSnappyS3DestinationRoleDefaultPolicyF25E97AE"
    ]
   },
   "CustomParquetS3DestinationRole22BF6D43": {
@@ -1121,7 +1688,7 @@
            },
            "/",
            {
-            "Ref": "SchemaTable"
+            "Ref": "InlineSchemaTable"
            }
           ]
          ]
@@ -1197,7 +1764,7 @@
        "Serializer": {
         "ParquetSerDe": {
          "BlockSizeBytes": 134217728,
-         "Compression": "GZIP",
+         "Compression": "UNCOMPRESSED",
          "EnableDictionaryCompression": true,
          "MaxPaddingBytes": 100,
          "PageSizeBytes": 2097152,
@@ -1222,13 +1789,13 @@
         ]
        },
        "TableName": {
-        "Ref": "SchemaTable"
+        "Ref": "InlineSchemaTable"
        },
        "VersionId": "LATEST"
       }
      },
-     "ErrorOutputPrefix": "error/",
-     "Prefix": "success/",
+     "ErrorOutputPrefix": "error/CustomParquet/",
+     "Prefix": "success/CustomParquet/",
      "RoleARN": {
       "Fn::GetAtt": [
        "CustomParquetS3DestinationRole22BF6D43",
@@ -1241,7 +1808,7 @@
     "CustomParquetS3DestinationRoleDefaultPolicyC988AB56"
    ]
   },
-  "DefaultHiveJsonOrcS3DestinationRole0A77EF4A": {
+  "CustomParquetGzipS3DestinationRoleD295866D": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -1258,7 +1825,7 @@
     }
    }
   },
-  "DefaultHiveJsonOrcS3DestinationRoleDefaultPolicy3385F735": {
+  "CustomParquetGzipS3DestinationRoleDefaultPolicy5968D435": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -1308,7 +1875,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "DefaultHiveJsonOrcLogGroupE45B2BEC",
+         "CustomParquetGzipLogGroup504E4231",
          "Arn"
         ]
        }
@@ -1386,7 +1953,7 @@
            },
            "/",
            {
-            "Ref": "SchemaTable"
+            "Ref": "InlineSchemaTable"
            }
           ]
          ]
@@ -1401,15 +1968,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "DefaultHiveJsonOrcS3DestinationRoleDefaultPolicy3385F735",
+    "PolicyName": "CustomParquetGzipS3DestinationRoleDefaultPolicy5968D435",
     "Roles": [
      {
-      "Ref": "DefaultHiveJsonOrcS3DestinationRole0A77EF4A"
+      "Ref": "CustomParquetGzipS3DestinationRoleD295866D"
      }
     ]
    }
   },
-  "DefaultHiveJsonOrcLogGroupE45B2BEC": {
+  "CustomParquetGzipLogGroup504E4231": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 731
@@ -1417,17 +1984,17 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "DefaultHiveJsonOrcLogGroupS3Destination51B88CDA": {
+  "CustomParquetGzipLogGroupS3DestinationB3D25C36": {
    "Type": "AWS::Logs::LogStream",
    "Properties": {
     "LogGroupName": {
-     "Ref": "DefaultHiveJsonOrcLogGroupE45B2BEC"
+     "Ref": "CustomParquetGzipLogGroup504E4231"
     }
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "DefaultHiveJsonOrc16EE3C90": {
+  "CustomParquetGzipD2370D52": {
    "Type": "AWS::KinesisFirehose::DeliveryStream",
    "Properties": {
     "DeliveryStreamType": "DirectPut",
@@ -1445,10 +2012,531 @@
      "CloudWatchLoggingOptions": {
       "Enabled": true,
       "LogGroupName": {
-       "Ref": "DefaultHiveJsonOrcLogGroupE45B2BEC"
+       "Ref": "CustomParquetGzipLogGroup504E4231"
       },
       "LogStreamName": {
-       "Ref": "DefaultHiveJsonOrcLogGroupS3Destination51B88CDA"
+       "Ref": "CustomParquetGzipLogGroupS3DestinationB3D25C36"
+      }
+     },
+     "DataFormatConversionConfiguration": {
+      "Enabled": true,
+      "InputFormatConfiguration": {
+       "Deserializer": {
+        "OpenXJsonSerDe": {}
+       }
+      },
+      "OutputFormatConfiguration": {
+       "Serializer": {
+        "ParquetSerDe": {
+         "Compression": "GZIP",
+         "WriterVersion": "V1"
+        }
+       }
+      },
+      "SchemaConfiguration": {
+       "CatalogId": {
+        "Ref": "AWS::AccountId"
+       },
+       "DatabaseName": {
+        "Ref": "Database"
+       },
+       "Region": {
+        "Ref": "AWS::Region"
+       },
+       "RoleARN": {
+        "Fn::GetAtt": [
+         "CustomParquetGzipS3DestinationRoleD295866D",
+         "Arn"
+        ]
+       },
+       "TableName": {
+        "Ref": "InlineSchemaTable"
+       },
+       "VersionId": "LATEST"
+      }
+     },
+     "ErrorOutputPrefix": "error/CustomParquetGzip/",
+     "Prefix": "success/CustomParquetGzip/",
+     "RoleARN": {
+      "Fn::GetAtt": [
+       "CustomParquetGzipS3DestinationRoleD295866D",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "DependsOn": [
+    "CustomParquetGzipS3DestinationRoleDefaultPolicy5968D435"
+   ]
+  },
+  "CustomParquetSnappyS3DestinationRole5E1ADD26": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "firehose.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "CustomParquetSnappyS3DestinationRoleDefaultPolicyED54CDC3": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Bucket83908E77",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Bucket83908E77",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "CustomParquetSnappyLogGroup3EC6F154",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "glue:GetTable",
+        "glue:GetTableVersion",
+        "glue:GetTableVersions"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":catalog"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":database/",
+           {
+            "Ref": "Database"
+           }
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":table/",
+           {
+            "Ref": "Database"
+           },
+           "/",
+           {
+            "Ref": "InlineSchemaTable"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "glue:GetSchemaVersion",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomParquetSnappyS3DestinationRoleDefaultPolicyED54CDC3",
+    "Roles": [
+     {
+      "Ref": "CustomParquetSnappyS3DestinationRole5E1ADD26"
+     }
+    ]
+   }
+  },
+  "CustomParquetSnappyLogGroup3EC6F154": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "CustomParquetSnappyLogGroupS3DestinationDDDB5ADC": {
+   "Type": "AWS::Logs::LogStream",
+   "Properties": {
+    "LogGroupName": {
+     "Ref": "CustomParquetSnappyLogGroup3EC6F154"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "CustomParquetSnappyDCECB34C": {
+   "Type": "AWS::KinesisFirehose::DeliveryStream",
+   "Properties": {
+    "DeliveryStreamType": "DirectPut",
+    "ExtendedS3DestinationConfiguration": {
+     "BucketARN": {
+      "Fn::GetAtt": [
+       "Bucket83908E77",
+       "Arn"
+      ]
+     },
+     "BufferingHints": {
+      "IntervalInSeconds": 0,
+      "SizeInMBs": 128
+     },
+     "CloudWatchLoggingOptions": {
+      "Enabled": true,
+      "LogGroupName": {
+       "Ref": "CustomParquetSnappyLogGroup3EC6F154"
+      },
+      "LogStreamName": {
+       "Ref": "CustomParquetSnappyLogGroupS3DestinationDDDB5ADC"
+      }
+     },
+     "DataFormatConversionConfiguration": {
+      "Enabled": true,
+      "InputFormatConfiguration": {
+       "Deserializer": {
+        "OpenXJsonSerDe": {}
+       }
+      },
+      "OutputFormatConfiguration": {
+       "Serializer": {
+        "ParquetSerDe": {
+         "Compression": "SNAPPY"
+        }
+       }
+      },
+      "SchemaConfiguration": {
+       "CatalogId": {
+        "Ref": "AWS::AccountId"
+       },
+       "DatabaseName": {
+        "Ref": "Database"
+       },
+       "Region": {
+        "Ref": "AWS::Region"
+       },
+       "RoleARN": {
+        "Fn::GetAtt": [
+         "CustomParquetSnappyS3DestinationRole5E1ADD26",
+         "Arn"
+        ]
+       },
+       "TableName": {
+        "Ref": "InlineSchemaTable"
+       },
+       "VersionId": "LATEST"
+      }
+     },
+     "ErrorOutputPrefix": "error/CustomParquetSnappy/",
+     "Prefix": "success/CustomParquetSnappy/",
+     "RoleARN": {
+      "Fn::GetAtt": [
+       "CustomParquetSnappyS3DestinationRole5E1ADD26",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "DependsOn": [
+    "CustomParquetSnappyS3DestinationRoleDefaultPolicyED54CDC3"
+   ]
+  },
+  "DefaultHiveJsonOrcInlineSchemaS3DestinationRoleBC2C6CCA": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "firehose.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "DefaultHiveJsonOrcInlineSchemaS3DestinationRoleDefaultPolicyCB0192C2": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Bucket83908E77",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Bucket83908E77",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "DefaultHiveJsonOrcInlineSchemaLogGroup6AC2CD61",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "glue:GetTable",
+        "glue:GetTableVersion",
+        "glue:GetTableVersions"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":catalog"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":database/",
+           {
+            "Ref": "Database"
+           }
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":table/",
+           {
+            "Ref": "Database"
+           },
+           "/",
+           {
+            "Ref": "InlineSchemaTable"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "glue:GetSchemaVersion",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DefaultHiveJsonOrcInlineSchemaS3DestinationRoleDefaultPolicyCB0192C2",
+    "Roles": [
+     {
+      "Ref": "DefaultHiveJsonOrcInlineSchemaS3DestinationRoleBC2C6CCA"
+     }
+    ]
+   }
+  },
+  "DefaultHiveJsonOrcInlineSchemaLogGroup6AC2CD61": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "DefaultHiveJsonOrcInlineSchemaLogGroupS3DestinationEA7D7BD2": {
+   "Type": "AWS::Logs::LogStream",
+   "Properties": {
+    "LogGroupName": {
+     "Ref": "DefaultHiveJsonOrcInlineSchemaLogGroup6AC2CD61"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "DefaultHiveJsonOrcInlineSchema38BDAC5E": {
+   "Type": "AWS::KinesisFirehose::DeliveryStream",
+   "Properties": {
+    "DeliveryStreamType": "DirectPut",
+    "ExtendedS3DestinationConfiguration": {
+     "BucketARN": {
+      "Fn::GetAtt": [
+       "Bucket83908E77",
+       "Arn"
+      ]
+     },
+     "BufferingHints": {
+      "IntervalInSeconds": 0,
+      "SizeInMBs": 128
+     },
+     "CloudWatchLoggingOptions": {
+      "Enabled": true,
+      "LogGroupName": {
+       "Ref": "DefaultHiveJsonOrcInlineSchemaLogGroup6AC2CD61"
+      },
+      "LogStreamName": {
+       "Ref": "DefaultHiveJsonOrcInlineSchemaLogGroupS3DestinationEA7D7BD2"
       }
      },
      "DataFormatConversionConfiguration": {
@@ -1475,31 +2563,31 @@
        },
        "RoleARN": {
         "Fn::GetAtt": [
-         "DefaultHiveJsonOrcS3DestinationRole0A77EF4A",
+         "DefaultHiveJsonOrcInlineSchemaS3DestinationRoleBC2C6CCA",
          "Arn"
         ]
        },
        "TableName": {
-        "Ref": "SchemaTable"
+        "Ref": "InlineSchemaTable"
        },
        "VersionId": "LATEST"
       }
      },
-     "ErrorOutputPrefix": "error/",
-     "Prefix": "success/",
+     "ErrorOutputPrefix": "error/DefaultHiveJsonOrcInlineSchema/",
+     "Prefix": "success/DefaultHiveJsonOrcInlineSchema/",
      "RoleARN": {
       "Fn::GetAtt": [
-       "DefaultHiveJsonOrcS3DestinationRole0A77EF4A",
+       "DefaultHiveJsonOrcInlineSchemaS3DestinationRoleBC2C6CCA",
        "Arn"
       ]
      }
     }
    },
    "DependsOn": [
-    "DefaultHiveJsonOrcS3DestinationRoleDefaultPolicy3385F735"
+    "DefaultHiveJsonOrcInlineSchemaS3DestinationRoleDefaultPolicyCB0192C2"
    ]
   },
-  "DefaultOpenXJsonParquetS3DestinationRole11E1A1BD": {
+  "DefaultOpenXJsonParquetInlineSchemaS3DestinationRole7755C156": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -1516,7 +2604,7 @@
     }
    }
   },
-  "DefaultOpenXJsonParquetS3DestinationRoleDefaultPolicy87714BCD": {
+  "DefaultOpenXJsonParquetInlineSchemaS3DestinationRoleDefaultPolicyC3A3A0FB": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -1566,7 +2654,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "DefaultOpenXJsonParquetLogGroupEBB4026F",
+         "DefaultOpenXJsonParquetInlineSchemaLogGroupDC74A2EF",
          "Arn"
         ]
        }
@@ -1644,7 +2732,7 @@
            },
            "/",
            {
-            "Ref": "SchemaTable"
+            "Ref": "InlineSchemaTable"
            }
           ]
          ]
@@ -1659,15 +2747,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "DefaultOpenXJsonParquetS3DestinationRoleDefaultPolicy87714BCD",
+    "PolicyName": "DefaultOpenXJsonParquetInlineSchemaS3DestinationRoleDefaultPolicyC3A3A0FB",
     "Roles": [
      {
-      "Ref": "DefaultOpenXJsonParquetS3DestinationRole11E1A1BD"
+      "Ref": "DefaultOpenXJsonParquetInlineSchemaS3DestinationRole7755C156"
      }
     ]
    }
   },
-  "DefaultOpenXJsonParquetLogGroupEBB4026F": {
+  "DefaultOpenXJsonParquetInlineSchemaLogGroupDC74A2EF": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 731
@@ -1675,17 +2763,17 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "DefaultOpenXJsonParquetLogGroupS3Destination368F89E9": {
+  "DefaultOpenXJsonParquetInlineSchemaLogGroupS3Destination585282CF": {
    "Type": "AWS::Logs::LogStream",
    "Properties": {
     "LogGroupName": {
-     "Ref": "DefaultOpenXJsonParquetLogGroupEBB4026F"
+     "Ref": "DefaultOpenXJsonParquetInlineSchemaLogGroupDC74A2EF"
     }
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "DefaultOpenXJsonParquetEB3F4442": {
+  "DefaultOpenXJsonParquetInlineSchema5EC8C090": {
    "Type": "AWS::KinesisFirehose::DeliveryStream",
    "Properties": {
     "DeliveryStreamType": "DirectPut",
@@ -1703,10 +2791,10 @@
      "CloudWatchLoggingOptions": {
       "Enabled": true,
       "LogGroupName": {
-       "Ref": "DefaultOpenXJsonParquetLogGroupEBB4026F"
+       "Ref": "DefaultOpenXJsonParquetInlineSchemaLogGroupDC74A2EF"
       },
       "LogStreamName": {
-       "Ref": "DefaultOpenXJsonParquetLogGroupS3Destination368F89E9"
+       "Ref": "DefaultOpenXJsonParquetInlineSchemaLogGroupS3Destination585282CF"
       }
      },
      "DataFormatConversionConfiguration": {
@@ -1733,28 +2821,544 @@
        },
        "RoleARN": {
         "Fn::GetAtt": [
-         "DefaultOpenXJsonParquetS3DestinationRole11E1A1BD",
+         "DefaultOpenXJsonParquetInlineSchemaS3DestinationRole7755C156",
          "Arn"
         ]
        },
        "TableName": {
-        "Ref": "SchemaTable"
+        "Ref": "InlineSchemaTable"
        },
        "VersionId": "LATEST"
       }
      },
-     "ErrorOutputPrefix": "error/",
-     "Prefix": "success/",
+     "ErrorOutputPrefix": "error/DefaultOpenXJsonParquetInlineSchema/",
+     "Prefix": "success/DefaultOpenXJsonParquetInlineSchema/",
      "RoleARN": {
       "Fn::GetAtt": [
-       "DefaultOpenXJsonParquetS3DestinationRole11E1A1BD",
+       "DefaultOpenXJsonParquetInlineSchemaS3DestinationRole7755C156",
        "Arn"
       ]
      }
     }
    },
    "DependsOn": [
-    "DefaultOpenXJsonParquetS3DestinationRoleDefaultPolicy87714BCD"
+    "DefaultOpenXJsonParquetInlineSchemaS3DestinationRoleDefaultPolicyC3A3A0FB"
+   ]
+  },
+  "DefaultHiveJsonOrcRegistrySchemaS3DestinationRoleF49CB596": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "firehose.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "DefaultHiveJsonOrcRegistrySchemaS3DestinationRoleDefaultPolicy099B95CB": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Bucket83908E77",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Bucket83908E77",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "DefaultHiveJsonOrcRegistrySchemaLogGroup94CF9451",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "glue:GetTable",
+        "glue:GetTableVersion",
+        "glue:GetTableVersions"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":catalog"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":database/",
+           {
+            "Ref": "Database"
+           }
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":table/",
+           {
+            "Ref": "Database"
+           },
+           "/",
+           {
+            "Ref": "RegistrySchemaTable"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "glue:GetSchemaVersion",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DefaultHiveJsonOrcRegistrySchemaS3DestinationRoleDefaultPolicy099B95CB",
+    "Roles": [
+     {
+      "Ref": "DefaultHiveJsonOrcRegistrySchemaS3DestinationRoleF49CB596"
+     }
+    ]
+   }
+  },
+  "DefaultHiveJsonOrcRegistrySchemaLogGroup94CF9451": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "DefaultHiveJsonOrcRegistrySchemaLogGroupS3Destination0F3C1D7C": {
+   "Type": "AWS::Logs::LogStream",
+   "Properties": {
+    "LogGroupName": {
+     "Ref": "DefaultHiveJsonOrcRegistrySchemaLogGroup94CF9451"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "DefaultHiveJsonOrcRegistrySchema4EBD1BF9": {
+   "Type": "AWS::KinesisFirehose::DeliveryStream",
+   "Properties": {
+    "DeliveryStreamType": "DirectPut",
+    "ExtendedS3DestinationConfiguration": {
+     "BucketARN": {
+      "Fn::GetAtt": [
+       "Bucket83908E77",
+       "Arn"
+      ]
+     },
+     "BufferingHints": {
+      "IntervalInSeconds": 0,
+      "SizeInMBs": 128
+     },
+     "CloudWatchLoggingOptions": {
+      "Enabled": true,
+      "LogGroupName": {
+       "Ref": "DefaultHiveJsonOrcRegistrySchemaLogGroup94CF9451"
+      },
+      "LogStreamName": {
+       "Ref": "DefaultHiveJsonOrcRegistrySchemaLogGroupS3Destination0F3C1D7C"
+      }
+     },
+     "DataFormatConversionConfiguration": {
+      "Enabled": true,
+      "InputFormatConfiguration": {
+       "Deserializer": {
+        "HiveJsonSerDe": {}
+       }
+      },
+      "OutputFormatConfiguration": {
+       "Serializer": {
+        "OrcSerDe": {}
+       }
+      },
+      "SchemaConfiguration": {
+       "CatalogId": {
+        "Ref": "AWS::AccountId"
+       },
+       "DatabaseName": {
+        "Ref": "Database"
+       },
+       "Region": {
+        "Ref": "AWS::Region"
+       },
+       "RoleARN": {
+        "Fn::GetAtt": [
+         "DefaultHiveJsonOrcRegistrySchemaS3DestinationRoleF49CB596",
+         "Arn"
+        ]
+       },
+       "TableName": {
+        "Ref": "RegistrySchemaTable"
+       },
+       "VersionId": "LATEST"
+      }
+     },
+     "ErrorOutputPrefix": "error/DefaultHiveJsonOrcRegistrySchema/",
+     "Prefix": "success/DefaultHiveJsonOrcRegistrySchema/",
+     "RoleARN": {
+      "Fn::GetAtt": [
+       "DefaultHiveJsonOrcRegistrySchemaS3DestinationRoleF49CB596",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "DependsOn": [
+    "DefaultHiveJsonOrcRegistrySchemaS3DestinationRoleDefaultPolicy099B95CB"
+   ]
+  },
+  "DefaultOpenXJsonParquetRegistrySchemaS3DestinationRole93AD7FA5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "firehose.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "DefaultOpenXJsonParquetRegistrySchemaS3DestinationRoleDefaultPolicy0F3E5C53": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Bucket83908E77",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Bucket83908E77",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "DefaultOpenXJsonParquetRegistrySchemaLogGroup9348CEE9",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "glue:GetTable",
+        "glue:GetTableVersion",
+        "glue:GetTableVersions"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":catalog"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":database/",
+           {
+            "Ref": "Database"
+           }
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":table/",
+           {
+            "Ref": "Database"
+           },
+           "/",
+           {
+            "Ref": "RegistrySchemaTable"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "glue:GetSchemaVersion",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DefaultOpenXJsonParquetRegistrySchemaS3DestinationRoleDefaultPolicy0F3E5C53",
+    "Roles": [
+     {
+      "Ref": "DefaultOpenXJsonParquetRegistrySchemaS3DestinationRole93AD7FA5"
+     }
+    ]
+   }
+  },
+  "DefaultOpenXJsonParquetRegistrySchemaLogGroup9348CEE9": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "DefaultOpenXJsonParquetRegistrySchemaLogGroupS3DestinationBFED465E": {
+   "Type": "AWS::Logs::LogStream",
+   "Properties": {
+    "LogGroupName": {
+     "Ref": "DefaultOpenXJsonParquetRegistrySchemaLogGroup9348CEE9"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "DefaultOpenXJsonParquetRegistrySchema2BA7A11C": {
+   "Type": "AWS::KinesisFirehose::DeliveryStream",
+   "Properties": {
+    "DeliveryStreamType": "DirectPut",
+    "ExtendedS3DestinationConfiguration": {
+     "BucketARN": {
+      "Fn::GetAtt": [
+       "Bucket83908E77",
+       "Arn"
+      ]
+     },
+     "BufferingHints": {
+      "IntervalInSeconds": 0,
+      "SizeInMBs": 128
+     },
+     "CloudWatchLoggingOptions": {
+      "Enabled": true,
+      "LogGroupName": {
+       "Ref": "DefaultOpenXJsonParquetRegistrySchemaLogGroup9348CEE9"
+      },
+      "LogStreamName": {
+       "Ref": "DefaultOpenXJsonParquetRegistrySchemaLogGroupS3DestinationBFED465E"
+      }
+     },
+     "DataFormatConversionConfiguration": {
+      "Enabled": true,
+      "InputFormatConfiguration": {
+       "Deserializer": {
+        "OpenXJsonSerDe": {}
+       }
+      },
+      "OutputFormatConfiguration": {
+       "Serializer": {
+        "ParquetSerDe": {}
+       }
+      },
+      "SchemaConfiguration": {
+       "CatalogId": {
+        "Ref": "AWS::AccountId"
+       },
+       "DatabaseName": {
+        "Ref": "Database"
+       },
+       "Region": {
+        "Ref": "AWS::Region"
+       },
+       "RoleARN": {
+        "Fn::GetAtt": [
+         "DefaultOpenXJsonParquetRegistrySchemaS3DestinationRole93AD7FA5",
+         "Arn"
+        ]
+       },
+       "TableName": {
+        "Ref": "RegistrySchemaTable"
+       },
+       "VersionId": "LATEST"
+      }
+     },
+     "ErrorOutputPrefix": "error/DefaultOpenXJsonParquetRegistrySchema/",
+     "Prefix": "success/DefaultOpenXJsonParquetRegistrySchema/",
+     "RoleARN": {
+      "Fn::GetAtt": [
+       "DefaultOpenXJsonParquetRegistrySchemaS3DestinationRole93AD7FA5",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "DependsOn": [
+    "DefaultOpenXJsonParquetRegistrySchemaS3DestinationRoleDefaultPolicy0F3E5C53"
    ]
   }
  },
@@ -1879,46 +3483,6 @@
     "Name": "RecordFormatConversion:ExportsOutputRefCustomHiveJsonEF2911B48EFEE2C6"
    }
   },
-  "ExportsOutputRefCustomOpenXJsonEA227FEF3789EDDA": {
-   "Value": {
-    "Ref": "CustomOpenXJsonEA227FEF"
-   },
-   "Export": {
-    "Name": "RecordFormatConversion:ExportsOutputRefCustomOpenXJsonEA227FEF3789EDDA"
-   }
-  },
-  "ExportsOutputRefCustomOrc771199861FB3EAC4": {
-   "Value": {
-    "Ref": "CustomOrc77119986"
-   },
-   "Export": {
-    "Name": "RecordFormatConversion:ExportsOutputRefCustomOrc771199861FB3EAC4"
-   }
-  },
-  "ExportsOutputRefCustomParquet17BE234326AD3637": {
-   "Value": {
-    "Ref": "CustomParquet17BE2343"
-   },
-   "Export": {
-    "Name": "RecordFormatConversion:ExportsOutputRefCustomParquet17BE234326AD3637"
-   }
-  },
-  "ExportsOutputRefDefaultHiveJsonOrc16EE3C9068BF05B1": {
-   "Value": {
-    "Ref": "DefaultHiveJsonOrc16EE3C90"
-   },
-   "Export": {
-    "Name": "RecordFormatConversion:ExportsOutputRefDefaultHiveJsonOrc16EE3C9068BF05B1"
-   }
-  },
-  "ExportsOutputRefDefaultOpenXJsonParquetEB3F4442D7D23EB5": {
-   "Value": {
-    "Ref": "DefaultOpenXJsonParquetEB3F4442"
-   },
-   "Export": {
-    "Name": "RecordFormatConversion:ExportsOutputRefDefaultOpenXJsonParquetEB3F4442D7D23EB5"
-   }
-  },
   "ExportsOutputRefBucket83908E7781C90AC0": {
    "Value": {
     "Ref": "Bucket83908E77"
@@ -1936,6 +3500,94 @@
    },
    "Export": {
     "Name": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+   }
+  },
+  "ExportsOutputRefCustomOpenXJsonEA227FEF3789EDDA": {
+   "Value": {
+    "Ref": "CustomOpenXJsonEA227FEF"
+   },
+   "Export": {
+    "Name": "RecordFormatConversion:ExportsOutputRefCustomOpenXJsonEA227FEF3789EDDA"
+   }
+  },
+  "ExportsOutputRefCustomOrc771199861FB3EAC4": {
+   "Value": {
+    "Ref": "CustomOrc77119986"
+   },
+   "Export": {
+    "Name": "RecordFormatConversion:ExportsOutputRefCustomOrc771199861FB3EAC4"
+   }
+  },
+  "ExportsOutputRefCustomOrcZlibAAA13E0C2700820A": {
+   "Value": {
+    "Ref": "CustomOrcZlibAAA13E0C"
+   },
+   "Export": {
+    "Name": "RecordFormatConversion:ExportsOutputRefCustomOrcZlibAAA13E0C2700820A"
+   }
+  },
+  "ExportsOutputRefCustomOrcSnappy0596CCDA43C033B0": {
+   "Value": {
+    "Ref": "CustomOrcSnappy0596CCDA"
+   },
+   "Export": {
+    "Name": "RecordFormatConversion:ExportsOutputRefCustomOrcSnappy0596CCDA43C033B0"
+   }
+  },
+  "ExportsOutputRefCustomParquet17BE234326AD3637": {
+   "Value": {
+    "Ref": "CustomParquet17BE2343"
+   },
+   "Export": {
+    "Name": "RecordFormatConversion:ExportsOutputRefCustomParquet17BE234326AD3637"
+   }
+  },
+  "ExportsOutputRefCustomParquetGzipD2370D5281974F79": {
+   "Value": {
+    "Ref": "CustomParquetGzipD2370D52"
+   },
+   "Export": {
+    "Name": "RecordFormatConversion:ExportsOutputRefCustomParquetGzipD2370D5281974F79"
+   }
+  },
+  "ExportsOutputRefCustomParquetSnappyDCECB34CCD3FC623": {
+   "Value": {
+    "Ref": "CustomParquetSnappyDCECB34C"
+   },
+   "Export": {
+    "Name": "RecordFormatConversion:ExportsOutputRefCustomParquetSnappyDCECB34CCD3FC623"
+   }
+  },
+  "ExportsOutputRefDefaultHiveJsonOrcInlineSchema38BDAC5EC66A0927": {
+   "Value": {
+    "Ref": "DefaultHiveJsonOrcInlineSchema38BDAC5E"
+   },
+   "Export": {
+    "Name": "RecordFormatConversion:ExportsOutputRefDefaultHiveJsonOrcInlineSchema38BDAC5EC66A0927"
+   }
+  },
+  "ExportsOutputRefDefaultOpenXJsonParquetInlineSchema5EC8C09024803BC9": {
+   "Value": {
+    "Ref": "DefaultOpenXJsonParquetInlineSchema5EC8C090"
+   },
+   "Export": {
+    "Name": "RecordFormatConversion:ExportsOutputRefDefaultOpenXJsonParquetInlineSchema5EC8C09024803BC9"
+   }
+  },
+  "ExportsOutputRefDefaultHiveJsonOrcRegistrySchema4EBD1BF9A86E78BC": {
+   "Value": {
+    "Ref": "DefaultHiveJsonOrcRegistrySchema4EBD1BF9"
+   },
+   "Export": {
+    "Name": "RecordFormatConversion:ExportsOutputRefDefaultHiveJsonOrcRegistrySchema4EBD1BF9A86E78BC"
+   }
+  },
+  "ExportsOutputRefDefaultOpenXJsonParquetRegistrySchema2BA7A11C0C19D38E": {
+   "Value": {
+    "Ref": "DefaultOpenXJsonParquetRegistrySchema2BA7A11C"
+   },
+   "Export": {
+    "Name": "RecordFormatConversion:ExportsOutputRefDefaultOpenXJsonParquetRegistrySchema2BA7A11C0C19D38E"
    }
   }
  },

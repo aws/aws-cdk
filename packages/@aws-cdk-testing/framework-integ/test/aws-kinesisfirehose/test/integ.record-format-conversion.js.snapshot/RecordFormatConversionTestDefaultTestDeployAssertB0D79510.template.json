@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallFirehosedescribeDeliveryStream1f633a3cab72011e76e59275f2cbb595": {
-   "Type": "Custom::DeployAssert@SdkCallFirehosedescribeDeliveryStream",
+  "AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723": {
+   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -10,8 +10,7 @@
      ]
     },
     "service": "Firehose",
-    "api": "describeDeliveryStream",
-    "expected": "{\"$ObjectLike\":{\"DeliveryStreamDescription\":{\"Destinations\":[{\"ExtendedS3DestinationDescription\":{\"DataFormatConversionConfiguration\":{\"InputFormatConfiguration\":{\"Deserializer\":{\"HiveJsonSerDe\":{\"TimestampFormats\":[\"millis\",\"yyyy-MM-dd\"]}}}}}}]}}}",
+    "api": "putRecord",
     "parameters": {
      "DeliveryStreamName": {
       "Fn::Join": [
@@ -24,10 +23,11 @@
         "\""
        ]
       ]
-     }
+     },
+     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
     },
     "flattenResponse": "false",
-    "salt": "1760602435956"
+    "salt": "1760708709902"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -60,7 +60,25 @@
        "Statement": [
         {
          "Action": [
-          "firehose:DescribeDeliveryStream"
+          "firehose:PutRecord"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -78,7 +96,16 @@
         },
         {
          "Action": [
-          "firehose:DescribeDeliveryStream"
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -96,7 +123,16 @@
         },
         {
          "Action": [
-          "firehose:DescribeDeliveryStream"
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -114,7 +150,16 @@
         },
         {
          "Action": [
-          "firehose:DescribeDeliveryStream"
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -132,7 +177,16 @@
         },
         {
          "Action": [
-          "firehose:DescribeDeliveryStream"
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -150,7 +204,151 @@
         },
         {
          "Action": [
-          "firehose:DescribeDeliveryStream"
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "firehose:PutRecord"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "firehose:PutRecord"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "firehose:PutRecord"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "firehose:PutRecord"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "firehose:PutRecord"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -210,377 +408,7 @@
     }
    }
   },
-  "AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723": {
-   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "Firehose",
-    "api": "putRecord",
-    "parameters": {
-     "DeliveryStreamName": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomHiveJsonEF2911B48EFEE2C6"
-        },
-        "\""
-       ]
-      ]
-     },
-     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
-    },
-    "flattenResponse": "false",
-    "salt": "1760602435957"
-   },
-   "DependsOn": [
-    "AwsApiCallFirehosedescribeDeliveryStream1f633a3cab72011e76e59275f2cbb595"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallFirehosedescribeDeliveryStream429b2496ec1bb3c217e799457b01c838": {
-   "Type": "Custom::DeployAssert@SdkCallFirehosedescribeDeliveryStream",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "Firehose",
-    "api": "describeDeliveryStream",
-    "expected": "{\"$ObjectLike\":{\"DeliveryStreamDescription\":{\"Destinations\":[{\"ExtendedS3DestinationDescription\":{\"DataFormatConversionConfiguration\":{\"InputFormatConfiguration\":{\"Deserializer\":{\"OpenXJsonSerDe\":{\"CaseInsensitive\":false,\"ColumnToJsonKeyMappings\":{\"column_yay\":\"Column_A\"},\"ConvertDotsInJsonKeysToUnderscores\":true}}}}}}]}}}",
-    "parameters": {
-     "DeliveryStreamName": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomOpenXJsonEA227FEF3789EDDA"
-        },
-        "\""
-       ]
-      ]
-     }
-    },
-    "flattenResponse": "false",
-    "salt": "1760602435957"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118": {
-   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "Firehose",
-    "api": "putRecord",
-    "parameters": {
-     "DeliveryStreamName": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomOpenXJsonEA227FEF3789EDDA"
-        },
-        "\""
-       ]
-      ]
-     },
-     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
-    },
-    "flattenResponse": "false",
-    "salt": "1760602435957"
-   },
-   "DependsOn": [
-    "AwsApiCallFirehosedescribeDeliveryStream429b2496ec1bb3c217e799457b01c838"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallFirehosedescribeDeliveryStream80ff3183e5eb6b5c7dadb7fc094e741d": {
-   "Type": "Custom::DeployAssert@SdkCallFirehosedescribeDeliveryStream",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "Firehose",
-    "api": "describeDeliveryStream",
-    "expected": "{\"$ObjectLike\":{\"DeliveryStreamDescription\":{\"Destinations\":[{\"ExtendedS3DestinationDescription\":{\"DataFormatConversionConfiguration\":{\"OutputFormatConfiguration\":{\"Serializer\":{\"OrcSerDe\":{\"BlockSizeBytes\":268435456,\"BloomFilterColumns\":[\"column_a\"],\"BloomFilterFalsePositiveProbability\":0.5,\"Compression\":\"NONE\",\"DictionaryKeyThreshold\":0.3,\"FormatVersion\":\"V0_11\",\"EnablePadding\":true,\"PaddingTolerance\":0.4,\"RowIndexStride\":5000,\"StripeSizeBytes\":33554432}}}}}}]}}}",
-    "parameters": {
-     "DeliveryStreamName": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomOrc771199861FB3EAC4"
-        },
-        "\""
-       ]
-      ]
-     }
-    },
-    "flattenResponse": "false",
-    "salt": "1760602435958"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c": {
-   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "Firehose",
-    "api": "putRecord",
-    "parameters": {
-     "DeliveryStreamName": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomOrc771199861FB3EAC4"
-        },
-        "\""
-       ]
-      ]
-     },
-     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
-    },
-    "flattenResponse": "false",
-    "salt": "1760602435958"
-   },
-   "DependsOn": [
-    "AwsApiCallFirehosedescribeDeliveryStream80ff3183e5eb6b5c7dadb7fc094e741d"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallFirehosedescribeDeliveryStream77751255b283a1ea1a4bd3c711269900": {
-   "Type": "Custom::DeployAssert@SdkCallFirehosedescribeDeliveryStream",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "Firehose",
-    "api": "describeDeliveryStream",
-    "expected": "{\"$ObjectLike\":{\"DeliveryStreamDescription\":{\"Destinations\":[{\"ExtendedS3DestinationDescription\":{\"DataFormatConversionConfiguration\":{\"OutputFormatConfiguration\":{\"Serializer\":{\"ParquetSerDe\":{\"BlockSizeBytes\":134217728,\"PageSizeBytes\":2097152,\"Compression\":\"GZIP\",\"WriterVersion\":\"V2\",\"EnableDictionaryCompression\":true,\"MaxPaddingBytes\":100}}}}}}]}}}",
-    "parameters": {
-     "DeliveryStreamName": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomParquet17BE234326AD3637"
-        },
-        "\""
-       ]
-      ]
-     }
-    },
-    "flattenResponse": "false",
-    "salt": "1760602435958"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638": {
-   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "Firehose",
-    "api": "putRecord",
-    "parameters": {
-     "DeliveryStreamName": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomParquet17BE234326AD3637"
-        },
-        "\""
-       ]
-      ]
-     },
-     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
-    },
-    "flattenResponse": "false",
-    "salt": "1760602435958"
-   },
-   "DependsOn": [
-    "AwsApiCallFirehosedescribeDeliveryStream77751255b283a1ea1a4bd3c711269900"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallFirehosedescribeDeliveryStreamb0d4cd9ba478423252d4278aa95b0414": {
-   "Type": "Custom::DeployAssert@SdkCallFirehosedescribeDeliveryStream",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "Firehose",
-    "api": "describeDeliveryStream",
-    "expected": "{\"$ObjectLike\":{\"DeliveryStreamDescription\":{\"Destinations\":[{\"ExtendedS3DestinationDescription\":{\"DataFormatConversionConfiguration\":{\"InputFormatConfiguration\":{\"Deserializer\":{\"HiveJsonSerDe\":{}}},\"OutputFormatConfiguration\":{\"Serializer\":{\"OrcSerDe\":{}}}}}}]}}}",
-    "parameters": {
-     "DeliveryStreamName": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefDefaultHiveJsonOrc16EE3C9068BF05B1"
-        },
-        "\""
-       ]
-      ]
-     }
-    },
-    "flattenResponse": "false",
-    "salt": "1760602435959"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallFirehoseputRecord7d0453eb6f4a193758747fd8ef3cfb72": {
-   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "Firehose",
-    "api": "putRecord",
-    "parameters": {
-     "DeliveryStreamName": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefDefaultHiveJsonOrc16EE3C9068BF05B1"
-        },
-        "\""
-       ]
-      ]
-     },
-     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
-    },
-    "flattenResponse": "false",
-    "salt": "1760602435959"
-   },
-   "DependsOn": [
-    "AwsApiCallFirehosedescribeDeliveryStreamb0d4cd9ba478423252d4278aa95b0414"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallFirehosedescribeDeliveryStreamc49aeb8fbb93c449cb71bf766f7246b7": {
-   "Type": "Custom::DeployAssert@SdkCallFirehosedescribeDeliveryStream",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "Firehose",
-    "api": "describeDeliveryStream",
-    "expected": "{\"$ObjectLike\":{\"DeliveryStreamDescription\":{\"Destinations\":[{\"ExtendedS3DestinationDescription\":{\"DataFormatConversionConfiguration\":{\"InputFormatConfiguration\":{\"Deserializer\":{\"OpenXJsonSerDe\":{}}},\"OutputFormatConfiguration\":{\"Serializer\":{\"ParquetSerDe\":{}}}}}}]}}}",
-    "parameters": {
-     "DeliveryStreamName": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefDefaultOpenXJsonParquetEB3F4442D7D23EB5"
-        },
-        "\""
-       ]
-      ]
-     }
-    },
-    "flattenResponse": "false",
-    "salt": "1760602435959"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallFirehoseputRecord1deac183d8f22b5b2d8e923c366d5bd1": {
-   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "Firehose",
-    "api": "putRecord",
-    "parameters": {
-     "DeliveryStreamName": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefDefaultOpenXJsonParquetEB3F4442D7D23EB5"
-        },
-        "\""
-       ]
-      ]
-     },
-     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
-    },
-    "flattenResponse": "false",
-    "salt": "1760602435960"
-   },
-   "DependsOn": [
-    "AwsApiCallFirehosedescribeDeliveryStreamc49aeb8fbb93c449cb71bf766f7246b7"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5b": {
+  "AwsApiCallS3listObjectsV2d62725d0101ebd3296719dea448eb770": {
    "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
    "Properties": {
     "ServiceToken": {
@@ -591,9 +419,9 @@
     },
     "service": "S3",
     "api": "listObjectsV2",
-    "expected": "{\"$ObjectLike\":{\"KeyCount\":6}}",
+    "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
     "stateMachineArn": {
-     "Ref": "AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5bWaitForB7FE0DC9"
+     "Ref": "AwsApiCallS3listObjectsV2d62725d0101ebd3296719dea448eb770WaitForACB0968C"
     },
     "parameters": {
      "Bucket": {
@@ -608,23 +436,18 @@
        ]
       ]
      },
-     "Prefix": "\"success\""
+     "Prefix": "\"success/CustomHiveJson/\""
     },
     "flattenResponse": "false",
-    "salt": "1760602435960"
+    "salt": "1760708709903"
    },
    "DependsOn": [
-    "AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723",
-    "AwsApiCallFirehoseputRecord1deac183d8f22b5b2d8e923c366d5bd1",
-    "AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638",
-    "AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c",
-    "AwsApiCallFirehoseputRecord7d0453eb6f4a193758747fd8ef3cfb72",
-    "AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118"
+    "AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5bWaitForIsCompleteProviderInvoke82262A86": {
+  "AwsApiCallS3listObjectsV2d62725d0101ebd3296719dea448eb770WaitForIsCompleteProviderInvoke1F04E11C": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -636,21 +459,16 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5bWaitForRole16B5DE5E",
+      "AwsApiCallS3listObjectsV2d62725d0101ebd3296719dea448eb770WaitForRole74106F46",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723",
-    "AwsApiCallFirehoseputRecord1deac183d8f22b5b2d8e923c366d5bd1",
-    "AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638",
-    "AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c",
-    "AwsApiCallFirehoseputRecord7d0453eb6f4a193758747fd8ef3cfb72",
-    "AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118"
+    "AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723"
    ]
   },
-  "AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5bWaitForTimeoutProviderInvokeB30CEE76": {
+  "AwsApiCallS3listObjectsV2d62725d0101ebd3296719dea448eb770WaitForTimeoutProviderInvoke06A0B950": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -662,21 +480,16 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5bWaitForRole16B5DE5E",
+      "AwsApiCallS3listObjectsV2d62725d0101ebd3296719dea448eb770WaitForRole74106F46",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723",
-    "AwsApiCallFirehoseputRecord1deac183d8f22b5b2d8e923c366d5bd1",
-    "AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638",
-    "AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c",
-    "AwsApiCallFirehoseputRecord7d0453eb6f4a193758747fd8ef3cfb72",
-    "AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118"
+    "AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723"
    ]
   },
-  "AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5bWaitForRole16B5DE5E": {
+  "AwsApiCallS3listObjectsV2d62725d0101ebd3296719dea448eb770WaitForRole74106F46": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -721,15 +534,10 @@
     ]
    },
    "DependsOn": [
-    "AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723",
-    "AwsApiCallFirehoseputRecord1deac183d8f22b5b2d8e923c366d5bd1",
-    "AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638",
-    "AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c",
-    "AwsApiCallFirehoseputRecord7d0453eb6f4a193758747fd8ef3cfb72",
-    "AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118"
+    "AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723"
    ]
   },
-  "AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5bWaitForB7FE0DC9": {
+  "AwsApiCallS3listObjectsV2d62725d0101ebd3296719dea448eb770WaitForACB0968C": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
     "DefinitionString": {
@@ -756,19 +564,14 @@
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5bWaitForRole16B5DE5E",
+      "AwsApiCallS3listObjectsV2d62725d0101ebd3296719dea448eb770WaitForRole74106F46",
       "Arn"
      ]
     }
    },
    "DependsOn": [
     "AwsApiCallFirehoseputRecord18eae126e1db88bccb665e3cf2382723",
-    "AwsApiCallFirehoseputRecord1deac183d8f22b5b2d8e923c366d5bd1",
-    "AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638",
-    "AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c",
-    "AwsApiCallFirehoseputRecord7d0453eb6f4a193758747fd8ef3cfb72",
-    "AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118",
-    "AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5bWaitForRole16B5DE5E"
+    "AwsApiCallS3listObjectsV2d62725d0101ebd3296719dea448eb770WaitForRole74106F46"
    ]
   },
   "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB": {
@@ -797,6 +600,435 @@
       "PolicyDocument": {
        "Version": "2012-10-17",
        "Statement": [
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListBucket"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+             },
+             "/*"
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListBucket"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+             },
+             "/*"
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListBucket"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+             },
+             "/*"
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListBucket"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+             },
+             "/*"
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListBucket"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+             },
+             "/*"
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListBucket"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+             },
+             "/*"
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListBucket"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+             },
+             "/*"
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListBucket"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+             },
+             "/*"
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListBucket"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+             },
+             "/*"
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListBucket"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+             },
+             "/*"
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListBucket"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+          }
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::ImportValue": "RecordFormatConversion:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+             },
+             "/*"
+            ]
+           ]
+          }
+         ]
+        },
         {
          "Action": [
           "s3:ListObjectsV2"
@@ -903,61 +1135,2279 @@
      ]
     }
    }
+  },
+  "AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118": {
+   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "putRecord",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomOpenXJsonEA227FEF3789EDDA"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709905"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV2a06a1b28bf9e377bbd75df44123def64": {
+   "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "listObjectsV2",
+    "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallS3listObjectsV2a06a1b28bf9e377bbd75df44123def64WaitForB302C5CD"
+    },
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Prefix": "\"success/CustomOpenXJson/\""
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709905"
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV2a06a1b28bf9e377bbd75df44123def64WaitForIsCompleteProviderInvoke3DD10067": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV2a06a1b28bf9e377bbd75df44123def64WaitForRoleF905EC2B",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118"
+   ]
+  },
+  "AwsApiCallS3listObjectsV2a06a1b28bf9e377bbd75df44123def64WaitForTimeoutProviderInvokeA3B78CC6": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV2a06a1b28bf9e377bbd75df44123def64WaitForRoleF905EC2B",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118"
+   ]
+  },
+  "AwsApiCallS3listObjectsV2a06a1b28bf9e377bbd75df44123def64WaitForRoleF905EC2B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118"
+   ]
+  },
+  "AwsApiCallS3listObjectsV2a06a1b28bf9e377bbd75df44123def64WaitForB302C5CD": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":24,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV2a06a1b28bf9e377bbd75df44123def64WaitForRoleF905EC2B",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecordca37e652bd2d5899647ca3a4b0194118",
+    "AwsApiCallS3listObjectsV2a06a1b28bf9e377bbd75df44123def64WaitForRoleF905EC2B"
+   ]
+  },
+  "AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c": {
+   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "putRecord",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomOrc771199861FB3EAC4"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709906"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV2dd392c4c6b6ee05bd5086b72d6ad59fd": {
+   "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "listObjectsV2",
+    "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallS3listObjectsV2dd392c4c6b6ee05bd5086b72d6ad59fdWaitFor2930B3B7"
+    },
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Prefix": "\"success/CustomOrc/\""
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709906"
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV2dd392c4c6b6ee05bd5086b72d6ad59fdWaitForIsCompleteProviderInvokeD50B2D81": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV2dd392c4c6b6ee05bd5086b72d6ad59fdWaitForRoleA423CC98",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c"
+   ]
+  },
+  "AwsApiCallS3listObjectsV2dd392c4c6b6ee05bd5086b72d6ad59fdWaitForTimeoutProviderInvoke0D81EE60": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV2dd392c4c6b6ee05bd5086b72d6ad59fdWaitForRoleA423CC98",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c"
+   ]
+  },
+  "AwsApiCallS3listObjectsV2dd392c4c6b6ee05bd5086b72d6ad59fdWaitForRoleA423CC98": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c"
+   ]
+  },
+  "AwsApiCallS3listObjectsV2dd392c4c6b6ee05bd5086b72d6ad59fdWaitFor2930B3B7": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":24,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV2dd392c4c6b6ee05bd5086b72d6ad59fdWaitForRoleA423CC98",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord41f6aac146cdbc41984ecab5a08c966c",
+    "AwsApiCallS3listObjectsV2dd392c4c6b6ee05bd5086b72d6ad59fdWaitForRoleA423CC98"
+   ]
+  },
+  "AwsApiCallFirehoseputRecordb2b140238489e49f3eb97bad014c3a2a": {
+   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "putRecord",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomOrcZlibAAA13E0C2700820A"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709907"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV2dcbbd29d5bfd85d81b23092e8850a999": {
+   "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "listObjectsV2",
+    "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallS3listObjectsV2dcbbd29d5bfd85d81b23092e8850a999WaitFor7442617E"
+    },
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Prefix": "\"success/CustomOrcZlib/\""
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709907"
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecordb2b140238489e49f3eb97bad014c3a2a"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV2dcbbd29d5bfd85d81b23092e8850a999WaitForIsCompleteProviderInvoke28220CC7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV2dcbbd29d5bfd85d81b23092e8850a999WaitForRoleEC47AB95",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecordb2b140238489e49f3eb97bad014c3a2a"
+   ]
+  },
+  "AwsApiCallS3listObjectsV2dcbbd29d5bfd85d81b23092e8850a999WaitForTimeoutProviderInvoke74814162": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV2dcbbd29d5bfd85d81b23092e8850a999WaitForRoleEC47AB95",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecordb2b140238489e49f3eb97bad014c3a2a"
+   ]
+  },
+  "AwsApiCallS3listObjectsV2dcbbd29d5bfd85d81b23092e8850a999WaitForRoleEC47AB95": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecordb2b140238489e49f3eb97bad014c3a2a"
+   ]
+  },
+  "AwsApiCallS3listObjectsV2dcbbd29d5bfd85d81b23092e8850a999WaitFor7442617E": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":24,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV2dcbbd29d5bfd85d81b23092e8850a999WaitForRoleEC47AB95",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecordb2b140238489e49f3eb97bad014c3a2a",
+    "AwsApiCallS3listObjectsV2dcbbd29d5bfd85d81b23092e8850a999WaitForRoleEC47AB95"
+   ]
+  },
+  "AwsApiCallFirehoseputRecord29d740526f9ed8d42d515482cdbaedbe": {
+   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "putRecord",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomOrcSnappy0596CCDA43C033B0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709907"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV287b1f1c7d54b0d6f1bca624e93d585c7": {
+   "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "listObjectsV2",
+    "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallS3listObjectsV287b1f1c7d54b0d6f1bca624e93d585c7WaitFor236E1DDA"
+    },
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Prefix": "\"success/CustomOrcSnappy/\""
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709908"
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord29d740526f9ed8d42d515482cdbaedbe"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV287b1f1c7d54b0d6f1bca624e93d585c7WaitForIsCompleteProviderInvoke7F965242": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV287b1f1c7d54b0d6f1bca624e93d585c7WaitForRole907F7758",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord29d740526f9ed8d42d515482cdbaedbe"
+   ]
+  },
+  "AwsApiCallS3listObjectsV287b1f1c7d54b0d6f1bca624e93d585c7WaitForTimeoutProviderInvoke10D6D303": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV287b1f1c7d54b0d6f1bca624e93d585c7WaitForRole907F7758",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord29d740526f9ed8d42d515482cdbaedbe"
+   ]
+  },
+  "AwsApiCallS3listObjectsV287b1f1c7d54b0d6f1bca624e93d585c7WaitForRole907F7758": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord29d740526f9ed8d42d515482cdbaedbe"
+   ]
+  },
+  "AwsApiCallS3listObjectsV287b1f1c7d54b0d6f1bca624e93d585c7WaitFor236E1DDA": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":24,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV287b1f1c7d54b0d6f1bca624e93d585c7WaitForRole907F7758",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord29d740526f9ed8d42d515482cdbaedbe",
+    "AwsApiCallS3listObjectsV287b1f1c7d54b0d6f1bca624e93d585c7WaitForRole907F7758"
+   ]
+  },
+  "AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638": {
+   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "putRecord",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomParquet17BE234326AD3637"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709908"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV23c6f1fe64b5fcf8b72be4ccb29f1b798": {
+   "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "listObjectsV2",
+    "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallS3listObjectsV23c6f1fe64b5fcf8b72be4ccb29f1b798WaitFor35A9D153"
+    },
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Prefix": "\"success/CustomParquet/\""
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709908"
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV23c6f1fe64b5fcf8b72be4ccb29f1b798WaitForIsCompleteProviderInvoke35114809": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV23c6f1fe64b5fcf8b72be4ccb29f1b798WaitForRoleFD89438F",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638"
+   ]
+  },
+  "AwsApiCallS3listObjectsV23c6f1fe64b5fcf8b72be4ccb29f1b798WaitForTimeoutProviderInvoke532C9465": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV23c6f1fe64b5fcf8b72be4ccb29f1b798WaitForRoleFD89438F",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638"
+   ]
+  },
+  "AwsApiCallS3listObjectsV23c6f1fe64b5fcf8b72be4ccb29f1b798WaitForRoleFD89438F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638"
+   ]
+  },
+  "AwsApiCallS3listObjectsV23c6f1fe64b5fcf8b72be4ccb29f1b798WaitFor35A9D153": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":24,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV23c6f1fe64b5fcf8b72be4ccb29f1b798WaitForRoleFD89438F",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord32bc5fec135267e9201d75ffff237638",
+    "AwsApiCallS3listObjectsV23c6f1fe64b5fcf8b72be4ccb29f1b798WaitForRoleFD89438F"
+   ]
+  },
+  "AwsApiCallFirehoseputRecorda6e112824a522d5388b0f7ae9f42df0d": {
+   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "putRecord",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomParquetGzipD2370D5281974F79"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709909"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV274c7554b23653a84cc8ab52c42146b4f": {
+   "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "listObjectsV2",
+    "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallS3listObjectsV274c7554b23653a84cc8ab52c42146b4fWaitFor79DD1E24"
+    },
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Prefix": "\"success/CustomParquetGzip/\""
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709909"
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecorda6e112824a522d5388b0f7ae9f42df0d"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV274c7554b23653a84cc8ab52c42146b4fWaitForIsCompleteProviderInvokeB5D98B9F": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV274c7554b23653a84cc8ab52c42146b4fWaitForRole614013AE",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecorda6e112824a522d5388b0f7ae9f42df0d"
+   ]
+  },
+  "AwsApiCallS3listObjectsV274c7554b23653a84cc8ab52c42146b4fWaitForTimeoutProviderInvokeF2DDE68D": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV274c7554b23653a84cc8ab52c42146b4fWaitForRole614013AE",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecorda6e112824a522d5388b0f7ae9f42df0d"
+   ]
+  },
+  "AwsApiCallS3listObjectsV274c7554b23653a84cc8ab52c42146b4fWaitForRole614013AE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecorda6e112824a522d5388b0f7ae9f42df0d"
+   ]
+  },
+  "AwsApiCallS3listObjectsV274c7554b23653a84cc8ab52c42146b4fWaitFor79DD1E24": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":24,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV274c7554b23653a84cc8ab52c42146b4fWaitForRole614013AE",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecorda6e112824a522d5388b0f7ae9f42df0d",
+    "AwsApiCallS3listObjectsV274c7554b23653a84cc8ab52c42146b4fWaitForRole614013AE"
+   ]
+  },
+  "AwsApiCallFirehoseputRecorda241188fc17692ab4755b0564942dfaa": {
+   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "putRecord",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefCustomParquetSnappyDCECB34CCD3FC623"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709909"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV295f95170989658ec7fa3661f8a47527d": {
+   "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "listObjectsV2",
+    "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallS3listObjectsV295f95170989658ec7fa3661f8a47527dWaitFor7E21F0E5"
+    },
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Prefix": "\"success/CustomParquetSnappy/\""
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709910"
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecorda241188fc17692ab4755b0564942dfaa"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV295f95170989658ec7fa3661f8a47527dWaitForIsCompleteProviderInvokeCB202D17": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV295f95170989658ec7fa3661f8a47527dWaitForRoleCE1B19D7",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecorda241188fc17692ab4755b0564942dfaa"
+   ]
+  },
+  "AwsApiCallS3listObjectsV295f95170989658ec7fa3661f8a47527dWaitForTimeoutProviderInvokeD7FF5D34": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV295f95170989658ec7fa3661f8a47527dWaitForRoleCE1B19D7",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecorda241188fc17692ab4755b0564942dfaa"
+   ]
+  },
+  "AwsApiCallS3listObjectsV295f95170989658ec7fa3661f8a47527dWaitForRoleCE1B19D7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecorda241188fc17692ab4755b0564942dfaa"
+   ]
+  },
+  "AwsApiCallS3listObjectsV295f95170989658ec7fa3661f8a47527dWaitFor7E21F0E5": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":24,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV295f95170989658ec7fa3661f8a47527dWaitForRoleCE1B19D7",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecorda241188fc17692ab4755b0564942dfaa",
+    "AwsApiCallS3listObjectsV295f95170989658ec7fa3661f8a47527dWaitForRoleCE1B19D7"
+   ]
+  },
+  "AwsApiCallFirehoseputRecord1f225ae81d6331da9a094c5357810b78": {
+   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "putRecord",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefDefaultHiveJsonOrcInlineSchema38BDAC5EC66A0927"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709910"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV2662f41c2a2e78c688a6e56cfcedb0b97": {
+   "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "listObjectsV2",
+    "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallS3listObjectsV2662f41c2a2e78c688a6e56cfcedb0b97WaitForB860F1EB"
+    },
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Prefix": "\"success/DefaultHiveJsonOrcInlineSchema/\""
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709910"
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord1f225ae81d6331da9a094c5357810b78"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV2662f41c2a2e78c688a6e56cfcedb0b97WaitForIsCompleteProviderInvokeD9500462": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV2662f41c2a2e78c688a6e56cfcedb0b97WaitForRole04B7357B",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord1f225ae81d6331da9a094c5357810b78"
+   ]
+  },
+  "AwsApiCallS3listObjectsV2662f41c2a2e78c688a6e56cfcedb0b97WaitForTimeoutProviderInvokeDB566BE5": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV2662f41c2a2e78c688a6e56cfcedb0b97WaitForRole04B7357B",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord1f225ae81d6331da9a094c5357810b78"
+   ]
+  },
+  "AwsApiCallS3listObjectsV2662f41c2a2e78c688a6e56cfcedb0b97WaitForRole04B7357B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord1f225ae81d6331da9a094c5357810b78"
+   ]
+  },
+  "AwsApiCallS3listObjectsV2662f41c2a2e78c688a6e56cfcedb0b97WaitForB860F1EB": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":24,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV2662f41c2a2e78c688a6e56cfcedb0b97WaitForRole04B7357B",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord1f225ae81d6331da9a094c5357810b78",
+    "AwsApiCallS3listObjectsV2662f41c2a2e78c688a6e56cfcedb0b97WaitForRole04B7357B"
+   ]
+  },
+  "AwsApiCallFirehoseputRecorde1b95309daec57a8d8d30bea632ea667": {
+   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "putRecord",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefDefaultOpenXJsonParquetInlineSchema5EC8C09024803BC9"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709911"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV214871b95a144e44fec8973aa6627db54": {
+   "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "listObjectsV2",
+    "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallS3listObjectsV214871b95a144e44fec8973aa6627db54WaitFor91D3B943"
+    },
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Prefix": "\"success/DefaultOpenXJsonParquetInlineSchema/\""
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709911"
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecorde1b95309daec57a8d8d30bea632ea667"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV214871b95a144e44fec8973aa6627db54WaitForIsCompleteProviderInvoke95AE1009": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV214871b95a144e44fec8973aa6627db54WaitForRole6CD80DAE",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecorde1b95309daec57a8d8d30bea632ea667"
+   ]
+  },
+  "AwsApiCallS3listObjectsV214871b95a144e44fec8973aa6627db54WaitForTimeoutProviderInvoke1B4AA6EB": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV214871b95a144e44fec8973aa6627db54WaitForRole6CD80DAE",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecorde1b95309daec57a8d8d30bea632ea667"
+   ]
+  },
+  "AwsApiCallS3listObjectsV214871b95a144e44fec8973aa6627db54WaitForRole6CD80DAE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecorde1b95309daec57a8d8d30bea632ea667"
+   ]
+  },
+  "AwsApiCallS3listObjectsV214871b95a144e44fec8973aa6627db54WaitFor91D3B943": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":24,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV214871b95a144e44fec8973aa6627db54WaitForRole6CD80DAE",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecorde1b95309daec57a8d8d30bea632ea667",
+    "AwsApiCallS3listObjectsV214871b95a144e44fec8973aa6627db54WaitForRole6CD80DAE"
+   ]
+  },
+  "AwsApiCallFirehoseputRecord82213ca373fdffa70bb25442cc449e04": {
+   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "putRecord",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefDefaultHiveJsonOrcRegistrySchema4EBD1BF9A86E78BC"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709911"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV2cf5ed90cccfb4b49944fe95ff60cb5d3": {
+   "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "listObjectsV2",
+    "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallS3listObjectsV2cf5ed90cccfb4b49944fe95ff60cb5d3WaitForBC4473C4"
+    },
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Prefix": "\"success/DefaultHiveJsonOrcRegistrySchema/\""
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709912"
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord82213ca373fdffa70bb25442cc449e04"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV2cf5ed90cccfb4b49944fe95ff60cb5d3WaitForIsCompleteProviderInvoke7BBA950E": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV2cf5ed90cccfb4b49944fe95ff60cb5d3WaitForRoleD858E055",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord82213ca373fdffa70bb25442cc449e04"
+   ]
+  },
+  "AwsApiCallS3listObjectsV2cf5ed90cccfb4b49944fe95ff60cb5d3WaitForTimeoutProviderInvoke2BCCB12F": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV2cf5ed90cccfb4b49944fe95ff60cb5d3WaitForRoleD858E055",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord82213ca373fdffa70bb25442cc449e04"
+   ]
+  },
+  "AwsApiCallS3listObjectsV2cf5ed90cccfb4b49944fe95ff60cb5d3WaitForRoleD858E055": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord82213ca373fdffa70bb25442cc449e04"
+   ]
+  },
+  "AwsApiCallS3listObjectsV2cf5ed90cccfb4b49944fe95ff60cb5d3WaitForBC4473C4": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":24,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV2cf5ed90cccfb4b49944fe95ff60cb5d3WaitForRoleD858E055",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord82213ca373fdffa70bb25442cc449e04",
+    "AwsApiCallS3listObjectsV2cf5ed90cccfb4b49944fe95ff60cb5d3WaitForRoleD858E055"
+   ]
+  },
+  "AwsApiCallFirehoseputRecord0447aacf1aa87c88ea1cfcf9a25c6863": {
+   "Type": "Custom::DeployAssert@SdkCallFirehoseputRecord",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Firehose",
+    "api": "putRecord",
+    "parameters": {
+     "DeliveryStreamName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefDefaultOpenXJsonParquetRegistrySchema2BA7A11C0C19D38E"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709912"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV282213aed03bee52f6430253dff0f81cd": {
+   "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "listObjectsV2",
+    "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallS3listObjectsV282213aed03bee52f6430253dff0f81cdWaitFor960A6703"
+    },
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordFormatConversion:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Prefix": "\"success/DefaultOpenXJsonParquetRegistrySchema/\""
+    },
+    "flattenResponse": "false",
+    "salt": "1760708709912"
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord0447aacf1aa87c88ea1cfcf9a25c6863"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3listObjectsV282213aed03bee52f6430253dff0f81cdWaitForIsCompleteProviderInvoke2083F514": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV282213aed03bee52f6430253dff0f81cdWaitForRole76B40006",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord0447aacf1aa87c88ea1cfcf9a25c6863"
+   ]
+  },
+  "AwsApiCallS3listObjectsV282213aed03bee52f6430253dff0f81cdWaitForTimeoutProviderInvokeEDFAACEC": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV282213aed03bee52f6430253dff0f81cdWaitForRole76B40006",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord0447aacf1aa87c88ea1cfcf9a25c6863"
+   ]
+  },
+  "AwsApiCallS3listObjectsV282213aed03bee52f6430253dff0f81cdWaitForRole76B40006": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord0447aacf1aa87c88ea1cfcf9a25c6863"
+   ]
+  },
+  "AwsApiCallS3listObjectsV282213aed03bee52f6430253dff0f81cdWaitFor960A6703": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":24,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallS3listObjectsV282213aed03bee52f6430253dff0f81cdWaitForRole76B40006",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallFirehoseputRecord0447aacf1aa87c88ea1cfcf9a25c6863",
+    "AwsApiCallS3listObjectsV282213aed03bee52f6430253dff0f81cdWaitForRole76B40006"
+   ]
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallFirehosedescribeDeliveryStream1f633a3cab72011e76e59275f2cbb595": {
+  "AssertionResultsAwsApiCallS3listObjectsV2d62725d0101ebd3296719dea448eb770": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallFirehosedescribeDeliveryStream1f633a3cab72011e76e59275f2cbb595",
+     "AwsApiCallS3listObjectsV2d62725d0101ebd3296719dea448eb770",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallFirehosedescribeDeliveryStream429b2496ec1bb3c217e799457b01c838": {
+  "AssertionResultsAwsApiCallS3listObjectsV2a06a1b28bf9e377bbd75df44123def64": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallFirehosedescribeDeliveryStream429b2496ec1bb3c217e799457b01c838",
+     "AwsApiCallS3listObjectsV2a06a1b28bf9e377bbd75df44123def64",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallFirehosedescribeDeliveryStream80ff3183e5eb6b5c7dadb7fc094e741d": {
+  "AssertionResultsAwsApiCallS3listObjectsV2dd392c4c6b6ee05bd5086b72d6ad59fd": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallFirehosedescribeDeliveryStream80ff3183e5eb6b5c7dadb7fc094e741d",
+     "AwsApiCallS3listObjectsV2dd392c4c6b6ee05bd5086b72d6ad59fd",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallFirehosedescribeDeliveryStream77751255b283a1ea1a4bd3c711269900": {
+  "AssertionResultsAwsApiCallS3listObjectsV2dcbbd29d5bfd85d81b23092e8850a999": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallFirehosedescribeDeliveryStream77751255b283a1ea1a4bd3c711269900",
+     "AwsApiCallS3listObjectsV2dcbbd29d5bfd85d81b23092e8850a999",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallFirehosedescribeDeliveryStreamb0d4cd9ba478423252d4278aa95b0414": {
+  "AssertionResultsAwsApiCallS3listObjectsV287b1f1c7d54b0d6f1bca624e93d585c7": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallFirehosedescribeDeliveryStreamb0d4cd9ba478423252d4278aa95b0414",
+     "AwsApiCallS3listObjectsV287b1f1c7d54b0d6f1bca624e93d585c7",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallFirehosedescribeDeliveryStreamc49aeb8fbb93c449cb71bf766f7246b7": {
+  "AssertionResultsAwsApiCallS3listObjectsV23c6f1fe64b5fcf8b72be4ccb29f1b798": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallFirehosedescribeDeliveryStreamc49aeb8fbb93c449cb71bf766f7246b7",
+     "AwsApiCallS3listObjectsV23c6f1fe64b5fcf8b72be4ccb29f1b798",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5b": {
+  "AssertionResultsAwsApiCallS3listObjectsV274c7554b23653a84cc8ab52c42146b4f": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallS3listObjectsV2caaf9d160cbf5c2f7e6c52932eddfc5b",
+     "AwsApiCallS3listObjectsV274c7554b23653a84cc8ab52c42146b4f",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3listObjectsV295f95170989658ec7fa3661f8a47527d": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3listObjectsV295f95170989658ec7fa3661f8a47527d",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3listObjectsV2662f41c2a2e78c688a6e56cfcedb0b97": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3listObjectsV2662f41c2a2e78c688a6e56cfcedb0b97",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3listObjectsV214871b95a144e44fec8973aa6627db54": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3listObjectsV214871b95a144e44fec8973aa6627db54",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3listObjectsV2cf5ed90cccfb4b49944fe95ff60cb5d3": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3listObjectsV2cf5ed90cccfb4b49944fe95ff60cb5d3",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3listObjectsV282213aed03bee52f6430253dff0f81cd": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3listObjectsV282213aed03bee52f6430253dff0f81cd",
      "assertion"
     ]
    }
