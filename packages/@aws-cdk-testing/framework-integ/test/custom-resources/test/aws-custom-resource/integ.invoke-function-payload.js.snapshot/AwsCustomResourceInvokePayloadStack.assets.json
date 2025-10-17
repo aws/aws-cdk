@@ -8,23 +8,23 @@
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-29dbdb89": {
+        "current_account-current_region-1c271e03": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "a73ebb32184d4a847fd87c0def742ac63ae3716c77d7d75f37ffe720d056adc6.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "984bf6328608a8bf77fcf5bb8011b734ab3a5cda8bb9c3f670e0db6043ab7ad6": {
+    "c8cf2ba9a71da0fa36397483f6b0cc484fa3c2443de2fd5da459feee22ed998c": {
       "displayName": "AwsCustomResourceInvokePayloadStack Template",
       "source": {
         "path": "AwsCustomResourceInvokePayloadStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-42dcb1cf": {
+        "current_account-current_region-cf7c8ce0": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "984bf6328608a8bf77fcf5bb8011b734ab3a5cda8bb9c3f670e0db6043ab7ad6.json",
+          "objectKey": "c8cf2ba9a71da0fa36397483f6b0cc484fa3c2443de2fd5da459feee22ed998c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

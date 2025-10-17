@@ -26,7 +26,7 @@ describe('AgentActionGroupExecutor', () => {
 
   test('creates action group with lambda executor', () => {
     const fn = new lambda.Function(stack, 'TestFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
     });
@@ -76,7 +76,7 @@ describe('AgentActionGroupExecutor', () => {
 
   test('grants necessary permissions to agent role', () => {
     const fn = new lambda.Function(stack, 'TestFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
     });
