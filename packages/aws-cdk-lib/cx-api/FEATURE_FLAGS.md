@@ -107,6 +107,7 @@ Flags come in three types:
 | [@aws-cdk/core:explicitStackTags](#aws-cdkcoreexplicitstacktags) | When enabled, stack tags need to be assigned explicitly on a Stack. | 2.205.0 | new default |
 | [@aws-cdk/aws-signer:signingProfileNamePassedToCfn](#aws-cdkaws-signersigningprofilenamepassedtocfn) | Pass signingProfileName to CfnSigningProfile | 2.212.0 | fix |
 | [@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener](#aws-cdkaws-ecs-patternssecgroupsdisablesimplicitopenlistener) | Disable implicit openListener when custom security groups are provided | 2.214.0 | new default |
+| [@aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault](#aws-cdkaws-cloudfront-originsfunctionurlorigindualstackdefault) | Enable dual-stack (IPv4 and IPv6) support by default for Lambda Function URL origins | V2NEXT | new default |
 | [@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId](#aws-cdkaws-ecs-patternsuniquetargetgroupid) | When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement | V2NEXT | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | V2NEXT | fix |
 
@@ -200,6 +201,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
     "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
+    "@aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault": true
     "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true
   }
 }
@@ -2280,6 +2282,20 @@ override this behavior.
 
 **Compatibility with old behavior:** You can pass `openListener: true` explicitly to maintain the old behavior.
 
+### @aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault
+
+Flag type: New default behavior
+
+When enabled, Lambda Function URL origins in CloudFront distributions will use dual-stack (IPv4 and IPv6) IP address type by default, instead of IPv4-only.
+
+This feature flag enables better connectivity and performance for users accessing your Lambda Function URLs through CloudFront by supporting both IPv4 and IPv6 protocols.
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** You can explicitly set `ipAddressType: OriginIpAddressType.IPV4` to maintain IPv4-only behavior, or set `ipAddressType: OriginIpAddressType.IPV6` for IPv6-only.
 
 ### @aws-cdk/aws-ecs-patterns:uniqueTargetGroupId
 
