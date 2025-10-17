@@ -1004,11 +1004,6 @@
     "construct-ctor-props-type:aws-cdk-lib.aws_inspector.AssessmentTemplate",
     "props-physical-name:aws-cdk-lib.aws_inspector.AssessmentTemplateProps",
     "attribute-tag:aws-cdk-lib.aws_scheduler.Schedule.scheduleGroup",
-    "docs-public-apis:aws-cdk-lib.aws_scheduler.ContextAttribute.name",
-    "no-experimental-apis:aws-cdk-lib.TestIntersections",
-    "docs-public-apis:aws-cdk-lib.TestIntersections.takeIntersection",
-    "no-experimental-apis:aws-cdk-lib.TestIntersections.takeIntersection",
-    "no-experimental-apis:aws-cdk-lib.TestIntersectionProps",
-    "no-experimental-apis:aws-cdk-lib.TestIntersectionProps.field"
+    "docs-public-apis:aws-cdk-lib.aws_scheduler.ContextAttribute.name"
   ]
 }
