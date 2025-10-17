@@ -629,4 +629,14 @@ const memory = new agentcore.Memory(this, "MyMemory", {
 You can add new memory strategies to the memory construct using the `addMemoryStrategy()` method, for instance:
 
 ```typescript fixture=default
-// Create me
+// Create memory without initial strategies
+const memory = new agentcore.Memory(this, "test-memory", {
+  memoryName: "test_memory_add_strategy",
+  description: "A test memory for testing addMemoryStrategy method",
+  expirationDuration: cdk.Duration.days(90),
+});
+
+// Add strategies after instantiation
+memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSummarization());
+memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSemantic());
+```
