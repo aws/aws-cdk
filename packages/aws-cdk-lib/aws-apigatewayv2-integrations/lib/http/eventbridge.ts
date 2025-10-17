@@ -1,9 +1,8 @@
 import { IConstruct } from 'constructs';
 import * as apigwv2 from '../../../aws-apigatewayv2';
-import * as iam from '../../../aws-iam';
 import * as events from '../../../aws-events';
+import * as iam from '../../../aws-iam';
 import { ValidationError } from '../../../core';
-
 
 /**
  * Properties to initialize `HttpEventBridgeIntegration`.
@@ -88,10 +87,10 @@ export class HttpEventBridgeIntegration extends apigwv2.HttpRouteIntegration {
     switch (this.subtype) {
       case apigwv2.HttpIntegrationSubtype.EVENTBRIDGE_PUT_EVENTS:
         return new apigwv2.ParameterMapping()
-            .custom('EventBusName', this.props.eventBus.eventBusName)
-            .custom('Detail', '$request.body.Detail')
-            .custom('DetailType', '$request.body.DetailType')
-            .custom('Source', '$request.body.Source');
+          .custom('EventBusName', this.props.eventBus.eventBusName)
+          .custom('Detail', '$request.body.Detail')
+          .custom('DetailType', '$request.body.DetailType')
+          .custom('Source', '$request.body.Source');
       default:
         throw new ValidationError(`Unsupported subtype: ${this.subtype}`, scope);
     }

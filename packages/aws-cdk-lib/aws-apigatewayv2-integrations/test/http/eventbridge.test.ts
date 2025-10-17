@@ -51,7 +51,7 @@ describe('EventBridgeIntegration', () => {
     });
     template.hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       ConnectionType: 'INTERNET',
-      CredentialsArn: Match.objectLike({ 'Fn::GetAtt': [ Match.stringLikeRegexp('EventBridgeRouteInvokeRole.*'), 'Arn' ] }),
+      CredentialsArn: Match.objectLike({ 'Fn::GetAtt': [Match.stringLikeRegexp('EventBridgeRouteInvokeRole.*'), 'Arn'] }),
       IntegrationType: 'AWS_PROXY',
       IntegrationSubtype: 'EventBridge-PutEvents',
       PayloadFormatVersion: '1.0',
@@ -81,7 +81,7 @@ describe('EventBridgeIntegration', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       ConnectionType: 'INTERNET',
-      CredentialsArn: Match.objectLike({ 'Fn::GetAtt': [ Match.stringLikeRegexp('EventBridgeRouteInvokeRole.*'), 'Arn' ] }),
+      CredentialsArn: Match.objectLike({ 'Fn::GetAtt': [Match.stringLikeRegexp('EventBridgeRouteInvokeRole.*'), 'Arn'] }),
       IntegrationType: 'AWS_PROXY',
       IntegrationSubtype: 'EventBridge-PutEvents',
       PayloadFormatVersion: '1.0',
@@ -129,5 +129,3 @@ describe('EventBridgeIntegration', () => {
     }).toThrow(/Subtype must start with `EventBridge-`/);
   });
 });
-
-

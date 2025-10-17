@@ -46,5 +46,3 @@ const putEventsAssertion = integTest.assertions.httpApiCall(
   },
 );
 putEventsAssertion.expect(integ.ExpectedResult.objectLike({ status: 200, statusText: 'OK' }));
-
-
