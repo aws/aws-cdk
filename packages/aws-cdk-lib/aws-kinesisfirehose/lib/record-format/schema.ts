@@ -98,12 +98,21 @@ export class SchemaConfiguration {
       account: this.catalogId,
     });
 
+    /*
+     * Permissions reference https://docs.aws.amazon.com/firehose/latest/dev/controlling-access.html#using-iam-glue
+     * Note that actions on a table require specifying the database and the catalog in the resources as well.
+     * See https://docs.aws.amazon.com/glue/latest/dg/glue-specifying-resource-arns.html
+     */
     iam.Grant.addToPrincipal({
       actions: ['glue:GetTable', 'glue:GetTableVersion', 'glue:GetTableVersions'],
       grantee: options.role,
       resourceArns: [catalogArn, databaseArn, tableArn],
     });
 
+    /*
+     * Needed if the table schema is stored in AWS Glue Schema Registry
+     * The resource must be '*' due to Firehose limitation
+     */
     iam.Grant.addToPrincipal({
       actions: ['glue:GetSchemaVersion'],
       grantee: options.role,
