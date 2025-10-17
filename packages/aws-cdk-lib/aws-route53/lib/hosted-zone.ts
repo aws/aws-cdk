@@ -536,8 +536,8 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
-      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-        return makeGrantDelegation(grantee, this.hostedZoneArn);
+      public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
+        return makeGrantDelegation(grantee, this, options);
       }
     }
     return new Import(scope, id);
