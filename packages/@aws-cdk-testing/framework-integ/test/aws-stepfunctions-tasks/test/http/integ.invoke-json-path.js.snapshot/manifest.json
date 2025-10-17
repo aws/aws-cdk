@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "TestStack.assets": {
+    "aws-stepfunctions-tasks-http-invoke-json-path-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "TestStack.assets.json",
+        "file": "aws-stepfunctions-tasks-http-invoke-json-path-integ.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "TestStack": {
+    "aws-stepfunctions-tasks-http-invoke-json-path-integ": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "TestStack.template.json",
+        "templateFile": "aws-stepfunctions-tasks-http-invoke-json-path-integ.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a9e5c98b6640f8f86487b9abf375441221e1b5ae855e39b82aad744106b9d117.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b3fe573981c2b0f87b1b1b100d6942d4dd2900fbb8d76a5053ab7117f17dacfd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "TestStack.assets"
+          "aws-stepfunctions-tasks-http-invoke-json-path-integ.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,284 +31,268 @@
         }
       },
       "dependencies": [
-        "TestStack.assets"
+        "aws-stepfunctions-tasks-http-invoke-json-path-integ.assets"
       ],
       "metadata": {
-        "/TestStack/Vpc": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "maxAzs": "*",
-              "natGateways": "*",
-              "restrictDefaultSecurityGroup": false
+              "entry": "*",
+              "handler": "*",
+              "runtime": "*",
+              "code": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "entry": "*",
+              "handler": "*"
             }
           }
         ],
-        "/TestStack/Vpc/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Vpc8378EB38"
-          }
-        ],
-        "/TestStack/Vpc/PublicSubnet1": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
               ]
             }
           }
         ],
-        "/TestStack/Vpc/PublicSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1Subnet5C2D37C4"
-          }
-        ],
-        "/TestStack/Vpc/PublicSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTable6C95E38E"
-          }
-        ],
-        "/TestStack/Vpc/PublicSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
-          }
-        ],
-        "/TestStack/Vpc/PublicSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
-          }
-        ],
-        "/TestStack/Vpc/PublicSubnet1/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1EIPD7E02669"
-          }
-        ],
-        "/TestStack/Vpc/PublicSubnet1/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1NATGateway4D7517AA"
-          }
-        ],
-        "/TestStack/Vpc/PublicSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/TestStack/Vpc/PublicSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2Subnet691E08A3"
-          }
-        ],
-        "/TestStack/Vpc/PublicSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTable94F7E489"
-          }
-        ],
-        "/TestStack/Vpc/PublicSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
-          }
-        ],
-        "/TestStack/Vpc/PublicSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2DefaultRoute97F91067"
-          }
-        ],
-        "/TestStack/Vpc/PrivateSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/TestStack/Vpc/PrivateSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1Subnet536B997A"
-          }
-        ],
-        "/TestStack/Vpc/PrivateSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
-          }
-        ],
-        "/TestStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
-          }
-        ],
-        "/TestStack/Vpc/PrivateSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
-          }
-        ],
-        "/TestStack/Vpc/PrivateSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/TestStack/Vpc/PrivateSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2Subnet3788AAA1"
-          }
-        ],
-        "/TestStack/Vpc/PrivateSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableA678073B"
-          }
-        ],
-        "/TestStack/Vpc/PrivateSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
-          }
-        ],
-        "/TestStack/Vpc/PrivateSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
-          }
-        ],
-        "/TestStack/Vpc/IGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcIGWD7BA715C"
-          }
-        ],
-        "/TestStack/Vpc/VPCGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcVPCGWBF912B6E"
-          }
-        ],
-        "/TestStack/Task": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
-          },
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuthorizerHandlerServiceRole5F40A014"
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuthorizerHandler0112B303"
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuthorizerHandlerLogGroup19D4FC4C"
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/awsstepfunctionstaskshttpinvokejsonpathintegAuthorizer0A0EA200:Permissions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuthorizerHandlerawsstepfunctionstaskshttpinvokejsonpathintegAuthorizer0A0EA200PermissionsAC1581B9"
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/Authorizer": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
-          },
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/Authorizer/Resource": [
           {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
+            "type": "aws:cdk:logicalId",
+            "data": "AuthorizerBD825682"
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi": [
           {
-            "type": "aws:cdk:analytics:method",
+            "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/TestStack/Task/TaskRole": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegRestApiF8B59B0D"
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegRestApiDeploymentD67E59ECc0bae562047b64e07eb861eb93111562"
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegRestApiDeploymentStageprod29E2686A"
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegRestApiEndpoint7BEB0C53"
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Default/test-json-path": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parent": "*",
+              "pathPart": "*"
+            }
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Default/test-json-path/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegRestApitestjsonpath7AE2D560"
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Default/test-json-path/GET": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "authorizer": "*",
+                "methodResponses": [
+                  {
+                    "statusCode": "*"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Default/test-json-path/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IntegRestApitestjsonpathGETEA421C58"
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/Connection": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "authorization": "*"
+            }
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/Connection/Connection": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Connection07624BCD"
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "definition": "*",
+              "timeout": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -317,255 +301,245 @@
                 "assumeRoleAction": "*"
               }
             }
-          }
-        ],
-        "/TestStack/Task/TaskRole/ImportTaskRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/TestStack/Task/TaskRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TaskTaskRoleE98524A1"
-          }
-        ],
-        "/TestStack/Task/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Task79114B6B"
-          }
-        ],
-        "/TestStack/Service/LB": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/TestStack/Service/LB/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceLBE9A1ADBC"
-          }
-        ],
-        "/TestStack/Service/LB/SecurityGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "description": "*",
-              "allowAllOutbound": false
-            }
           },
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addIngressRule": [
-                {
-                  "canInlineRule": true,
-                  "connections": "*",
-                  "uniqueId": "*"
-                },
-                {},
-                "*",
-                false
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           },
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addEgressRule": [
-                "*",
-                {},
-                "*",
-                true
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           }
         ],
-        "/TestStack/Service/LB/SecurityGroup/Resource": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Role/ImportRole": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceLBSecurityGroupF7435A5C"
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
-        "/TestStack/Service/LB/SecurityGroup/to TestStackServiceSecurityGroup59159BDD:80": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ServiceLBSecurityGrouptoTestStackServiceSecurityGroup59159BDD804A6BA8AC"
+            "data": "StateMachineRoleB840431D"
           }
         ],
-        "/TestStack/Service/LB/PublicListener": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/TestStack/Service/LB/PublicListener/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceLBPublicListener46709EAA"
-          }
-        ],
-        "/TestStack/Service/LB/PublicListener/ECSPrivateGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceLBPublicListenerECSPrivateGroup93D5832E"
-          }
-        ],
-        "/TestStack/Service/LoadBalancerDNS": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceLoadBalancerDNSEC5B149E"
-          }
-        ],
-        "/TestStack/Service/ServiceURL": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceServiceURL250C0FB6"
-          }
-        ],
-        "/TestStack/Service/Service": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/TestStack/Service/Service/Service": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Service9571FDD8"
-          }
-        ],
-        "/TestStack/Service/Service/SecurityGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
             "data": {
-              "vpc": "*"
+              "attachToRole": [
+                "*"
+              ]
             }
           },
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addIngressRule": [
-                "*",
-                {},
-                "*",
-                false
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
               ]
             }
           }
         ],
-        "/TestStack/Service/Service/SecurityGroup/Resource": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ServiceSecurityGroupEEA09B68"
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
           }
         ],
-        "/TestStack/Service/Service/SecurityGroup/from TestStackServiceLBSecurityGroup76260E3B:80": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ServiceSecurityGroupfromTestStackServiceLBSecurityGroup76260E3B8004FB511A"
+            "data": "StateMachine2E01A3A5"
           }
         ],
-        "/TestStack/EcsDefaultClusterMnL3mNNYNVpc": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*"
-            }
-          }
-        ],
-        "/TestStack/EcsDefaultClusterMnL3mNNYNVpc/Resource": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsDefaultClusterMnL3mNNYNVpc18E0451A"
+            "data": "ExportsOutputRefStateMachine2E01A3A5BA46F753"
           }
         ],
-        "/TestStack/Nlb": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/TestStack/Nlb/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NlbBCDB97FE"
-          }
-        ],
-        "/TestStack/Nlb/listener": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/TestStack/Nlb/listener/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NlblistenerBE297616"
-          }
-        ],
-        "/TestStack/Nlb/listener/TargetsGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NlblistenerTargetsGroupDD2A3CB0"
-          }
-        ],
-        "/TestStack/NlbEndpoint": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NlbEndpoint"
-          }
-        ],
-        "/TestStack/BootstrapVersion": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/TestStack/CheckBootstrapVersion": [
+        "/aws-stepfunctions-tasks-http-invoke-json-path-integ/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "TestStack"
+      "displayName": "aws-stepfunctions-tasks-http-invoke-json-path-integ"
+    },
+    "HttpInvokeTestDefaultTestDeployAssertBA1B4726.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "HttpInvokeTestDefaultTestDeployAssertBA1B4726.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "HttpInvokeTestDefaultTestDeployAssertBA1B4726": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "HttpInvokeTestDefaultTestDeployAssertBA1B4726.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2c882b44eb4a8c8634a353ef51f91d82e7d6971e1378398a72606e1c5dba1bc6.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "HttpInvokeTestDefaultTestDeployAssertBA1B4726.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-stepfunctions-tasks-http-invoke-json-path-integ",
+        "HttpInvokeTestDefaultTestDeployAssertBA1B4726.assets"
+      ],
+      "metadata": {
+        "/HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution6889d16cb95f6b788d9ce305167f8e14/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution6889d16cb95f6b788d9ce305167f8e14/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsstartExecution6889d16cb95f6b788d9ce305167f8e14"
+          }
+        ],
+        "/HttpInvokeTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/HttpInvokeTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e"
+          }
+        ],
+        "/HttpInvokeTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallStepFunctionsdescribeExecution884e7f76ad5a29cd349843b05b0c4c1e"
+          }
+        ],
+        "/HttpInvokeTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/HttpInvokeTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "HttpInvokeTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -1047,6 +1021,17 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           }
         }
       }
