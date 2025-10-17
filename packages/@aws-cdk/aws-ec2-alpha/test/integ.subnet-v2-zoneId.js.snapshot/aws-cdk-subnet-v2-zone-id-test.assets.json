@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "81c49f5141352d02cd7690645fbc9f173dd786dafb48918f67966e28784f2d19": {
+      "displayName": "aws-cdk-subnet-v2-zone-id-test Template",
+      "source": {
+        "path": "aws-cdk-subnet-v2-zone-id-test.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1-168f508c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "81c49f5141352d02cd7690645fbc9f173dd786dafb48918f67966e28784f2d19.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
