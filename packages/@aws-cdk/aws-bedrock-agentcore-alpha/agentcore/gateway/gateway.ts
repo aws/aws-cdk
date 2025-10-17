@@ -1,4 +1,4 @@
-import { Aws } from 'aws-cdk-lib';
+import { Aws, Token } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -514,6 +514,11 @@ export class Gateway extends GatewayBase {
    * @throws Error if the name is invalid
    */
   private validateGatewayName(name: string): void {
+    // Skip validation if the name contains CDK tokens (unresolved values)
+    if (Token.isUnresolved(name)) {
+      return;
+    }
+
     // Validate length
     const lengthErrors = validateStringField({
       value: name,
@@ -546,6 +551,11 @@ export class Gateway extends GatewayBase {
    * @throws Error if validation fails
    */
   private validateDescription(description: string): void {
+    // Skip validation if the description contains CDK tokens (unresolved values)
+    if (Token.isUnresolved(description)) {
+      return;
+    }
+
     const errors = validateStringField({
       value: description,
       minLength: 1,

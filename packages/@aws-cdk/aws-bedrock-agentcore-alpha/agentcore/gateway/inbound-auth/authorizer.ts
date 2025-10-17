@@ -1,4 +1,5 @@
 import { IUserPoolClient, UserPool } from 'aws-cdk-lib/aws-cognito';
+import { ValidationError } from '../validation-helpers';
 
 /******************************************************************************
  *                                Authorizer Configuration
@@ -108,7 +109,7 @@ export class CustomJwtAuthorizer implements IGatewayAuthorizer {
  *****************************************************************************/
 
 /**
- * Custom JWT authorizer configuration implementation
+ * AWS IAM authorizer configuration implementation
  *
  */
 export class IamAuthorizer implements IGatewayAuthorizer {
@@ -118,7 +119,9 @@ export class IamAuthorizer implements IGatewayAuthorizer {
    * @internal
    */
   _render(): any {
-    return {};
+    // AWS IAM authorizer doesn't need additional configuration
+    // Return null or undefined to indicate no configuration needed
+    return undefined;
   }
 }
 
@@ -159,7 +162,7 @@ export abstract class GatewayAuthorizer {
   public static usingCustomJwt(configuration: CustomJwtConfiguration): IGatewayAuthorizer {
     // At least one of allowedAudience or allowedClients must be defined for CUSTOM_JWT authorizer
     if (!configuration.allowedAudience && !configuration.allowedClients) {
-      throw new Error('At least one of allowedAudience or allowedClients must be defined for CUSTOM_JWT authorizer');
+      throw new ValidationError('At least one of allowedAudience or allowedClients must be defined for CUSTOM_JWT authorizer');
     }
     return new CustomJwtAuthorizer(configuration);
   }

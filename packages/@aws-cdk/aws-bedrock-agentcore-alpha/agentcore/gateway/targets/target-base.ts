@@ -2,7 +2,6 @@ import { Resource, IResource } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IGateway } from '../gateway-base';
 import { ICredentialProvider } from '../outbound-auth/credential-provider';
-import { ValidationError } from '../validation-helpers';
 
 /******************************************************************************
  *                                 ENUM
@@ -172,28 +171,5 @@ export abstract class GatewayTargetBase extends Resource implements IGatewayTarg
       'bedrock-agentcore:UpdateGatewayTarget',
       'bedrock-agentcore:DeleteGatewayTarget',
     );
-  }
-
-  /**
-   * Validates the gateway target name format
-   * @param name The gateway target name to validate
-   * @throws Error if the name is invalid
-   */
-  protected validateGatewayTargetName(name: string): void {
-    if (!name || name.length === 0) {
-      throw new ValidationError('Gateway target name cannot be empty');
-    }
-
-    if (name.length > 50) {
-      throw new ValidationError(`Gateway target name cannot exceed 50 characters. Current length: ${name.length}/100`);
-    }
-
-    // Check if name contains only valid characters: a-z, A-Z, 0-9, and -
-    const validNamePattern = /^[a-zA-Z0-9-]+$/;
-    if (!validNamePattern.test(name)) {
-      throw new ValidationError(
-        `Gateway target name can only contain letters (a-z, A-Z), numbers (0-9), and hyphens (-). Invalid name: "${name}"`,
-      );
-    }
   }
 }

@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "edaf80a6056b6c7ca0840d3d2b9ef9f4ebd6c8fc33fec9cde62e42875862fab1": {
+      "displayName": "BedrockAgentCoreGatewayIntegTest Template",
+      "source": {
+        "path": "BedrockAgentCoreGatewayIntegTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1-bb2d2818": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "edaf80a6056b6c7ca0840d3d2b9ef9f4ebd6c8fc33fec9cde62e42875862fab1.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

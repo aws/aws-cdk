@@ -122,6 +122,11 @@ export interface IGateway extends IResource {
    */
   grantManage(grantee: iam.IGrantable): iam.Grant;
 
+  /**
+   * Grants permission to invoke this Gateway
+   */
+  grantInvoke(grantee: iam.IGrantable): iam.Grant;
+
   // ------------------------------------------------------
   // Metrics
   // ------------------------------------------------------
@@ -229,6 +234,13 @@ export abstract class GatewayBase extends Resource implements IGateway {
    */
   public grantManage(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...GatewayPerms.MANAGE_PERMS);
+  }
+
+  /**
+   * Grants permission to invoke this Gateway
+   */
+  public grantInvoke(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...GatewayPerms.INVOKE_PERMS);
   }
 
   // ------------------------------------------------------

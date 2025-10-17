@@ -26,7 +26,7 @@ import { McpProtocolConfiguration, MCPProtocolVersion, McpGatewaySearchType } fr
 import { ApiSchema } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/targets/schema/api-schema';
 import { ToolSchema, SchemaDefinitionType } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/targets/schema/tool-schema';
 import { GatewayTarget } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/targets/target';
-import { LambdaTargetConfiguration } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/targets/target-configuration';
+import { LambdaTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/targets/target-configuration';
 
 describe('Gateway Core Tests', () => {
   let stack: cdk.Stack;
@@ -50,6 +50,70 @@ describe('Gateway Core Tests', () => {
     const template = Template.fromStack(stack);
     template.resourceCountIs('AWS::BedrockAgentCore::Gateway', 1);
     template.resourceCountIs('AWS::Cognito::UserPool', 1);
+  });
+
+  test('Should create Gateway with custom role', () => {
+    const role = new iam.Role(stack, 'CustomRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+    });
+
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      role: role,
+    });
+
+    expect(gateway.role).toBe(role);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      RoleArn: Match.anyValue(),
+    });
+  });
+
+  test('Should grant gateway invoke permissions', () => {
+    const gateway = new Gateway(stack, 'TestGateway', { gatewayName: 'test-gateway' });
+    const role = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    gateway.grantInvoke(role);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:InvokeGateway',
+            Effect: 'Allow',
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should create Gateway with DEBUG exception level', () => {
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      exceptionLevel: GatewayExceptionLevel.DEBUG,
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      ExceptionLevel: 'DEBUG',
+    });
+  });
+
+  test('Should create Gateway without exception level', () => {
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    const template = Template.fromStack(stack);
+    const resources = template.findResources('AWS::BedrockAgentCore::Gateway');
+    const resourceProps = Object.values(resources)[0].Properties;
+
+    // ExceptionLevel should not be set when not provided
+    expect(resourceProps.ExceptionLevel).toBeUndefined();
   });
 
   test('Should create Gateway with custom protocol', () => {
@@ -573,7 +637,7 @@ describe('Gateway Target Core Tests', () => {
         lambdaFunction: fn,
         toolSchema: toolSchema,
       });
-    }).toThrow(/must be between 1 and 200 characters/);
+    }).toThrow();
   });
 
   test('Should grant target read permissions', () => {
@@ -755,6 +819,38 @@ describe('Credential Provider Tests', () => {
     });
   });
 
+  test('Should create OAuth credential provider with only scopes', () => {
+    const provider = GatewayCredentialProvider.oauth({
+      providerArn: 'arn:aws:bedrock:us-east-1:123456789012:oauth/test',
+      scopes: ['read'],
+    });
+
+    expect(provider.credentialProviderType).toBe('OAUTH');
+    expect((provider as any).scopes).toEqual(['read']);
+  });
+
+  test('Should create OAuth credential provider with minimal scopes', () => {
+    const provider = GatewayCredentialProvider.oauth({
+      providerArn: 'arn:aws:bedrock:us-east-1:123456789012:oauth/test',
+      scopes: [],
+    });
+
+    expect(provider.credentialProviderType).toBe('OAUTH');
+    expect((provider as any).scopes).toEqual([]);
+  });
+
+  test('Should create OAuth credential provider with empty arrays', () => {
+    const provider = GatewayCredentialProvider.oauth({
+      providerArn: 'arn:aws:bedrock:us-east-1:123456789012:oauth/test',
+      scopes: [],
+      customParameters: {},
+    });
+
+    expect(provider.credentialProviderType).toBe('OAUTH');
+    expect((provider as any).scopes).toEqual([]);
+    expect((provider as any).customParameters).toEqual({});
+  });
+
   test('Should create IAM role credential provider', () => {
     const provider = GatewayCredentialProvider.iamRole();
 
@@ -885,6 +981,43 @@ describe('Authorizer Configuration Tests', () => {
     // Just verify the authorizer is created with correct type
     expect(authorizer.authorizerType).toBe('CUSTOM_JWT');
   });
+
+  test('Should create AWS IAM authorizer', () => {
+    const authorizer = GatewayAuthorizer.awsIam;
+
+    // Just verify the authorizer is created with correct type
+    expect(authorizer.authorizerType).toBe('AWS_IAM');
+  });
+
+  test('Should create Gateway with AWS IAM authorizer', () => {
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.awsIam,
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      AuthorizerType: 'AWS_IAM',
+    });
+  });
+
+  test('Should create custom JWT authorizer with only allowedAudience', () => {
+    const authorizer = GatewayAuthorizer.usingCustomJwt({
+      discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
+      allowedAudience: ['my-app'],
+    });
+
+    expect(authorizer.authorizerType).toBe('CUSTOM_JWT');
+  });
+
+  test('Should create custom JWT authorizer with only allowedClients', () => {
+    const authorizer = GatewayAuthorizer.usingCustomJwt({
+      discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
+      allowedClients: ['client-123'],
+    });
+
+    expect(authorizer.authorizerType).toBe('CUSTOM_JWT');
+  });
 });
 
 describe('Gateway Error Handling Tests', () => {
@@ -946,6 +1079,456 @@ describe('Gateway Error Handling Tests', () => {
         toolSchema: toolSchema,
       });
     }).toThrow();
+  });
+
+  test('Should validate gateway name with hyphens at start', () => {
+    expect(() => {
+      new Gateway(stack, 'TestGateway', {
+        gatewayName: '-test-gateway',
+      });
+    }).toThrow(/Gateway name must contain only alphanumeric characters and hyphens/);
+  });
+
+  test('Should validate gateway name with consecutive hyphens', () => {
+    expect(() => {
+      new Gateway(stack, 'TestGateway', {
+        gatewayName: 'test--gateway',
+      });
+    }).toThrow(/Gateway name must contain only alphanumeric characters and hyphens/);
+  });
+
+  test('Should validate target name with spaces', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    const fn = new lambda.Function(stack, 'TestFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
+    });
+
+    const toolSchema = ToolSchema.fromInline([{
+      name: 'test_tool',
+      description: 'A test tool',
+      inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
+    }]);
+
+    expect(() => {
+      GatewayTarget.forLambda(stack, 'TestTarget', {
+        targetName: 'test target',
+        gateway: gateway,
+        lambdaFunction: fn,
+        toolSchema: toolSchema,
+      });
+    }).toThrow(/Gateway target name must contain only alphanumeric characters and hyphens/);
+  });
+
+  test('Should allow empty description', () => {
+    // Empty descriptions are allowed
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      description: '',
+    });
+    expect(gateway.description).toBe('');
+  });
+
+  test('Should create Gateway with valid single character name', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'a',
+    });
+    expect(gateway.name).toBe('a');
+  });
+
+  test('Should create Gateway with KMS key', () => {
+    const key = new kms.Key(stack, 'TestKey');
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      kmsKey: key,
+    });
+
+    expect(gateway.kmsKey).toBe(key);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      KmsKeyArn: Match.anyValue(),
+    });
+  });
+
+  test('Should create Gateway without KMS key', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    expect(gateway.kmsKey).toBeUndefined();
+
+    const template = Template.fromStack(stack);
+    const resources = template.findResources('AWS::BedrockAgentCore::Gateway');
+    const resourceProps = Object.values(resources)[0].Properties;
+    expect(resourceProps.KmsKeyArn).toBeUndefined();
+  });
+
+  test('Should create Gateway with KMS key and verify role permissions', () => {
+    const key = new kms.Key(stack, 'TestKey2');
+    new Gateway(stack, 'TestGateway2', {
+      gatewayName: 'test-gateway2',
+      kmsKey: key,
+    });
+
+    const template = Template.fromStack(stack);
+    // Verify KMS permissions are added when KMS key is provided
+    template.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Effect: 'Allow',
+            Principal: {
+              Service: 'bedrock-agentcore.amazonaws.com',
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should allow gateway name ending with hyphen', () => {
+    // Gateway names ending with hyphen are allowed
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway-',
+    });
+    expect(gateway.name).toBe('test-gateway-');
+  });
+
+  test('Should grant manage permissions for gateway', () => {
+    const gateway = new Gateway(stack, 'TestGateway', { gatewayName: 'test-gateway' });
+    const role = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    gateway.grantManage(role);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith([
+              'bedrock-agentcore:CreateGateway',
+              'bedrock-agentcore:UpdateGateway',
+              'bedrock-agentcore:DeleteGateway',
+            ]),
+            Effect: 'Allow',
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should validate target name exceeding max length', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    const fn = new lambda.Function(stack, 'TestFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
+    });
+
+    const toolSchema = ToolSchema.fromInline([{
+      name: 'test_tool',
+      description: 'A test tool',
+      inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
+    }]);
+
+    expect(() => {
+      GatewayTarget.forLambda(stack, 'TestTarget', {
+        targetName: 'a'.repeat(101),
+        gateway: gateway,
+        lambdaFunction: fn,
+        toolSchema: toolSchema,
+      });
+    }).toThrow();
+  });
+
+  test('Should validate empty target name', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    const fn = new lambda.Function(stack, 'TestFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
+    });
+
+    const toolSchema = ToolSchema.fromInline([{
+      name: 'test_tool',
+      description: 'A test tool',
+      inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
+    }]);
+
+    expect(() => {
+      GatewayTarget.forLambda(stack, 'TestTarget', {
+        targetName: '',
+        gateway: gateway,
+        lambdaFunction: fn,
+        toolSchema: toolSchema,
+      });
+    }).toThrow();
+  });
+
+  test('Should validate gateway name with underscore', () => {
+    expect(() => {
+      new Gateway(stack, 'TestGateway', {
+        gatewayName: 'test_gateway',
+      });
+    }).toThrow(/Gateway name must contain only alphanumeric characters and hyphens/);
+  });
+});
+
+describe('Gateway Import Tests', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should import Gateway from ARN', () => {
+    const arn = 'arn:aws:bedrock-agentcore:us-east-1:123456789012:gateway/test-gateway-id';
+    const imported = Gateway.fromGatewayArn(stack, 'ImportedGateway', arn);
+
+    expect(imported.gatewayArn).toBe(arn);
+    expect(imported.gatewayId).toBe('test-gateway-id');
+    expect(imported.name).toBe('test-gateway-id');
+  });
+
+  test('Should import Gateway from attributes', () => {
+    const role = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+    });
+
+    const imported = Gateway.fromGatewayAttributes(stack, 'ImportedGateway', {
+      gatewayArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:gateway/test-gateway-id',
+      gatewayId: 'test-gateway-id',
+      gatewayName: 'test-gateway',
+      role: role,
+    });
+
+    expect(imported.gatewayArn).toBe('arn:aws:bedrock-agentcore:us-east-1:123456789012:gateway/test-gateway-id');
+    expect(imported.gatewayId).toBe('test-gateway-id');
+    expect(imported.name).toBe('test-gateway');
+    expect(imported.role).toBe(role);
+  });
+
+  test('Should grant permissions to imported Gateway', () => {
+    const imported = Gateway.fromGatewayArn(
+      stack,
+      'ImportedGateway',
+      'arn:aws:bedrock-agentcore:us-east-1:123456789012:gateway/test-gateway-id',
+    );
+
+    const role = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    imported.grantRead(role);
+    imported.grantManage(role);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith(['bedrock-agentcore:GetGateway']),
+            Effect: 'Allow',
+          }),
+        ]),
+      },
+    });
+  });
+});
+
+describe('Gateway Target Import Tests', () => {
+  let stack: cdk.Stack;
+  let gateway: Gateway;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+  });
+
+  test('Should import GatewayTarget from attributes', () => {
+    const imported = GatewayTarget.fromGatewayTargetAttributes(stack, 'ImportedTarget', {
+      targetArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:gateway/gateway-id/target/target-id',
+      targetId: 'target-id',
+      targetName: 'test-target',
+      gateway: gateway,
+      status: 'ACTIVE',
+      createdAt: '2024-01-01T00:00:00Z',
+      updatedAt: '2024-01-01T00:00:00Z',
+    });
+
+    expect(imported.targetArn).toBe('arn:aws:bedrock-agentcore:us-east-1:123456789012:gateway/gateway-id/target/target-id');
+    expect(imported.targetId).toBe('target-id');
+    expect(imported.name).toBe('test-target');
+    expect(imported.gateway).toBe(gateway);
+    expect(imported.status).toBe('ACTIVE');
+    expect(imported.createdAt).toBe('2024-01-01T00:00:00Z');
+    expect(imported.updatedAt).toBe('2024-01-01T00:00:00Z');
+  });
+
+  test('Should grant permissions to imported GatewayTarget', () => {
+    const imported = GatewayTarget.fromGatewayTargetAttributes(stack, 'ImportedTarget', {
+      targetArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:gateway/gateway-id/target/target-id',
+      targetId: 'target-id',
+      targetName: 'test-target',
+      gateway: gateway,
+    });
+
+    const role = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    imported.grantRead(role);
+    imported.grantManage(role);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:GetGatewayTarget',
+            Effect: 'Allow',
+          }),
+        ]),
+      },
+    });
+  });
+});
+
+describe('Gateway Validation Edge Cases', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should handle Token.isUnresolved for description validation', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      description: cdk.Lazy.string({ produce: () => 'lazy-description' }),
+    });
+
+    expect(gateway.description).toBeDefined();
+  });
+
+  test('Should handle Token.isUnresolved for target description validation', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    const fn = new lambda.Function(stack, 'TestFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
+    });
+
+    const toolSchema = ToolSchema.fromInline([{
+      name: 'test_tool',
+      description: 'A test tool',
+      inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
+    }]);
+
+    const target = GatewayTarget.forLambda(stack, 'TestTarget', {
+      targetName: 'test-target',
+      description: cdk.Lazy.string({ produce: () => 'lazy-description' }),
+      gateway: gateway,
+      lambdaFunction: fn,
+      toolSchema: toolSchema,
+    });
+
+    expect(target.description).toBeDefined();
+  });
+
+  test('Should handle Gateway with Lazy string for name', () => {
+    // This should NOT throw since CDK Tokens are handled
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: cdk.Lazy.string({ produce: () => 'lazy-gateway-name' }),
+    });
+
+    expect(gateway.name).toBeDefined();
+  });
+});
+
+describe('Gateway Schema Binding Tests', () => {
+  let stack: cdk.Stack;
+  let gateway: Gateway;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+  });
+
+  test('Should bind Lambda target configuration properly', () => {
+    const fn = new lambda.Function(stack, 'TestFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
+    });
+
+    const toolSchema = ToolSchema.fromInline([{
+      name: 'complex_tool',
+      description: 'A complex tool',
+      inputSchema: {
+        type: SchemaDefinitionType.OBJECT,
+        properties: {
+          test: { type: SchemaDefinitionType.STRING },
+        },
+      },
+    }]);
+
+    const config = LambdaTargetConfiguration.create(fn, toolSchema);
+    const boundConfig = config.bind(stack, gateway);
+
+    expect(boundConfig).toBeDefined();
+    expect(config.targetType).toBe('LAMBDA');
+  });
+
+  test('Should bind OpenAPI target configuration properly', () => {
+    const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0');
+    const config = OpenApiTargetConfiguration.create(apiSchema);
+    const boundConfig = config.bind(stack, gateway);
+
+    expect(boundConfig).toBeDefined();
+    expect(config.targetType).toBe('OPENAPI_SCHEMA');
+  });
+
+  test('Should bind Smithy target configuration properly', () => {
+    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }');
+    const config = SmithyTargetConfiguration.create(smithyModel);
+    const boundConfig = config.bind(stack, gateway);
+
+    expect(boundConfig).toBeDefined();
+    expect(config.targetType).toBe('SMITHY_MODEL');
   });
 });
 

@@ -9,7 +9,7 @@ import { ToolSchema } from './schema/tool-schema';
 import { GatewayTargetBase, GatewayTargetProtocolType, IGatewayTarget, IMcpGatewayTarget, McpTargetType } from './target-base';
 import { ITargetConfiguration, LambdaTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from './target-configuration';
 import { GatewayCredentialProvider, ICredentialProvider } from '../outbound-auth/credential-provider';
-import { ValidationError } from '../validation-helpers';
+import { validateStringField, validateFieldPattern, ValidationError } from '../validation-helpers';
 
 /******************************************************************************
  *                                Props
@@ -427,6 +427,42 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
   }
 
   /**
+   * Validates the gateway target name format
+   * Pattern: ^([0-9a-zA-Z][-]?){1,100}$
+   * Max length: 100 characters
+   * @param targetName The gateway target name to validate
+   * @throws Error if the name is invalid
+   */
+  protected validateGatewayTargetName(targetName: string): void {
+    // Skip validation if the name contains CDK tokens (unresolved values)
+    if (Token.isUnresolved(targetName)) {
+      return;
+    }
+
+    // Validate length
+    const lengthErrors = validateStringField({
+      value: targetName,
+      fieldName: 'Gateway target name',
+      minLength: 1,
+      maxLength: 100,
+    });
+
+    // Validate pattern
+    const patternErrors = validateFieldPattern(
+      targetName,
+      'Gateway target name',
+      /^([0-9a-zA-Z][-]?){1,100}$/,
+      'Gateway target name must contain only alphanumeric characters and hyphens, with hyphens only between characters',
+    );
+
+    // Combine and throw if any errors
+    const allErrors = [...lengthErrors, ...patternErrors];
+    if (allErrors.length > 0) {
+      throw new ValidationError(allErrors.join('\n'));
+    }
+  }
+
+  /**
    * Validates the description format
    * Must be between 1 and 200 characters
    * @throws Error if validation fails
@@ -437,10 +473,15 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       return;
     }
 
-    if (description.length < 1 || description.length > 200) {
-      throw new ValidationError(
-        `Gateway target description must be between 1 and 200 characters. Current length: ${description.length}`,
-      );
+    const errors = validateStringField({
+      value: description,
+      fieldName: 'Gateway target description',
+      minLength: 1,
+      maxLength: 200,
+    });
+
+    if (errors.length > 0) {
+      throw new ValidationError(errors.join('\n'));
     }
   }
 }

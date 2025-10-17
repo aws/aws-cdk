@@ -86,13 +86,15 @@ export function validateFieldPattern(
     // Verify type
     if (typeof value !== 'string') {
       errors.push(`Expected string for ${fieldName}, got ${typeof value}`);
+      return errors; // Return early if value is not a string
     }
     // Validate specified regex
     if (!(pattern instanceof RegExp)) {
       errors.push('Pattern must be a valid regular expression');
+      return errors; // Return early if pattern is not a RegExp
     }
 
-    // Pattern validation
+    // Pattern validation (only if value is string and pattern is RegExp)
     if (!pattern.test(value)) {
       const defaultMessage = `The field ${fieldName} with value "${value}" does not match the required pattern ${pattern}`;
       errors.push(customMessage || defaultMessage);
@@ -106,14 +108,3 @@ export function validateFieldPattern(
  * @internal
  */
 export type ValidationFn<T> = (param: T) => string[];
-
-/**
- * @internal
- */
-export function throwIfInvalid<T>(validationFn: ValidationFn<T>, param: T): T {
-  const errors = validationFn(param);
-  if (errors.length > 0) {
-    throw new ValidationError(errors.join('\n'));
-  }
-  return param;
-}

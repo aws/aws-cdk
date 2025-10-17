@@ -18,6 +18,8 @@ export namespace GatewayPerms {
     'bedrock-agentcore:DeleteGatewayTarget',
   ];
 
+  export const INVOKE_PERMS = ['bedrock-agentcore:InvokeGateway'];
+
   export const KMS_KEY_PERMS = [
     'kms:GenerateDataKey',
     'kms:Decrypt',
