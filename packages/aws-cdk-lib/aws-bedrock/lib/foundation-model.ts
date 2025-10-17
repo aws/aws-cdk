@@ -242,6 +242,9 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-3-haiku-20240307-v1:0:200k" */
   public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_200K = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0:200k');
 
+  /** Base model "anthropic.claude-haiku-4-5-20251001-v1:0" */
+  public static readonly ANTHROPIC_CLAUDE_HAIKU_4_5_20251001_V1_0 = new FoundationModelIdentifier('anthropic.claude-haiku-4-5-20251001-v1:0');
+
   /** Base model "anthropic.claude-3-opus-20240229-v1:0" */
   public static readonly ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-opus-20240229-v1:0');
 
