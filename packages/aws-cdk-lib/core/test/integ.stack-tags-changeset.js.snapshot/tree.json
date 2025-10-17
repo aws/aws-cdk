@@ -1,0 +1,31 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "integ-stack-tags-changeset": {
+        "id": "integ-stack-tags-changeset",
+        "path": "integ-stack-tags-changeset",
+        "children": {
+          "TestOutput": {
+            "id": "TestOutput",
+            "path": "integ-stack-tags-changeset/TestOutput",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

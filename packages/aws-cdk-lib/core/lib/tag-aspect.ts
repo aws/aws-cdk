@@ -3,6 +3,7 @@ import { Annotations } from './annotations';
 import { IAspect, Aspects, AspectOptions } from './aspect';
 import { UnscopedValidationError } from './errors';
 import { FeatureFlags } from './feature-flags';
+import { Stack } from './stack';
 import * as cxapi from '../../cx-api';
 import { mutatingAspectPrio32333 } from './private/aspect-prio';
 import { ITaggable, ITaggableV2, TagManager } from './tag-manager';
@@ -37,6 +38,18 @@ export interface TagProps {
    * @default []
    */
   readonly includeResourceTypes?: string[];
+
+  /**
+   * Whether to apply tags to CloudFormation ChangeSets
+   * 
+   * This ensures tags are applied to ChangeSets even when the 
+   * explicitStackTags feature flag excludes stack-level tags.
+   * This is important for compliance with SCP policies that 
+   * require tags on ChangeSets.
+   * 
+   * @default true
+   */
+  readonly applyToChangeSets?: boolean;
 
   /**
    * Priority of the tag operation
@@ -186,7 +199,18 @@ export class Tags {
    */
   public add(key: string, value: string, props: TagProps = {}) {
     // Implicitly add `aws:cdk:stack` to the `excludeResourceTypes` array in modern behavior
+    // BUT: If applyToChangeSets is true (default), we need to ensure ChangeSets still get tagged
     if (this.explicitStackTags && !props.includeResourceTypes?.includes('aws:cdk:stack')) {
+      // Check if we should still apply to ChangeSets
+      const applyToChangeSets = props.applyToChangeSets !== false;
+      
+      // If applyToChangeSets is true, we need to ensure the stack still gets the tags
+      // for ChangeSets, even though resources won't get them from the stack
+      if (applyToChangeSets && Stack.isStack(this.scope)) {
+        // Apply the tag directly to the stack for ChangeSet purposes
+        (this.scope as Stack).addStackTag(key, value);
+      }
+      
       props = {
         ...props,
         excludeResourceTypes: [...props.excludeResourceTypes ?? [], 'aws:cdk:stack'],
