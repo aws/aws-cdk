@@ -229,6 +229,7 @@ describe('proxy', () => {
         proxyTarget: rds.ProxyTarget.fromCluster(cluster),
         secrets: [], // No secret
         vpc,
+        defaultAuthScheme: rds.DefaultAuthScheme.NONE,
       });
     }).toThrow('One or more secrets are required.');
   });
@@ -431,6 +432,92 @@ describe('proxy', () => {
     expect(() => {
       proxy.grantConnect(role);
     }).toThrow(/When the Proxy contains multiple Secrets, you must pass a dbUser explicitly to grantConnect/);
+  });
+
+  test('new Proxy with no secrets throws when grantConnect() is used without a dbUser', () => {
+    // GIVEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.postgres({
+        version: rds.PostgresEngineVersion.VER_16_3,
+      }),
+      vpc,
+      iamAuthentication: true,
+    });
+
+    const proxy = new rds.DatabaseProxy(stack, 'Proxy', {
+      proxyTarget: rds.ProxyTarget.fromInstance(instance),
+      vpc,
+      defaultAuthScheme: rds.DefaultAuthScheme.IAM_AUTH,
+    });
+
+    // WHEN
+    const role = new Role(stack, 'DBProxyRole', {
+      assumedBy: new AccountPrincipal(stack.account),
+    });
+
+    // THEN
+    expect(() => {
+      proxy.grantConnect(role);
+    }).toThrow(/When the Proxy has no Secrets, you must specify a dbUser to grantConnect/);
+  });
+
+  test('new Proxy with no secrets can use grantConnect() with a dbUser specified', () => {
+    // GIVEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.postgres({
+        version: rds.PostgresEngineVersion.VER_16_3,
+      }),
+      vpc,
+      iamAuthentication: true,
+    });
+
+    const proxy = new rds.DatabaseProxy(stack, 'Proxy', {
+      proxyTarget: rds.ProxyTarget.fromInstance(instance),
+      vpc,
+      defaultAuthScheme: rds.DefaultAuthScheme.IAM_AUTH,
+      // No secrets provided
+    });
+
+    // WHEN
+    const role = new Role(stack, 'DBProxyRole', {
+      assumedBy: new AccountPrincipal(stack.account),
+    });
+    const databaseUser = 'testuser';
+    proxy.grantConnect(role, databaseUser);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Effect: 'Allow',
+          Action: 'rds-db:connect',
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':rds-db:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':dbuser:',
+              {
+                'Fn::Select': [
+                  6,
+                  {
+                    'Fn::Split': [
+                      ':',
+                      { 'Fn::GetAtt': ['ProxyCB0DFB71', 'DBProxyArn'] },
+                    ],
+                  },
+                ],
+              },
+              '/testuser',
+            ]],
+          },
+        }],
+        Version: '2012-10-17',
+      },
+    });
   });
 
   test('new Proxy with kms encrypted Secrets has permissions to kms:Decrypt that secret using its key', () => {
@@ -770,6 +857,97 @@ describe('proxy', () => {
           clientPasswordAuthType: rds.ClientPasswordAuthType.SQL_SERVER_AUTHENTICATION,
         });
       }).toThrow(/SQL_SERVER_AUTHENTICATION client password authentication type requires SQLSERVER engineFamily, got MYSQL/);
+    });
+  });
+
+  describe('defaultAuthScheme', () => {
+    test('create a DB proxy with IAM_AUTH default authentication scheme', () => {
+      // GIVEN
+      const instance = new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.postgres({
+          version: rds.PostgresEngineVersion.VER_16_3,
+        }),
+        vpc,
+        iamAuthentication: true,
+      });
+
+      // WHEN
+      new rds.DatabaseProxy(stack, 'Proxy', {
+        proxyTarget: rds.ProxyTarget.fromInstance(instance),
+        vpc,
+        defaultAuthScheme: rds.DefaultAuthScheme.IAM_AUTH,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxy', {
+        DBProxyName: 'Proxy',
+        EngineFamily: 'POSTGRESQL',
+        RequireTLS: true,
+        DefaultAuthScheme: 'IAM_AUTH',
+        RoleArn: {
+          'Fn::GetAtt': [
+            'ProxyIAMRole2FE8AB0F',
+            'Arn',
+          ],
+        },
+        VpcSubnetIds: [
+          {
+            Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+          },
+          {
+            Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+          },
+        ],
+      });
+    });
+
+    test('create a DB proxy with NONE default authentication scheme and secrets', () => {
+      // GIVEN
+      const instance = new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.postgres({
+          version: rds.PostgresEngineVersion.VER_16_3,
+        }),
+        vpc,
+      });
+
+      // WHEN
+      new rds.DatabaseProxy(stack, 'Proxy', {
+        proxyTarget: rds.ProxyTarget.fromInstance(instance),
+        secrets: [instance.secret!],
+        vpc,
+        defaultAuthScheme: rds.DefaultAuthScheme.NONE,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxy', {
+        Auth: [
+          {
+            AuthScheme: 'SECRETS',
+            IAMAuth: 'DISABLED',
+            SecretArn: {
+              Ref: 'InstanceSecretAttachment83BEE581',
+            },
+          },
+        ],
+        DBProxyName: 'Proxy',
+        EngineFamily: 'POSTGRESQL',
+        RequireTLS: true,
+        DefaultAuthScheme: 'NONE',
+        RoleArn: {
+          'Fn::GetAtt': [
+            'ProxyIAMRole2FE8AB0F',
+            'Arn',
+          ],
+        },
+        VpcSubnetIds: [
+          {
+            Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+          },
+          {
+            Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+          },
+        ],
+      });
     });
   });
 
