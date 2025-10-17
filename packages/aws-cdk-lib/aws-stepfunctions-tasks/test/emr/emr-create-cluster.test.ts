@@ -2097,3 +2097,96 @@ test('StateMachine get correct permission', () => {
     ],
   });
 });
+
+describe('EMR Instance Fleet Priority Feature', () => {
+  test('Create Cluster with PRIORITIZED allocation strategy', () => {
+    // WHEN
+    const task = new EmrCreateCluster(stack, 'Task', {
+      instances: {
+        instanceFleets: [{
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.CORE,
+          launchSpecifications: {
+            onDemandSpecification: {
+              allocationStrategy: EmrCreateCluster.OnDemandAllocationStrategy.PRIORITIZED,
+            },
+          },
+          targetOnDemandCapacity: 1,
+        }],
+      },
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+    });
+
+    new sfn.StateMachine(stack, 'SM', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: {
+        'Fn::Join': ['', [
+          '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"arn:',
+          { Ref: 'AWS::Partition' },
+          ':states:::elasticmapreduce:createCluster.sync","Parameters":{"Instances":{"InstanceFleets":[{"InstanceFleetType":"CORE","LaunchSpecifications":{"OnDemandSpecification":{"AllocationStrategy":"prioritized"}},"TargetOnDemandCapacity":1}],"KeepJobFlowAliveWhenNoSteps":true},"JobFlowRole":"',
+          { Ref: 'ClusterRoleD9CA7471' },
+          '","Name":"Cluster","ServiceRole":"',
+          { Ref: 'ServiceRole4288B192' },
+          '","VisibleToAllUsers":true}}}}',
+        ]],
+      },
+    });
+  });
+
+  test('Create Cluster with instance type priority configuration', () => {
+    // WHEN
+    const task = new EmrCreateCluster(stack, 'Task2', {
+      instances: {
+        instanceFleets: [{
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.CORE,
+          instanceTypeConfigs: [{
+            instanceType: 'm5.large',
+            priority: 0,
+          }, {
+            instanceType: 'm5.xlarge',
+            priority: 1,
+          }],
+          launchSpecifications: {
+            onDemandSpecification: {
+              allocationStrategy: EmrCreateCluster.OnDemandAllocationStrategy.PRIORITIZED,
+            },
+          },
+          targetOnDemandCapacity: 2,
+        }],
+      },
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+    });
+
+    new sfn.StateMachine(stack, 'SM2', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: {
+        'Fn::Join': ['', [
+          '{"StartAt":"Task2","States":{"Task2":{"End":true,"Type":"Task","Resource":"arn:',
+          { Ref: 'AWS::Partition' },
+          ':states:::elasticmapreduce:createCluster.sync","Parameters":{"Instances":{"InstanceFleets":[{"InstanceFleetType":"CORE","InstanceTypeConfigs":[{"InstanceType":"m5.large","Priority":0},{"InstanceType":"m5.xlarge","Priority":1}],"LaunchSpecifications":{"OnDemandSpecification":{"AllocationStrategy":"prioritized"}},"TargetOnDemandCapacity":2}],"KeepJobFlowAliveWhenNoSteps":true},"JobFlowRole":"',
+          { Ref: 'ClusterRoleD9CA7471' },
+          '","Name":"Cluster","ServiceRole":"',
+          { Ref: 'ServiceRole4288B192' },
+          '","VisibleToAllUsers":true}}}}',
+        ]],
+      },
+    });
+  });
+
+  test('OnDemandAllocationStrategy enum values', () => {
+    // THEN
+    expect(EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE).toEqual('lowest-price');
+    expect(EmrCreateCluster.OnDemandAllocationStrategy.PRIORITIZED).toEqual('prioritized');
+  });
+});
