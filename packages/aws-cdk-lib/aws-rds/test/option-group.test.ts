@@ -127,6 +127,36 @@ describe('option group', () => {
     });
   });
 
+  test('option group with custom name', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new OptionGroup(stack, 'Options', {
+      engine: DatabaseInstanceEngine.oracleSe2({
+        version: OracleEngineVersion.VER_12_1,
+      }),
+      optionGroupName: 'MyCustomOptionGroup',
+      configurations: [
+        {
+          name: 'XMLDB',
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::OptionGroup', {
+      EngineName: 'oracle-se2',
+      MajorEngineVersion: '12.1',
+      OptionGroupName: 'MyCustomOptionGroup',
+      OptionConfigurations: [
+        {
+          OptionName: 'XMLDB',
+        },
+      ],
+    });
+  });
+
   test('throws when using an option with port and no vpc', () => {
     // GIVEN
     const stack = new cdk.Stack();
