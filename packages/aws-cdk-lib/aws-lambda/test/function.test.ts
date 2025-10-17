@@ -5063,7 +5063,7 @@ describe('telemetry metadata', () => {
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
     });
 
     fn.addEnvironment('foo', '1234567890', {
@@ -5101,7 +5101,7 @@ describe('telemetry metadata', () => {
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
     });
 
     expect(fn.node.metadata).toStrictEqual([]);
