@@ -5,7 +5,7 @@ import { Connections, IConnectable } from './connections';
 import { CfnInstance, IInstanceRef, InstanceReference, IPlacementGroupRef } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
-import { CpuCredits, InstanceInitiatedShutdownBehavior } from './launch-template';
+import { CpuCredits, HttpTokens, InstanceInitiatedShutdownBehavior } from './launch-template';
 import { IMachineImage, OperatingSystemType } from './machine-image';
 import { instanceBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
@@ -83,6 +83,54 @@ export interface IInstance extends IResource, IConnectable, iam.IGrantable, IIns
    * @attribute
    */
   readonly instancePublicIp: string;
+}
+
+/**
+ * Interface for the Metadata Options of an EC2 Instance.
+ */
+export interface InstanceMetadataOptions {
+  /**
+   * Enables or disables the HTTP metadata endpoint on your instances.
+   *
+   * @default - Uses CloudFormation default behavior when metadataOptions is specified
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-metadataoptions.html#cfn-ec2-instance-metadataoptions-httpendpoint
+   */
+  readonly httpEndpoint?: boolean;
+
+  /**
+   * Enables or disables the IPv6 endpoint for the instance metadata service.
+   *
+   * @default - Uses CloudFormation default behavior when metadataOptions is specified
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-metadataoptions.html#cfn-ec2-instance-metadataoptions-httpprotocolipv6
+   */
+  readonly httpProtocolIpv6?: boolean;
+
+  /**
+   * The desired HTTP PUT response hop limit for instance metadata requests. The larger the number, the further instance metadata requests can travel.
+   *
+   * @default - Uses CloudFormation default behavior when metadataOptions is specified
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-metadataoptions.html#cfn-ec2-instance-metadataoptions-httpputresponsehoplimit
+   */
+  readonly httpPutResponseHopLimit?: number;
+
+  /**
+   * The state of token usage for your instance metadata requests.
+   *
+   * Set to 'required' to enforce IMDSv2. This is equivalent to using `requireImdsv2: true`,
+   * but allows you to configure other metadata options alongside IMDSv2 enforcement.
+   *
+   * @default - Uses CloudFormation default behavior when metadataOptions is specified
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-metadataoptions.html#cfn-ec2-instance-metadataoptions-httptokens
+   */
+  readonly httpTokens?: HttpTokens;
+
+  /**
+   * Set to enabled to allow access to instance tags from the instance metadata. Set to disabled to turn off access to instance tags from the instance metadata.
+   *
+   * @default - Uses CloudFormation default behavior when metadataOptions is specified
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-metadataoptions.html#cfn-ec2-instance-metadataoptions-instancemetadatatags
+   */
+  readonly instanceMetadataTags?: boolean;
 }
 
 /**
@@ -286,9 +334,32 @@ export interface InstanceProps {
   /**
    * Whether IMDSv2 should be required on this instance.
    *
+   * This is a simple boolean flag that enforces IMDSv2 by creating a Launch Template
+   * with `httpTokens: 'required'`. Use this for straightforward IMDSv2 enforcement.
+   *
+   * For more granular control over metadata options (like disabling the metadata endpoint,
+   * configuring hop limits, or enabling instance tags), use `metadataOptions` instead.
+   *
    * @default - false
    */
   readonly requireImdsv2?: boolean;
+
+  /**
+   * The metadata options for the instance.
+   *
+   * This provides fine-grained control over all metadata service settings. Use this when you need
+   * to configure multiple metadata options or when `requireImdsv2` is too restrictive.
+   *
+   * To enforce IMDSv2, you can use either:
+   * - `requireImdsv2: true` (simple, creates a Launch Template)
+   * - `metadataOptions: { httpTokens: 'required' }` (part of broader metadata configuration)
+   *
+   * @default undefined - uses legacy EC2 behavior. Set to {} to opt into metadata options with CloudFormation defaults for unspecified properties.
+   *
+   * Note: this property cannot be used together with `requireImdsv2`, as `requireImdsv2` creates its own Launch Template with metadata options.
+   * Use `requireImdsv2` for simple IMDSv2 enforcement or `metadataOptions` for advanced configuration, but not both.
+   */
+  readonly metadataOptions?: InstanceMetadataOptions;
 
   /**
    * Whether "Detailed Monitoring" is enabled for this instance
@@ -624,6 +695,7 @@ export class Instance extends Resource implements IInstance {
       enclaveOptions: props.enclaveEnabled !== undefined ? { enabled: props.enclaveEnabled } : undefined,
       hibernationOptions: props.hibernationEnabled !== undefined ? { configured: props.hibernationEnabled } : undefined,
       ipv6AddressCount: props.ipv6AddressCount,
+      metadataOptions: this.renderMetadataOptions(props),
     });
     this.instance.node.addDependency(this.role);
 
@@ -788,6 +860,45 @@ export class Instance extends Resource implements IInstance {
         },
       };
     }
+  }
+
+  /**
+   * Render the metadata options for the instance
+   */
+  private renderMetadataOptions(props: InstanceProps): CfnInstance.MetadataOptionsProperty | undefined {
+    const metadataOptions = props.metadataOptions;
+
+    // Only return undefined if metadataOptions is not specified at all
+    // This allows metadataOptions: {} to be a clean way to opt into CloudFormation defaults
+    if (metadataOptions === undefined) {
+      return undefined;
+    }
+
+    // CloudFormation constraint: An EC2 instance cannot have metadata options specified both
+    // directly on the instance AND in an associated Launch Template. The requireImdsv2 property
+    // works by creating a Launch Template with httpTokens='required', while metadataOptions
+    // sets metadata options directly on the instance. Using both would result in a CloudFormation
+    // deployment error, so we prevent this combination at synthesis time.
+    if (props.requireImdsv2) {
+      throw new ValidationError('Cannot use both requireImdsv2 and metadataOptions. Use requireImdsv2 for simple IMDSv2 enforcement or metadataOptions for advanced configuration, but not both.', this);
+    }
+
+    // Validate httpPutResponseHopLimit range
+    if (metadataOptions.httpPutResponseHopLimit !== undefined &&
+      (metadataOptions.httpPutResponseHopLimit < 1 || metadataOptions.httpPutResponseHopLimit > 64)) {
+      throw new ValidationError('httpPutResponseHopLimit must be between 1 and 64', this);
+    }
+
+    return {
+      httpEndpoint: metadataOptions.httpEndpoint === true ? 'enabled' :
+        metadataOptions.httpEndpoint === false ? 'disabled' : undefined,
+      httpProtocolIpv6: metadataOptions.httpProtocolIpv6 === true ? 'enabled' :
+        metadataOptions.httpProtocolIpv6 === false ? 'disabled' : undefined,
+      httpPutResponseHopLimit: metadataOptions.httpPutResponseHopLimit,
+      httpTokens: metadataOptions.httpTokens,
+      instanceMetadataTags: metadataOptions.instanceMetadataTags === true ? 'enabled' :
+        metadataOptions.instanceMetadataTags === false ? 'disabled' : undefined,
+    };
   }
 }
 

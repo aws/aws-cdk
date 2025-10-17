@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "instance-metadata-options-test/DefaultTest": {
+      "stacks": [
+        "integ-ec2-instance-metadata-options"
+      ],
+      "assertionStack": "instance-metadata-options-test/DefaultTest/DeployAssert",
+      "assertionStackName": "instancemetadataoptionstestDefaultTestDeployAssert743E5801"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
