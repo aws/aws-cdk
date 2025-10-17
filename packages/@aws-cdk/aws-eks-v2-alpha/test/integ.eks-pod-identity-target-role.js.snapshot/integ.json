@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "eks-pod-identity-target-role-integ/DefaultTest": {
+      "stacks": [
+        "eks-pod-identity-target-role-test"
+      ],
+      "assertionStack": "eks-pod-identity-target-role-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "ekspodidentitytargetroleintegDefaultTestDeployAssert456758E0"
+    }
+  },
+  "minimumCliVersion": "2.1023.0"
+}
