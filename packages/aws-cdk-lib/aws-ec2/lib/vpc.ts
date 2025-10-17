@@ -2426,6 +2426,11 @@ export enum RouterType {
    * VPC Endpoint for gateway load balancers
    */
   VPC_ENDPOINT = 'VpcEndpoint',
+
+  /**
+   * AWS Network Manager Core Network
+   */
+  CORE_NETWORK = 'CoreNetwork',
 }
 
 function routerTypeToPropName(routerType: RouterType) {
@@ -2440,6 +2445,7 @@ function routerTypeToPropName(routerType: RouterType) {
     [RouterType.TRANSIT_GATEWAY]: 'transitGatewayId',
     [RouterType.VPC_PEERING_CONNECTION]: 'vpcPeeringConnectionId',
     [RouterType.VPC_ENDPOINT]: 'vpcEndpointId',
+    [RouterType.CORE_NETWORK]: 'coreNetworkArn',
   })[routerType];
 }
 
