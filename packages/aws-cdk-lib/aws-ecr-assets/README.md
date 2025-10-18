@@ -173,36 +173,93 @@ using alternative container runtimes like Finch.
 through the CDK CLI or through CI/CD workflows. To that end, the ECR repository behind this construct is controlled by the AWS CDK.
 The mechanics of where these images are published and how are intentionally kept as an implementation detail, and by default the construct itself sets the ECR repository, name, and tags.
 
-However, if you need to use your own custom ECR repository or custom image tags, you can specify the `ecrRepository`, `imageTag`, or `imageTagPrefix` properties explicitly.
+### Using externally managed ECR repositories
 
-WARNING: When using custom repositories, you are responsible for managing the repository lifecycle and permissions.
+If you need to publish images to an **existing ECR repository that is managed outside of your CDK application**, 
+you can specify the `ecrRepository` property to reference an externally created repository. You can also customize 
+image tags using the `imageTag` or `imageTagPrefix` properties.
+
+> **Important**: The ECR repository **must already exist** before deploying your CDK application, as CDK publishes 
+> assets before stack deployment begins. The repository cannot be created in the same CDK application that uses it 
+> for Docker image assets.
+
+**Use cases for externally managed repositories:**
+
+- Using pre-existing ECR repositories with specific lifecycle policies and governance requirements
+- Publishing to shared repositories managed by a central platform team
+- Integrating with existing CI/CD workflows that require specific repository structures
 
 ```ts
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 
-// Custom ECR repository
-const customRepo = new ecr.Repository(this, 'MyRepo', {
-  repositoryName: 'my-custom-repo'
-});
+// Reference an EXISTING ECR repository (created outside this CDK app)
+// Option 1: Import by repository ARN
+const existingRepo = ecr.Repository.fromRepositoryArn(
+  this, 
+  'ExistingRepo',
+  'arn:aws:ecr:us-east-1:123456789012:repository/my-existing-repo'
+);
 
+// Option 2: Import by repository name (must exist in the same account/region)
+const existingRepo = ecr.Repository.fromRepositoryName(
+  this,
+  'ExistingRepo', 
+  'my-existing-repo'
+);
+
+// Use the existing repository for your Docker image asset
 const asset = new DockerImageAsset(this, 'MyAsset', {
   directory: path.join(__dirname, 'my-image'),
-  ecrRepository: customRepo,           // Use custom repository
-  imageTag: 'v1.2.3',                 // Custom tag
+  ecrRepository: existingRepo,         // Use existing external repository
+  imageTag: 'v1.2.3',                 // Custom tag (optional)
   // OR
-  imageTagPrefix: 'feature-branch-',   // Tag prefix + asset hash
+  imageTagPrefix: 'feature-branch-',   // Tag prefix + asset hash (optional)
+});
+```
+
+> **Warning**: When using externally managed repositories, you are responsible for:
+> - Ensuring the repository exists before deployment
+> - Managing repository lifecycle policies
+> - Configuring appropriate IAM permissions for CDK to push images
+> - Handling image cleanup and retention
+
+### Custom image tags with CDK-managed repositories
+
+Even when using the default CDK-managed ECR repositories, you can customize the image tags:
+
+```ts
+// Use custom tag with default CDK-managed repository
+const asset = new DockerImageAsset(this, 'MyAsset', {
+  directory: path.join(__dirname, 'my-image'),
+  imageTag: 'v1.0.0',                    // Fixed tag
 });
 
-We are testing a new experimental synthesizer, the
-[App Staging Synthesizer](https://docs.aws.amazon.com/cdk/api/v2/docs/app-staging-synthesizer-alpha-readme.html) that
+// Or use a tag prefix combined with the asset hash
+const asset = new DockerImageAsset(this, 'MyAsset', {
+  directory: path.join(__dirname, 'my-image'),
+  imageTagPrefix: 'prod-',               // Results in: prod-<asset-hash>
+});
+```
+
+> **Note**: Custom tags affect the asset hash, so different tags will create different assets.
+
+### Alternative solutions for image lifecycle management
+
+If you need more advanced ECR repository management, consider these CDK-recommended approaches:
+
+**1. App Staging Synthesizer (Recommended for per-app isolation)**
+
+The [App Staging Synthesizer](https://docs.aws.amazon.com/cdk/api/v2/docs/app-staging-synthesizer-alpha-readme.html)
 creates separate support stacks for each CDK application. Unlike the default stack synthesizer, the App Staging
 Synthesizer creates unique ECR repositories for each `DockerImageAsset`, allowing lifecycle policies to only retain the
 last `n` images. This is a great way to keep your ECR repositories clean and reduce cost. You can learn more about
 this feature in [this blog post](https://aws.amazon.com/blogs/devops/enhancing-resource-isolation-in-aws-cdk-with-the-app-staging-synthesizer/).
 
-Alternatively, If you are looking for a way to _publish_ image assets to an ECR repository in your control, you should consider using
-[cdklabs/cdk-ecr-deployment], which is able to replicate an image asset from the CDK-controlled ECR repository to a repository of
-your choice.
+**2. CDK ECR Deployment (For copying images to well-known locations)**
+
+If you need to publish image assets to a specific ECR repository in your control (e.g., for consumption by other teams), 
+consider using [cdklabs/cdk-ecr-deployment], which can replicate an image asset from the CDK-controlled ECR repository 
+to a repository of your choice.
 
 Here an example from the [cdklabs/cdk-ecr-deployment] project:
 
