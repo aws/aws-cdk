@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "aaf7ea682fc634b22eb6fff9bb556e00743a2f30965dc8206dc6f11c519a2e3c": {
+      "displayName": "integ-mt-distribution-default-metrics Template",
+      "source": {
+        "path": "integ-mt-distribution-default-metrics.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-3403e574": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "aaf7ea682fc634b22eb6fff9bb556e00743a2f30965dc8206dc6f11c519a2e3c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

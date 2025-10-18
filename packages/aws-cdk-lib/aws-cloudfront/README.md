@@ -69,6 +69,8 @@ new cloudfront.Distribution(this, 'myDist', {
 ```
 ### CloudFront SaaS Manager resources
 
+Update with new L2 Constructs
+
 #### Multi-tenant distribution and tenant providing ACM certificates
 You can use Cloudfront to build multi-tenant distributions to house applications.
 
