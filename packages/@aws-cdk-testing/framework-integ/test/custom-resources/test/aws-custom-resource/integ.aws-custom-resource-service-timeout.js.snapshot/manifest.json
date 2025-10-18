@@ -199,12 +199,6 @@
             "data": "GetSecretCustomResourcePolicyB461F5E2"
           }
         ],
-        "/GetParameterServiceTimeoutStack/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
         "/GetParameterServiceTimeoutStack/AWS679f53fac002430cb0da5b7982bd2287": [
           {
             "type": "aws:cdk:analytics:construct",
