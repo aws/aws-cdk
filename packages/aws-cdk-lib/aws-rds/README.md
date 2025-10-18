@@ -203,6 +203,7 @@ v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverle
   capacity of all the instances in the cluster.
 - `ACUUtilization`: Value of the `ServerlessDatabaseCapacity`/ max ACU of the
   cluster.
+- `ReadIOPS`: Instance-level metric that represents the average read I/O operations per second. This metric is supported by DatabaseCluster and DatabaseClusterFromSnapshot both.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -229,7 +230,7 @@ cluster.metricACUUtilization({
 });
 cluster.metricReadIOPs({
   period: Duration.minutes(10),
-}).createAlarm(this, 'readIOPs', {
+}).createAlarm(this, 'readIOPsAlarm', {
   threshold: 1000,
   evaluationPeriods: 3,
 });
