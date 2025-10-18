@@ -108,6 +108,7 @@ export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 = '@aws-cdk/aws-codepipeli
 export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE = '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope';
 export const PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceAssetRoleTrustScope';
 export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
+export const ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID = '@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId';
 export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
 export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm';
 export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
@@ -145,6 +146,7 @@ export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-c
 export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
 export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
+export const STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT = '@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1719,6 +1721,37 @@ export const FLAGS: Record<string, FlagInfo> = {
     unconfiguredBehavesLike: { v2: false },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.',
+    detailsMd: `
+      When this feature flag is enabled, the JSONPath apiEndpoint value will be resolved dynamically at runtime, while slightly increasing the size of the state machine definition.
+      When disabled, the JSONPath apiEndpoint property will only support a static string value.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    unconfiguredBehavesLike: { v2: true },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement',
+    detailsMd: `
+      When this feature flag is enabled, ECS patterns will generate unique target group IDs that include
+      both the load balancer type (public/private) and load balancer name. This prevents CloudFormation
+      conflicts when switching between public and private load balancers or when changing load balancer names.
+
+      Without this flag, target groups use generic IDs like 'ECS' which can cause conflicts when the
+      underlying load balancer is replaced due to changes in internetFacing or loadBalancerName properties.
+
+      This is a breaking change as it will cause target group replacement when the flag is enabled.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
   },
 };
 
