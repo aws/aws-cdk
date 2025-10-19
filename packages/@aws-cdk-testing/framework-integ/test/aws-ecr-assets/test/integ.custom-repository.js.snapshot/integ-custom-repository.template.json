@@ -61,7 +61,7 @@
       {
        "Ref": "CustomRepo98CFBAD2"
       },
-      ":b4832ce0a1531e509c18ed5609b86a4e82164e014280c2fff4c9aa8f4e69a0d9"
+      ":05184bb384306c04f5f252e503170bc375f52d8a5803148b86e5c9188316a101"
      ]
     ]
    }
@@ -70,7 +70,7 @@
    "Value": "v1.2.3"
   },
   "PrefixedCustomAssetTag": {
-   "Value": "branch-main-c24e55557574222c6da8349e74cbf9e20ec94a6397b3848e97903cd13ab627f4"
+   "Value": "branch-main-0750f79ef76f117846eb2cb4bf6089ac5548979a34df919eda4aed0c03e58c86"
   },
   "DefaultRepoCustomTagTag": {
    "Value": "custom-tag-v2"
