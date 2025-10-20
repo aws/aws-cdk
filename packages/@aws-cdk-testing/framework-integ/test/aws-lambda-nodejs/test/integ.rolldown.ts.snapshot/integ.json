@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "RolldownTest/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-nodejs-rolldown"
+      ],
+      "assertionStack": "RolldownTest/DefaultTest/DeployAssert",
+      "assertionStackName": "RolldownTestDefaultTestDeployAssertAA130930"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
