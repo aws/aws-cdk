@@ -21,6 +21,11 @@ RUN npm install --global typescript
 ARG ESBUILD_VERSION=0.21
 RUN npm install --global --unsafe-perm=true esbuild@$ESBUILD_VERSION
 
+# Install rolldown
+# pin the minor version to 0.15 to prevent breaking change
+ARG ROLLDOWN_VERSION=0.15
+RUN npm install --global rolldown@$ROLLDOWN_VERSION
+
 # Ensure all users can write to npm cache
 RUN mkdir /tmp/npm-cache && \
     chmod -R 777 /tmp/npm-cache && \

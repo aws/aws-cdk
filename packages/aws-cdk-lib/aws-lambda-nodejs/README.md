@@ -1,6 +1,5 @@
 # Amazon Lambda Node.js Library
 
-
 This library provides constructs for Node.js Lambda functions.
 
 ## Node.js Function
@@ -32,16 +31,16 @@ id to look up the entry file. In `my-construct.ts` above we have:
 
 ```ts
 // automatic entry look up
-const apiHandler = new nodejs.NodejsFunction(this, 'api');
-const authHandler = new nodejs.NodejsFunction(this, 'auth');
+const apiHandler = new nodejs.NodejsFunction(this, "api");
+const authHandler = new nodejs.NodejsFunction(this, "auth");
 ```
 
 Alternatively, an entry file and handler can be specified:
 
 ```ts
-new nodejs.NodejsFunction(this, 'MyFunction', {
-  entry: '/path/to/my/file.ts', // accepts .js, .jsx, .cjs, .mjs, .ts, .tsx, .cts and .mts files
-  handler: 'myExportedFunc', // defaults to 'handler'
+new nodejs.NodejsFunction(this, "MyFunction", {
+  entry: "/path/to/my/file.ts", // accepts .js, .jsx, .cjs, .mjs, .ts, .tsx, .cts and .mts files
+  handler: "myExportedFunc", // defaults to 'handler'
 });
 ```
 
@@ -85,7 +84,7 @@ The AWS SDK v3 for JavaScript does not include the environment variable set by `
 
 ## Runtime
 
-When the `@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion` feature flag is enabled, the `NODEJS_LATEST` runtime 
+When the `@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion` feature flag is enabled, the `NODEJS_LATEST` runtime
 will be used by default. This runtime will be updated to use the latest Node.js version currently available in lambda.
 Since this runtime can change from version to version, you should ensure that all of your dependencies are included
 during packaging and avoid relying on depdendencies being globally installed. See [externals](#externals) for details.
@@ -97,10 +96,10 @@ you need to rely on packages pre-installed in the lambda environment, you must e
 This can be set via `lambda.Runtime`:
 
 ```ts
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Runtime } from "aws-cdk-lib/aws-lambda";
 
-new nodejs.NodejsFunction(this, 'my-function', {
-    runtime: Runtime.NODEJS_18_X,
+new nodejs.NodejsFunction(this, "my-function", {
+  runtime: Runtime.NODEJS_18_X,
 });
 ```
 
@@ -156,28 +155,28 @@ will change as new NodeJs versions become available in lambda, which may change 
 environment.
 
 When passing a runtime that is known to include a version of the aws sdk, it will be excluded by default. For example, when
-passing `NODEJS_16_X`, `aws-sdk` is excluded. When passing `NODEJS_18_X`,  all `@aws-sdk/*` packages are excluded.
+passing `NODEJS_16_X`, `aws-sdk` is excluded. When passing `NODEJS_18_X`, all `@aws-sdk/*` packages are excluded.
 
 > [!WARNING]
 > The NodeJS runtime of Node 16 will be deprecated by Lambda on June 12, 2024. Lambda runtimes Node 18 and higher include SDKv3 and not SDKv2. Updating your Lambda runtime from <=Node 16 to any newer version will require bundling the SDK with your handler code, or updating all SDK calls in your handler code to use SDKv3 (which is not a trivial update). Please account for this added complexity and update as soon as possible.
 
-
-
 This can be configured by specifying `bundling.externalModules`:
 
 ```ts
-new nodejs.NodejsFunction(this, 'my-handler', {
+new nodejs.NodejsFunction(this, "my-handler", {
   bundling: {
     externalModules: [
-      '@aws-sdk/*', // Use the AWS SDK for JS v3 available in the Lambda runtime
-      'cool-module', // 'cool-module' is already available in a Layer
+      "@aws-sdk/*", // Use the AWS SDK for JS v3 available in the Lambda runtime
+      "cool-module", // 'cool-module' is already available in a Layer
     ],
   },
 });
 ```
+
 Includes AWS SDK in the bundle asset by setting `bundleAwsSDK` to `true`. This will exclude SDK from the external module and would not be resolved to Lambda provided SDK.
+
 ```ts
-new nodejs.NodejsFunction(this, 'my-handler', {
+new nodejs.NodejsFunction(this, "my-handler", {
   bundling: {
     bundleAwsSDK: true,
   },
@@ -192,9 +191,9 @@ bundled but instead included in the `node_modules` folder of the Lambda package.
 when working with native dependencies or when `esbuild` fails to bundle a module.
 
 ```ts
-new nodejs.NodejsFunction(this, 'my-handler', {
+new nodejs.NodejsFunction(this, "my-handler", {
   bundling: {
-    nodeModules: ['native-module', 'other-module'],
+    nodeModules: ["native-module", "other-module"],
   },
 });
 ```
@@ -214,38 +213,82 @@ The `NodejsFunction` construct exposes [esbuild options](https://esbuild.github.
 via properties under `bundling`:
 
 ```ts
-new nodejs.NodejsFunction(this, 'my-handler', {
+new nodejs.NodejsFunction(this, "my-handler", {
   bundling: {
     minify: true, // minify code, defaults to false
     sourceMap: true, // include source map, defaults to false
     sourceMapMode: nodejs.SourceMapMode.INLINE, // defaults to SourceMapMode.DEFAULT
     sourcesContent: false, // do not include original source into source map, defaults to true
-    target: 'es2020', // target environment for the generated JavaScript code
-    loader: { // Use the 'dataurl' loader for '.png' files
-      '.png': 'dataurl',
+    target: "es2020", // target environment for the generated JavaScript code
+    loader: {
+      // Use the 'dataurl' loader for '.png' files
+      ".png": "dataurl",
     },
-    define: { // Replace strings during build time
-      'process.env.API_KEY': JSON.stringify('xxx-xxxx-xxx'),
-      'process.env.PRODUCTION': JSON.stringify(true),
-      'process.env.NUMBER': JSON.stringify(123),
+    define: {
+      // Replace strings during build time
+      "process.env.API_KEY": JSON.stringify("xxx-xxxx-xxx"),
+      "process.env.PRODUCTION": JSON.stringify(true),
+      "process.env.NUMBER": JSON.stringify(123),
     },
     logLevel: nodejs.LogLevel.ERROR, // defaults to LogLevel.WARNING
     keepNames: true, // defaults to false
-    tsconfig: 'custom-tsconfig.json', // use custom-tsconfig.json instead of default,
+    tsconfig: "custom-tsconfig.json", // use custom-tsconfig.json instead of default,
     metafile: true, // include meta file, defaults to false
-    banner: '/* comments */', // requires esbuild >= 0.9.0, defaults to none
-    footer: '/* comments */', // requires esbuild >= 0.9.0, defaults to none
+    banner: "/* comments */", // requires esbuild >= 0.9.0, defaults to none
+    footer: "/* comments */", // requires esbuild >= 0.9.0, defaults to none
     charset: nodejs.Charset.UTF8, // do not escape non-ASCII characters, defaults to Charset.ASCII
     format: nodejs.OutputFormat.ESM, // ECMAScript module output format, defaults to OutputFormat.CJS (OutputFormat.ESM requires Node.js >= 14)
-    mainFields: ['module', 'main'], // prefer ECMAScript versions of dependencies
-    inject: ['./my-shim.js', './other-shim.js'], // allows to automatically replace a global variable with an import from another file
-    esbuildArgs: { // Pass additional arguments to esbuild
+    mainFields: ["module", "main"], // prefer ECMAScript versions of dependencies
+    inject: ["./my-shim.js", "./other-shim.js"], // allows to automatically replace a global variable with an import from another file
+    esbuildArgs: {
+      // Pass additional arguments to esbuild
       "--log-limit": "0",
       "--splitting": true,
     },
   },
 });
 ```
+
+## Using Rolldown as an Alternative Bundler
+
+By default, `NodejsFunction` uses [esbuild](https://esbuild.github.io/) to bundle your Lambda code. As an alternative, you can use [Rolldown](https://rolldown.rs/), a fast Rust-based bundler with an API compatible with Rollup.
+
+To use Rolldown, set the `bundler` property in your bundling configuration:
+
+```ts
+import { Bundler } from "aws-cdk-lib/aws-lambda-nodejs";
+
+new nodejs.NodejsFunction(this, "my-handler", {
+  bundling: {
+    bundler: Bundler.ROLLDOWN,
+    minify: true,
+    sourceMap: true,
+  },
+});
+```
+
+Most bundling options work with both esbuild and Rolldown. Options like `minify`, `sourceMap`, `externals`, `define`, and `loader` are supported by both bundlers. However, some options are bundler-specific:
+
+- `esbuildVersion` and `esbuildArgs` - Only apply when using esbuild
+- `rolldownVersion` and `rolldownArgs` - Only apply when using Rolldown
+
+Example with Rolldown-specific options:
+
+```ts
+new nodejs.NodejsFunction(this, "my-handler", {
+  bundling: {
+    bundler: Bundler.ROLLDOWN,
+    minify: true,
+    sourceMap: true,
+    rolldownVersion: "0.15.0", // Specify rolldown version for Docker bundling
+    rolldownArgs: {
+      "--log-level": "debug",
+    },
+  },
+});
+```
+
+For more information on Rolldown options, see the [Rolldown CLI documentation](https://rolldown.rs/apis/cli).
 
 ## Command hooks
 
@@ -296,7 +339,7 @@ In some cases, `esbuild` may not yet support some newer features of the typescri
 In such cases, it is possible to run pre-compilation using `tsc` by setting the `preCompilation` flag.
 
 ```ts
-new nodejs.NodejsFunction(this, 'my-handler', {
+new nodejs.NodejsFunction(this, "my-handler", {
   bundling: {
     preCompilation: true,
   },
@@ -310,10 +353,10 @@ Note: A [`tsconfig.json` file](https://www.typescriptlang.org/docs/handbook/tsco
 Use `bundling.environment` to define environments variables when `esbuild` runs:
 
 ```ts
-new nodejs.NodejsFunction(this, 'my-handler', {
+new nodejs.NodejsFunction(this, "my-handler", {
   bundling: {
     environment: {
-      NODE_ENV: 'production',
+      NODE_ENV: "production",
     },
   },
 });
@@ -322,21 +365,21 @@ new nodejs.NodejsFunction(this, 'my-handler', {
 Use `bundling.buildArgs` to pass build arguments when building the Docker bundling image:
 
 ```ts
-new nodejs.NodejsFunction(this, 'my-handler', {
+new nodejs.NodejsFunction(this, "my-handler", {
   bundling: {
     buildArgs: {
-      HTTPS_PROXY: 'https://127.0.0.1:3001',
+      HTTPS_PROXY: "https://127.0.0.1:3001",
     },
-  }
+  },
 });
 ```
 
 Use `bundling.dockerImage` to use a custom Docker bundling image:
 
 ```ts
-new nodejs.NodejsFunction(this, 'my-handler', {
+new nodejs.NodejsFunction(this, "my-handler", {
   bundling: {
-    dockerImage: DockerImage.fromBuild('/path/to/Dockerfile'),
+    dockerImage: DockerImage.fromBuild("/path/to/Dockerfile"),
   },
 });
 ```
@@ -349,15 +392,15 @@ as a source of inspiration.
 
 You can set additional Docker options to configure the build environment:
 
- ```ts
-new nodejs.NodejsFunction(this, 'my-handler', {
+```ts
+new nodejs.NodejsFunction(this, "my-handler", {
   bundling: {
-      network: 'host',
-      securityOpt: 'no-new-privileges',
-      user: 'user:group',
-      volumesFrom: ['777f7dc92da7'],
-      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
-   },
+    network: "host",
+    securityOpt: "no-new-privileges",
+    user: "user:group",
+    volumesFrom: ["777f7dc92da7"],
+    volumes: [{ hostPath: "/host-path", containerPath: "/container-path" }],
+  },
 });
 ```
 
@@ -368,9 +411,9 @@ By default the asset hash will be calculated based on the bundled output (`Asset
 Use the `assetHash` prop to pass a custom hash:
 
 ```ts
-new nodejs.NodejsFunction(this, 'my-handler', {
+new nodejs.NodejsFunction(this, "my-handler", {
   bundling: {
-    assetHash: 'my-custom-hash',
+    assetHash: "my-custom-hash",
   },
 });
 ```
@@ -383,8 +426,8 @@ changes, or otherwise it is possible that some deployments will not be invalidat
 By default the input and output of Docker based bundling is handled via bind mounts.
 In situtations where this does not work, like Docker-in-Docker setups or when using a remote Docker socket, you can configure an alternative, but slower, variant that also works in these situations.
 
- ```ts
- new nodejs.NodejsFunction(this, 'my-handler', {
+```ts
+new nodejs.NodejsFunction(this, "my-handler", {
   bundling: {
     bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
   },
@@ -432,9 +475,9 @@ export class ExampleStack extends Stack {
 
     const pathToBuildFile = path.join(__dirname, 'build.mjs');
 
-    // assuming the `handler` property is specified as 'index.handler' (as in this example), then 
+    // assuming the `handler` property is specified as 'index.handler' (as in this example), then
     // this 'build-output' directory must contain an index.js file with an exported `handler` function.
-    const pathToOutputFile = path.join(__dirname, 'build-output'); 
+    const pathToOutputFile = path.join(__dirname, 'build-output');
     const handler = 'index.handler';
 
     const commandThatIsRanDuringCdkSynth = ['node', pathToBuildFile];
