@@ -1,7 +1,7 @@
 import * as path from 'node:path';
 import { parseArgs } from 'node:util';
 import { PositionalArg, showHelp } from './help';
-import { GenerateModuleMap, PatternKeys, generate, generateAll } from '../generate';
+import { GenerateModuleMap, GenerateOptions, generateSome, generateAll, defaultFilePatterns, GenerateFilePatterns } from '../generate';
 import { log, parsePattern } from '../util';
 
 const command = 'spec2cdk';
@@ -22,17 +22,14 @@ const config = {
   },
   'pattern': {
     type: 'string',
-    default: '%moduleName%/%serviceShortName%.generated.ts',
     description: 'File and path pattern for generated files',
   },
   'augmentations': {
     type: 'string',
-    default: '%moduleName%/%serviceShortName%-augmentations.generated.ts',
     description: 'File and path pattern for generated augmentations files',
   },
   'metrics': {
     type: 'string',
-    default: '%moduleName%/%serviceShortName%-canned-metrics.generated.ts',
     description: 'File and path pattern for generated canned metrics files ',
   },
   'service': {
@@ -89,30 +86,23 @@ export async function main(argv: string[]) {
     throw new EvalError('Please specify the output-path');
   }
 
-  const pss: Record<PatternKeys, true> = { moduleName: true, serviceName: true, serviceShortName: true };
-
   const outputPath = outputDir ?? path.join(__dirname, '..', 'services');
-  const resourceFilePattern = parsePattern(
-    stringOr(options.pattern, path.join('%moduleName%', '%serviceShortName%.generated.ts')),
-    pss,
-  );
+  const customFilePatterns: Partial<GenerateFilePatterns> = {};
+  if (options.pattern) {
+    customFilePatterns.resources = parsePattern(options.pattern);
+  }
+  if (options.augmentations) {
+    customFilePatterns.augmentations = parsePattern(options.augmentations);
+  }
+  if (options.metrics) {
+    customFilePatterns.cannedMetrics = parsePattern(options.metrics);
+  }
 
-  const augmentationsFilePattern = parsePattern(
-    stringOr(options.augmentations, path.join('%moduleName%', '%serviceShortName%-augmentations.generated.ts')),
-    pss,
-  );
-
-  const cannedMetricsFilePattern = parsePattern(
-    stringOr(options.metrics, path.join('%moduleName%', '%serviceShortName%-canned-metrics.generated.ts')),
-    pss,
-  );
-
-  const generatorOptions = {
+  const generatorOptions: GenerateOptions = {
     outputPath,
     filePatterns: {
-      resources: resourceFilePattern,
-      augmentations: augmentationsFilePattern,
-      cannedMetrics: cannedMetricsFilePattern,
+      ...defaultFilePatterns(),
+      ...customFilePatterns,
     },
     clearOutput: options['clear-output'],
     augmentationsSupport: options['augmentations-support'],
@@ -127,20 +117,9 @@ export async function main(argv: string[]) {
       }
       moduleMap[service.toLocaleLowerCase().split('::').join('-')] = { services: [{ namespace: service }] };
     }
-    await generate(moduleMap, generatorOptions);
+    await generateSome(moduleMap, generatorOptions);
     return;
   }
 
   await generateAll(generatorOptions);
-}
-
-function stringOr(pat: unknown, def: string) {
-  if (!pat) {
-    return def;
-  }
-  if (typeof pat !== 'string') {
-    // eslint-disable-next-line @cdklabs/no-throw-default-error
-    throw new Error(`Expected string, got: ${JSON.stringify(pat)}`);
-  }
-  return pat;
 }

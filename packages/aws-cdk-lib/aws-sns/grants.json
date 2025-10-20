@@ -1,0 +1,17 @@
+{
+  "resources": {
+    "Topic": {
+      "targetField": "arn",
+      "hasResourcePolicy": true,
+      "grants": {
+        "publish": {
+          "actions": ["sns:Publish"],
+          "keyActions": ["kms:Decrypt", "kms:GenerateDataKey*"]
+        },
+        "subscribe": {
+          "actions": ["sns:Subscribe"]
+        }
+      }
+    }
+  }
+}

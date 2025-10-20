@@ -1,7 +1,11 @@
-export function parsePattern<A extends string>(pattern: string, fields: { [k in A]: unknown }): PatternedString<A> {
-  const placeholders = Object.keys(fields);
-  if (!placeholders.some((param) => pattern.includes(param))) {
-    throw new Error(`--pattern must contain one of [${placeholders.join(', ')}]`);
+const POSSIBLE_PATTERN_KEYS = ['moduleName', 'serviceName', 'serviceShortName'];
+
+export type PatternKeys = (typeof POSSIBLE_PATTERN_KEYS)[number];
+
+export function parsePattern<A extends string>(pattern: string): PatternedString<A> {
+  if (!POSSIBLE_PATTERN_KEYS.some((param) => pattern.includes(param))) {
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
+    throw new Error(`--pattern must contain one of [${POSSIBLE_PATTERN_KEYS.join(', ')}]`);
   }
 
   return (values: { [k in A]: string }) => {

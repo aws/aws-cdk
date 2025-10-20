@@ -6,9 +6,8 @@ import { TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { AstBuilder, ServiceModule } from './cdk/ast';
 import { ModuleImportLocations } from './cdk/cdk';
-import { queryDb, log, PatternedString, TsFileWriter } from './util';
-
-export type PatternKeys = 'moduleName' | 'serviceName' | 'serviceShortName';
+import { GrantsModule } from './cdk/grants-module';
+import { queryDb, log, PatternedString, TsFileWriter, PatternValues, PatternKeys } from './util';
 
 export interface GenerateServiceRequest {
   /**
@@ -52,21 +51,28 @@ export interface GenerateModuleOptions {
 export interface GenerateFilePatterns {
   /**
    * The pattern used to name resource files.
-   * @default "%module.name%/%service.short%.generated.ts"
    */
-  readonly resources?: PatternedString<PatternKeys>;
+  resources: PatternedString<PatternKeys>;
 
   /**
    * The pattern used to name augmentations.
-   * @default "%module.name%/%service.short%-augmentations.generated.ts"
    */
-  readonly augmentations?: PatternedString<PatternKeys>;
+  augmentations: PatternedString<PatternKeys>;
 
   /**
    * The pattern used to name canned metrics.
-   * @default "%module.name%/%service.short%-canned-metrics.generated.ts"
    */
-  readonly cannedMetrics?: PatternedString<PatternKeys>;
+  cannedMetrics: PatternedString<PatternKeys>;
+
+  /**
+   * The file that holds the generated grants class
+   */
+  grantsClass: PatternedString<PatternKeys>;
+
+  /**
+   * The file that holds the source grants JSON file
+   */
+  grantsJson: PatternedString<PatternKeys>;
 }
 
 export interface GenerateOptions {
@@ -78,7 +84,7 @@ export interface GenerateOptions {
   /**
    * Configure where files are created exactly
    */
-  readonly filePatterns?: GenerateFilePatterns;
+  readonly filePatterns: GenerateFilePatterns;
 
   /**
    * Base path for generated files
@@ -132,7 +138,7 @@ export interface GenerateOutput {
  * @param modules A map of arbitrary module names to GenerateModuleOptions. This allows for flexible generation of different configurations at a time.
  * @param options Configure the code generation
  */
-export async function generate(modules: GenerateModuleMap, options: GenerateOptions) {
+export async function generateSome(modules: GenerateModuleMap, options: GenerateOptions) {
   enableDebug(options);
   const db = await loadAwsServiceSpec();
 
@@ -180,8 +186,7 @@ async function generator(
   const timeLabel = '🐢  Completed in';
   log.time(timeLabel);
   log.debug('Options', options);
-  const { augmentationsSupport, clearOutput, outputPath = process.cwd() } = options;
-  const filePatterns = ensureFilePatterns(options.filePatterns);
+  const { augmentationsSupport, clearOutput, outputPath = process.cwd(), filePatterns } = options;
 
   const renderer = new TypeScriptRenderer();
 
@@ -197,7 +202,9 @@ async function generator(
   log.info('Generating %i modules...', Object.keys(modules).length);
   for (const [moduleName, moduleOptions] of Object.entries(modules)) {
     const { moduleImportLocations: importLocations = options.importLocations, services } = moduleOptions;
-    moduleMap[moduleName] = queryDb.getServicesByGenerateServiceRequest(db, services).map(([req, s]) => {
+
+    moduleMap[moduleName] = [];
+    for (const [req, s] of queryDb.getServicesByGenerateServiceRequest(db, services)) {
       log.debug(moduleName, s.name, 'ast');
       const ast = AstBuilder.forService(s, {
         db,
@@ -207,11 +214,12 @@ async function generator(
       });
 
       log.debug(moduleName, s.name, 'render');
-      const writer = new TsFileWriter(outputPath, renderer, {
-        ['moduleName']: moduleName,
-        ['serviceName']: ast.module.service.toLowerCase(),
-        ['serviceShortName']: ast.module.shortName.toLowerCase(),
-      });
+      const filenamePlaceHolders: PatternValues<PatternKeys> = {
+        moduleName: moduleName,
+        serviceName: ast.module.service.toLowerCase(),
+        serviceShortName: ast.module.shortName.toLowerCase(),
+      };
+      const writer = new TsFileWriter(outputPath, renderer, filenamePlaceHolders);
 
       // Resources
       writer.write(ast.module, filePatterns.resources);
@@ -231,13 +239,19 @@ async function generator(
         writer.write(ast.cannedMetrics, filePatterns.cannedMetrics);
       }
 
-      return {
+      // Grants from a separate file
+      const grantsModule = await GrantsModule.forService(db, s, filePatterns.grantsJson(filenamePlaceHolders));
+      if (grantsModule) {
+        writer.write(grantsModule, filePatterns.grantsClass);
+      }
+
+      moduleMap[moduleName].push({
         module: ast,
         options: moduleOptions,
         resources: ast.resources,
         outputFiles: writer.outputFiles,
-      };
-    });
+      });
+    }
   }
 
   const result = {
@@ -254,12 +268,13 @@ async function generator(
   return result;
 }
 
-function ensureFilePatterns(patterns: GenerateFilePatterns = {}): Required<GenerateFilePatterns> {
+export function defaultFilePatterns(): GenerateFilePatterns {
   return {
-    resources: ({ serviceShortName }) => `${serviceShortName}.generated.ts`,
-    augmentations: ({ serviceShortName }) => `${serviceShortName}-augmentations.generated.ts`,
-    cannedMetrics: ({ serviceShortName }) => `${serviceShortName}-canned-metrics.generated.ts`,
-    ...patterns,
+    resources: ({ moduleName: m, serviceShortName: s }) => `${m}/lib/${s}.generated.ts`,
+    augmentations: ({ moduleName: m, serviceShortName: s }) => `${m}/lib/${s}-augmentations.generated.ts`,
+    cannedMetrics: ({ moduleName: m, serviceShortName: s }) => `${m}/lib/${s}-canned-metrics.generated.ts`,
+    grantsClass: ({ moduleName, serviceShortName }) => `${moduleName}/lib/${serviceShortName}-grants.generated.ts`,
+    grantsJson: ({ moduleName }) => `${moduleName}/grants.json`,
   };
 }
 
@@ -276,3 +291,5 @@ function mergeObjects<T>(all: T, res: T) {
     ...res,
   };
 }
+export { PatternKeys };
+
