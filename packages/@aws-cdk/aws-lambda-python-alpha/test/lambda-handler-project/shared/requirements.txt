@@ -2,5 +2,5 @@
 certifi==2024.7.4
 chardet==3.0.4
 idna==3.7
-urllib3==1.26.19
+urllib3==2.5.0
 # Requests used by this lambda
