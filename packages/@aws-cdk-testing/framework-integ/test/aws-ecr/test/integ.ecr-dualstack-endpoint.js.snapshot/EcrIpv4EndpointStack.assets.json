@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "0dc5170a0675b61c3788397e9286c3bbe84da139fa8cb424545889324b652a5f": {
+      "displayName": "EcrIpv4EndpointStack Template",
+      "source": {
+        "path": "EcrIpv4EndpointStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-8713e386": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0dc5170a0675b61c3788397e9286c3bbe84da139fa8cb424545889324b652a5f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -10,6 +10,7 @@ import { CfnParameter } from '../cfn-parameter';
 import { CfnRule } from '../cfn-rule';
 import { UnscopedValidationError, ValidationError } from '../errors';
 import { resolvedOr } from '../helpers-internal/string-specializer';
+import { determineEcrEndpointType, formatEcrEndpoint } from '../private/ecr-endpoint-utils';
 import { Stack } from '../stack';
 
 /**
@@ -200,7 +201,7 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
     return {
       repositoryName: cfnify(dest.repositoryName),
       imageUri: cfnify(
-        `${account}.dkr.ecr.${region}.${urlSuffix}/${dest.repositoryName}:${dest.imageTag}`,
+        `${formatEcrEndpoint(account, region, urlSuffix, determineEcrEndpointType())}/${dest.repositoryName}:${dest.imageTag}`,
       ),
       imageTag: cfnify(dest.imageTag),
     };

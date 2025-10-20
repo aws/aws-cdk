@@ -1,0 +1,34 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "af5268d96b4964e4a214d6575784a33941399903e880913ebedfc4d446d36e1c": {
+      "displayName": "EcrSynthesizerDualStackStack Template",
+      "source": {
+        "path": "EcrSynthesizerDualStackStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-8e50955c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "af5268d96b4964e4a214d6575784a33941399903e880913ebedfc4d446d36e1c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {
+    "bc71351e3522b38bffa75e1f42515b9136902031e1271c74a07ca38f1e1cda27": {
+      "displayName": "DualStackDockerAsset",
+      "source": {
+        "directory": "asset.bc71351e3522b38bffa75e1f42515b9136902031e1271c74a07ca38f1e1cda27"
+      },
+      "destinations": {
+        "current_account-current_region-9cb59b7d": {
+          "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}",
+          "imageTag": "bc71351e3522b38bffa75e1f42515b9136902031e1271c74a07ca38f1e1cda27",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  }
+}
