@@ -23,7 +23,7 @@ RUN npm install --global --unsafe-perm=true esbuild@$ESBUILD_VERSION
 
 # Install rolldown
 # pin the minor version to 0.15 to prevent breaking change
-ARG ROLLDOWN_VERSION=0.15
+ARG ROLLDOWN_VERSION=1.0.0-beta.44
 RUN npm install --global rolldown@$ROLLDOWN_VERSION
 
 # Ensure all users can write to npm cache
