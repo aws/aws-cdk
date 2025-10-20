@@ -4,7 +4,7 @@ import * as glue from 'aws-cdk-lib/aws-glue';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
-import { putData, waitForKeys } from './util/util';
+import { putData, waitForKeys } from './util/assertion-helpers';
 
 const app = new cdk.App();
 
