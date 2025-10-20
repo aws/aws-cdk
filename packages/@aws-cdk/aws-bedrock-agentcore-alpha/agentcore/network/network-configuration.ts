@@ -1,8 +1,7 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 // Internal Libs
-import { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
+import { CfnBrowserCustom, CfnCodeInterpreterCustom } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { Construct } from 'constructs';
-import { ValidationError } from './../runtime/validation-helpers';
 
 /**
  * VPC configuration properties.
@@ -33,11 +32,13 @@ export interface VpcConfigProps {
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
   /**
-   * Whether to allow all outbound traffic by default.
+   * Whether to allow the resource to send all network traffic (except ipv6)
    *
-   * If this is set to true, the security groups created by this construct
-   * will allow all outbound traffic. If this is set to false, no outbound traffic will be allowed by default
-   * and all egress traffic must be explicitly authorized.
+   * If set to false, you must individually add traffic rules to allow the
+   * resource to connect to network targets.
+   *
+   * Do not specify this property if the `securityGroups` property is set.
+   * Instead, configure `allowAllOutbound` directly on the security group.
    *
    * @default true
    */
@@ -79,12 +80,12 @@ export abstract class NetworkConfiguration {
    */
   readonly scope?: Construct | undefined;
   /**
-   * The selected VPC subnets.
+   * The VPC subnets to use.
    */
-  readonly vpcSubnets?: ec2.SelectedSubnets;
+  readonly vpcSubnets?: ec2.SubnetSelection;
   /**
    * Creates a new network configuration.
-   * @param mode - the network mode to use for the resource.
+   * @param mode - the network mode to use for the tool.
    */
   protected constructor (mode: string, scope?: Construct, vpcConfig?: VpcConfigProps) {
     this.scope = scope;
@@ -101,7 +102,7 @@ export abstract class NetworkConfiguration {
    */
   private _validateAndConfigureVpcConfig = (vpcConfig?: VpcConfigProps): NetworkConfig | undefined => {
     if ((vpcConfig?.securityGroups || vpcConfig?.allowAllOutbound !== undefined) && !vpcConfig?.vpc) {
-      throw new ValidationError('Cannot configure \'securityGroups\' or \'allowAllOutbound\' without configuring a VPC');
+      throw new Error('Cannot configure \'securityGroups\' or \'allowAllOutbound\' without configuring a VPC');
     }
 
     if (!vpcConfig?.vpc) {
@@ -109,11 +110,11 @@ export abstract class NetworkConfiguration {
     }
 
     if ((vpcConfig?.securityGroups && vpcConfig?.securityGroups.length > 0) && vpcConfig?.allowAllOutbound !== undefined) {
-      throw new ValidationError('Configure \'allowAllOutbound\' directly on the supplied SecurityGroups');
+      throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroups');
     }
 
     if (!this.scope) {
-      throw new ValidationError('Scope is required to create the security group');
+      throw new Error('Scope is required to create the security group');
     }
 
     let securityGroups: ec2.ISecurityGroup[];
@@ -122,7 +123,7 @@ export abstract class NetworkConfiguration {
     } else {
       const securityGroup = new ec2.SecurityGroup(this.scope!, 'SecurityGroup', {
         vpc: vpcConfig.vpc,
-        allowAllOutbound: vpcConfig.allowAllOutbound,
+        allowAllOutbound: vpcConfig.allowAllOutbound ?? true,
       });
       securityGroups = [securityGroup];
     }
@@ -137,40 +138,86 @@ export abstract class NetworkConfiguration {
 }
 
 /**
- * Network configuration for the Runtime.
+ * Network configuration for the Browser tool.
  */
-export class RuntimeNetworkConfiguration extends NetworkConfiguration {
+export class BrowserNetworkConfiguration extends NetworkConfiguration {
   /**
    * Creates a public network configuration. PUBLIC is the default network mode.
-   * @returns A RuntimeNetworkConfiguration.
-   * Run the runtime in a public environment with internet access, suitable for less sensitive or open-use scenarios.
+   * @returns A BrowserNetworkConfiguration.
+   * Run this tool to operate in a public environment with internet access, suitable for less sensitive or open-use scenarios.
    */
-  public static usingPublicNetwork(): RuntimeNetworkConfiguration {
-    return new RuntimeNetworkConfiguration('PUBLIC');
+  public static usingPublicNetwork(): BrowserNetworkConfiguration {
+    return new BrowserNetworkConfiguration('PUBLIC');
   }
 
   /**
    * Creates a network configuration from a VPC configuration.
-   * @param scope - The construct scope for creating resources.
    * @param vpcConfig - The VPC configuration.
-   * @returns A RuntimeNetworkConfiguration.
+   * @returns A BrowserNetworkConfiguration.
    */
-  public static usingVpc(scope: Construct, vpcConfig: VpcConfigProps): RuntimeNetworkConfiguration {
-    return new RuntimeNetworkConfiguration('VPC', scope, vpcConfig);
+  public static usingVpc(scope: Construct, vpcConfig: VpcConfigProps): BrowserNetworkConfiguration {
+    return new BrowserNetworkConfiguration('VPC', scope, vpcConfig);
   }
 
   /**
    * Renders the network configuration as a CloudFormation property.
-   * @param runtimeConnections - The connections object to the runtime.
+   * @param browserConnections - The connections object to the browser.
    * @internal This is an internal core function and should not be called directly.
    */
-  public _render(_runtimeConnections?: ec2.Connections): CfnRuntime.NetworkConfigurationProperty {
+  public _render(browserConnections?: ec2.Connections): CfnBrowserCustom.BrowserNetworkConfigurationProperty {
     return {
       networkMode: this.networkMode,
-      networkModeConfig: (this.networkMode == 'VPC' && _runtimeConnections) ? {
+      vpcConfig: (this.networkMode === 'VPC' && browserConnections) ? {
         subnets: this.vpcSubnets?.subnets?.map(subnet => subnet.subnetId) ?? [],
-        securityGroups: _runtimeConnections?.securityGroups?.map(s=> s.securityGroupId) ?? [],
-      }: undefined,
+        securityGroups: browserConnections?.securityGroups?.map(s => s.securityGroupId) ?? [],
+      } : undefined,
+    };
+  }
+}
+
+/**
+ * Network configuration for the Code Interpreter tool.
+ */
+export class CodeInterpreterNetworkConfiguration extends NetworkConfiguration {
+  /**
+   * Creates a public network configuration.
+   * @returns A CodeInterpreterNetworkConfiguration.
+   * Run this tool to operate in a public environment with internet access, suitable for less sensitive or open-use scenarios.
+   */
+  public static usingPublicNetwork(): CodeInterpreterNetworkConfiguration {
+    return new CodeInterpreterNetworkConfiguration('PUBLIC');
+  }
+
+  /**
+   * Creates a sandbox network configuration.
+   * @returns A CodeInterpreterNetworkConfiguration.
+   * Run this tool in a restricted environment with limited Permissions and Encryption to enhance safety and reduce potential risks.
+   */
+  public static usingSandboxNetwork(): CodeInterpreterNetworkConfiguration {
+    return new CodeInterpreterNetworkConfiguration('SANDBOX');
+  }
+
+  /**
+   * Creates a network configuration from a VPC configuration.
+   * @param vpcConfig - The VPC configuration.
+   * @returns A CodeInterpreterNetworkConfiguration.
+   */
+  public static usingVpc(scope: Construct, vpcConfig: VpcConfigProps): CodeInterpreterNetworkConfiguration {
+    return new CodeInterpreterNetworkConfiguration('VPC', scope, vpcConfig);
+  }
+
+  /**
+   * Renders the network configuration as a CloudFormation property.
+   * @param codeInterpreterConnections - The connections object to the code interpreter.
+   * @internal This is an internal core function and should not be called directly.
+   */
+  public _render(codeInterpreterConnections?: ec2.Connections): CfnCodeInterpreterCustom.CodeInterpreterNetworkConfigurationProperty {
+    return {
+      networkMode: this.networkMode,
+      vpcConfig: (this.networkMode === 'VPC' && codeInterpreterConnections) ? {
+        subnets: this.vpcSubnets?.subnets?.map(subnet => subnet.subnetId) ?? [],
+        securityGroups: codeInterpreterConnections?.securityGroups?.map(s => s.securityGroupId) ?? [],
+      } : undefined,
     };
   }
 }

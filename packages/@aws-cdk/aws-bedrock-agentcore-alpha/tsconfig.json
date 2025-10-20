@@ -40,7 +40,7 @@
     },
     {
       "path": "../../../tools/@aws-cdk/cdk-build-tools"
-    },   
+    },
     {
       "path": "../../../tools/@aws-cdk/pkglint"
     },
