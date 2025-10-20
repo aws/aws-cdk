@@ -11,33 +11,34 @@ const app = new cdk.App({
     '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
   },
 });
-const stack = new cdk.Stack(app, 'integ-managedinstances-capacity-provider');
+const stack = new cdk.Stack(app, 'integ-managedinstances-no-default-capacity-provider');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new ecs.Cluster(stack, 'ManagedInstancesCluster', {
   vpc,
-  enableFargateCapacityProviders: true,
 });
 
 // Create IAM roles required for FMI following Omakase specifications
 const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
-  roleName: 'AmazonECSInfrastructureRoleForOmakase',
+  roleName: 'InfrastructureRole',
   assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
   managedPolicies: [
-    iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonECSInfrastructureRolePolicyForManagedInstances'),
   ],
 });
 
 const instanceRole = new iam.Role(stack, 'InstanceRole', {
-  roleName: 'AmazonECSInstanceRoleForOmakase',
+  roleName: 'InstanceRole',
   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
   managedPolicies: [
-    iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonECSInstanceRolePolicyForManagedInstances'),
   ],
 });
 
+infrastructureRole.grantPassRole(instanceRole);
+
 const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
-  instanceProfileName: 'AmazonECSInstanceRoleForOmakase',
+  instanceProfileName: 'InstanceProfile',
   role: instanceRole,
 });
 
@@ -65,12 +66,6 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'Mana
 
 // Add FMI capacity provider to cluster
 cluster.addManagedInstancesCapacityProvider(miCapacityProvider);
-cluster.addDefaultCapacityProviderStrategy([
-  {
-    capacityProvider: miCapacityProvider.capacityProviderName,
-    weight: 1,
-  },
-]);
 
 // Create a task definition compatible with Managed Instances and Fargate
 const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
@@ -106,6 +101,7 @@ new ecs.FargateService(stack, 'ManagedInstancesService', {
 
 new integ.IntegTest(app, 'ManagedInstancesCapacityProviders', {
   testCases: [stack],
+  regions: ['us-west-2'],
 });
 
 app.synth();
