@@ -549,6 +549,7 @@ export class StateMachine extends StateMachineBase {
     });
     resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
 
+    resource.node.addDependency(this.role);
     this.stateMachineName = this.getResourceNameAttribute(resource.attrName);
     this.stateMachineArn = this.getResourceArnAttribute(resource.ref, {
       service: 'states',
