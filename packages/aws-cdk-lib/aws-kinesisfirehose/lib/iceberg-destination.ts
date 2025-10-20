@@ -48,6 +48,8 @@ export interface PartitionSpec {
   /**
    * List of identity transforms that performs an identity transformation.
    * The transform takes the source value and does not modify it.
+   *
+   * @default - No identity transforms
    */
   readonly identity?: PartitionField[];
 }
