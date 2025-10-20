@@ -4,22 +4,13 @@ import { IConstruct } from 'constructs';
 import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import { Bundler, BundlingOptions, OutputFormat, SourceMapMode } from './types';
-import {
-  exec,
-  extractDependencies,
-  findUp,
-  getTsconfigCompilerOptions,
-  isSdkV2Runtime,
-} from './util';
+import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime } from './util';
 import { Architecture, AssetCode, Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
 import { LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES } from '../../cx-api';
 
-const ESBUILD_MAJOR_VERSION = '0';
 const ESBUILD_DEFAULT_VERSION = '0.21';
-
-const ROLLDOWN_MAJOR_VERSION = '1';
 const ROLLDOWN_DEFAULT_VERSION = '1.0.0-beta.44';
 
 /**
@@ -362,10 +353,12 @@ export class Bundling implements cdk.BundlingOptions {
     if (sourceMapEnabled) {
       const sourceMapMode = this.props.sourceMapMode ?? SourceMapMode.DEFAULT;
       if (sourceMapMode === SourceMapMode.INLINE) {
-        sourceMapArgs = ['-s', 'inline'];
+        sourceMapArgs = ['--sourcemap=inline'];
+      } else if (sourceMapMode === SourceMapMode.EXTERNAL) {
+        sourceMapArgs = ['--sourcemap=hidden'];
       } else {
-        // For DEFAULT, EXTERNAL, and BOTH - use default sourcemap generation
-        sourceMapArgs = ['-s'];
+        // For DEFAULT and BOTH - use default sourcemap generation
+        sourceMapArgs = ['--sourcemap'];
       }
     }
 
@@ -376,7 +369,6 @@ export class Bundling implements cdk.BundlingOptions {
       '-p node',
       ...(this.props.format ? [`-f ${this.props.format}`] : []),
       ...(this.props.minify ? ['-m'] : []),
-      ...sourceMapArgs,
       ...this.externals.map((external) => `-e ${external}`),
       ...loaders.map(([ext, name]) => `--module-types ${ext}=${name}`),
       ...defines.map(([key, value]) => `--define ${key}=${JSON.stringify(value)}`),
@@ -387,6 +379,8 @@ export class Bundling implements cdk.BundlingOptions {
       ...(this.props.mainFields ? [`--main-fields ${this.props.mainFields.join(',')}`] : []),
       ...(this.props.inject ? this.props.inject.map((i) => `--inject "${i}"`) : []),
       ...(this.props.rolldownArgs ? [toCliArgs(this.props.rolldownArgs)] : []),
+      // According to rolldown documentation, the sourcemap argument must be last argument...
+      ...sourceMapArgs,
     ];
   }
 
@@ -411,15 +405,10 @@ export class Bundling implements cdk.BundlingOptions {
       tryBundle(outputDir: string) {
         const bundlerInstallation = bundler === Bundler.ROLLDOWN ? Bundling.rolldownInstallation : Bundling.esbuildInstallation;
         const bundlerName = bundler === Bundler.ROLLDOWN ? 'rolldown' : 'esbuild';
-        const expectedMajorVersion = bundler === Bundler.ROLLDOWN ? ROLLDOWN_MAJOR_VERSION : ESBUILD_MAJOR_VERSION;
 
         if (!bundlerInstallation) {
           process.stderr.write(`${bundlerName} cannot run locally. Switching to Docker bundling.\n`);
           return false;
-        }
-
-        if (!bundlerInstallation.version.startsWith(`${expectedMajorVersion}.`)) {
-          throw new ValidationError(`Expected ${bundlerName} version ${expectedMajorVersion}.x but got ${bundlerInstallation.version}`, scope);
         }
 
         const localCommand = createLocalCommand(outputDir, bundlerInstallation, Bundling.tscInstallation);

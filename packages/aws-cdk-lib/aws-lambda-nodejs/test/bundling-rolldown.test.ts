@@ -125,7 +125,7 @@ describe('rolldown bundler', () => {
       bundling: expect.objectContaining({
         command: [
           'bash', '-c',
-          expect.stringContaining('-s'),
+          expect.stringContaining('--sourcemap'),
         ],
       }),
     });
