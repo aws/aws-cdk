@@ -1,6 +1,7 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 // Internal Libs
-import { CfnBrowserCustom, CfnCodeInterpreterCustom } from 'aws-cdk-lib/aws-bedrockagentcore';
+import { CfnBrowserCustom, CfnCodeInterpreterCustom, CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { Construct } from 'constructs';
 
 /**
@@ -218,6 +219,45 @@ export class CodeInterpreterNetworkConfiguration extends NetworkConfiguration {
         subnets: this.vpcSubnets?.subnets?.map(subnet => subnet.subnetId) ?? [],
         securityGroups: codeInterpreterConnections?.securityGroups?.map(s => s.securityGroupId) ?? [],
       } : undefined,
+    };
+  }
+}
+
+/**
+ * Network configuration for the Runtime.
+ */
+export class RuntimeNetworkConfiguration extends NetworkConfiguration {
+  /**
+   * Creates a public network configuration. PUBLIC is the default network mode.
+   * @returns A RuntimeNetworkConfiguration.
+   * Run the runtime in a public environment with internet access, suitable for less sensitive or open-use scenarios.
+   */
+  public static usingPublicNetwork(): RuntimeNetworkConfiguration {
+    return new RuntimeNetworkConfiguration('PUBLIC');
+  }
+
+  /**
+   * Creates a network configuration from a VPC configuration.
+   * @param scope - The construct scope for creating resources.
+   * @param vpcConfig - The VPC configuration.
+   * @returns A RuntimeNetworkConfiguration.
+   */
+  public static usingVpc(scope: Construct, vpcConfig: VpcConfigProps): RuntimeNetworkConfiguration {
+    return new RuntimeNetworkConfiguration('VPC', scope, vpcConfig);
+  }
+
+  /**
+   * Renders the network configuration as a CloudFormation property.
+   * @param runtimeConnections - The connections object to the runtime.
+   * @internal This is an internal core function and should not be called directly.
+   */
+  public _render(_runtimeConnections?: ec2.Connections): CfnRuntime.NetworkConfigurationProperty {
+    return {
+      networkMode: this.networkMode,
+      networkModeConfig: (this.networkMode == 'VPC' && _runtimeConnections) ? {
+        subnets: this.vpcSubnets?.subnets?.map(subnet => subnet.subnetId) ?? [],
+        securityGroups: _runtimeConnections?.securityGroups?.map(s=> s.securityGroupId) ?? [],
+      }: undefined,
     };
   }
 }
