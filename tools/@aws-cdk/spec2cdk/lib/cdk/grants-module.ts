@@ -36,12 +36,17 @@ export interface GrantsFileSchema {
 }
 
 export interface ResourceSchema {
-  readonly targetField: string;
   readonly hasResourcePolicy?: boolean;
   readonly grants: Record<string, GrantSchema>;
 }
 
 export interface GrantSchema {
+  /**
+   * ARN format containing placeholders
+   *
+   * If absent, just use the resource's default ARN format.
+   */
+  readonly arnFormat?: string;
   readonly actions: string[];
   readonly keyActions?: string[];
 }

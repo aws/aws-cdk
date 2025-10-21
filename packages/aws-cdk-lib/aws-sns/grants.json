@@ -1,7 +1,6 @@
 {
   "resources": {
     "Topic": {
-      "targetField": "arn",
       "hasResourcePolicy": true,
       "grants": {
         "publish": {
