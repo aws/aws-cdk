@@ -8,8 +8,8 @@ describe('cli', () => {
     await withTemporaryDirectory(async ({ testDir }) => {
       await main([testDir, '--service', 'AWS::S3', '--service', 'AWS::SNS']);
 
-      expect(fs.existsSync(path.join(testDir, 'aws-s3', 's3.generated.ts'))).toBe(true);
-      expect(fs.existsSync(path.join(testDir, 'aws-sns', 'sns.generated.ts'))).toBe(true);
+      expect(fs.existsSync(path.join(testDir, 'aws-s3', 'lib', 's3.generated.ts'))).toBe(true);
+      expect(fs.existsSync(path.join(testDir, 'aws-sns', 'lib', 'sns.generated.ts'))).toBe(true);
     });
   });
 });
