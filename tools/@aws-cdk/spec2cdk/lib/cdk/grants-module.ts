@@ -33,6 +33,7 @@ export class GrantsModule extends Module {
 
 export interface GrantsFileSchema {
   readonly resources: Record<string, ResourceSchema>;
+  readonly constants?: Record<string, string[]>;
 }
 
 export interface ResourceSchema {
