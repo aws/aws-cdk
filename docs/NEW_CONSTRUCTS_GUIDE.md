@@ -54,7 +54,7 @@ Whether publishing your own package or making a PR against aws-cdk-lib immediate
 
 ### Alpha CDK Package
 1. Design: create a draft PR with the new README detailing the API, socialize, and gain consensus
-1. Implement: write the construct as designed and create a new pull requests
+1. Implement: write the construct as designed and create a new pull request
 1. Iterate: respond to feedback from pull request reviewers on the aws-cdk team
 1. Publish: publish your new constructs as an alpha module
 1. Iterate: respond to issues from users, fix bugs and optimize usage patterns
