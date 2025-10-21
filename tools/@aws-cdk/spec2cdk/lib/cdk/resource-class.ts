@@ -737,3 +737,16 @@ function mkImportClass(largerScope: IScope): ClassType {
   largerScope.linkSymbol(new ThingSymbol(className, scope), expr.ident(className));
   return innerClass;
 }
+
+// TODO deduplicate with ResourceDecider.findArnProperty
+export function findArnProperty(resource: Resource): undefined | string {
+  const possibleArnNames = ['Arn', `${resource.name}Arn`];
+  for (const name of possibleArnNames) {
+    const prop = resource.attributes[name];
+    if (prop) {
+      return name;
+    }
+  }
+  return undefined;
+}
+
