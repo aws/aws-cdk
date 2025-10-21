@@ -163,7 +163,7 @@ CodePipeline actions that trigger Lambda functions).
 The next level of abstraction present within the CDK are what we designate as
 "L2.5s": a step above the L2s in terms of abstraction, but not quite at the
 level of complete patterns or applications.  These constructs still largely
-focus on a single logical resource -- in constrast to "patterns" which combine
+focus on a single logical resource -- in contrast to "patterns" which combine
 multiple resources -- but are customized for a specific common usage scenario of
 an L2. Examples of L2.5s in the CDK are `aws-apigateway.LambdaRestApi`,
 `aws-lambda-nodejs.NodeJsFunction`, `aws-rds.ServerlessCluster` and `eks.FargateCluster`.
