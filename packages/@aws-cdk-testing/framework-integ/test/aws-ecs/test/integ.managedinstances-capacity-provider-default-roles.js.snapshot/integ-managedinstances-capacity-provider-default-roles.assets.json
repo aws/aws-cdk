@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "7b5f4515c055ce84d43e7f9bf36c803e8e7c285b02ec06a6633ba813644b2388": {
+    "831371b67e03ae289627c831ef5ac0b95c86d8e542693308d702de4aff4bf6c1": {
       "displayName": "integ-managedinstances-capacity-provider-default-roles Template",
       "source": {
         "path": "integ-managedinstances-capacity-provider-default-roles.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-e6a84213": {
+        "current_account-current_region-bd196aec": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7b5f4515c055ce84d43e7f9bf36c803e8e7c285b02ec06a6633ba813644b2388.json",
+          "objectKey": "831371b67e03ae289627c831ef5ac0b95c86d8e542693308d702de4aff4bf6c1.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
