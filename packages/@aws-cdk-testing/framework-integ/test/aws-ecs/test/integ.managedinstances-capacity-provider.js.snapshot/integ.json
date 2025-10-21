@@ -5,6 +5,9 @@
       "stacks": [
         "integ-managedinstances-capacity-provider"
       ],
+      "regions": [
+        "us-west-2"
+      ],
       "assertionStack": "ManagedInstancesCapacityProviders/DefaultTest/DeployAssert",
       "assertionStackName": "ManagedInstancesCapacityProvidersDefaultTestDeployAssert3628EE88"
     }
