@@ -5046,19 +5046,27 @@ describe('Lambda Function log group behavior', () => {
 });
 
 describe('telemetry metadata', () => {
-  it('redaction happens when feature flag is enabled', () => {
-    const app = new cdk.App();
-    app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
-    const stack = new cdk.Stack(app);
+  let getPrototypeOfSpy: jest.SpyInstance;
 
+  beforeEach(() => {
     const mockConstructor = {
       [JSII_RUNTIME_SYMBOL]: {
         fqn: 'aws-cdk-lib.aws-lambda.Function',
       },
     };
-    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
+    getPrototypeOfSpy = jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
       constructor: mockConstructor,
     });
+  });
+
+  afterEach(() => {
+    getPrototypeOfSpy.mockRestore();
+  });
+
+  it('redaction happens when feature flag is enabled', () => {
+    const app = new cdk.App();
+    app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
+    const stack = new cdk.Stack(app);
 
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
@@ -5089,15 +5097,6 @@ describe('telemetry metadata', () => {
     app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, false);
     const stack = new cdk.Stack(app);
 
-    const mockConstructor = {
-      [JSII_RUNTIME_SYMBOL]: {
-        fqn: 'aws-cdk-lib.aws-lambda.Function',
-      },
-    };
-    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
-      constructor: mockConstructor,
-    });
-
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
@@ -5107,7 +5106,6 @@ describe('telemetry metadata', () => {
     expect(fn.node.metadata).toStrictEqual([]);
   });
 });
-
 describe('L1 Relationships', () => {
   it('simple union', () => {
     const stack = new cdk.Stack();
