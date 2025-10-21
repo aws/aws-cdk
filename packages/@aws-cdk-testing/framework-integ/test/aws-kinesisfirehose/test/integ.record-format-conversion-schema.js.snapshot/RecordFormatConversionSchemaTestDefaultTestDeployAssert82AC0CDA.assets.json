@@ -14,16 +14,16 @@
         }
       }
     },
-    "5873e539026143c49ad002ae74e36767c5bb5aee76549e81dc518c49808f5584": {
-      "displayName": "IntegCanaryTestDefaultTestDeployAssert3AD5A094 Template",
+    "cf9b011df10f4678e4692ba4ac200ad3adfc2b6b698faa0f19de21183b102022": {
+      "displayName": "RecordFormatConversionSchemaTestDefaultTestDeployAssert82AC0CDA Template",
       "source": {
-        "path": "IntegCanaryTestDefaultTestDeployAssert3AD5A094.template.json",
+        "path": "RecordFormatConversionSchemaTestDefaultTestDeployAssert82AC0CDA.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-aba57f29": {
+        "current_account-current_region-b8192f98": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5873e539026143c49ad002ae74e36767c5bb5aee76549e81dc518c49808f5584.json",
+          "objectKey": "cf9b011df10f4678e4692ba4ac200ad3adfc2b6b698faa0f19de21183b102022.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
