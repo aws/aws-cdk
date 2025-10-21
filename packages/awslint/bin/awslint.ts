@@ -2,11 +2,14 @@
 /* eslint-disable no-console */
 import * as child_process from 'child_process';
 import * as path from 'path';
+import { JsiiFeature } from '@jsii/spec';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as reflect from 'jsii-reflect';
 import * as yargs from 'yargs';
 import { ALL_RULES_LINTER, DiagnosticLevel, RuleFilterSet } from '../lib';
+
+const FEATURES: JsiiFeature[] = ['intersection-types'];
 
 let stackTrace = false;
 
@@ -247,7 +250,7 @@ main().catch(e => {
 
 async function loadModule(dir: string) {
   const ts = new reflect.TypeSystem();
-  await ts.load(dir, { validate: false }); // Don't validate to save 66% of execution time (20s vs 1min).
+  await ts.load(dir, { validate: false, supportedFeatures: FEATURES }); // Don't validate to save 66% of execution time (20s vs 1min).
   // We run 'awslint' during build time, assemblies are guaranteed to be ok.
 
   // We won't load any more assemblies. Lock the typesystem to benefit from performance improvements.
