@@ -1718,6 +1718,10 @@ Option 2: If you don't want to use the `AmazonECSInfrastructureRolePolicyForMana
 You can also choose not to use the the AWS managed policy for the instance role `AmazonECSInstanceRolePolicyForManagedInstances`. See [ECS documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-instances-instance-profile.html) for what permissions are required.
 
 ```ts
+declare const vpc: ec2.Vpc;
+
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
+
 // Add your custom policies to the role.
 const customInstanceRole = new iam.Role(this, 'CustomInstanceRole', {
   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
@@ -1753,12 +1757,18 @@ const miCapacityProviderCustom = new ecs.ManagedInstancesCapacityProvider(this, 
 // Add the capacity provider to the cluster
 cluster.addManagedInstancesCapacityProvider(miCapacityProvider);
 
-const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
+  memoryMiB: '512',
+  cpu: '256',
+  networkMode: ecs.NetworkMode.AWS_VPC,
+  compatibility: ecs.Compatibility.MANAGED_INSTANCES,
+});
 
 taskDefinition.addContainer('web', {
   image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   memoryReservationMiB: 256,
 });
+
 
 new ecs.FargateService(this, 'FargateService', {
 
@@ -1767,7 +1777,7 @@ new ecs.FargateService(this, 'FargateService', {
   minHealthyPercent: 100,
   capacityProviderStrategies: [
     {
-      capacityProvider: miCapacityProvider.capacityProviderName,
+      capacityProvider: miCapacityProviderCustom.capacityProviderName,
       weight: 1,
     },
   ],

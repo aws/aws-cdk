@@ -476,18 +476,98 @@
      ],
      "Version": "2012-10-17"
     },
-    "ManagedPolicyArns": [
+    "Policies": [
      {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
+      "PolicyDocument": {
+       "Statement": [
         {
-         "Ref": "AWS::Partition"
+         "Action": "ecs:DiscoverPollEndpoint",
+         "Effect": "Allow",
+         "Resource": "*",
+         "Sid": "ECSAgentDiscoverPollEndpointPermissions"
         },
-        ":iam::aws:policy/AmazonECSInstanceRolePolicyForManagedInstances"
-       ]
-      ]
+        {
+         "Action": "ecs:RegisterContainerInstance",
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::GetAtt": [
+           "ManagedInstancesClusterDC139296",
+           "Arn"
+          ]
+         },
+         "Sid": "ECSAgentRegisterPermissions"
+        },
+        {
+         "Action": "ecs:Poll",
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":ecs:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":container-instance/*"
+           ]
+          ]
+         },
+         "Sid": "ECSAgentPollPermissions"
+        },
+        {
+         "Action": [
+          "ecs:PutSystemLogEvents",
+          "ecs:StartTelemetrySession"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":ecs:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":container-instance/*"
+           ]
+          ]
+         },
+         "Sid": "ECSAgentTelemetryPermissions"
+        },
+        {
+         "Action": [
+          "ecs:SubmitAttachmentStateChanges",
+          "ecs:SubmitTaskStateChange"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::GetAtt": [
+           "ManagedInstancesClusterDC139296",
+           "Arn"
+          ]
+         },
+         "Sid": "ECSAgentStateChangePermissions"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "ECSInstancePolicy"
      }
     ],
     "RoleName": "ecsInstanceRoleintegmanagedinstancencesCapacityProviderD251D44E"
