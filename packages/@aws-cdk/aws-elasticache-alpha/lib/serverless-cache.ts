@@ -329,6 +329,7 @@ export class ServerlessCache extends ServerlessCacheBase {
             case CacheEngine.VALKEY_7:
             case CacheEngine.VALKEY_8:
             case CacheEngine.REDIS_LATEST:
+            case CacheEngine.REDIS_7:
               // Document showing the default port
               // https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/set-up.html#elasticache-install-grant-access-VPN
               defaultPort = ec2.Port.tcp(6379);
