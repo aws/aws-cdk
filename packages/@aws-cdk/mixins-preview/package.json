@@ -55,6 +55,7 @@
     "directory": "packages/@aws-cdk/mixins-preview"
   },
   "scripts": {
+    "gen": "tsx scripts/codegen.ts",
     "build": "cdk-build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
@@ -86,10 +87,14 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
+    "@aws-cdk/service-spec-types": "^0.0.174",
+    "@aws-cdk/spec2cdk": "0.0.0",
+    "@cdklabs/typewriter": "^0.0.6",
     "@types/jest": "^29.5.14",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "tsx": "^4.20.6"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {

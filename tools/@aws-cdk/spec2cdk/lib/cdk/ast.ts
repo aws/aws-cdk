@@ -52,7 +52,7 @@ export class AstBuilder<T extends Module> {
     const aug = new AugmentationsModule(props.db, service.name, props.importLocations?.cloudwatch);
     const metrics = CannedMetricsModule.forService(props.db, service);
 
-    const ast = new AstBuilder(scope, props, aug, metrics);
+    const ast = new this(scope, props, aug, metrics);
 
     const resources = props.db.follow('hasResource', service);
 
@@ -72,7 +72,7 @@ export class AstBuilder<T extends Module> {
     const aug = new AugmentationsModule(props.db, parts[1], props.importLocations?.cloudwatch);
     const metrics = CannedMetricsModule.forResource(props.db, resource);
 
-    const ast = new AstBuilder(scope, props, aug, metrics);
+    const ast = new this(scope, props, aug, metrics);
     ast.addResource(resource);
 
     return ast;
@@ -83,8 +83,8 @@ export class AstBuilder<T extends Module> {
    * Map of CloudFormation resource name to generated class name
    */
   public readonly resources: Record<string, string> = {};
-  private nameSuffix?: string;
-  private deprecated?: string;
+  protected nameSuffix?: string;
+  protected deprecated?: string;
 
   protected constructor(
     public readonly module: T,
