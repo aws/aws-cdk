@@ -1,0 +1,16 @@
+{
+  "resources": {
+    "LambdaDeploymentGroup": {
+      "grants": {
+        "putLifecycleEventHookExecutionStatus": {
+          "actions": [
+            "codedeploy:PutLifecycleEventHookExecutionStatus"
+          ]
+        }
+      }
+    }
+  }
+}
+
+
+
