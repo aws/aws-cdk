@@ -4,7 +4,6 @@ import * as glue from 'aws-cdk-lib/aws-glue';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
-import { putData, waitForKeys } from './util/assertion-helpers';
 
 const app = new cdk.App();
 
@@ -128,10 +127,28 @@ const assertions = testCase.assertions;
 // Test each delivery stream with the same input, and verify that each writes the output to the success prefix
 // Relies on waiting timeout to tell if record format conversion failed.
 stack.deliveryStreamsToTest.forEach(deliveryStream => {
-  const putDataCall = putData(assertions, deliveryStream, {
-    Column_A: 'foo',
-    Column_B: 'bar',
+  const putDataCall = assertions.awsApiCall('Firehose', 'putRecord', {
+    DeliveryStreamName: deliveryStream.deliveryStreamName,
+    Record: {
+      Data: JSON.stringify({
+        Column_A: 'foo',
+        Column_B: 'bar',
+      }),
+    },
   });
-  const waitForResultCall = waitForKeys(assertions, stack.bucket, `success/${deliveryStream.node.id}/`);
+
+  const waitForResultCall = assertions.awsApiCall('S3', 'listObjectsV2', {
+    Bucket: stack.bucket.bucketName,
+    Prefix: `success/${deliveryStream.node.id}/`,
+  }).expect(integ.ExpectedResult.objectLike({
+    KeyCount: 1,
+  })).waitForAssertions({
+    interval: cdk.Duration.seconds(5),
+    totalTimeout: cdk.Duration.minutes(2),
+  });
+
+  const api = waitForResultCall as integ.AwsApiCall;
+  api.waiterProvider?.addPolicyStatementFromSdkCall('s3', 'ListBucket', [stack.bucket.bucketArn]);
+  api.waiterProvider?.addPolicyStatementFromSdkCall('s3', 'GetObject', [stack.bucket.arnForObjects('*')]);
   putDataCall.next(waitForResultCall);
 });
