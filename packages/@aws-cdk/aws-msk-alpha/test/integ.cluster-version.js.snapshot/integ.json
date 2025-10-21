@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "testCases": {
     "KafkaVersionIntegTest/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "KafkaVersionIntegTestDefaultTestDeployAssertD6628743"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1027.0"
 }
