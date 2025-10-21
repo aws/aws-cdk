@@ -35,7 +35,7 @@ const lambdaFromFunctionAttributesIntegration = new HttpLambdaIntegration('my-re
 
 // Lambda created with Function.fromFunctionName()
 const thirdLambdaName = 'third-lambda-function';
-new lambda.Function(stack, thirdLambdaName, {
+const thirdLambdaFunction = new lambda.Function(stack, thirdLambdaName, {
   runtime: lambda.Runtime.NODEJS_20_X,
   handler: 'index.handler',
   code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: \'success-hit-third-lambda\' }; };'),
@@ -82,6 +82,9 @@ httpApi.addRoutes({
   methods: [HttpMethod.GET],
   integration: lambdaFromFunctionNameIntegration,
 });
+
+httpApi.node.addDependency(secondLambdaHandler);
+httpApi.node.addDependency(thirdLambdaFunction);
 
 // Integ Test Assertions
 const integ = new IntegTest(app, 'Integ', { testCases: [stack] });
