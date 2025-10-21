@@ -7,11 +7,9 @@ import * as cxapi from '../../cx-api';
 import { FunctionUrlOrigin } from '../lib';
 
 let stack: Stack;
-let otherStack: Stack;
 
 beforeEach(() => {
   stack = new Stack();
-  otherStack = new Stack();
 });
 
 test('Correctly renders the origin for a Lambda Function URL', () => {
