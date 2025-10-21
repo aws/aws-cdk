@@ -75,7 +75,7 @@ to production by simply updating the endpoint to point to the newer version.
 | `runtimeName` | `string` | Yes | The name of the agent runtime. Valid characters are a-z, A-Z, 0-9, _ (underscore). Must start with a letter and can be up to 48 characters long |
 | `agentRuntimeArtifact` | `AgentRuntimeArtifact` | Yes | The artifact configuration for the agent runtime containing the container configuration with ECR URI |
 | `executionRole` | `iam.IRole` | No | The IAM role that provides permissions for the agent runtime. If not provided, a role will be created automatically |
-| `networkConfiguration` | `NetworkConfiguration` | No | Network configuration for the agent runtime. Defaults to `{ networkMode: NetworkMode.PUBLIC }` |
+| `networkConfiguration` | `NetworkConfiguration` | No | Network configuration for the agent runtime. Defaults to `RuntimeNetworkConfiguration.usingPublicNetwork()` |
 | `description` | `string` | No | Optional description for the agent runtime |
 | `protocolConfiguration` | `ProtocolType` | No | Protocol configuration for the agent runtime. Defaults to `ProtocolType.HTTP` |
 | `authorizerConfiguration` | `RuntimeAuthorizerConfiguration` | No | Authorizer configuration for the agent runtime. Use `RuntimeAuthorizerConfiguration` static methods to create configurations for IAM, Cognito, JWT, or OAuth authentication |
@@ -164,11 +164,38 @@ the steps below to understand how to use versioning with runtime for controlled 
 When you first create an agent runtime, AgentCore automatically creates Version 1 of your runtime. At this point, a DEFAULT endpoint is
 automatically created that points to Version 1. This DEFAULT endpoint serves as the main access point for your runtime.
 
+```ts
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0"),
+});
+```
+
 ##### Step 2: Creating Custom Endpoints
 
 After the initial deployment, you can create additional endpoints for different environments. For example, you might create a "production"
 endpoint that explicitly points to Version 1. This allows you to maintain stable access points for specific environments while keeping the
 flexibility to test newer versions elsewhere.
+
+```ts
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0"),
+});
+
+const prodEndpoint = runtime.addEndpoint("production", {
+  version: "1",
+  description: "Stable production endpoint - pinned to v1"
+});
+```
 
 ##### Step 3: Runtime Update Deployment
 
@@ -179,61 +206,64 @@ configurations), AgentCore automatically creates a new version (Version 2). Upon
 - The DEFAULT endpoint automatically updates to point to Version 2
 - Any explicitly pinned endpoints (like the production endpoint) remain on their specified versions
 
+```ts
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+
+const agentRuntimeArtifactNew = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v2.0.0");
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifactNew,
+});
+```
+
 ##### Step 4: Testing with Staging Endpoints
 
 Once Version 2 exists, you can create a staging endpoint that points to the new version. This staging endpoint allows you to test the
 new version in a controlled environment before promoting it to production. This separation ensures that production traffic continues
 to use the stable version while you validate the new version.
 
-##### Step 5: Promoting to Production
-
-After thoroughly testing the new version through the staging endpoint, you can update the production endpoint to point to Version 2.
-This controlled promotion process ensures that you can validate changes before they affect production traffic.
-
-```typescript
-// Initial version
+```ts
 const repository = new ecr.Repository(this, "TestRepository", {
   repositoryName: "test-agent-runtime",
 });
 
-const agentcoreArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0")
+const agentRuntimeArtifactNew = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v2.0.0");
 
 const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
-  agentRuntimeArtifact: agentcoreArtifact,
-});
-
-const prodEndpoint = runtime.addEndpoint("production", {
-  version: "1",
-  description: "Stable production endpoint - pinned to v1"
-});
-```
-
-Update the agentcore artifact for new runtime version.
-
-```typescript
-// New version
-const repository = new ecr.Repository(this, "TestRepository", {
-  repositoryName: "test-agent-runtime",
-});
-
-const agentcoreArtifactNew = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v2.0.0")
-
-const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
-  runtimeName: "myAgent",
-  agentRuntimeArtifact: agentcoreArtifactNew,
+  agentRuntimeArtifact: agentRuntimeArtifactNew,
 });
 
 const stagingEndpoint = runtime.addEndpoint("staging", {
   version: "2",
   description: "Staging environment for testing new version"
 });
+```
 
-runtime.addEndpoint("production", {
+##### Step 5: Promoting to Production
+
+After thoroughly testing the new version through the staging endpoint, you can update the production endpoint to point to Version 2.
+This controlled promotion process ensures that you can validate changes before they affect production traffic.
+
+```ts
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+
+const agentRuntimeArtifactNew = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v2.0.0");
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifactNew,
+});
+
+const prodEndpoint = runtime.addEndpoint("production", {
   version: "2",  // New version added here
   description: "Stable production endpoint"
 });
-
 ```
 
 ### Creating Standalone Runtime Endpoints
