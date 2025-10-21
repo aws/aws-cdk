@@ -13,10 +13,6 @@
      {
       "ImageTagMutabilityExclusionFilterType": "WILDCARD",
       "ImageTagMutabilityExclusionFilterValue": "test-*"
-     },
-     {
-      "ImageTagMutabilityExclusionFilterType": "WILDCARD",
-      "ImageTagMutabilityExclusionFilterValue": "pr-*"
      }
     ]
    },
@@ -31,15 +27,11 @@
     "ImageTagMutabilityExclusionFilters": [
      {
       "ImageTagMutabilityExclusionFilterType": "WILDCARD",
-      "ImageTagMutabilityExclusionFilterValue": "dev-*"
+      "ImageTagMutabilityExclusionFilterValue": "prod-*"
      },
      {
       "ImageTagMutabilityExclusionFilterType": "WILDCARD",
-      "ImageTagMutabilityExclusionFilterValue": "test-*"
-     },
-     {
-      "ImageTagMutabilityExclusionFilterType": "WILDCARD",
-      "ImageTagMutabilityExclusionFilterValue": "pr-*"
+      "ImageTagMutabilityExclusionFilterValue": "release-v*"
      }
     ]
    },

@@ -10,7 +10,6 @@ new ecr.Repository(stack, 'ImmutableRepoWithExclusions', {
   imageTagMutabilityExclusionFilters: [
     ecr.ImageTagMutabilityExclusionFilter.wildcard('dev-*'),
     ecr.ImageTagMutabilityExclusionFilter.wildcard('test-*'),
-    ecr.ImageTagMutabilityExclusionFilter.wildcard('pr-*'),
   ],
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   emptyOnDelete: true,
@@ -19,9 +18,8 @@ new ecr.Repository(stack, 'ImmutableRepoWithExclusions', {
 new ecr.Repository(stack, 'MutableRepoWithExclusions', {
   imageTagMutability: ecr.TagMutability.MUTABLE_WITH_EXCLUSION,
   imageTagMutabilityExclusionFilters: [
-    ecr.ImageTagMutabilityExclusionFilter.wildcard('dev-*'),
-    ecr.ImageTagMutabilityExclusionFilter.wildcard('test-*'),
-    ecr.ImageTagMutabilityExclusionFilter.wildcard('pr-*'),
+    ecr.ImageTagMutabilityExclusionFilter.wildcard('prod-*'),
+    ecr.ImageTagMutabilityExclusionFilter.wildcard('release-v*'),
   ],
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   emptyOnDelete: true,
