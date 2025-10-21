@@ -47,6 +47,11 @@ export enum AcceleratorManufacturer {
 
   /** Xilinx (e.g., VU9P FPGA). */
   XILINX = 'xilinx',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  HABANA = 'habana',
 }
 
 /**
@@ -76,6 +81,31 @@ export enum AcceleratorName {
 
   /** Xilinx VU9P FPGA. */
   VU9P = 'vu9p',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  A10G = 'a10g',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  H100 = 'h100',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  INFERENTIA = 'inferentia',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  K520 = 'k520',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  T4G = 't4g',
 }
 
 /**
