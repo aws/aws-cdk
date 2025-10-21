@@ -51,6 +51,8 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
 
 new IntegTest(app, 'PipelineCrossRegionSupportStackDeletionIntegTest', {
   testCases: [stack],
+  diffAssets: true,
+  allowDestroy: ['AWS::CDK::Metadata'],
 });
 
 app.synth();
