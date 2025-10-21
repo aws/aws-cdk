@@ -438,7 +438,7 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/AdministratorAccess"
+        ":iam::aws:policy/AmazonECSInfrastructureRolePolicyForManagedInstances"
        ]
       ]
      }
@@ -470,7 +470,7 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/AdministratorAccess"
+        ":iam::aws:policy/AmazonECSInstanceRolePolicyForManagedInstances"
        ]
       ]
      }
@@ -498,6 +498,34 @@
       "CidrIp": "0.0.0.0/0",
       "Description": "Allow all outbound traffic by default",
       "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Fn::GetAtt": [
+        "Vpc8378EB38",
+        "CidrBlock"
+       ]
+      },
+      "Description": {
+       "Fn::Join": [
+        "",
+        [
+         "from ",
+         {
+          "Fn::GetAtt": [
+           "Vpc8378EB38",
+           "CidrBlock"
+          ]
+         },
+         ":80"
+        ]
+       ]
+      },
+      "FromPort": 80,
+      "IpProtocol": "tcp",
+      "ToPort": 80
      }
     ],
     "VpcId": {
