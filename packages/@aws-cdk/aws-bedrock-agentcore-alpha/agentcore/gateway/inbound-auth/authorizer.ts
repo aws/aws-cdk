@@ -48,15 +48,13 @@ export interface CustomJwtConfiguration {
   readonly discoveryUrl: string;
 
   /**
-   * Represents individual audience values that are validated in the incoming JWT token validation process.
-   *
+   * Represents individual audience values that are validated in the incoming JWT token validation process.   *
    * @default - No audience validation
    */
   readonly allowedAudience?: string[];
 
   /**
-   * Represents individual client IDs that are validated in the incoming JWT token validation process.
-   *
+   * Represents individual client IDs that are validated in the incoming JWT token validation process.   *
    * @default - No client ID validation
    */
   readonly allowedClients?: string[];

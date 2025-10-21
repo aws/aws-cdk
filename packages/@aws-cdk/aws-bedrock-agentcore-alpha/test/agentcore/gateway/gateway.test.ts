@@ -241,7 +241,7 @@ describe('Gateway Add Target Methods Tests', () => {
     }]);
 
     const target = gateway.addLambdaTarget('TestTarget', {
-      targetName: 'added-lambda-target',
+      gatewayTargetName: 'added-lambda-target',
       lambdaFunction: fn,
       toolSchema: toolSchema,
     });
@@ -257,11 +257,12 @@ describe('Gateway Add Target Methods Tests', () => {
     const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0');
 
     const target = gateway.addOpenApiTarget('TestTarget', {
-      targetName: 'added-openapi-target',
+      gatewayTargetName: 'added-openapi-target',
       apiSchema: apiSchema,
       credentialProviderConfigurations: [
         GatewayCredentialProvider.apiKey({
           providerArn: 'arn:aws:bedrock:us-east-1:123456789012:api-key/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
           credentialLocation: ApiKeyCredentialLocation.queryParameter(),
         }),
       ],
@@ -277,7 +278,7 @@ describe('Gateway Add Target Methods Tests', () => {
     const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }');
 
     const target = gateway.addSmithyTarget('TestTarget', {
-      targetName: 'added-smithy-target',
+      gatewayTargetName: 'added-smithy-target',
       smithyModel: smithyModel,
     });
 
@@ -401,7 +402,7 @@ describe('Gateway Target Core Tests', () => {
     }]);
 
     const target = GatewayTarget.forLambda(stack, 'TestTarget', {
-      targetName: 'test-lambda-target',
+      gatewayTargetName: 'test-lambda-target',
       gateway: gateway,
       lambdaFunction: fn,
       toolSchema: toolSchema,
@@ -418,12 +419,13 @@ describe('Gateway Target Core Tests', () => {
     const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0');
 
     const target = GatewayTarget.forOpenApi(stack, 'TestTarget', {
-      targetName: 'test-openapi-target',
+      gatewayTargetName: 'test-openapi-target',
       gateway: gateway,
       apiSchema: apiSchema,
       credentialProviderConfigurations: [
         GatewayCredentialProvider.apiKey({
           providerArn: 'arn:aws:bedrock:us-east-1:123456789012:api-key/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
           credentialLocation: ApiKeyCredentialLocation.header(),
         }),
       ],
@@ -439,12 +441,13 @@ describe('Gateway Target Core Tests', () => {
     const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }');
 
     const target = GatewayTarget.forSmithy(stack, 'TestTarget', {
-      targetName: 'test-smithy-target',
+      gatewayTargetName: 'test-smithy-target',
       gateway: gateway,
       smithyModel: smithyModel,
       credentialProviderConfigurations: [
         GatewayCredentialProvider.oauth({
           providerArn: 'arn:aws:bedrock:us-east-1:123456789012:oauth/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
           scopes: ['read'],
         }),
       ],
@@ -470,7 +473,7 @@ describe('Gateway Target Core Tests', () => {
     }]);
 
     const target = GatewayTarget.forLambda(stack, 'TestTarget', {
-      targetName: 'test-target',
+      gatewayTargetName: 'test-target',
       gateway: gateway,
       lambdaFunction: fn,
       toolSchema: toolSchema,
@@ -494,7 +497,7 @@ describe('Gateway Target Core Tests', () => {
     }]);
 
     GatewayTarget.forLambda(stack, 'TestTarget', {
-      targetName: 'test-target',
+      gatewayTargetName: 'test-target',
       gateway: gateway,
       lambdaFunction: fn,
       toolSchema: toolSchema,
@@ -518,12 +521,14 @@ describe('Gateway Target Core Tests', () => {
     const apiSchema = ApiSchema.fromS3File(bucket, 'schemas/test-api.yaml');
 
     GatewayTarget.forOpenApi(stack, 'TestTarget', {
-      targetName: 'test-target',
+      gatewayTargetName: 'test-target',
       gateway: gateway,
       apiSchema: apiSchema,
       credentialProviderConfigurations: [
         GatewayCredentialProvider.apiKey({
           providerArn: 'arn:aws:bedrock:us-east-1:123456789012:api-key/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+
         }),
       ],
     });
@@ -546,7 +551,7 @@ describe('Gateway Target Core Tests', () => {
     }]);
 
     const target = new GatewayTarget(stack, 'TestTarget', {
-      targetName: 'test-target',
+      gatewayTargetName: 'test-target',
       gateway: gateway,
       targetConfiguration: LambdaTargetConfiguration.create(fn, toolSchema),
     });
@@ -576,14 +581,14 @@ describe('Gateway Target Core Tests', () => {
     }]);
 
     GatewayTarget.forLambda(stack, 'Target1', {
-      targetName: 'target-1',
+      gatewayTargetName: 'target-1',
       gateway: gateway,
       lambdaFunction: fn1,
       toolSchema: toolSchema,
     });
 
     GatewayTarget.forLambda(stack, 'Target2', {
-      targetName: 'target-2',
+      gatewayTargetName: 'target-2',
       gateway: gateway,
       lambdaFunction: fn2,
       toolSchema: toolSchema,
@@ -608,7 +613,7 @@ describe('Gateway Target Core Tests', () => {
 
     expect(() => {
       GatewayTarget.forLambda(stack, 'TestTarget', {
-        targetName: '',
+        gatewayTargetName: '',
         gateway: gateway,
         lambdaFunction: fn,
         toolSchema: toolSchema,
@@ -631,7 +636,7 @@ describe('Gateway Target Core Tests', () => {
 
     expect(() => {
       GatewayTarget.forLambda(stack, 'TestTarget', {
-        targetName: 'test-target',
+        gatewayTargetName: 'test-target',
         description: 'a'.repeat(201),
         gateway: gateway,
         lambdaFunction: fn,
@@ -654,7 +659,7 @@ describe('Gateway Target Core Tests', () => {
     }]);
 
     const target = GatewayTarget.forLambda(stack, 'TestTarget', {
-      targetName: 'test-target',
+      gatewayTargetName: 'test-target',
       gateway: gateway,
       lambdaFunction: fn,
       toolSchema: toolSchema,
@@ -693,7 +698,7 @@ describe('Gateway Target Core Tests', () => {
     }]);
 
     const target = GatewayTarget.forLambda(stack, 'TestTarget', {
-      targetName: 'test-target',
+      gatewayTargetName: 'test-target',
       gateway: gateway,
       lambdaFunction: fn,
       toolSchema: toolSchema,
@@ -726,12 +731,13 @@ describe('Gateway Target Core Tests', () => {
     const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0');
 
     GatewayTarget.forOpenApi(stack, 'TestTarget', {
-      targetName: 'test-target',
+      gatewayTargetName: 'test-target',
       gateway: gateway,
       apiSchema: apiSchema,
       credentialProviderConfigurations: [
         GatewayCredentialProvider.apiKey({
           providerArn: 'arn:aws:bedrock:us-east-1:123456789012:api-key/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
           credentialLocation: ApiKeyCredentialLocation.header(),
         }),
       ],
@@ -745,12 +751,13 @@ describe('Gateway Target Core Tests', () => {
     const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }');
 
     GatewayTarget.forSmithy(stack, 'TestTarget', {
-      targetName: 'test-target',
+      gatewayTargetName: 'test-target',
       gateway: gateway,
       smithyModel: smithyModel,
       credentialProviderConfigurations: [
         GatewayCredentialProvider.oauth({
           providerArn: 'arn:aws:bedrock:us-east-1:123456789012:oauth/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
           scopes: ['read'],
         }),
       ],
@@ -804,6 +811,7 @@ describe('Credential Provider Tests', () => {
   test('Should create OAuth credential provider with custom parameters', () => {
     const provider = GatewayCredentialProvider.oauth({
       providerArn: 'arn:aws:bedrock:us-east-1:123456789012:oauth/test',
+      secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
       scopes: ['read', 'write'],
       customParameters: {
         audience: 'https://api.example.com',
@@ -822,6 +830,7 @@ describe('Credential Provider Tests', () => {
   test('Should create OAuth credential provider with only scopes', () => {
     const provider = GatewayCredentialProvider.oauth({
       providerArn: 'arn:aws:bedrock:us-east-1:123456789012:oauth/test',
+      secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
       scopes: ['read'],
     });
 
@@ -832,6 +841,7 @@ describe('Credential Provider Tests', () => {
   test('Should create OAuth credential provider with minimal scopes', () => {
     const provider = GatewayCredentialProvider.oauth({
       providerArn: 'arn:aws:bedrock:us-east-1:123456789012:oauth/test',
+      secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
       scopes: [],
     });
 
@@ -842,6 +852,7 @@ describe('Credential Provider Tests', () => {
   test('Should create OAuth credential provider with empty arrays', () => {
     const provider = GatewayCredentialProvider.oauth({
       providerArn: 'arn:aws:bedrock:us-east-1:123456789012:oauth/test',
+      secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
       scopes: [],
       customParameters: {},
     });
@@ -1073,7 +1084,7 @@ describe('Gateway Error Handling Tests', () => {
 
     expect(() => {
       GatewayTarget.forLambda(stack, 'TestTarget', {
-        targetName: 'test@target!',
+        gatewayTargetName: 'test@target!',
         gateway: gateway,
         lambdaFunction: fn,
         toolSchema: toolSchema,
@@ -1116,7 +1127,7 @@ describe('Gateway Error Handling Tests', () => {
 
     expect(() => {
       GatewayTarget.forLambda(stack, 'TestTarget', {
-        targetName: 'test target',
+        gatewayTargetName: 'test target',
         gateway: gateway,
         lambdaFunction: fn,
         toolSchema: toolSchema,
@@ -1243,7 +1254,7 @@ describe('Gateway Error Handling Tests', () => {
 
     expect(() => {
       GatewayTarget.forLambda(stack, 'TestTarget', {
-        targetName: 'a'.repeat(101),
+        gatewayTargetName: 'a'.repeat(101),
         gateway: gateway,
         lambdaFunction: fn,
         toolSchema: toolSchema,
@@ -1270,7 +1281,7 @@ describe('Gateway Error Handling Tests', () => {
 
     expect(() => {
       GatewayTarget.forLambda(stack, 'TestTarget', {
-        targetName: '',
+        gatewayTargetName: '',
         gateway: gateway,
         lambdaFunction: fn,
         toolSchema: toolSchema,
@@ -1371,7 +1382,7 @@ describe('Gateway Target Import Tests', () => {
     const imported = GatewayTarget.fromGatewayTargetAttributes(stack, 'ImportedTarget', {
       targetArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:gateway/gateway-id/target/target-id',
       targetId: 'target-id',
-      targetName: 'test-target',
+      gatewayTargetName: 'test-target',
       gateway: gateway,
       status: 'ACTIVE',
       createdAt: '2024-01-01T00:00:00Z',
@@ -1391,7 +1402,7 @@ describe('Gateway Target Import Tests', () => {
     const imported = GatewayTarget.fromGatewayTargetAttributes(stack, 'ImportedTarget', {
       targetArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:gateway/gateway-id/target/target-id',
       targetId: 'target-id',
-      targetName: 'test-target',
+      gatewayTargetName: 'test-target',
       gateway: gateway,
     });
 
@@ -1453,7 +1464,7 @@ describe('Gateway Validation Edge Cases', () => {
     }]);
 
     const target = GatewayTarget.forLambda(stack, 'TestTarget', {
-      targetName: 'test-target',
+      gatewayTargetName: 'test-target',
       description: cdk.Lazy.string({ produce: () => 'lazy-description' }),
       gateway: gateway,
       lambdaFunction: fn,
@@ -1573,7 +1584,7 @@ describe('Gateway Integration Tests', () => {
     }]);
 
     gateway.addLambdaTarget('LambdaTarget', {
-      targetName: 'lambda-target',
+      gatewayTargetName: 'lambda-target',
       lambdaFunction: lambdaFn,
       toolSchema: toolSchema,
     });
@@ -1582,11 +1593,12 @@ describe('Gateway Integration Tests', () => {
     const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0');
 
     gateway.addOpenApiTarget('OpenApiTarget', {
-      targetName: 'openapi-target',
+      gatewayTargetName: 'openapi-target',
       apiSchema: apiSchema,
       credentialProviderConfigurations: [
         GatewayCredentialProvider.apiKey({
           providerArn: 'arn:aws:bedrock:us-east-1:123456789012:api-key/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
           credentialLocation: ApiKeyCredentialLocation.header(),
         }),
       ],

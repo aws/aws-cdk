@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/472795d74684f999aabb451d239c1d8b65cc13975d2e0479cc246fa186f7ea94.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/631856ea9bbf1b63fe52039d62e29b5b16be00841bab9ae3fb54d708192cfae2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,7 +34,7 @@
         "BedrockAgentCoreTargetIntegTest.assets"
       ],
       "metadata": {
-        "/BedrockAgentCoreTargetIntegTest/TestGateway/AmazonBedrockAgentCoreGatewayDefaultServiceRole": [
+        "/BedrockAgentCoreTargetIntegTest/TestGateway/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -42,7 +42,7 @@
                 "principalAccount": "*",
                 "assumeRoleAction": "*"
               },
-              "inlinePolicies": "*"
+              "description": "*"
             }
           },
           {
@@ -70,19 +70,19 @@
             }
           }
         ],
-        "/BedrockAgentCoreTargetIntegTest/TestGateway/AmazonBedrockAgentCoreGatewayDefaultServiceRole/ImportAmazonBedrockAgentCoreGatewayDefaultServiceRole": [
+        "/BedrockAgentCoreTargetIntegTest/TestGateway/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/BedrockAgentCoreTargetIntegTest/TestGateway/AmazonBedrockAgentCoreGatewayDefaultServiceRole/Resource": [
+        "/BedrockAgentCoreTargetIntegTest/TestGateway/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestGatewayAmazonBedrockAgentCoreGatewayDefaultServiceRole899949B4"
+            "data": "TestGatewayServiceRole426CDA0F"
           }
         ],
-        "/BedrockAgentCoreTargetIntegTest/TestGateway/AmazonBedrockAgentCoreGatewayDefaultServiceRole/DefaultPolicy": [
+        "/BedrockAgentCoreTargetIntegTest/TestGateway/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -112,10 +112,10 @@
             }
           }
         ],
-        "/BedrockAgentCoreTargetIntegTest/TestGateway/AmazonBedrockAgentCoreGatewayDefaultServiceRole/DefaultPolicy/Resource": [
+        "/BedrockAgentCoreTargetIntegTest/TestGateway/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestGatewayAmazonBedrockAgentCoreGatewayDefaultServiceRoleDefaultPolicy735FDFF2"
+            "data": "TestGatewayServiceRoleDefaultPolicyCFEDA895"
           }
         ],
         "/BedrockAgentCoreTargetIntegTest/TestGateway/UserPool": [

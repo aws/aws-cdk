@@ -61,7 +61,7 @@ const toolSchema = agentcore.ToolSchema.fromInline([
 
 // Add Lambda target to the gateway
 gateway.addLambdaTarget('TestLambdaTarget', {
-  targetName: 'test-lambda-target',
+  gatewayTargetName: 'test-lambda-target',
   description: 'Simple Lambda target for testing',
   lambdaFunction: lambdaFunction,
   toolSchema: toolSchema,

@@ -1,4 +1,4 @@
-import { Aws, Token } from 'aws-cdk-lib';
+import { Aws, Stack, Token } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -29,7 +29,7 @@ export interface AddLambdaTargetOptions {
    * The name of the gateway target
    * Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen)
    */
-  readonly targetName: string;
+  readonly gatewayTargetName: string;
 
   /**
    * Optional description for the gateway target
@@ -62,7 +62,7 @@ export interface AddOpenApiTargetOptions {
    * The name of the gateway target
    * Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen)
    */
-  readonly targetName: string;
+  readonly gatewayTargetName: string;
 
   /**
    * Optional description for the gateway target
@@ -90,7 +90,7 @@ export interface AddSmithyTargetOptions {
    * The name of the gateway target
    * Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen)
    */
-  readonly targetName: string;
+  readonly gatewayTargetName: string;
 
   /**
    * Optional description for the gateway target
@@ -415,8 +415,9 @@ export class Gateway extends GatewayBase {
     id: string,
     props: AddLambdaTargetOptions,
   ): GatewayTarget {
+    // Lambda invoke permissions are automatically granted in LambdaTargetConfiguration.bind()
     const target = GatewayTarget.forLambda(this, id, {
-      targetName: props.targetName,
+      gatewayTargetName: props.gatewayTargetName,
       description: props.description,
       gateway: this,
       lambdaFunction: props.lambdaFunction,
@@ -440,7 +441,7 @@ export class Gateway extends GatewayBase {
     props: AddOpenApiTargetOptions,
   ): GatewayTarget {
     const target = GatewayTarget.forOpenApi(this, id, {
-      targetName: props.targetName,
+      gatewayTargetName: props.gatewayTargetName,
       description: props.description,
       gateway: this,
       apiSchema: props.apiSchema,
@@ -463,7 +464,7 @@ export class Gateway extends GatewayBase {
     props: AddSmithyTargetOptions,
   ): GatewayTarget {
     const target = GatewayTarget.forSmithy(this, id, {
-      targetName: props.targetName,
+      gatewayTargetName: props.gatewayTargetName,
       description: props.description,
       gateway: this,
       smithyModel: props.smithyModel,
@@ -474,56 +475,66 @@ export class Gateway extends GatewayBase {
   }
 
   /**
-   * Creates execution role needed for the gateway to access AWS services
+   * Creates the service role for the gateway to assume
+   *
+   * The service role starts with minimal permissions. Additional permissions
+   * are added automatically when targets are configured:
+   * - KMS encryption: Automatically grants encrypt/decrypt permissions
+   *
+   * For other target types, manually grant permissions using standard CDK grant methods:
    */
-  private createGatewayRole(): iam.IRole {
-    const statements: iam.PolicyStatement[] = [
+  private createGatewayRole(): iam.Role {
+    const role = new iam.Role(this, 'ServiceRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+      description: `Service role for Bedrock AgentCore Gateway ${this.name}`,
+    });
+
+    const region = Stack.of(this).region;
+    const account = Stack.of(this).account;
+    const partition = Stack.of(this).partition;
+
+    role.assumeRolePolicy?.addStatements(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
-        actions: ['iam:PassRole', 'bedrock-agentcore:*'],
-        resources: ['*'],
+        principals: [new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com')],
+        actions: GatewayPerms.ASSUME_ROLE,
+        conditions: {
+          StringEquals: {
+            'aws:SourceAccount': account,
+          },
+          ArnLike: {
+            'aws:SourceArn': `arn:${partition}:bedrock-agentcore:${region}:${account}:gateway/${this.name}*`,
+          },
+        },
       }),
-    ];
+    );
 
-    // Add KMS permissions if a KMS key is configured
     if (this.kmsKey) {
-      statements.push(new iam.PolicyStatement({
+      role.addToPolicy(new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: GatewayPerms.KMS_KEY_PERMS,
         resources: [this.kmsKey.keyArn],
       }));
     }
-
-    const role = new iam.Role(this, 'AmazonBedrockAgentCoreGatewayDefaultServiceRole', {
-      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
-      inlinePolicies: {
-        GatewayAccessPolicy: new iam.PolicyDocument({
-          statements: statements,
-        }),
-      },
-    });
-
     return role;
   }
 
   /**
    * Validates the gateway name format
    * Pattern: ^([0-9a-zA-Z][-]?){1,100}$
-   * Max length: 100 characters
+   * Max length: 48 characters
    * @param name The gateway name to validate
    * @throws Error if the name is invalid
    */
   private validateGatewayName(name: string): void {
-    // Skip validation if the name contains CDK tokens (unresolved values)
     if (Token.isUnresolved(name)) {
       return;
     }
 
-    // Validate length
     const lengthErrors = validateStringField({
       value: name,
       minLength: 1,
-      maxLength: 100,
+      maxLength: 48,
       fieldName: 'Gateway name',
     });
 
@@ -531,7 +542,6 @@ export class Gateway extends GatewayBase {
       throw new ValidationError(lengthErrors.join('\n'));
     }
 
-    // Validate pattern
     const patternErrors = validateFieldPattern(
       name,
       'Gateway name',
@@ -551,7 +561,6 @@ export class Gateway extends GatewayBase {
    * @throws Error if validation fails
    */
   private validateDescription(description: string): void {
-    // Skip validation if the description contains CDK tokens (unresolved values)
     if (Token.isUnresolved(description)) {
       return;
     }

@@ -3,6 +3,7 @@ import { CfnGatewayTarget } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { ApiKeyCredentialProviderConfiguration, ApiKeyCredentialProviderProps } from './api-key';
 import { GatewayIamRoleCredentialProvider } from './iam-role';
 import { OAuthConfiguration, OAuthCredentialProviderConfiguration } from './oauth';
+import { Grant, IRole } from 'aws-cdk-lib/aws-iam';
 
 /******************************************************************************
  *                                 Enums
@@ -50,9 +51,8 @@ export interface ICredentialProvider {
 
   /**
    * Grant the role the permissions
-   * changed provider from ApiKeyIdentity to string, will set this permission explicitly
    */
-  // grantNeededPermissionsToRole(role: IRole): Grant | undefined;
+  grantNeededPermissionsToRole(role: IRole): Grant | undefined;
 }
 
 /**

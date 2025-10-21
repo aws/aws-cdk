@@ -1,4 +1,6 @@
+import { Grant, IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { CredentialProviderType, ICredentialProvider } from './credential-provider';
+import { GatewayPerms } from '../perms';
 
 /******************************************************************************
  *                                 API KEY
@@ -95,9 +97,18 @@ export class ApiKeyCredentialLocation {
  */
 export interface ApiKeyCredentialProviderProps {
   /**
-   * The arn of the API key identity provider.
+   * The API key credential provider ARN.
+   * This is returned when creating the API key credential provider via Console or API.
+   * Format: arn:aws:bedrock-agentcore:region:account:token-vault/id/apikeycredentialprovider/name
    */
   readonly providerArn: string;
+
+  /**
+   * The ARN of the Secrets Manager secret containing the API key.
+   * This is returned when creating the API key credential provider via Console or API.
+   * Format: arn:aws:secretsmanager:region:account:secret:name
+   */
+  readonly secretArn: string;
 
   /**
    * The location of the API key credential.
@@ -118,13 +129,43 @@ export class ApiKeyCredentialProviderConfiguration implements ICredentialProvide
    */
   public readonly providerArn: string;
   /**
+   * The ARN of the Secrets Manager secret
+   */
+  public readonly secretArn: string;
+  /**
    * The location configuration for the API key credential
    */
   public readonly credentialLocation: ApiKeyCredentialLocation;
 
   constructor(configuration: ApiKeyCredentialProviderProps) {
     this.providerArn = configuration.providerArn;
+    this.secretArn = configuration.secretArn;
     this.credentialLocation = configuration.credentialLocation ?? ApiKeyCredentialLocation.header();
+  }
+
+  /**
+   * Grant the needed permissions to the role for API key authentication
+   */
+  grantNeededPermissionsToRole(role: IRole): Grant | undefined {
+    const statements = [
+      new PolicyStatement({
+        actions: [
+          ...GatewayPerms.GATEWAY_API_KEY_PERMS,
+          ...GatewayPerms.GATEWAY_WORKLOAD_IDENTITY_PERMS,
+        ],
+        resources: [this.providerArn],
+      }),
+      new PolicyStatement({
+        actions: GatewayPerms.SECRETS_PERMS,
+        resources: [this.secretArn],
+      }),
+    ];
+
+    return Grant.addToPrincipal({
+      grantee: role,
+      actions: statements.flatMap(s => s.actions),
+      resourceArns: statements.flatMap(s => s.resources),
+    });
   }
 
   /**
@@ -143,9 +184,4 @@ export class ApiKeyCredentialProviderConfiguration implements ICredentialProvide
       },
     };
   }
-
-  // Set this permission explicitly
-  // grantNeededPermissionsToRole(role: IRole): Grant | undefined {
-  //   return this.provider.grantRead(role);
-  // }
 }

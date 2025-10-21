@@ -225,7 +225,7 @@ After Creating gateways, you can add targets which define the tools that your ga
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `targetName` | `string` | Yes | The name of the gateway target. Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen) |
+| `gatewayTargetName` | `string` | Yes | The name of the gateway target. Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen) |
 | `description` | `string` | No | Optional description for the gateway target. Maximum 200 characters |
 | `gateway` | `IGateway` | Yes | The gateway this target belongs to |
 | `targetConfiguration` | `ITargetConfiguration` | Yes | The target configuration (Lambda, OpenAPI, or Smithy). Use `LambdaTargetConfiguration.create()`, `OpenApiTargetConfiguration.create()`, or `SmithyTargetConfiguration.create()` |
@@ -316,19 +316,22 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
   }),
 });
 
-const apiKeyIdentityArn = "your-idp-arn"
+// These ARNs are returned when creating the API key credential provider via Console or API
+const apiKeyProviderArn = "arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc123/apikeycredentialprovider/my-apikey"
+const apiKeySecretArn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-apikey-secret-abc123"
 
 const bucket = s3.Bucket.fromBucketName(this, "ExistingBucket", "my-schema-bucket");
 const s3Schema = agentcore.ApiSchema.fromS3File(bucket, "schemas/myschema.yaml");
 
 // Add an OpenAPI target directly to the gateway
 const target = gateway.addOpenApiTarget("MyTarget", {
-  targetName: "my-api-target",
+  gatewayTargetName: "my-api-target",
   description: "Target for external API integration",
   apiSchema: s3Schema,
   credentialProviderConfigurations: [
     agentcore.GatewayCredentialProvider.apiKey({
-      providerArn: apiKeyIdentityArn,
+      providerArn: apiKeyProviderArn,
+      secretArn: apiKeySecretArn, 
       credentialLocation: agentcore.ApiKeyCredentialLocation.header({
         credentialParameterName: "X-API-Key",
       }),
@@ -351,7 +354,7 @@ const lambdaFunction = new lambda.Function(this, "MyFunction", {
 });
 
 const lambdaTarget = gateway.addLambdaTarget("MyLambdaTarget", {
-  targetName: "my-lambda-target",
+  gatewayTargetName: "my-lambda-target",
   description: "Lambda function target",
   lambdaFunction: lambdaFunction,
   toolSchema: agentcore.ToolSchema.fromInline([
@@ -375,7 +378,7 @@ const lambdaTarget = gateway.addLambdaTarget("MyLambdaTarget", {
 // Add a Smithy target
 const smithySchema = agentcore.ApiSchema.fromS3File(bucket, "schemas/mymodel.json");
 const smithyTarget = gateway.addSmithyTarget("MySmithyTarget", {
-  targetName: "my-smithy-target",
+  gatewayTargetName: "my-smithy-target",
   description: "Smithy model target",
   smithyModel: smithySchema,
   credentialProviderConfigurations: [
@@ -392,20 +395,22 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
   gatewayName: "my-gateway",
 });
 
-const apiKeyIdentityArn = "your-idp-arn"
+const apiKeyIdentityArn = "arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc123/apikeycredentialprovider/my-apikey"
+const apiKeySecretArn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-apikey-secret-abc123"
 
 const bucket = s3.Bucket.fromBucketName(this, "ExistingBucket", "my-schema-bucket");
 const s3Schema = agentcore.ApiSchema.fromS3File(bucket, "schemas/myschema.yaml");
 
 // Create a gateway target with OpenAPI Schema 
 const target = agentcore.GatewayTarget.forOpenApi(this, "MyTarget", {
-  targetName: "my-api-target",
+  gatewayTargetName: "my-api-target",
   description: "Target for external API integration",
   gateway: gateway,  // Note: you need to pass the gateway reference
   apiSchema: s3Schema,
   credentialProviderConfigurations: [
     agentcore.GatewayCredentialProvider.apiKey({
      providerArn: apiKeyIdentityArn,
+     secretArn: apiKeySecretArn,
       credentialLocation: agentcore.ApiKeyCredentialLocation.header({
         credentialParameterName: "X-API-Key",
       }),
@@ -448,7 +453,7 @@ const lambdaFunction = new lambda.Function(this, "MyFunction", {
 
 // Create a gateway target with Lambda and tool schema 
 const target = agentcore.GatewayTarget.forLambda(this, "MyLambdaTarget", {
-  targetName: "my-lambda-target",
+  gatewayTargetName: "my-lambda-target",
   description: "Target for Lambda function integration",
   gateway: gateway,
   lambdaFunction: lambdaFunction,
@@ -502,7 +507,8 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
 });
 
 // Create an OAuth identity
-const oauthIdentityArn = "oauth-idp-arn"
+const oauthIdentityArn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-oauth123"
+const oauthSecretArn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-apikey-secret-abc123"
 
 const bucket = s3.Bucket.fromBucketName(this, "ExistingBucket", "my-schema-bucket");
 // A Smithy model in JSON AST format
@@ -510,13 +516,14 @@ const s3Schema = agentcore.ApiSchema.fromS3File(bucket, "schemas/myschema.json")
 
 // Create a gateway target with Smithy Model and OAuth 
 const target = agentcore.GatewayTarget.forSmithy(this, "MySmithyTarget", {
-  targetName: "my-smithy-target",
+  gatewayTargetName: "my-smithy-target",
   description: "Target for Smithy model integration",
   gateway: gateway,
   smithyModel: s3Schema,
   credentialProviderConfigurations: [
     agentcore.GatewayCredentialProvider.oauth({
       providerArn: oauthIdentityArn,
+      secretArn: oauthSecretArn,
       scopes: ["read", "write"],
       customParameters: {
         audience: "https://api.example.com",
@@ -561,7 +568,7 @@ const lambdaFunction = new lambda.Function(this, "MyComplexFunction", {
 
 // Create a gateway target with Lambda and S3 tool schema 
 const target = agentcore.GatewayTarget.forLambda(this, "MyComplexLambdaTarget", {
-  targetName: "my-complex-lambda-target",
+  gatewayTargetName: "my-complex-lambda-target",
   description: "Target for complex Lambda function integration",
   gateway: gateway,
   lambdaFunction: lambdaFunction,
@@ -607,7 +614,7 @@ const lambdaFunction = new lambda.Function(this, "MyLambdaFunction", {
 
 // Create a target with local asset tool schema 
 const target = agentcore.GatewayTarget.forLambda(this, "MyLocalAssetLambdaTarget", {
-  targetName: "my-local-asset-lambda-target",
+  gatewayTargetName: "my-local-asset-lambda-target",
   description: "Target for Lambda function with local asset tool schema",
   gateway: gateway,
   lambdaFunction: lambdaFunction,
@@ -638,18 +645,20 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
   }),
 });
 
-const apiKeyIdentityArn = "your-idp-arn"
+const apiKeyIdentityArn = "arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc123/apikeycredentialprovider/my-apikey"
+const apiKeySecretArn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-apikey-secret-abc123"
 
 const bucket = s3.Bucket.fromBucketName(this, "ExistingBucket", "my-schema-bucket");
 const s3Schema = agentcore.ApiSchema.fromS3File(bucket, "schemas/myschema.yaml");
 
 const target = agentcore.GatewayTarget.forOpenApi(this, "MyTarget", {
-  targetName: "my-target",
+  gatewayTargetName: "my-target",
   gateway: gateway,
   apiSchema: s3Schema,
   credentialProviderConfigurations: [
     agentcore.GatewayCredentialProvider.apiKey({
      providerArn: apiKeyIdentityArn,
+     secretArn: apiKeySecretArn,
       credentialLocation: agentcore.ApiKeyCredentialLocation.header({
         credentialParameterName: "X-API-Key",
       }),

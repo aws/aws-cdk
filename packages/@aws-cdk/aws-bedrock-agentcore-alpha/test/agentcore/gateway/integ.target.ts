@@ -62,7 +62,7 @@ const toolSchema = agentcore.ToolSchema.fromInline([
 
 // Add Lambda target to the gateway
 const target = gateway.addLambdaTarget('LambdaTarget', {
-  targetName: 'lambda-greeting-target',
+  gatewayTargetName: 'lambda-greeting-target',
   description: 'Lambda target for greeting service',
   lambdaFunction: lambdaFunction,
   toolSchema: toolSchema,

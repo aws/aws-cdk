@@ -24,7 +24,7 @@ export interface McpGatewayTargetCommonProps {
    * The name must be unique within the gateway
    * Pattern: ^([0-9a-zA-Z][-]?){1,100}$
    */
-  readonly targetName: string;
+  readonly gatewayTargetName: string;
 
   /**
    * Optional description for the gateway target
@@ -145,7 +145,7 @@ export interface GatewayTargetAttributes {
   /**
    * The name of the gateway target
    */
-  readonly targetName: string;
+  readonly gatewayTargetName: string;
 
   /**
    * The gateway this target belongs to
@@ -206,7 +206,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
     class ImportedGatewayTarget extends GatewayTargetBase {
       public readonly targetArn = attrs.targetArn;
       public readonly targetId = attrs.targetId;
-      public readonly name = attrs.targetName;
+      public readonly name = attrs.gatewayTargetName;
       public readonly description = attrs.status;
       public readonly gateway = attrs.gateway;
       public readonly credentialProviderConfigurations = [];
@@ -239,7 +239,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
   ): GatewayTarget {
     return new GatewayTarget(scope, id, {
       gateway: props.gateway,
-      targetName: props.targetName,
+      gatewayTargetName: props.gatewayTargetName,
       description: props.description,
       credentialProviderConfigurations: props.credentialProviderConfigurations,
       targetConfiguration: LambdaTargetConfiguration.create(
@@ -266,7 +266,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
   ): GatewayTarget {
     return new GatewayTarget(scope, id, {
       gateway: props.gateway,
-      targetName: props.targetName,
+      gatewayTargetName: props.gatewayTargetName,
       description: props.description,
       credentialProviderConfigurations: props.credentialProviderConfigurations,
       targetConfiguration: OpenApiTargetConfiguration.create(props.apiSchema),
@@ -289,7 +289,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
   ): GatewayTarget {
     return new GatewayTarget(scope, id, {
       gateway: props.gateway,
-      targetName: props.targetName,
+      gatewayTargetName: props.gatewayTargetName,
       description: props.description,
       credentialProviderConfigurations: props.credentialProviderConfigurations,
       targetConfiguration: SmithyTargetConfiguration.create(props.smithyModel),
@@ -369,7 +369,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
     super(scope, id);
 
     // Validate and assign properties
-    this.name = props.targetName;
+    this.name = props.gatewayTargetName;
     this.validateGatewayTargetName(this.name);
 
     this.description = props.description;
@@ -390,7 +390,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
     // This sets up permissions and dependencies
     this.targetConfiguration.bind(this, this.gateway);
 
-    // Create the L1 construct using Lazy evaluation
+    // Create the L1 construct
     const cfnProps: bedrockagentcore.CfnGatewayTargetProps = {
       gatewayIdentifier: this.gateway.gatewayId,
       name: this.name,
@@ -410,14 +410,12 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       cfnProps,
     );
 
-    // Grant credential provider permissions and apply them before resource creation
-    // for (const provider of this.credentialProviderConfigurations) {
-    //   provider
-    //     .grantNeededPermissionsToRole(this.gateway.role)
-    //     ?.applyBefore(this.targetResource);
-    // }
+    for (const provider of this.credentialProviderConfigurations) {
+      provider
+        .grantNeededPermissionsToRole(this.gateway.role)
+        ?.applyBefore(this.targetResource);
+    }
 
-    // Assign attributes from L1 construct
     this.targetId = this.targetResource.attrTargetId;
     this.targetArn = this.targetResource.ref;
     this.status = this.targetResource.attrStatus;
@@ -430,32 +428,28 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
    * Validates the gateway target name format
    * Pattern: ^([0-9a-zA-Z][-]?){1,100}$
    * Max length: 100 characters
-   * @param targetName The gateway target name to validate
+   * @param gatewayTargetName The gateway target name to validate
    * @throws Error if the name is invalid
    */
-  protected validateGatewayTargetName(targetName: string): void {
-    // Skip validation if the name contains CDK tokens (unresolved values)
-    if (Token.isUnresolved(targetName)) {
+  protected validateGatewayTargetName(gatewayTargetName: string): void {
+    if (Token.isUnresolved(gatewayTargetName)) {
       return;
     }
 
-    // Validate length
     const lengthErrors = validateStringField({
-      value: targetName,
+      value: gatewayTargetName,
       fieldName: 'Gateway target name',
       minLength: 1,
       maxLength: 100,
     });
 
-    // Validate pattern
     const patternErrors = validateFieldPattern(
-      targetName,
+      gatewayTargetName,
       'Gateway target name',
       /^([0-9a-zA-Z][-]?){1,100}$/,
       'Gateway target name must contain only alphanumeric characters and hyphens, with hyphens only between characters',
     );
 
-    // Combine and throw if any errors
     const allErrors = [...lengthErrors, ...patternErrors];
     if (allErrors.length > 0) {
       throw new ValidationError(allErrors.join('\n'));
@@ -468,7 +462,6 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
    * @throws Error if validation fails
    */
   private validateDescription(description: string): void {
-    // Skip validation if the description contains CDK tokens (unresolved values)
     if (Token.isUnresolved(description)) {
       return;
     }

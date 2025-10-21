@@ -1,4 +1,7 @@
+import { Grant, IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { CredentialProviderType, ICredentialProvider } from './credential-provider';
+import { GatewayPerms } from '../perms';
+
 /******************************************************************************
  *                                OAuth
  *****************************************************************************/
@@ -8,10 +11,20 @@ import { CredentialProviderType, ICredentialProvider } from './credential-provid
  */
 export interface OAuthConfiguration {
   /**
-   * The OAuth identity Arn.
+   * The OAuth credential provider ARN.
+   * This is returned when creating the OAuth credential provider via Console or API.
+   * Format: arn:aws:bedrock-agentcore:region:account:token-vault/id/oauth2credentialprovider/name
    * Required: Yes
    */
   readonly providerArn: string;
+
+  /**
+   * The ARN of the Secrets Manager secret containing OAuth credentials (client ID and secret).
+   * This is returned when creating the OAuth credential provider via Console or API.
+   * Format: arn:aws:secretsmanager:region:account:secret:name
+   * Required: Yes
+   */
+  readonly secretArn: string;
 
   /**
    * The OAuth scopes for the credential provider.
@@ -49,6 +62,10 @@ export class OAuthCredentialProviderConfiguration implements ICredentialProvider
    */
   public readonly providerArn: string;
   /**
+   * The ARN of the Secrets Manager secret
+   */
+  public readonly secretArn: string;
+  /**
    * The OAuth scopes to request
    */
   public readonly scopes: string[];
@@ -59,14 +76,35 @@ export class OAuthCredentialProviderConfiguration implements ICredentialProvider
 
   constructor(configuration: OAuthConfiguration) {
     this.providerArn = configuration.providerArn;
+    this.secretArn = configuration.secretArn;
     this.scopes = configuration.scopes;
     this.customParameters = configuration.customParameters;
   }
 
-  // Set this permission explicitly
-  // grantNeededPermissionsToRole(role: IRole): Grant | undefined {
-  //   return this.oauthClient.grantRead(role);
-  // }
+  /**
+   * Grant the needed permissions to the role for OAuth authentication
+   */
+  grantNeededPermissionsToRole(role: IRole): Grant | undefined {
+    const statements = [
+      new PolicyStatement({
+        actions: [
+          ...GatewayPerms.GATEWAY_OAUTH_PERMS,
+          ...GatewayPerms.GATEWAY_WORKLOAD_IDENTITY_PERMS,
+        ],
+        resources: [this.providerArn],
+      }),
+      new PolicyStatement({
+        actions: GatewayPerms.SECRETS_PERMS,
+        resources: [this.secretArn],
+      }),
+    ];
+
+    return Grant.addToPrincipal({
+      grantee: role,
+      actions: statements.flatMap(s => s.actions),
+      resourceArns: statements.flatMap(s => s.resources),
+    });
+  }
 
   /**
    * @internal
