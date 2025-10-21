@@ -153,7 +153,7 @@ describe('RuntimeNetworkConfiguration', () => {
         vpc: vpc,
       });
       expect(config.vpcSubnets).toBeDefined();
-      expect(config.vpcSubnets?.subnets.length).toBeGreaterThan(0);
+      expect(config.vpcSubnets?.subnets?.length).toBeGreaterThan(0);
     });
 
     test('Should select specific subnets when vpcSubnets provided', () => {
@@ -164,7 +164,7 @@ describe('RuntimeNetworkConfiguration', () => {
         },
       });
       expect(config.vpcSubnets).toBeDefined();
-      expect(config.vpcSubnets?.subnets.length).toBeGreaterThan(0);
+      expect(config.vpcSubnets?.subnets?.length).toBeGreaterThan(0);
     });
 
     test('Should work with multiple subnet selection criteria', () => {
