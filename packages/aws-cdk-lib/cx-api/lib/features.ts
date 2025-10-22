@@ -13,7 +13,7 @@ import { FlagInfo, FlagType } from './private/flag-modeling';
 //  !!! IMPORTANT !!!
 //
 //  When you introduce a new flag, set its 'introducedIn.v2' value to the literal string
-// 'V2·NEXT', without the dot.
+//  'V2·NEXT', without the dot.
 //
 //  DO NOT USE A VARIABLE. DO NOT DEFINE A CONSTANT. The actual value will be string-replaced at
 //  version bump time.
