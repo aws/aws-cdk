@@ -429,7 +429,9 @@
     "Parameters": {
      "binlog_format": "ROW"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "PrimaryDatabaseSecret74EE369B": {
    "Type": "AWS::SecretsManager::Secret",
