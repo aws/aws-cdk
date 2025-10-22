@@ -37,6 +37,7 @@
   "aiops": {},
   "amazonmq": {
     "AuthenticationStrategy": [
+      "CONFIG_MANAGED",
       "LDAP",
       "SIMPLE"
     ],
@@ -56,6 +57,15 @@
     "StorageType": [
       "EBS",
       "EFS"
+    ],
+    "DayOfWeek": [
+      "FRIDAY",
+      "MONDAY",
+      "SATURDAY",
+      "SUNDAY",
+      "THURSDAY",
+      "TUESDAY",
+      "WEDNESDAY"
     ]
   },
   "amplify": {
@@ -1038,7 +1048,13 @@
       "Deleting"
     ]
   },
-  "aps": {},
+  "aps": {
+    "ScraperComponentType": [
+      "SERVICE_DISCOVERY",
+      "COLLECTOR",
+      "EXPORTER"
+    ]
+  },
   "arcregionswitch": {
     "AlarmCondition": [
       "red",
@@ -2232,6 +2248,121 @@
       "assistant"
     ]
   },
+  "bedrockagentcore": {
+    "BrowserNetworkMode": [
+      "PUBLIC",
+      "VPC"
+    ],
+    "BrowserStatus": [
+      "CREATING",
+      "CREATE_FAILED",
+      "READY",
+      "DELETING",
+      "DELETE_FAILED",
+      "DELETED"
+    ],
+    "CodeInterpreterNetworkMode": [
+      "PUBLIC",
+      "SANDBOX",
+      "VPC"
+    ],
+    "CodeInterpreterStatus": [
+      "CREATING",
+      "CREATE_FAILED",
+      "READY",
+      "DELETING",
+      "DELETE_FAILED",
+      "DELETED"
+    ],
+    "AuthorizerType": [
+      "CUSTOM_JWT",
+      "AWS_IAM"
+    ],
+    "ExceptionLevel": [
+      "DEBUG"
+    ],
+    "GatewayProtocolType": [
+      "MCP"
+    ],
+    "GatewayStatus": [
+      "CREATING",
+      "UPDATING",
+      "UPDATE_UNSUCCESSFUL",
+      "DELETING",
+      "READY",
+      "FAILED"
+    ],
+    "SearchType": [
+      "SEMANTIC"
+    ],
+    "ApiKeyCredentialLocation": [
+      "HEADER",
+      "QUERY_PARAMETER"
+    ],
+    "CredentialProviderType": [
+      "GATEWAY_IAM_ROLE",
+      "OAUTH",
+      "API_KEY"
+    ],
+    "SchemaType": [
+      "string",
+      "number",
+      "object",
+      "array",
+      "boolean",
+      "integer"
+    ],
+    "TargetStatus": [
+      "CREATING",
+      "UPDATING",
+      "UPDATE_UNSUCCESSFUL",
+      "DELETING",
+      "READY",
+      "FAILED"
+    ],
+    "Status": [
+      "CREATING",
+      "ACTIVE",
+      "DELETING",
+      "FAILED"
+    ],
+    "Type": [
+      "SEMANTIC",
+      "SUMMARIZATION",
+      "USER_PREFERENCE",
+      "CUSTOM"
+    ],
+    "MemoryStatus": [
+      "CREATING",
+      "ACTIVE",
+      "FAILED",
+      "DELETING"
+    ],
+    "AgentStatus": [
+      "CREATING",
+      "CREATE_FAILED",
+      "UPDATING",
+      "UPDATE_FAILED",
+      "READY",
+      "DELETING"
+    ],
+    "NetworkMode": [
+      "PUBLIC",
+      "VPC"
+    ],
+    "ProtocolConfiguration": [
+      "MCP",
+      "HTTP"
+    ],
+    "AgentRuntimeEndpointStatus": [
+      "CREATING",
+      "CREATE_FAILED",
+      "UPDATING",
+      "UPDATE_FAILED",
+      "READY",
+      "DELETING"
+    ]
+  },
   "billing": {
     "BillingViewType": [
       "PRIMARY",
@@ -2288,6 +2419,7 @@
     ],
     "TimeUnit": [
       "ANNUALLY",
+      "CUSTOM",
       "DAILY",
       "MONTHLY",
       "QUARTERLY"
@@ -2424,6 +2556,9 @@
     "AnalyticsEngine": [
       "CLEAN_ROOMS_SQL",
       "SPARK"
+    ],
+    "AutoApprovedChangeType": [
+      "ADD_MEMBER"
     ],
     "CollaborationJobLogStatus": [
       "ENABLED",
@@ -2992,6 +3127,7 @@
       "TLSv1.2_2018",
       "TLSv1.2_2019",
       "TLSv1.2_2021",
+      "TLSv1.2_2025",
       "TLSv1.3_2025",
       "TLSv1_2016"
     ],
@@ -4370,6 +4506,10 @@
       "DELETED",
       "INACCESSIBLE"
     ],
+    "Status": [
+      "ENABLED",
+      "DISABLED"
+    ],
     "GroupProfileStatus": [
       "ASSIGNED",
       "NOT_ASSIGNED"
@@ -4402,9 +4542,6 @@
       "PROJECT_CATALOG_STEWARD"
     ],
     "TargetEntityType": [
-      "DomainUnit",
-      "EnvironmentBlueprintConfiguration",
-      "EnvironmentProfile",
       "DOMAIN_UNIT",
       "ENVIRONMENT_BLUEPRINT_CONFIGURATION",
       "ENVIRONMENT_PROFILE",
@@ -4439,10 +4576,6 @@
     "DeploymentMode": [
       "ON_CREATE",
       "ON_DEMAND"
-    ],
-    "Status": [
-      "ENABLED",
-      "DISABLED"
     ],
     "UserProfileStatus": [
       "ASSIGNED",
@@ -4556,6 +4689,7 @@
   "directoryservice": {
     "Edition": [
       "Enterprise",
+      "Hybrid",
       "Standard"
     ],
     "Size": [
@@ -4649,6 +4783,10 @@
   },
   "dsql": {},
   "dynamodb": {
+    "GlobalTableSettingsReplicationMode": [
+      "ENABLED",
+      "DISABLED"
+    ],
     "MultiRegionConsistency": [
       "EVENTUAL",
       "STRONG"
@@ -5050,8 +5188,13 @@
       "g6e.4xlarge",
       "g6e.8xlarge",
       "g6e.xlarge",
+      "g6f.2xlarge",
+      "g6f.4xlarge",
+      "g6f.large",
+      "g6f.xlarge",
       "gr6.4xlarge",
       "gr6.8xlarge",
+      "gr6f.4xlarge",
       "h1.16xlarge",
       "h1.2xlarge",
       "h1.4xlarge",
@@ -5134,6 +5277,17 @@
       "i8g.large",
       "i8g.metal-24xl",
       "i8g.xlarge",
+      "i8ge.12xlarge",
+      "i8ge.18xlarge",
+      "i8ge.24xlarge",
+      "i8ge.2xlarge",
+      "i8ge.3xlarge",
+      "i8ge.48xlarge",
+      "i8ge.6xlarge",
+      "i8ge.large",
+      "i8ge.metal-24xl",
+      "i8ge.metal-48xl",
+      "i8ge.xlarge",
       "im4gn.16xlarge",
       "im4gn.2xlarge",
       "im4gn.4xlarge",
@@ -5371,6 +5525,28 @@
       "m8gd.metal-24xl",
       "m8gd.metal-48xl",
       "m8gd.xlarge",
+      "m8i-flex.12xlarge",
+      "m8i-flex.16xlarge",
+      "m8i-flex.2xlarge",
+      "m8i-flex.4xlarge",
+      "m8i-flex.8xlarge",
+      "m8i-flex.large",
+      "m8i-flex.xlarge",
+      "m8i.12xlarge",
+      "m8i.16xlarge",
+      "m8i.24xlarge",
+      "m8i.2xlarge",
+      "m8i.32xlarge",
+      "m8i.48xlarge",
+      "m8i.4xlarge",
+      "m8i.8xlarge",
+      "m8i.96xlarge",
+      "m8i.large",
+      "m8i.metal-48xl",
+      "m8i.metal-96xl",
+      "m8i.xlarge",
+      "mac-m4.metal",
+      "mac-m4pro.metal",
       "mac1.metal",
       "mac2-m1ultra.metal",
       "mac2-m2.metal",
@@ -5386,6 +5562,7 @@
       "p4d.24xlarge",
       "p4de.24xlarge",
       "p5.48xlarge",
+      "p5.4xlarge",
       "p5e.48xlarge",
       "p5en.48xlarge",
       "p6-b200.48xlarge",
@@ -5606,6 +5783,38 @@
       "r8gd.metal-24xl",
       "r8gd.metal-48xl",
       "r8gd.xlarge",
+      "r8gn.12xlarge",
+      "r8gn.16xlarge",
+      "r8gn.24xlarge",
+      "r8gn.2xlarge",
+      "r8gn.48xlarge",
+      "r8gn.4xlarge",
+      "r8gn.8xlarge",
+      "r8gn.large",
+      "r8gn.medium",
+      "r8gn.metal-24xl",
+      "r8gn.metal-48xl",
+      "r8gn.xlarge",
+      "r8i-flex.12xlarge",
+      "r8i-flex.16xlarge",
+      "r8i-flex.2xlarge",
+      "r8i-flex.4xlarge",
+      "r8i-flex.8xlarge",
+      "r8i-flex.large",
+      "r8i-flex.xlarge",
+      "r8i.12xlarge",
+      "r8i.16xlarge",
+      "r8i.24xlarge",
+      "r8i.2xlarge",
+      "r8i.32xlarge",
+      "r8i.48xlarge",
+      "r8i.4xlarge",
+      "r8i.8xlarge",
+      "r8i.96xlarge",
+      "r8i.large",
+      "r8i.metal-48xl",
+      "r8i.metal-96xl",
+      "r8i.xlarge",
       "t1.micro",
       "t2.2xlarge",
       "t2.large",
@@ -6181,6 +6390,68 @@
       "DISABLED",
       "ENABLED"
     ],
+    "AcceleratorManufacturers": [
+      "amazon-web-services",
+      "amd",
+      "habana",
+      "nvidia",
+      "xilinx"
+    ],
+    "AcceleratorNames": [
+      "a10g",
+      "a100",
+      "h100",
+      "inferentia",
+      "k520",
+      "k80",
+      "m60",
+      "radeon-pro-v520",
+      "t4",
+      "t4g",
+      "vu9p",
+      "v100"
+    ],
+    "AcceleratorTypes": [
+      "gpu",
+      "fpga",
+      "inference"
+    ],
+    "BareMetal": [
+      "included",
+      "required",
+      "excluded"
+    ],
+    "BurstablePerformance": [
+      "included",
+      "required",
+      "excluded"
+    ],
+    "CpuManufacturers": [
+      "intel",
+      "amd",
+      "amazon-web-services"
+    ],
+    "InstanceGenerations": [
+      "current",
+      "previous"
+    ],
+    "LocalStorage": [
+      "included",
+      "required",
+      "excluded"
+    ],
+    "LocalStorageTypes": [
+      "hdd",
+      "ssd"
+    ],
+    "ManagedInstancesMonitoringOptions": [
+      "BASIC",
+      "DETAILED"
+    ],
+    "PropagateTags": [
+      "SERVICE",
+      "TASK_DEFINITION"
+    ],
     "Status": [
       "DISABLED",
       "ENABLED"
@@ -6197,10 +6468,6 @@
     "LaunchType": [
       "EC2",
       "FARGATE"
-    ],
-    "PropagateTags": [
-      "SERVICE",
-      "TASK_DEFINITION"
     ],
     "SchedulingStrategy": [
       "DAEMON",
@@ -6253,7 +6520,8 @@
     "RequiresCompatibilities": [
       "EC2",
       "EXTERNAL",
-      "FARGATE"
+      "FARGATE",
+      "MANAGED_INSTANCES"
     ],
     "IAM": [
       "ENABLED",
@@ -7091,35 +7359,98 @@
   },
   "glue": {
     "ConnectionType": [
+      "ADOBEANALYTICS",
+      "ASANA",
+      "AZURECOSMOS",
+      "AZURESQL",
+      "BIGQUERY",
+      "BLACKBAUD",
+      "BLACKBAUDRAISEREDGENXT",
+      "CIRCLECI",
+      "CLOUDERAHIVE",
+      "CLOUDERAIMPALA",
+      "CLOUDWATCH",
+      "CLOUDWATCHMETRICS",
+      "CMDB",
       "CUSTOM",
+      "DATADOG",
+      "DATALAKEGEN2",
+      "DB2",
+      "DB2AS400",
+      "DOCUMENTDB",
+      "DOCUSIGNMONITOR",
+      "DOMO",
+      "DYNAMODB",
+      "DYNATRACE",
       "FACEBOOKADS",
+      "FACEBOOKPAGEINSIGHTS",
+      "FRESHDESK",
+      "FRESHSALES",
+      "GITLAB",
       "GOOGLEADS",
       "GOOGLEANALYTICS4",
+      "GOOGLECLOUDSTORAGE",
+      "GOOGLESEARCHCONSOLE",
       "GOOGLESHEETS",
+      "HBASE",
       "HUBSPOT",
       "INSTAGRAMADS",
       "INTERCOM",
       "JDBC",
       "JIRACLOUD",
       "KAFKA",
+      "KUSTOMER",
+      "LINKEDIN",
+      "MAILCHIMP",
       "MARKETO",
       "MARKETPLACE",
+      "MICROSOFTDYNAMIC365FINANCEANDOPS",
+      "MICROSOFTDYNAMICS365CRM",
+      "MICROSOFTTEAMS",
+      "MIXPANEL",
+      "MONDAY",
       "MONGODB",
+      "MYSQL",
       "NETSUITEERP",
       "NETWORK",
+      "OKTA",
+      "OPENSEARCH",
+      "ORACLE",
+      "PAYPAL",
+      "PENDO",
+      "PIPEDIVE",
+      "PIPEDRIVE",
+      "POSTGRESQL",
+      "PRODUCTBOARD",
+      "QUICKBOOKS",
       "SALESFORCE",
+      "SALESFORCECOMMERCECLOUD",
       "SALESFORCEMARKETINGCLOUD",
       "SALESFORCEPARDOT",
+      "SAPCONCUR",
+      "SAPHANA",
       "SAPODATA",
+      "SENDGRID",
       "SERVICENOW",
       "SFTP",
       "SLACK",
+      "SMARTSHEET",
       "SNAPCHATADS",
+      "SQLSERVER",
       "STRIPE",
+      "SYNAPSE",
+      "TERADATA",
+      "TERADATANOS",
+      "TIMESTREAM",
+      "TPCDS",
+      "TWILIO",
+      "VERTICA",
       "VIEW_VALIDATION_ATHENA",
       "VIEW_VALIDATION_REDSHIFT",
+      "WOOCOMMERCE",
       "ZENDESK",
-      "ZOHOCRM"
+      "ZOHOCRM",
+      "ZOOM"
     ],
     "EnableAdditionalMetadata": [
       "COMMENTS",
@@ -8901,6 +9232,15 @@
       "Disabled",
       "Failed"
     ],
+    "ResourceType": [
+      "Domain"
+    ],
+    "State": [
+      "pending",
+      "completed",
+      "error",
+      "unknown"
+    ],
     "IpAddressType": [
       "dualstack",
       "ipv4",
@@ -8953,9 +9293,6 @@
       "us-east-2",
       "us-west-1",
       "us-west-2"
-    ],
-    "ResourceType": [
-      "Domain"
     ],
     "Type": [
       "A",
@@ -9949,6 +10286,18 @@
     ]
   },
   "observabilityadmin": {
+    "EncryptionConflictResolutionStrategy": [
+      "ALLOW",
+      "SKIP"
+    ],
+    "EncryptionStrategy": [
+      "CUSTOMER_MANAGED",
+      "AWS_OWNED"
+    ],
+    "EncryptedLogGroupStrategy": [
+      "ALLOW",
+      "SKIP"
+    ],
     "DestinationType": [
       "cloud-watch-logs"
     ],
@@ -9992,8 +10341,29 @@
       "DECEMBER"
     ],
     "Preference": [
-      "NO_PREFERENCE",
-      "CUSTOM_PREFERENCE"
+      "CUSTOM_PREFERENCE",
+      "NO_PREFERENCE"
+    ],
+    "PatchingMode": [
+      "NONROLLING",
+      "ROLLING"
+    ],
+    "S3Access": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "ZeroEtlAccess": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "ManagedResourceStatus": [
+      "ENABLED",
+      "ENABLING",
+      "DISABLED",
+      "DISABLING"
+    ],
+    "VpcEndpointType": [
+      "SERVICENETWORK"
     ]
   },
   "omics": {
@@ -10051,6 +10421,11 @@
     ],
     "Accelerators": [
       "GPU"
+    ],
+    "type": [
+      "BRANCH",
+      "TAG",
+      "COMMIT"
     ],
     "StorageType": [
       "STATIC",
@@ -10122,7 +10497,8 @@
     ],
     "SecurityConfigType": [
       "saml",
-      "iamidentitycenter"
+      "iamidentitycenter",
+      "iamfederation"
     ],
     "SecurityPolicyType": [
       "encryption",
@@ -10468,7 +10844,8 @@
     ],
     "PurchaseOption": [
       "ONDEMAND",
-      "SPOT"
+      "SPOT",
+      "CAPACITY_BLOCK"
     ],
     "AllocationStrategy": [
       "lowest-price",
@@ -11488,6 +11865,10 @@
       "EXPANDED",
       "COLLAPSED"
     ],
+    "QBusinessInsightsStatus": [
+      "ENABLED",
+      "DISABLED"
+    ],
     "ColumnDataSubType": [
       "FLOAT",
       "FIXED"
@@ -11983,11 +12364,16 @@
     ],
     "ClusterScalabilityType": [
       "limitless",
+      "scaleout",
       "standard"
     ],
     "DatabaseInsightsMode": [
       "advanced",
       "standard"
+    ],
+    "MasterUserAuthenticationType": [
+      "iam-db-auth",
+      "password"
     ],
     "PerformanceInsightsRetentionPeriod": [
       7,
@@ -12024,10 +12410,23 @@
       "coreCount",
       "threadsPerCore"
     ],
+    "DefaultAuthScheme": [
+      "IAM_AUTH",
+      "NONE"
+    ],
+    "EndpointNetworkType": [
+      "IPV4",
+      "IPV6",
+      "DUAL"
+    ],
     "EngineFamily": [
       "MYSQL",
       "POSTGRESQL",
       "SQLSERVER"
+    ],
+    "TargetConnectionNetworkType": [
+      "IPV4",
+      "IPV6"
     ],
     "AuthScheme": [
       "SECRETS"
@@ -12298,6 +12697,7 @@
       "ap-southeast-3",
       "ap-southeast-4",
       "ap-southeast-5",
+      "ap-southeast-6",
       "ap-southeast-7",
       "ca-central-1",
       "ca-west-1",
@@ -12754,6 +13154,13 @@
     "NodeRecovery": [
       "Automatic",
       "None"
+    ],
+    "AutoScalerType": [
+      "Karpenter"
+    ],
+    "Mode": [
+      "Enable",
+      "Disable"
     ],
     "DeepHealthCheckType": [
       "InstanceStress",
@@ -13324,6 +13731,7 @@
       "ml.p4d.24xlarge",
       "ml.p4de.24xlarge",
       "ml.p5.48xlarge",
+      "ml.p5.4xlarge",
       "ml.p5e.48xlarge",
       "ml.p5en.48xlarge",
       "ml.p6-b200.48xlarge",
@@ -14053,6 +14461,30 @@
     ]
   },
   "simspaceweaver": {},
+  "smsvoice": {
+    "NumberCapabilities": [
+      "SMS",
+      "VOICE",
+      "MMS"
+    ],
+    "NumberType": [
+      "LONG_CODE",
+      "TOLL_FREE",
+      "TEN_DLC",
+      "SIMULATOR"
+    ],
+    "Action": [
+      "AUTOMATIC_RESPONSE",
+      "OPT_OUT",
+      "OPT_IN"
+    ],
+    "ProtectStatus": [
+      "ALLOW",
+      "BLOCK",
+      "MONITOR",
+      "FILTER"
+    ]
+  },
   "sns": {
     "Protocol": [
       "http/s",
@@ -14280,6 +14712,10 @@
     "ProvisionedResourceCleanup": [
       "AUTOMATIC",
       "OFF"
+    ],
+    "BrowserType": [
+      "CHROME",
+      "FIREFOX"
     ],
     "Type": [
       "LambdaLayer"
