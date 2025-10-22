@@ -4,6 +4,7 @@ import { KeyLookupOptions } from './key-lookup';
 import { CfnKey, IKeyRef, KeyReference } from './kms.generated';
 import * as perms from './private/perms';
 import * as iam from '../../aws-iam';
+import { IResourceWithPolicy } from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
 import {
   Arn,
@@ -106,6 +107,119 @@ export interface IKey extends IResource, IKeyRef {
   grantVerifyMac(grantee: iam.IGrantable): iam.Grant;
 }
 
+/**
+ * Allows granting of KMS key permissions to principals.
+ */
+export class KeyGrants {
+  /**
+   * Create a KeyGrants for a key with a resource policy.
+   */
+  public static fromKeyWithPolicy(key: IKeyRef & IResourceWithPolicy): KeyGrants {
+    return new KeyGrants(key);
+  }
+
+  private constructor(private readonly key: IKeyRef & IResourceWithPolicy) {
+  }
+
+  /**
+   * Grant the indicated permissions on this key to the given principal
+   *
+   * This modifies both the principal's policy as well as the resource policy,
+   * since the default CloudFormation setup for KMS keys is that the policy
+   * must not be empty and so default grants won't work.
+   */
+  public grant(grantee: iam.IGrantable, trustAccountIdentities = true, ...actions: string[]): iam.Grant {
+    // KMS verifies whether the principals included in its key policy actually exist.
+    // This is a problem if the stack the grantee is part of depends on the key stack
+    // (as it won't exist before the key policy is attempted to be created).
+    // In that case, make the account the resource policy principal
+    const granteeStackDependsOnKeyStack = this.granteeStackDependsOnKeyStack(grantee);
+    const principal = granteeStackDependsOnKeyStack
+      ? new iam.AccountPrincipal(granteeStackDependsOnKeyStack)
+      : grantee.grantPrincipal;
+
+    const crossAccountAccess = this.isGranteeFromAnotherAccount(grantee);
+    const crossRegionAccess = this.isGranteeFromAnotherRegion(grantee);
+    const crossEnvironment = crossAccountAccess || crossRegionAccess;
+    const grantOptions: iam.GrantWithResourceOptions = {
+      grantee,
+      actions,
+      resource: this.key,
+      resourceArns: [this.key.keyRef.keyArn],
+      resourceSelfArns: crossEnvironment ? undefined : ['*'],
+    };
+
+    if (trustAccountIdentities && !crossEnvironment) {
+      return iam.Grant.addToPrincipalOrResource(grantOptions);
+    } else {
+      return iam.Grant.addToPrincipalAndResource({
+        ...grantOptions,
+        // if the key is used in a cross-environment matter,
+        // we can't access the Key ARN (they don't have physical names),
+        // so fall back to using '*'. ToDo we need to make this better... somehow
+        resourceArns: crossEnvironment ? ['*'] : [this.key.keyRef.keyArn],
+        resourcePolicyPrincipal: principal,
+      });
+    }
+  }
+
+  /**
+   * Checks whether the grantee belongs to a stack that will be deployed
+   * after the stack containing this key.
+   *
+   * @param grantee the grantee to give permissions to
+   * @returns the account ID of the grantee stack if its stack does depend on this stack,
+   *   undefined otherwise
+   */
+  private granteeStackDependsOnKeyStack(grantee: iam.IGrantable): string | undefined {
+    const grantPrincipal = grantee.grantPrincipal;
+    // this logic should only apply to newly created
+    // (= not imported) resources
+    if (!iam.principalIsOwnedResource(grantPrincipal)) {
+      return undefined;
+    }
+    const keyStack = Stack.of(this.key);
+    const granteeStack = Stack.of(grantPrincipal);
+    if (keyStack === granteeStack) {
+      return undefined;
+    }
+
+    return granteeStack.dependencies.includes(keyStack)
+      ? granteeStack.account
+      : undefined;
+  }
+
+  private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
+    if (!iam.principalIsOwnedResource(grantee.grantPrincipal)) {
+      return false;
+    }
+    const bucketStack = Stack.of(this.key);
+    const identityStack = Stack.of(grantee.grantPrincipal);
+
+    if (FeatureFlags.of(this.key).isEnabled(cxapi.KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE)) {
+      // if two compared stacks have the same region, this should return 'false' since it's from the
+      // same region; if two stacks have different region, then compare env.account
+      return bucketStack.account !== identityStack.account && this.key.env.account !== identityStack.account;
+    }
+    return bucketStack.account !== identityStack.account;
+  }
+
+  private isGranteeFromAnotherRegion(grantee: iam.IGrantable): boolean {
+    if (!iam.principalIsOwnedResource(grantee.grantPrincipal)) {
+      return false;
+    }
+    const bucketStack = Stack.of(this.key);
+    const identityStack = Stack.of(grantee.grantPrincipal);
+
+    if (FeatureFlags.of(this.key).isEnabled(cxapi.KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE)) {
+      // if two compared stacks have the same region, this should return 'false' since it's from the
+      // same region; if two stacks have different region, then compare env.region
+      return bucketStack.region !== identityStack.region && this.key.env.region !== identityStack.region;
+    }
+    return bucketStack.region !== identityStack.region;
+  }
+}
+
 abstract class KeyBase extends Resource implements IKey {
   /**
    * The ARN of the key.
@@ -113,6 +227,11 @@ abstract class KeyBase extends Resource implements IKey {
   public abstract readonly keyArn: string;
 
   public abstract readonly keyId: string;
+
+  /**
+   * Allows granting of KMS key permissions to principals.
+   */
+  public readonly grants = KeyGrants.fromKeyWithPolicy(this);
 
   /**
    * Optional policy document that represents the resource policy of this key.
@@ -190,37 +309,7 @@ abstract class KeyBase extends Resource implements IKey {
    * must not be empty and so default grants won't work.
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    // KMS verifies whether the principals included in its key policy actually exist.
-    // This is a problem if the stack the grantee is part of depends on the key stack
-    // (as it won't exist before the key policy is attempted to be created).
-    // In that case, make the account the resource policy principal
-    const granteeStackDependsOnKeyStack = this.granteeStackDependsOnKeyStack(grantee);
-    const principal = granteeStackDependsOnKeyStack
-      ? new iam.AccountPrincipal(granteeStackDependsOnKeyStack)
-      : grantee.grantPrincipal;
-
-    const crossAccountAccess = this.isGranteeFromAnotherAccount(grantee);
-    const crossRegionAccess = this.isGranteeFromAnotherRegion(grantee);
-    const crossEnvironment = crossAccountAccess || crossRegionAccess;
-    const grantOptions: iam.GrantWithResourceOptions = {
-      grantee,
-      actions,
-      resource: this,
-      resourceArns: [this.keyArn],
-      resourceSelfArns: crossEnvironment ? undefined : ['*'],
-    };
-    if (this.trustAccountIdentities && !crossEnvironment) {
-      return iam.Grant.addToPrincipalOrResource(grantOptions);
-    } else {
-      return iam.Grant.addToPrincipalAndResource({
-        ...grantOptions,
-        // if the key is used in a cross-environment matter,
-        // we can't access the Key ARN (they don't have physical names),
-        // so fall back to using '*'. ToDo we need to make this better... somehow
-        resourceArns: crossEnvironment ? ['*'] : [this.keyArn],
-        resourcePolicyPrincipal: principal,
-      });
-    }
+    return this.grants.grant(grantee, this.trustAccountIdentities, ...actions);
   }
 
   /**
@@ -277,62 +366,6 @@ abstract class KeyBase extends Resource implements IKey {
    */
   public grantVerifyMac(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...perms.VERIFY_HMAC_ACTIONS);
-  }
-
-  /**
-   * Checks whether the grantee belongs to a stack that will be deployed
-   * after the stack containing this key.
-   *
-   * @param grantee the grantee to give permissions to
-   * @returns the account ID of the grantee stack if its stack does depend on this stack,
-   *   undefined otherwise
-   */
-  private granteeStackDependsOnKeyStack(grantee: iam.IGrantable): string | undefined {
-    const grantPrincipal = grantee.grantPrincipal;
-    // this logic should only apply to newly created
-    // (= not imported) resources
-    if (!iam.principalIsOwnedResource(grantPrincipal)) {
-      return undefined;
-    }
-    const keyStack = Stack.of(this);
-    const granteeStack = Stack.of(grantPrincipal);
-    if (keyStack === granteeStack) {
-      return undefined;
-    }
-
-    return granteeStack.dependencies.includes(keyStack)
-      ? granteeStack.account
-      : undefined;
-  }
-
-  private isGranteeFromAnotherRegion(grantee: iam.IGrantable): boolean {
-    if (!iam.principalIsOwnedResource(grantee.grantPrincipal)) {
-      return false;
-    }
-    const bucketStack = Stack.of(this);
-    const identityStack = Stack.of(grantee.grantPrincipal);
-
-    if (FeatureFlags.of(this).isEnabled(cxapi.KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE)) {
-      // if two compared stacks have the same region, this should return 'false' since it's from the
-      // same region; if two stacks have different region, then compare env.region
-      return bucketStack.region !== identityStack.region && this.env.region !== identityStack.region;
-    }
-    return bucketStack.region !== identityStack.region;
-  }
-
-  private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
-    if (!iam.principalIsOwnedResource(grantee.grantPrincipal)) {
-      return false;
-    }
-    const bucketStack = Stack.of(this);
-    const identityStack = Stack.of(grantee.grantPrincipal);
-
-    if (FeatureFlags.of(this).isEnabled(cxapi.KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE)) {
-      // if two compared stacks have the same region, this should return 'false' since it's from the
-      // same region; if two stacks have different region, then compare env.account
-      return bucketStack.account !== identityStack.account && this.env.account !== identityStack.account;
-    }
-    return bucketStack.account !== identityStack.account;
   }
 }
 
@@ -711,8 +744,8 @@ export class Key extends KeyBase {
       // We might make this parsing logic smarter later,
       // but let's start by erroring out.
       throw new ValidationError('Could not parse the PolicyDocument of the passed AWS::KMS::Key resource because it contains CloudFormation functions. ' +
-        'This makes it impossible to create a mutable IKey from that Policy. ' +
-        'You have to use fromKeyArn instead, passing it the ARN attribute property of the low-level CfnKey', cfnKey);
+          'This makes it impossible to create a mutable IKey from that Policy. ' +
+          'You have to use fromKeyArn instead, passing it the ARN attribute property of the low-level CfnKey', cfnKey);
     }
 
     // change the key policy of the L1, so that all changes done in the L2 are reflected in the resulting template
