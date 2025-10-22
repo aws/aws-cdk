@@ -73,7 +73,7 @@ export class ResourceClass extends ClassType {
       refInterface = new InterfaceType(scope, {
         export: true,
         name: `I${resource.name}${props.suffix ?? ''}Ref`,
-        extends: [CONSTRUCTS.IConstruct],
+        extends: [CONSTRUCTS.IConstruct, CDK_CORE.IEnvironmentable],
         docs: {
           summary: `Indicates that this resource can be referenced as a ${resource.name}.`,
           stability: Stability.Experimental,
