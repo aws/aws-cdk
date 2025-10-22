@@ -128,7 +128,7 @@ export class KeyGrants {
    * since the default CloudFormation setup for KMS keys is that the policy
    * must not be empty and so default grants won't work.
    */
-  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+  public grant(grantee: iam.IGrantable, trustAccountIdentities = true, ...actions: string[]): iam.Grant {
     // KMS verifies whether the principals included in its key policy actually exist.
     // This is a problem if the stack the grantee is part of depends on the key stack
     // (as it won't exist before the key policy is attempted to be created).
@@ -149,7 +149,6 @@ export class KeyGrants {
       resourceSelfArns: crossEnvironment ? undefined : ['*'],
     };
 
-    const trustAccountIdentities = FeatureFlags.of(this.key).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
     if (trustAccountIdentities && !crossEnvironment) {
       return iam.Grant.addToPrincipalOrResource(grantOptions);
     } else {
@@ -310,7 +309,7 @@ abstract class KeyBase extends Resource implements IKey {
    * must not be empty and so default grants won't work.
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return this.grants.grant(grantee, ...actions);
+    return this.grants.grant(grantee, this.trustAccountIdentities, ...actions);
   }
 
   /**
