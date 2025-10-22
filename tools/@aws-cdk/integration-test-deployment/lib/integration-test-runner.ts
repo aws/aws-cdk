@@ -18,6 +18,7 @@ export const deployInegTestsWithAtmosphere = async ({ endpoint, pool }: {endpoin
       SOURCE_BRANCH_COMMIT: process.env.SOURCE_BRANCH_COMMIT,
     };
 
+    await bootstrap(env);
     await deployIntegrationTests(env);
     outcome = 'success';
   } catch (e) {
@@ -31,6 +32,19 @@ export const deployInegTestsWithAtmosphere = async ({ endpoint, pool }: {endpoin
   }
 };
 
+export const bootstrap = async (env: NodeJS.ProcessEnv) => {
+  console.log('Bootstrapping AWS account.');
+  const spawnProcess = spawn('npx', ['cdk', 'bootstrap', ...['us-east-1', 'us-east-2', 'us-west-2'].map((region) => `aws://${env.AWS_ACCOUNT_ID}/${region}`)], {
+    stdio: ['ignore', 'inherit', 'inherit'],
+    env,
+  });
+
+  return new Promise<void>((resolve, reject) => spawnProcess.on('close', (code) => {
+    if (code == 0) resolve();
+    else reject(new Error(`Account bootstrap failed with exit code ${code}`));
+  }));
+};
+
 export const deployIntegrationTests = async (env: NodeJS.ProcessEnv) => {
   const changedSnapshotPaths = await getChangedSnapshots();
   console.log(`Detected changed snapshots:\n${changedSnapshotPaths.join('\n')}`);
@@ -39,7 +53,7 @@ export const deployIntegrationTests = async (env: NodeJS.ProcessEnv) => {
     throw new Error('No snapshots changed, skipping deployment integ test.');
   }
 
-  const spawnProcess = spawn('yarn', ['integ-runner', '--directory', 'packages', '--force', ...changedSnapshotPaths], {
+  const spawnProcess = spawn('yarn', ['integ-runner', '--disable-update-workflow', '--directory', 'packages', '--force', ...changedSnapshotPaths], {
     stdio: ['ignore', 'inherit', 'inherit'],
     env,
   });
