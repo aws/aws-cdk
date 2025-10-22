@@ -83,6 +83,7 @@ export interface GrantOnPrincipalOptions extends CommonGrantOptions {
    * Construct to report warnings on in case grant could not be registered
    *
    * @default - the construct in which this construct is defined
+   * @deprecated The scope argument is currently unused.
    */
   readonly scope?: IConstruct;
 }
@@ -138,10 +139,7 @@ export class Grant implements IDependable {
    *   resource construct.
    */
   public static addToPrincipalOrResource(options: GrantWithResourceOptions): Grant {
-    const result = Grant.addToPrincipal({
-      ...options,
-      scope: options.resource,
-    });
+    const result = Grant.addToPrincipal(options);
 
     const resourceAndPrincipalAccountComparison = options.grantee.grantPrincipal.principalAccount
       ? cdk.Token.compareStrings(options.resource.env.account, options.grantee.grantPrincipal.principalAccount)
@@ -267,10 +265,7 @@ export class Grant implements IDependable {
    * Statement will be the resource statement.
    */
   public static addToPrincipalAndResource(options: GrantOnPrincipalAndResourceOptions): Grant {
-    const result = Grant.addToPrincipal({
-      ...options,
-      scope: options.resource,
-    });
+    const result = Grant.addToPrincipal(options);
 
     const statement = new PolicyStatement({
       actions: options.actions,
@@ -426,7 +421,7 @@ interface GrantProps {
 /**
  * A resource with a resource policy that can be added to
  */
-export interface IResourceWithPolicy extends cdk.IResource {
+export interface IResourceWithPolicy extends cdk.IEnvironmentable {
   /**
    * Add a statement to the resource's resource policy
    */
