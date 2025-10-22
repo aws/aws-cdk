@@ -953,14 +953,11 @@ export enum SecurityPolicyProtocol {
   TLS_V1_2_2018 = 'TLSv1.2_2018',
   TLS_V1_2_2019 = 'TLSv1.2_2019',
   TLS_V1_2_2021 = 'TLSv1.2_2021',
+  TLS_V1_2_2025 = 'TLSv1.2_2025',
   TLS_V1_3_2025 = 'TLSv1.3_2025',
-  /**
-   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
-   */
-  TLSV1_2_2025 = 'TLSv1.2_2025',
 }
 
-/**
+/**=
  * The HTTP methods that the Behavior will accept requests on.
  */
 export class AllowedMethods {
