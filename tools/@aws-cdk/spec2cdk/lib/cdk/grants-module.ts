@@ -47,6 +47,7 @@ export class GrantsModule extends Module {
     let hasContent = false;
     const resources = this.db.follow('hasResource', this.service);
     const resourceIndex = Object.fromEntries(resources.map(r => [r.entity.name, r.entity]));
+    const encryptedResourcePropName = 'encryptedResource';
 
     for (const [name, config] of Object.entries(this.schema.resources ?? {})) {
       if (!resourceIndex[name]) continue;
@@ -89,18 +90,20 @@ export class GrantsModule extends Module {
       if (hasKeyActions) {
         const iEncryptedResourceType = Type.fromName(this, 'iam.IEncryptedResource');
         classType.addProperty({
-          name: 'encryptedResource',
+          name: encryptedResourcePropName,
           immutable: true,
           type: iEncryptedResourceType,
           protected: true, // TODO I actually want private
+          optional: true,
         });
 
         const encryptedResourceParam = init.addParameter({
-          name: 'encryptedResource',
+          name: encryptedResourcePropName,
           type: iEncryptedResourceType,
+          optional: true,
         });
 
-        init.addBody(stmt.assign($this.encryptedResource, encryptedResourceParam));
+        init.addBody(stmt.assign($this.prop(encryptedResourcePropName), encryptedResourceParam));
       }
 
       if (hasPolicy) {
@@ -155,7 +158,10 @@ export class GrantsModule extends Module {
         method.addBody(stmt.constVar(actions, expr.lit(grantSchema.actions)));
 
         if (grantSchema && grantSchema.keyActions && grantSchema.keyActions.length > 0) {
-          method.addBody($this.encryptedResource.prop('grantOnKey').call(grantee, ...grantSchema.keyActions.map((a) => expr.lit(a))));
+          const grantOnKey = $this.prop(`${encryptedResourcePropName}?`)
+            .callMethod('grantOnKey', grantee, ...grantSchema.keyActions.map((a) => expr.lit(a)));
+
+          method.addBody(grantOnKey);
         }
 
         if (hasPolicy) {
