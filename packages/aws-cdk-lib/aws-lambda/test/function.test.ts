@@ -5218,6 +5218,35 @@ describe('L1 Relationships', () => {
       },
     });
   });
+
+  it('tokens should be passed as is', () => {
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'SomeRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    const codeToken = cdk.Token.asAny({
+      resolve: () => ({ s3Bucket: bucket.bucketName }),
+    });
+
+    const fsConfigToken = cdk.Token.asAny({
+      resolve: () => ([{ arn: 'TestArn', localMountPath: '/mnt' }]),
+    });
+
+    new lambda.CfnFunction(stack, 'MyLambda', {
+      code: codeToken,
+      role: role,
+      fileSystemConfigs: fsConfigToken,
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
+        Code: { S3Bucket: { Ref: 'MyBucketF68F3FF0' } },
+        FileSystemConfigs: [{ Arn: 'TestArn', LocalMountPath: '/mnt' }],
+      },
+    });
+  });
 });
 
 function newTestLambda(scope: constructs.Construct) {
