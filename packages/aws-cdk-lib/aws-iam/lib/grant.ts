@@ -421,7 +421,7 @@ interface GrantProps {
 /**
  * A resource with a resource policy that can be added to
  */
-export interface IResourceWithPolicy extends cdk.IEnvironmentable {
+export interface IResourceWithPolicy extends cdk.IEnvironmentAware {
   /**
    * Add a statement to the resource's resource policy
    */

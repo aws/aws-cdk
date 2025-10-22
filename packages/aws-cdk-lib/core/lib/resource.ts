@@ -1,7 +1,7 @@
 import { ArnComponents, ArnFormat } from './arn';
 import { CfnResource } from './cfn-resource';
 import { RESOURCE_SYMBOL } from './constants';
-import { IEnvironmentable, ResourceEnvironment } from './environment';
+import { IEnvironmentAware, ResourceEnvironment } from './environment';
 import { ValidationError } from './errors';
 import { IStringProducer, Lazy } from './lazy';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
@@ -18,7 +18,7 @@ import { Construct, IConstruct } from 'constructs';
 /**
  * Interface for the Resource construct.
  */
-export interface IResource extends IConstruct, IEnvironmentable {
+export interface IResource extends IConstruct, IEnvironmentAware {
   /**
    * The stack in which this resource is defined.
    */

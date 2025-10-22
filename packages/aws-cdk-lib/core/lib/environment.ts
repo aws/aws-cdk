@@ -34,7 +34,7 @@ export interface Environment {
 /**
  * Represents the environment a given resource lives in.
  *
- * Used as the return value for the `IEnvironmentable.env` property.
+ * Used as the return value for the `IEnvironmentAware.env` property.
  */
 export interface ResourceEnvironment {
   /**
@@ -60,7 +60,7 @@ export interface ResourceEnvironment {
 /**
  * Used to indicate that a particular construct has an resource environment
  */
-export interface IEnvironmentable {
+export interface IEnvironmentAware {
   /**
    * The environment this resource belongs to.
    *
