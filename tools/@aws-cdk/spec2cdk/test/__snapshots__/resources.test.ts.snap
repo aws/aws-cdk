@@ -12,7 +12,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface IResourceRef extends constructs.IConstruct {
+export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentable {
   /**
    * A reference to a Resource resource.
    */
@@ -184,7 +184,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface IResourceRef extends constructs.IConstruct {
+export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentable {
   /**
    * A reference to a Resource resource.
    */
@@ -347,7 +347,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface ISomethingRef extends constructs.IConstruct {
+export interface ISomethingRef extends constructs.IConstruct, cdk.IEnvironmentable {
   /**
    * A reference to a Something resource.
    */
@@ -524,7 +524,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface IResourceRef extends constructs.IConstruct {
+export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentable {
   /**
    * A reference to a Resource resource.
    */
@@ -701,7 +701,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface IResourceRef extends constructs.IConstruct {
+export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentable {
   /**
    * A reference to a Resource resource.
    */
@@ -881,7 +881,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface IResourceRef extends constructs.IConstruct {
+export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentable {
   /**
    * A reference to a Resource resource.
    */
@@ -1044,7 +1044,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface IResourceRef extends constructs.IConstruct {
+export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentable {
   /**
    * A reference to a Resource resource.
    */
@@ -1221,7 +1221,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface IResourceRef extends constructs.IConstruct {
+export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentable {
   /**
    * A reference to a Resource resource.
    */
@@ -1415,7 +1415,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface IResourceRef extends constructs.IConstruct {
+export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentable {
   /**
    * A reference to a Resource resource.
    */
@@ -1610,7 +1610,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface IResourceRef extends constructs.IConstruct {
+export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentable {
   /**
    * A reference to a Resource resource.
    */
