@@ -13,7 +13,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  * @deprecated in favour of something else
  * @stability deprecated
  */
-export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentable {
+export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Resource resource.
    */
