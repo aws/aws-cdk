@@ -44,13 +44,9 @@ export class GrantsModule extends Module {
   }
 
   private build() {
-    // TODO Only build anything at all if there are resources with grants
-
-    new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`).import(this, this.service.shortName);
-    new ExternalModule('aws-cdk-lib/aws-iam').import(this, 'iam');
-
+    let hasContent = false;
+    let kmsImported = false;
     const resources = this.db.follow('hasResource', this.service);
-
     const resourceIndex = Object.fromEntries(resources.map(r => [r.entity.name, r.entity]));
 
     for (const [name, config] of Object.entries(this.schema.resources ?? {})) {
@@ -58,6 +54,9 @@ export class GrantsModule extends Module {
       const resource = resourceIndex[name];
 
       const hasPolicy = config.hasResourcePolicy ?? false;
+
+      const arnMap = resourceArnMap(resource, config.grants);
+      if (Object.keys(arnMap).length === 0) continue;
 
       const classType = new ClassType(this, {
         name: `${name}Grants`,
@@ -84,9 +83,30 @@ export class GrantsModule extends Module {
         name: 'resource',
         type: resourceRefType,
       });
-      init.addBody(
-        stmt.assign($this.resource, resourceParam),
-      );
+
+      init.addBody(stmt.assign($this.resource, resourceParam));
+
+      const hasKeyActions = Object.values(config.grants).some(grant => grant.keyActions && grant.keyActions.length > 0);
+      if (hasKeyActions) {
+        if (!kmsImported) {
+          new ExternalModule('aws-cdk-lib/aws-kms').import(this, 'kms');
+        }
+
+        const iKeyType = Type.fromName(this, 'kms.IKey');
+        classType.addProperty({
+          name: 'key',
+          immutable: true,
+          type: iKeyType,
+          protected: true, // TODO I actually want private
+        });
+
+        const keyParam = init.addParameter({
+          name: 'key',
+          type: iKeyType,
+        });
+
+        init.addBody(stmt.assign($this.key, keyParam));
+      }
 
       if (hasPolicy) {
         const resourceWithPolicy = Type.fromName(this, 'iam.IResourceWithPolicy');
@@ -107,7 +127,7 @@ export class GrantsModule extends Module {
       }
 
       for (const [methodName, grantSchema] of Object.entries(config.grants)) {
-        const resourceArns = arns(resource, grantSchema);
+        const resourceArns = arnMap[methodName];
         if (resourceArns == null) {
           // Without ARNs, we cannot generate grants.
           continue;
@@ -137,33 +157,28 @@ export class GrantsModule extends Module {
           resource: $this.policyResource,
         }));
 
-        if (hasPolicy) {
-          method.addBody(
-            stmt.constVar(actions, expr.lit(grantSchema.actions)),
-            stmt.ret(expr.cond($this.policyResource, addToBothExpr, addToPrincipalExpr)),
-          );
-        } else {
-          method.addBody(
-            stmt.constVar(actions, expr.lit(grantSchema.actions)),
-            stmt.ret(addToPrincipalExpr));
+        method.addBody(stmt.constVar(actions, expr.lit(grantSchema.actions)));
+
+        if (grantSchema && grantSchema.keyActions && grantSchema.keyActions.length > 0) {
+          // Generate key.grantKey(grantee, "kms:Decrypt");
+          method.addBody($this.key.prop('grant').call(grantee, ...grantSchema.keyActions.map((a) => expr.lit(a))));
         }
+
+        if (hasPolicy) {
+          method.addBody(stmt.ret(expr.cond($this.policyResource, addToBothExpr, addToPrincipalExpr)));
+        } else {
+          method.addBody(stmt.ret(addToPrincipalExpr));
+        }
+
+        hasContent = true;
       }
     }
+
+    if (hasContent) {
+      new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`).import(this, this.service.shortName);
+      new ExternalModule('aws-cdk-lib/aws-iam').import(this, 'iam');
+    }
   }
-}
-
-function arns(resource: Resource, grantSchema?: GrantSchema): Expression | undefined {
-  const arnFormat = grantSchema?.arnFormat;
-  const refName = `this.resource.${camelcasedResourceName(resource)}Ref`;
-
-  if (arnFormat != null) {
-    return expr.list([expr.ident(replace(refName, arnFormat))]);
-  }
-
-  const cfnArnProperty = findArnProperty(resource);
-  return cfnArnProperty == null
-    ? undefined
-    : expr.list([expr.ident(`${refName}.${referencePropertyName(cfnArnProperty, resource.name)}`)]);
 }
 
 export interface GrantsFileSchema {
@@ -187,8 +202,48 @@ export interface GrantSchema {
   readonly keyActions?: string[];
 }
 
-function replace(refName: string, arnFormat: string): string {
-  return arnFormat.replace(/\${([^{}]+)}/g, (_, varName) => {
-    return `${refName}.${varName}`;
-  });
+function resourceArnMap(resource: Resource, grants: Record<string, GrantSchema>): Record<string, Expression> {
+  const result: Record<string, Expression> = {};
+  for (const [methodName, grantSchema] of Object.entries(grants)) {
+    let expression = arns(resource, grantSchema);
+    if (expression != null) {
+      result[methodName] = expression;
+    }
+  }
+  return result;
+}
+
+function arns(resource: Resource, grantSchema?: GrantSchema): Expression | undefined {
+  const arnFormat = grantSchema?.arnFormat;
+  const refName = `this.resource.${camelcasedResourceName(resource)}Ref`;
+
+  if (arnFormat != null) {
+    return expr.list([expr.strConcat(...replace(refName, arnFormat))]);
+  }
+
+  const cfnArnProperty = findArnProperty(resource);
+  return cfnArnProperty == null
+    ? undefined
+    : expr.list([expr.ident(`${refName}.${referencePropertyName(cfnArnProperty, resource.name)}`)]);
+}
+
+// TODO better name
+function replace(refName: string, arnFormat: string): Expression[] {
+  const i = arnFormat.indexOf('${');
+  const j = arnFormat.indexOf('}', i);
+
+  const prefix = arnFormat.substring(0, i);
+  const varName = arnFormat.substring(i + 2, j);
+  const suffix = arnFormat.substring(j + 1);
+
+  const result: Expression[] = [];
+  if (prefix !== '') {
+    result.push(expr.lit(prefix));
+  }
+  result.push(expr.ident(`${refName}.${varName}`));
+  if (suffix !== '') {
+    result.push(expr.lit(suffix));
+  }
+
+  return result;
 }
