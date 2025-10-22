@@ -15,6 +15,8 @@ import { FeatureFlags } from './feature-flags';
 import { ResolutionTypeHint } from './type-hints';
 import * as cxapi from '../../cx-api';
 import { AssumptionError, ValidationError } from './errors';
+import { ResourceEnvironment } from './environment';
+import { IResource } from './resource';
 
 export interface CfnResourceProps {
   /**
@@ -33,7 +35,7 @@ export interface CfnResourceProps {
 /**
  * Represents a CloudFormation resource.
  */
-export class CfnResource extends CfnRefElement {
+export class CfnResource extends CfnRefElement implements IResource {
   /**
    * Check whether the given object is a CfnResource
    */
@@ -99,6 +101,13 @@ export class CfnResource extends CfnRefElement {
     if (Node.of(this).tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
       this.addMetadata(cxapi.PATH_METADATA_KEY, Node.of(this).path);
     }
+  }
+
+  public get env(): ResourceEnvironment {
+    return {
+      account: this.stack.account,
+      region: this.stack.region,
+    };
   }
 
   /**
