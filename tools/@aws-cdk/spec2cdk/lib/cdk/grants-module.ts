@@ -45,7 +45,6 @@ export class GrantsModule extends Module {
 
   private build() {
     let hasContent = false;
-    let kmsImported = false;
     const resources = this.db.follow('hasResource', this.service);
     const resourceIndex = Object.fromEntries(resources.map(r => [r.entity.name, r.entity]));
 
@@ -88,24 +87,20 @@ export class GrantsModule extends Module {
 
       const hasKeyActions = Object.values(config.grants).some(grant => grant.keyActions && grant.keyActions.length > 0);
       if (hasKeyActions) {
-        if (!kmsImported) {
-          new ExternalModule('aws-cdk-lib/aws-kms').import(this, 'kms');
-        }
-
-        const iKeyType = Type.fromName(this, 'kms.IKey');
+        const iEncryptedResourceType = Type.fromName(this, 'iam.IEncryptedResource');
         classType.addProperty({
-          name: 'key',
+          name: 'encryptedResource',
           immutable: true,
-          type: iKeyType,
+          type: iEncryptedResourceType,
           protected: true, // TODO I actually want private
         });
 
-        const keyParam = init.addParameter({
-          name: 'key',
-          type: iKeyType,
+        const encryptedResourceParam = init.addParameter({
+          name: 'encryptedResource',
+          type: iEncryptedResourceType,
         });
 
-        init.addBody(stmt.assign($this.key, keyParam));
+        init.addBody(stmt.assign($this.encryptedResource, encryptedResourceParam));
       }
 
       if (hasPolicy) {
@@ -160,8 +155,7 @@ export class GrantsModule extends Module {
         method.addBody(stmt.constVar(actions, expr.lit(grantSchema.actions)));
 
         if (grantSchema && grantSchema.keyActions && grantSchema.keyActions.length > 0) {
-          // Generate key.grantKey(grantee, "kms:Decrypt");
-          method.addBody($this.key.prop('grant').call(grantee, ...grantSchema.keyActions.map((a) => expr.lit(a))));
+          method.addBody($this.encryptedResource.prop('grantOnKey').call(grantee, ...grantSchema.keyActions.map((a) => expr.lit(a))));
         }
 
         if (hasPolicy) {

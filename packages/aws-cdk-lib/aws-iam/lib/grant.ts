@@ -423,6 +423,10 @@ interface GrantProps {
   readonly policyDependable?: IDependable;
 }
 
+export interface IEncryptedResource extends cdk.IResource {
+  grantOnKey(grantee: IGrantable, ...actions: string[]): void;
+}
+
 /**
  * A resource with a resource policy that can be added to
  */
