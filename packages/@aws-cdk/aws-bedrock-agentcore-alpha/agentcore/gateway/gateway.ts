@@ -372,6 +372,10 @@ export class Gateway extends GatewayBase {
     this.kmsKey = props.kmsKey;
     this.role = props.role ?? this.createGatewayRole();
 
+    if (this.kmsKey && this.role) {
+      this.kmsKey.grantEncryptDecrypt(this.role);
+    }
+
     this.protocolConfiguration = props.protocolConfiguration ?? this.createDefaultMcpProtocolConfiguration();
     this.authorizerConfiguration = props.authorizerConfiguration ?? this.createDefaultCognitoAuthorizer();
     this.exceptionLevel = props.exceptionLevel;

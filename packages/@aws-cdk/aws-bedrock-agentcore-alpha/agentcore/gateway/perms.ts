@@ -69,6 +69,10 @@ export namespace GatewayPerms {
     'kms:GenerateDataKey',
     'kms:Decrypt',
     'kms:Encrypt',
+    'kms:GenerateDataKey*',
+    'kms:ReEncrypt*',
+    'kms:CreateGrant',
+    'kms:DescribeKey',
   ];
 
   /**
