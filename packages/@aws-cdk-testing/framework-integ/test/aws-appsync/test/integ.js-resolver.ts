@@ -64,7 +64,7 @@ const integ = new IntegTest(app, 'JsResolverIntegTest', { testCases: [stack] });
 const invoke = new lambda.Function(stack, 'InvokeApi', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'integ-assets', 'js-resolver-assertion')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
 });
 
 const addTestInvoke = integ.assertions.invokeFunction({

@@ -15,7 +15,7 @@ const stack = new cdk.Stack(app, 'AwsCustomResourceInvokePayloadStack');
 const fn = new lambda.Function(stack, 'Function', {
   code: lambda.Code.fromInline("exports.handler = async () => { return { statusCode: 200, body: 'Hello World' }; };"),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
 });
 
 const testCr = new cr.AwsCustomResource(stack, 'ListLambdaFunctions', {

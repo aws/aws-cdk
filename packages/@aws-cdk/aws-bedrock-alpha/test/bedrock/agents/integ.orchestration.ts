@@ -15,7 +15,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-bedrock-orchestration-1');
 
 // Create a Lambda function for custom orchestration
 const orchestrationFunction = new lambda.Function(stack, 'OrchestrationFunction', {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {

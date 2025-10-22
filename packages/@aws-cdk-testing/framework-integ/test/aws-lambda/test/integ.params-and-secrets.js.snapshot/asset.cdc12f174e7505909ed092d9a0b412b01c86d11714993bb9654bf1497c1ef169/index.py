@@ -7,13 +7,13 @@ def handler(event, context):
     headers = {'X-Aws-Parameters-Secrets-Token': session_token}
 
     # request to parameter store
-    parameter_url = 'http://localhost:2773/systemsmanager/parameters/get?name=email_url'
+    parameter_url = 'http://localhost:8080/systemsmanager/parameters/get?name=email_url'
     response = requests.get(parameter_url, headers=headers)
     print(f'response status code from HTTP for parameters request was {response.status_code}')
     print(f'response json is {response.json()}')
 
     # request to secrets manager
-    secrets_url = 'https://localhost:2773/secretsmanager/get?secretId=MySecret'
+    secrets_url = 'https://localhost:8080/secretsmanager/get?secretId=MySecret'
     response = requests.get(secrets_url, headers=headers)
     print(f'response status code from HTTP for secrets request was {response.status_code}')
     print(f'response json is {response.json()}')

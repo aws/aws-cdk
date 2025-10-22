@@ -8,7 +8,7 @@ export enum Runtime {
   /**
    * The NodeJs 18.x runtime
    */
-  NODEJS_18_X = 'nodejs18.x',
+  NODEJS_20_X = 'nodejs20.x',
 
   /**
    * The Python 3.9 runtime

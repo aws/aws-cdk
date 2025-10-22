@@ -163,7 +163,7 @@ describe('Agent', () => {
   describe('custom orchestration', () => {
     test('sets custom orchestration and grants necessary permissions', () => {
       const fn = new lambda.Function(stack, 'TestFunction', {
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = async () => {};'),
       });
@@ -380,13 +380,13 @@ describe('Agent', () => {
       });
 
       const fn1 = new lambda.Function(stack, 'TestFunction1', {
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = async () => {};'),
       });
 
       const fn2 = new lambda.Function(stack, 'TestFunction2', {
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = async () => {};'),
       });
@@ -417,7 +417,7 @@ describe('Agent', () => {
       });
 
       const fn = new lambda.Function(stack, 'TestFunction', {
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = async () => {};'),
       });

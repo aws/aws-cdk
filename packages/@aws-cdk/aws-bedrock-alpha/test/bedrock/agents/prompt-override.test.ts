@@ -146,7 +146,7 @@ describe('PromptOverrideConfiguration', () => {
     test('creates with valid parser and steps', () => {
       // GIVEN
       const parser = new lambda.Function(stack, 'TestParser', {
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = () => {}'),
       });
@@ -170,7 +170,7 @@ describe('PromptOverrideConfiguration', () => {
     test('throws error when no step uses custom parser', () => {
       // GIVEN
       const parser = new lambda.Function(stack, 'TestParser', {
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = () => {}'),
       });
@@ -376,7 +376,7 @@ describe('PromptOverrideConfiguration', () => {
       // WHEN
       const config = PromptOverrideConfiguration.withCustomParser({
         parser: new lambda.Function(stack, 'TestParser', {
-          runtime: lambda.Runtime.NODEJS_18_X,
+          runtime: lambda.Runtime.NODEJS_20_X,
           handler: 'index.handler',
           code: lambda.Code.fromInline('exports.handler = () => {}'),
         }),

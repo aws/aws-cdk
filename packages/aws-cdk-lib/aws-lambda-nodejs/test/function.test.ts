@@ -113,14 +113,14 @@ describe('lambda.Code.fromCustomCommand', () => {
     // WHEN
     new NodejsFunction(stack, 'handler1', {
       handler: 'Random.Name',
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
       code: Code.fromCustomCommand('function.test.handler7.zip', ['node'], undefined),
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Handler: 'Random.Name',
-      Runtime: 'nodejs18.x',
+      Runtime: 'nodejs20.x',
     });
   });
 });
@@ -389,7 +389,7 @@ describe('Node 18+ runtimes', () => {
   test('connection reuse for aws sdk v2 not set by default', () => {
     // WHEN
     new NodejsFunction(stack, 'handler1', {
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
     });
 
     // THEN
@@ -401,7 +401,7 @@ describe('Node 18+ runtimes', () => {
   test('connection reuse for aws sdk v2 can be explicitly not set', () => {
     // WHEN
     new NodejsFunction(stack, 'handler1', {
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
       awsSdkConnectionReuse: false,
     });
 
@@ -414,7 +414,7 @@ describe('Node 18+ runtimes', () => {
   test('setting connection reuse for aws sdk v2 has warning', () => {
     // WHEN
     new NodejsFunction(stack, 'handler1', {
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
       awsSdkConnectionReuse: true,
     });
 

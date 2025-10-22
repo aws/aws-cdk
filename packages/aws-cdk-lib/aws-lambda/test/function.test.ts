@@ -3845,9 +3845,9 @@ describe('function', () => {
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'bar',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrow('SnapStart currently not supported by runtime nodejs18.x');
+      })).toThrow('SnapStart currently not supported by runtime nodejs20.x');
     });
 
     test('arm64 function using snapStart', () => {
@@ -4721,7 +4721,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs22.x',
       },
     });
   });
@@ -4905,7 +4905,7 @@ describe('CMCMK', () => {
     new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromCustomCommand('function.test.handler7.zip', ['node'], commandOptions),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
     });
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
@@ -4913,7 +4913,7 @@ describe('CMCMK', () => {
         Code: {
           SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
         },
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs20.x',
         Handler: 'index.handler',
       },
     });
@@ -4940,7 +4940,7 @@ describe('CMCMK', () => {
     new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromCustomCommand('function.test.handler7.zip', ['node']),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
     });
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
@@ -4948,7 +4948,7 @@ describe('CMCMK', () => {
         Code: {
           SourceKMSKeyArn: Match.absent(),
         },
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs20.x',
         Handler: 'index.handler',
       },
     });
@@ -5063,7 +5063,7 @@ describe('telemetry metadata', () => {
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
     });
 
     fn.addEnvironment('foo', '1234567890', {
@@ -5101,7 +5101,7 @@ describe('telemetry metadata', () => {
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
     });
 
     expect(fn.node.metadata).toStrictEqual([]);
