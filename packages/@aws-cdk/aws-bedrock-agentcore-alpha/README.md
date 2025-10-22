@@ -26,6 +26,15 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
 
 ## Table of contents
 
+- [AgentCore Runtime](#agentcore-runtime)
+  - [Runtime Versioning](#runtime-versioning)
+  - [Runtime Endpoints](#runtime-endpoints)
+  - [AgentCore Runtime Properties](#agentcore-runtime-properties)
+  - [Runtime Endpoint Properties](#runtime-endpoint-properties)
+  - [Creating a Runtime](#creating-a-runtime)
+    - [Option 1: Use an existing image in ECR](#option-1-use-an-existing-image-in-ecr)
+    - [Managing Endpoints and Versions](#managing-endpoints-and-versions)
+    - [Option 2: Use a local asset](#option-2-use-a-local-asset)
 - [Browser Custom tool](#browser)
   - [Browser properties](#browser-properties)
   - [Browser Network modes](#browser-network-modes)
@@ -36,6 +45,410 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
   - [Code Interpreter Network Modes](#code-interpreter-network-modes)
   - [Basic Code Interpreter Creation](#basic-code-interpreter-creation)
   - [Code Interpreter IAM permissions](#code-interpreter-iam-permissions)
+
+
+## AgentCore Runtime
+
+The AgentCore Runtime construct enables you to deploy containerized agents on Amazon Bedrock AgentCore.
+This L2 construct simplifies runtime creation just pass your ECR repository name
+and the construct handles all the configuration with sensible defaults.
+
+### Runtime Endpoints
+
+Endpoints provide a stable way to invoke specific versions of your agent runtime, enabling controlled deployments across different environments.
+When you create an agent runtime, Amazon Bedrock AgentCore automatically creates a "DEFAULT" endpoint which always points to the latest version
+of runtime.
+
+You can create additional endpoints in two ways:
+
+1. **Using Runtime.addEndpoint()** - Convenient method when creating endpoints alongside the runtime.
+2. **Using RuntimeEndpoint** - Flexible approach for existing runtimes.
+
+For example, you might keep a "production" endpoint on a stable version while testing newer versions
+through a "staging" endpoint. This separation allows you to test changes thoroughly before promoting them
+to production by simply updating the endpoint to point to the newer version.
+
+### AgentCore Runtime Properties
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `runtimeName` | `string` | Yes | The name of the agent runtime. Valid characters are a-z, A-Z, 0-9, _ (underscore). Must start with a letter and can be up to 48 characters long |
+| `agentRuntimeArtifact` | `AgentRuntimeArtifact` | Yes | The artifact configuration for the agent runtime containing the container configuration with ECR URI |
+| `executionRole` | `iam.IRole` | No | The IAM role that provides permissions for the agent runtime. If not provided, a role will be created automatically |
+| `networkConfiguration` | `NetworkConfiguration` | No | Network configuration for the agent runtime. Defaults to `RuntimeNetworkConfiguration.usingPublicNetwork()` |
+| `description` | `string` | No | Optional description for the agent runtime |
+| `protocolConfiguration` | `ProtocolType` | No | Protocol configuration for the agent runtime. Defaults to `ProtocolType.HTTP` |
+| `authorizerConfiguration` | `RuntimeAuthorizerConfiguration` | No | Authorizer configuration for the agent runtime. Use `RuntimeAuthorizerConfiguration` static methods to create configurations for IAM, Cognito, JWT, or OAuth authentication |
+| `environmentVariables` | `{ [key: string]: string }` | No | Environment variables for the agent runtime. Maximum 50 environment variables |
+| `tags` | `{ [key: string]: string }` | No | Tags for the agent runtime. A list of key:value pairs of tags to apply to this Runtime resource |
+
+### Runtime Endpoint Properties
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `endpointName` | `string` | Yes | The name of the runtime endpoint. Valid characters are a-z, A-Z, 0-9, _ (underscore). Must start with a letter and can be up to 48 characters long |
+| `agentRuntimeId` | `string` | Yes | The Agent Runtime ID for this endpoint |
+| `agentRuntimeVersion` | `string` | Yes | The Agent Runtime version for this endpoint. Must be between 1 and 5 characters long.|
+| `description` | `string` | No | Optional description for the runtime endpoint |
+| `tags` | `{ [key: string]: string }` | No | Tags for the runtime endpoint |
+
+### Creating a Runtime
+
+#### Option 1: Use an existing image in ECR
+
+Reference an image available within ECR.
+
+```typescript
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+
+// The runtime by default create ECR permission only for the repository available in the account the stack is being deployed
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+// Create runtime using the built image
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact
+});
+```
+
+To grant the runtime permission to invoke a Bedrock model or inference profile:
+
+```text
+// Note: This example uses @aws-cdk/aws-bedrock-alpha which must be installed separately
+import * as bedrock from '@aws-cdk/aws-bedrock-alpha';
+
+// Create a cross-region inference profile for Claude 3.7 Sonnet
+const inferenceProfile = bedrock.CrossRegionInferenceProfile.fromConfig({
+  geoRegion: bedrock.CrossRegionInferenceProfileRegion.US,
+  model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_7_SONNET_V1_0
+});
+
+// Grant the runtime permission to invoke the inference profile
+inferenceProfile.grantInvoke(runtime);
+```
+
+#### Option 2: Use a local asset
+
+Reference a local directory containing a Dockerfile.
+Images are built from a local Docker context directory (with a Dockerfile), uploaded to Amazon Elastic Container Registry (ECR)
+by the CDK toolkit,and can be naturally referenced in your CDK app .
+
+```typescript
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
+  path.join(__dirname, "path to agent dockerfile directory")
+);
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+});
+```
+
+### Runtime Versioning
+
+Amazon Bedrock AgentCore automatically manages runtime versioning to ensure safe deployments and rollback capabilities.
+When you create an agent runtime, AgentCore automatically creates version 1 (V1). Each subsequent update to the
+runtime configuration (such as updating the container image, modifying network settings, or changing protocol configurations)
+creates a new immutable version. These versions contain complete, self-contained configurations that can be referenced by endpoints,
+allowing you to maintain different versions for different environments or gradually roll out updates.
+
+#### Managing Endpoints and Versions
+
+Amazon Bedrock AgentCore automatically manages runtime versioning to provide safe deployments and rollback capabilities. You can follow
+the steps below to understand how to use versioning with runtime for controlled deployments across different environments.
+
+##### Step 1: Initial Deployment
+
+When you first create an agent runtime, AgentCore automatically creates Version 1 of your runtime. At this point, a DEFAULT endpoint is
+automatically created that points to Version 1. This DEFAULT endpoint serves as the main access point for your runtime.
+
+```ts
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0"),
+});
+```
+
+##### Step 2: Creating Custom Endpoints
+
+After the initial deployment, you can create additional endpoints for different environments. For example, you might create a "production"
+endpoint that explicitly points to Version 1. This allows you to maintain stable access points for specific environments while keeping the
+flexibility to test newer versions elsewhere.
+
+```ts
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0"),
+});
+
+const prodEndpoint = runtime.addEndpoint("production", {
+  version: "1",
+  description: "Stable production endpoint - pinned to v1"
+});
+```
+
+##### Step 3: Runtime Update Deployment
+
+When you update the runtime configuration (such as updating the container image, modifying network settings, or changing protocol
+configurations), AgentCore automatically creates a new version (Version 2). Upon this update:
+
+- Version 2 is created automatically with the new configuration
+- The DEFAULT endpoint automatically updates to point to Version 2
+- Any explicitly pinned endpoints (like the production endpoint) remain on their specified versions
+
+```ts
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+
+const agentRuntimeArtifactNew = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v2.0.0");
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifactNew,
+});
+```
+
+##### Step 4: Testing with Staging Endpoints
+
+Once Version 2 exists, you can create a staging endpoint that points to the new version. This staging endpoint allows you to test the
+new version in a controlled environment before promoting it to production. This separation ensures that production traffic continues
+to use the stable version while you validate the new version.
+
+```ts
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+
+const agentRuntimeArtifactNew = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v2.0.0");
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifactNew,
+});
+
+const stagingEndpoint = runtime.addEndpoint("staging", {
+  version: "2",
+  description: "Staging environment for testing new version"
+});
+```
+
+##### Step 5: Promoting to Production
+
+After thoroughly testing the new version through the staging endpoint, you can update the production endpoint to point to Version 2.
+This controlled promotion process ensures that you can validate changes before they affect production traffic.
+
+```ts
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+
+const agentRuntimeArtifactNew = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v2.0.0");
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifactNew,
+});
+
+const prodEndpoint = runtime.addEndpoint("production", {
+  version: "2",  // New version added here
+  description: "Stable production endpoint"
+});
+```
+
+### Creating Standalone Runtime Endpoints
+
+RuntimeEndpoint can also be created as a standalone resource.
+
+#### Example: Creating an endpoint for an existing runtime
+
+```typescript
+// Reference an existing runtime by its ID
+const existingRuntimeId = "abc123-runtime-id"; // The ID of an existing runtime
+
+// Create a standalone endpoint
+const endpoint = new agentcore.RuntimeEndpoint(this, "MyEndpoint", {
+  endpointName: "production",
+  agentRuntimeId: existingRuntimeId,
+  agentRuntimeVersion: "1", // Specify which version to use
+  description: "Production endpoint for existing runtime"
+});
+```
+
+### Runtime Authentication Configuration
+
+The AgentCore Runtime supports multiple authentication modes to secure access to your agent endpoints. Authentication is configured during runtime creation using the `RuntimeAuthorizerConfiguration` class's static factory methods.
+
+#### IAM Authentication (Default)
+
+IAM authentication is the default mode, when no authorizerConfiguration is set then the underlying service use IAM.
+
+#### Cognito Authentication
+
+To configure AWS Cognito User Pool authentication:
+
+```typescript
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingCognito(
+    "us-west-2_ABC123",  // User Pool ID (required)
+    "client123",         // Client ID (required)
+    "us-west-2"         // Region (optional, defaults to stack region)
+  ),
+});
+```
+
+#### JWT Authentication
+
+To configure custom JWT authentication with your own OpenID Connect (OIDC) provider:
+
+```typescript
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingJWT(
+    "https://example.com/.well-known/openid-configuration",  // Discovery URL (required)
+    ["client1", "client2"],  // Allowed Client IDs (optional)
+    ["audience1"]           // Allowed Audiences (optional)
+  ),
+});
+```
+
+**Note**: The discovery URL must end with `/.well-known/openid-configuration`.
+
+#### OAuth Authentication
+
+To configure OAuth 2.0 authentication:
+
+```typescript
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingOAuth(
+    "https://github.com/.well-known/openid-configuration",  
+    "oauth_client_123",  
+  ),
+});
+```
+
+#### Using a Custom IAM Role
+
+Instead of using the auto-created execution role, you can provide your own IAM role with specific permissions:
+The auto-created role includes all necessary baseline permissions for ECR access, CloudWatch logging, and X-Ray tracing. When providing a custom role, ensure these permissions are included.
+
+### Runtime Network Configuration
+
+The AgentCore Runtime supports two network modes for deployment:
+
+#### Public Network Mode (Default)
+
+By default, runtimes are deployed in PUBLIC network mode, which provides internet access suitable for less sensitive or open-use scenarios:
+
+```typescript
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+// Explicitly using public network (this is the default)
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  networkConfiguration: agentcore.RuntimeNetworkConfiguration.usingPublicNetwork(),
+});
+```
+
+#### VPC Network Mode
+
+For enhanced security and network isolation, you can deploy your runtime within a VPC:
+
+```typescript
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+// Create or use an existing VPC
+const vpc = new ec2.Vpc(this, 'MyVpc', {
+  maxAzs: 2,
+});
+
+// Configure runtime with VPC
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  networkConfiguration: agentcore.RuntimeNetworkConfiguration.usingVpc(this, {
+    vpc: vpc,
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    // Optionally specify security groups, or one will be created automatically
+    // securityGroups: [mySecurityGroup],
+  }),
+});
+```
+
+#### Managing Security Groups with VPC Configuration
+
+When using VPC mode, the Runtime implements `ec2.IConnectable`, allowing you to manage network access using the `connections` property:
+
+```typescript
+
+const vpc = new ec2.Vpc(this, 'MyVpc', {
+  maxAzs: 2,
+});
+
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+// Create runtime with VPC configuration
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  networkConfiguration: agentcore.RuntimeNetworkConfiguration.usingVpc(this, {
+    vpc: vpc,
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+  }),
+});
+
+// Now you can manage network access using the connections property
+// Allow inbound HTTPS traffic from a specific security group
+const webServerSecurityGroup = new ec2.SecurityGroup(this, 'WebServerSG', { vpc });
+runtime.connections.allowFrom(webServerSecurityGroup, ec2.Port.tcp(443), 'Allow HTTPS from web servers');
+
+// Allow outbound connections to a database
+const databaseSecurityGroup = new ec2.SecurityGroup(this, 'DatabaseSG', { vpc });
+runtime.connections.allowTo(databaseSecurityGroup, ec2.Port.tcp(5432), 'Allow PostgreSQL connection');
+
+// Allow outbound HTTPS to anywhere (for external API calls)
+runtime.connections.allowToAnyIpv4(ec2.Port.tcp(443), 'Allow HTTPS outbound');
+```
 
 ## Browser
 
