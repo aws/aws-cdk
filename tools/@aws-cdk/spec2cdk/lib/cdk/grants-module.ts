@@ -57,15 +57,21 @@ export class GrantsModule extends Module {
       if (!resourceIndex[name]) continue;
       const resource = resourceIndex[name];
 
+      const hasPolicy = config.hasResourcePolicy ?? false;
+
       const classType = new ClassType(this, {
         name: `${name}Grants`,
         export: true,
       });
 
+      // IBucketRef
+      // FIXME: Not sure that Type.fromName() is the best to be used here.
+      const resourceRefType = Type.fromName(this, `${this.service.shortName}.I${resource.name}Ref`);
+
       classType.addProperty({
         name: 'resource',
         immutable: true,
-        type: Type.STRING,
+        type: resourceRefType,
         protected: true, // TODO I actually want private
       });
 
@@ -76,12 +82,29 @@ export class GrantsModule extends Module {
 
       const resourceParam = init.addParameter({
         name: 'resource',
-        type: Type.fromName(this, `${this.service.shortName}.I${resource.name}Ref`),
+        type: resourceRefType,
       });
-
       init.addBody(
         stmt.assign($this.resource, resourceParam),
       );
+
+      if (hasPolicy) {
+        const resourceWithPolicy = Type.fromName(this, 'iam.IResourceWithPolicy');
+        const field = classType.addProperty({
+          name: 'policyResource',
+          immutable: true,
+          type: resourceWithPolicy,
+          optional: true,
+        });
+        const param = init.addParameter({
+          name: 'policyResource',
+          type: resourceWithPolicy,
+          optional: true,
+        });
+        init.addBody(
+          stmt.assign($this[field.name], param),
+        );
+      }
 
       for (const [methodName, grantSchema] of Object.entries(config.grants)) {
         const resourceArns = arns(resource, grantSchema);
@@ -92,6 +115,7 @@ export class GrantsModule extends Module {
 
         const method = classType.addMethod({
           name: methodName,
+          returnType: Type.fromName(this, 'iam.Grant'),
         });
 
         const grantee = method.addParameter({
@@ -101,15 +125,28 @@ export class GrantsModule extends Module {
 
         const actions = expr.ident('actions');
 
-        method.addBody(
-          stmt.constVar(actions, expr.lit(grantSchema.actions)),
-          stmt.ret(expr.ident('iam.Grant').prop('addToPrincipalOrResource').call(expr.object({
-            actions,
-            grantee,
-            resourceArns,
-            resource: $this.resource,
-          }))),
-        );
+        const addToPrincipalExpr = $E(expr.ident('iam.Grant')).addToPrincipal(expr.object({
+          actions,
+          grantee,
+          resourceArns,
+        }));
+        const addToBothExpr = $E(expr.ident('iam.Grant')).addToPrincipalOrResource(expr.object({
+          actions,
+          grantee,
+          resourceArns,
+          resource: $this.policyResource,
+        }));
+
+        if (hasPolicy) {
+          method.addBody(
+            stmt.constVar(actions, expr.lit(grantSchema.actions)),
+            stmt.ret(expr.cond($this.policyResource, addToBothExpr, addToPrincipalExpr)),
+          );
+        } else {
+          method.addBody(
+            stmt.constVar(actions, expr.lit(grantSchema.actions)),
+            stmt.ret(addToPrincipalExpr));
+        }
       }
     }
   }
