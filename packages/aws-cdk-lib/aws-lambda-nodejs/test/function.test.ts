@@ -37,6 +37,11 @@ let stack: Stack;
 beforeEach(() => {
   stack = new Stack();
   jest.clearAllMocks();
+  // pretend the calling file is in a fake file path
+  mockCallsites.mockImplementation(() => [
+    { getFunctionName: () => 'NodejsFunction' },
+    { getFileName: () => bockPath`function.test.ts` },
+  ]);
 });
 
 // We MUST use a fake file system here.
@@ -56,12 +61,6 @@ bockfs({
   '/home/project/aws-lambda-nodejs/lib/index.ts': '// nothing',
 });
 const bockPath = bockfs.workingDirectory('/home/project');
-
-// pretend the calling file is in a fake file path
-mockCallsites.mockImplementation(() => [
-  { getFunctionName: () => 'NodejsFunction' },
-  { getFileName: () => bockPath`function.test.ts` },
-]);
 
 afterAll(() => {
   bockfs.restore();
@@ -229,6 +228,23 @@ test('throws when entry is not js/ts', () => {
   expect(() => new NodejsFunction(stack, 'Fn', {
     entry: 'handler.py',
   })).toThrow(/Only JavaScript or TypeScript entry files are supported/);
+});
+
+test('NodejsFunction with .js handler in an ESM package', () => {
+  // pretend the calling file is in a fake file path
+  // In ESM, callsites are prepended with 'file://'
+  mockCallsites.mockImplementation(() => [
+    { getFunctionName: () => 'NodejsFunction' },
+    { getFileName: () => `file://${bockPath`function.test.ts`}` },
+  ]);
+
+  // WHEN
+  new NodejsFunction(stack, 'handler2');
+
+  // THEN
+  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
+    entry: expect.stringContaining('function.test.handler2.js'), // Automatically finds .ts handler file
+  }));
 });
 
 test('accepts tsx', () => {
