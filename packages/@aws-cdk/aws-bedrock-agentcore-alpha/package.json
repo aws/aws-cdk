@@ -113,5 +113,10 @@
       "naming/package-matches-directory",
       "assert/assert-dependency"
     ]
+  },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-bedrock-agentcore-alpha.RuntimeEndpointProps"
+    ]
   }
 }
