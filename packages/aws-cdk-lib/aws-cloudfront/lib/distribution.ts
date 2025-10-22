@@ -957,7 +957,7 @@ export enum SecurityPolicyProtocol {
   TLS_V1_3_2025 = 'TLSv1.3_2025',
 }
 
-/**=
+/**
  * The HTTP methods that the Behavior will accept requests on.
  */
 export class AllowedMethods {
