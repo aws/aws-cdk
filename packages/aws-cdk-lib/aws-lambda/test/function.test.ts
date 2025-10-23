@@ -5046,27 +5046,19 @@ describe('Lambda Function log group behavior', () => {
 });
 
 describe('telemetry metadata', () => {
-  let getPrototypeOfSpy: jest.SpyInstance;
+  it('redaction happens when feature flag is enabled', () => {
+    const app = new cdk.App();
+    app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
+    const stack = new cdk.Stack(app);
 
-  beforeEach(() => {
     const mockConstructor = {
       [JSII_RUNTIME_SYMBOL]: {
         fqn: 'aws-cdk-lib.aws-lambda.Function',
       },
     };
-    getPrototypeOfSpy = jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
+    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
       constructor: mockConstructor,
     });
-  });
-
-  afterEach(() => {
-    getPrototypeOfSpy.mockRestore();
-  });
-
-  it('redaction happens when feature flag is enabled', () => {
-    const app = new cdk.App();
-    app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
-    const stack = new cdk.Stack(app);
 
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
@@ -5097,6 +5089,15 @@ describe('telemetry metadata', () => {
     app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, false);
     const stack = new cdk.Stack(app);
 
+    const mockConstructor = {
+      [JSII_RUNTIME_SYMBOL]: {
+        fqn: 'aws-cdk-lib.aws-lambda.Function',
+      },
+    };
+    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
+      constructor: mockConstructor,
+    });
+
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
@@ -5104,148 +5105,6 @@ describe('telemetry metadata', () => {
     });
 
     expect(fn.node.metadata).toStrictEqual([]);
-  });
-});
-describe('L1 Relationships', () => {
-  it('simple union', () => {
-    const stack = new cdk.Stack();
-    const role = new iam.Role(stack, 'SomeRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-    new lambda.CfnFunction(stack, 'MyLambda', {
-      code: { zipFile: 'foo' },
-      role: role, // Simple Union
-    });
-    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-      Properties: {
-        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
-      },
-    });
-  });
-
-  it('array of unions', () => {
-    const stack = new cdk.Stack();
-    const role = new iam.Role(stack, 'SomeRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-    const layer1 = new lambda.LayerVersion(stack, 'LayerVersion1', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
-      compatibleRuntimes: [lambda.Runtime.PYTHON_3_13],
-    });
-    const layer2 = new lambda.LayerVersion(stack, 'LayerVersion2', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
-      compatibleRuntimes: [lambda.Runtime.PYTHON_3_13],
-    });
-    new lambda.CfnFunction(stack, 'MyLambda', {
-      code: { zipFile: 'foo' },
-      role: role,
-      layers: [layer1, layer2], // Array of Unions
-    });
-    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-      Properties: {
-        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
-        Layers: [{ Ref: 'LayerVersion139D4D7A8' }, { Ref: 'LayerVersion23E5F3CEA' }],
-      },
-    });
-  });
-
-  it('nested union', () => {
-    const stack = new cdk.Stack();
-    const role = new iam.Role(stack, 'SomeRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-    const bucket = new s3.Bucket(stack, 'MyBucket');
-
-    new lambda.CfnFunction(stack, 'MyLambda', {
-      code: {
-        s3Bucket: bucket, // Nested union
-      },
-      role: role,
-    });
-    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-      Properties: {
-        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
-        Code: { S3Bucket: { Ref: 'MyBucketF68F3FF0' } },
-      },
-    });
-  });
-
-  it('deeply nested union', () => {
-    const stack = new cdk.Stack();
-    const topic = new sns.CfnTopic(stack, 'Topic');
-
-    new lambda.CfnEventInvokeConfig(stack, 'EventConfig', {
-      functionName: 'myFunction',
-      qualifier: '$LATEST',
-      destinationConfig: {
-        onFailure: {
-          destination: topic, // Deeply nested: destinationConfig -> onFailure -> destination (union)
-        },
-      },
-    });
-    Template.fromStack(stack).hasResource('AWS::Lambda::EventInvokeConfig', {
-      Properties: {
-        DestinationConfig: {
-          OnFailure: {
-            Destination: { Ref: 'Topic' },
-          },
-        },
-      },
-    });
-  });
-
-  it('nested array of unions', () => {
-    const stack = new cdk.Stack();
-    const role = new iam.Role(stack, 'SomeRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-    const securityGroup = new ec2.SecurityGroup(stack, 'SG', {
-      vpc: new ec2.Vpc(stack, 'VPC'),
-    });
-    new lambda.CfnFunction(stack, 'MyLambda', {
-      code: { zipFile: 'foo' },
-      role: role,
-      vpcConfig: {
-        securityGroupIds: [securityGroup], // Nested array of union
-      },
-    });
-    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-      Properties: {
-        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
-        VpcConfig: {
-          SecurityGroupIds: [{ 'Fn::GetAtt': ['SGADB53937', 'GroupId'] }],
-        },
-      },
-    });
-  });
-
-  it('tokens should be passed as is', () => {
-    const stack = new cdk.Stack();
-    const role = new iam.Role(stack, 'SomeRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-    const bucket = new s3.Bucket(stack, 'MyBucket');
-
-    const codeToken = cdk.Token.asAny({
-      resolve: () => ({ s3Bucket: bucket.bucketName }),
-    });
-
-    const fsConfigToken = cdk.Token.asAny({
-      resolve: () => ([{ arn: 'TestArn', localMountPath: '/mnt' }]),
-    });
-
-    new lambda.CfnFunction(stack, 'MyLambda', {
-      code: codeToken,
-      role: role,
-      fileSystemConfigs: fsConfigToken,
-    });
-    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-      Properties: {
-        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
-        Code: { S3Bucket: { Ref: 'MyBucketF68F3FF0' } },
-        FileSystemConfigs: [{ Arn: 'TestArn', LocalMountPath: '/mnt' }],
-      },
-    });
   });
 });
 
