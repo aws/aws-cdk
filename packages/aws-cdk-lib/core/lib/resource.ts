@@ -16,7 +16,7 @@ import { Token, Tokenization } from './token';
 import { Construct, IConstruct } from 'constructs';
 
 /**
- * Interface for the Resource construct.
+ * Interface for L2 Resource constructs.
  */
 export interface IResource extends IConstruct, IEnvironmentAware {
   /**
@@ -83,7 +83,7 @@ export interface ResourceProps {
 }
 
 /**
- * A construct which represents an AWS resource.
+ * An L2 construct which represents an AWS resource.
  */
 export abstract class Resource extends Construct implements IResource {
   /**
