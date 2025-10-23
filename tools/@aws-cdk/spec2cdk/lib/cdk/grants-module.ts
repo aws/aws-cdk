@@ -13,7 +13,7 @@ import {
   Type,
 } from '@cdklabs/typewriter';
 import { camelcasedResourceName, referencePropertyName } from '../naming';
-import { findArnProperty } from './resource-class';
+import { findArnProperty } from './resource-decider';
 
 const $this = $E(expr.this_());
 
@@ -71,7 +71,6 @@ export class GrantsModule extends Module {
         name: 'resource',
         immutable: true,
         type: resourceRefType,
-        protected: true, // TODO I actually want private
       });
 
       const init = classType.addInitializer({
@@ -93,7 +92,6 @@ export class GrantsModule extends Module {
           name: encryptedResourcePropName,
           immutable: true,
           type: iEncryptedResourceType,
-          protected: true, // TODO I actually want private
           optional: true,
         });
 

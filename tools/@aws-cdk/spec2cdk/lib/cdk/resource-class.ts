@@ -28,7 +28,7 @@ import {
 } from '@cdklabs/typewriter';
 import { CDK_CORE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
-import { ResourceDecider, shouldBuildReferenceInterface } from './resource-decider';
+import { findArnProperty, ResourceDecider, shouldBuildReferenceInterface } from './resource-decider';
 import { TypeConverter } from './type-converter';
 import {
   cfnParserNameFromType,
@@ -237,7 +237,7 @@ export class ResourceClass extends ClassType {
       return;
     }
 
-    const cfnArnProperty = this.decider.findArnProperty();
+    const cfnArnProperty = findArnProperty(this.resource);
     if (cfnArnProperty == null) {
       return;
     }
@@ -736,17 +736,5 @@ function mkImportClass(largerScope: IScope): ClassType {
   });
   largerScope.linkSymbol(new ThingSymbol(className, scope), expr.ident(className));
   return innerClass;
-}
-
-// TODO deduplicate with ResourceDecider.findArnProperty
-export function findArnProperty(resource: Resource): undefined | string {
-  const possibleArnNames = ['Arn', `${resource.name}Arn`];
-  for (const name of possibleArnNames) {
-    const prop = resource.attributes[name];
-    if (prop) {
-      return name;
-    }
-  }
-  return undefined;
 }
 

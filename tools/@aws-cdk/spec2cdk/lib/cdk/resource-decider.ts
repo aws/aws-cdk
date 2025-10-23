@@ -80,23 +80,6 @@ export class ResourceDecider {
     }
   }
 
-  /**
-   * Find an ARN property for this resource
-   *
-   * Returns `undefined` if no ARN property is found, or if the ARN property is already
-   * included in the primary identifier.
-   */
-  public findArnProperty() {
-    const possibleArnNames = ['Arn', `${this.resource.name}Arn`];
-    for (const name of possibleArnNames) {
-      const prop = this.resource.attributes[name];
-      if (prop && !this.resource.primaryIdentifier?.includes(name)) {
-        return name;
-      }
-    }
-    return undefined;
-  }
-
   private convertReferenceProps() {
     // Primary identifier. We assume all parts are strings.
     const primaryIdentifier = this.resource.primaryIdentifier ?? [];
@@ -128,7 +111,7 @@ export class ResourceDecider {
       }
     }
 
-    const arnProp = this.findArnProperty();
+    const arnProp = findArnProperty(this.resource);
     if (arnProp) {
       this.referenceProps.push({
         declaration: {
@@ -476,4 +459,21 @@ function enumerate<A>(xs: A[]): Array<[number, A]> {
 
 export function shouldBuildReferenceInterface(resource: Resource) {
   return true || REFERENCE_PROP_SERVICES.some(s => resource.cloudFormationType.toLowerCase().startsWith(`aws::${s}::`));
+}
+
+/**
+ * Find an ARN property for this resource
+ *
+ * Returns `undefined` if no ARN property is found, or if the ARN property is already
+ * included in the primary identifier.
+ */
+export function findArnProperty(resource: Resource): undefined | string {
+  const possibleArnNames = ['Arn', `${resource.name}Arn`];
+  for (const name of possibleArnNames) {
+    const prop = resource.attributes[name];
+    if (prop) {
+      return name;
+    }
+  }
+  return undefined;
 }
