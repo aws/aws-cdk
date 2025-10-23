@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`asdas 1`] = `
+"/* eslint-disable prettier/prettier, @stylistic/max-len */
+import * as sns from "aws-cdk-lib/aws-sns";
+import * as iam from "aws-cdk-lib/aws-iam";
+
+export class TopicGrants {
+  public readonly resource: sns.ITopicRef;
+
+  public readonly encryptedResource?: iam.IEncryptedResource;
+
+  public readonly policyResource?: iam.IResourceWithPolicy;
+
+  public constructor(resource: sns.ITopicRef, encryptedResource?: iam.IEncryptedResource, policyResource?: iam.IResourceWithPolicy) {
+    this.resource = resource;
+    this.encryptedResource = encryptedResource;
+    this.policyResource = policyResource;
+  }
+
+  public publish(grantee: iam.IGrantable): iam.Grant {
+    const actions = ["sns:Publish"];
+    this.encryptedResource?.grantOnKey(grantee, "kms:Decrypt", "kms:GenerateDataKey*");
+    return (this.policyResource ? iam.Grant.addToPrincipalOrResource({
+      "actions": actions,
+      "grantee": grantee,
+      "resourceArns": [this.resource.topicRef.topicArn],
+      "resource": this.policyResource
+    }) : iam.Grant.addToPrincipal({
+      "actions": actions,
+      "grantee": grantee,
+      "resourceArns": [this.resource.topicRef.topicArn]
+    }));
+  }
+
+  public subscribe(grantee: iam.IGrantable): iam.Grant {
+    const actions = ["sns:Subscribe"];
+    return (this.policyResource ? iam.Grant.addToPrincipalOrResource({
+      "actions": actions,
+      "grantee": grantee,
+      "resourceArns": [this.resource.topicRef.topicArn],
+      "resource": this.policyResource
+    }) : iam.Grant.addToPrincipal({
+      "actions": actions,
+      "grantee": grantee,
+      "resourceArns": [this.resource.topicRef.topicArn]
+    }));
+  }
+}"
+`;

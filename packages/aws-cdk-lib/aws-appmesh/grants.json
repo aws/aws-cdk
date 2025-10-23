@@ -1,0 +1,23 @@
+{
+  "resources": {
+    "VirtualGateway": {
+      "grants": {
+        "streamAggregatedResources": {
+          "actions": [
+            "appmesh:StreamAggregatedResources"
+          ]
+        }
+      }
+    },
+    "VirtualNode": {
+      "grants": {
+        "streamAggregatedResources": {
+          "actions": [
+            "appmesh:StreamAggregatedResources"
+          ]
+        }
+      }
+    }
+  }
+}
+

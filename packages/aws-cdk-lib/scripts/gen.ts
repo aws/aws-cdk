@@ -1,6 +1,6 @@
 import * as path from 'node:path';
+import { legacyGenerateAll, ModuleMap } from '@aws-cdk/spec2cdk';
 import * as fs from 'fs-extra';
-import { generateAll, ModuleMap } from './codegen';
 import submodulesGen from './submodules';
 
 const awsCdkLibDir = path.join(__dirname, '..');
@@ -17,7 +17,7 @@ main().catch(e => {
 async function main() {
   // Generate all L1s based on config in scope-map.json
 
-  const generated = (await generateAll(awsCdkLibDir, {
+  const generated = (await legacyGenerateAll(awsCdkLibDir, {
     coreImport: '../../core',
     cloudwatchImport: '../../aws-cloudwatch',
     skippedServices: [],

@@ -1,0 +1,39 @@
+{
+  "resources": {
+    "ApiKey": {
+      "grants": {
+        "read": {
+          "actions": [
+            "apigateway:GET"
+          ]
+        },
+        "write": {
+          "actions": [
+            "apigateway:POST",
+            "apigateway:PUT",
+            "apigateway:PATCH",
+            "apigateway:DELETE"
+          ]
+        },
+        "readWrite": {
+          "actions": [
+            "apigateway:GET",
+            "apigateway:POST",
+            "apigateway:PUT",
+            "apigateway:PATCH",
+            "apigateway:DELETE"
+          ]
+        }
+      }
+    },
+    "Method": {
+      "grants": {
+        "execute": {
+          "actions": [
+            "execute-api:Invoke"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -5,7 +5,7 @@ import * as pLimit from 'p-limit';
 import * as pkglint from './pkglint';
 import { CodeGeneratorOptions, GenerateAllOptions, ModuleMap, ModuleMapScope } from './types';
 import type { ModuleImportLocations } from '../cdk/cdk';
-import { generate as generateModules } from '../generate';
+import { defaultFilePatterns, generateSome as generateModules } from '../generate';
 import { log } from '../util';
 
 export * from './types';
@@ -49,11 +49,7 @@ export default async function generate(
     {
       outputPath: outPath ?? 'lib',
       clearOutput: false,
-      filePatterns: {
-        resources: ({ serviceShortName }) => `${serviceShortName}.generated.ts`,
-        augmentations: ({ serviceShortName }) => `${serviceShortName}-augmentations.generated.ts`,
-        cannedMetrics: ({ serviceShortName }) => `${serviceShortName}-canned-metrics.generated.ts`,
-      },
+      filePatterns: defaultFilePatterns(),
       importLocations: {
         core: coreImport,
         coreHelpers: `${coreImport}/${coreImport === '.' ? '' : 'lib/'}helpers-internal`,
@@ -110,11 +106,15 @@ function computeSuffix(scope: string, allScopes: string[]): string | undefined {
  * Generates L1s for all submodules of a monomodule. Modules to generate are
  * chosen based on the contents of the `scopeMapPath` file. This is intended for
  * use in generated L1s in aws-cdk-lib.
+ *
+ * This entrypoint is called from `aws-cdk-lib`s pre-build script. It is distinct
+ * from the `generateAll()` function in a sibling module to this one.
+ *
  * @param outPath The root directory to generate L1s in
  * @param param1  Options
  * @returns       A ModuleMap containing the ModuleDefinition and CFN scopes for each generated module.
  */
-export async function generateAll(
+export async function legacyGenerateAll(
   outPath: string,
   { scopeMapPath, skippedServices, ...options }: GenerateAllOptions,
 ): Promise<ModuleMap> {
@@ -162,11 +162,7 @@ export async function generateAll(
     {
       outputPath: outPath,
       clearOutput: false,
-      filePatterns: {
-        resources: ({ moduleName: m, serviceShortName: s }) => `${m}/lib/${s}.generated.ts`,
-        augmentations: ({ moduleName: m, serviceShortName: s }) => `${m}/lib/${s}-augmentations.generated.ts`,
-        cannedMetrics: ({ moduleName: m, serviceShortName: s }) => `${m}/lib/${s}-canned-metrics.generated.ts`,
-      },
+      filePatterns: defaultFilePatterns(),
       importLocations: {
         core: options.coreImport,
         coreHelpers: `${options.coreImport}/lib/helpers-internal`,

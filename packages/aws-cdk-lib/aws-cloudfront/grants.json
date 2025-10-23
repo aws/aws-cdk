@@ -1,0 +1,13 @@
+{
+  "resources": {
+    "Distribution": {
+      "grants": {
+        "createInvalidation": {
+          "actions": [
+            "cloudfront:CreateInvalidation"
+          ]
+        }
+      }
+    }
+  }
+}

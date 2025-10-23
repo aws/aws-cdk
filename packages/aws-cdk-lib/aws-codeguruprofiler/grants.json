@@ -1,0 +1,23 @@
+{
+  "resources": {
+    "ProfilingGroup": {
+      "grants": {
+        "publish": {
+          "actions": [
+            "codeguru-profiler:ConfigureAgent",
+            "codeguru-profiler:PostAgentProfile"
+          ]
+        },
+        "read": {
+          "actions": [
+            "codeguru-profiler:GetProfile",
+            "codeguru-profiler:DescribeProfilingGroup"
+          ]
+        }
+      }
+    }
+  }
+}
+
+
+

@@ -1,0 +1,17 @@
+{
+  "resources": {
+    "ReportGroup": {
+      "grants": {
+        "write": {
+          "actions": [
+            "codebuild:CreateReport",
+            "codebuild:UpdateReport",
+            "codebuild:BatchPutCodeCoverages",
+            "codebuild:BatchPutTestCases"
+          ]
+        }
+      }
+    }
+  }
+}
+

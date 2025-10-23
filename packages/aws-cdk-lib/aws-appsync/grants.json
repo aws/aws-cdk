@@ -1,0 +1,49 @@
+{
+  "resources": {
+    "ChannelNamespace": {
+      "grants": {
+        "publish": {
+          "actions": [
+            "appsync:EventPublish"
+          ]
+        },
+        "subscribe": {
+          "actions": [
+            "appsync:EventSubscribe"
+          ]
+        },
+        "publishAndSubscribe": {
+          "actions": [
+            "appsync:EventPublish",
+            "appsync:EventSubscribe"
+          ]
+        }
+      }
+    },
+    "EventApi": {
+      "grants": {
+        "connect": {
+          "actions": [
+            "appmesh:EventConnect"
+          ]
+        },
+        "publish": {
+          "actions": [
+            "appsync:EventPublish"
+          ]
+        },
+        "subscribe": {
+          "actions": [
+            "appsync:EventSubscribe"
+          ]
+        },
+        "publishAndSubscribe": {
+          "actions": [
+            "appsync:EventPublish",
+            "appsync:EventSubscribe"
+          ]
+        }
+      }
+    }
+  }
+}

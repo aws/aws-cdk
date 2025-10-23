@@ -7,3 +7,5 @@ export * from './shared';
 export * from './capacity';
 export * from './billing';
 export * from './encryption';
+export * from './table-grants';
+export * from './stream-grants';
