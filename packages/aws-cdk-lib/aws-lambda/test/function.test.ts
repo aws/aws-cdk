@@ -55,15 +55,7 @@ describe('function', () => {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
       },
       DependsOn: ['MyLambdaServiceRole4539ECB6'],
     });
@@ -116,15 +108,7 @@ describe('function', () => {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
       },
       DependsOn: ['MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6'],
     });
@@ -919,15 +903,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
         DeadLetterConfig: {
           TargetArn: {
             'Fn::GetAtt': [
@@ -1023,15 +999,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
         DeadLetterConfig: {
           TargetArn: {
             'Fn::GetAtt': [
@@ -1096,15 +1064,7 @@ describe('function', () => {
           'Arn',
         ],
       },
-      Runtime: {
-        'Fn::FindInMap': [
-          'LatestNodeRuntimeMap',
-          {
-            Ref: 'AWS::Region',
-          },
-          'value',
-        ],
-      },
+      Runtime: 'nodejs22.x',
     });
   });
 
@@ -1343,15 +1303,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
         TracingConfig: {
           Mode: 'Active',
         },
@@ -1411,15 +1363,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
         TracingConfig: {
           Mode: 'Active',
         },
@@ -1480,15 +1424,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
         TracingConfig: {
           Mode: 'PassThrough',
         },
@@ -1548,15 +1484,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
         TracingConfig: {
           Mode: 'PassThrough',
         },
@@ -1592,15 +1520,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
       },
       DependsOn: [
         'MyLambdaServiceRole4539ECB6',
@@ -3925,9 +3845,9 @@ describe('function', () => {
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'bar',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrow('SnapStart currently not supported by runtime nodejs18.x');
+      })).toThrow('SnapStart currently not supported by runtime nodejs20.x');
     });
 
     test('arm64 function using snapStart', () => {
@@ -4005,15 +3925,7 @@ describe('function', () => {
         {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
-          Runtime: {
-            'Fn::FindInMap': [
-              'LatestNodeRuntimeMap',
-              {
-                Ref: 'AWS::Region',
-              },
-              'value',
-            ],
-          },
+          Runtime: 'nodejs22.x',
           RecursiveLoop: 'Terminate',
         },
       });
@@ -4033,15 +3945,7 @@ describe('function', () => {
         {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
-          Runtime: {
-            'Fn::FindInMap': [
-              'LatestNodeRuntimeMap',
-              {
-                Ref: 'AWS::Region',
-              },
-              'value',
-            ],
-          },
+          Runtime: 'nodejs22.x',
           RecursiveLoop: 'Allow',
         },
       });
@@ -4060,15 +3964,7 @@ describe('function', () => {
         {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
-          Runtime: {
-            'Fn::FindInMap': [
-              'LatestNodeRuntimeMap',
-              {
-                Ref: 'AWS::Region',
-              },
-              'value',
-            ],
-          },
+          Runtime: 'nodejs22.x',
           // for default, if the property is not set up in stack it doesn't show up in the template.
         },
       });
@@ -4332,15 +4228,7 @@ test('set ephemeral storage to desired size', () => {
     {
       Code: { ZipFile: 'foo' },
       Handler: 'bar',
-      Runtime: {
-        'Fn::FindInMap': [
-          'LatestNodeRuntimeMap',
-          {
-            Ref: 'AWS::Region',
-          },
-          'value',
-        ],
-      },
+      Runtime: 'nodejs22.x',
       EphemeralStorage: {
         Size: 1024,
       },
@@ -4377,15 +4265,7 @@ test('FunctionVersionUpgrade adds new description to function', () => {
     {
       Code: { ZipFile: 'foo' },
       Handler: 'bar',
-      Runtime: {
-        'Fn::FindInMap': [
-          'LatestNodeRuntimeMap',
-          {
-            Ref: 'AWS::Region',
-          },
-          'value',
-        ],
-      },
+      Runtime: 'nodejs22.x',
       Description: Match.stringLikeRegexp('my description version-hash'),
     },
   });
@@ -4746,15 +4626,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: {
-          'Fn::FindInMap': [
-            'LatestNodeRuntimeMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'value',
-          ],
-        },
+        Runtime: 'nodejs22.x',
       },
     });
   });
@@ -4849,7 +4721,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs22.x',
       },
     });
   });
@@ -5033,7 +4905,7 @@ describe('CMCMK', () => {
     new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromCustomCommand('function.test.handler7.zip', ['node'], commandOptions),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
     });
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
@@ -5041,7 +4913,7 @@ describe('CMCMK', () => {
         Code: {
           SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
         },
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs20.x',
         Handler: 'index.handler',
       },
     });
@@ -5068,7 +4940,7 @@ describe('CMCMK', () => {
     new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromCustomCommand('function.test.handler7.zip', ['node']),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
     });
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
@@ -5076,7 +4948,7 @@ describe('CMCMK', () => {
         Code: {
           SourceKMSKeyArn: Match.absent(),
         },
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs20.x',
         Handler: 'index.handler',
       },
     });
@@ -5174,24 +5046,32 @@ describe('Lambda Function log group behavior', () => {
 });
 
 describe('telemetry metadata', () => {
-  it('redaction happens when feature flag is enabled', () => {
-    const app = new cdk.App();
-    app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
-    const stack = new cdk.Stack(app);
+  let getPrototypeOfSpy: jest.SpyInstance;
 
+  beforeEach(() => {
     const mockConstructor = {
       [JSII_RUNTIME_SYMBOL]: {
         fqn: 'aws-cdk-lib.aws-lambda.Function',
       },
     };
-    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
+    getPrototypeOfSpy = jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
       constructor: mockConstructor,
     });
+  });
+
+  afterEach(() => {
+    getPrototypeOfSpy.mockRestore();
+  });
+
+  it('redaction happens when feature flag is enabled', () => {
+    const app = new cdk.App();
+    app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
+    const stack = new cdk.Stack(app);
 
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
     });
 
     fn.addEnvironment('foo', '1234567890', {
@@ -5217,22 +5097,155 @@ describe('telemetry metadata', () => {
     app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, false);
     const stack = new cdk.Stack(app);
 
-    const mockConstructor = {
-      [JSII_RUNTIME_SYMBOL]: {
-        fqn: 'aws-cdk-lib.aws-lambda.Function',
-      },
-    };
-    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
-      constructor: mockConstructor,
-    });
-
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
     });
 
     expect(fn.node.metadata).toStrictEqual([]);
+  });
+});
+describe('L1 Relationships', () => {
+  it('simple union', () => {
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'SomeRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    new lambda.CfnFunction(stack, 'MyLambda', {
+      code: { zipFile: 'foo' },
+      role: role, // Simple Union
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
+      },
+    });
+  });
+
+  it('array of unions', () => {
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'SomeRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    const layer1 = new lambda.LayerVersion(stack, 'LayerVersion1', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+      compatibleRuntimes: [lambda.Runtime.PYTHON_3_13],
+    });
+    const layer2 = new lambda.LayerVersion(stack, 'LayerVersion2', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+      compatibleRuntimes: [lambda.Runtime.PYTHON_3_13],
+    });
+    new lambda.CfnFunction(stack, 'MyLambda', {
+      code: { zipFile: 'foo' },
+      role: role,
+      layers: [layer1, layer2], // Array of Unions
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
+        Layers: [{ Ref: 'LayerVersion139D4D7A8' }, { Ref: 'LayerVersion23E5F3CEA' }],
+      },
+    });
+  });
+
+  it('nested union', () => {
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'SomeRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    new lambda.CfnFunction(stack, 'MyLambda', {
+      code: {
+        s3Bucket: bucket, // Nested union
+      },
+      role: role,
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
+        Code: { S3Bucket: { Ref: 'MyBucketF68F3FF0' } },
+      },
+    });
+  });
+
+  it('deeply nested union', () => {
+    const stack = new cdk.Stack();
+    const topic = new sns.CfnTopic(stack, 'Topic');
+
+    new lambda.CfnEventInvokeConfig(stack, 'EventConfig', {
+      functionName: 'myFunction',
+      qualifier: '$LATEST',
+      destinationConfig: {
+        onFailure: {
+          destination: topic, // Deeply nested: destinationConfig -> onFailure -> destination (union)
+        },
+      },
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::EventInvokeConfig', {
+      Properties: {
+        DestinationConfig: {
+          OnFailure: {
+            Destination: { Ref: 'Topic' },
+          },
+        },
+      },
+    });
+  });
+
+  it('nested array of unions', () => {
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'SomeRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'SG', {
+      vpc: new ec2.Vpc(stack, 'VPC'),
+    });
+    new lambda.CfnFunction(stack, 'MyLambda', {
+      code: { zipFile: 'foo' },
+      role: role,
+      vpcConfig: {
+        securityGroupIds: [securityGroup], // Nested array of union
+      },
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
+        VpcConfig: {
+          SecurityGroupIds: [{ 'Fn::GetAtt': ['SGADB53937', 'GroupId'] }],
+        },
+      },
+    });
+  });
+
+  it('tokens should be passed as is', () => {
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'SomeRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    const codeToken = cdk.Token.asAny({
+      resolve: () => ({ s3Bucket: bucket.bucketName }),
+    });
+
+    const fsConfigToken = cdk.Token.asAny({
+      resolve: () => ([{ arn: 'TestArn', localMountPath: '/mnt' }]),
+    });
+
+    new lambda.CfnFunction(stack, 'MyLambda', {
+      code: codeToken,
+      role: role,
+      fileSystemConfigs: fsConfigToken,
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
+        Code: { S3Bucket: { Ref: 'MyBucketF68F3FF0' } },
+        FileSystemConfigs: [{ Arn: 'TestArn', LocalMountPath: '/mnt' }],
+      },
+    });
   });
 });
 
