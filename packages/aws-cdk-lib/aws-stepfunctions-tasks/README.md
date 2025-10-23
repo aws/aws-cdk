@@ -973,6 +973,18 @@ new tasks.EmrCreateCluster(this, 'SpotSpecification', {
 });
 ```
 
+You can [customize EBS root device volume](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-custom-ami-root-volume-size.html).
+
+```ts
+new tasks.EmrCreateCluster(this, 'Create Cluster', {
+  instances: {},
+  name: 'ClusterName',
+  ebsRootVolumeIops: 4000,
+  ebsRootVolumeSize: Size.gibibytes(20),
+  ebsRootVolumeThroughput: 200,
+});
+```
+
 If you want to run multiple steps in [parallel](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-concurrent-steps.html),
 you can specify the `stepConcurrencyLevel` property. The concurrency range is between 1
 and 256 inclusive, where the default concurrency of 1 means no step concurrency is allowed.
@@ -995,6 +1007,47 @@ new tasks.EmrCreateCluster(this, 'Create Cluster', {
   instances: {},
   name: 'ClusterName',
   autoTerminationPolicyIdleTimeout: Duration.seconds(100),
+});
+```
+
+If you want to use [managed scaling](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-scaling.html),
+you can specify the `managedScalingPolicy` property.
+
+```ts
+new tasks.EmrCreateCluster(this, 'CreateCluster', {
+  instances: {
+    instanceFleets: [
+      {
+        instanceFleetType: tasks.EmrCreateCluster.InstanceRoleType.CORE,
+        instanceTypeConfigs: [
+          {
+            instanceType: 'm5.xlarge',
+          },
+        ],
+        targetOnDemandCapacity: 1,
+      },
+      {
+        instanceFleetType: tasks.EmrCreateCluster.InstanceRoleType.MASTER,
+        instanceTypeConfigs: [
+          {
+            instanceType: 'm5.xlarge',
+          },
+        ],
+        targetOnDemandCapacity: 1,
+      },
+    ],
+  },
+  name: 'ClusterName',
+  releaseLabel: 'emr-7.9.0',
+  managedScalingPolicy: {
+    computeLimits: {
+      unitType: tasks.EmrCreateCluster.ComputeLimitsUnitType.INSTANCE_FLEET_UNITS,
+      maximumCapacityUnits: 4,
+      minimumCapacityUnits: 1,
+      maximumOnDemandCapacityUnits: 4,
+      maximumCoreCapacityUnits: 2,
+    },
+  },
 });
 ```
 
@@ -1540,7 +1593,7 @@ const connection = new events.Connection(this, 'Connection', {
 
 new tasks.HttpInvoke(this, 'Invoke HTTP API', {
   apiRoot: 'https://api.example.com',
-  apiEndpoint: sfn.TaskInput.fromText('path/to/resource'),
+  apiEndpoint: sfn.TaskInput.fromText(sfn.JsonPath.format('resource/{}/details', sfn.JsonPath.stringAt('$.resourceId'))),
   body: sfn.TaskInput.fromObject({ foo: 'bar' }),
   connection,
   headers: sfn.TaskInput.fromObject({ 'Content-Type': 'application/json' }),

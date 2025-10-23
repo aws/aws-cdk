@@ -22,6 +22,11 @@ export interface ModuleImportLocations {
    * @default 'aws-cdk-lib/aws-cloudwatch'
    */
   readonly cloudwatch?: string;
+  /**
+   * The root location of all the modules
+   * @default '../..'
+   */
+  readonly modulesRoot?: string;
 }
 
 export class CdkCore extends ExternalModule {
@@ -41,6 +46,7 @@ export class CdkCore extends ExternalModule {
   public readonly ITaggable = Type.fromName(this, 'ITaggable');
   public readonly ITaggableV2 = Type.fromName(this, 'ITaggableV2');
   public readonly IResolvable = Type.fromName(this, 'IResolvable');
+  public readonly Stack = Type.fromName(this, 'Stack');
 
   public readonly objectToCloudFormation = makeCallableExpr(this, 'objectToCloudFormation');
   public readonly stringToCloudFormation = makeCallableExpr(this, 'stringToCloudFormation');
@@ -93,6 +99,7 @@ export class CdkInternalHelpers extends ExternalModule {
   public readonly FromCloudFormationResult = $T(Type.fromName(this, 'FromCloudFormationResult'));
   public readonly FromCloudFormation = $T(Type.fromName(this, 'FromCloudFormation'));
   public readonly FromCloudFormationPropertyObject = Type.fromName(this, 'FromCloudFormationPropertyObject');
+  public readonly TemplateString = Type.fromName(this, 'TemplateString');
 
   constructor(parent: CdkCore) {
     super(`${parent.fqn}/core/lib/helpers-internal`);
