@@ -448,7 +448,6 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
         grantee,
         actions: options.streamActions,
         resourceArns: [this.tableStreamArn],
-        scope: this,
       });
     }
 
