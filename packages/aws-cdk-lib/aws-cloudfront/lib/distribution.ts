@@ -17,6 +17,7 @@ import { CacheBehavior } from './private/cache-behavior';
 import { formatDistributionArn, grant } from './private/utils';
 import * as acm from '../../aws-certificatemanager';
 import * as cloudwatch from '../../aws-cloudwatch';
+import * as elasticloadbalancingv2 from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
@@ -716,7 +717,9 @@ export class Distribution extends Resource implements IDistribution {
       const generatedId = Names.uniqueId(scope).slice(-ORIGIN_ID_MAX_LENGTH);
       const distributionId = this.distributionId;
       const originBindConfig = origin.bind(scope, { originId: generatedId, distributionId: Lazy.string({ produce: () => this.distributionId }) });
-      const originId = originBindConfig.originProperty?.id ?? generatedId;
+      const originId = (originBindConfig.originProperty?.id as elasticloadbalancingv2.ILoadBalancerRef)?.loadBalancerRef?.loadBalancerArn
+        ?? originBindConfig.originProperty?.id
+        ?? generatedId;
       const duplicateId = this.boundOrigins.find(boundOrigin => boundOrigin.originProperty?.id === originBindConfig.originProperty?.id);
       if (duplicateId) {
         throw new ValidationError(`Origin with id ${duplicateId.originProperty?.id} already exists. OriginIds must be unique within a distribution`, this);
@@ -741,7 +744,8 @@ export class Distribution extends Resource implements IDistribution {
         );
         return originGroupId;
       }
-      return originBindConfig.originProperty?.id ?? originId;
+      return (originBindConfig.originProperty?.id as elasticloadbalancingv2.ILoadBalancerRef)?.loadBalancerRef?.loadBalancerArn
+        ?? originBindConfig.originProperty?.id ?? originId;
     }
   }
 
