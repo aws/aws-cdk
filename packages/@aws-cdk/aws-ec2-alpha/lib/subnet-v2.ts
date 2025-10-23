@@ -7,6 +7,7 @@ import {
   ISubnet,
   NetworkAcl,
   SubnetNetworkAclAssociation,
+  SubnetReference,
   SubnetType,
 } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
@@ -15,7 +16,6 @@ import { CidrBlock, CidrBlockIpv6, defaultSubnetName } from './util';
 import { RouteTable } from './route';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { SubnetReference } from 'aws-cdk-lib/aws-ec2/lib/ec2.generated';
 
 /**
  * Interface to define subnet CIDR
