@@ -12,7 +12,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface IRoleRef extends constructs.IConstruct {
+export interface IRoleRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Role resource.
    */
@@ -165,7 +165,7 @@ function CfnRolePropsFromCloudFormation(properties: any): cfn_parse.FromCloudFor
  *
  * @stability experimental
  */
-export interface IResourceRef extends constructs.IConstruct {
+export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Resource resource.
    */
@@ -391,7 +391,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface IRoleRef extends constructs.IConstruct {
+export interface IRoleRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Role resource.
    */
@@ -544,7 +544,7 @@ function CfnRolePropsFromCloudFormation(properties: any): cfn_parse.FromCloudFor
  *
  * @stability experimental
  */
-export interface IUserRef extends constructs.IConstruct {
+export interface IUserRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a User resource.
    */
@@ -697,7 +697,7 @@ function CfnUserPropsFromCloudFormation(properties: any): cfn_parse.FromCloudFor
  *
  * @stability experimental
  */
-export interface IPolicyRef extends constructs.IConstruct {
+export interface IPolicyRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Policy resource.
    */
@@ -859,7 +859,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface IRoleRef extends constructs.IConstruct {
+export interface IRoleRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Role resource.
    */
@@ -1012,7 +1012,7 @@ function CfnRolePropsFromCloudFormation(properties: any): cfn_parse.FromCloudFor
  *
  * @stability experimental
  */
-export interface ITaskRef extends constructs.IConstruct {
+export interface ITaskRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Task resource.
    */
@@ -1238,7 +1238,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface IRoleRef extends constructs.IConstruct {
+export interface IRoleRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Role resource.
    */
@@ -1391,7 +1391,7 @@ function CfnRolePropsFromCloudFormation(properties: any): cfn_parse.FromCloudFor
  *
  * @stability experimental
  */
-export interface IJobRef extends constructs.IConstruct {
+export interface IJobRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Job resource.
    */
@@ -1688,7 +1688,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface IRoleRef extends constructs.IConstruct {
+export interface IRoleRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Role resource.
    */
@@ -1841,7 +1841,7 @@ function CfnRolePropsFromCloudFormation(properties: any): cfn_parse.FromCloudFor
  *
  * @stability experimental
  */
-export interface IFunctionRef extends constructs.IConstruct {
+export interface IFunctionRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Function resource.
    */
