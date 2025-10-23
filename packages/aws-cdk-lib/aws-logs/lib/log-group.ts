@@ -11,11 +11,11 @@ import { IProcessor, Transformer } from './transformer';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
+import { Arn, ArnFormat, IResource, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface ILogGroup extends iam.IResourceWithPolicy {
+export interface ILogGroup extends IResource, iam.IResourceWithPolicy {
   /**
    * The ARN of this log group, with ':*' appended
    *
