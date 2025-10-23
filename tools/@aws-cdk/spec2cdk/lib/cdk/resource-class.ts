@@ -26,9 +26,10 @@ import {
   TypeDeclarationStatement,
   DocsSpec,
 } from '@cdklabs/typewriter';
+import { findNonIdentifierArnProperty } from './arn';
 import { CDK_CORE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
-import { findArnProperty, ResourceDecider } from './resource-decider';
+import { ResourceDecider } from './resource-decider';
 import { TypeConverter } from './type-converter';
 import {
   cfnParserNameFromType,
@@ -40,7 +41,6 @@ import {
   staticResourceTypeName,
 } from '../naming';
 import { splitDocumentation } from '../util';
-import { findArnProperty } from './reference-props';
 import { SelectiveImport, RelationshipDecider } from './relationship-decider';
 
 export interface ITypeHost {
@@ -237,7 +237,7 @@ export class ResourceClass extends ClassType {
       return;
     }
 
-    const cfnArnProperty = findArnProperty(this.resource);
+    const cfnArnProperty = findNonIdentifierArnProperty(this.resource);
     if (cfnArnProperty == null) {
       return;
     }

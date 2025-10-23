@@ -7,13 +7,15 @@ import {
   expr,
   Expression,
   ExternalModule,
+  InterfaceType,
   MemberVisibility,
   Module,
   stmt,
   Type,
 } from '@cdklabs/typewriter';
+import { PropertySpec } from '@cdklabs/typewriter/lib/property';
 import { camelcasedResourceName, referencePropertyName } from '../naming';
-import { findArnProperty } from './resource-decider';
+import { findArnProperty } from './arn';
 
 const $this = $E(expr.this_());
 
@@ -58,11 +60,43 @@ export class GrantsModule extends Module {
       const resource = resourceIndex[name];
 
       const hasPolicy = config.hasResourcePolicy ?? false;
+      const hasKeyActions = Object.values(config.grants)
+        .some(grant => grant.keyActions && grant.keyActions.length > 0);
 
       const arnMap = resourceArnMap(resource, config.grants);
       if (Object.keys(arnMap).length === 0) continue;
 
       const className = `${name}Grants`;
+
+      const propsProperties: PropertySpec[] = [{
+        name: 'resource',
+        type: Type.fromName(this, `${this.service.shortName}.I${resource.name}Ref`),
+        immutable: true,
+      }];
+
+      if (hasPolicy) {
+        propsProperties.push({
+          name: 'policyResource',
+          type: Type.fromName(this, 'iam.IResourceWithPolicy'),
+          optional: true,
+          immutable: true,
+        });
+      }
+      if (hasKeyActions) {
+        propsProperties.push({
+          name: encryptedResourcePropName,
+          type: Type.fromName(this, 'iam.IEncryptedResource'),
+          optional: true,
+          immutable: true,
+        });
+      }
+
+      const propsType = new InterfaceType(this, {
+        name: `${className}Props`,
+        export: false,
+        properties: propsProperties,
+      });
+
       const classType = new ClassType(this, {
         name: className,
         export: true,
@@ -83,14 +117,13 @@ export class GrantsModule extends Module {
         visibility: MemberVisibility.Private,
       });
 
-      const resourceParam = init.addParameter({
-        name: 'resource',
-        type: resourceRefType,
+      const propsParameter = init.addParameter({
+        name: 'props',
+        type: propsType.type,
       });
 
-      init.addBody(stmt.assign($this.resource, resourceParam));
+      init.addBody(stmt.assign($this.resource, propsParameter.prop('resource')));
 
-      const hasKeyActions = Object.values(config.grants).some(grant => grant.keyActions && grant.keyActions.length > 0);
       if (hasKeyActions) {
         const iEncryptedResourceType = Type.fromName(this, 'iam.IEncryptedResource');
         classType.addProperty({
@@ -100,35 +133,22 @@ export class GrantsModule extends Module {
           optional: true,
         });
 
-        const encryptedResourceParam = init.addParameter({
-          name: encryptedResourcePropName,
-          type: iEncryptedResourceType,
-          optional: true,
-        });
-
-        init.addBody(stmt.assign($this.prop(encryptedResourcePropName), encryptedResourceParam));
+        init.addBody(stmt.assign($this[encryptedResourcePropName], propsParameter.prop(encryptedResourcePropName)));
       }
 
       if (hasPolicy) {
         const resourceWithPolicy = Type.fromName(this, 'iam.IResourceWithPolicy');
-        const field = classType.addProperty({
+        classType.addProperty({
           name: 'policyResource',
           immutable: true,
           type: resourceWithPolicy,
           optional: true,
         });
-        const param = init.addParameter({
-          name: 'policyResource',
-          type: resourceWithPolicy,
-          optional: true,
-        });
-        init.addBody(
-          stmt.assign($this[field.name], param),
-        );
+        init.addBody(stmt.assign($this.policyResource, propsParameter.prop('policyResource')));
       }
 
       const factoryMethod = classType.addMethod({
-        name: 'from' + resource.name,
+        name: `from${resource.name}`,
         static: true,
         returnType: Type.fromName(this, `${classType.name}`),
       });
@@ -138,18 +158,28 @@ export class GrantsModule extends Module {
         type: resourceRefType,
       });
 
-      const resourceWithPolicy = expr.ident('resourceWithPolicy');
-      const encryptedResource = expr.ident('encryptedResource');
+      const props: Record<string, Expression> = {
+        resource: staticResourceParam,
+      };
+
+      if (hasKeyActions) {
+        props[encryptedResourcePropName] = expr.cond(
+          $E(expr.ident('iam.GrantableResources')).isEncryptedResource(staticResourceParam),
+          staticResourceParam,
+          expr.UNDEFINED,
+        );
+      }
+
+      if (hasPolicy) {
+        props.policyResource = expr.cond(
+          $E(expr.ident('iam.GrantableResources')).isResourceWithPolicy(staticResourceParam),
+          staticResourceParam,
+          expr.UNDEFINED,
+        );
+      }
+
       factoryMethod.addBody(
-        stmt.letVar(resourceWithPolicy, expr.UNDEFINED),
-        stmt.letVar(encryptedResource, expr.UNDEFINED),
-        stmt.if_($E(expr.ident('iam.GrantableResources')).isResourceWithPolicy(expr.ident('resource')))
-          .then(stmt.assign(resourceWithPolicy, staticResourceParam)),
-
-        stmt.if_($E(expr.ident('iam.GrantableResources')).isEncryptedResource(expr.ident('resource')))
-          .then(stmt.assign(encryptedResource, staticResourceParam)),
-
-        stmt.ret(Type.fromName(this, className).newInstance(staticResourceParam, encryptedResource, resourceWithPolicy)),
+        stmt.ret(Type.fromName(this, className).newInstance(expr.object(props))),
       );
 
       for (const [methodName, grantSchema] of Object.entries(config.grants)) {

@@ -73,53 +73,6 @@ export class ResourceDecider {
     }
   }
 
-  private convertReferenceProps() {
-    // Primary identifier. We assume all parts are strings.
-    const primaryIdentifier = this.resource.primaryIdentifier ?? [];
-    if (primaryIdentifier.length === 1) {
-      this.referenceProps.push({
-        declaration: {
-          name: referencePropertyName(primaryIdentifier[0], this.resource.name),
-          type: Type.STRING,
-          immutable: true,
-          docs: {
-            summary: `The ${primaryIdentifier[0]} of the ${this.resource.name} resource.`,
-          },
-        },
-        cfnValue: $this.ref,
-      });
-    } else if (primaryIdentifier.length > 1) {
-      for (const [i, cfnName] of enumerate(primaryIdentifier)) {
-        this.referenceProps.push({
-          declaration: {
-            name: referencePropertyName(cfnName, this.resource.name),
-            type: Type.STRING,
-            immutable: true,
-            docs: {
-              summary: `The ${cfnName} of the ${this.resource.name} resource.`,
-            },
-          },
-          cfnValue: splitSelect('|', i, $this.ref),
-        });
-      }
-    }
-
-    const arnProp = findArnProperty(this.resource);
-    if (arnProp) {
-      this.referenceProps.push({
-        declaration: {
-          name: referencePropertyName(arnProp, this.resource.name),
-          type: Type.STRING,
-          immutable: true,
-          docs: {
-            summary: `The ARN of the ${this.resource.name} resource.`,
-          },
-        },
-        cfnValue: $this[attributePropertyName(arnProp)],
-      });
-    }
-  }
-
   /**
    * Default mapping for a property
    */
@@ -438,23 +391,5 @@ export function deprecationMessage(property: Property): string | undefined {
       return 'this property will be ignored';
   }
 
-  return undefined;
-}
-
-
-/**
- * Find an ARN property for this resource
- *
- * Returns `undefined` if no ARN property is found, or if the ARN property is already
- * included in the primary identifier.
- */
-export function findArnProperty(resource: Resource): undefined | string {
-  const possibleArnNames = ['Arn', `${resource.name}Arn`];
-  for (const name of possibleArnNames) {
-    const prop = resource.attributes[name];
-    if (prop) {
-      return name;
-    }
-  }
   return undefined;
 }
