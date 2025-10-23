@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "16b2dca4330952dfe3cbdaa58729759a6bfb1782bb9b0dabb2961baf895d163b": {
+      "displayName": "BatchConsumableResourcePropertiesStack Template",
+      "source": {
+        "path": "BatchConsumableResourcePropertiesStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-3bba6f36": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "16b2dca4330952dfe3cbdaa58729759a6bfb1782bb9b0dabb2961baf895d163b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
