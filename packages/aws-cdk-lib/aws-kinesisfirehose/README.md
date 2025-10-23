@@ -125,6 +125,102 @@ const s3Destination = new firehose.S3Bucket(bucket, {
 });
 ```
 
+## Data Format Conversion
+
+Data format conversion allows automatic conversion of inputs from JSON to either Parquet or ORC.
+Converting JSON records to columnar formats like Parquet or ORC can help speed up analytical querying while also increasing compression efficiency.
+When data format conversion is specified, it automatically enables Snappy compression on the output.
+
+Only S3 Destinations support data format conversion.
+
+An example of defining an S3 destination configured with data format conversion:
+
+```ts
+declare const bucket: s3.Bucket;
+declare const schemaGlueTable: glue.CfnTable;
+const s3Destination = new firehose.S3Bucket(bucket, {
+  dataFormatConversion: {
+    schemaConfiguration: firehose.SchemaConfiguration.fromCfnTable(schemaGlueTable),
+    inputFormat: firehose.InputFormat.OPENX_JSON,
+    outputFormat: firehose.OutputFormat.PARQUET,
+  }
+});
+```
+
+When data format conversion is enabled, the Delivery Stream's buffering size must be at least 64 MiB. 
+Additionally, the default buffering size is changed from 5 MiB to 128 MiB. This mirrors the Cloudformation behavior.
+
+You can only parse JSON and transform it into either Parquet or ORC:
+- to read JSON using OpenX parser, choose `InputFormat.OPENX_JSON`.
+- to read JSON using Hive parser, choose `InputFormat.HIVE_JSON`.
+- to transform into Parquet, choose `OutputFormat.PARQUET`.
+- to transform into ORC, choose `OutputFormat.ORC`.
+
+The following subsections explain how to specify advanced configuration options for each input and output format if the defaults are not desirable
+
+### Input Format: OpenX JSON
+
+Example creation of custom OpenX JSON InputFormat:
+
+```ts
+const inputFormat = new firehose.OpenXJsonInputFormat({
+  lowercaseColumnNames: false,
+  columnToJsonKeyMappings: {"ts": "timestamp"},
+  convertDotsInJsonKeysToUnderscores: true,
+})
+```
+
+### Input Format: Hive JSON
+
+Example creation of custom Hive JSON InputFormat:
+
+```ts
+const inputFormat = new firehose.HiveJsonInputFormat({
+  timestampParsers: [
+    firehose.TimestampParser.fromFormatString('yyyy-MM-dd'),
+    firehose.TimestampParser.EPOCH_MILLIS,
+  ]
+})
+```
+
+Hive JSON allows you to specify custom timestamp formats to parse. The syntax of the format string is Joda Time.
+
+To parse timestamps formatted as milliseconds since epoch, use the convenience constant `TimestampParser.EPOCH_MILLIS`.
+
+### Output Format: Parquet
+
+Example of a custom Parquet OutputFormat, with all values changed from the defaults.
+
+```ts
+const outputFormat = new firehose.ParquetOutputFormat({
+  blockSize: Size.mebibytes(512),
+  compression: firehose.ParquetCompression.UNCOMPRESSED,
+  enableDictionaryCompression: true,
+  maxPadding: Size.bytes(10),
+  pageSize: Size.mebibytes(2),
+  writerVersion: firehose.ParquetWriterVersion.V2,
+})
+```
+
+### Output Format: ORC
+
+Example creation of custom ORC OutputFormat, with all values changed from the defaults.
+
+```ts
+const outputFormat = new firehose.OrcOutputFormat({
+  formatVersion: firehose.OrcFormatVersion.V0_11,
+  blockSize: Size.mebibytes(256),
+  compression: firehose.OrcCompression.NONE,
+  bloomFilterColumns: ['columnA'],
+  bloomFilterFalsePositiveProbability: 0.1,
+  dictionaryKeyThreshold: 0.7,
+  enablePadding: true,
+  paddingTolerance: 0.2,
+  rowIndexStride: 9000,
+  stripeSize: Size.mebibytes(32),
+})
+```
+
 ## Server-side Encryption
 
 Enabling server-side encryption (SSE) requires Amazon Data Firehose to encrypt all data

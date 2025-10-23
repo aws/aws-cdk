@@ -9,7 +9,7 @@ describe('CustomOrchestrationExecutor', () => {
   beforeEach(() => {
     stack = new Stack();
     testFunction = new lambda.Function(stack, 'TestFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('exports.handler = function() { }'),
     });

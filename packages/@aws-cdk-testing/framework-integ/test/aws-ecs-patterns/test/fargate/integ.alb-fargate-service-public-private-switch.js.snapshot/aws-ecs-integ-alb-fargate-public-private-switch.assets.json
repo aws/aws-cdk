@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "4acee6fbd77c9230804c69f35cebd32c7a1e8fffb3020981fb47edde4d5ec8a7": {
+      "displayName": "aws-ecs-integ-alb-fargate-public-private-switch Template",
+      "source": {
+        "path": "aws-ecs-integ-alb-fargate-public-private-switch.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-d1a695e3": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4acee6fbd77c9230804c69f35cebd32c7a1e8fffb3020981fb47edde4d5ec8a7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

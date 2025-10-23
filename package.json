@@ -12,7 +12,8 @@
     "pack": "./pack.sh",
     "compat": "./scripts/check-api-compatibility.sh",
     "bump": "./bump.sh",
-    "build-all": "tsc -b"
+    "build-all": "tsc -b",
+    "atmosphere-integ-test": "lerna run build --scope @aws-cdk/integration-test-deployment && node tools/@aws-cdk/integration-test-deployment/bin/index.js"
   },
   "devDependencies": {
     "@nx/workspace": "^20",
@@ -20,14 +21,14 @@
     "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "aws-sdk-js-codemod": "^2.4.5",
-    "cdk-generate-synthetic-examples": "^0.2.29",
+    "cdk-generate-synthetic-examples": "^0.2.32",
     "conventional-changelog-cli": "^2.2.2",
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.11",
     "jest-junit": "^13.2.0",
-    "jsii-diff": "1.113.0",
-    "jsii-pacmak": "1.113.0",
-    "jsii-reflect": "1.113.0",
+    "jsii-diff": "1.116.0",
+    "jsii-pacmak": "1.116.0",
+    "jsii-reflect": "1.116.0",
     "lerna": "^8.2.4",
     "nx": "^20",
     "semver": "^7.7.2",

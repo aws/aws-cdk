@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/efd9303469a91ba32da8a899dd9e9fde776ebf90f4ec36b3b387c41de681c1b2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/84c1e5a88c3cd11b190f70495ce57d23bc64fca5cfaf428fe0007c0b76733120.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -279,12 +279,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Providerpython39frameworkonEventinlinePolicyAddedToExecutionRole0012C4340"
-          }
-        ],
-        "/lambda-layer-kubectl-integ-stack/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/lambda-layer-kubectl-integ-stack/CustomResourcepython3.9": [

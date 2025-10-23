@@ -1,5 +1,6 @@
 import * as cdk from '../..';
 import { Match, Template } from '../../assertions';
+import * as glue from '../../aws-glue';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
@@ -672,6 +673,110 @@ describe('S3 destination', () => {
       ExtendedS3DestinationConfiguration: {
         CustomTimeZone: 'Asia/Tokyo',
       },
+    });
+  });
+
+  describe('data format conversion', () => {
+    let database: glue.CfnDatabase;
+    let table: glue.CfnTable;
+
+    beforeEach(() => {
+      database = new glue.CfnDatabase(stack, 'Database', {
+        databaseInput: {
+          description: 'A database',
+        },
+        catalogId: stack.account,
+      });
+
+      // Create a dummy table to use in the Delivery stream
+      table = new glue.CfnTable(stack, 'Table', {
+        databaseName: database.ref,
+        catalogId: database.catalogId,
+        tableInput: {
+          description: 'A table',
+        },
+      });
+    });
+
+    it('sets data format conversion', () => {
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: new firehose.S3Bucket(bucket, {
+          dataFormatConversion: {
+            schemaConfiguration: firehose.SchemaConfiguration.fromCfnTable(table),
+            inputFormat: firehose.InputFormat.OPENX_JSON,
+            outputFormat: firehose.OutputFormat.PARQUET,
+          },
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          DataFormatConversionConfiguration: {
+            Enabled: true,
+            SchemaConfiguration: {},
+            InputFormatConfiguration: {},
+            OutputFormatConfiguration: {},
+          },
+        },
+      });
+    });
+
+    it('throws when compression is set on the destination', () => {
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'Delivery Stream', {
+          destination: new firehose.S3Bucket(bucket, {
+            compression: firehose.Compression.SNAPPY,
+            dataFormatConversion: {
+              schemaConfiguration: firehose.SchemaConfiguration.fromCfnTable(table),
+              inputFormat: firehose.InputFormat.OPENX_JSON,
+              outputFormat: firehose.OutputFormat.ORC,
+            },
+          }),
+        });
+      }).toThrow(cdk.UnscopedValidationError);
+    });
+
+    it('throws when buffer size is less than the minimum', () => {
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'Delivery Stream', {
+          destination: new firehose.S3Bucket(bucket, {
+            bufferingSize: cdk.Size.mebibytes(63),
+            dataFormatConversion: {
+              schemaConfiguration: firehose.SchemaConfiguration.fromCfnTable(table),
+              inputFormat: firehose.InputFormat.OPENX_JSON,
+              outputFormat: firehose.OutputFormat.ORC,
+            },
+          }),
+        });
+      }).toThrow(cdk.ValidationError);
+    });
+
+    it('default buffer size is set to 128 MiB', () => {
+      new firehose.DeliveryStream(stack, 'Delivery Stream', {
+        destination: new firehose.S3Bucket(bucket, {
+          bufferingInterval: cdk.Duration.seconds(5),
+          dataFormatConversion: {
+            schemaConfiguration: firehose.SchemaConfiguration.fromCfnTable(table),
+            inputFormat: firehose.InputFormat.OPENX_JSON,
+            outputFormat: firehose.OutputFormat.ORC,
+          },
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          BufferingHints: {
+            IntervalInSeconds: 5,
+            SizeInMBs: 128,
+          },
+          DataFormatConversionConfiguration: {
+            Enabled: true,
+            SchemaConfiguration: {},
+            InputFormatConfiguration: {},
+            OutputFormatConfiguration: {},
+          },
+        },
+      });
     });
   });
 });

@@ -1,0 +1,108 @@
+{
+  "name": "@aws-cdk/mixins-preview",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Preview of CDK Mixins - composable, reusable abstractions that can be applied to any construct (L1, L2 or custom).",
+  "main": "lib/mixins/index.js",
+  "types": "lib/mixins/index.d.ts",
+  "exports": {
+    "./.jsii": "./.jsii",
+    "./.warnings.jsii.js": "./.warnings.jsii.js",
+    "./mixins": "./index.js"
+  },
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.mixins.preview",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-mixins-preview"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.Mixins.Preview",
+        "packageId": "Amazon.CDK.Mixins.Preview",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.mixins-preview",
+        "module": "aws_cdk.mixins_preview",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
+        ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdkmixinspreview"
+      }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    },
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/mixins-preview"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "construct",
+    "library",
+    "mixins",
+    "preview"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "aws-cdk-lib": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "aws-cdk-lib": "^0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "separate-module": false,
+  "engines": {
+    "node": ">= 18.0.0"
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "awscdkio": {
+    "announce": false
+  },
+  "cdk-build": {
+  }
+}

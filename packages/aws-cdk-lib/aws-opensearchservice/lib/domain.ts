@@ -1649,6 +1649,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       ec2.InstanceClass.R6GD,
       ec2.InstanceClass.I4G,
       ec2.InstanceClass.I4I,
+      ec2.InstanceClass.I8G,
       ec2.InstanceClass.IM4GN,
       ec2.InstanceClass.R7GD,
     ];

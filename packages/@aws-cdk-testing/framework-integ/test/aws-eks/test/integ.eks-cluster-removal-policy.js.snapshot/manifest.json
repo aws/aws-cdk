@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d58fc9fbd49447e4f4d1f450f1038cbfef5177bc006a4e411ee9ecd358675890.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/12faad803a9abe89102738630c13dfe1a9d5b6e3146f29b9ff065b4f44c819b9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -878,12 +878,6 @@
             "data": "ClusterAwsAuthmanifestFE51F8AE"
           }
         ],
-        "/EksClusterRemovalPolicyStack/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
         "/EksClusterRemovalPolicyStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
           {
             "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
@@ -912,12 +906,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "NodeProxyAgentLayer924C1971"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.ClusterResourceProvider/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler": [
@@ -2083,12 +2071,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEventLogGroup683073A3"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.KubectlProvider/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.KubectlProvider/EksClusterRemovalPolicyStackawscdkawseksKubectlProviderframeworkonEventC6B93F26Arn": [

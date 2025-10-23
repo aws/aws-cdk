@@ -55,13 +55,6 @@ const python313 = new Function(stack, 'PYTHON_3_13', {
 });
 new CfnOutput(stack, 'PYTHON_3_13-functionName', { value: python313.functionName });
 
-const node18xfn = new Function(stack, 'NODEJS_18_X', {
-  code: new InlineCode('exports.handler = async function(event) { return "success" }'),
-  handler: 'index.handler',
-  runtime: Runtime.NODEJS_18_X,
-});
-new CfnOutput(stack, 'NODEJS_18_X-functionName', { value: node18xfn.functionName });
-
 const node20xfn = new Function(stack, 'NODEJS_20_X', {
   code: new InlineCode('exports.handler = async function(event) { return "success" }'),
   handler: 'index.handler',

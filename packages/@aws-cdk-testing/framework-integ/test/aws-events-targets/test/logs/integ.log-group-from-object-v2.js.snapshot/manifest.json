@@ -178,12 +178,6 @@
             "data": "EventsLogGroupPolicyawscdkcloudwatcheventbridgelogsRule939B3D08CustomResourcePolicy25D0581B"
           }
         ],
-        "/aws-cdk-cloudwatch-eventbridge-logs/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
         "/aws-cdk-cloudwatch-eventbridge-logs/AWS679f53fac002430cb0da5b7982bd2287": [
           {
             "type": "aws:cdk:analytics:construct",

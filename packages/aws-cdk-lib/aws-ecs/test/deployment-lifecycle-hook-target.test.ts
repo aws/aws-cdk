@@ -24,7 +24,7 @@ describe('DeploymentLifecycleHookTarget', () => {
     });
 
     lambdaFunction = new lambda.Function(stack, 'TestFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('exports.handler = async () => { return { hookStatus: "SUCCEEDED" }; }'),
     });
@@ -220,7 +220,7 @@ describe('DeploymentLifecycleHookTarget', () => {
     });
 
     const secondLambda = new lambda.Function(stack, 'SecondFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('exports.handler = async () => { return { hookStatus: "SUCCEEDED" }; }'),
     });

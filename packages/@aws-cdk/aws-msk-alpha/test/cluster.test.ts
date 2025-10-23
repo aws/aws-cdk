@@ -52,6 +52,7 @@ describe('MSK Cluster', () => {
     [msk.KafkaVersion.V3_9_X, '3.9.x'],
     [msk.KafkaVersion.V3_9_X_KRAFT, '3.9.x.kraft'],
     [msk.KafkaVersion.V4_0_X_KRAFT, '4.0.x.kraft'],
+    [msk.KafkaVersion.V4_1_X_KRAFT, '4.1.x.kraft'],
   ],
   )('created with expected Kafka version %j', (parameter, result) => {
     new msk.Cluster(stack, 'Cluster', {
