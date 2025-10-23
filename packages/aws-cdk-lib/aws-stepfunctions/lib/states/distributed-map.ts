@@ -3,7 +3,7 @@ import { ItemBatcher } from './distributed-map/item-batcher';
 import { IItemReader } from './distributed-map/item-reader';
 import { ResultWriter, ResultWriterV2 } from './distributed-map/result-writer';
 import { MapBase, MapBaseJsonataOptions, MapBaseJsonPathOptions, MapBaseOptions, MapBaseProps } from './map-base';
-import { Annotations, FeatureFlags } from '../../../core';
+import { Annotations, FeatureFlags, ValidationError } from '../../../core';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { StateMachineType } from '../state-machine';
@@ -314,17 +314,26 @@ export class DistributedMap extends MapBase implements INextable {
    * Return the Amazon States Language object for this state
    */
   public toStateJson(stateMachineQueryLanguage?: QueryLanguage): object {
+    // https://docs.aws.amazon.com/step-functions/latest/dg/statemachine-structure.html
+    if (stateMachineQueryLanguage == QueryLanguage.JSONATA && this.queryLanguage == QueryLanguage.JSON_PATH) {
+      throw new ValidationError('When StateMachine query language is JSONata, individual states cannot use JSONPath.', this);
+    }
+
     let rendered: any = super.toStateJson(stateMachineQueryLanguage);
     if (rendered.ItemProcessor.ProcessorConfig.ExecutionType) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-stepfunctions:propertyIgnored', 'Property \'ProcessorConfig.executionType\' is ignored, use the \'mapExecutionType\' in the \'DistributedMap\' class instead.');
     }
 
     rendered.ItemProcessor.ProcessorConfig.ExecutionType = this.mapExecutionType;
-    const renderedResultWriter = this.renderResultWriter(stateMachineQueryLanguage);
-    this.addWarningIfResultWriterIsEmpty(renderedResultWriter);
     // ItemReader and ResultWriter configuration will base on the Map's query language.
     // If Map's query language is not specified, then use state machine's query language.
-    const stateQueryLanguage = this.queryLanguage ?? stateMachineQueryLanguage;
+    const stateQueryLanguage = stateMachineQueryLanguage == QueryLanguage.JSONATA
+      ? QueryLanguage.JSONATA
+      : this.queryLanguage ?? stateMachineQueryLanguage;
+
+    const renderedResultWriter = this.renderResultWriter(stateQueryLanguage);
+    this.addWarningIfResultWriterIsEmpty(renderedResultWriter);
+
     return {
       ...rendered,
       ...this.renderItemReader(stateQueryLanguage),
