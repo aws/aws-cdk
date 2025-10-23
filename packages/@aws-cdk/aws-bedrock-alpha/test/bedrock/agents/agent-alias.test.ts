@@ -194,7 +194,7 @@ describe('AgentAlias', () => {
     const fn = new lambda.Function(stack, 'TestFunction', {
       code: lambda.Code.fromInline('exports.handler = function() { }'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
     });
 
     // WHEN

@@ -2,6 +2,8 @@
 merge_queue:
   # Required to force mergify to merge in place, see https://docs.mergify.com/merge-queue/parallel-checks/#inplace-checks-no-drafts
   max_parallel_checks: 1
+  dequeued_label: null
+  queued_label: null
 queue_rules:
   - name: default-merge
     # batch_size: 1 enables in-place checks (no draft PRs created for testing merges)
