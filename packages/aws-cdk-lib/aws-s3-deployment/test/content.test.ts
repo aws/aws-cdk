@@ -111,7 +111,8 @@ test('lazy within a string is not resolved', () => {
     },
   });
 });
-test('empty string data', () => {
+
+test('renderData can render empty string data', () => {
   const stack = new Stack();
   expect(renderData('')).toStrictEqual({
     markers: {},
@@ -119,7 +120,7 @@ test('empty string data', () => {
   });
 });
 
-test('Source.data with empty string - issue #35809 regression test', () => {
+test('Source.data with empty string does not throw error', () => {
   const stack = new Stack();
   const handler = new lambda.Function(stack, 'Handler', {
     runtime: lambda.Runtime.NODEJS_LATEST,
