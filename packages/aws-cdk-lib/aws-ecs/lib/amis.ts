@@ -231,6 +231,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023,
       hardwareType,
       cachedInContext: options.cachedInContext,
+      additionalCacheKey: options.additionalCacheKey,
     });
   }
 
@@ -244,6 +245,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
       hardwareType,
       cachedInContext: options.cachedInContext,
+      additionalCacheKey: options.additionalCacheKey,
     });
   }
 
@@ -254,6 +256,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     return new EcsOptimizedImage({
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX,
       cachedInContext: options.cachedInContext,
+      additionalCacheKey: options.additionalCacheKey,
     });
   }
 
@@ -266,6 +269,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     return new EcsOptimizedImage({
       windowsVersion,
       cachedInContext: options.cachedInContext,
+      additionalCacheKey: options.additionalCacheKey,
     });
   }
 
