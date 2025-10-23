@@ -5219,7 +5219,7 @@ describe('L1 Relationships', () => {
     });
   });
 
-  it('tokens should be passed as is', () => {
+  it('tokens should be passed as is test', () => {
     const stack = new cdk.Stack();
     const role = new iam.Role(stack, 'SomeRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
