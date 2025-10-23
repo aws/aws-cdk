@@ -62,10 +62,10 @@ export interface OverrideConfig {
 }
 
 /**
- * Configuration parameters for a memory strategy that overrides
+ * Configuration parameters for a memory strategy that can override
  * existing built-in default prompts/models
  */
-export interface OverrideStrategyProps extends MemoryStrategyCommonProps {
+export interface UnifiedStrategyProps extends MemoryStrategyCommonProps {
   /**
    * The configuration for the custom extraction.
    * This configuration provides customization to how the model identifies
@@ -82,21 +82,40 @@ export interface OverrideStrategyProps extends MemoryStrategyCommonProps {
    * @required - No
    */
   readonly customConsolidation?: OverrideConfig;
+  /**
+   * The namespaces for the strategy
+   * Represents a namespace for organizing memory data
+   * Use a hierarchical format separated by forward slashes (/)
+   *
+   * Use a hierarchical format separated by forward slashes (/) to organize namespaces logically.
+   * You can include these defined variables:
+   *
+   * - {sessionId} - the user identifier to be created in the CreateEvent API
+   * - {memoryStrategyId} - an identifier for an extraction strategy
+   * - {sessionId} - an identifier for each session
+   *
+   * Example namespace path:
+   * /strategies/{memoryStrategyId}/actions/{actionId}/sessions/{sessionId}
+   *
+   * After memory creation, this namespace might look like:
+   * /actor/actor-3afc5aa8fef9/strategy/summarization-fy5c5fwc7/session/session-qj7tpd1kvr8
+   * @required - Yes
+   */
+  readonly namespaces: string[];
 }
 
 /**
- * If you need long-term memory for context recall across sessions,
- * you can setup memory extraction strategies to extract the relevant memory from the raw events.
- * use built-in strategies with override to specify models and prompt templates.
- * Custom memory strategies let you tailor memory extraction and consolidation to your specific domain or use case.
- * You can override the prompts for extracting and consolidating semantic, summary, or user preferences.
- * You can also choose the model that you want to use for extraction and consolidation.
- * The custom prompts you create are appended to a non-editable system prompt.
+ * Unified memory strategy that handles both built-in and override configurations.
+ * This strategy can be used for quick setup with built-in defaults or customized
+ * with specific models and prompt templates.
  */
-export class OverrideMemoryStrategy implements IMemoryStrategy {
+export class UnifiedMemoryStrategy implements IMemoryStrategy {
   public readonly strategyClassType: MemoryStrategyClassType;
   public readonly name: string;
   public readonly description?: string;
+  /**
+   * The namespaces for the strategy
+   */
   public readonly namespaces: string[];
   /**
    * The configuration for the custom consolidation.
@@ -109,11 +128,11 @@ export class OverrideMemoryStrategy implements IMemoryStrategy {
   public readonly strategyType: MemoryStrategyType;
 
   /**
-   * Constructor to create a new override memory strategy type
-   * @param strategyType the strategy type to override
-   * @param props the properties for the override
+   * Constructor to create a new unified memory strategy
+   * @param strategyType the strategy type
+   * @param props the properties for the strategy
    */
-  constructor(strategyType: MemoryStrategyType, props: OverrideStrategyProps) {
+  constructor(strategyType: MemoryStrategyType, props: UnifiedStrategyProps) {
     // ------------------------------------------------------
     // Set properties and defaults
     // ------------------------------------------------------
@@ -123,7 +142,11 @@ export class OverrideMemoryStrategy implements IMemoryStrategy {
     this.strategyType = strategyType;
     this.consolidationOverride = props.customConsolidation;
     this.extractionOverride = props.customExtraction;
-    this.strategyClassType = MemoryStrategyClassType.BUILT_IN_OVERRIDE;
+
+    // Determine strategy class type based on whether overrides are provided
+    this.strategyClassType = (this.consolidationOverride || this.extractionOverride)
+      ? MemoryStrategyClassType.BUILT_IN_OVERRIDE
+      : MemoryStrategyClassType.BUILT_IN;
 
     // ------------------------------------------------------
     // Validations
@@ -131,13 +154,36 @@ export class OverrideMemoryStrategy implements IMemoryStrategy {
     throwIfInvalid(this._validatePrompt, this.consolidationOverride?.appendToPrompt);
     throwIfInvalid(this._validatePrompt, this.extractionOverride?.appendToPrompt);
     throwIfInvalid(this._validateMemoryStrategyName, this.name);
-    throwIfInvalid(this._validateMemoryStrategyNamespaces, this.namespaces);
+    if (this.namespaces) {
+      throwIfInvalid(this._validateMemoryStrategyNamespaces, this.namespaces);
+    }
   }
+
   /**
    * Renders the network configuration as a CloudFormation property.
    * @returns The CloudFormation property for the memory strategy.
    */
   public render(): bedrockagentcore.CfnMemory.MemoryStrategyProperty {
+    // If no overrides, use built-in strategy format
+    if (!this.consolidationOverride && !this.extractionOverride) {
+      const cfnStrategyMap: Record<MemoryStrategyType, string> = {
+        [MemoryStrategyType.USER_PREFERENCE]: 'userPreferenceMemoryStrategy',
+        [MemoryStrategyType.SEMANTIC]: 'semanticMemoryStrategy',
+        [MemoryStrategyType.SUMMARIZATION]: 'summaryMemoryStrategy',
+        [MemoryStrategyType.CUSTOM]: 'customMemoryStrategy',
+      };
+      const strategyKey = cfnStrategyMap[this.strategyType];
+      return {
+        [strategyKey]: {
+          name: this.name,
+          description: this.description,
+          namespaces: this.namespaces,
+          type: this.strategyType,
+        },
+      };
+    }
+
+    // If overrides are provided, use custom strategy format
     const cfnStrategyMap: Record<MemoryStrategyType, string> = {
       [MemoryStrategyType.USER_PREFERENCE]: 'userPreferenceOverride',
       [MemoryStrategyType.SEMANTIC]: 'semanticOverride',
@@ -184,11 +230,12 @@ export class OverrideMemoryStrategy implements IMemoryStrategy {
     const grant2 = this.extractionOverride?.model.grantInvoke(role);
     return grant1 && grant2 ? grant1.combine(grant2) : grant1 || grant2;
   }
+
   // ------------------------------------------------------
   // VALIDATORS
   // ------------------------------------------------------
   /**
-   * Validates the memory strategy
+   * Validates the memory strategy name
    * @param name - The name to validate
    * @returns Array of validation error messages, empty if valid
    */
@@ -209,9 +256,10 @@ export class OverrideMemoryStrategy implements IMemoryStrategy {
 
     return errors;
   };
+
   /**
-   * Validates the memory strategy
-   * @param name - The name to validate
+   * Validates the prompt
+   * @param prompt - The prompt to validate
    * @returns Array of validation error messages, empty if valid
    */
   private _validatePrompt = (prompt?: string): string[] => {

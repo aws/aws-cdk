@@ -14,8 +14,8 @@
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
 // Internal libs
-import { BuiltInMemoryStrategy } from './strategies/builtin-strategy';
-import { OverrideMemoryStrategy, OverrideStrategyProps } from './strategies/override-strategies';
+import { UnifiedMemoryStrategy, UnifiedStrategyProps } from './strategies/unified-strategy';
+import { SelfManagedMemoryStrategy, SelfManagedStrategyProps } from './strategies/self-managed-strategy';
 
 /**
  * Internal enum used to differentiate the different classes of memory strategies
@@ -33,10 +33,6 @@ export enum MemoryStrategyClassType {
    * Fully custom memory strategy
    */
   CUSTOM = 'CUSTOM',
-  /**
-   * Self managed memory strategy
-   */
-  SELF_MANAGED = 'SELF_MANAGED',
 }
 
 /**
@@ -80,26 +76,6 @@ export interface MemoryStrategyCommonProps {
    * @required - No
    */
   readonly description?: string;
-  /**
-   * The namespaces for the strategy
-   * Represents a namespace for organizing memory data
-   * Use a hierarchical format separated by forward slashes (/)
-   *
-   * Use a hierarchical format separated by forward slashes (/) to organize namespaces logically.
-   * You can include these defined variables:
-   *
-   * - {sessionId} - the user identifier to be created in the CreateEvent API
-   * - {memoryStrategyId} - an identifier for an extraction strategy
-   * - {sessionId} - an identifier for each session
-   *
-   * Example namespace path:
-   * /strategies/{memoryStrategyId}/actions/{actionId}/sessions/{sessionId}
-   *
-   * After memory creation, this namespace might look like:
-   * /actor/actor-3afc5aa8fef9/strategy/summarization-fy5c5fwc7/session/session-qj7tpd1kvr8
-   * @required - Yes
-   */
-  readonly namespaces: string[];
 }
 
 /******************************************************************************
@@ -117,10 +93,6 @@ export interface IMemoryStrategy {
    * The description of the memory strategy
    */
   readonly description?: string;
-  /**
-   * The namespaces of the memory strategy to store extracted memories
-   */
-  readonly namespaces: string[];
   /**
    * The class of memory strategy (built-in or custom)
    */
@@ -156,11 +128,11 @@ export class MemoryStrategy {
    * Default strategies for organizing and extracting memory data, each optimized for specific use cases.
    * This strategy compresses conversations into concise overviews, preserving essential context and key insights for quick recall.
    * Extracted memory example: Users confused by cloud setup during onboarding.
-   * @returns A BuiltInMemoryStrategy.
+   * @returns A UnifiedMemoryStrategy.
    */
-  public static usingBuiltInSummarization(): BuiltInMemoryStrategy {
-    return new BuiltInMemoryStrategy(MemoryStrategyType.SUMMARIZATION, {
-      name: `summary_builtin_cdkGen0001`,
+  public static usingBuiltInSummarization(): UnifiedMemoryStrategy {
+    return new UnifiedMemoryStrategy(MemoryStrategyType.SUMMARIZATION, {
+      name: 'summary_builtin_cdkGen0001',
       description: 'Summarize interactions to preserve critical context and key insights',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
     });
@@ -169,11 +141,11 @@ export class MemoryStrategy {
    * Default strategies for organizing and extracting memory data, each optimized for specific use cases.
    * Distills general facts, concepts, and underlying meanings from raw conversational data, presenting the information in a context-independent format.
    * Extracted memory example: In-context learning = task-solving via examples, no training needed.
-   * @returns A BuiltInMemoryStrategy.
+   * @returns A UnifiedMemoryStrategy.
    */
-  public static usingBuiltInSemantic(): BuiltInMemoryStrategy {
-    return new BuiltInMemoryStrategy(MemoryStrategyType.SEMANTIC, {
-      name: `semantic_builtin_cdkGen0001`,
+  public static usingBuiltInSemantic(): UnifiedMemoryStrategy {
+    return new UnifiedMemoryStrategy(MemoryStrategyType.SEMANTIC, {
+      name: 'semantic_builtin_cdkGen0001',
       description:
       'Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
@@ -183,11 +155,11 @@ export class MemoryStrategy {
    * Default strategies for organizing and extracting memory data, each optimized for specific use cases.
    * Captures individual preferences, interaction patterns, and personalized settings to enhance future experiences.
    * Extracted memory example: User needs clear guidance on cloud storage account connection during onboarding.
-   * @returns A BuiltInMemoryStrategy.
+   * @returns A UnifiedMemoryStrategy.
    */
-  public static usingBuiltInUserPreference(): BuiltInMemoryStrategy {
-    return new BuiltInMemoryStrategy(MemoryStrategyType.USER_PREFERENCE, {
-      name: `preference_builtin_cdkGen0001`,
+  public static usingBuiltInUserPreference(): UnifiedMemoryStrategy {
+    return new UnifiedMemoryStrategy(MemoryStrategyType.USER_PREFERENCE, {
+      name: 'preference_builtin_cdkGen0001',
       description: 'Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
     });
@@ -197,62 +169,39 @@ export class MemoryStrategy {
    * Distills general facts, concepts, and underlying meanings from raw conversational data, presenting the information in a context-independent format.
    * Extracted memory example: In-context learning = task-solving via examples, no training needed.
    * @param config - The configuration for the semantic memory strategy.
-   * @returns A BuiltInMemoryStrategy.
+   * @returns A UnifiedMemoryStrategy.
    */
-  public static usingSemantic(config: MemoryStrategyCommonProps): BuiltInMemoryStrategy {
-    return new BuiltInMemoryStrategy(MemoryStrategyType.SEMANTIC, config);
+  public static usingSemantic(config: UnifiedStrategyProps): UnifiedMemoryStrategy {
+    return new UnifiedMemoryStrategy(MemoryStrategyType.SEMANTIC, config);
   }
   /**
    * Creates a user preference memory strategy with custom configuration.
    * Captures individual preferences, interaction patterns, and personalized settings to enhance future experiences.
    * Extracted memory example: User needs clear guidance on cloud storage account connection during onboarding.
    * @param config - The configuration for the user preference memory strategy.
-   * @returns A BuiltInMemoryStrategy.
+   * @returns A UnifiedMemoryStrategy.
    */
-  public static usingUserPreference(config: MemoryStrategyCommonProps): BuiltInMemoryStrategy {
-    return new BuiltInMemoryStrategy(MemoryStrategyType.USER_PREFERENCE, config);
+  public static usingUserPreference(config: UnifiedStrategyProps): UnifiedMemoryStrategy {
+    return new UnifiedMemoryStrategy(MemoryStrategyType.USER_PREFERENCE, config);
   }
   /**
    * Creates a summarization memory strategy with custom configuration.
    * This strategy compresses conversations into concise overviews, preserving essential context and key insights for quick recall.
    * Extracted memory example: Users confused by cloud setup during onboarding.
    * @param config - The configuration for the summarization memory strategy.
-   * @returns A BuiltInMemoryStrategy.
+   * @returns A UnifiedMemoryStrategy.
    */
-  public static usingSummarization(config: MemoryStrategyCommonProps): BuiltInMemoryStrategy {
-    return new BuiltInMemoryStrategy(MemoryStrategyType.SUMMARIZATION, config);
+  public static usingSummarization(config: UnifiedStrategyProps): UnifiedMemoryStrategy {
+    return new UnifiedMemoryStrategy(MemoryStrategyType.SUMMARIZATION, config);
   }
   /**
-   * Creates a custom semantic memory strategy.
-   * Custom memory strategies let you tailor memory extraction and consolidation to your specific domain or use case.
-   * You can also choose the model that you want to use for extraction and consolidation.
-   * You can override the prompts for extracting and consolidating semantic memories.
-   * @param config - The configuration for the semantic memory strategy.
-   * @returns A OverrideMemoryStrategy.
+   * Creates a self-managed memory strategy.
+   * A self-managed strategy gives you complete control over your memory extraction and consolidation pipelines.
+   * @param config - The configuration for the self-managed memory strategy.
+   * @returns A SelfManagedMemoryStrategy.
    */
-  public static usingSemanticOverride(config: OverrideStrategyProps): OverrideMemoryStrategy {
-    return new OverrideMemoryStrategy(MemoryStrategyType.SEMANTIC, config);
-  }
-  /**
-   * Creates a custom user preference memory strategy.
-   * Custom memory strategies let you tailor memory extraction and consolidation to your specific domain or use case.
-   * You can also choose the model that you want to use for extraction and consolidation.
-   * You can override the prompts for extracting and consolidating user preference memories.
-   * @param config - The configuration for the user preference memory strategy.
-   * @returns A OverrideMemoryStrategy.
-   */
-  public static usingUserPreferenceOverride(config: OverrideStrategyProps): OverrideMemoryStrategy {
-    return new OverrideMemoryStrategy(MemoryStrategyType.USER_PREFERENCE, config);
-  }
-  /**
-   * Creates a custom summarization memory strategy.
-   * Custom memory strategies let you tailor memory extraction and consolidation to your specific domain or use case.
-   * You can also choose the model that you want to use for extraction and consolidation.
-   * You can override the prompts for extracting and consolidating summarization memories.
-   * @param config - The configuration for the summarization memory strategy.
-   * @returns A OverrideMemoryStrategy.
-   */
-  public static usingSummarizationOverride(config: OverrideStrategyProps): OverrideMemoryStrategy {
-    return new OverrideMemoryStrategy(MemoryStrategyType.SUMMARIZATION, config);
+  public static usingSelfManaged(config: SelfManagedStrategyProps): SelfManagedMemoryStrategy {
+    // Scope is passed for future use in permission granting
+    return new SelfManagedMemoryStrategy(MemoryStrategyType.CUSTOM, config);
   }
 }

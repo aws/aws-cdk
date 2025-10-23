@@ -958,9 +958,9 @@ After memory creation, this namespace might look like:
 
 You can customise the namespace, i.e. where the memories are stored by using the following methods:
 
-1. **Summarization Strategy** (`MemoryStrategy.usingSummarization(scope, props)`)
-1. **Semantic Memory Strategy** (`MemoryStrategy.usingSemantic(scope, props)`)
-1. **User Preference Strategy** (`MemoryStrategy.usingUserPreference(scope, props)`)
+1. **Summarization Strategy** (`MemoryStrategy.usingSummarization(props)`)
+1. **Semantic Memory Strategy** (`MemoryStrategy.usingSemantic(props)`)
+1. **User Preference Strategy** (`MemoryStrategy.usingUserPreference(props)`)
 
 ```typescript fixture=default
 // Create memory with built-in strategies
@@ -969,11 +969,11 @@ const memory = new agentcore.Memory(this, "MyMemory", {
   description: "Memory with built-in strategies",
   expirationDuration: cdk.Duration.days(90),
   memoryStrategies: [
-    agentcore.MemoryStrategy.usingUserPreference(this, {
+    agentcore.MemoryStrategy.usingUserPreference({
         name: "CustomerPreferences",
         namespaces: ["support/customer/{actorId}/preferences"]
     }),
-    agentcore.MemoryStrategy.usingSemantic(this, {
+    agentcore.MemoryStrategy.usingSemantic({
         name: "CustomerSupportSemantic",
         namespaces: ["support/customer/{actorId}/semantic"]
     }),
@@ -1022,7 +1022,7 @@ In customConsolidation and customExtraction, the model property uses the [@aws-c
 
 ```typescript fixture=default
 // Create a custom semantic memory strategy
-const customSemanticStrategy = agentcore.MemoryStrategy.usingSemantic(this, {
+const customSemanticStrategy = agentcore.MemoryStrategy.usingSemantic({
   name: "customSemanticStrategy",
   description: "Custom semantic memory strategy",
   namespaces: ["/custom/strategies/{memoryStrategyId}/actors/{actorId}"],
@@ -1061,7 +1061,7 @@ The construct will apply the correct permissions to the memory execution role to
 
 ```typescript fixture=default
 
-const bucket = new s3.Bucket(stack, 'memoryBucket', {
+const bucket = new s3.Bucket(this, 'memoryBucket', {
   bucketName: 'test-memory',
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
@@ -1070,7 +1070,7 @@ const bucket = new s3.Bucket(stack, 'memoryBucket', {
 const topic = new sns.Topic(this, 'topic');
 
 // Create a custom semantic memory strategy
-const selfManagedStrategy = agentcore.MemoryStrategy.usingSelfManaged(this, {
+const selfManagedStrategy = agentcore.MemoryStrategy.usingSelfManaged({
   name: "selfMabagedStrategy",
   description: "self managed memory strategy",
   historicalContextWindowSize: 5,

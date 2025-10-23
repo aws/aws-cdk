@@ -30,6 +30,41 @@
     "Name": "memory"
    }
   },
+  "MyEncryptionKeyD795679F": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "MemoryWithBuiltinStrategiesServiceRole9D3D59C7": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -47,10 +82,45 @@
     }
    }
   },
+  "MemoryWithBuiltinStrategiesServiceRoleDefaultPolicy99037030": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyEncryptionKeyD795679F",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MemoryWithBuiltinStrategiesServiceRoleDefaultPolicy99037030",
+    "Roles": [
+     {
+      "Ref": "MemoryWithBuiltinStrategiesServiceRole9D3D59C7"
+     }
+    ]
+   }
+  },
   "MemoryWithBuiltinStrategiesMemory25697FD7": {
    "Type": "AWS::BedrockAgentCore::Memory",
    "Properties": {
     "Description": "A test memory with built-in strategies",
+    "EncryptionKeyArn": {
+     "Fn::GetAtt": [
+      "MyEncryptionKeyD795679F",
+      "Arn"
+     ]
+    },
     "EventExpiryDuration": 60,
     "MemoryExecutionRoleArn": {
      "Fn::GetAtt": [
@@ -62,7 +132,7 @@
      {
       "SummaryMemoryStrategy": {
        "Description": "Summarize interactions to preserve critical context and key insights",
-       "Name": "summary_builtin_MjXPM",
+       "Name": "summary_builtin_cdkGen0001",
        "Namespaces": [
         "/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}"
        ],
@@ -72,7 +142,7 @@
      {
       "SemanticMemoryStrategy": {
        "Description": "Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.",
-       "Name": "semantic_builtin_mtHd8",
+       "Name": "semantic_builtin_cdkGen0001",
        "Namespaces": [
         "/strategies/{memoryStrategyId}/actors/{actorId}"
        ],
@@ -82,7 +152,7 @@
      {
       "UserPreferenceMemoryStrategy": {
        "Description": "Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.",
-       "Name": "preference_builtin_sNmg5",
+       "Name": "preference_builtin_cdkGen0001",
        "Namespaces": [
         "/strategies/{memoryStrategyId}/actors/{actorId}"
        ],
@@ -185,7 +255,304 @@
      }
     ],
     "Name": "memory_with_custom_strategies"
+   },
+   "DependsOn": [
+    "MemoryWithCustomStrategiesServiceRoleDefaultPolicyB8522B1A"
+   ]
+  },
+  "MemoryBucket34BAD4CD": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MemoryBucketPolicyE2E00A35": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "MemoryBucket34BAD4CD"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MemoryBucket34BAD4CD",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MemoryBucket34BAD4CD",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
    }
+  },
+  "MemoryBucketAutoDeleteObjectsCustomResource24E6631C": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "MemoryBucket34BAD4CD"
+    }
+   },
+   "DependsOn": [
+    "MemoryBucketPolicyE2E00A35"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "MemoryBucket34BAD4CD"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ]
+  },
+  "MemoryTopic5EB6DDE2": {
+   "Type": "AWS::SNS::Topic"
+  },
+  "MemoryWithSelfManagedStrategyServiceRole9A484437": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MemoryWithSelfManagedStrategyServiceRoleDefaultPolicy8649CA0E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sns:GetTopicAttributes",
+        "sns:Publish"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "MemoryTopic5EB6DDE2"
+       }
+      },
+      {
+       "Action": [
+        "s3:GetBucketLocation",
+        "s3:PutObject"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Ref": "MemoryBucket34BAD4CD"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Ref": "MemoryBucket34BAD4CD"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MemoryWithSelfManagedStrategyServiceRoleDefaultPolicy8649CA0E",
+    "Roles": [
+     {
+      "Ref": "MemoryWithSelfManagedStrategyServiceRole9A484437"
+     }
+    ]
+   }
+  },
+  "MemoryWithSelfManagedStrategyMemory927C030F": {
+   "Type": "AWS::BedrockAgentCore::Memory",
+   "Properties": {
+    "Description": "A test memory with a self managed strategy",
+    "EventExpiryDuration": 60,
+    "MemoryExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "MemoryWithSelfManagedStrategyServiceRole9A484437",
+      "Arn"
+     ]
+    },
+    "MemoryStrategies": [
+     {
+      "SummaryMemoryStrategy": {
+       "Description": "Summarize interactions to preserve critical context and key insights",
+       "Name": "summary_builtin_cdkGen0001",
+       "Namespaces": [
+        "/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}"
+       ],
+       "Type": "SUMMARIZATION"
+      }
+     },
+     {
+      "CustomMemoryStrategy": {
+       "Configuration": {
+        "SelfManagedConfiguration": {
+         "HistoricalContextWindowSize": 4,
+         "InvocationConfiguration": {
+          "PayloadDeliveryBucketName": {
+           "Ref": "MemoryBucket34BAD4CD"
+          },
+          "TopicArn": {
+           "Ref": "MemoryTopic5EB6DDE2"
+          }
+         },
+         "TriggerConditions": [
+          {
+           "MessageBasedTrigger": {
+            "MessageCount": 1
+           }
+          },
+          {
+           "TimeBasedTrigger": {
+            "IdleSessionTimeout": 10
+           }
+          },
+          {
+           "TokenBasedTrigger": {
+            "TokenCount": 100
+           }
+          }
+         ]
+        }
+       },
+       "Description": "Self managed memory strategy",
+       "Name": "selfManagedStrategy",
+       "Type": "CUSTOM"
+      }
+     }
+    ],
+    "Name": "memory_with_self_managed_strategy"
+   },
+   "DependsOn": [
+    "MemoryWithSelfManagedStrategyServiceRoleDefaultPolicy8649CA0E"
+   ]
   }
  },
  "Parameters": {

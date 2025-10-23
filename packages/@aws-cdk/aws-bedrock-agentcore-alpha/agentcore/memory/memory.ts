@@ -677,23 +677,12 @@ export class Memory extends MemoryBase {
     // Permissions
     // ------------------------------------------------------
     if (this.kmsKey) {
-      this.kmsKey.addToResourcePolicy(
-        new iam.PolicyStatement({
-          sid: 'AllowAgentCoreMemoryKMS',
-          actions: ['kms:Decrypt', 'kms:Encrypt', 'kms:GenerateDataKey', 'kms:DescribeKey'],
-          resources: ['*'],
-          principals: [new iam.ServicePrincipal('bedrock-agentcore')],
-        }),
-      );
+      this.kmsKey.grant(this.executionRole, 'kms:Decrypt', 'kms:GenerateDataKey');
     }
 
     // ------------------------------------------------------
     // Validations
     // ------------------------------------------------------
-    this.memoryStrategies.forEach((strategy) => {
-      // Grant necessary permissions to the execution role
-      strategy.grant(this.executionRole as iam.IRole);
-    });
 
     // Validate memory name
     throwIfInvalid(this._validateMemoryName, this.memoryName);
@@ -730,6 +719,11 @@ export class Memory extends MemoryBase {
     this.updatedAt = this.__resource.attrUpdatedAt;
     this.createdAt = this.__resource.attrCreatedAt;
     this.failureReason = this.__resource.attrFailureReason;
+
+    this.memoryStrategies.forEach((strategy) => {
+      const grant = strategy.grant(this.executionRole as iam.IRole);
+      grant?.applyBefore(this.__resource);
+    });
   }
 
   // ------------------------------------------------------
@@ -745,7 +739,8 @@ export class Memory extends MemoryBase {
     this.memoryStrategies.push(memoryStrategy);
 
     // Grant necessary permissions to the execution role
-    memoryStrategy.grant(this.executionRole as iam.IRole);
+    const grant = memoryStrategy.grant(this.executionRole as iam.IRole);
+    grant?.applyBefore(this.__resource);
   }
 
   /**

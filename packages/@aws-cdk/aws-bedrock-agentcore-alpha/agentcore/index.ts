@@ -1,6 +1,6 @@
 export * from './memory/memory';
-export * from './memory/strategies/builtin-strategy';
-export * from './memory/strategies/override-strategies';
+export * from './memory/strategies/unified-strategy';
+export * from './memory/strategies/self-managed-strategy';
 export * from './memory/memory-strategy';
 // ===================================
 // Network Configuration

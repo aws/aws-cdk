@@ -4,6 +4,8 @@ import { Duration } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as sns from 'aws-cdk-lib/aws-sns';
 import {
   Memory,
 } from '../../../agentcore/memory/memory';
@@ -488,7 +490,7 @@ describe('Memory with custom strategies tests', () => {
     });
 
     // Create custom strategies
-    const customSemanticStrategy = MemoryStrategy.usingSemanticOverride({
+    const customSemanticStrategy = MemoryStrategy.usingSemantic({
       name: 'custom_semantic_strategy',
       description: 'Custom semantic memory strategy with overrides',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/custom'],
@@ -502,7 +504,7 @@ describe('Memory with custom strategies tests', () => {
       },
     });
 
-    const customUserPreferenceStrategy = MemoryStrategy.usingUserPreferenceOverride({
+    const customUserPreferenceStrategy = MemoryStrategy.usingUserPreference({
       name: 'custom_user_preference_strategy',
       description: 'Custom user preference strategy with overrides',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/preferences'],
@@ -516,7 +518,7 @@ describe('Memory with custom strategies tests', () => {
       },
     });
 
-    const customSummaryStrategy = MemoryStrategy.usingSummarizationOverride({
+    const customSummaryStrategy = MemoryStrategy.usingSummarization({
       name: 'custom_summary_strategy',
       description: 'Custom summary strategy with override',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}/custom'],
@@ -659,7 +661,7 @@ describe('Memory with mixed built-in and custom strategies tests', () => {
     });
 
     // Mix of built-in and custom strategies
-    const customSemanticStrategy = MemoryStrategy.usingSemanticOverride({
+    const customSemanticStrategy = MemoryStrategy.usingSemantic({
       name: 'hybrid_semantic_strategy',
       description: 'Hybrid semantic strategy combining built-in and custom',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/hybrid'],
@@ -778,7 +780,7 @@ describe('Memory with addMemoryStrategy method tests', () => {
     memory.addMemoryStrategy(MemoryStrategy.usingBuiltInSemantic());
 
     // Add a custom strategy
-    const customStrategy = MemoryStrategy.usingSemanticOverride({
+    const customStrategy = MemoryStrategy.usingSemantic({
       name: 'added_custom_strategy',
       description: 'Custom strategy added via addMemoryStrategy method',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/added'],
@@ -910,7 +912,7 @@ describe('Memory with dynamic strategy addition tests', () => {
     // Add more strategies dynamically
     memory.addMemoryStrategy(MemoryStrategy.usingBuiltInSummarization());
 
-    const customStrategy = MemoryStrategy.usingSummarizationOverride({
+    const customStrategy = MemoryStrategy.usingSummarization({
       name: 'dynamic_summary_strategy',
       description: 'Dynamic summary strategy',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/dynamic'],
@@ -1096,7 +1098,7 @@ describe('Memory strategy namespace validation tests', () => {
 
   test('Should throw error for namespace containing only opening brace', () => {
     expect(() => {
-      MemoryStrategy.usingSemanticOverride({
+      MemoryStrategy.usingSemantic({
         name: 'invalid_namespace_strategy',
         description: 'Strategy with invalid namespace',
         namespaces: ['/strategies/{/actors'],
@@ -1114,7 +1116,7 @@ describe('Memory strategy namespace validation tests', () => {
 
   test('Should throw error for namespace with invalid template variables', () => {
     expect(() => {
-      MemoryStrategy.usingSemanticOverride({
+      MemoryStrategy.usingSemantic({
         name: 'invalid_template_strategy',
         description: 'Strategy with invalid template variables',
         namespaces: ['/strategies/{invalidVar}/actors'],
@@ -1132,7 +1134,7 @@ describe('Memory strategy namespace validation tests', () => {
 
   test('Should accept valid namespace with correct template variables', () => {
     expect(() => {
-      MemoryStrategy.usingSemanticOverride({
+      MemoryStrategy.usingSemantic({
         name: 'valid_namespace_strategy',
         description: 'Strategy with valid namespace',
         namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
@@ -1150,7 +1152,7 @@ describe('Memory strategy namespace validation tests', () => {
 
   test('Should accept namespace without template variables', () => {
     expect(() => {
-      MemoryStrategy.usingSemanticOverride({
+      MemoryStrategy.usingSemantic({
         name: 'no_template_strategy',
         description: 'Strategy without template variables',
         namespaces: ['/strategies/custom/actors'],
@@ -1171,7 +1173,7 @@ describe('BuiltInMemoryStrategy unit tests', () => {
   test('Should create BuiltInMemoryStrategy with valid properties', () => {
     const strategy = MemoryStrategy.usingBuiltInSummarization();
 
-    expect(strategy.name).toMatch(/^summary_builtin_[a-zA-Z0-9]{5}$/);
+    expect(strategy.name).toMatch('summary_builtin_cdkGen0001');
     expect(strategy.description).toBe('Summarize interactions to preserve critical context and key insights');
     expect(strategy.namespaces).toEqual(['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}']);
     expect(strategy.strategyType).toBe('SUMMARIZATION');
@@ -1181,7 +1183,7 @@ describe('BuiltInMemoryStrategy unit tests', () => {
   test('Should create semantic BuiltInMemoryStrategy with valid properties', () => {
     const strategy = MemoryStrategy.usingBuiltInSemantic();
 
-    expect(strategy.name).toMatch(/^semantic_builtin_[a-zA-Z0-9]{5}$/);
+    expect(strategy.name).toMatch('semantic_builtin_cdkGen0001');
     expect(strategy.description).toBe('Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.');
     expect(strategy.namespaces).toEqual(['/strategies/{memoryStrategyId}/actors/{actorId}']);
     expect(strategy.strategyType).toBe('SEMANTIC');
@@ -1191,7 +1193,7 @@ describe('BuiltInMemoryStrategy unit tests', () => {
   test('Should create user preference BuiltInMemoryStrategy with valid properties', () => {
     const strategy = MemoryStrategy.usingBuiltInUserPreference();
 
-    expect(strategy.name).toMatch(/^preference_builtin_[a-zA-Z0-9]{5}$/);
+    expect(strategy.name).toMatch('preference_builtin_cdkGen0001');
     expect(strategy.description).toBe('Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.');
     expect(strategy.namespaces).toEqual(['/strategies/{memoryStrategyId}/actors/{actorId}']);
     expect(strategy.strategyType).toBe('USER_PREFERENCE');
@@ -1204,7 +1206,7 @@ describe('BuiltInMemoryStrategy unit tests', () => {
 
     expect(rendered).toHaveProperty('summaryMemoryStrategy');
     expect(rendered.summaryMemoryStrategy).toMatchObject({
-      name: expect.stringMatching(/^summary_builtin_[a-zA-Z0-9]{5}$/),
+      name: expect.stringMatching('summary_builtin_cdkGen0001'),
       description: 'Summarize interactions to preserve critical context and key insights',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
       type: 'SUMMARIZATION',
@@ -1217,7 +1219,7 @@ describe('BuiltInMemoryStrategy unit tests', () => {
 
     expect(rendered).toHaveProperty('semanticMemoryStrategy');
     expect(rendered.semanticMemoryStrategy).toMatchObject({
-      name: expect.stringMatching(/^semantic_builtin_[a-zA-Z0-9]{5}$/),
+      name: expect.stringMatching('semantic_builtin_cdkGen0001'),
       description: 'Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
       type: 'SEMANTIC',
@@ -1230,7 +1232,7 @@ describe('BuiltInMemoryStrategy unit tests', () => {
 
     expect(rendered).toHaveProperty('userPreferenceMemoryStrategy');
     expect(rendered.userPreferenceMemoryStrategy).toMatchObject({
-      name: expect.stringMatching(/^preference_builtin_[a-zA-Z0-9]{5}$/),
+      name: expect.stringMatching('preference_builtin_cdkGen0001'),
       description: 'Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
       type: 'USER_PREFERENCE',
@@ -1396,6 +1398,263 @@ describe('BuiltInMemoryStrategy validation tests', () => {
         name: 'no_template_strategy',
         description: 'Strategy without template variables',
         namespaces: ['/strategies/custom/actors'],
+      });
+    }).not.toThrow();
+  });
+});
+
+describe('SelfManagedMemoryStrategy unit tests', () => {
+  let stack: cdk.Stack;
+  let topic: sns.Topic;
+  let bucket: s3.Bucket;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+    topic = new sns.Topic(stack, 'TestTopic');
+    bucket = new s3.Bucket(stack, 'TestBucket');
+  });
+
+  test('Should create SelfManagedMemoryStrategy with default values', () => {
+    const strategy = MemoryStrategy.usingSelfManaged({
+      name: 'test_self_managed',
+      description: 'Test self managed strategy',
+      invocationConfiguration: {
+        topic: topic,
+        s3Location: {
+          bucketName: bucket.bucketName,
+          objectKey: 'test/',
+        },
+      },
+    });
+
+    expect(strategy.name).toBe('test_self_managed');
+    expect(strategy.description).toBe('Test self managed strategy');
+    expect(strategy.strategyType).toBe('CUSTOM');
+    expect(strategy.strategyClassType).toBe('SELF_MANAGED');
+    expect(strategy.historicalContextWindowSize).toBe(4);
+    expect(strategy.triggerConditions.messageBasedTrigger).toBe(1);
+    expect(strategy.triggerConditions.timeBasedTrigger?.toSeconds()).toBe(10);
+    expect(strategy.triggerConditions.tokenBasedTrigger).toBe(100);
+  });
+
+  test('Should create SelfManagedMemoryStrategy with custom values', () => {
+    const strategy = MemoryStrategy.usingSelfManaged({
+      name: 'custom_self_managed',
+      description: 'Custom self managed strategy',
+      historicalContextWindowSize: 10,
+      invocationConfiguration: {
+        topic: topic,
+        s3Location: {
+          bucketName: bucket.bucketName,
+          objectKey: 'custom/',
+        },
+      },
+      triggerConditions: {
+        messageBasedTrigger: 5,
+        timeBasedTrigger: cdk.Duration.seconds(30),
+        tokenBasedTrigger: 500,
+      },
+    });
+
+    expect(strategy.historicalContextWindowSize).toBe(10);
+    expect(strategy.triggerConditions.messageBasedTrigger).toBe(5);
+    expect(strategy.triggerConditions.timeBasedTrigger?.toSeconds()).toBe(30);
+    expect(strategy.triggerConditions.tokenBasedTrigger).toBe(500);
+  });
+
+  test('Should create SelfManagedMemoryStrategy with partial trigger conditions', () => {
+    const strategy = MemoryStrategy.usingSelfManaged({
+      name: 'partial_self_managed',
+      description: 'Partial self managed strategy',
+      invocationConfiguration: {
+        topic: topic,
+        s3Location: {
+          bucketName: bucket.bucketName,
+          objectKey: 'partial/',
+        },
+      },
+      triggerConditions: {
+        messageBasedTrigger: 3,
+        // timeBasedTrigger and tokenBasedTrigger will use defaults
+      },
+    });
+
+    expect(strategy.triggerConditions.messageBasedTrigger).toBe(3);
+    expect(strategy.triggerConditions.timeBasedTrigger?.toSeconds()).toBe(10); // default
+    expect(strategy.triggerConditions.tokenBasedTrigger).toBe(100); // default
+  });
+
+  test('Should validate historical context window size range', () => {
+    expect(() => {
+      MemoryStrategy.usingSelfManaged({
+        name: 'invalid_historical',
+        invocationConfiguration: {
+          topic: topic,
+          s3Location: {
+            bucketName: bucket.bucketName,
+            objectKey: 'test/',
+          },
+        },
+        historicalContextWindowSize: 100, // Invalid: should be 0-50
+      });
+    }).toThrow('Historical context window size must be between 0 and 50, got 100');
+  });
+
+  test('Should validate message-based trigger range', () => {
+    expect(() => {
+      MemoryStrategy.usingSelfManaged({
+        name: 'invalid_message_trigger',
+        invocationConfiguration: {
+          topic: topic,
+          s3Location: {
+            bucketName: bucket.bucketName,
+            objectKey: 'test/',
+          },
+        },
+        triggerConditions: {
+          messageBasedTrigger: 100, // Invalid: should be 1-50
+        },
+      });
+    }).toThrow('Message-based trigger must be between 1 and 50, got 100');
+  });
+
+  test('Should validate time-based trigger range', () => {
+    expect(() => {
+      MemoryStrategy.usingSelfManaged({
+        name: 'invalid_time_trigger',
+        invocationConfiguration: {
+          topic: topic,
+          s3Location: {
+            bucketName: bucket.bucketName,
+            objectKey: 'test/',
+          },
+        },
+        triggerConditions: {
+          timeBasedTrigger: cdk.Duration.seconds(5), // Invalid: should be 10-3000
+        },
+      });
+    }).toThrow('Time-based trigger must be between 10 and 3000 seconds, got 5');
+  });
+
+  test('Should validate token-based trigger range', () => {
+    expect(() => {
+      MemoryStrategy.usingSelfManaged({
+        name: 'invalid_token_trigger',
+        invocationConfiguration: {
+          topic: topic,
+          s3Location: {
+            bucketName: bucket.bucketName,
+            objectKey: 'test/',
+          },
+        },
+        triggerConditions: {
+          tokenBasedTrigger: 50, // Invalid: should be 100-500000
+        },
+      });
+    }).toThrow('Token-based trigger must be between 100 and 500000, got 50');
+  });
+
+  test('Should validate multiple trigger conditions', () => {
+    expect(() => {
+      MemoryStrategy.usingSelfManaged({
+        name: 'invalid_multiple_triggers',
+        invocationConfiguration: {
+          topic: topic,
+          s3Location: {
+            bucketName: bucket.bucketName,
+            objectKey: 'test/',
+          },
+        },
+        triggerConditions: {
+          messageBasedTrigger: 0, // Invalid: should be 1-50
+          timeBasedTrigger: cdk.Duration.seconds(5000), // Invalid: should be 10-3000
+          tokenBasedTrigger: 1000000, // Invalid: should be 100-500000
+        },
+      });
+    }).toThrow();
+  });
+
+  test('Should render CloudFormation properties correctly', () => {
+    const strategy = MemoryStrategy.usingSelfManaged({
+      name: 'render_test',
+      invocationConfiguration: {
+        topic: topic,
+        s3Location: {
+          bucketName: bucket.bucketName,
+          objectKey: 'render/',
+        },
+      },
+      triggerConditions: {
+        messageBasedTrigger: 2,
+        timeBasedTrigger: cdk.Duration.seconds(60),
+        tokenBasedTrigger: 200,
+      },
+    });
+
+    const rendered = strategy.render();
+    expect(rendered.customMemoryStrategy).toBeDefined();
+    expect((rendered.customMemoryStrategy as any)?.name).toBe('render_test');
+    expect((rendered.customMemoryStrategy as any)?.type).toBe('CUSTOM');
+  });
+
+  test('Should grant permissions correctly', () => {
+    const role = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+    });
+
+    const strategy = MemoryStrategy.usingSelfManaged({
+      name: 'grant_test',
+      invocationConfiguration: {
+        topic: topic,
+        s3Location: {
+          bucketName: bucket.bucketName,
+          objectKey: 'grant/',
+        },
+      },
+    });
+
+    const grant = strategy.grant(role);
+    expect(grant).toBeDefined();
+  });
+
+  test('Should handle minimum valid values', () => {
+    expect(() => {
+      MemoryStrategy.usingSelfManaged({
+        name: 'min_values',
+        invocationConfiguration: {
+          topic: topic,
+          s3Location: {
+            bucketName: bucket.bucketName,
+            objectKey: 'min/',
+          },
+        },
+        historicalContextWindowSize: 0,
+        triggerConditions: {
+          messageBasedTrigger: 1,
+          timeBasedTrigger: cdk.Duration.seconds(10),
+          tokenBasedTrigger: 100,
+        },
+      });
+    }).not.toThrow();
+  });
+
+  test('Should handle maximum valid values', () => {
+    expect(() => {
+      MemoryStrategy.usingSelfManaged({
+        name: 'max_values',
+        invocationConfiguration: {
+          topic: topic,
+          s3Location: {
+            bucketName: bucket.bucketName,
+            objectKey: 'max/',
+          },
+        },
+        historicalContextWindowSize: 50,
+        triggerConditions: {
+          messageBasedTrigger: 50,
+          timeBasedTrigger: cdk.Duration.seconds(3000),
+          tokenBasedTrigger: 500000,
+        },
       });
     }).not.toThrow();
   });

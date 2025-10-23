@@ -1,16 +1,30 @@
 {
   "version": "48.0.0",
   "files": {
-    "a80c36ba7004b61575343ed5a7e927500dd2158dc49759196d6b4e611b63cb1f": {
+    "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+      "displayName": "aws-cdk-bedrock-agentcore-memory-1/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "source": {
+        "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-094cbf39": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "2669479749cc4902dd50ec63100384d7a7d490064758f0b72b68261d28f4d792": {
       "displayName": "aws-cdk-bedrock-agentcore-memory-1 Template",
       "source": {
         "path": "aws-cdk-bedrock-agentcore-memory-1.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-cebb4180": {
+        "current_account-current_region-969e82f6": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a80c36ba7004b61575343ed5a7e927500dd2158dc49759196d6b4e611b63cb1f.json",
+          "objectKey": "2669479749cc4902dd50ec63100384d7a7d490064758f0b72b68261d28f4d792.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
