@@ -827,7 +827,8 @@ To write to long-term memory, you need to configure extraction strategies which 
 
 ### Basic Memory Creation
 
-Below you can find how to configure a simple short-term memory (STM) with no long-term memory extraction strategies. Note how you set `expirationDuration`, which defines the time the events will be stored in the short-term memory before they expire.
+Below you can find how to configure a simple short-term memory (STM) with no long-term memory extraction strategies.
+Note how you set `expirationDuration`, which defines the time the events will be stored in the short-term memory before they expire.
 
 ```typescript fixture=default
 
@@ -859,36 +860,43 @@ const memory = new agentcore.Memory(this, "MyMemory", {
 
 ### LTM Memory Extraction Stategies
 
-If you need long-term memory for context recall across sessions, you can setup memory extraction strategies to extract the relevant memory from the raw events.
+If you need long-term memory for context recall across sessions, you can setup memory extraction strategies
+to extract the relevant memory from the raw events.
 
 Amazon Bedrock AgentCore Memory has different memory strategies for extracting and organizing information:
 
 - **Summarization**: to summarize interactions to preserve critical context and key insights.
-- **Semantic Memory**: to extract general factual knowledge, concepts and meanings from raw conversations using vector embeddings. This enables similarity-based retrieval of relevant facts and context.
+- **Semantic Memory**: to extract general factual knowledge, concepts and meanings from raw conversations using vector embeddings.
+This enables similarity-based retrieval of relevant facts and context.
 - **User Preferences**: to extract user behavior patterns from raw conversations.
 
 You can use built-in extraction strategies for quick setup, or create custom extraction strategies with specific models and prompt templates.
 
 ### Memory with Built-in Strategies
 
-The library provides three built-in LTM strategies. These are default strategies for organizing and extracting memory data, each optimized for specific use cases.
+The library provides three built-in LTM strategies. These are default strategies for organizing and extracting memory data,
+each optimized for specific use cases.
 
-For example: An agent helps multiple users with cloud storage setup. From these conversations, see how each strategy processes users expressing confusion about account connection:
+For example: An agent helps multiple users with cloud storage setup. From these conversations,
+see how each strategy processes users expressing confusion about account connection:
 
 1. **Summarization Strategy** (`MemoryStrategy.usingBuiltInSummarization()`)
-This strategy compresses conversations into concise overviews, preserving essential context and key insights for quick recall. Extracted memory example: Users confused by cloud setup during onboarding.
+This strategy compresses conversations into concise overviews, preserving essential context and key insights for quick recall.
+Extracted memory example: Users confused by cloud setup during onboarding.
 
    - Extracts concise summaries to preserve critical context and key insights
    - Namespace: `/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}`
 
 2. **Semantic Memory Strategy** (`MemoryStrategy.usingBuiltInSemantic()`)
-Distills general facts, concepts, and underlying meanings from raw conversational data, presenting the information in a context-independent format. Extracted memory example: In-context learning = task-solving via examples, no training needed.
+Distills general facts, concepts, and underlying meanings from raw conversational data, presenting the information in a context-independent format.
+Extracted memory example: In-context learning = task-solving via examples, no training needed.
 
    - Extracts general factual knowledge, concepts and meanings from raw conversations
    - Namespace: `/strategies/{memoryStrategyId}/actors/{actorId}`
 
 3. **User Preference Strategy** (`MemoryStrategy.usingBuiltInUserPreference()`)
-Captures individual preferences, interaction patterns, and personalized settings to enhance future experiences. Extracted memory example: User needs clear guidance on cloud storage account connection during onboarding.
+Captures individual preferences, interaction patterns, and personalized settings to enhance future experiences.
+Extracted memory example: User needs clear guidance on cloud storage account connection during onboarding.
 
    - Extracts user behavior patterns from raw conversations
    - Namespace: `/strategies/{memoryStrategyId}/actors/{actorId}`
@@ -907,25 +915,30 @@ const memory = new agentcore.Memory(this, "MyMemory", {
 });
 ```
 
-The name generated for each built in memory strategy the followin pattern:
+The name generated for each built in memory strategy is as follows:
 
-- For Summarization: `summary_builtin_<suffix>`
-- For Semantic:`semantic_builtin_<suffix>`
-- For User Preferences: `preference_builtin_<suffix>`
+- For Summarization: `summary_builtin_cdk001`
+- For Semantic:`semantic_builtin_cdk001>`
+- For User Preferences: `preference_builtin_cdk001`
 
-Where the suffix is a 5 characters string ([a-z, A-Z, 0-9]).
-
-### Memory with Built-in Strategies - Custom Namespace
+### Memory with custom Strategies
 
 With Long-Term Memory, organization is managed through Namespaces.
 
-An `actor` refers to entity such as end users or agent/user combinations. For example, in a coding support chatbot, the actor is usually the developer asking questions. Using the actor ID helps the system know which user the memory belongs to, keeping each user's data separate and organized.
+An `actor` refers to entity such as end users or agent/user combinations. For example, in a coding support chatbot,
+the actor is usually the developer asking questions. Using the actor ID helps the system know which user the memory belongs to,
+keeping each user's data separate and organized.
 
-A `session` is usually a single conversation or interaction period between the user and the AI agent. It groups all related messages and events that happen during that conversation.
+A `session` is usually a single conversation or interaction period between the user and the AI agent.
+It groups all related messages and events that happen during that conversation.
 
 A `namespace` is used to logically group and organize long-term memories. It ensures data stays neat, separate, and secure.
 
-With AgentCore Memory, you need to add a namespace when you define a memory strategy. This namespace helps define where the long-term memory will be logically grouped. Every time a new long-term memory is extracted using this memory strategy, it is saved under the namespace you set. This means that all long-term memories are scoped to their specific namespace, keeping them organized and preventing any mix-ups with other users or sessions. You should use a hierarchical format separated by forward slashes /. This helps keep memories organized clearly. As needed, you can choose to use the below pre-defined variables within braces in the namespace based on your applications' organization needs:
+With AgentCore Memory, you need to add a namespace when you define a memory strategy. This namespace helps define where the long-term memory
+will be logically grouped. Every time a new long-term memory is extracted using this memory strategy, it is saved under the namespace you set.
+This means that all long-term memories are scoped to their specific namespace, keeping them organized and preventing any mix-ups with other
+users or sessions. You should use a hierarchical format separated by forward slashes /. This helps keep memories organized clearly. As needed,
+you can choose to use the below pre-defined variables within braces in the namespace based on your applications' organization needs:
 
 - `actorId` – Identifies who the long-term memory belongs to, such as a user
 - `memoryStrategyId` – Shows which memory strategy is being used. This strategy identifier is auto-generated when you create a memory using CreateMemory operation.
@@ -945,9 +958,9 @@ After memory creation, this namespace might look like:
 
 You can customise the namespace, i.e. where the memories are stored by using the following methods:
 
-1. **Summarization Strategy** (`MemoryStrategy.usingSummarization(props)`)
-1. **Semantic Memory Strategy** (`MemoryStrategy.usingSemantic(props)`)
-1. **User Preference Strategy** (`MemoryStrategy.usingUserPreference(props)`)
+1. **Summarization Strategy** (`MemoryStrategy.usingSummarization(scope, props)`)
+1. **Semantic Memory Strategy** (`MemoryStrategy.usingSemantic(scope, props)`)
+1. **User Preference Strategy** (`MemoryStrategy.usingUserPreference(scope, props)`)
 
 ```typescript fixture=default
 // Create memory with built-in strategies
@@ -956,11 +969,11 @@ const memory = new agentcore.Memory(this, "MyMemory", {
   description: "Memory with built-in strategies",
   expirationDuration: cdk.Duration.days(90),
   memoryStrategies: [
-    agentcore.MemoryStrategy.usingUserPreference({
+    agentcore.MemoryStrategy.usingUserPreference(this, {
         name: "CustomerPreferences",
         namespaces: ["support/customer/{actorId}/preferences"]
     }),
-    agentcore.MemoryStrategy.usingSemantic({
+    agentcore.MemoryStrategy.usingSemantic(this, {
         name: "CustomerSupportSemantic",
         namespaces: ["support/customer/{actorId}/semantic"]
     }),
@@ -968,17 +981,11 @@ const memory = new agentcore.Memory(this, "MyMemory", {
 });
 ```
 
-### Custom Strategies (Built-in strategy with override)
-
-Custom memory strategies let you tailor memory extraction and consolidation to your specific domain or use case. You can override the prompts for extracting and consolidating semantic, summary, or user preferences. You can also choose the model that you want to use for extraction and consolidation.
+Custom memory strategies let you tailor memory extraction and consolidation to your specific domain or use case.
+You can override the prompts for extracting and consolidating semantic, summary, or user preferences.
+You can also choose the model that you want to use for extraction and consolidation.
 
 The custom prompts you create are appended to a non-editable system prompt.
-
-You can do so by using:
-
-1. **Summarization Strategy** (`MemoryStrategy.usingSummaryOverride(props)`)
-1. **Semantic Memory Strategy** (`MemoryStrategy.usingSemanticOverride(props)`)
-1. **User Preference Strategy** (`MemoryStrategy.usingUserPreferenceOverride(props)`)
 
 Since a custom strategy requires you to invoke certain FMs, you need a role with appropriate permissions. For that, you can:
 
@@ -988,7 +995,8 @@ Since a custom strategy requires you to invoke certain FMs, you need a role with
 
 #### Memory with Custom Execution Role
 
-Keep in mind that memories that **do not** use custom strategies do not require a service role. So even if you provide it, it will be ignored as it will never be used.
+Keep in mind that memories that **do not** use custom strategies do not require a service role.
+So even if you provide it, it will be ignored as it will never be used.
 
 ```typescript fixture=default
 // Create a custom execution role
@@ -1006,7 +1014,7 @@ const memory = new agentcore.Memory(this, "MyMemory", {
   memoryName: "my_memory",
   description: "Memory with custom execution role",
   expirationDuration: cdk.Duration.days(90),
- // executionRole: executionRole,
+  executionRole: executionRole,
 });
 ```
 
@@ -1014,7 +1022,7 @@ In customConsolidation and customExtraction, the model property uses the [@aws-c
 
 ```typescript fixture=default
 // Create a custom semantic memory strategy
-const customSemanticStrategy = agentcore.MemoryStrategy.usingSemanticOverride({
+const customSemanticStrategy = agentcore.MemoryStrategy.usingSemantic(this, {
   name: "customSemanticStrategy",
   description: "Custom semantic memory strategy",
   namespaces: ["/custom/strategies/{memoryStrategyId}/actors/{actorId}"],
@@ -1034,6 +1042,58 @@ const memory = new agentcore.Memory(this, "MyMemory", {
   description: "Memory with custom strategy",
   expirationDuration: cdk.Duration.days(90),
   memoryStrategies: [customSemanticStrategy],
+});
+```
+
+### Memory with self-managed Strategies
+
+A self-managed strategy in Amazon Bedrock AgentCore Memory gives you complete control over your memory extraction and consolidation pipelines. 
+With a self-managed strategy, you can build custom memory processing workflows while leveraging Amazon Bedrock AgentCore for storage and retrieval.
+
+For additional information, you can refer to the [developer guide for self managed strategies](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory-self-managed-strategies.html).
+
+Create the required AWS resources including:
+
+- an S3 bucket in your account where Amazon Bedrock AgentCore will deliver batched event payloads.
+- an SNS topic for job notifications. Use FIFO topics if processing order within sessions is important for your use case.
+
+The construct will apply the correct permissions to the memory execution role to access these resources.
+
+```typescript fixture=default
+
+const bucket = new s3.Bucket(stack, 'memoryBucket', {
+  bucketName: 'test-memory',
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
+});
+
+const topic = new sns.Topic(this, 'topic');
+
+// Create a custom semantic memory strategy
+const selfManagedStrategy = agentcore.MemoryStrategy.usingSelfManaged(this, {
+  name: "selfMabagedStrategy",
+  description: "self managed memory strategy",
+  historicalContextWindowSize: 5,
+  invocationConfiguration: {
+    topic: topic,
+    s3Location: {
+      bucketName: bucket.bucketName,
+      objectKey: 'memory/',
+    }
+  },
+  triggerConditions: {
+    messageBasedTrigger: 1,
+    timeBasedTrigger: cdk.Duration.seconds(10),
+    tokenBasedTrigger: 100
+  }
+});
+
+// Create memory with custom strategy
+const memory = new agentcore.Memory(this, "MyMemory", {
+  memoryName: "my-custom-memory",
+  description: "Memory with custom strategy",
+  expirationDuration: cdk.Duration.days(90),
+  memoryStrategies: [selfManagedStrategy],
 });
 ```
 
