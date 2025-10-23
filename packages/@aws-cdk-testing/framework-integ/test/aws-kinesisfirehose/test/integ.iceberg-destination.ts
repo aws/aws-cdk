@@ -59,69 +59,81 @@ const table = new glue.CfnTable(stack, 'IcebergTable', {
 table.addDependency(database);
 
 // Create delivery stream with Iceberg destination using catalogArn
-new firehose.DeliveryStream(stack, 'IcebergDeliveryStreamWithCatalog', {
+const deliveryStreamWithCatalog = new firehose.DeliveryStream(stack, 'IcebergDeliveryStreamWithCatalog', {
   destination: new firehose.IcebergDestination(bucket, {
     catalogConfiguration: {
-      catalogArn: `arn:aws:glue:${cdk.Stack.of(stack).region}:${cdk.Stack.of(stack).account}:catalog`,
+      catalogArn: cdk.Stack.of(stack).formatArn({
+        service: 'glue',
+        resource: 'catalog',
+      }),
     },
     destinationTableConfigurations: [
       {
-        databaseName: 'iceberg_db',
-        tableName: 'iceberg_table',
+        databaseName: database.ref,
+        tableName: table.ref,
         uniqueKeys: ['id'],
       },
     ],
   }),
 });
+deliveryStreamWithCatalog.node.addDependency(table);
 
 // Create delivery stream with warehouse location
-new firehose.DeliveryStream(stack, 'IcebergDeliveryStreamWithWarehouse', {
+const deliveryStreamWithWarehouse = new firehose.DeliveryStream(stack, 'IcebergDeliveryStreamWithWarehouse', {
   destination: new firehose.IcebergDestination(bucket, {
     catalogConfiguration: {
       warehouseLocation: `s3://${bucket.bucketName}/warehouse`,
     },
     destinationTableConfigurations: [
       {
-        databaseName: 'iceberg_db',
-        tableName: 'iceberg_table',
+        databaseName: database.ref,
+        tableName: table.ref,
         uniqueKeys: ['id'],
       },
     ],
   }),
 });
+deliveryStreamWithWarehouse.node.addDependency(table);
 
 // Create delivery stream with custom role
 const customRole = new iam.Role(stack, 'CustomRole', {
   assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
 });
 
-new firehose.DeliveryStream(stack, 'IcebergDeliveryStreamWithCustomRole', {
+const deliveryStreamWithCustomRole = new firehose.DeliveryStream(stack, 'IcebergDeliveryStreamWithCustomRole', {
   destination: new firehose.IcebergDestination(bucket, {
     catalogConfiguration: {
-      catalogArn: `arn:aws:glue:${cdk.Stack.of(stack).region}:${cdk.Stack.of(stack).account}:catalog`,
+      catalogArn: cdk.Stack.of(stack).formatArn({
+        service: 'glue',
+        resource: 'catalog',
+      }),
     },
     destinationTableConfigurations: [
       {
-        databaseName: 'iceberg_db',
-        tableName: 'iceberg_table',
+        databaseName: database.ref,
+        tableName: table.ref,
         uniqueKeys: ['id'],
       },
     ],
     role: customRole,
   }),
 });
+deliveryStreamWithCustomRole.node.addDependency(table);
 
 // Create delivery stream with all properties
-new firehose.DeliveryStream(stack, 'IcebergDeliveryStreamAllProperties', {
+const deliveryStreamAllProperties = new firehose.DeliveryStream(stack, 'IcebergDeliveryStreamAllProperties', {
   destination: new firehose.IcebergDestination(bucket, {
     catalogConfiguration: {
-      catalogArn: `arn:aws:glue:${cdk.Stack.of(stack).region}:${cdk.Stack.of(stack).account}:catalog`,
+      catalogArn: cdk.Stack.of(stack).formatArn({
+        service: 'glue',
+        resource: 'catalog',
+      }),
       warehouseLocation: `s3://${bucket.bucketName}/warehouse`,
     },
     destinationTableConfigurations: [
       {
-        databaseName: 'iceberg_db',
-        tableName: 'iceberg_table',
+        databaseName: database.ref,
+        tableName: table.ref,
         uniqueKeys: ['id'],
         s3ErrorOutputPrefix: 'errors/iceberg_table/',
       },
@@ -132,6 +144,7 @@ new firehose.DeliveryStream(stack, 'IcebergDeliveryStreamAllProperties', {
     retryDuration: cdk.Duration.hours(2),
   }),
 });
+deliveryStreamAllProperties.node.addDependency(table);
 
 new IntegTest(app, 'integ-tests', {
   testCases: [stack],
