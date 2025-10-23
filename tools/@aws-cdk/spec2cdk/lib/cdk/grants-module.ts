@@ -25,11 +25,15 @@ const $this = $E(expr.this_());
  * repository.
  */
 export class GrantsModule extends Module {
-  public static async forService(db: SpecDatabase, service: Service, sourceFile: string): Promise<GrantsModule | undefined> {
+  public static async forServiceFromString(db: SpecDatabase, service: Service, config: string): Promise<GrantsModule | undefined> {
+    const schema = JSON.parse(config);
+    return new GrantsModule(service, db, schema);
+  }
+
+  public static async forServiceFromFile(db: SpecDatabase, service: Service, sourceFile: string): Promise<GrantsModule | undefined> {
     try {
       const location = path.join(__dirname, '../../../../../packages/aws-cdk-lib', sourceFile);
-      const schema = JSON.parse(await fs.readFile(location, 'utf-8'));
-      return new GrantsModule(service, db, schema);
+      return await GrantsModule.forServiceFromString(db, service, await fs.readFile(location, 'utf-8'));
     } catch (e: any) {
       if (e.code === 'ENOENT') {
         return undefined;
@@ -58,8 +62,9 @@ export class GrantsModule extends Module {
       const arnMap = resourceArnMap(resource, config.grants);
       if (Object.keys(arnMap).length === 0) continue;
 
+      const className = `${name}Grants`;
       const classType = new ClassType(this, {
-        name: `${name}Grants`,
+        name: className,
         export: true,
       });
 
@@ -121,6 +126,31 @@ export class GrantsModule extends Module {
           stmt.assign($this[field.name], param),
         );
       }
+
+      const factoryMethod = classType.addMethod({
+        name: 'from' + resource.name,
+        static: true,
+        returnType: Type.fromName(this, `${classType.name}`),
+      });
+
+      const staticResourceParam = factoryMethod.addParameter({
+        name: 'resource',
+        type: resourceRefType,
+      });
+
+      const resourceWithPolicy = expr.ident('resourceWithPolicy');
+      const encryptedResource = expr.ident('encryptedResource');
+      factoryMethod.addBody(
+        stmt.letVar(resourceWithPolicy, expr.UNDEFINED),
+        stmt.letVar(encryptedResource, expr.UNDEFINED),
+        stmt.if_($E(expr.ident('iam.GrantableResources')).isResourceWithPolicy(expr.ident('resource')))
+          .then(stmt.assign(resourceWithPolicy, staticResourceParam)),
+
+        stmt.if_($E(expr.ident('iam.GrantableResources')).isEncryptedResource(expr.ident('resource')))
+          .then(stmt.assign(encryptedResource, staticResourceParam)),
+
+        stmt.ret(Type.fromName(this, className).newInstance(staticResourceParam, encryptedResource, resourceWithPolicy)),
+      );
 
       for (const [methodName, grantSchema] of Object.entries(config.grants)) {
         const resourceArns = arnMap[methodName];

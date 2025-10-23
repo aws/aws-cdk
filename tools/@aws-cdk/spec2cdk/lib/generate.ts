@@ -240,7 +240,7 @@ async function generator(
       }
 
       // Grants from a separate file
-      const grantsModule = await GrantsModule.forService(db, s, filePatterns.grantsJson(filenamePlaceHolders));
+      const grantsModule = await GrantsModule.forServiceFromFile(db, s, filePatterns.grantsJson(filenamePlaceHolders));
       if (grantsModule) {
         writer.write(grantsModule, filePatterns.grantsClass);
       }

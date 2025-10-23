@@ -2,6 +2,7 @@ import { Dependable, IConstruct, IDependable } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import { IGrantable, IPrincipal } from './principals';
 import * as cdk from '../../core';
+import * as iam from "../index";
 
 /**
  * Basic options for a grant operation
@@ -435,6 +436,16 @@ export interface IResourceWithPolicy extends cdk.IResource {
    * Add a statement to the resource's resource policy
    */
   addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult;
+}
+
+export class GrantableResources {
+  static isResourceWithPolicy(resource: IConstruct): resource is iam.IResourceWithPolicy {
+    return (resource as unknown as iam.IResourceWithPolicy).addToResourcePolicy !== undefined;
+  }
+
+  static isEncryptedResource(resource: IConstruct): resource is iam.IEncryptedResource {
+    return (resource as unknown as iam.IEncryptedResource).grantOnKey !== undefined;
+  }
 }
 
 /**

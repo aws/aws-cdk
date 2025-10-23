@@ -946,7 +946,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   public get resourceRef(): ResourceReference {
     return {
-      "resourceArn": this.ref
+      "resourceArn": this.attrArn
     };
   }
 
@@ -989,6 +989,11 @@ export interface CfnResourceProps {
 export interface ResourceReference {
   /**
    * The Arn of the Resource resource.
+   */
+  readonly resourceArn: string;
+
+  /**
+   * The ARN of the Resource resource.
    */
   readonly resourceArn: string;
 }
