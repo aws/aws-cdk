@@ -52,5 +52,3 @@ describe('none log driver', () => {
     });
   });
 });
-
-
