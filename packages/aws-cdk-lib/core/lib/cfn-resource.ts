@@ -16,7 +16,6 @@ import { ResolutionTypeHint } from './type-hints';
 import * as cxapi from '../../cx-api';
 import { AssumptionError, ValidationError } from './errors';
 import { ResourceEnvironment } from './environment';
-import { IResource } from './resource';
 
 export interface CfnResourceProps {
   /**
@@ -35,7 +34,7 @@ export interface CfnResourceProps {
 /**
  * Represents a CloudFormation resource.
  */
-export class CfnResource extends CfnRefElement implements IResource {
+export class CfnResource extends CfnRefElement {
   /**
    * Check whether the given object is a CfnResource
    */
