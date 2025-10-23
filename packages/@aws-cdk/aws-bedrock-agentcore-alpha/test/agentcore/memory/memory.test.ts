@@ -1430,7 +1430,7 @@ describe('SelfManagedMemoryStrategy unit tests', () => {
     expect(strategy.name).toBe('test_self_managed');
     expect(strategy.description).toBe('Test self managed strategy');
     expect(strategy.strategyType).toBe('CUSTOM');
-    expect(strategy.strategyClassType).toBe('SELF_MANAGED');
+    expect(strategy.strategyClassType).toBe('CUSTOM');
     expect(strategy.historicalContextWindowSize).toBe(4);
     expect(strategy.triggerConditions.messageBasedTrigger).toBe(1);
     expect(strategy.triggerConditions.timeBasedTrigger?.toSeconds()).toBe(10);

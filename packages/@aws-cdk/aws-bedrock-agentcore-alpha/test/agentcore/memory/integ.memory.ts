@@ -22,7 +22,7 @@ new agentcore.Memory(stack, 'Memory', {
 });
 
 // Create a memory with LTM strategies (builtin) and kms key
-const myEncryptionKey = new kms.Key(stack, 'MyEncryptionKey', {});
+const myEncryptionKey = new kms.Key(stack, 'MyEncryptionKey');
 
 new agentcore.Memory(stack, 'MemoryWithBuiltinStrategies', {
   memoryName: 'memory_with_builtin_strategies',
