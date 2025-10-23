@@ -8,8 +8,11 @@ All notable changes to this project will be documented in this file. See [standa
 ### ⚠ BREAKING CHANGES
 
 * ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+- **aws-datazone**: AWS::DataZone::ProjectProfile: Id property removed.
+- **aws-logs**: AWS::Logs::DeliveryDestination: DeliveryDestinationType attribute removed.  
 - **aws-s3**: AWS::S3::AccessGrantsLocation: IamRoleArn property is now required.  
 - **aws-s3**: AWS::S3::AccessGrantsLocation: LocationScope property is now required.
+- **aws-servicecatalog**: AWS::ServiceCatalog::TagOptionAssociation: Id attribute removed.
 
 ### Features
 
