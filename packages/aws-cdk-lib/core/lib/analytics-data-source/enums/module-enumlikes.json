@@ -749,6 +749,7 @@
       "ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_200K",
       "ANTHROPIC_CLAUDE_3_7_SONNET_20250219_V1_0",
       "ANTHROPIC_CLAUDE_SONNET_4_20250514_V1_0",
+      "ANTHROPIC_CLAUDE_SONNET_4_5_20250929_V1_0",
       "ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0",
       "ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_48K",
       "ANTHROPIC_CLAUDE_3_5_HAIKU_20241022_V1_0",
@@ -772,7 +773,9 @@
       "COHERE_EMBED_ENGLISH_V3_0_512",
       "COHERE_EMBED_MULTILINGUAL_V3",
       "COHERE_EMBED_MULTILINGUAL_V3_0_512",
+      "COHERE_EMBED_V4",
       "DEEP_SEEK_R1_V1_0",
+      "DEEP_SEEK_V3_V1_0",
       "OPENAI_GPT_OSS_120B_1",
       "OPENAI_GPT_OSS_20B_1",
       "LUMA_RAY_V2_0",
@@ -804,6 +807,10 @@
       "MISTRAL_SMALL_V0_1",
       "MISTRAL_LARGE_2_V0_1",
       "MISTRAL_PIXTRAL_LARGE_2502_V1_0",
+      "QWEN_QWEN3_32B_V1_0",
+      "QWEN_QWEN3_235B_A22B_2507_V1_0",
+      "QWEN_QWEN3_CODER_30B_A3B_V1_0",
+      "QWEN_QWEN3_CODER_480B_A35B_V1_0",
       "STABILITY_STABLE_DIFFUSION_XL",
       "STABILITY_STABLE_DIFFUSION_XL_V0",
       "STABILITY_STABLE_DIFFUSION_XL_V1",
@@ -1616,6 +1623,8 @@
       "BEDROCK",
       "BEDROCK_AGENT",
       "BEDROCK_AGENT_RUNTIME",
+      "BEDROCK_AGENTCORE",
+      "BEDROCK_AGENTCORE_GATEWAY",
       "BEDROCK_RUNTIME",
       "BEDROCK_DATA_AUTOMATION",
       "BEDROCK_DATA_AUTOMATION_FIPS",
@@ -2468,7 +2477,8 @@
       "OPENSEARCH_2_13",
       "OPENSEARCH_2_15",
       "OPENSEARCH_2_17",
-      "OPENSEARCH_2_19"
+      "OPENSEARCH_2_19",
+      "OPENSEARCH_3_1"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/ca-certificate.ts": {
@@ -2588,7 +2598,8 @@
       "VER_3_08_1",
       "VER_3_08_2",
       "VER_3_09_0",
-      "VER_3_10_0"
+      "VER_3_10_0",
+      "VER_3_10_1"
     ],
     "AuroraPostgresEngineVersion": [
       "VER_9_6_8",
@@ -2881,6 +2892,7 @@
       "VER_5_7_44_RDS_20250103",
       "VER_5_7_44_RDS_20250213",
       "VER_5_7_44_RDS_20250508",
+      "VER_5_7_44_RDS_20250818",
       "VER_8_0",
       "VER_8_0_11",
       "VER_8_0_13",
@@ -3358,6 +3370,13 @@
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.ts": {
     "SessionPinningFilter": [
       "EXCLUDE_VARIABLE_SETS"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.ts": {
+    "Alpn": [
+      "HTTP1_1",
+      "H2",
+      "H3"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.ts": {

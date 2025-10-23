@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f97084341942cce6d395121f281068833a9aeff77c8af00c4cbbc023928935fe.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8b49669a954d14a1e3c8b0c7a822972cb0af3b32cc736cecfe2e2c47494efdc0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -114,12 +114,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambdalambdaalarmmultiplestepscalingpolicyFleetMetricScale2UpperAlarmC5D62FBBAlarmPermissionFE0DB2BA"
-          }
-        ],
-        "/lambda-alarm-multiple-stepscalingpolicy/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/lambda-alarm-multiple-stepscalingpolicy/MyLambda2": [

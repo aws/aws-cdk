@@ -477,7 +477,7 @@
     "DefaultActions": [
      {
       "TargetGroupArn": {
-       "Ref": "ServiceLBPublicListenerECSGroup0CC8688C"
+       "Ref": "ServiceLBPublicListenerECSPrivateGroup93D5832E"
       },
       "Type": "forward"
      }
@@ -489,7 +489,7 @@
     "Protocol": "HTTP"
    }
   },
-  "ServiceLBPublicListenerECSGroup0CC8688C": {
+  "ServiceLBPublicListenerECSPrivateGroup93D5832E": {
    "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
    "Properties": {
     "Port": 80,
@@ -524,7 +524,7 @@
       "ContainerName": "nginx",
       "ContainerPort": 80,
       "TargetGroupArn": {
-       "Ref": "ServiceLBPublicListenerECSGroup0CC8688C"
+       "Ref": "ServiceLBPublicListenerECSPrivateGroup93D5832E"
       }
      }
     ],
@@ -554,7 +554,7 @@
     }
    },
    "DependsOn": [
-    "ServiceLBPublicListenerECSGroup0CC8688C",
+    "ServiceLBPublicListenerECSPrivateGroup93D5832E",
     "ServiceLBPublicListener46709EAA",
     "TaskTaskRoleE98524A1"
    ]
@@ -674,7 +674,7 @@
     }
    },
    "DependsOn": [
-    "ServiceLBPublicListenerECSGroup0CC8688C",
+    "ServiceLBPublicListenerECSPrivateGroup93D5832E",
     "ServiceLBPublicListener46709EAA"
    ]
   }

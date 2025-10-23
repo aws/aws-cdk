@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "7d6ffdb7a277ce7cd11317605b00742b4a4c8b8a59ae810d97723716e6a9b232": {
+      "displayName": "FleetIntegStack1 Template",
+      "source": {
+        "path": "FleetIntegStack1.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-e99bb092": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7d6ffdb7a277ce7cd11317605b00742b4a4c8b8a59ae810d97723716e6a9b232.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

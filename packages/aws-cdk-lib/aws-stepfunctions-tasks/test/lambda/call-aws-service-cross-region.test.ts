@@ -1,4 +1,3 @@
-import { describe } from 'node:test';
 import { Template } from '../../../assertions';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
