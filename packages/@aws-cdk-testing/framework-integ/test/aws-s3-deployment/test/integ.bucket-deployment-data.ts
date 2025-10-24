@@ -50,6 +50,9 @@ const file7 = Source.yamlData('my-yaml/secret-config.yaml', {
   secret_value: tokenizedValue,
 });
 
+// case for empty string
+const file8 = Source.data('file8.txt', '');
+
 const deployment = new BucketDeployment(stack, 'DeployMeHere', {
   destinationBucket: bucket,
   sources: [file1, file2],
@@ -61,6 +64,7 @@ deployment.addSource(file4);
 deployment.addSource(file5);
 deployment.addSource(file6);
 deployment.addSource(file7);
+deployment.addSource(file8);
 
 new CfnOutput(stack, 'BucketName', { value: bucket.bucketName });
 
