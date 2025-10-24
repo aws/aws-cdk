@@ -245,6 +245,54 @@ export interface LogConfig {
 }
 
 /**
+ * Controls how data source metrics will be emitted to CloudWatch.
+ */
+export enum DataSourceLevelMetricsBehavior {
+  /**
+   * Records and emits metric data for all data sources in the request.
+   */
+  FULL_REQUEST_DATA_SOURCE_METRICS = 'FULL_REQUEST_DATA_SOURCE_METRICS',
+  /**
+   * Records and emits metric data for data sources that have the MetricsConfig value set to ENABLED.
+   */
+  PER_DATA_SOURCE_METRICS = 'PER_DATA_SOURCE_METRICS',
+}
+
+/**
+ * Controls how resolver metrics will be emitted to CloudWatch.
+ */
+export enum ResolverLevelMetricsBehavior {
+  /**
+   * Records and emits metric data for all resolvers in the request.
+   */
+  FULL_REQUEST_RESOLVER_METRICS = 'FULL_REQUEST_RESOLVER_METRICS',
+  /**
+   * Records and emits metric data for resolvers that have the MetricsConfig value set to ENABLED.
+   */
+  PER_RESOLVER_METRICS = 'PER_RESOLVER_METRICS',
+}
+
+/**
+ * Enhanced metrics configuration for AppSync
+ */
+export interface EnhancedMetricsConfig {
+  /**
+   * Controls how data source metrics will be emitted to CloudWatch.
+   */
+  readonly dataSourceLevelMetricsBehavior: DataSourceLevelMetricsBehavior;
+  /**
+   * Controls how operation metrics will be emitted to CloudWatch.
+   *
+   * @default disabled
+   */
+  readonly operationLevelMetricsEnabled?: boolean;
+  /**
+   * Controls how resolver metrics will be emitted to CloudWatch.
+   */
+  readonly resolverLevelMetricsBehavior: ResolverLevelMetricsBehavior;
+}
+
+/**
  * Domain name configuration for AppSync
  */
 export interface DomainOptions {
@@ -450,6 +498,13 @@ export interface GraphqlApiProps {
    * @default - No owner contact.
    */
   readonly ownerContact?: string;
+
+  /**
+   * Enables and controls the enhanced metrics feature.
+   *
+   * @default - Enhanced metrics disabled.
+   */
+  readonly enhancedMetricsConfig?: EnhancedMetricsConfig;
 }
 
 /**
@@ -676,6 +731,7 @@ export class GraphqlApi extends GraphqlApiBase {
       resolverCountLimit: props.resolverCountLimit,
       environmentVariables: Lazy.any({ produce: () => this.renderEnvironmentVariables() }),
       ownerContact: props.ownerContact,
+      enhancedMetricsConfig: this.setupEnhancedMetricsConfig(props.enhancedMetricsConfig),
     });
 
     this.apiId = this.api.attrApiId;
@@ -918,6 +974,19 @@ export class GraphqlApi extends GraphqlApiBase {
         lambdaAuthorizerConfig: this.setupLambdaAuthorizerConfig(mode.lambdaAuthorizerConfig),
       },
     ], []);
+  }
+
+  private setupEnhancedMetricsConfig(config?: EnhancedMetricsConfig) {
+    if (!config) return undefined;
+    const dataSourceLevelMetricsBehavior = config.dataSourceLevelMetricsBehavior;
+    const operationLevelMetricsEnabled = config.operationLevelMetricsEnabled
+      ? 'ENABLED' : 'DISABLED';
+    const resolverLevelMetricsBehavior = config.resolverLevelMetricsBehavior;
+    return {
+      dataSourceLevelMetricsBehavior: dataSourceLevelMetricsBehavior,
+      operationLevelMetricsConfig: operationLevelMetricsEnabled,
+      resolverLevelMetricsBehavior: resolverLevelMetricsBehavior,
+    };
   }
 
   private createAPIKey(config?: ApiKeyConfig) {
