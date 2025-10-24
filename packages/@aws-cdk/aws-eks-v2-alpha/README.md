@@ -27,6 +27,7 @@ Compared to the original EKS module, it has the following major changes:
 - Remove nested stacks
 - API changes to make them more ergonomic.
 
+
 ## Quick start
 
 Here is the minimal example of defining an AWS EKS cluster
@@ -36,6 +37,10 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_33,
 });
 ```
+
+## Migrating from V1
+
+See [Migration Guide](./MIGRATION.md)
 
 ## Architecture
 
