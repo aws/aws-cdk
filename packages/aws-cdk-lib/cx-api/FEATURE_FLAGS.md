@@ -107,8 +107,8 @@ Flags come in three types:
 | [@aws-cdk/core:explicitStackTags](#aws-cdkcoreexplicitstacktags) | When enabled, stack tags need to be assigned explicitly on a Stack. | 2.205.0 | new default |
 | [@aws-cdk/aws-signer:signingProfileNamePassedToCfn](#aws-cdkaws-signersigningprofilenamepassedtocfn) | Pass signingProfileName to CfnSigningProfile | 2.212.0 | fix |
 | [@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener](#aws-cdkaws-ecs-patternssecgroupsdisablesimplicitopenlistener) | Disable implicit openListener when custom security groups are provided | 2.214.0 | new default |
-| [@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId](#aws-cdkaws-ecs-patternsuniquetargetgroupid) | When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement | V2NEXT | fix |
-| [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | V2NEXT | fix |
+| [@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId](#aws-cdkaws-ecs-patternsuniquetargetgroupid) | When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement | 2.221.0 | fix |
+| [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | 2.221.0 | fix |
 
 <!-- END table -->
 
@@ -2300,7 +2300,7 @@ This is a breaking change as it will cause target group replacement when the fla
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.221.0 | `false` | `true` |
 
 
 ### @aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint
@@ -2316,7 +2316,7 @@ When disabled, the JSONPath apiEndpoint property will only support a static stri
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `true` | `true` |
+| 2.221.0 | `true` | `true` |
 
 
 <!-- END details -->
