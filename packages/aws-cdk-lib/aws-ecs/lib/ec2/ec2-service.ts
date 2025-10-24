@@ -267,20 +267,22 @@ export class Ec2Service extends BaseService implements IEc2Service {
    * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    */
   @MethodMetadata()
-  public addPlacementStrategies(...strategies: PlacementStrategy[]) {
-    if (strategies.length > 0 && this.daemon) {
+  public addPlacementStrategies(...newStrategies: PlacementStrategy[]) {
+    if (newStrategies.length > 0 && this.daemon) {
       throw new ValidationError("Can't configure placement strategies when daemon=true", this);
     }
 
-    if (strategies.length > 0 && !this.strategies && this.availabilityZoneRebalancingEnabled) {
-      const [placement] = strategies[0].toJson();
+    if (newStrategies.length > 0 && !this.strategies && this.availabilityZoneRebalancingEnabled) {
+      const [placement] = newStrategies[0].toJson();
       if (placement.type !== 'spread' || placement.field !== BuiltInAttributes.AVAILABILITY_ZONE) {
         throw new ValidationError(`AvailabilityZoneBalancing.ENABLED requires that the first placement strategy, if any, be 'spread across "${BuiltInAttributes.AVAILABILITY_ZONE}"'`, this);
       }
     }
 
-    this.strategies = [];
-    for (const strategy of strategies) {
+    if (!this.strategies) {
+      this.strategies = [];
+    }
+    for (const strategy of newStrategies) {
       this.strategies.push(...strategy.toJson());
     }
   }
