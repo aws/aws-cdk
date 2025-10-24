@@ -247,6 +247,9 @@ const importedAttributeGroup = appreg.AttributeGroup.fromAttributeGroupArn(
   'MyImportedAttrGroup',
   'arn:aws:servicecatalog:us-east-1:012345678910:/attribute-groups/0aqmvxvgmry0ecc4mjhwypun6i',
 );
+
+// Access attributes property (empty for imported attribute groups)
+console.log(importedAttributeGroup.attributes);
 ```
 
 ## Associations
