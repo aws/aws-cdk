@@ -65,9 +65,44 @@ export interface IJobDefinition extends IResource {
   readonly timeout?: Duration;
 
   /**
+   * Contains a list of consumable resources required by the job.
+   *
+   * Consumable resources are finite resources that are consumed by jobs,
+   * such as third-party software licenses or API rate limits.
+   *
+   * @default - no consumable resources
+   */
+  readonly consumableResourceProperties?: ConsumableResourceProperties;
+
+  /**
    * Add a RetryStrategy to this JobDefinition
    */
   addRetryStrategy(strategy: RetryStrategy): void;
+}
+
+/**
+ * Represents a consumable resource requirement for a job
+ */
+export interface ConsumableResourceRequirement {
+  /**
+   * The name or ARN of the consumable resource
+   */
+  readonly consumableResource: string;
+
+  /**
+   * The quantity of the consumable resource that is needed
+   */
+  readonly quantity: number;
+}
+
+/**
+ * Properties for consumable resources required by a job
+ */
+export interface ConsumableResourceProperties {
+  /**
+   * The list of consumable resources required by a job
+   */
+  readonly consumableResourceList: ConsumableResourceRequirement[];
 }
 
 /**
@@ -124,6 +159,16 @@ export interface JobDefinitionProps {
    * @default - no timeout
    */
   readonly timeout?: Duration;
+
+  /**
+   * Contains a list of consumable resources required by the job.
+   *
+   * Consumable resources are finite resources that are consumed by jobs,
+   * such as third-party software licenses or API rate limits.
+   *
+   * @default - no consumable resources
+   */
+  readonly consumableResourceProperties?: ConsumableResourceProperties;
 }
 
 /**
@@ -243,6 +288,7 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
   public readonly retryStrategies: RetryStrategy[];
   public readonly schedulingPriority?: number;
   public readonly timeout?: Duration;
+  public readonly consumableResourceProperties?: ConsumableResourceProperties;
 
   constructor(scope: Construct, id: string, props?: JobDefinitionProps) {
     super(scope, id, {
@@ -254,6 +300,7 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
     this.retryStrategies = props?.retryStrategies ?? [];
     this.schedulingPriority = props?.schedulingPriority;
     this.timeout = props?.timeout;
+    this.consumableResourceProperties = props?.consumableResourceProperties;
   }
 
   addRetryStrategy(strategy: RetryStrategy): void {
@@ -287,6 +334,12 @@ export function baseJobDefinitionProperties(baseJobDefinition: JobDefinitionBase
     timeout: {
       attemptDurationSeconds: baseJobDefinition.timeout?.toSeconds(),
     },
+    consumableResourceProperties: baseJobDefinition.consumableResourceProperties ? {
+      consumableResourceList: baseJobDefinition.consumableResourceProperties.consumableResourceList.map(req => ({
+        consumableResource: req.consumableResource,
+        quantity: req.quantity,
+      })),
+    } : undefined,
     type: 'dummy',
   };
 }
