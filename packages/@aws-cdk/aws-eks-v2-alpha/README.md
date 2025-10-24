@@ -414,17 +414,6 @@ cluster.addAutoScalingGroupCapacity('custom-subnet-nodes', {
 });
 ```
 
-Self-managed nodes support ARM64 architectures:
-
-```ts
-declare const cluster: eks.Cluster;
-
-cluster.addAutoScalingGroupCapacity('arm64-nodes', {
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M6G, ec2.InstanceSize.MEDIUM),
-  minCapacity: 2,
-});
-```
-
 ### Endpoint Access
 
 When you create a new cluster, Amazon EKS creates an endpoint for the managed Kubernetes API server that you use to communicate with your cluster (using Kubernetes management tools such as `kubectl`)
