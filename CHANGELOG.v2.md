@@ -2,21 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [2.221.0](https://github.com/aws/aws-cdk/compare/v2.220.0...v2.221.0) (2025-10-23)
+## [2.221.0](https://github.com/aws/aws-cdk/compare/v2.220.0...v2.221.0) (2025-10-24)
 
 
 ### ⚠ BREAKING CHANGES
 
 * ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
 - **aws-datazone**: AWS::DataZone::ProjectProfile: Id property removed.
-- **aws-logs**: AWS::Logs::DeliveryDestination: DeliveryDestinationType attribute removed.  
-- **aws-s3**: AWS::S3::AccessGrantsLocation: IamRoleArn property is now required.  
+- **aws-logs**: AWS::Logs::DeliveryDestination: DeliveryDestinationType attribute removed. 
+- **aws-s3**: AWS::S3::AccessGrantsLocation: IamRoleArn property is now required.
 - **aws-s3**: AWS::S3::AccessGrantsLocation: LocationScope property is now required.
 - **aws-servicecatalog**: AWS::ServiceCatalog::TagOptionAssociation: Id attribute removed.
 
 ### Features
 
-* **core:** cfn constructs (L1s) can now accept constructs as parameters for known resource relationships ([#35713](https://github.com/aws/aws-cdk/issues/35713)) ([c5e7f21](https://github.com/aws/aws-cdk/commit/c5e7f215565beeaf21211677b1fc8f62ba8c136a))
 * update L1 CloudFormation resource definitions ([#35816](https://github.com/aws/aws-cdk/issues/35816)) ([82bef28](https://github.com/aws/aws-cdk/commit/82bef28a322a436d0c99adf8cb097008591f3952))
 * **agentcore:** add agentcore L2 constructs for 1p tools ([#35577](https://github.com/aws/aws-cdk/issues/35577)) ([3087ffa](https://github.com/aws/aws-cdk/commit/3087ffa33fdde85d02ec2574854856762866ca7d))
 * **agentcore:** add agentcore runtime L2 construct ([#35623](https://github.com/aws/aws-cdk/issues/35623)) ([c57484a](https://github.com/aws/aws-cdk/commit/c57484ababbf99b13660ab597e5738819b1855a6))

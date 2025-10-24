@@ -8,7 +8,6 @@ import {
 } from '@aws-cdk/service-spec-types';
 import { ClassType, Module, PrimitiveType, RichScope, StructType, Type, TypeDeclaration } from '@cdklabs/typewriter';
 import { CDK_CORE } from './cdk';
-import { RelationshipDecider } from './relationship-decider';
 import { TypeDefinitionStruct } from './typedefinition-struct';
 import { structNameFromTypeDefinition } from '../naming/conventions';
 
@@ -32,7 +31,6 @@ export type TypeDefinitionConverter = (
 export interface TypeConverterForResourceOptions extends Omit<TypeConverterOptions, 'typeDefinitionConverter'> {
   readonly resource: Resource;
   readonly resourceClass: ClassType;
-  readonly relationshipDecider: RelationshipDecider;
 }
 
 /**
@@ -66,7 +64,6 @@ export class TypeConverter {
           resourceClass: opts.resourceClass,
           converter,
           typeDefinition,
-          relationshipDecider: opts.relationshipDecider,
         });
 
         return {
