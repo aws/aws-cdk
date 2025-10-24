@@ -1785,6 +1785,11 @@ export enum LaunchType {
    * The service will be launched using the EXTERNAL launch type
    */
   EXTERNAL = 'EXTERNAL',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  MANAGED_INSTANCES = 'MANAGED_INSTANCES',
 }
 
 /**
