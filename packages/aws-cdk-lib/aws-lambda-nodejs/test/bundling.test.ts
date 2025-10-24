@@ -16,7 +16,9 @@ const STANDARD_RUNTIME = Runtime.NODEJS_20_X;
 const STANDARD_TARGET = 'node20';
 const STANDARD_EXTERNAL = '@aws-sdk/*';
 
-let detectPackageInstallationMock: jest.SpyInstance<PackageInstallation | undefined>;
+let detectPackageInstallationMock: jest.SpyInstance<
+  PackageInstallation | undefined
+>;
 const app = new App();
 const stack = new Stack(app, 'MyTestStack');
 beforeEach(() => {
@@ -24,6 +26,7 @@ beforeEach(() => {
   jest.resetAllMocks();
   jest.restoreAllMocks();
   Bundling.clearEsbuildInstallationCache();
+  Bundling.clearRolldownInstallationCache();
   Bundling.clearTscInstallationCache();
 
   jest.spyOn(Code, 'fromAsset');

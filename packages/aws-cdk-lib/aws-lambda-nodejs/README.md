@@ -161,8 +161,6 @@ passing `NODEJS_16_X`, `aws-sdk` is excluded. When passing `NODEJS_18_X`,  all `
 > [!WARNING]
 > The NodeJS runtime of Node 16 will be deprecated by Lambda on June 12, 2024. Lambda runtimes Node 18 and higher include SDKv3 and not SDKv2. Updating your Lambda runtime from <=Node 16 to any newer version will require bundling the SDK with your handler code, or updating all SDK calls in your handler code to use SDKv3 (which is not a trivial update). Please account for this added complexity and update as soon as possible.
 
-
-
 This can be configured by specifying `bundling.externalModules`:
 
 ```ts
@@ -246,6 +244,47 @@ new nodejs.NodejsFunction(this, 'my-handler', {
   },
 });
 ```
+
+## Using Rolldown as an Alternative Bundler
+
+By default, `NodejsFunction` uses [esbuild](https://esbuild.github.io/) to bundle your Lambda code. As an alternative, you can use [Rolldown](https://rolldown.rs/), a fast Rust-based bundler with an API compatible with Rollup.
+
+To use Rolldown, set the `bundler` property in your bundling configuration:
+
+```ts
+import { Bundler } from 'aws-cdk-lib/aws-lambda-nodejs';
+
+new nodejs.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    bundler: Bundler.ROLLDOWN,
+    minify: true,
+    sourceMap: true,
+  },
+});
+```
+
+Most bundling options work with both esbuild and Rolldown. Options like `minify`, `sourceMap`, `externals`, `define`, and `loader` are supported by both bundlers. However, some options are bundler-specific:
+
+- `esbuildVersion` and `esbuildArgs` - Only apply when using esbuild
+- `rolldownVersion` and `rolldownArgs` - Only apply when using Rolldown
+
+Example with Rolldown-specific options:
+
+```ts
+new nodejs.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    bundler: Bundler.ROLLDOWN,
+    minify: true,
+    sourceMap: true,
+    rolldownVersion: '0.15.0', // Specify rolldown version for Docker bundling
+    rolldownArgs: {
+      '--log-level': 'debug',
+    },
+  },
+});
+```
+
+For more information on Rolldown options, see the [Rolldown CLI documentation](https://rolldown.rs/apis/cli).
 
 ## Command hooks
 
