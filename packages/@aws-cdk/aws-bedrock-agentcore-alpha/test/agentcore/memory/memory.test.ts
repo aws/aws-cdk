@@ -1177,7 +1177,6 @@ describe('BuiltInMemoryStrategy unit tests', () => {
     expect(strategy.description).toBe('Summarize interactions to preserve critical context and key insights');
     expect(strategy.namespaces).toEqual(['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}']);
     expect(strategy.strategyType).toBe('SUMMARIZATION');
-    expect(strategy.strategyClassType).toBe('BUILT-IN');
   });
 
   test('Should create semantic BuiltInMemoryStrategy with valid properties', () => {
@@ -1187,7 +1186,6 @@ describe('BuiltInMemoryStrategy unit tests', () => {
     expect(strategy.description).toBe('Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.');
     expect(strategy.namespaces).toEqual(['/strategies/{memoryStrategyId}/actors/{actorId}']);
     expect(strategy.strategyType).toBe('SEMANTIC');
-    expect(strategy.strategyClassType).toBe('BUILT-IN');
   });
 
   test('Should create user preference BuiltInMemoryStrategy with valid properties', () => {
@@ -1197,7 +1195,6 @@ describe('BuiltInMemoryStrategy unit tests', () => {
     expect(strategy.description).toBe('Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.');
     expect(strategy.namespaces).toEqual(['/strategies/{memoryStrategyId}/actors/{actorId}']);
     expect(strategy.strategyType).toBe('USER_PREFERENCE');
-    expect(strategy.strategyClassType).toBe('BUILT-IN');
   });
 
   test('Should render summarization strategy correctly', () => {
@@ -1258,7 +1255,6 @@ describe('BuiltInMemoryStrategy unit tests', () => {
     expect(strategy.description).toBe('Custom semantic strategy');
     expect(strategy.namespaces).toEqual(['/strategies/{memoryStrategyId}/actors/{actorId}/custom']);
     expect(strategy.strategyType).toBe('SEMANTIC');
-    expect(strategy.strategyClassType).toBe('BUILT-IN');
   });
 
   test('Should create custom user preference strategy with valid properties', () => {
@@ -1272,7 +1268,6 @@ describe('BuiltInMemoryStrategy unit tests', () => {
     expect(strategy.description).toBe('Custom user preference strategy');
     expect(strategy.namespaces).toEqual(['/strategies/{memoryStrategyId}/actors/{actorId}/preferences']);
     expect(strategy.strategyType).toBe('USER_PREFERENCE');
-    expect(strategy.strategyClassType).toBe('BUILT-IN');
   });
 
   test('Should create custom summarization strategy with valid properties', () => {
@@ -1286,7 +1281,6 @@ describe('BuiltInMemoryStrategy unit tests', () => {
     expect(strategy.description).toBe('Custom summarization strategy');
     expect(strategy.namespaces).toEqual(['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}/custom']);
     expect(strategy.strategyType).toBe('SUMMARIZATION');
-    expect(strategy.strategyClassType).toBe('BUILT-IN');
   });
 });
 
@@ -1430,7 +1424,6 @@ describe('SelfManagedMemoryStrategy unit tests', () => {
     expect(strategy.name).toBe('test_self_managed');
     expect(strategy.description).toBe('Test self managed strategy');
     expect(strategy.strategyType).toBe('CUSTOM');
-    expect(strategy.strategyClassType).toBe('CUSTOM');
     expect(strategy.historicalContextWindowSize).toBe(4);
     expect(strategy.triggerConditions.messageBasedTrigger).toBe(1);
     expect(strategy.triggerConditions.timeBasedTrigger?.toSeconds()).toBe(10);

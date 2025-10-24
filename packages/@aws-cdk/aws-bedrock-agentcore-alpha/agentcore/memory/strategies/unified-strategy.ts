@@ -15,7 +15,7 @@ import { IBedrockInvokable } from '@aws-cdk/aws-bedrock-alpha';
 import { Arn, ArnFormat } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import { Grant, IRole } from 'aws-cdk-lib/aws-iam';
-import { MemoryStrategyCommonProps, IMemoryStrategy, MemoryStrategyClassType, MemoryStrategyType } from '../memory-strategy';
+import { MemoryStrategyCommonProps, IMemoryStrategy, MemoryStrategyType } from '../memory-strategy';
 import { validateStringFieldLength, throwIfInvalid, validateFieldPattern } from '../validation-helpers';
 
 /******************************************************************************
@@ -110,7 +110,6 @@ export interface UnifiedStrategyProps extends MemoryStrategyCommonProps {
  * with specific models and prompt templates.
  */
 export class UnifiedMemoryStrategy implements IMemoryStrategy {
-  public readonly strategyClassType: MemoryStrategyClassType;
   public readonly name: string;
   public readonly description?: string;
   /**
@@ -142,11 +141,6 @@ export class UnifiedMemoryStrategy implements IMemoryStrategy {
     this.strategyType = strategyType;
     this.consolidationOverride = props.customConsolidation;
     this.extractionOverride = props.customExtraction;
-
-    // Determine strategy class type based on whether overrides are provided
-    this.strategyClassType = (this.consolidationOverride || this.extractionOverride)
-      ? MemoryStrategyClassType.BUILT_IN_OVERRIDE
-      : MemoryStrategyClassType.BUILT_IN;
 
     // ------------------------------------------------------
     // Validations

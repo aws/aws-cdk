@@ -18,24 +18,6 @@ import { UnifiedMemoryStrategy, UnifiedStrategyProps } from './strategies/unifie
 import { SelfManagedMemoryStrategy, SelfManagedStrategyProps } from './strategies/self-managed-strategy';
 
 /**
- * Internal enum used to differentiate the different classes of memory strategies
- */
-export enum MemoryStrategyClassType {
-  /**
-   * Built-in memory strategy
-   */
-  BUILT_IN = 'BUILT-IN',
-  /**
-   * Overrides a built-in memory strategy
-   */
-  BUILT_IN_OVERRIDE = 'BUILT_IN_OVERRIDE',
-  /**
-   * Fully custom memory strategy
-   */
-  CUSTOM = 'CUSTOM',
-}
-
-/**
  * Long-term memory extraction strategy types.
  */
 export enum MemoryStrategyType {
@@ -93,10 +75,6 @@ export interface IMemoryStrategy {
    * The description of the memory strategy
    */
   readonly description?: string;
-  /**
-   * The class of memory strategy (built-in or custom)
-   */
-  readonly strategyClassType: MemoryStrategyClassType;
   /**
    * The type of memory strategy
    */

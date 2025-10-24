@@ -16,7 +16,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Location } from 'aws-cdk-lib/aws-s3';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
-import { IMemoryStrategy, MemoryStrategyClassType, MemoryStrategyCommonProps, MemoryStrategyType } from '../memory-strategy';
+import { IMemoryStrategy, MemoryStrategyCommonProps, MemoryStrategyType } from '../memory-strategy';
 import { validateStringFieldLength, throwIfInvalid, validateFieldPattern } from '../validation-helpers';
 
 /******************************************************************************
@@ -176,7 +176,6 @@ export interface SelfManagedStrategyProps extends MemoryStrategyCommonProps {
  * Use AgentCore memory for event storage with custom triggers. Define memory processing logic in your own environment.
  */
 export class SelfManagedMemoryStrategy implements IMemoryStrategy {
-  public readonly strategyClassType: MemoryStrategyClassType;
   public readonly name: string;
   public readonly description?: string;
   public readonly strategyType: MemoryStrategyType;
@@ -197,7 +196,6 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
     this.name = props.name;
     this.description = props.description;
     this.strategyType = strategyType;
-    this.strategyClassType = MemoryStrategyClassType.CUSTOM;
     this.invocationConfiguration = props.invocationConfiguration;
     this.triggerConditions = {
       messageBasedTrigger: props.triggerConditions?.messageBasedTrigger ?? DEFAULT_MESSAGE_BASED_TRIGGER,
