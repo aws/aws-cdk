@@ -1653,7 +1653,7 @@ export interface ManagedInstancesCapacityProviderProps {
  * Managed Instances for task placement with managed infrastructure.
  */
 @propertyInjectable
-export class ManagedInstancesCapacityProvider extends Construct {
+export class ManagedInstancesCapacityProvider extends Construct implements ec2.IConnectable {
   /**
    * Uniquely identifies this class.
    */
@@ -1663,6 +1663,11 @@ export class ManagedInstancesCapacityProvider extends Construct {
    * Capacity provider name
    */
   readonly capacityProviderName: string;
+
+  /**
+   * The network connections associated with this resource.
+   */
+  readonly connections: ec2.Connections;
 
   /**
    * The CloudFormation capacity provider resource
@@ -1737,6 +1742,10 @@ export class ManagedInstancesCapacityProvider extends Construct {
     });
 
     this.capacityProviderName = this.capacityProvider.ref;
+
+    this.connections = new ec2.Connections({
+      securityGroups: props.securityGroups,
+    });
 
     this.node.defaultChild = this.capacityProvider;
   }

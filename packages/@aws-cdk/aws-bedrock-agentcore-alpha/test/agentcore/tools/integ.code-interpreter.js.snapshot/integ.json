@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "BedrockAgentCoreCodeInterpreter/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-agentcore-code-interpreter-1"
+      ],
+      "assertionStack": "BedrockAgentCoreCodeInterpreter/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockAgentCoreCodeInterpreterDefaultTestDeployAssertDF53FC14"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
