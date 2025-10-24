@@ -7,7 +7,7 @@ import {
   AuthorizerPayloadVersion,
   IHttpApi,
 } from '../../../aws-apigatewayv2';
-import { ServicePrincipal } from '../../../aws-iam';
+import { ServicePrincipal, IRole } from '../../../aws-iam';
 import { IFunction } from '../../../aws-lambda';
 import { Stack, Duration, Names } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
@@ -60,6 +60,15 @@ export interface HttpLambdaAuthorizerProps {
    * @default [HttpLambdaResponseType.IAM]
    */
   readonly responseTypes?: HttpLambdaResponseType[];
+
+  /**
+   * The IAM role that the API Gateway service assumes while invoking the authorizer.
+   *
+   * Supported only for REQUEST authorizers.
+   *
+   * @default - No role
+   */
+  readonly role?: IRole;
 }
 
 /**
@@ -119,6 +128,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
         payloadFormatVersion: enableSimpleResponses ? AuthorizerPayloadVersion.VERSION_2_0 : AuthorizerPayloadVersion.VERSION_1_0,
         authorizerUri: lambdaAuthorizerArn(this.handler),
         resultsCacheTtl: this.props.resultsCacheTtl ?? Duration.minutes(5),
+        role: this.props.role,
       });
 
       this.handler.addPermission(`${Names.nodeUniqueId(this.authorizer.node)}-Permission`, {
