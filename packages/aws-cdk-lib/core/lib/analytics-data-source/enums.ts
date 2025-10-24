@@ -2744,6 +2744,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "name",
     "position"
   ],
+  "OrcFormatVersion": [
+    "V0_11",
+    "V0_12"
+  ],
   "OrchestrationType": [
     "DEFAULT",
     "CUSTOM_ORCHESTRATION"
@@ -2824,6 +2828,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "ParamsAndSecretsVersions": [
     "1.0.103"
+  ],
+  "ParquetWriterVersion": [
+    "V1",
+    "V2"
   ],
   "ParserProcessorType": [
     0,
@@ -3042,6 +3050,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TLS",
     "UDP",
     "TCP_UDP"
+  ],
+  "ProtocolType": [
+    "MCP",
+    "HTTP"
   ],
   "ProviderType": [
     "CodeStarSourceConnection"
@@ -3274,7 +3286,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "MULTIVALUE"
   ],
   "Runtime": [
-    "nodejs18.x",
+    "nodejs20.x",
     "python3.9",
     "python3.10",
     "python3.11",
@@ -3352,6 +3364,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TLSv1.2_2018",
     "TLSv1.2_2019",
     "TLSv1.2_2021",
+    "TLSv1.2_2025",
     "TLSv1.3_2025"
   ],
   "ServerSideEncryption": [
