@@ -63,6 +63,16 @@ export interface IJobDefinition extends IResource {
    * @default - no timeout
    */
   readonly timeout?: Duration;
+  
+  /**
+   * Contains a list of consumable resources required by the job.
+   *
+   * Consumable resources are finite resources that are consumed by jobs,
+   * such as third-party software licenses or API rate limits.
+   *
+   * @default - no consumable resources
+   */
+  readonly consumableResourceProperties?: ConsumableResourceProperties;
 
   /**
    * Add a RetryStrategy to this JobDefinition
