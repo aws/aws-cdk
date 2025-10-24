@@ -59,9 +59,10 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 |                                                                           |
 +---------------------------------------------------------------------------+
 ```
+
 In a nutshell:
 
-- **Auto Mode** (Default) – The fully managed capacity mode in EKS.  
+- **[Auto Mode](#eks-auto-mode)** (Default) – The fully managed capacity mode in EKS.  
   EKS automatically provisions and scales  EC2 capacity based on pod requirements.  
   It manages internal *system* and *general-purpose* NodePools, handles networking and storage setup, and removes the need for user-managed node groups or Auto Scaling Groups.
 
@@ -72,18 +73,18 @@ In a nutshell:
   });
   ```
 
-- **Managed Node Groups** – The semi-managed capacity mode.  
+- **[Managed Node Groups](#managed-node-groups)** – The semi-managed capacity mode.  
   EKS provisions and manages EC2 nodes on your behalf but you configure the instance types, scaling ranges, and update strategy.  
   AWS handles node health, draining, and rolling updates while you retain control over scaling and cost optimization.
 
-	You can also define *Fargate Profiles* that determine which pods or namespaces run on Fargate infrastructure.
+  You can also define *Fargate Profiles* that determine which pods or namespaces run on Fargate infrastructure.
 
   ```ts
   const cluster = new eks.Cluster(this, 'ManagedNodeCluster', {
     version: eks.KubernetesVersion.V1_33,
     defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
   });
-	
+  
   // Add a Fargate Profile for specific workloads (e.g., default namespace)
   cluster.addFargateProfile('FargateProfile', {
     selectors: [
@@ -92,7 +93,7 @@ In a nutshell:
   });
   ```
 
-- **Fargate Mode** – The Fargate capacity mode.  
+- **[Fargate Mode](#fargate-profiles)** – The Fargate capacity mode.  
   EKS runs your pods directly on AWS Fargate without provisioning EC2 nodes.
 
   ```ts
@@ -101,9 +102,10 @@ In a nutshell:
   });
   ```
 
-- **Self-Managed Nodes** – The fully manual capacity mode.  
+- **[Self-Managed Nodes](#self-managed-capacity)** – The fully manual capacity mode.  
   You create and manage EC2 instances (via an Auto Scaling Group) and connect them to the cluster manually.  
   This provides maximum flexibility for custom AMIs or configurations but also the highest operational overhead.
+
   ```ts
   const cluster = new eks.Cluster(this, 'SelfManagedCluster', {
     version: eks.KubernetesVersion.V1_33,
@@ -117,7 +119,7 @@ In a nutshell:
   });
   ```
 
-- **Kubectl Handler (Optional)** – A Lambda-backed custom resource created by the AWS CDK to execute `kubectl` commands (like `apply` or `patch`) during deployment.  
+- **[Kubectl Handler](#kubectl-support) (Optional)** – A Lambda-backed custom resource created by the AWS CDK to execute `kubectl` commands (like `apply` or `patch`) during deployment.  
   Regardless of the capacity mode, this handler may still be created to apply Kubernetes manifests as part of CDK provisioning.
 
 ## Provisioning cluster
@@ -379,6 +381,49 @@ const cluster = new eks.FargateCluster(this, 'MyCluster', {
 pods running on Fargate. For ingress, we recommend that you use the [ALB Ingress
 Controller](https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html)
 on Amazon EKS (minimum version v1.1.4).
+
+### Self-managed capacity
+
+Self-managed capacity gives you the most control over your worker nodes by allowing you to create and manage your own EC2 Auto Scaling Groups. This approach provides maximum flexibility for custom AMIs, instance configurations, and scaling policies, but requires more operational overhead.
+
+You can add self-managed capacity to any cluster using the `addAutoScalingGroupCapacity` method:
+
+```ts
+const cluster = new eks.Cluster(this, 'Cluster', {
+  version: eks.KubernetesVersion.V1_33,
+});
+
+cluster.addAutoScalingGroupCapacity('self-managed-nodes', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+  minCapacity: 1,
+  maxCapacity: 10,
+  desiredCapacity: 3,
+});
+```
+
+You can specify custom subnets for the Auto Scaling Group:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const cluster: eks.Cluster;
+
+cluster.addAutoScalingGroupCapacity('custom-subnet-nodes', {
+  vpcSubnets: { subnets: vpc.privateSubnets },
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+  minCapacity: 2,
+});
+```
+
+Self-managed nodes support ARM64 architectures:
+
+```ts
+declare const cluster: eks.Cluster;
+
+cluster.addAutoScalingGroupCapacity('arm64-nodes', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M6G, ec2.InstanceSize.MEDIUM),
+  minCapacity: 2,
+});
+```
 
 ### Endpoint Access
 
