@@ -47,7 +47,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "authfunctionServiceRoleFCB72198"
@@ -369,7 +369,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "lambdaServiceRole494E4CA6"
