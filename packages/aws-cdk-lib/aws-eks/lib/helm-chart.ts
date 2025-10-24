@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
 import { Asset } from '../../aws-s3-assets';
-import { CustomResource, Duration, Names, RemovalPolicy, Stack, ValidationError } from '../../core';
+import { CustomResource, Duration, Names, RemovalPolicies, RemovalPolicy, Stack, ValidationError } from '../../core';
 
 /**
  * Helm Chart options.
@@ -147,7 +147,9 @@ export class HelmChart extends Construct {
 
     const stack = Stack.of(this);
 
-    const provider = KubectlProvider.getOrCreate(this, props.cluster);
+    const provider = KubectlProvider.getOrCreate(this, props.cluster, props.removalPolicy);
+
+    RemovalPolicies.of(this).apply(props.removalPolicy!);
 
     const timeout = props.timeout?.toSeconds();
     if (timeout && timeout > 900) {
