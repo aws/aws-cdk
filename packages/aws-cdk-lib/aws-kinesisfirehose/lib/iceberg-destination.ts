@@ -4,6 +4,7 @@ import { DestinationBindOptions, DestinationConfig, IDestination } from './desti
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import { createBackupConfig, createBufferingHints, createLoggingOptions, createProcessingConfig } from './private/helpers';
+import * as cdk from '../../core';
 import { Duration, Size, UnscopedValidationError } from '../../core';
 
 /**
@@ -16,7 +17,7 @@ export interface CatalogConfiguration {
    * Specifies the Glue catalog ARN identifier of the destination Apache Iceberg Tables.
    * Format: arn:aws:glue:region:account-id:catalog
    *
-   * @default - Uses the default Glue Catalog for the account
+   * @default - No catalog ARN specified. At least one of catalogArn or warehouseLocation must be provided.
    */
   readonly catalogArn?: string;
 
@@ -159,7 +160,8 @@ export interface IcebergDestinationProps extends CommonDestinationProps {
    * When enabled, Firehose can automatically evolve the schema of the Iceberg table
    * to accommodate new fields in the incoming data.
    *
-   * Note: This feature is in preview and subject to change.
+   * Note: This feature is only available for DatabaseAsSourceStream and is in preview.
+   * It may not work with standard delivery streams.
    *
    * @default false
    */
@@ -171,7 +173,8 @@ export interface IcebergDestinationProps extends CommonDestinationProps {
    * When enabled, Firehose can automatically create Iceberg tables if they don't exist.
    * Requires warehouseLocation to be specified in catalogConfiguration.
    *
-   * Note: This feature is in preview and subject to change.
+   * Note: This feature is only available for DatabaseAsSourceStream and is in preview.
+   * It may not work with standard delivery streams.
    *
    * @default false
    */
@@ -211,31 +214,73 @@ export class IcebergDestination implements IDestination {
     // Grant S3 permissions
     const bucketGrant = this.bucket.grantReadWrite(role);
 
-    // Grant Glue Catalog permissions if catalogArn is specified
-    if (this.props.catalogConfiguration.catalogArn) {
-      const catalogArn = this.props.catalogConfiguration.catalogArn;
-      const actions = [
-        'glue:GetDatabase',
-        'glue:GetTable',
-        'glue:GetTableVersion',
-        'glue:GetTableVersions',
-        'glue:UpdateTable',
-      ];
+    // Grant Glue Catalog permissions
+    // Permissions are needed for both catalogArn and warehouseLocation configurations
+    const catalogArn = this.props.catalogConfiguration.catalogArn;
+    const actions = [
+      'glue:GetDatabase',
+      'glue:GetTable',
+      'glue:GetTableVersion',
+      'glue:GetTableVersions',
+      'glue:UpdateTable',
+    ];
 
-      // Add CreateTable permission if table creation is enabled
-      if (this.props.tableCreationEnabled) {
-        actions.push('glue:CreateTable');
+    // Add CreateTable permission if table creation is enabled
+    if (this.props.tableCreationEnabled) {
+      actions.push('glue:CreateTable');
+    }
+
+    // Build specific resource ARNs based on destination table configurations
+    const resources: string[] = [];
+    const stack = cdk.Stack.of(scope);
+
+    // Determine region and account from catalogArn or use stack defaults
+    const region = catalogArn ? cdk.Arn.split(catalogArn, cdk.ArnFormat.COLON_RESOURCE_NAME).region : stack.region;
+    const account = catalogArn ? cdk.Arn.split(catalogArn, cdk.ArnFormat.COLON_RESOURCE_NAME).account : stack.account;
+
+    // Add catalog resource
+    resources.push(stack.formatArn({
+      service: 'glue',
+      resource: 'catalog',
+      region,
+      account,
+    }));
+
+    // Add specific database and table resources if configurations are provided
+    if (this.props.destinationTableConfigurations && this.props.destinationTableConfigurations.length > 0) {
+      const databases = new Set<string>();
+      const tables = new Set<string>();
+
+      for (const config of this.props.destinationTableConfigurations) {
+        databases.add(config.databaseName);
+        tables.add(`${config.databaseName}/${config.tableName}`);
       }
 
-      role.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions,
-        resources: [
-          catalogArn,
-          `${catalogArn}/database/*`,
-          `${catalogArn}/table/*`,
-        ],
-      }));
+      for (const dbName of databases) {
+        resources.push(stack.formatArn({
+          service: 'glue',
+          resource: 'database',
+          resourceName: dbName,
+          region,
+          account,
+        }));
+      }
+
+      for (const tablePath of tables) {
+        resources.push(stack.formatArn({
+          service: 'glue',
+          resource: 'table',
+          resourceName: tablePath,
+          region,
+          account,
+        }));
+      }
     }
+
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions,
+      resources,
+    }));
 
     // Create logging configuration
     const { loggingOptions, dependables: loggingDependables } = createLoggingOptions(scope, {
@@ -294,11 +339,11 @@ export class IcebergDestination implements IDestination {
         processingConfiguration: processingConfig,
         destinationTableConfigurationList,
         retryOptions,
-        schemaEvolutionConfiguration: this.props.schemaEvolutionEnabled !== undefined ? {
-          enabled: this.props.schemaEvolutionEnabled,
+        schemaEvolutionConfiguration: this.props.schemaEvolutionEnabled ? {
+          enabled: true,
         } : undefined,
-        tableCreationConfiguration: this.props.tableCreationEnabled !== undefined ? {
-          enabled: this.props.tableCreationEnabled,
+        tableCreationConfiguration: this.props.tableCreationEnabled ? {
+          enabled: true,
         } : undefined,
       },
       dependables: [bucketGrant, ...(loggingDependables ?? []), ...(backupDependables ?? [])],
