@@ -312,7 +312,7 @@ describe('Topic', () => {
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    new TopicGrants(topic).publish(user);
+    TopicGrants.fromTopic(topic).publish(user);
 
     // THEN
     let template = Template.fromStack(stack);
@@ -356,16 +356,16 @@ describe('Topic', () => {
         Version: '2012-10-17',
         'Statement': [
           {
-            'Action': 'sns:Publish',
-            'Effect': 'Allow',
-            'Resource': stack.resolve(topic.topicArn),
-          },
-          {
             'Action': ['kms:Decrypt', 'kms:GenerateDataKey*'],
             'Effect': 'Allow',
             'Resource': {
               'Fn::GetAtt': ['CustomKey1E6D0D07', 'Arn'],
             },
+          },
+          {
+            'Action': 'sns:Publish',
+            'Effect': 'Allow',
+            'Resource': stack.resolve(topic.topicArn),
           },
         ],
       },
