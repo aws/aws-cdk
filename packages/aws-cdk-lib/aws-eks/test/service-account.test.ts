@@ -2,7 +2,7 @@ import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { testFixture } from './util';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
-import { App, Stack } from '../../core';
+import { App, RemovalPolicy, Stack } from '../../core';
 import * as eks from '../lib';
 import { Cluster, KubernetesVersion } from '../lib';
 
@@ -327,6 +327,59 @@ describe('service account', () => {
       }, 0);
       // should not have pod identity association
       t.resourceCountIs('AWS::EKS::PodIdentityAssociation', 0);
+    });
+  });
+
+  test('supports custom removal policy with IRSA', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    const cluster = new Cluster(stack, 'Cluster', {
+      version: KubernetesVersion.V1_30,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    // WHEN
+    new eks.ServiceAccount(stack, 'MyServiceAccount', {
+      cluster,
+      identityType: eks.IdentityType.IRSA,
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+      DeletionPolicy: 'Retain',
+    });
+    Template.fromStack(stack).hasResource('AWS::IAM::Role', {
+      DeletionPolicy: 'Retain',
+    });
+  });
+
+  test('supports custom removal policy with POD_IDENTITY', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    const cluster = new Cluster(stack, 'Cluster', {
+      version: KubernetesVersion.V1_30,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    // WHEN
+    new eks.ServiceAccount(stack, 'MyServiceAccount', {
+      cluster,
+      identityType: eks.IdentityType.POD_IDENTITY,
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource(eks.KubernetesManifest.RESOURCE_TYPE, {
+      DeletionPolicy: 'Retain',
+    });
+    Template.fromStack(stack).hasResource('AWS::IAM::Role', {
+      DeletionPolicy: 'Retain',
+    });
+    Template.fromStack(stack).hasResource('AWS::EKS::PodIdentityAssociation', {
+      DeletionPolicy: 'Retain',
     });
   });
 });
