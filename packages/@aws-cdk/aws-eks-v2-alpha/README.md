@@ -64,6 +64,7 @@ In a nutshell:
 - **Auto Mode** (Default) – The fully managed capacity mode in EKS.  
   EKS automatically provisions and scales  EC2 capacity based on pod requirements.  
   It manages internal *system* and *general-purpose* NodePools, handles networking and storage setup, and removes the need for user-managed node groups or Auto Scaling Groups.
+
   ```ts
   const cluster = new eks.Cluster(this, 'AutoModeCluster', {
     version: eks.KubernetesVersion.V1_33,
@@ -92,7 +93,8 @@ In a nutshell:
   ```
 
 - **Fargate Mode** – The Fargate capacity mode.  
-  EKS runs your pods directly on AWS Fargate without provisioning EC2 nodes.  
+  EKS runs your pods directly on AWS Fargate without provisioning EC2 nodes.
+
   ```ts
   const cluster = new eks.FargateCluster(this, 'FargateCluster', {
     version: eks.KubernetesVersion.V1_33,
