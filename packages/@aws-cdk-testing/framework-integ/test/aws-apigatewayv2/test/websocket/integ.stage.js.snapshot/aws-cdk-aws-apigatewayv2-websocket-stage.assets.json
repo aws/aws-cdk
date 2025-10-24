@@ -1,15 +1,16 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "files": {
-    "f395ca0d527831a9bb9efb9f8596f28402b0cdf892c286ff1597977eb5faf167": {
+    "46121cb31a9a19115e811ab60bef5894208584bebf1558b35fc7a3fbc7d259d0": {
+      "displayName": "aws-cdk-aws-apigatewayv2-websocket-stage Template",
       "source": {
         "path": "aws-cdk-aws-apigatewayv2-websocket-stage.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-63a0ec44": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f395ca0d527831a9bb9efb9f8596f28402b0cdf892c286ff1597977eb5faf167.json",
+          "objectKey": "46121cb31a9a19115e811ab60bef5894208584bebf1558b35fc7a3fbc7d259d0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
