@@ -17,7 +17,7 @@ class ExpressMskStack extends cdk.Stack {
       clusterName: 'integ-test-express',
       kafkaVersion: msk.KafkaVersion.V3_8_X,
       vpc,
-      express: true,
+      brokerType: msk.BrokerType.EXPRESS,
       instanceType: ec2.InstanceType.of(
         ec2.InstanceClass.M7G,
         ec2.InstanceSize.XLARGE,

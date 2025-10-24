@@ -99,13 +99,13 @@ export interface ClusterProps {
   readonly instanceType?: ec2.InstanceType;
 
   /**
-   * Whether to use an Express Broker.
-   * When set to true, the cluster will be created with Express Brokers.
-   * When this is set to true, instanceType must also be specified.
+   * The broker type for the cluster.
+   * When set to EXPRESS, the cluster will be created with Express Brokers.
+   * When this is set to EXPRESS, instanceType must also be specified.
    *
-   * @default false
+   * @default BrokerType.STANDARD
    */
-  readonly express?: boolean;
+  readonly brokerType?: BrokerType;
 
   /**
    * The AWS security groups to associate with the elastic network interfaces in order to specify who can
@@ -206,6 +206,21 @@ export enum StorageMode {
    * Tiered storage mode utilizes EBS storage and Tiered storage.
    */
   TIERED = 'TIERED',
+}
+
+/**
+ * The broker type for the cluster.
+ */
+export enum BrokerType {
+  /**
+   * Standard brokers provide high-availability guarantees.
+   */
+  STANDARD = 'STANDARD',
+
+  /**
+   * Express brokers are a low-cost option for development, testing, and workloads that don't require the high availability guarantees of standard MSK cluster.
+   */
+  EXPRESS = 'EXPRESS',
 }
 
 /**
@@ -511,18 +526,28 @@ export class Cluster extends ClusterBase {
       throw new core.ValidationError('EBS volume size should be in the range 1-16384', this);
     }
 
-    if (props.express) {
+    const isExpress = props.brokerType === BrokerType.EXPRESS;
+
+    if (isExpress) {
+      // Validate Kafka version compatibility
+      const supportedVersions = ['3.6', '3.8'];
+      const kafkaVersionString = props.kafkaVersion.version;
+      const isCompatibleVersion = supportedVersions.some(version => kafkaVersionString.includes(version));
+      if (!isCompatibleVersion) {
+        throw new core.ValidationError(`Express brokers are only supported with Apache Kafka 3.6.x and 3.8.x, got ${kafkaVersionString}`, this);
+      }
+
       if (!props.instanceType) {
-        throw new core.ValidationError('`instanceType` must also be specified when `express` is true.', this);
+        throw new core.ValidationError('`instanceType` must also be specified when `brokerType` is `BrokerType.EXPRESS`.', this);
       }
       if (props.ebsStorageInfo) {
-        throw new core.ValidationError('`ebsStorageInfo` is not supported when `express` is true.', this);
+        throw new core.ValidationError('`ebsStorageInfo` is not supported when `brokerType` is `BrokerType.EXPRESS`.', this);
       }
       if (props.storageMode) {
-        throw new core.ValidationError('`storageMode` is not supported when `express` is true.', this);
+        throw new core.ValidationError('`storageMode` is not supported when `brokerType` is `BrokerType.EXPRESS`.', this);
       }
       if (props.logging) {
-        throw new core.ValidationError('`logging` is not supported when `express` is true.', this);
+        throw new core.ValidationError('`logging` is not supported when `brokerType` is `BrokerType.EXPRESS`.', this);
       }
       if (subnetSelection.subnets.length < 3) {
         throw new core.ValidationError(`Express cluster requires at least 3 subnets, got ${subnetSelection.subnets.length}`, this);
@@ -530,7 +555,7 @@ export class Cluster extends ClusterBase {
     }
 
     const instanceType = props.instanceType
-      ? this.mskInstanceType(props.instanceType, props.express)
+      ? this.mskInstanceType(props.instanceType, isExpress)
       : this.mskInstanceType(
         ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
       );
@@ -625,7 +650,7 @@ export class Cluster extends ClusterBase {
         },
       }));
     }
-    const loggingInfo = props.express ? undefined : {
+    const loggingInfo = isExpress ? undefined : {
       brokerLogs: {
         cloudWatchLogs: {
           enabled:
@@ -705,7 +730,7 @@ export class Cluster extends ClusterBase {
         securityGroups: this.connections.securityGroups.map(
           (group) => group.securityGroupId,
         ),
-        storageInfo: props.express ? undefined : {
+        storageInfo: isExpress ? undefined : {
           ebsStorageInfo: {
             volumeSize: volumeSize,
           },
@@ -718,7 +743,7 @@ export class Cluster extends ClusterBase {
       configurationInfo: props.configurationInfo,
       enhancedMonitoring: props.monitoring?.clusterMonitoringLevel,
       openMonitoring: openMonitoring,
-      storageMode: props.express ? undefined : props.storageMode,
+      storageMode: isExpress ? undefined : props.storageMode,
       loggingInfo: loggingInfo,
       clientAuthentication,
     });
