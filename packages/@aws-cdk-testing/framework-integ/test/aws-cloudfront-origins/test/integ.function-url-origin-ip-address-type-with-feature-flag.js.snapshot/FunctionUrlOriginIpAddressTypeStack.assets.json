@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "6124cbebad755ed222a400c0b12c400da3ecceae03a5784dc64558af26ea4103": {
+      "displayName": "FunctionUrlOriginIpAddressTypeStack Template",
+      "source": {
+        "path": "FunctionUrlOriginIpAddressTypeStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-ff3a9cb0": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6124cbebad755ed222a400c0b12c400da3ecceae03a5784dc64558af26ea4103.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
