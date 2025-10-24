@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8ec2cd033ccca4fd4a5ab1cf4956e5297f1be0ca799b32358c9a9244b32c3bca.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ab4cf0b2d71694975924a5af89387d9fb428c94ba512375cfcfc74c173e2110d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -68,12 +68,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "IcebergBucketAutoDeleteObjectsCustomResourceA3068757"
-          }
-        ],
-        "/aws-cdk-firehose-iceberg-destination/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-cdk-firehose-iceberg-destination/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
@@ -244,6 +238,10 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/aws-cdk-firehose-iceberg-destination/IcebergDeliveryStreamWithWarehouse/Iceberg Destination Role/ImportIceberg Destination Role": [
@@ -261,6 +259,10 @@
         "/aws-cdk-firehose-iceberg-destination/IcebergDeliveryStreamWithWarehouse/Iceberg Destination Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
             "data": "*"
           },
           {
@@ -1071,6 +1073,17 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           }
         }
       }

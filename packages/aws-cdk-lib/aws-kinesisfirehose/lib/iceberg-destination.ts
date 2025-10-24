@@ -220,8 +220,6 @@ export class IcebergDestination implements IDestination {
     const actions = [
       'glue:GetDatabase',
       'glue:GetTable',
-      'glue:GetTableVersion',
-      'glue:GetTableVersions',
       'glue:UpdateTable',
     ];
 
@@ -275,6 +273,22 @@ export class IcebergDestination implements IDestination {
           account,
         }));
       }
+    } else {
+      // If no specific table configurations are provided, grant access to all databases and tables
+      resources.push(stack.formatArn({
+        service: 'glue',
+        resource: 'database',
+        resourceName: '*',
+        region,
+        account,
+      }));
+      resources.push(stack.formatArn({
+        service: 'glue',
+        resource: 'table',
+        resourceName: '*/*',
+        region,
+        account,
+      }));
     }
 
     role.addToPrincipalPolicy(new iam.PolicyStatement({

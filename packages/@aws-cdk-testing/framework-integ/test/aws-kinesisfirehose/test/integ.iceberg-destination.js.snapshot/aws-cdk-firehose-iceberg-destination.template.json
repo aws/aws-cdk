@@ -124,15 +124,7 @@
       "Arn"
      ]
     },
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs22.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -228,7 +220,10 @@
      ],
      "Version": "2012-10-17"
     }
-   }
+   },
+   "DependsOn": [
+    "IcebergTable"
+   ]
   },
   "IcebergDeliveryStreamWithCatalogIcebergDestinationRoleDefaultPolicy64A29470": {
    "Type": "AWS::IAM::Policy",
@@ -274,13 +269,83 @@
       },
       {
        "Action": [
+        "glue:GetDatabase",
         "glue:GetTable",
-        "glue:GetTableVersion",
-        "glue:GetTableVersions",
         "glue:UpdateTable"
        ],
        "Effect": "Allow",
-       "Resource": "*"
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":catalog"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":database/",
+           {
+            "Ref": "IcebergDatabase"
+           }
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":table/",
+           {
+            "Ref": "IcebergDatabase"
+           },
+           "/",
+           {
+            "Ref": "IcebergTable"
+           }
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": [
@@ -304,13 +369,19 @@
       "Ref": "IcebergDeliveryStreamWithCatalogIcebergDestinationRoleA786FC31"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "IcebergTable"
+   ]
   },
   "IcebergDeliveryStreamWithCatalogLogGroup81275A13": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 731
    },
+   "DependsOn": [
+    "IcebergTable"
+   ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -321,6 +392,9 @@
      "Ref": "IcebergDeliveryStreamWithCatalogLogGroup81275A13"
     }
    },
+   "DependsOn": [
+    "IcebergTable"
+   ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -334,7 +408,11 @@
        "Fn::Join": [
         "",
         [
-         "arn:aws:glue:",
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":glue:",
          {
           "Ref": "AWS::Region"
          },
@@ -358,8 +436,12 @@
      },
      "DestinationTableConfigurationList": [
       {
-       "DestinationDatabaseName": "iceberg_db",
-       "DestinationTableName": "iceberg_table",
+       "DestinationDatabaseName": {
+        "Ref": "IcebergDatabase"
+       },
+       "DestinationTableName": {
+        "Ref": "IcebergTable"
+       },
        "UniqueKeys": [
         "id"
        ]
@@ -388,7 +470,8 @@
     }
    },
    "DependsOn": [
-    "IcebergDeliveryStreamWithCatalogIcebergDestinationRoleDefaultPolicy64A29470"
+    "IcebergDeliveryStreamWithCatalogIcebergDestinationRoleDefaultPolicy64A29470",
+    "IcebergTable"
    ]
   },
   "IcebergDeliveryStreamWithWarehouseIcebergDestinationRole3F6CA365": {
@@ -406,7 +489,10 @@
      ],
      "Version": "2012-10-17"
     }
-   }
+   },
+   "DependsOn": [
+    "IcebergTable"
+   ]
   },
   "IcebergDeliveryStreamWithWarehouseIcebergDestinationRoleDefaultPolicy6DA999A2": {
    "Type": "AWS::IAM::Policy",
@@ -452,6 +538,86 @@
       },
       {
        "Action": [
+        "glue:GetDatabase",
+        "glue:GetTable",
+        "glue:UpdateTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":catalog"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":database/",
+           {
+            "Ref": "IcebergDatabase"
+           }
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":table/",
+           {
+            "Ref": "IcebergDatabase"
+           },
+           "/",
+           {
+            "Ref": "IcebergTable"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
         "logs:CreateLogStream",
         "logs:PutLogEvents"
        ],
@@ -472,13 +638,19 @@
       "Ref": "IcebergDeliveryStreamWithWarehouseIcebergDestinationRole3F6CA365"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "IcebergTable"
+   ]
   },
   "IcebergDeliveryStreamWithWarehouseLogGroup16F73D33": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 731
    },
+   "DependsOn": [
+    "IcebergTable"
+   ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -489,6 +661,9 @@
      "Ref": "IcebergDeliveryStreamWithWarehouseLogGroup16F73D33"
     }
    },
+   "DependsOn": [
+    "IcebergTable"
+   ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -522,8 +697,12 @@
      },
      "DestinationTableConfigurationList": [
       {
-       "DestinationDatabaseName": "iceberg_db",
-       "DestinationTableName": "iceberg_table",
+       "DestinationDatabaseName": {
+        "Ref": "IcebergDatabase"
+       },
+       "DestinationTableName": {
+        "Ref": "IcebergTable"
+       },
        "UniqueKeys": [
         "id"
        ]
@@ -552,7 +731,8 @@
     }
    },
    "DependsOn": [
-    "IcebergDeliveryStreamWithWarehouseIcebergDestinationRoleDefaultPolicy6DA999A2"
+    "IcebergDeliveryStreamWithWarehouseIcebergDestinationRoleDefaultPolicy6DA999A2",
+    "IcebergTable"
    ]
   },
   "CustomRole6D8E6809": {
@@ -616,13 +796,83 @@
       },
       {
        "Action": [
+        "glue:GetDatabase",
         "glue:GetTable",
-        "glue:GetTableVersion",
-        "glue:GetTableVersions",
         "glue:UpdateTable"
        ],
        "Effect": "Allow",
-       "Resource": "*"
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":catalog"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":database/",
+           {
+            "Ref": "IcebergDatabase"
+           }
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":table/",
+           {
+            "Ref": "IcebergDatabase"
+           },
+           "/",
+           {
+            "Ref": "IcebergTable"
+           }
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": [
@@ -653,6 +903,9 @@
    "Properties": {
     "RetentionInDays": 731
    },
+   "DependsOn": [
+    "IcebergTable"
+   ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -663,6 +916,9 @@
      "Ref": "IcebergDeliveryStreamWithCustomRoleLogGroupD445E04A"
     }
    },
+   "DependsOn": [
+    "IcebergTable"
+   ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -676,7 +932,11 @@
        "Fn::Join": [
         "",
         [
-         "arn:aws:glue:",
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":glue:",
          {
           "Ref": "AWS::Region"
          },
@@ -700,8 +960,12 @@
      },
      "DestinationTableConfigurationList": [
       {
-       "DestinationDatabaseName": "iceberg_db",
-       "DestinationTableName": "iceberg_table",
+       "DestinationDatabaseName": {
+        "Ref": "IcebergDatabase"
+       },
+       "DestinationTableName": {
+        "Ref": "IcebergTable"
+       },
        "UniqueKeys": [
         "id"
        ]
@@ -730,7 +994,8 @@
     }
    },
    "DependsOn": [
-    "CustomRoleDefaultPolicyC5C189DF"
+    "CustomRoleDefaultPolicyC5C189DF",
+    "IcebergTable"
    ]
   },
   "IcebergDeliveryStreamAllPropertiesIcebergDestinationRole6D748BA7": {
@@ -748,7 +1013,10 @@
      ],
      "Version": "2012-10-17"
     }
-   }
+   },
+   "DependsOn": [
+    "IcebergTable"
+   ]
   },
   "IcebergDeliveryStreamAllPropertiesIcebergDestinationRoleDefaultPolicy3284DF7E": {
    "Type": "AWS::IAM::Policy",
@@ -794,13 +1062,83 @@
       },
       {
        "Action": [
+        "glue:GetDatabase",
         "glue:GetTable",
-        "glue:GetTableVersion",
-        "glue:GetTableVersions",
         "glue:UpdateTable"
        ],
        "Effect": "Allow",
-       "Resource": "*"
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":catalog"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":database/",
+           {
+            "Ref": "IcebergDatabase"
+           }
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":glue:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":table/",
+           {
+            "Ref": "IcebergDatabase"
+           },
+           "/",
+           {
+            "Ref": "IcebergTable"
+           }
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": [
@@ -824,13 +1162,19 @@
       "Ref": "IcebergDeliveryStreamAllPropertiesIcebergDestinationRole6D748BA7"
      }
     ]
-   }
+   },
+   "DependsOn": [
+    "IcebergTable"
+   ]
   },
   "IcebergDeliveryStreamAllPropertiesLogGroup0ADD9328": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 731
    },
+   "DependsOn": [
+    "IcebergTable"
+   ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -841,6 +1185,9 @@
      "Ref": "IcebergDeliveryStreamAllPropertiesLogGroup0ADD9328"
     }
    },
+   "DependsOn": [
+    "IcebergTable"
+   ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -859,7 +1206,11 @@
        "Fn::Join": [
         "",
         [
-         "arn:aws:glue:",
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":glue:",
          {
           "Ref": "AWS::Region"
          },
@@ -895,8 +1246,12 @@
      },
      "DestinationTableConfigurationList": [
       {
-       "DestinationDatabaseName": "iceberg_db",
-       "DestinationTableName": "iceberg_table",
+       "DestinationDatabaseName": {
+        "Ref": "IcebergDatabase"
+       },
+       "DestinationTableName": {
+        "Ref": "IcebergTable"
+       },
        "S3ErrorOutputPrefix": "errors/iceberg_table/",
        "UniqueKeys": [
         "id"
@@ -933,151 +1288,12 @@
     }
    },
    "DependsOn": [
-    "IcebergDeliveryStreamAllPropertiesIcebergDestinationRoleDefaultPolicy3284DF7E"
+    "IcebergDeliveryStreamAllPropertiesIcebergDestinationRoleDefaultPolicy3284DF7E",
+    "IcebergTable"
    ]
   }
  },
  "Mappings": {
-  "LatestNodeRuntimeMap": {
-   "af-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-4": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-5": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-6": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-7": {
-    "value": "nodejs22.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs22.x"
-   },
-   "ca-west-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-isoe-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs22.x"
-   },
-   "eusc-de-east-1": {
-    "value": "nodejs22.x"
-   },
-   "il-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-south-1": {
-    "value": "nodejs22.x"
-   },
-   "mx-central-1": {
-    "value": "nodejs22.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-2": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isof-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-isof-south-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-2": {
-    "value": "nodejs22.x"
-   }
-  },
   "awscdkawskinesisfirehoseCidrBlocks": {
    "af-south-1": {
     "FirehoseCidrBlock": "13.244.121.224/27"
