@@ -124,10 +124,10 @@
             "data": "MyHttpApiGETRootIntegration5068C5B0"
           }
         ],
-        "/AuthorizerInteg/MyHttpApi/GET--/RootIntegration-Permission": [
+        "/AuthorizerInteg/MyHttpApi/GET--/ApiPermission.AuthorizerInteglambdaFCA5E993.AuthorizerIntegMyHttpApiBD909144.RootIntegration": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiGETRootIntegrationPermission81613491"
+            "data": "MyHttpApiGETApiPermissionAuthorizerInteglambdaFCA5E993AuthorizerIntegMyHttpApiBD909144RootIntegration0310B049"
           }
         ],
         "/AuthorizerInteg/MyHttpApi/GET--/Resource": [
@@ -258,10 +258,10 @@
             "data": "RouteRootIntegration1CF58575"
           }
         ],
-        "/AuthorizerInteg/Route/RootIntegration-Permission": [
+        "/AuthorizerInteg/Route/ApiPermission.AuthorizerInteglambdaFCA5E993.AuthorizerIntegMyHttpApiWithDefaultAuthorizer355DDEC6.RootIntegration": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RouteRootIntegrationPermissionC2C15701"
+            "data": "RouteApiPermissionAuthorizerInteglambdaFCA5E993AuthorizerIntegMyHttpApiWithDefaultAuthorizer355DDEC6RootIntegration71216610"
           }
         ],
         "/AuthorizerInteg/Route/Resource": [
@@ -304,6 +304,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "MyHttpApiGETRootIntegrationPermission81613491": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApiGETRootIntegrationPermission81613491",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "RouteRootIntegrationPermissionC2C15701": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RouteRootIntegrationPermissionC2C15701",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

@@ -256,16 +256,16 @@
             }
           }
         ],
-        "/LambdaApiIntegrationOptionsStack/lambdarestapi/Default/{proxy+}/ANY/ApiPermission.LambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BD.ANY..{proxy+}": [
+        "/LambdaApiIntegrationOptionsStack/lambdarestapi/Default/{proxy+}/ANY/ApiPermission.LambdaApiIntegrationOptionsStackmyfn93B2937D.LambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BD.ANY..{proxy+}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "lambdarestapiproxyANYApiPermissionLambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BDANYproxy19093776"
+            "data": "lambdarestapiproxyANYApiPermissionLambdaApiIntegrationOptionsStackmyfn93B2937DLambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BDANYproxyD4BD6695"
           }
         ],
-        "/LambdaApiIntegrationOptionsStack/lambdarestapi/Default/{proxy+}/ANY/ApiPermission.Test.LambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BD.ANY..{proxy+}": [
+        "/LambdaApiIntegrationOptionsStack/lambdarestapi/Default/{proxy+}/ANY/ApiPermission.Test.LambdaApiIntegrationOptionsStackmyfn93B2937D.LambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BD.ANY..{proxy+}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "lambdarestapiproxyANYApiPermissionTestLambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BDANYproxyE203BD4E"
+            "data": "lambdarestapiproxyANYApiPermissionTestLambdaApiIntegrationOptionsStackmyfn93B2937DLambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BDANYproxy2E444BA7"
           }
         ],
         "/LambdaApiIntegrationOptionsStack/lambdarestapi/Default/{proxy+}/ANY/Resource": [
@@ -285,16 +285,16 @@
             }
           }
         ],
-        "/LambdaApiIntegrationOptionsStack/lambdarestapi/Default/ANY/ApiPermission.LambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BD.ANY..": [
+        "/LambdaApiIntegrationOptionsStack/lambdarestapi/Default/ANY/ApiPermission.LambdaApiIntegrationOptionsStackmyfn93B2937D.LambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BD.ANY..": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "lambdarestapiANYApiPermissionLambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BDANY509EE687"
+            "data": "lambdarestapiANYApiPermissionLambdaApiIntegrationOptionsStackmyfn93B2937DLambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BDANY0FE79DF6"
           }
         ],
-        "/LambdaApiIntegrationOptionsStack/lambdarestapi/Default/ANY/ApiPermission.Test.LambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BD.ANY..": [
+        "/LambdaApiIntegrationOptionsStack/lambdarestapi/Default/ANY/ApiPermission.Test.LambdaApiIntegrationOptionsStackmyfn93B2937D.LambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BD.ANY..": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "lambdarestapiANYApiPermissionTestLambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BDANYA5EF21A0"
+            "data": "lambdarestapiANYApiPermissionTestLambdaApiIntegrationOptionsStackmyfn93B2937DLambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BDANY607A7B48"
           }
         ],
         "/LambdaApiIntegrationOptionsStack/lambdarestapi/Default/ANY/Resource": [
@@ -325,6 +325,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "lambdarestapiproxyANYApiPermissionLambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BDANYproxy19093776": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdarestapiproxyANYApiPermissionLambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BDANYproxy19093776",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "lambdarestapiproxyANYApiPermissionTestLambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BDANYproxyE203BD4E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdarestapiproxyANYApiPermissionTestLambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BDANYproxyE203BD4E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "lambdarestapiANYApiPermissionLambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BDANY509EE687": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdarestapiANYApiPermissionLambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BDANY509EE687",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "lambdarestapiANYApiPermissionTestLambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BDANYA5EF21A0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdarestapiANYApiPermissionTestLambdaApiIntegrationOptionsStacklambdarestapi1C6EE2BDANYA5EF21A0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

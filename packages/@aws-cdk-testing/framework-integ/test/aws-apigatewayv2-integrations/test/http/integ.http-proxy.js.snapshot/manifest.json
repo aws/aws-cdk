@@ -108,10 +108,10 @@
             "data": "LambdaProxyApiDefaultRouteDefaultIntegrationAE9908C8"
           }
         ],
-        "/integ-http-proxy/LambdaProxyApi/DefaultRoute/DefaultIntegration-Permission": [
+        "/integ-http-proxy/LambdaProxyApi/DefaultRoute/ApiPermission.integhttpproxyAlwaysSuccess56329DD7.integhttpproxyLambdaProxyApi96AE1B48.DefaultIntegration": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaProxyApiDefaultRouteDefaultIntegrationPermission39F587FC"
+            "data": "LambdaProxyApiDefaultRouteApiPermissioninteghttpproxyAlwaysSuccess56329DD7integhttpproxyLambdaProxyApi96AE1B48DefaultIntegrationB4096691"
           }
         ],
         "/integ-http-proxy/LambdaProxyApi/DefaultRoute/Resource": [
@@ -196,6 +196,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "LambdaProxyApiDefaultRouteDefaultIntegrationPermission39F587FC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaProxyApiDefaultRouteDefaultIntegrationPermission39F587FC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

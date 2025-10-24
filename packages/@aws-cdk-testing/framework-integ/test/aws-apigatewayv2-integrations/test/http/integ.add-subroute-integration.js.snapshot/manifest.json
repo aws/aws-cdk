@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21451c460fb1ee22d7a92aa8bcb0d3e8ec4d5f58865f53228eeb9ed4ca44d595.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bac13d778aba562b8a61fe03e9f3d3b3b63cc2de33cc05c66f0a051a828e64eb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -100,10 +100,10 @@
             "data": "testapigwv2addsubrouteintegrationGETfirstroutemylambdaintegration9AC16429"
           }
         ],
-        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--firstroute/my-lambda-integration-Permission": [
+        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--firstroute/ApiPermission.integlambdaaddsubrouteintegrationfirstlambdafunction64FC033F.integlambdaaddsubrouteintegrationtestapigwv2addsubrouteintegration1797896C.my-lambda-integration": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testapigwv2addsubrouteintegrationGETfirstroutemylambdaintegrationPermissionA652DC1D"
+            "data": "testapigwv2addsubrouteintegrationGETfirstrouteApiPermissioninteglambdaaddsubrouteintegrationfirstlambdafunction64FC033Finteglambdaaddsubrouteintegrationtestapigwv2addsubrouteintegration1797896CmylambdaintegrationB9C39350"
           }
         ],
         "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--firstroute/Resource": [
@@ -118,10 +118,10 @@
             "data": "*"
           }
         ],
-        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--firstroute--subroute/my-lambda-integration-Permission": [
+        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--firstroute--subroute/ApiPermission.integlambdaaddsubrouteintegrationfirstlambdafunction64FC033F.integlambdaaddsubrouteintegrationtestapigwv2addsubrouteintegration1797896C.my-lambda-integration": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testapigwv2addsubrouteintegrationGETfirstroutesubroutemylambdaintegrationPermissionCCC6B203"
+            "data": "testapigwv2addsubrouteintegrationGETfirstroutesubrouteApiPermissioninteglambdaaddsubrouteintegrationfirstlambdafunction64FC033Finteglambdaaddsubrouteintegrationtestapigwv2addsubrouteintegration1797896CmylambdaintegrationD9EAFD8F"
           }
         ],
         "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--firstroute--subroute/Resource": [
@@ -148,10 +148,10 @@
             "data": "testapigwv2addsubrouteintegrationGETsecondroutemyreferencedlambdaintegration6C087A72"
           }
         ],
-        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--secondroute/my-referenced-lambda-integration-Permission": [
+        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--secondroute/ApiPermission.integlambdaaddsubrouteintegrationReferencedLambdaAttributes107A0272.integlambdaaddsubrouteintegrationtestapigwv2addsubrouteintegration1797896C.my-referenced-lambda-integration": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testapigwv2addsubrouteintegrationGETsecondroutemyreferencedlambdaintegrationPermissionC21831D2"
+            "data": "testapigwv2addsubrouteintegrationGETsecondrouteApiPermissioninteglambdaaddsubrouteintegrationReferencedLambdaAttributes107A0272integlambdaaddsubrouteintegrationtestapigwv2addsubrouteintegration1797896Cmyreferencedlambdaintegration46F86701"
           }
         ],
         "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--secondroute/Resource": [
@@ -166,10 +166,10 @@
             "data": "*"
           }
         ],
-        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--secondroute--subroute/my-referenced-lambda-integration-Permission": [
+        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--secondroute--subroute/ApiPermission.integlambdaaddsubrouteintegrationReferencedLambdaAttributes107A0272.integlambdaaddsubrouteintegrationtestapigwv2addsubrouteintegration1797896C.my-referenced-lambda-integration": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testapigwv2addsubrouteintegrationGETsecondroutesubroutemyreferencedlambdaintegrationPermissionBC2FB67A"
+            "data": "testapigwv2addsubrouteintegrationGETsecondroutesubrouteApiPermissioninteglambdaaddsubrouteintegrationReferencedLambdaAttributes107A0272integlambdaaddsubrouteintegrationtestapigwv2addsubrouteintegration1797896Cmyreferencedlambdaintegration8A09940A"
           }
         ],
         "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--secondroute--subroute/Resource": [
@@ -196,10 +196,10 @@
             "data": "testapigwv2addsubrouteintegrationGETthirdroutemyreferencedlambdaintegrationD0FF024E"
           }
         ],
-        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--thirdroute/my-referenced-lambda-integration-Permission": [
+        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--thirdroute/ApiPermission.integlambdaaddsubrouteintegrationReferencedLambdaNameA6C4508F.integlambdaaddsubrouteintegrationtestapigwv2addsubrouteintegration1797896C.my-referenced-lambda-integration": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testapigwv2addsubrouteintegrationGETthirdroutemyreferencedlambdaintegrationPermission020AA386"
+            "data": "testapigwv2addsubrouteintegrationGETthirdrouteApiPermissioninteglambdaaddsubrouteintegrationReferencedLambdaNameA6C4508Finteglambdaaddsubrouteintegrationtestapigwv2addsubrouteintegration1797896Cmyreferencedlambdaintegration29344CD1"
           }
         ],
         "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--thirdroute/Resource": [
@@ -214,10 +214,10 @@
             "data": "*"
           }
         ],
-        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--thirdroute--subroute/my-referenced-lambda-integration-Permission": [
+        "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--thirdroute--subroute/ApiPermission.integlambdaaddsubrouteintegrationReferencedLambdaNameA6C4508F.integlambdaaddsubrouteintegrationtestapigwv2addsubrouteintegration1797896C.my-referenced-lambda-integration": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testapigwv2addsubrouteintegrationGETthirdroutesubroutemyreferencedlambdaintegrationPermissionDE3E4E26"
+            "data": "testapigwv2addsubrouteintegrationGETthirdroutesubrouteApiPermissioninteglambdaaddsubrouteintegrationReferencedLambdaNameA6C4508Finteglambdaaddsubrouteintegrationtestapigwv2addsubrouteintegration1797896Cmyreferencedlambdaintegration7B5BD612"
           }
         ],
         "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--thirdroute--subroute/Resource": [
@@ -376,6 +376,60 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "testapigwv2addsubrouteintegrationGETfirstroutemylambdaintegrationPermissionA652DC1D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testapigwv2addsubrouteintegrationGETfirstroutemylambdaintegrationPermissionA652DC1D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "testapigwv2addsubrouteintegrationGETfirstroutesubroutemylambdaintegrationPermissionCCC6B203": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testapigwv2addsubrouteintegrationGETfirstroutesubroutemylambdaintegrationPermissionCCC6B203",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "testapigwv2addsubrouteintegrationGETsecondroutemyreferencedlambdaintegrationPermissionC21831D2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testapigwv2addsubrouteintegrationGETsecondroutemyreferencedlambdaintegrationPermissionC21831D2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "testapigwv2addsubrouteintegrationGETsecondroutesubroutemyreferencedlambdaintegrationPermissionBC2FB67A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testapigwv2addsubrouteintegrationGETsecondroutesubroutemyreferencedlambdaintegrationPermissionBC2FB67A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "testapigwv2addsubrouteintegrationGETthirdroutemyreferencedlambdaintegrationPermission020AA386": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testapigwv2addsubrouteintegrationGETthirdroutemyreferencedlambdaintegrationPermission020AA386",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "testapigwv2addsubrouteintegrationGETthirdroutesubroutemyreferencedlambdaintegrationPermissionDE3E4E26": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "testapigwv2addsubrouteintegrationGETthirdroutesubroutemyreferencedlambdaintegrationPermissionDE3E4E26",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "integ-lambda-add-subroute-integration"
@@ -397,7 +451,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6baf99c0783f9ce5a7890f7cc03c1950c1caf737738680cf51ff0f09f7d73d01.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4e2bfa1b32d3c619183c611af9f32116005f0f17bdea43ea56f623db012b154b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

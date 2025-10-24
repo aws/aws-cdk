@@ -120,7 +120,7 @@
     }
    }
   },
-  "lambdarestapiproxyANYApiPermissionLateBoundDeploymentStageStacklambdarestapiCE6017F6ANYproxy2C5460ED": {
+  "lambdarestapiproxyANYApiPermissionLateBoundDeploymentStageStackmyfn4CC23969LateBoundDeploymentStageStacklambdarestapiCE6017F6ANYproxyACF1FE03": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -161,7 +161,7 @@
     }
    }
   },
-  "lambdarestapiproxyANYApiPermissionTestLateBoundDeploymentStageStacklambdarestapiCE6017F6ANYproxyCC4F6BB2": {
+  "lambdarestapiproxyANYApiPermissionTestLateBoundDeploymentStageStackmyfn4CC23969LateBoundDeploymentStageStacklambdarestapiCE6017F6ANYproxyCDC41C8A": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -238,7 +238,7 @@
     }
    }
   },
-  "lambdarestapiANYApiPermissionLateBoundDeploymentStageStacklambdarestapiCE6017F6ANY35688E13": {
+  "lambdarestapiANYApiPermissionLateBoundDeploymentStageStackmyfn4CC23969LateBoundDeploymentStageStacklambdarestapiCE6017F6ANYA683DFAB": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -279,7 +279,7 @@
     }
    }
   },
-  "lambdarestapiANYApiPermissionTestLateBoundDeploymentStageStacklambdarestapiCE6017F6ANY239CFD70": {
+  "lambdarestapiANYApiPermissionTestLateBoundDeploymentStageStackmyfn4CC23969LateBoundDeploymentStageStacklambdarestapiCE6017F6ANY3D01120C": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",

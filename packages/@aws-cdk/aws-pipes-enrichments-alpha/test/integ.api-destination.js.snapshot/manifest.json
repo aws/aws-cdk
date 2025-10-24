@@ -148,10 +148,10 @@
             "data": "HttpApiPOSTtestLambdaIntegrationE0E30FBE"
           }
         ],
-        "/aws-cdk-pipes-enrichments-lambda/HttpApi/POST--test/LambdaIntegration-Permission": [
+        "/aws-cdk-pipes-enrichments-lambda/HttpApi/POST--test/ApiPermission.awscdkpipesenrichmentslambdaConnectHandler1BCFB96A.awscdkpipesenrichmentslambdaHttpApiC2308A36.LambdaIntegration": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HttpApiPOSTtestLambdaIntegrationPermission04EC2B3D"
+            "data": "HttpApiPOSTtestApiPermissionawscdkpipesenrichmentslambdaConnectHandler1BCFB96AawscdkpipesenrichmentslambdaHttpApiC2308A36LambdaIntegrationE628E0DA"
           }
         ],
         "/aws-cdk-pipes-enrichments-lambda/HttpApi/POST--test/Resource": [
@@ -355,6 +355,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "HttpApiPOSTtestLambdaIntegrationPermission04EC2B3D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiPOSTtestLambdaIntegrationPermission04EC2B3D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

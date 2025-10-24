@@ -7,8 +7,13 @@ import {
   ParameterMapping,
 } from '../../../aws-apigatewayv2';
 import { ServicePrincipal } from '../../../aws-iam';
+import * as lambda from '../../../aws-lambda';
 import { IFunction } from '../../../aws-lambda';
-import { Duration, Stack } from '../../../core';
+import { Duration, Names, Stack } from '../../../core';
+
+// The maximum number of individual route-scoped lambda permissions to be added before they are
+// consolidated into a single permission scoped to the API
+const LAMBDA_PERMISSION_CONSOLIDATION_THRESHOLD = 10;
 
 /**
  * Lambda Proxy integration properties
@@ -58,15 +63,44 @@ export class HttpLambdaIntegration extends HttpRouteIntegration {
 
   protected completeBind(options: HttpRouteIntegrationBindOptions) {
     const route = options.route;
-    this.handler.addPermission(`${this._id}-Permission`, {
-      scope: options.scope,
-      principal: new ServicePrincipal('apigateway.amazonaws.com'),
-      sourceArn: Stack.of(route).formatArn({
-        service: 'execute-api',
-        resource: route.httpApi.apiId,
-        resourceName: `*/*${route.path ?? ''}`, // empty string in the case of the catch-all route $default
-      }),
-    });
+
+    // Permission prefix is unique to the handler and the API
+    const descPrefix = `${Names.nodeUniqueId(this.handler.node)}.${Names.nodeUniqueId(route.httpApi.node)}`;
+    const desc = `${descPrefix}.${this._id}`;
+
+    // Find any existing permissions for this handler and this API within the parent stack
+    const stack = Stack.of(options.scope);
+    const otherHandlerPermissions = stack.node.findAll()
+      .filter(c => c instanceof lambda.CfnPermission &&
+        c.node.id.startsWith(`ApiPermission.${descPrefix}.`));
+
+    const consolidatedPermission = stack.node.findAll()
+      .find(c => c instanceof lambda.CfnPermission && c.node.id.startsWith(`ApiPermission.Any.${descPrefix}`));
+
+    if (otherHandlerPermissions.length >= LAMBDA_PERMISSION_CONSOLIDATION_THRESHOLD) {
+      // If there are too many existing permissions, remove them in favour of a single permission scoped to the API
+      otherHandlerPermissions.forEach(permission => permission.node.scope?.node?.tryRemoveChild?.(permission.node.id));
+      this.handler.addPermission(`ApiPermission.Any.${descPrefix}`, {
+        scope: options.scope,
+        principal: new ServicePrincipal('apigateway.amazonaws.com'),
+        sourceArn: Stack.of(route).formatArn({
+          service: 'execute-api',
+          resource: route.httpApi.apiId,
+          resourceName: '*/*/*',
+        }),
+      });
+    } else if (!consolidatedPermission) {
+      // No other permissions exist or below threshold, so scope the permission to the specific route
+      this.handler.addPermission(`ApiPermission.${desc}`, {
+        scope: options.scope,
+        principal: new ServicePrincipal('apigateway.amazonaws.com'),
+        sourceArn: Stack.of(route).formatArn({
+          service: 'execute-api',
+          resource: route.httpApi.apiId,
+          resourceName: `*/*${route.path ?? ''}`, // empty string in the case of the catch-all route $default
+        }),
+      });
+    }
   }
 
   public bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
@@ -79,3 +113,4 @@ export class HttpLambdaIntegration extends HttpRouteIntegration {
     };
   }
 }
+

@@ -677,16 +677,16 @@
             }
           }
         ],
-        "/TestStack/MyRestAPI/Default/{proxy+}/ANY/ApiPermission.TestStackMyRestAPIC2110DF7.ANY..{proxy+}": [
+        "/TestStack/MyRestAPI/Default/{proxy+}/ANY/ApiPermission.TestStackFunction0204A443.TestStackMyRestAPIC2110DF7.ANY..{proxy+}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyRestAPIproxyANYApiPermissionTestStackMyRestAPIC2110DF7ANYproxy61217372"
+            "data": "MyRestAPIproxyANYApiPermissionTestStackFunction0204A443TestStackMyRestAPIC2110DF7ANYproxy76B9E43F"
           }
         ],
-        "/TestStack/MyRestAPI/Default/{proxy+}/ANY/ApiPermission.Test.TestStackMyRestAPIC2110DF7.ANY..{proxy+}": [
+        "/TestStack/MyRestAPI/Default/{proxy+}/ANY/ApiPermission.Test.TestStackFunction0204A443.TestStackMyRestAPIC2110DF7.ANY..{proxy+}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyRestAPIproxyANYApiPermissionTestTestStackMyRestAPIC2110DF7ANYproxyAA075AE5"
+            "data": "MyRestAPIproxyANYApiPermissionTestTestStackFunction0204A443TestStackMyRestAPIC2110DF7ANYproxy02F02D14"
           }
         ],
         "/TestStack/MyRestAPI/Default/{proxy+}/ANY/Resource": [
@@ -706,16 +706,16 @@
             }
           }
         ],
-        "/TestStack/MyRestAPI/Default/ANY/ApiPermission.TestStackMyRestAPIC2110DF7.ANY..": [
+        "/TestStack/MyRestAPI/Default/ANY/ApiPermission.TestStackFunction0204A443.TestStackMyRestAPIC2110DF7.ANY..": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyRestAPIANYApiPermissionTestStackMyRestAPIC2110DF7ANYB4C9B6E3"
+            "data": "MyRestAPIANYApiPermissionTestStackFunction0204A443TestStackMyRestAPIC2110DF7ANY9DEEF6B4"
           }
         ],
-        "/TestStack/MyRestAPI/Default/ANY/ApiPermission.Test.TestStackMyRestAPIC2110DF7.ANY..": [
+        "/TestStack/MyRestAPI/Default/ANY/ApiPermission.Test.TestStackFunction0204A443.TestStackMyRestAPIC2110DF7.ANY..": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyRestAPIANYApiPermissionTestTestStackMyRestAPIC2110DF7ANY8F157E85"
+            "data": "MyRestAPIANYApiPermissionTestTestStackFunction0204A443TestStackMyRestAPIC2110DF7ANY54631A1E"
           }
         ],
         "/TestStack/MyRestAPI/Default/ANY/Resource": [
@@ -734,6 +734,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "MyRestAPIproxyANYApiPermissionTestStackMyRestAPIC2110DF7ANYproxy61217372": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestAPIproxyANYApiPermissionTestStackMyRestAPIC2110DF7ANYproxy61217372",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyRestAPIproxyANYApiPermissionTestTestStackMyRestAPIC2110DF7ANYproxyAA075AE5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestAPIproxyANYApiPermissionTestTestStackMyRestAPIC2110DF7ANYproxyAA075AE5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyRestAPIANYApiPermissionTestStackMyRestAPIC2110DF7ANYB4C9B6E3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestAPIANYApiPermissionTestStackMyRestAPIC2110DF7ANYB4C9B6E3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyRestAPIANYApiPermissionTestTestStackMyRestAPIC2110DF7ANY8F157E85": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRestAPIANYApiPermissionTestTestStackMyRestAPIC2110DF7ANY8F157E85",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

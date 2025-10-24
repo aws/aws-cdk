@@ -139,7 +139,7 @@
     }
    }
   },
-  "RestApibooksfictionGETApiPermissionawscdkpipestargetsapigwRestApiF13D8AB8GETbooksfiction63E0426F": {
+  "RestApibooksfictionGETApiPermissionawscdkpipestargetsapigwConnectHandlerDBDCE3BAawscdkpipestargetsapigwRestApiF13D8AB8GETbooksfictionE555AFE1": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -180,7 +180,7 @@
     }
    }
   },
-  "RestApibooksfictionGETApiPermissionTestawscdkpipestargetsapigwRestApiF13D8AB8GETbooksfictionDF7E9804": {
+  "RestApibooksfictionGETApiPermissionTestawscdkpipestargetsapigwConnectHandlerDBDCE3BAawscdkpipestargetsapigwRestApiF13D8AB8GETbooksfiction84348AC6": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",

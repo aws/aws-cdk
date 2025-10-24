@@ -215,16 +215,16 @@
             }
           }
         ],
-        "/aws-cdk-pipes-targets-api-gw/RestApi/Default/books/fiction/GET/ApiPermission.awscdkpipestargetsapigwRestApiF13D8AB8.GET..books.fiction": [
+        "/aws-cdk-pipes-targets-api-gw/RestApi/Default/books/fiction/GET/ApiPermission.awscdkpipestargetsapigwConnectHandlerDBDCE3BA.awscdkpipestargetsapigwRestApiF13D8AB8.GET..books.fiction": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RestApibooksfictionGETApiPermissionawscdkpipestargetsapigwRestApiF13D8AB8GETbooksfiction63E0426F"
+            "data": "RestApibooksfictionGETApiPermissionawscdkpipestargetsapigwConnectHandlerDBDCE3BAawscdkpipestargetsapigwRestApiF13D8AB8GETbooksfictionE555AFE1"
           }
         ],
-        "/aws-cdk-pipes-targets-api-gw/RestApi/Default/books/fiction/GET/ApiPermission.Test.awscdkpipestargetsapigwRestApiF13D8AB8.GET..books.fiction": [
+        "/aws-cdk-pipes-targets-api-gw/RestApi/Default/books/fiction/GET/ApiPermission.Test.awscdkpipestargetsapigwConnectHandlerDBDCE3BA.awscdkpipestargetsapigwRestApiF13D8AB8.GET..books.fiction": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RestApibooksfictionGETApiPermissionTestawscdkpipestargetsapigwRestApiF13D8AB8GETbooksfictionDF7E9804"
+            "data": "RestApibooksfictionGETApiPermissionTestawscdkpipestargetsapigwConnectHandlerDBDCE3BAawscdkpipestargetsapigwRestApiF13D8AB8GETbooksfiction84348AC6"
           }
         ],
         "/aws-cdk-pipes-targets-api-gw/RestApi/Default/books/fiction/GET/Resource": [
@@ -460,6 +460,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "RestApibooksfictionGETApiPermissionawscdkpipestargetsapigwRestApiF13D8AB8GETbooksfiction63E0426F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApibooksfictionGETApiPermissionawscdkpipestargetsapigwRestApiF13D8AB8GETbooksfiction63E0426F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "RestApibooksfictionGETApiPermissionTestawscdkpipestargetsapigwRestApiF13D8AB8GETbooksfictionDF7E9804": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RestApibooksfictionGETApiPermissionTestawscdkpipestargetsapigwRestApiF13D8AB8GETbooksfictionDF7E9804",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

@@ -397,16 +397,16 @@
             }
           }
         ],
-        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/ANY/ApiPermission.integtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065.ANY..InitiateAction.{proxy+}": [
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/ANY/ApiPermission.integtestrestapiwithauthorizerandproxylambdas39072AD1B.integtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065.ANY..InitiateAction.{proxy+}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ActionsApiGatewayInitiateActionproxyANYApiPermissionintegtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065ANYInitiateActionproxy1FB876EB"
+            "data": "ActionsApiGatewayInitiateActionproxyANYApiPermissionintegtestrestapiwithauthorizerandproxylambdas39072AD1BintegtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065ANYInitiateActionproxyFD3F1D84"
           }
         ],
-        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/ANY/ApiPermission.Test.integtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065.ANY..InitiateAction.{proxy+}": [
+        "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/ANY/ApiPermission.Test.integtestrestapiwithauthorizerandproxylambdas39072AD1B.integtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065.ANY..InitiateAction.{proxy+}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ActionsApiGatewayInitiateActionproxyANYApiPermissionTestintegtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065ANYInitiateActionproxyD05DD0B4"
+            "data": "ActionsApiGatewayInitiateActionproxyANYApiPermissionTestintegtestrestapiwithauthorizerandproxylambdas39072AD1BintegtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065ANYInitiateActionproxy6828870D"
           }
         ],
         "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/ANY/Resource": [
@@ -469,6 +469,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ActionsApiGatewayInitiateActionproxyANYApiPermissionintegtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065ANYInitiateActionproxy1FB876EB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayInitiateActionproxyANYApiPermissionintegtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065ANYInitiateActionproxy1FB876EB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ActionsApiGatewayInitiateActionproxyANYApiPermissionTestintegtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065ANYInitiateActionproxyD05DD0B4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayInitiateActionproxyANYApiPermissionTestintegtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065ANYInitiateActionproxyD05DD0B4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

@@ -110,7 +110,7 @@
     "PayloadFormatVersion": "2.0"
    }
   },
-  "HttpApiGETbooksLambdaIntegrationPermissionAF46C722": {
+  "HttpApiGETbooksApiPermissionawscdkpipestargetsapidestConnectHandlerFED9171AawscdkpipestargetsapidestHttpApi2DC37905LambdaIntegrationE7240EF7": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
