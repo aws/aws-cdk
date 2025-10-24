@@ -15,12 +15,94 @@
     ]
    }
   },
+  "requestorVpcCrossAccountRequestorVpcPeeringRoleED646990": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "arn:aws:iam::234567890123:root"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Restrictive role for VPC peering from requestor side",
+    "RoleName": "RequestorVpcPeeringRole",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "requestor-stack/requestorVpcCrossAccount"
+     }
+    ]
+   }
+  },
+  "requestorVpcCrossAccountRequestorVpcPeeringRoleDefaultPolicy1E57A1DA": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ec2:CreateVpcPeeringConnection",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ec2:us-east-1:12345678:vpc-peering-connection/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ec2:us-east-1:12345678:vpc/",
+           {
+            "Fn::GetAtt": [
+             "requestorVpcCrossAccount6372A252",
+             "VpcId"
+            ]
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "requestorVpcCrossAccountRequestorVpcPeeringRoleDefaultPolicy1E57A1DA",
+    "Roles": [
+     {
+      "Ref": "requestorVpcCrossAccountRequestorVpcPeeringRoleED646990"
+     }
+    ]
+   }
+  },
   "requestorVpcCrossAccountacceptorAccountCrossRegionPeeringVPCPeeringConnection3605B6B0": {
    "Type": "AWS::EC2::VPCPeeringConnection",
    "Properties": {
     "PeerOwnerId": "234567890123",
     "PeerRegion": "us-east-1",
-    "PeerRoleArn": "arn:aws:iam::916743627080:role/VpcPeeringRole",
+    "PeerRoleArn": {
+     "Fn::GetAtt": [
+      "requestorVpcCrossAccountRequestorVpcPeeringRoleED646990",
+      "Arn"
+     ]
+    },
     "PeerVpcId": "vpc-09b9235d8a3195ba3",
     "Tags": [
      {
