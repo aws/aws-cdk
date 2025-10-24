@@ -63,7 +63,7 @@ export interface IJobDefinition extends IResource {
    * @default - no timeout
    */
   readonly timeout?: Duration;
-  
+
   /**
    * Contains a list of consumable resources required by the job.
    *
