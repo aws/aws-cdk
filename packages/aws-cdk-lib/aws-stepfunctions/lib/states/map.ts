@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { MapBase, MapBaseJsonataOptions, MapBaseJsonPathOptions, MapBaseOptions, MapBaseProps } from './map-base';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
-import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, QueryLanguage, RetryProps } from '../types';
+import { CatchProps, ICatchable, IChainable, INextable, ProcessorConfig, ProcessorMode, QueryLanguage, RetryProps } from '../types';
 import { StateBaseProps } from './state';
 
 interface MapOptions extends MapBaseOptions {
@@ -45,7 +45,7 @@ export interface MapProps extends MapBaseProps, MapOptions {}
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-map-state.html
  */
-export class Map extends MapBase implements INextable {
+export class Map extends MapBase implements INextable, ICatchable {
   /**
    * Define a Map state using JSONPath in the state machine
    *

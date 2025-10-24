@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { Chain } from '..';
 import { State } from './state';
 import { Annotations } from '../../../core/';
-import { CatchProps, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
+import { CatchProps, ICatchable, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
 
 /**
  * Properties for defining a custom state definition
@@ -20,7 +20,7 @@ export interface CustomStateProps {
  * State defined by supplying Amazon States Language (ASL) in the state machine.
  *
  */
-export class CustomState extends State implements IChainable, INextable {
+export class CustomState extends State implements IChainable, INextable, ICatchable {
   public readonly endStates: INextable[];
 
   /**

@@ -4,7 +4,7 @@ import { AssignableStateOptions, JsonataCommonOptions, JsonPathCommonOptions, re
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
-import { CatchProps, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
+import { CatchProps, ICatchable, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
 
 interface ParallelJsonPathOptions extends JsonPathCommonOptions {
   /**
@@ -76,7 +76,7 @@ export interface ParallelProps extends StateBaseProps, AssignableStateOptions, P
  *
  * The Result of a Parallel state is an array of the results of its substatemachines.
  */
-export class Parallel extends State implements INextable {
+export class Parallel extends State implements INextable, ICatchable {
   /**
    * Define a Parallel state using JSONPath in the state machine
    *
