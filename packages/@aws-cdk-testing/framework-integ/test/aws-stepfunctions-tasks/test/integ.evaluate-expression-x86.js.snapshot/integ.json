@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "EvaluateExpressionX86Test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-sfn-evaluate-expression-x86-integ"
+      ],
+      "assertionStack": "EvaluateExpressionX86Test/DefaultTest/DeployAssert",
+      "assertionStackName": "EvaluateExpressionX86TestDefaultTestDeployAssert22D837CF"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
