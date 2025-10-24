@@ -532,24 +532,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "VPCPublicSubnet2EIP4947BC00": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2EIP4947BC00",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "VPCPublicSubnet2NATGateway3C070193": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2NATGateway3C070193",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "integ-ec2-instance-metadata-options"

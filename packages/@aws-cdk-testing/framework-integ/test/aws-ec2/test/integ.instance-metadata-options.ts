@@ -22,7 +22,7 @@ class TestStack extends cdk.Stack {
         httpEndpoint: true,
         httpProtocolIpv6: false,
         httpPutResponseHopLimit: 2,
-        httpTokens: ec2.LaunchTemplateHttpTokens.REQUIRED,
+        httpTokens: ec2.HttpTokens.REQUIRED,
         instanceMetadataTags: true,
       },
     });
@@ -33,7 +33,7 @@ class TestStack extends cdk.Stack {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.NANO),
       machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
       metadataOptions: {
-        httpTokens: ec2.LaunchTemplateHttpTokens.REQUIRED,
+        httpTokens: ec2.HttpTokens.REQUIRED,
         instanceMetadataTags: true,
       },
     });
