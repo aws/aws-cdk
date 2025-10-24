@@ -105,6 +105,10 @@ Flags come in three types:
 | [@aws-cdk/aws-lambda:useCdkManagedLogGroup](#aws-cdkaws-lambdausecdkmanagedloggroup) | When enabled, CDK creates and manages loggroup for the lambda function | 2.200.0 | new default |
 | [@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal](#aws-cdkaws-kmsapplyimportedaliaspermissionstoprincipal) | Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition | 2.202.0 | fix |
 | [@aws-cdk/core:explicitStackTags](#aws-cdkcoreexplicitstacktags) | When enabled, stack tags need to be assigned explicitly on a Stack. | 2.205.0 | new default |
+| [@aws-cdk/aws-signer:signingProfileNamePassedToCfn](#aws-cdkaws-signersigningprofilenamepassedtocfn) | Pass signingProfileName to CfnSigningProfile | 2.212.0 | fix |
+| [@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener](#aws-cdkaws-ecs-patternssecgroupsdisablesimplicitopenlistener) | Disable implicit openListener when custom security groups are provided | 2.214.0 | new default |
+| [@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId](#aws-cdkaws-ecs-patternsuniquetargetgroupid) | When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement | V2NEXT | fix |
+| [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -116,6 +120,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
 ```json
 {
   "context": {
+    "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": true,
+    "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": true,
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
     "@aws-cdk/core:checkSecretUsage": true,
     "@aws-cdk/core:target-partitions": [
@@ -193,7 +199,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
-    "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true
+    "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
+    "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true
   }
 }
 ```
@@ -241,6 +248,7 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 | [@aws-cdk/core:aspectStabilization](#aws-cdkcoreaspectstabilization) | When enabled, a stabilization loop will be run when invoking Aspects during synthesis. | config |  | `false` | `true` |
 | [@aws-cdk/pipelines:reduceStageRoleTrustScope](#aws-cdkpipelinesreducestageroletrustscope) | Remove the root account principal from Stage addActions trust policy | new default |  | `false` | `true` |
 | [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | new default |  | `false` | `true` |
+| [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | fix |  | `false` | `true` |
 
 <!-- END diff -->
 
@@ -2223,6 +2231,92 @@ and Stack tags must be configured explicitly on the Stack object.
 | 2.205.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Configure stack-level tags using `new Stack(..., { tags: { ... } })`.
+
+
+### @aws-cdk/aws-signer:signingProfileNamePassedToCfn
+
+*Pass signingProfileName to CfnSigningProfile*
+
+Flag type: Backwards incompatible bugfix
+
+When enabled, the `signingProfileName` property is passed to the L1 `CfnSigningProfile` construct,
+which ensures that the AWS Signer profile is created with the specified name.
+
+When disabled, the `signingProfileName` is not passed to CloudFormation, maintaining backward
+compatibility with existing deployments where CloudFormation auto-generated profile names.
+
+This feature flag is needed because enabling it can cause existing signing profiles to be
+replaced during deployment if a `signingProfileName` was specified but not previously used
+in the CloudFormation template.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.212.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener
+
+*Disable implicit openListener when custom security groups are provided*
+
+Flag type: New default behavior
+
+ApplicationLoadBalancedServiceBase currently defaults openListener to true, which creates
+security group rules allowing ingress from 0.0.0.0/0. This can be a security risk when
+users provide custom security groups on their load balancer, expecting those to be the
+only ingress rules.
+
+If this flag is not set, openListener will always default to true for backward compatibility.
+If true, openListener will default to false when custom security groups are detected on the
+load balancer, and true otherwise. Users can still explicitly set openListener: true to
+override this behavior.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.214.0 | `false` | `true` |
+
+**Compatibility with old behavior:** You can pass `openListener: true` explicitly to maintain the old behavior.
+
+
+### @aws-cdk/aws-ecs-patterns:uniqueTargetGroupId
+
+*When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement*
+
+Flag type: Backwards incompatible bugfix
+
+When this feature flag is enabled, ECS patterns will generate unique target group IDs that include
+both the load balancer type (public/private) and load balancer name. This prevents CloudFormation
+conflicts when switching between public and private load balancers or when changing load balancer names.
+
+Without this flag, target groups use generic IDs like 'ECS' which can cause conflicts when the
+underlying load balancer is replaced due to changes in internetFacing or loadBalancerName properties.
+
+This is a breaking change as it will cause target group replacement when the flag is enabled.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+
+### @aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint
+
+*When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.*
+
+Flag type: Backwards incompatible bugfix
+
+When this feature flag is enabled, the JSONPath apiEndpoint value will be resolved dynamically at runtime, while slightly increasing the size of the state machine definition.
+When disabled, the JSONPath apiEndpoint property will only support a static string value.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `true` | `true` |
 
 
 <!-- END details -->

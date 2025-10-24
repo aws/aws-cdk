@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
-import { CfnVPCEndpoint } from './ec2.generated';
+import { CfnVPCEndpoint, IVPCEndpointRef, VPCEndpointReference } from './ec2.generated';
 import { Peer } from './peer';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
@@ -15,7 +15,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * A VPC endpoint.
  */
-export interface IVpcEndpoint extends IResource {
+export interface IVpcEndpoint extends IResource, IVPCEndpointRef {
   /**
    * The VPC endpoint identifier.
    * @attribute
@@ -27,6 +27,12 @@ export abstract class VpcEndpoint extends Resource implements IVpcEndpoint {
   public abstract readonly vpcEndpointId: string;
 
   protected policyDocument?: iam.PolicyDocument;
+
+  public get vpcEndpointRef(): VPCEndpointReference {
+    return {
+      vpcEndpointId: this.vpcEndpointId,
+    };
+  }
 
   /**
    * Adds a statement to the policy document of the VPC endpoint. The statement
@@ -399,6 +405,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly BEDROCK = new InterfaceVpcEndpointAwsService('bedrock');
   public static readonly BEDROCK_AGENT = new InterfaceVpcEndpointAwsService('bedrock-agent');
   public static readonly BEDROCK_AGENT_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-agent-runtime');
+  public static readonly BEDROCK_AGENTCORE = new InterfaceVpcEndpointAwsService('bedrock-agentcore');
+  public static readonly BEDROCK_AGENTCORE_GATEWAY = new InterfaceVpcEndpointAwsService('bedrock-agentcore.gateway');
   public static readonly BEDROCK_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-runtime');
   public static readonly BEDROCK_DATA_AUTOMATION = new InterfaceVpcEndpointAwsService('bedrock-data-automation');
   public static readonly BEDROCK_DATA_AUTOMATION_FIPS = new InterfaceVpcEndpointAwsService('bedrock-data-automation-fips');
@@ -929,6 +937,15 @@ export interface InterfaceVpcEndpointOptions {
    * @default not specified
    */
   readonly privateDnsOnlyForInboundResolverEndpoint?: VpcEndpointPrivateDnsOnlyForInboundResolverEndpoint;
+
+  /**
+   * The region where the VPC endpoint service is located.
+   *
+   * Only needs to be specified for cross-region VPC endpoints.
+   *
+   * @default - Same region as the interface VPC endpoint
+   */
+  readonly serviceRegion?: string;
 }
 
 /**
@@ -972,6 +989,11 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
         defaultPort: Port.tcp(attrs.port),
         securityGroups,
       });
+      public get vpcEndpointRef(): VPCEndpointReference {
+        return {
+          vpcEndpointId: this.vpcEndpointId,
+        };
+      }
     }
 
     return new Import(scope, id);
@@ -1064,6 +1086,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       vpcId: props.vpc.vpcId,
       ipAddressType: props.ipAddressType,
       dnsOptions,
+      ...(props.serviceRegion && { serviceRegion: props.serviceRegion }),
     });
 
     this.vpcEndpointId = endpoint.ref;

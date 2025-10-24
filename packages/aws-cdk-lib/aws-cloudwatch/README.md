@@ -479,7 +479,7 @@ const metric = new cloudwatch.Metric({
   namespace: 'AWS/EC2',
   metricName: 'CPUUtilization',
   statistic: 'Average',
-  period: Duration.minutes(5),
+  period: Duration.hours(1), // Alarm will use the metric's period
 });
 
 // Create an anomaly detection alarm
@@ -597,6 +597,19 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
   // ...
 
   view: cloudwatch.GraphWidgetView.BAR,
+}));
+```
+
+The `displayLabelsOnChart` property can be set to `true` to show labels on the chart. Note that this only has an effect when the `view` property is set to `cloudwatch.GraphWidgetView.PIE`.
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
+  // ...
+
+  view: cloudwatch.GraphWidgetView.PIE,
+  displayLabelsOnChart: true,
 }));
 ```
 

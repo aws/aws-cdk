@@ -2,6 +2,64 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.220.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.219.0-alpha.0...v2.220.0-alpha.0) (2025-10-14)
+
+
+### Bug Fixes
+
+* **amplify-alpha:** handle empty customResponseHeaders array ([#35700](https://github.com/aws/aws-cdk/issues/35700)) ([57f9068](https://github.com/aws/aws-cdk/commit/57f90687d56ebe2cdc3fd5cff1dc35329c502ee4)), closes [#35693](https://github.com/aws/aws-cdk/issues/35693)
+## [2.219.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.218.0-alpha.0...v2.219.0-alpha.0) (2025-10-01)
+
+## [2.218.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.217.0-alpha.0...v2.218.0-alpha.0) (2025-09-29)
+* **elasticache-alpha:** implement Serverless ElastiCache L2 Construct ([#35424](https://github.com/aws/aws-cdk/issues/35424)) ([0e08c8c](https://github.com/aws/aws-cdk/commit/0e08c8ccc17f45a9023433c17c22a951b23cad43))
+## [2.217.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.216.0-alpha.0...v2.217.0-alpha.0) (2025-09-25)
+
+## [2.216.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.215.0-alpha.0...v2.216.0-alpha.0) (2025-09-22)
+
+## [2.215.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.214.0-alpha.0...v2.215.0-alpha.0) (2025-09-15)
+
+
+### Bug Fixes
+
+* **bedrock-alpha:** added missing validation when prompt uses default variant ([#35366](https://github.com/aws/aws-cdk/issues/35366)) ([cbd271e](https://github.com/aws/aws-cdk/commit/cbd271e36b68adbbaa1c87f95e7b99eaf3817264))
+
+## [2.214.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.213.0-alpha.0...v2.214.0-alpha.0) (2025-09-02)
+
+
+### Features
+
+* **bedrock-alpha:** add guardrails l2 construct ([#34765](https://github.com/aws/aws-cdk/issues/34765)) ([b4fdb2b](https://github.com/aws/aws-cdk/commit/b4fdb2b494abf41eccab90cca0d0f64d38009fbe))
+* **eks-v2-alpha:** support eks with k8s 1.33 ([#34713](https://github.com/aws/aws-cdk/issues/34713)) ([c24565e](https://github.com/aws/aws-cdk/commit/c24565e015d692e9a9c5dc9703372ec51b04be6b)), closes [#34520](https://github.com/aws/aws-cdk/issues/34520) [#34911](https://github.com/aws/aws-cdk/issues/34911)
+* **s3tables-alpha:** add TablePolicy support to L2 construct library ([#35223](https://github.com/aws/aws-cdk/issues/35223)) ([2741dfb](https://github.com/aws/aws-cdk/commit/2741dfbf69bbfa3e4353b4b3cbb4423fddc53226)), closes [#33054](https://github.com/aws/aws-cdk/issues/33054)
+
+## [2.213.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.212.0-alpha.0...v2.213.0-alpha.0) (2025-08-27)
+
+
+### Features
+
+* **s3tables-alpha:** add TablePolicy support to L2 construct library ([#35223](https://github.com/aws/aws-cdk/issues/35223)) ([a4aad78](https://github.com/aws/aws-cdk/commit/a4aad78a45fb776f2c2c71cb7818b4f8cbeaadd0)), closes [#33054](https://github.com/aws/aws-cdk/issues/33054)
+
+## [2.212.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.211.0-alpha.0...v2.212.0-alpha.0) (2025-08-20)
+
+## [2.211.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.210.0-alpha.0...v2.211.0-alpha.0) (2025-08-12)
+
+## [2.210.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.209.1-alpha.0...v2.210.0-alpha.0) (2025-08-06)
+
+
+### Features
+
+* **glue-alpha:** add optional metrics control for cost optimization ([#35154](https://github.com/aws/aws-cdk/issues/35154)) ([6e24133](https://github.com/aws/aws-cdk/commit/6e24133d26dc2cde2cbefa8736495bfc423c5e56)), closes [#35149](https://github.com/aws/aws-cdk/issues/35149)
+
+
+## [2.209.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.209.0-alpha.0...v2.209.1-alpha.0) (2025-08-06)
+
+
+### Bug Fixes
+
+* **eks-v2-alpha:** fix helm commands not running ecr public login ([#35162](https://github.com/aws/aws-cdk/issues/35162)) ([6c2a8b8](https://github.com/aws/aws-cdk/commit/6c2a8b8fd54991ce2c8557578eeb8199b8af38ac))
+
+## [2.209.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.208.0-alpha.0...v2.209.0-alpha.0) (2025-08-05)
+
 ## [2.208.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.207.0-alpha.0...v2.208.0-alpha.0) (2025-07-29)
 
 
