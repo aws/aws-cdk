@@ -31,9 +31,9 @@
     "jsii-reflect": "1.116.0",
     "lerna": "^8.2.4",
     "nx": "^20",
-    "semver": "^7.7.2",
+    "semver": "^7.7.3",
     "standard-version": "^9.5.0",
-    "ts-jest": "^29.4.1",
+    "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
     "typescript": "~5.5.4"
   },
