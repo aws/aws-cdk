@@ -7,7 +7,7 @@ import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
-import { Resource, Stack, ValidationError } from '../../core';
+import { Lazy, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -351,7 +351,7 @@ export class Trail extends Resource {
       cloudWatchLogsLogGroupArn: this.logGroup?.logGroupArn,
       cloudWatchLogsRoleArn: logsRole?.roleArn,
       snsTopicName: this.topic?.topicName,
-      eventSelectors: this.eventSelectors,
+      eventSelectors: Lazy.any({ produce: () => [...this.eventSelectors] }),
       isOrganizationTrail: props.isOrganizationTrail,
       insightSelectors: this.insightTypeValues,
     });

@@ -2,7 +2,7 @@ import * as constructs from 'constructs';
 import { CfnNotificationRule } from './codestarnotifications.generated';
 import { INotificationRuleSource } from './notification-rule-source';
 import { INotificationRuleTarget, NotificationRuleTargetConfig } from './notification-rule-target';
-import { IResource, Resource, Names } from '../../core';
+import { IResource, Resource, Names, Lazy } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -158,7 +158,7 @@ export class NotificationRule extends Resource implements INotificationRule {
       // It has a 64 characters limit for the name
       name: props.notificationRuleName || Names.uniqueId(this).slice(-64),
       detailType: props.detailType || DetailType.FULL,
-      targets: this.targets,
+      targets: Lazy.any({ produce: () => this.targets }),
       eventTypeIds: this.events,
       resource: source.sourceArn,
       status: props.enabled !== undefined
