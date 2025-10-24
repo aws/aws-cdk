@@ -1972,7 +1972,7 @@ class MaybeCreateCapacityProviderAssociations implements IAspect {
   public visit(node: IConstruct): void {
     if (Cluster.isCluster(node)) {
       if ((this.scope.defaultCapacityProviderStrategy.length > 0
-          || (this.scope.capacityProviderNames.length > 0 || this.scope.clusterScopedCapacityProviderNames.length > 0) && !this.resource)) {
+          || (this.scope.capacityProviderNames.length > 0) && !this.resource)) {
         this.resource = new CfnClusterCapacityProviderAssociations(this.scope, this.id, {
           cluster: node.clusterName,
           defaultCapacityProviderStrategy: this.scope.defaultCapacityProviderStrategy,

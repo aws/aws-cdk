@@ -3374,6 +3374,36 @@ describe('cluster', () => {
       });
     });
 
+    test('does not create CfnClusterCapacityProviderAssociations when using managed instances capacity provider', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonECSInstanceRolePolicyForManagedInstances'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      // WHEN
+      const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        ec2InstanceProfile: instanceProfile,
+        subnets: vpc.privateSubnets,
+      });
+
+      cluster.addManagedInstancesCapacityProvider(capacityProvider);
+
+      // THEN
+      Template.fromStack(stack).resourceCountIs('AWS::ECS::ClusterCapacityProviderAssociations', 0);
+    });
+
     test('minimal configuration with required fields only', () => {
       // GIVEN
       const app = new cdk.App();
