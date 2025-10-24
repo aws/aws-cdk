@@ -704,6 +704,15 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
     this.secret?.grantRead(grantee);
     return ret;
   }
+
+  /**
+   * Instance-level read I/O operations per second.
+   *
+   * Represents the average of the ReadIOPS values across all instances in the cluster.
+   */
+  public metricReadIOPs(props?: cloudwatch.MetricOptions) {
+    return this.metric('ReadIOPS', { statistic: 'Average', ...props });
+  }
 }
 
 /**

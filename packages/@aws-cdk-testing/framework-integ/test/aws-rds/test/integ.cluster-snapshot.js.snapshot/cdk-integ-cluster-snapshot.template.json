@@ -431,7 +431,7 @@
      "Ref": "ClusterSubnetsDCFA5CB7"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.04.0",
+    "EngineVersion": "8.0.mysql_aurora.3.10.0",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -1522,7 +1522,7 @@
      "Ref": "FromSnapshotSubnets9ED4B8EE"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.04.0",
+    "EngineVersion": "8.0.mysql_aurora.3.10.0",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -1676,6 +1676,26 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "ReadIOPsAlarmFB02F871": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "DBClusterIdentifier",
+      "Value": {
+       "Ref": "FromSnapshotEE0682C5"
+      }
+     }
+    ],
+    "EvaluationPeriods": 3,
+    "MetricName": "ReadIOPS",
+    "Namespace": "AWS/RDS",
+    "Period": 600,
+    "Statistic": "Average",
+    "Threshold": 1000
+   }
   }
  },
  "Mappings": {
