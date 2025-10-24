@@ -4,17 +4,6 @@ import { getReferenceProps } from './reference-props';
 import { createModuleDefinitionFromCfnNamespace } from '../cfn2ts/pkglint';
 import { log } from '../util';
 
-// For now we want relationships to be applied only for these services
-const RELATIONSHIP_SERVICES = [
-  'iam',
-  'apigateway',
-  'ec2',
-  'cloudfront',
-  'kms',
-  's3',
-  'lambda',
-];
-
 /**
  * Represents a cross-service property relationship that enables references
  * between resources from different AWS services.
@@ -83,9 +72,6 @@ export class RelationshipDecider {
    * properties as a relationship can only target a primary identifier or arn
    */
   private findTargetResource(sourcePropName: string, relationship: RelationshipRef) {
-    if (!RELATIONSHIP_SERVICES.some(s => this.resource.cloudFormationType.toLowerCase().startsWith(`aws::${s}::`))) {
-      return undefined;
-    }
     const targetResource = this.db.lookup('resource', 'cloudFormationType', 'equals', relationship.cloudFormationType).only();
     const refProps = getReferenceProps(targetResource);
     const expectedPropName = referencePropertyName(relationship.propertyName, targetResource.name);
