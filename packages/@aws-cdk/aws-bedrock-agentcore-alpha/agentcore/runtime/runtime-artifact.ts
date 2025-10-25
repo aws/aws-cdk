@@ -18,6 +18,7 @@ import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import { Runtime } from './runtime';
 import { ValidationError } from './validation-helpers';
+import { CfnPolicy, Policy } from 'aws-cdk-lib/aws-iam';
 
 /**
  * Abstract base class for agent runtime artifacts.
@@ -50,6 +51,33 @@ export abstract class AgentRuntimeArtifact {
    * @internal
    */
   public abstract _render(): CfnRuntime.AgentRuntimeArtifactProperty;
+
+  /**
+   * Add any missing policy dependencies to the runtime resource
+   *
+   * TODO: add docs
+   * @internal
+   */
+  protected _addMissingPolicyDependencies(runtime: Runtime) {
+    const runtimeResource = runtime.node.defaultChild as CfnRuntime;
+    for (const child of runtime.role.node.children) {
+      if (!(child instanceof Policy)) {
+        continue;
+      }
+      if (!runtimeResource.node.dependencies.includes(child)) {
+        // This `_addMissingPolicyDependencies` method is executed in the `bind` method, which is called by a `Lazy`
+        // method in the Runtime constructor. The `Lazy` method executes during the Synthesize phase at the end of
+        // the CDK application lifecycle.
+        // On the other hand, `runtimeResource.node.addDependency(child)` is executed during the Prepare phase, which is
+        // before the Synthesize phase. This means that calling `node.addDependency` here would not actually add
+        // the dependency.
+        // Therefore, we use the `addDependency` method of the L1 Construct, which is executed during the Synthesize phase,
+        // instead of calling `node.addDependency`.
+        const cfnPolicy = child.node.defaultChild as CfnPolicy;
+        runtimeResource.addDependency(cfnPolicy);
+      }
+    }
+  }
 }
 
 class EcrImage extends AgentRuntimeArtifact {
@@ -63,6 +91,7 @@ class EcrImage extends AgentRuntimeArtifact {
     // Handle permissions (only once)
     if (!this.bound && runtime.role) {
       this.repository.grantPull(runtime.role);
+      this._addMissingPolicyDependencies(runtime);
       this.bound = true;
     }
   }
@@ -97,6 +126,7 @@ class AssetImage extends AgentRuntimeArtifact {
     // Grant permissions (only once)
     if (!this.bound) {
       this.asset.repository.grantPull(runtime.role);
+      this._addMissingPolicyDependencies(runtime);
       this.bound = true;
     }
   }
