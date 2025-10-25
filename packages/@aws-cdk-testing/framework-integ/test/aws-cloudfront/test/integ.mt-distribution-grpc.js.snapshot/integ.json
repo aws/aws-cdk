@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "MTDistributionGrpc/DefaultTest": {
+      "stacks": [
+        "integ-mt-distribution-grpc"
+      ],
+      "assertionStack": "MTDistributionGrpc/DefaultTest/DeployAssert",
+      "assertionStackName": "MTDistributionGrpcDefaultTestDeployAssertAFFB893F"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

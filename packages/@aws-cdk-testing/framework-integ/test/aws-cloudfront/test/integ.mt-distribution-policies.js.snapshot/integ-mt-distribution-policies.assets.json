@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "3dba21a8f4d88b390a5dd3c3fc2968a53d8ce3a43c9debabbfd561c20e7395fb": {
+      "displayName": "integ-mt-distribution-policies Template",
+      "source": {
+        "path": "integ-mt-distribution-policies.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-fa594999": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3dba21a8f4d88b390a5dd3c3fc2968a53d8ce3a43c9debabbfd561c20e7395fb.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
