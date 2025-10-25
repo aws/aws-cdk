@@ -1,0 +1,163 @@
+{
+ "Resources": {
+  "DefaultRoleInvestigationGroupInvestigationGroupRoleA8C3C1FD": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "aiops.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Role for AIOps Investigation Group",
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AIOpsAssistantPolicy"
+       ]
+      ]
+     }
+    ],
+    "RoleName": "AIOpsRole-DefaultInvestigationGroup"
+   }
+  },
+  "DefaultRoleInvestigationGroupFD746EC0": {
+   "Type": "AWS::AIOps::InvestigationGroup",
+   "Properties": {
+    "ChatbotNotificationChannels": [],
+    "CrossAccountConfigurations": [],
+    "IsCloudTrailEventHistoryEnabled": true,
+    "Name": "default-role-investigation-group",
+    "RetentionInDays": 90,
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "DefaultRoleInvestigationGroupInvestigationGroupRoleA8C3C1FD",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "CustomInvestigationRoleA6EE0A2C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "aiops.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Custom role for AIOps investigation group",
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/CloudWatchReadOnlyAccess"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/CloudWatchLogsReadOnlyAccess"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AIOpsAssistantPolicy"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "CustomRoleInvestigationGroup57A362EB": {
+   "Type": "AWS::AIOps::InvestigationGroup",
+   "Properties": {
+    "ChatbotNotificationChannels": [],
+    "CrossAccountConfigurations": [],
+    "IsCloudTrailEventHistoryEnabled": true,
+    "Name": "custom-role-investigation-group",
+    "RetentionInDays": 90,
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "CustomInvestigationRoleA6EE0A2C",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
