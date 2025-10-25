@@ -1342,6 +1342,94 @@ describe('Runtime metrics and grant methods tests', () => {
     const result = imported.addToRolePolicy(statement);
     expect(result).toBe(imported);
   });
+
+  test('Should create sequentially named policies when addToRolePolicy is called multiple times on imported role', () => {
+    const importedRole = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/imported-role');
+
+    const artifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+    const runtimeWithImportedRole = new Runtime(stack, 'RuntimeWithImportedRole', {
+      runtimeName: 'imported_runtime',
+      agentRuntimeArtifact: artifact,
+      executionRole: importedRole,
+    });
+
+    runtimeWithImportedRole.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['s3:GetObject'],
+        resources: ['arn:aws:s3:::bucket/*'],
+      }),
+    );
+    runtimeWithImportedRole.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['s3:PutObject'],
+        resources: ['arn:aws:s3:::bucket/*'],
+      }),
+    );
+    runtimeWithImportedRole.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['s3:DeleteObject'],
+        resources: ['arn:aws:s3:::bucket/*'],
+      }),
+    );
+
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: Match.stringLikeRegexp('RuntimeWithImportedRoleCustomPolicy0*'),
+      PolicyDocument: Match.objectLike({
+        Statement: [
+          Match.objectLike({
+            Action: 's3:GetObject',
+            Resource: 'arn:aws:s3:::bucket/*',
+          }),
+        ],
+      }),
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: Match.stringLikeRegexp('RuntimeWithImportedRoleCustomPolicy1*'),
+      PolicyDocument: Match.objectLike({
+        Statement: [
+          Match.objectLike({
+            Action: 's3:PutObject',
+            Resource: 'arn:aws:s3:::bucket/*',
+          }),
+        ],
+      }),
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: Match.stringLikeRegexp('RuntimeWithImportedRoleCustomPolicy2*'),
+      PolicyDocument: Match.objectLike({
+        Statement: [
+          Match.objectLike({
+            Action: 's3:DeleteObject',
+            Resource: 'arn:aws:s3:::bucket/*',
+          }),
+        ],
+      }),
+    });
+  });
+
+  test('Should add dependency to new policy including ECR permissions on imported role', () => {
+    const importedRole = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/imported-role');
+
+    const artifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+    new Runtime(stack, 'RuntimeWithImportedRole', {
+      runtimeName: 'imported_runtime',
+      agentRuntimeArtifact: artifact,
+      executionRole: importedRole,
+    });
+
+    const template = Template.fromStack(stack);
+
+    template.hasResource('AWS::BedrockAgentCore::Runtime', {
+      Properties: Match.objectLike({
+        AgentRuntimeName: 'imported_runtime',
+      }),
+      DependsOn: [
+        'ImportedRolePolicyB363E365',
+      ],
+    });
+  });
 });
 
 describe('Runtime with VPC network configuration tests', () => {
