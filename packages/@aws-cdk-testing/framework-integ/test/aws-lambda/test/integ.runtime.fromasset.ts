@@ -11,7 +11,7 @@ const app = new App({
 const stack = new Stack(app, 'aws-cdk-lambda-runtime-fromasset');
 
 const lambdaFunction = new Function(stack, 'MyFunction', {
-  runtime: Runtime.JAVA_21,
+  runtime: Runtime.JAVA_25,
   handler: 'com.mycompany.app.LambdaMethodHandler::handleRequest',
   code: Code.fromAsset(path.join(__dirname, 'my-app-1.0-SNAPSHOT.zip')),
 });
