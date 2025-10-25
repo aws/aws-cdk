@@ -2623,6 +2623,10 @@ describe('vpc', () => {
         routerType: RouterType.VPC_ENDPOINT,
         routerId: 'vpc-endpoint-id',
       });
+      (vpc.publicSubnets[0] as Subnet).addRoute('CoreNetworkRoute', {
+        routerType: RouterType.CORE_NETWORK,
+        routerId: 'core-network-arn',
+      });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
@@ -2636,6 +2640,9 @@ describe('vpc', () => {
       });
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
         VpcEndpointId: 'vpc-endpoint-id',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        CoreNetworkArn: 'core-network-arn',
       });
     });
   });
