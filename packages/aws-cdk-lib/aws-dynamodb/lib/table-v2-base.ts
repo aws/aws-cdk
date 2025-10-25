@@ -298,6 +298,77 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   }
 
   /**
+   * Metric for the successful request latency for GetItem operations on this table.
+   *
+   * By default, the metric will be calculated as an average over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
+   *
+   * @param props - Optional metric properties
+   */
+  public metricSuccessfulRequestLatencyForGetItem(props?: MetricOptions): Metric {
+    return this.metricSuccessfulRequestLatencyForOperation(Operation.GET_ITEM, props);
+  }
+
+  /**
+   * Metric for the successful request latency for PutItem operations on this table.
+   *
+   * By default, the metric will be calculated as an average over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
+   *
+   * @param props - Optional metric properties
+   */
+  public metricSuccessfulRequestLatencyForPutItem(props?: MetricOptions): Metric {
+    return this.metricSuccessfulRequestLatencyForOperation(Operation.PUT_ITEM, props);
+  }
+
+  /**
+   * Metric for the successful request latency for Query operations on this table.
+   *
+   * By default, the metric will be calculated as an average over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
+   *
+   * @param props - Optional metric properties
+   */
+  public metricSuccessfulRequestLatencyForQuery(props?: MetricOptions): Metric {
+    return this.metricSuccessfulRequestLatencyForOperation(Operation.QUERY, props);
+  }
+
+  /**
+   * Metric for the successful request latency for Scan operations on this table.
+   *
+   * By default, the metric will be calculated as an average over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
+   *
+   * @param props - Optional metric properties
+   */
+  public metricSuccessfulRequestLatencyForScan(props?: MetricOptions): Metric {
+    return this.metricSuccessfulRequestLatencyForOperation(Operation.SCAN, props);
+  }
+
+  /**
+   * Metric for the successful request latency for a specific operation on this table.
+   *
+   * By default, the metric will be calculated as an average over a period of 5 minutes.
+   * You can customize this by using the `statistic` and `period` properties.
+   *
+   * @param operation - The DynamoDB operation to get metrics for
+   * @param props - Optional metric properties
+   */
+  public metricSuccessfulRequestLatencyForOperation(operation: string, props?: MetricOptions): Metric {
+    const dimensionsMap = {
+      TableName: this.tableName,
+      Operation: operation,
+    };
+
+    const metricProps: MetricProps = {
+      ...DynamoDBMetrics.successfulRequestLatencyAverage(dimensionsMap),
+      ...props,
+      dimensionsMap,
+    };
+    return this.configureMetric(metricProps);
+  }
+
+  /**
    * How many requests are throttled on this table for the given operation
    *
    * By default, the metric will be calculated as an average over a period of 5 minutes.

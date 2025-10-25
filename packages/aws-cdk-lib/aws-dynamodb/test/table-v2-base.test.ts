@@ -4,7 +4,7 @@ import { Template } from '../../assertions';
 import { Alarm, Metric } from '../../aws-cloudwatch';
 import { User } from '../../aws-iam';
 import { Key } from '../../aws-kms';
-import { Stack, StackProps, App } from '../../core';
+import { Stack, StackProps, App, Duration } from '../../core';
 import { TableV2, AttributeType, TableEncryptionV2, ITable, ITableV2, Operation } from '../lib';
 
 function testForKey(stack: Stack) {
@@ -1835,6 +1835,130 @@ describe('metrics', () => {
     expect(() => {
       table.metricSuccessfulRequestLatency({ dimensionsMap: { TableName: table.tableName } });
     }).toThrow('`Operation` dimension must be passed for the `SuccessfulRequestLatency` metric');
+  });
+
+  test('can use metricSuccessfulRequestLatencyForGetItem', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const metric = table.metricSuccessfulRequestLatencyForGetItem();
+
+    // THEN
+    expect(metric.namespace).toEqual('AWS/DynamoDB');
+    expect(metric.metricName).toEqual('SuccessfulRequestLatency');
+    expect(metric.dimensions).toEqual({
+      TableName: table.tableName,
+      Operation: 'GetItem',
+    });
+    expect(metric.statistic).toEqual('Average');
+  });
+
+  test('can use metricSuccessfulRequestLatencyForPutItem', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const metric = table.metricSuccessfulRequestLatencyForPutItem();
+
+    // THEN
+    expect(metric.namespace).toEqual('AWS/DynamoDB');
+    expect(metric.metricName).toEqual('SuccessfulRequestLatency');
+    expect(metric.dimensions).toEqual({
+      TableName: table.tableName,
+      Operation: 'PutItem',
+    });
+    expect(metric.statistic).toEqual('Average');
+  });
+
+  test('can use metricSuccessfulRequestLatencyForQuery', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const metric = table.metricSuccessfulRequestLatencyForQuery();
+
+    // THEN
+    expect(metric.namespace).toEqual('AWS/DynamoDB');
+    expect(metric.metricName).toEqual('SuccessfulRequestLatency');
+    expect(metric.dimensions).toEqual({
+      TableName: table.tableName,
+      Operation: 'Query',
+    });
+    expect(metric.statistic).toEqual('Average');
+  });
+
+  test('can use metricSuccessfulRequestLatencyForScan', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const metric = table.metricSuccessfulRequestLatencyForScan();
+
+    // THEN
+    expect(metric.namespace).toEqual('AWS/DynamoDB');
+    expect(metric.metricName).toEqual('SuccessfulRequestLatency');
+    expect(metric.dimensions).toEqual({
+      TableName: table.tableName,
+      Operation: 'Scan',
+    });
+    expect(metric.statistic).toEqual('Average');
+  });
+
+  test('can use metricSuccessfulRequestLatencyForOperation with custom operation', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const metric = table.metricSuccessfulRequestLatencyForOperation('BatchGetItem');
+
+    // THEN
+    expect(metric.namespace).toEqual('AWS/DynamoDB');
+    expect(metric.metricName).toEqual('SuccessfulRequestLatency');
+    expect(metric.dimensions).toEqual({
+      TableName: table.tableName,
+      Operation: 'BatchGetItem',
+    });
+    expect(metric.statistic).toEqual('Average');
+  });
+
+  test('can use metricSuccessfulRequestLatencyForGetItem with custom props', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const metric = table.metricSuccessfulRequestLatencyForGetItem({
+      statistic: 'Maximum',
+      period: Duration.minutes(1),
+    });
+
+    // THEN
+    expect(metric.namespace).toEqual('AWS/DynamoDB');
+    expect(metric.metricName).toEqual('SuccessfulRequestLatency');
+    expect(metric.dimensions).toEqual({
+      TableName: table.tableName,
+      Operation: 'GetItem',
+    });
+    expect(metric.statistic).toEqual('Maximum');
+    expect(metric.period).toEqual(Duration.minutes(1));
   });
 
   testDeprecated('throws when using metricSystemErrors without Operation dimension', () => {
