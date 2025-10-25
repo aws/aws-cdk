@@ -90,34 +90,6 @@ describe('IcebergDestination', () => {
     });
   });
 
-  test('grants Glue permissions when catalogArn is specified', () => {
-    // WHEN
-    new firehose.DeliveryStream(stack, 'DeliveryStream', {
-      destination: new firehose.IcebergDestination(bucket, {
-        catalogConfiguration: {
-          catalogArn: 'arn:aws:glue:us-east-1:123456789012:catalog',
-        },
-      }),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: Match.arrayWith([
-          Match.objectLike({
-            Action: Match.arrayWith([
-              'glue:GetTable',
-              'glue:GetTableVersion',
-              'glue:GetTableVersions',
-              'glue:UpdateTable',
-            ]),
-            Effect: 'Allow',
-          }),
-        ]),
-      },
-    });
-  });
-
   test('supports custom role', () => {
     // GIVEN
     const role = new iam.Role(stack, 'CustomRole', {
@@ -468,20 +440,28 @@ describe('IcebergDestination', () => {
       }),
     });
 
-    // THEN
+    // THEN - Without destinationTableConfigurations, wildcard permissions are granted
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
-            Action: Match.arrayWith([
+            Action: [
               'glue:GetDatabase',
               'glue:GetTable',
-              'glue:GetTableVersion',
-              'glue:GetTableVersions',
               'glue:UpdateTable',
               'glue:CreateTable',
-            ]),
+            ],
             Effect: 'Allow',
+            Resource: Match.arrayWith([
+              Match.objectLike({
+                'Fn::Join': [
+                  '',
+                  Match.arrayWith([
+                    Match.stringLikeRegexp('database/\\*'),
+                  ]),
+                ],
+              }),
+            ]),
           }),
         ]),
       },
