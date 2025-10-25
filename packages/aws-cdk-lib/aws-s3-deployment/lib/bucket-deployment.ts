@@ -398,6 +398,13 @@ export class BucketDeployment extends Construct {
     if (!handlerRole) { throw new ValidationError('lambda.SingletonFunction should have created a Role', this); }
     this.handlerRole = handlerRole;
 
+    // Ensure that the log group won't be deleted before the Lambda function.
+    // Otherwise, the Lambda can be invoked during stack deletion after the log group is deleted,
+    // which can lead to log group recreation even though it's marked as deleted in the stack.
+    if (props.logGroup) {
+      handler.node.addDependency(props.logGroup);
+    }
+
     this.sources = props.sources.map((source: ISource) => source.bind(this, { handlerRole: this.handlerRole }));
 
     this.destinationBucket.grantReadWrite(handler);
