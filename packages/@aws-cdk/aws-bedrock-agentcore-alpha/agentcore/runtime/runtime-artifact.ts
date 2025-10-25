@@ -58,7 +58,7 @@ export abstract class AgentRuntimeArtifact {
    * This ensures the Runtime waits for the policies (including ECR permissions) to be created.
    * While the Runtime constructor already adds dependencies to the policies and their role, in the case
    * where the role is imported, the policies are not yet generated in the role at that point, so the policy
-   * dependencies are not added. Therefore, this method explicitly adds the policy dependencies for the imported role.
+   * dependencies are not added. Therefore, this method explicitly adds the policy dependencies.
    *
    * @internal
    */
