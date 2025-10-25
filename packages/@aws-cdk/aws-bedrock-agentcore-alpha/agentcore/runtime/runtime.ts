@@ -407,8 +407,8 @@ export class Runtime extends RuntimeBase {
 
     // Add dependency on the policies for imported roles.
     // This ensures the Runtime waits for the policies (including ECR permissions) to be created.
-    // When the role is created within the construct, it automatically depends on the policies,
-    // with `this.runtimeResource.node.addDependency(this.role)`.
+    // In the case where the role is created within the construct, it automatically depends on
+    // the policies with `this.runtimeResource.node.addDependency(this.role)` in the constructor.
     // However, for imported roles, this dependency is not established, so we need to add it explicitly.
     if (!(this.role instanceof iam.Role)) {
       this.role.node.children.forEach(child => {
