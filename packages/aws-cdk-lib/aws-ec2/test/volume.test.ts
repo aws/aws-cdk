@@ -1,17 +1,18 @@
 import { Match, Template } from '../../assertions';
 import { AccountRootPrincipal, Role } from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { SnapStartConf } from '../../aws-lambda';
 import * as cdk from '../../core';
 import { SizeRoundingBehavior } from '../../core';
 import * as cxapi from '../../cx-api';
 import {
   AmazonLinuxGeneration,
+  CfnVolume,
   EbsDeviceVolumeType,
   Instance,
   InstanceType,
   MachineImage,
   Volume,
+  VolumeGrants,
   Vpc,
 } from '../lib';
 
@@ -681,6 +682,74 @@ describe('volume', () => {
           }]),
         }],
       },
+    });
+  });
+
+  test('grantAttachVolume to instance self using VolumeGrants', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new Vpc(stack, 'Vpc');
+    const instance = new Instance(stack, 'Instance', {
+      vpc,
+      instanceType: new InstanceType('t3.small'),
+      machineImage: MachineImage.latestAmazonLinux({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+      availabilityZone: 'us-east-1a',
+    });
+    const volume = new CfnVolume(stack, 'Volume', {
+      availabilityZone: 'us-east-1a',
+    });
+
+    // WHEN
+    VolumeGrants.fromVolume(volume).grantAttachVolumeByResourceTag(instance.grantPrincipal, [instance]);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [{
+          Action: 'ec2:AttachVolume',
+          Effect: 'Allow',
+          Resource: Match.arrayWith([{
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':ec2:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':instance/*',
+              ],
+            ],
+          }]),
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'ec2:ResourceTag/VolumeGrantAttach-B2376B2BDA': 'b2376b2bda65cb40f83c290dd844c4aa',
+            },
+          },
+        }],
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
+      Tags: [
+        {
+          Key: 'VolumeGrantAttach-B2376B2BDA',
+          Value: 'b2376b2bda65cb40f83c290dd844c4aa',
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      Tags: Match.arrayWith([{
+        Key: 'VolumeGrantAttach-B2376B2BDA',
+        Value: 'b2376b2bda65cb40f83c290dd844c4aa',
+      }]),
     });
   });
 
