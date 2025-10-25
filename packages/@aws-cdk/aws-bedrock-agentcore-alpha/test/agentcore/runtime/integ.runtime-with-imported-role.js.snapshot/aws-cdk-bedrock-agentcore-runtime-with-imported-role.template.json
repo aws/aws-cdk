@@ -1,22 +1,5 @@
 {
  "Resources": {
-  "ExecutionRole605A040B": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "bedrock-agentcore.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
   "ImportedRolePolicyawscdkbedrockagentcoreruntimewithimportedroleImportedRole261507D78EB91FCC": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
@@ -76,10 +59,7 @@
             "Fn::Split": [
              ":",
              {
-              "Fn::GetAtt": [
-               "ExecutionRole605A040B",
-               "Arn"
-              ]
+              "Fn::ImportValue": "pre-stack:ExportsOutputFnGetAttExecutionRole605A040BArnA891DEDE"
              }
             ]
            }
@@ -98,7 +78,27 @@
     "AgentRuntimeArtifact": {
      "ContainerConfiguration": {
       "ContainerUri": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:f06c9f54828243752afd2df4e39ab9d2987b5ccf44e6bdc05621c18d5488f240"
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Ref": "AWS::AccountId"
+         },
+         ".dkr.ecr.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/",
+         {
+          "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+         },
+         ":f06c9f54828243752afd2df4e39ab9d2987b5ccf44e6bdc05621c18d5488f240"
+        ]
+       ]
       }
      }
     },
@@ -108,15 +108,9 @@
     },
     "ProtocolConfiguration": "HTTP",
     "RoleArn": {
-     "Fn::GetAtt": [
-      "ExecutionRole605A040B",
-      "Arn"
-     ]
+     "Fn::ImportValue": "pre-stack:ExportsOutputFnGetAttExecutionRole605A040BArnA891DEDE"
     }
-   },
-   "DependsOn": [
-    "ImportedRolePolicyawscdkbedrockagentcoreruntimewithimportedroleImportedRole261507D78EB91FCC"
-   ]
+   }
   },
   "TestRuntimeCustomPolicy0BD35B9F3": {
    "Type": "AWS::IAM::Policy",
@@ -146,10 +140,7 @@
             "Fn::Split": [
              ":",
              {
-              "Fn::GetAtt": [
-               "ExecutionRole605A040B",
-               "Arn"
-              ]
+              "Fn::ImportValue": "pre-stack:ExportsOutputFnGetAttExecutionRole605A040BArnA891DEDE"
              }
             ]
            }
@@ -190,10 +181,7 @@
             "Fn::Split": [
              ":",
              {
-              "Fn::GetAtt": [
-               "ExecutionRole605A040B",
-               "Arn"
-              ]
+              "Fn::ImportValue": "pre-stack:ExportsOutputFnGetAttExecutionRole605A040BArnA891DEDE"
              }
             ]
            }
