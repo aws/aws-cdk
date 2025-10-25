@@ -72,11 +72,11 @@ export abstract class AgentRuntimeArtifact {
         // This `_addMissingPolicyDependencies` method is executed in the `bind` method, which is called by a `Lazy`
         // method in the Runtime constructor. The `Lazy` method executes during the Synthesize phase at the end of
         // the CDK application lifecycle.
-        // On the other hand, `runtimeResource.node.addDependency(child)` is executed during the Prepare phase, which is
-        // before the Synthesize phase. This means that calling `node.addDependency` here would not actually add
+        // On the other hand, `runtimeResource.node.addDependency(child)` is executed during the Prepare phase, which
+        // is before the Synthesize phase. This means that calling `node.addDependency` here would not actually add
         // the dependency.
-        // Therefore, we use the `addDependency` method of the L1 Construct, which is executed during the Synthesize phase,
-        // instead of calling `node.addDependency`.
+        // Therefore, we use the `addDependency` method of the L1 Construct, which is executed during the Synthesize
+        // phase, instead of calling `node.addDependency`.
         const cfnPolicy = child.node.defaultChild as CfnPolicy;
         runtimeResource.addDependency(cfnPolicy);
       }
