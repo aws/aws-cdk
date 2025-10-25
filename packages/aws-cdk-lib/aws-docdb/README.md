@@ -100,6 +100,71 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
 });
 ```
 
+## AWS Secrets Manager Integration
+
+DocumentDB clusters can integrate with AWS Secrets Manager to automatically manage master user passwords. This provides enhanced security through automatic password generation and rotation capabilities.
+
+### Managed Master User Password
+
+To enable AWS Secrets Manager to manage the master user password, set `manageMasterUserPassword` to `true`:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const cluster = new docdb.DatabaseCluster(this, 'Database', {
+  manageMasterUserPassword: true,
+  masterUser: {
+    username: 'myuser', // Username is still required
+  },
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.MEMORY5, ec2.InstanceSize.LARGE),
+  vpc,
+});
+```
+
+When `manageMasterUserPassword` is enabled:
+- AWS DocumentDB automatically generates a secure password
+- The password is stored in AWS Secrets Manager
+- You cannot specify `masterUser.password` (it will be auto-generated)
+- The secret is automatically rotated every 7 days by default
+
+### Custom KMS Key for Secret Encryption
+
+You can specify a custom KMS key to encrypt the managed secret:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const myKmsKey: kms.Key;
+
+const cluster = new docdb.DatabaseCluster(this, 'Database', {
+  manageMasterUserPassword: true,
+  masterUser: {
+    username: 'myuser',
+  },
+  masterUserSecretKmsKey: myKmsKey, // KMS Key for secret encryption
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.MEMORY5, ec2.InstanceSize.LARGE),
+  vpc,
+});
+```
+
+### Manual Password Rotation
+
+To manually trigger password rotation for a managed secret:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const cluster = new docdb.DatabaseCluster(this, 'Database', {
+  manageMasterUserPassword: true,
+  masterUser: {
+    username: 'myuser',
+  },
+  rotateMasterUserPassword: true, // Triggers immediate password rotation
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.MEMORY5, ec2.InstanceSize.LARGE),
+  vpc,
+});
+```
+
+
 ## Rotating credentials
 
 When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
