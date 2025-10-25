@@ -362,7 +362,7 @@ const outputFormat = new firehose.OrcOutputFormat({
   dictionaryKeyThreshold: 0.7,
   enablePadding: true,
   paddingTolerance: 0.2,
-  rowIndexStride: 900
+  rowIndexStride: 900,
   stripeSize: Size.mebibytes(32),
 })
 ```
