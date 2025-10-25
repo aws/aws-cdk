@@ -1327,6 +1327,28 @@ describe('Runtime metrics and grant methods tests', () => {
     const result = imported.addToRolePolicy(statement);
     expect(result).toBe(imported);
   });
+
+  test('Should add dependency to new policy including ECR permissions on imported role', () => {
+    const importedRole = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/imported-role');
+
+    const artifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+    new Runtime(stack, 'RuntimeWithImportedRole', {
+      runtimeName: 'imported_runtime',
+      agentRuntimeArtifact: artifact,
+      executionRole: importedRole,
+    });
+
+    const template = Template.fromStack(stack);
+
+    template.hasResource('AWS::BedrockAgentCore::Runtime', {
+      Properties: Match.objectLike({
+        AgentRuntimeName: 'imported_runtime',
+      }),
+      DependsOn: [
+        'ImportedRolePolicyB363E365',
+      ],
+    });
+  });
 });
 
 describe('Runtime with VPC network configuration tests', () => {
