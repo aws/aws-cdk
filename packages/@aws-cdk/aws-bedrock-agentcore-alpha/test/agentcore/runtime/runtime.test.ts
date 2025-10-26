@@ -1,7 +1,7 @@
 
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
-import { Template, Match } from 'aws-cdk-lib/assertions';
+import { Annotations, Template, Match } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -94,6 +94,10 @@ describe('Runtime default tests', () => {
       MaxSessionDuration: 28800, // 8 hours in seconds
     });
   });
+
+  test('Should have policy for execution role with correct permissions', () => {
+    template.hasResourceProperties('AWS::IAM::Policy', expectedExecutionRolePolicy);
+  });
 });
 
 describe('Runtime with custom execution role tests', () => {
@@ -172,6 +176,10 @@ describe('Runtime with custom execution role tests', () => {
         Version: '2012-10-17',
       },
     });
+  });
+
+  test('Should have policy for custom execution role with correct permissions', () => {
+    template.hasResourceProperties('AWS::IAM::Policy', expectedExecutionRolePolicy);
   });
 });
 
@@ -1593,18 +1601,31 @@ describe('Runtime role validation tests', () => {
     }).toThrow(/Invalid IAM role ARN format/);
   });
 
-  test('Should handle cross-account role with warning', () => {
-    const crossAccountRole = {
-      roleArn: 'arn:aws:iam::123456789012:role/test-role',
-      roleName: 'test-role',
-      assumeRoleAction: 'sts:AssumeRole',
-      grantPrincipal: {} as iam.IPrincipal,
-      principalAccount: '123456789012',
-      applyRemovalPolicy: () => {},
-      node: {} as any,
-      stack: stack,
-      env: { account: '123456789012', region: 'us-east-1' },
-    } as unknown as iam.IRole;
+  test('Should handle cross-account role with no warnings', () => {
+    const crossAccountStack = new cdk.Stack(app, 'cross-account-stack', {
+      env: {
+        account: '210987654321',
+        region: 'us-east-1',
+      },
+    });
+    const crossAccountRole = new iam.Role(crossAccountStack, 'ImportedCrossAccountRole', {
+      roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+    });
+
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      executionRole: crossAccountRole,
+    });
+
+    // Should not throw
+    expect(runtime.role).toBe(crossAccountRole);
+  });
+
+  test('Should handle cross-account imported role with warning', () => {
+    const crossAccountRole = iam.Role.fromRoleArn(stack, 'ImportedCrossAccountRole',
+      'arn:aws:iam::210987654321:role/test-cross-account-role');
 
     const runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
@@ -1614,5 +1635,131 @@ describe('Runtime role validation tests', () => {
 
     // Should not throw, just add warning
     expect(runtime.role).toBe(crossAccountRole);
+
+    const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
+    expect(annotations.length).toBe(1);
+
+    Annotations.fromStack(stack).hasWarning('/test-stack/test-runtime', 'IAM role is from a different account (210987654321) than the stack account (123456789012). Ensure cross-account permissions are properly configured.');
   });
 });
+
+const expectedExecutionRolePolicy = {
+  PolicyDocument: {
+    Statement: [
+      {
+        Sid: 'LogGroupAccess',
+        Action: ['logs:DescribeLogStreams', 'logs:CreateLogGroup'],
+        Effect: 'Allow',
+        Resource: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/*',
+            ],
+          ],
+        },
+      },
+      {
+        Sid: 'DescribeLogGroups',
+        Action: 'logs:DescribeLogGroups',
+        Effect: 'Allow',
+        Resource: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':logs:us-east-1:123456789012:log-group:*',
+            ],
+          ],
+        },
+      },
+      {
+        Sid: 'LogStreamAccess',
+        Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+        Effect: 'Allow',
+        Resource: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/*:log-stream:*',
+            ],
+          ],
+        },
+      },
+      {
+        Sid: 'XRayAccess',
+        Action: [
+          'xray:PutTraceSegments',
+          'xray:PutTelemetryRecords',
+          'xray:GetSamplingRules',
+          'xray:GetSamplingTargets',
+        ],
+        Effect: 'Allow',
+        Resource: '*',
+      },
+      {
+        Sid: 'CloudWatchMetrics',
+        Action: 'cloudwatch:PutMetricData',
+        Condition: {
+          StringEquals: {
+            'cloudwatch:namespace': 'bedrock-agentcore',
+          },
+        },
+        Effect: 'Allow',
+        Resource: '*',
+      },
+      {
+        Sid: 'GetAgentAccessToken',
+        Action: [
+          'bedrock-agentcore:GetWorkloadAccessToken',
+          'bedrock-agentcore:GetWorkloadAccessTokenForJWT',
+          'bedrock-agentcore:GetWorkloadAccessTokenForUserId',
+        ],
+        Effect: 'Allow',
+        Resource: [
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':bedrock-agentcore:us-east-1:123456789012:workload-identity-directory/default',
+              ],
+            ],
+          },
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':bedrock-agentcore:us-east-1:123456789012:workload-identity-directory/default/workload-identity/*',
+              ],
+            ],
+          },
+        ],
+      },
+      {
+        Action: [
+          'ecr:BatchCheckLayerAvailability',
+          'ecr:GetDownloadUrlForLayer',
+          'ecr:BatchGetImage',
+        ],
+        Effect: 'Allow',
+        Resource: {
+          'Fn::GetAtt': ['TestRepositoryC0DA8195', 'Arn'],
+        },
+      },
+      {
+        Action: 'ecr:GetAuthorizationToken',
+        Effect: 'Allow',
+        Resource: '*',
+      },
+    ],
+  },
+};
