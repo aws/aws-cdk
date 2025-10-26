@@ -1415,8 +1415,8 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.VisibleContext,
     summary: 'When enabled, a stabilization loop will be run when invoking Aspects during synthesis.',
     detailsMd: `
-      Currently, when Aspects are invoked in one single pass of the construct tree.
-      This means that the Aspects that create other Aspects are not run and Aspects that create new nodes of the tree sometimes do not inherit their parent Aspects.
+      Previously, Aspects were invoked in a single pass of the construct tree.
+      This meant that Aspects which created other Aspects were not run, and Aspects that created new nodes in the tree sometimes did not inherit their parent Aspects.
 
       When this feature flag is enabled, a stabilization loop is run to recurse the construct tree multiple times when invoking Aspects.
     `,
