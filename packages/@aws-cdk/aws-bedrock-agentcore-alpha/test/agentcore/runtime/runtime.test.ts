@@ -1604,7 +1604,7 @@ describe('Runtime role validation tests', () => {
   test('Should handle cross-account role with no warnings', () => {
     const crossAccountStack = new cdk.Stack(app, 'cross-account-stack', {
       env: {
-        account: '210987654321',
+        account: '111111111111',
         region: 'us-east-1',
       },
     });
@@ -1625,7 +1625,7 @@ describe('Runtime role validation tests', () => {
 
   test('Should handle cross-account imported role with warning', () => {
     const crossAccountRole = iam.Role.fromRoleArn(stack, 'ImportedCrossAccountRole',
-      'arn:aws:iam::210987654321:role/test-cross-account-role');
+      'arn:aws:iam::111111111111:role/test-cross-account-role');
 
     const runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
@@ -1639,7 +1639,7 @@ describe('Runtime role validation tests', () => {
     const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
     expect(annotations.length).toBe(1);
 
-    Annotations.fromStack(stack).hasWarning('/test-stack/test-runtime', 'IAM role is from a different account (210987654321) than the stack account (123456789012). Ensure cross-account permissions are properly configured.');
+    Annotations.fromStack(stack).hasWarning('/test-stack/test-runtime', 'IAM role is from a different account (111111111111) than the stack account (123456789012). Ensure cross-account permissions are properly configured.');
   });
 });
 
