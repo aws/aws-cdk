@@ -157,10 +157,10 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       When enabled, the \`signingProfileName\` property is passed to the L1 \`CfnSigningProfile\` construct,
       which ensures that the AWS Signer profile is created with the specified name.
-
+      
       When disabled, the \`signingProfileName\` is not passed to CloudFormation, maintaining backward
       compatibility with existing deployments where CloudFormation auto-generated profile names.
-
+      
       This feature flag is needed because enabling it can cause existing signing profiles to be
       replaced during deployment if a \`signingProfileName\` was specified but not previously used
       in the CloudFormation template.`,
@@ -677,7 +677,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'Use S3 Bucket Policy instead of ACLs for Server Access Logging',
     detailsMd: `
-      Enable this feature flag to use S3 Bucket Policy for granting permission fo Server Access Logging
+      Enable this feature flag to use S3 Bucket Policy for granting permission for Server Access Logging
       rather than using the canned \`LogDeliveryWrite\` ACL. ACLs do not work when Object Ownership is
       enabled on the bucket.
 
@@ -976,7 +976,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     summary: 'Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default',
     detailsMd: `
       If this is set, and a \`runtime\` prop is not passed to, Lambda NodeJs
-      functions will us the latest version of the runtime provided by the Lambda
+      functions will use the latest version of the runtime provided by the Lambda
       service. Do not use this if you your lambda function is reliant on dependencies
       shipped as part of the runtime environment.
     `,
@@ -1162,7 +1162,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.ApiDefault,
     summary: 'When enabled, remove default deployment alarm settings',
     detailsMd: `
-      When this featuer flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
+      When this feature flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
     `,
     introducedIn: { v2: '2.143.0' },
     recommendedValue: true,
@@ -1606,7 +1606,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.ApiDefault,
     summary: 'When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs.',
     detailsMd: `
-      When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom
+      When this feature flag is enabled, the SDK API call response to describe user pool client values will be logged in the custom
       resource lambda function logs.
 
       When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom
@@ -1712,7 +1712,7 @@ export const FLAGS: Record<string, FlagInfo> = {
         of the function (existing behavior).
         LogGroups created in this way do not support Tag propagation, Property Injectors, Aspects.
 
-        DO NOT ENABLE: If you have and existing app defining a lambda function and
+        DO NOT ENABLE: If you have an existing app defining a lambda function and
         have not supplied a logGroup or logRetention prop and your lambda function has
         executed at least once, the logGroup has been already created with the same name
         so your deployment will start failing.
