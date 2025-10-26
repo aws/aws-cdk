@@ -2,7 +2,7 @@
  * Integration test for Bedrock AgentCore Runtime constructs with imported role
  */
 
-/// !cdk-integ aws-cdk-bedrock-agentcore-runtime
+/// !cdk-integ aws-cdk-bedrock-agentcore-runtime-with-imported-role
 
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
