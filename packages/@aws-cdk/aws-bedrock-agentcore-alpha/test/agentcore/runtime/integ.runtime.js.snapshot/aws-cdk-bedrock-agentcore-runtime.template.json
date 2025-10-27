@@ -180,6 +180,48 @@
       },
       {
        "Action": [
+        "bedrock:InvokeModel",
+        "bedrock:InvokeModelWithResponseStream"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock:*::foundation-model/*"
+          ]
+         ]
+        }
+       ],
+       "Sid": "BedrockModelInvocation"
+      },
+      {
+       "Action": [
         "ecr:BatchCheckLayerAvailability",
         "ecr:BatchGetImage",
         "ecr:GetDownloadUrlForLayer"

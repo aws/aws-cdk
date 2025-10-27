@@ -14,6 +14,7 @@ import {
   RUNTIME_CLOUDWATCH_METRICS_ACTIONS,
   RUNTIME_CLOUDWATCH_NAMESPACE,
   RUNTIME_WORKLOAD_IDENTITY_ACTIONS,
+  RUNTIME_BEDROCK_MODEL_INVOCATION_ACTIONS,
 } from './perms';
 import { AgentRuntimeArtifact } from './runtime-artifact';
 import { RuntimeAuthorizerConfiguration } from './runtime-authorizer-configuration';
@@ -389,6 +390,18 @@ export class Runtime extends RuntimeBase {
         `arn:${Stack.of(this).partition}:bedrock-agentcore:${region}:${account}:workload-identity-directory/default/workload-identity/*`,
       ],
     }));
+
+    // Bedrock - Access to foundation models and bedrock resources
+    role.addToPolicy(new iam.PolicyStatement({
+      sid: 'BedrockModelInvocation',
+      effect: iam.Effect.ALLOW,
+      actions: RUNTIME_BEDROCK_MODEL_INVOCATION_ACTIONS,
+      resources: [
+        `arn:${Stack.of(this).partition}:bedrock:*::foundation-model/*`,
+        `arn:${Stack.of(this).partition}:bedrock:${region}:${account}:*`,
+      ],
+    }));
+
     return role;
   }
 

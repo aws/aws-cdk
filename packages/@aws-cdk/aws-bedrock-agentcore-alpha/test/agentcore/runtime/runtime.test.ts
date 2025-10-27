@@ -94,6 +94,161 @@ describe('Runtime default tests', () => {
       MaxSessionDuration: 28800, // 8 hours in seconds
     });
   });
+
+  test('Should have policy for execution role with correct permissions', () => {
+    const expectedExecutionRolePolicy = {
+      PolicyDocument: {
+        Statement: [
+          {
+            Sid: 'LogGroupAccess',
+            Action: ['logs:DescribeLogStreams', 'logs:CreateLogGroup'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/*',
+                ],
+              ],
+            },
+          },
+          {
+            Sid: 'DescribeLogGroups',
+            Action: 'logs:DescribeLogGroups',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:us-east-1:123456789012:log-group:*',
+                ],
+              ],
+            },
+          },
+          {
+            Sid: 'LogStreamAccess',
+            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/*:log-stream:*',
+                ],
+              ],
+            },
+          },
+          {
+            Sid: 'XRayAccess',
+            Action: [
+              'xray:PutTraceSegments',
+              'xray:PutTelemetryRecords',
+              'xray:GetSamplingRules',
+              'xray:GetSamplingTargets',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Sid: 'CloudWatchMetrics',
+            Action: 'cloudwatch:PutMetricData',
+            Condition: {
+              StringEquals: {
+                'cloudwatch:namespace': 'bedrock-agentcore',
+              },
+            },
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Sid: 'GetAgentAccessToken',
+            Action: [
+              'bedrock-agentcore:GetWorkloadAccessToken',
+              'bedrock-agentcore:GetWorkloadAccessTokenForJWT',
+              'bedrock-agentcore:GetWorkloadAccessTokenForUserId',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':bedrock-agentcore:us-east-1:123456789012:workload-identity-directory/default',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':bedrock-agentcore:us-east-1:123456789012:workload-identity-directory/default/workload-identity/*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Sid: 'BedrockModelInvocation',
+            Action: [
+              'bedrock:InvokeModel',
+              'bedrock:InvokeModelWithResponseStream',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':bedrock:*::foundation-model/*',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':bedrock:us-east-1:123456789012:*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: [
+              'ecr:BatchCheckLayerAvailability',
+              'ecr:GetDownloadUrlForLayer',
+              'ecr:BatchGetImage',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['TestRepositoryC0DA8195', 'Arn'],
+            },
+          },
+          {
+            Action: 'ecr:GetAuthorizationToken',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+      },
+    };
+
+    template.hasResourceProperties('AWS::IAM::Policy', expectedExecutionRolePolicy);
+  });
 });
 
 describe('Runtime with custom execution role tests', () => {

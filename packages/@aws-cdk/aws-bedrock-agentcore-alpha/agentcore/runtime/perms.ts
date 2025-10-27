@@ -101,6 +101,16 @@ export const RUNTIME_WORKLOAD_IDENTITY_ACTIONS = [
   'bedrock-agentcore:GetWorkloadAccessTokenForJWT',
   'bedrock-agentcore:GetWorkloadAccessTokenForUserId',
 ];
+
+/**
+ * Bedrock model invocation permissions
+ * Used by the runtime to invoke Bedrock models
+ */
+export const RUNTIME_BEDROCK_MODEL_INVOCATION_ACTIONS = [
+  'bedrock:InvokeModel',
+  'bedrock:InvokeModelWithResponseStream',
+];
+
 /**
  * CloudWatch namespace for metrics
  * Used as a condition for CloudWatch metrics permissions
