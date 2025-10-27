@@ -325,7 +325,7 @@ export class Runtime extends RuntimeBase {
   }
 
   /**
-   * Adds necessary permissions to the execution role for the agent runtime
+   * Adds proper permissions to the execution role for the agent runtime
    * Based on: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-permissions.html
    */
   private addExecutionRolePermissions() {
