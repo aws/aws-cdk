@@ -436,7 +436,7 @@
      },
      "S3Key": "e995b7fa13f3d9f946ff291512015444c90346ee68f0067f80037541a4b54d62.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.33.0; /opt/helm/helm 3.18.0",
+    "Description": "/opt/kubectl/kubectl 1.34.0; /opt/helm/helm 3.18.0",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -755,7 +755,7 @@
      ]
     },
     "Config": {
-     "version": "1.33",
+     "version": "1.34",
      "roleArn": {
       "Fn::GetAtt": [
        "ClusterRoleFA261979",
