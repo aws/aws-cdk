@@ -80,7 +80,7 @@ jobs:
           git add .
           git diff --patch --staged > ${{ runner.temp }}/upgrade.patch
       - name: Upload Patch
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: upgrade.patch
           path: ${{ runner.temp }}/upgrade.patch

@@ -1731,7 +1731,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, the JSONPath apiEndpoint value will be resolved dynamically at runtime, while slightly increasing the size of the state machine definition.
       When disabled, the JSONPath apiEndpoint property will only support a static string value.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.221.0' },
     unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
@@ -1750,7 +1750,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       This is a breaking change as it will cause target group replacement when the flag is enabled.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.221.0' },
     recommendedValue: true,
   },
 };

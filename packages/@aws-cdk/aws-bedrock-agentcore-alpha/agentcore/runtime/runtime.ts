@@ -3,7 +3,7 @@ import { Duration, Stack, Annotations, Token, Arn, ArnFormat, Lazy } from 'aws-c
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import {
@@ -683,6 +683,7 @@ export class Runtime extends RuntimeBase {
    * @param options Optional configuration for the endpoint
    * @returns The created RuntimeEndpoint
    */
+  @MethodMetadata()
   public addEndpoint(
     endpointName: string,
     options?: AddEndpointOptions,

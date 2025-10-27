@@ -382,7 +382,8 @@
       "V3_8_X_KRAFT",
       "V3_9_X",
       "V3_9_X_KRAFT",
-      "V4_0_X_KRAFT"
+      "V4_0_X_KRAFT",
+      "V4_1_X_KRAFT"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-neptune-alpha/lib/cluster.ts": {
@@ -416,7 +417,9 @@
       "V1_4_3_0",
       "V1_4_4_0",
       "V1_4_5_0",
-      "V1_4_5_1"
+      "V1_4_5_1",
+      "V1_4_6_0",
+      "V1_4_6_1"
     ],
     "LogType": [
       "AUDIT"
@@ -754,6 +757,7 @@
       "ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_48K",
       "ANTHROPIC_CLAUDE_3_5_HAIKU_20241022_V1_0",
       "ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_200K",
+      "ANTHROPIC_CLAUDE_HAIKU_4_5_20251001_V1_0",
       "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0",
       "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_12K",
       "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_28K",
@@ -2168,6 +2172,31 @@
       "UNCOMPRESSED"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/input.ts": {
+    "TimestampParser": [
+      "EPOCH_MILLIS"
+    ],
+    "InputFormat": [
+      "OPENX_JSON",
+      "HIVE_JSON"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/output.ts": {
+    "ParquetCompression": [
+      "GZIP",
+      "SNAPPY",
+      "UNCOMPRESSED"
+    ],
+    "OrcCompression": [
+      "ZLIB",
+      "SNAPPY",
+      "NONE"
+    ],
+    "OutputFormat": [
+      "PARQUET",
+      "ORC"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/adot-layers.ts": {
     "AdotLambdaLayerJavaSdkVersion": [
       "V1_32_0_1",
@@ -3286,6 +3315,7 @@
       "VER_13_00_6455_2_V1",
       "VER_13_00_6460_7_V1",
       "VER_13_00_6465_1_V1",
+      "VER_13_00_6470_1_V1",
       "VER_14",
       "VER_14_00_1000_169_V1",
       "VER_14_00_3015_40_V1",
@@ -3308,6 +3338,7 @@
       "VER_14_00_3485_1_V1",
       "VER_14_00_3495_9_V1",
       "VER_14_00_3500_1_V1",
+      "VER_14_00_3505_1_V1",
       "VER_15",
       "VER_15_00_4043_16_V1",
       "VER_15_00_4355_3_V1",
@@ -3333,6 +3364,7 @@
       "VER_15_00_4430_1_V1",
       "VER_15_00_4435_7_V1",
       "VER_15_00_4440_1_V1",
+      "VER_15_00_4445_1_V1",
       "VER_16",
       "VER_16_00_4085_2_V1",
       "VER_16_00_4095_4_V1",
@@ -3349,7 +3381,8 @@
       "VER_16_00_4185_3_V1",
       "VER_16_00_4195_2_V1",
       "VER_16_00_4205_1_V1",
-      "VER_16_00_4210_1_V1"
+      "VER_16_00_4210_1_V1",
+      "VER_16_00_4215_2_V1"
     ],
     "DatabaseInstanceEngine": [
       "MARIADB",
@@ -3509,7 +3542,8 @@
       "SYNTHETICS_PYTHON_SELENIUM_4_1",
       "SYNTHETICS_PYTHON_SELENIUM_5_0",
       "SYNTHETICS_PYTHON_SELENIUM_5_1",
-      "SYNTHETICS_PYTHON_SELENIUM_6_0"
+      "SYNTHETICS_PYTHON_SELENIUM_6_0",
+      "SYNTHETICS_PYTHON_SELENIUM_7_0"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/cfn-pseudo.ts": {

@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.221.0](https://github.com/aws/aws-cdk/compare/v2.220.0...v2.221.0) (2025-10-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+- **aws-datazone**: AWS::DataZone::ProjectProfile: Id property removed.
+- **aws-logs**: AWS::Logs::DeliveryDestination: DeliveryDestinationType attribute removed. 
+- **aws-s3**: AWS::S3::AccessGrantsLocation: IamRoleArn property is now required.
+- **aws-s3**: AWS::S3::AccessGrantsLocation: LocationScope property is now required.
+- **aws-servicecatalog**: AWS::ServiceCatalog::TagOptionAssociation: Id attribute removed.
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#35816](https://github.com/aws/aws-cdk/issues/35816)) ([82bef28](https://github.com/aws/aws-cdk/commit/82bef28a322a436d0c99adf8cb097008591f3952))
+* **agentcore:** add agentcore L2 constructs for 1p tools ([#35577](https://github.com/aws/aws-cdk/issues/35577)) ([3087ffa](https://github.com/aws/aws-cdk/commit/3087ffa33fdde85d02ec2574854856762866ca7d))
+* **agentcore:** add agentcore runtime L2 construct ([#35623](https://github.com/aws/aws-cdk/issues/35623)) ([c57484a](https://github.com/aws/aws-cdk/commit/c57484ababbf99b13660ab597e5738819b1855a6))
+* **ecr:** image tag mutability exclusion filters ([#35246](https://github.com/aws/aws-cdk/issues/35246)) ([f6dd5cf](https://github.com/aws/aws-cdk/commit/f6dd5cfd50209b82b654935fc965819a46bd0247)), closes [#35454](https://github.com/aws/aws-cdk/issues/35454)
+* **ecs:** implement IConnectable interface for ManagedInstancesCapacityProvider ([#35745](https://github.com/aws/aws-cdk/issues/35745)) ([fd5ff76](https://github.com/aws/aws-cdk/commit/fd5ff76c9707b36e878d58e20d7544b80e53d603))
+* **kinesisfirehose:** support DeliveryStream record format conversion for S3 Bucket Destination ([#35410](https://github.com/aws/aws-cdk/issues/35410)) ([79bcba2](https://github.com/aws/aws-cdk/commit/79bcba24313955bcb7e3e4d02d3d2cc11db5cd7d)), closes [#15501](https://github.com/aws/aws-cdk/issues/15501) [/github.com/aws/aws-cdk/issues/15501#issuecomment-3255582302](https://github.com/aws//github.com/aws/aws-cdk/issues/15501/issues/issuecomment-3255582302)
+* update L1 CloudFormation resource definitions ([#35769](https://github.com/aws/aws-cdk/issues/35769)) ([a165905](https://github.com/aws/aws-cdk/commit/a16590513ff1dcd41141e77eec5ebfaef2dff3c4))
+
+
+### Bug Fixes
+
+* **ecs-patterns:** resolve target group conflict when updating ALB internetFacing or loadBalancerName (under feature flag) ([#35508](https://github.com/aws/aws-cdk/issues/35508)) ([69b9c03](https://github.com/aws/aws-cdk/commit/69b9c03583ef5542aee93c5c011304314ddcd4fc)), closes [#33253](https://github.com/aws/aws-cdk/issues/33253) [#33253](https://github.com/aws/aws-cdk/issues/33253) [#33253](https://github.com/aws/aws-cdk/issues/33253)
+* **lambda:** can't find entry file under ESM module system ([#35797](https://github.com/aws/aws-cdk/issues/35797)) ([7becd79](https://github.com/aws/aws-cdk/commit/7becd79b95d4e6a2290b39cb39e9b7ae1c92c78e)), closes [#21630](https://github.com/aws/aws-cdk/issues/21630)
+* **lambda-runtime:** change fallback for latest lambda node runtime to node 22.x ([#35764](https://github.com/aws/aws-cdk/issues/35764)) ([10fcb1b](https://github.com/aws/aws-cdk/commit/10fcb1bcfde256373a2b240a86bb776fc7de9c92))
+* **opensearchservice:** add i8g nodes validation without EBS  ([#35668](https://github.com/aws/aws-cdk/issues/35668)) ([9594842](https://github.com/aws/aws-cdk/commit/9594842729f96967eb9bdba1c856d962a97ad3cf)), closes [#35666](https://github.com/aws/aws-cdk/issues/35666)
+* **s3-deployment:** handle empty string in Source.data()  ([#35824](https://github.com/aws/aws-cdk/issues/35824)) ([95c8d73](https://github.com/aws/aws-cdk/commit/95c8d73c3e95ae421b314101f34d422503981fb7)), closes [#35809](https://github.com/aws/aws-cdk/issues/35809)
+* **stepfunctions-tasks:** allow passing apiEndpoint as intrinsic function (under feature flag) ([#32139](https://github.com/aws/aws-cdk/issues/32139)) ([ddfef06](https://github.com/aws/aws-cdk/commit/ddfef06e6893d55f605c475dbb13bdb22efcfbaa)), closes [#29925](https://github.com/aws/aws-cdk/issues/29925) [#29925](https://github.com/aws/aws-cdk/issues/29925) [#30749](https://github.com/aws/aws-cdk/issues/30749)
+
 ## [2.220.0](https://github.com/aws/aws-cdk/compare/v2.219.0...v2.220.0) (2025-10-14)
 
 
