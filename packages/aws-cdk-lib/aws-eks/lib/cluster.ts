@@ -1,34 +1,49 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { Construct, Node } from 'constructs';
-import * as YAML from 'yaml';
-import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
-import { IAddon, Addon } from './addon';
-import { AlbController, AlbControllerOptions } from './alb-controller';
-import { AwsAuth } from './aws-auth';
-import { ClusterResource, clusterArnComponents } from './cluster-resource';
-import { FargateProfile, FargateProfileOptions } from './fargate-profile';
-import { HelmChart, HelmChartOptions } from './helm-chart';
-import { INSTANCE_TYPES } from './instance-types';
-import { KubernetesManifest, KubernetesManifestOptions } from './k8s-manifest';
-import { KubernetesObjectValue } from './k8s-object-value';
-import { KubernetesPatch } from './k8s-patch';
-import { IKubectlProvider, KubectlProvider } from './kubectl-provider';
-import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
-import { OpenIdConnectProvider } from './oidc-provider';
-import { BottleRocketImage } from './private/bottlerocket';
-import { ServiceAccount, ServiceAccountOptions } from './service-account';
-import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
-import * as autoscaling from '../../aws-autoscaling';
-import * as ec2 from '../../aws-ec2';
-import { CidrBlock } from '../../aws-ec2/lib/network-util';
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
-import * as ssm from '../../aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, ValidationError, UnscopedValidationError, RemovalPolicy, RemovalPolicies } from '../../core';
-import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as fs from "fs";
+import * as path from "path";
+import { Construct, Node } from "constructs";
+import * as YAML from "yaml";
+import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from "./access-entry";
+import { IAddon, Addon } from "./addon";
+import { AlbController, AlbControllerOptions } from "./alb-controller";
+import { AwsAuth } from "./aws-auth";
+import { ClusterResource, clusterArnComponents } from "./cluster-resource";
+import { FargateProfile, FargateProfileOptions } from "./fargate-profile";
+import { HelmChart, HelmChartOptions } from "./helm-chart";
+import { INSTANCE_TYPES } from "./instance-types";
+import { KubernetesManifest, KubernetesManifestOptions } from "./k8s-manifest";
+import { KubernetesObjectValue } from "./k8s-object-value";
+import { KubernetesPatch } from "./k8s-patch";
+import { IKubectlProvider, KubectlProvider } from "./kubectl-provider";
+import { Nodegroup, NodegroupOptions } from "./managed-nodegroup";
+import { OpenIdConnectProvider } from "./oidc-provider";
+import { BottleRocketImage } from "./private/bottlerocket";
+import { ServiceAccount, ServiceAccountOptions } from "./service-account";
+import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from "./user-data";
+import * as autoscaling from "../../aws-autoscaling";
+import * as ec2 from "../../aws-ec2";
+import { CidrBlock } from "../../aws-ec2/lib/network-util";
+import * as iam from "../../aws-iam";
+import * as kms from "../../aws-kms";
+import * as lambda from "../../aws-lambda";
+import * as ssm from "../../aws-ssm";
+import {
+  Annotations,
+  CfnOutput,
+  CfnResource,
+  IResource,
+  Resource,
+  Stack,
+  Tags,
+  Token,
+  Duration,
+  Size,
+  ValidationError,
+  UnscopedValidationError,
+  RemovalPolicy,
+  RemovalPolicies,
+} from "../../core";
+import { addConstructMetadata, MethodMetadata } from "../../core/lib/metadata-resource";
+import { propertyInjectable } from "../../core/lib/prop-injectable";
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -738,7 +753,6 @@ export interface ClusterOptions extends CommonClusterOptions {
  * Group access configuration together.
  */
 interface EndpointAccessConfig {
-
   /**
    * Indicates if private access is enabled.
    */
@@ -755,7 +769,6 @@ interface EndpointAccessConfig {
    * @default - No restrictions.
    */
   readonly publicCidrs?: string[];
-
 }
 
 /**
@@ -800,9 +813,10 @@ export class EndpointAccess {
      *
      * @internal
      */
-    public readonly _config: EndpointAccessConfig) {
+    public readonly _config: EndpointAccessConfig,
+  ) {
     if (!_config.publicAccess && _config.publicCidrs && _config.publicCidrs.length > 0) {
-      throw new UnscopedValidationError('CIDR blocks can only be configured when public access is enabled');
+      throw new UnscopedValidationError("CIDR blocks can only be configured when public access is enabled");
     }
   }
 
@@ -816,7 +830,9 @@ export class EndpointAccess {
     if (!this._config.privateAccess) {
       // when private access is disabled, we can't restric public
       // access since it will render the kubectl provider unusable.
-      throw new UnscopedValidationError('Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom() instead.');
+      throw new UnscopedValidationError(
+        "Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom() instead.",
+      );
     }
     return new EndpointAccess({
       ...this._config,
@@ -830,7 +846,6 @@ export class EndpointAccess {
  * Common configuration props for EKS clusters.
  */
 export interface ClusterProps extends ClusterOptions {
-
   /**
    * Number of instances to allocate as an initial capacity for this cluster.
    * Instance type can be configured through `defaultCapacityInstanceType`,
@@ -903,49 +918,49 @@ export class KubernetesVersion {
    * Kubernetes version 1.14
    * @deprecated Use newer version of EKS
    */
-  public static readonly V1_14 = KubernetesVersion.of('1.14');
+  public static readonly V1_14 = KubernetesVersion.of("1.14");
 
   /**
    * Kubernetes version 1.15
    * @deprecated Use newer version of EKS
    */
-  public static readonly V1_15 = KubernetesVersion.of('1.15');
+  public static readonly V1_15 = KubernetesVersion.of("1.15");
 
   /**
    * Kubernetes version 1.16
    * @deprecated Use newer version of EKS
    */
-  public static readonly V1_16 = KubernetesVersion.of('1.16');
+  public static readonly V1_16 = KubernetesVersion.of("1.16");
 
   /**
    * Kubernetes version 1.17
    * @deprecated Use newer version of EKS
    */
-  public static readonly V1_17 = KubernetesVersion.of('1.17');
+  public static readonly V1_17 = KubernetesVersion.of("1.17");
 
   /**
    * Kubernetes version 1.18
    * @deprecated Use newer version of EKS
    */
-  public static readonly V1_18 = KubernetesVersion.of('1.18');
+  public static readonly V1_18 = KubernetesVersion.of("1.18");
 
   /**
    * Kubernetes version 1.19
    * @deprecated Use newer version of EKS
    */
-  public static readonly V1_19 = KubernetesVersion.of('1.19');
+  public static readonly V1_19 = KubernetesVersion.of("1.19");
 
   /**
    * Kubernetes version 1.20
    * @deprecated Use newer version of EKS
    */
-  public static readonly V1_20 = KubernetesVersion.of('1.20');
+  public static readonly V1_20 = KubernetesVersion.of("1.20");
 
   /**
    * Kubernetes version 1.21
    * @deprecated Use newer version of EKS
    */
-  public static readonly V1_21 = KubernetesVersion.of('1.21');
+  public static readonly V1_21 = KubernetesVersion.of("1.21");
 
   /**
    * Kubernetes version 1.22
@@ -956,7 +971,7 @@ export class KubernetesVersion {
    * `@aws-cdk/lambda-layer-kubectl-v22`.
    * @deprecated Use newer version of EKS
    */
-  public static readonly V1_22 = KubernetesVersion.of('1.22');
+  public static readonly V1_22 = KubernetesVersion.of("1.22");
 
   /**
    * Kubernetes version 1.23
@@ -965,7 +980,7 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV23Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v23`.
    */
-  public static readonly V1_23 = KubernetesVersion.of('1.23');
+  public static readonly V1_23 = KubernetesVersion.of("1.23");
 
   /**
    * Kubernetes version 1.24
@@ -974,7 +989,7 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV24Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v24`.
    */
-  public static readonly V1_24 = KubernetesVersion.of('1.24');
+  public static readonly V1_24 = KubernetesVersion.of("1.24");
 
   /**
    * Kubernetes version 1.25
@@ -983,7 +998,7 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV25Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v25`.
    */
-  public static readonly V1_25 = KubernetesVersion.of('1.25');
+  public static readonly V1_25 = KubernetesVersion.of("1.25");
 
   /**
    * Kubernetes version 1.26
@@ -992,7 +1007,7 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV26Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v26`.
    */
-  public static readonly V1_26 = KubernetesVersion.of('1.26');
+  public static readonly V1_26 = KubernetesVersion.of("1.26");
 
   /**
    * Kubernetes version 1.27
@@ -1001,7 +1016,7 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV27Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v27`.
    */
-  public static readonly V1_27 = KubernetesVersion.of('1.27');
+  public static readonly V1_27 = KubernetesVersion.of("1.27");
 
   /**
    * Kubernetes version 1.28
@@ -1010,7 +1025,7 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV28Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v28`.
    */
-  public static readonly V1_28 = KubernetesVersion.of('1.28');
+  public static readonly V1_28 = KubernetesVersion.of("1.28");
 
   /**
    * Kubernetes version 1.29
@@ -1019,7 +1034,7 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV29Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v29`.
    */
-  public static readonly V1_29 = KubernetesVersion.of('1.29');
+  public static readonly V1_29 = KubernetesVersion.of("1.29");
 
   /**
    * Kubernetes version 1.30
@@ -1028,7 +1043,7 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV30Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v30`.
    */
-  public static readonly V1_30 = KubernetesVersion.of('1.30');
+  public static readonly V1_30 = KubernetesVersion.of("1.30");
 
   /**
    * Kubernetes version 1.31
@@ -1037,7 +1052,7 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV31Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v31`.
    */
-  public static readonly V1_31 = KubernetesVersion.of('1.31');
+  public static readonly V1_31 = KubernetesVersion.of("1.31");
 
   /**
    * Kubernetes version 1.32
@@ -1046,7 +1061,7 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV32Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v32`.
    */
-  public static readonly V1_32 = KubernetesVersion.of('1.32');
+  public static readonly V1_32 = KubernetesVersion.of("1.32");
 
   /**
    * Kubernetes version 1.33
@@ -1055,18 +1070,29 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV33Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v33`.
    */
-  public static readonly V1_33 = KubernetesVersion.of('1.33');
+  public static readonly V1_33 = KubernetesVersion.of("1.33");
+
+  /**
+   * Kubernetes version 1.34
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV33Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v34`.
+   */
+  public static readonly V1_34 = KubernetesVersion.of("1.34");
 
   /**
    * Custom cluster version
    * @param version custom version number
    */
-  public static of(version: string) { return new KubernetesVersion(version); }
+  public static of(version: string) {
+    return new KubernetesVersion(version);
+  }
   /**
    *
    * @param version cluster version number
    */
-  private constructor(public readonly version: string) { }
+  private constructor(public readonly version: string) {}
 }
 
 // Shared definition with packages/@aws-cdk/custom-resource-handlers/test/aws-eks/compare-log.test.ts
@@ -1077,23 +1103,23 @@ export enum ClusterLoggingTypes {
   /**
    * Logs pertaining to API requests to the cluster.
    */
-  API = 'api',
+  API = "api",
   /**
    * Logs pertaining to cluster access via the Kubernetes API.
    */
-  AUDIT = 'audit',
+  AUDIT = "audit",
   /**
    * Logs pertaining to authentication requests into the cluster.
    */
-  AUTHENTICATOR = 'authenticator',
+  AUTHENTICATOR = "authenticator",
   /**
    * Logs pertaining to state of cluster controllers.
    */
-  CONTROLLER_MANAGER = 'controllerManager',
+  CONTROLLER_MANAGER = "controllerManager",
   /**
    * Logs pertaining to scheduling decisions.
    */
-  SCHEDULER = 'scheduler',
+  SCHEDULER = "scheduler",
 }
 
 /**
@@ -1103,11 +1129,11 @@ export enum IpFamily {
   /**
    * Use IPv4 for pods and services in your cluster.
    */
-  IP_V4 = 'ipv4',
+  IP_V4 = "ipv4",
   /**
    * Use IPv6 for pods and services in your cluster.
    */
-  IP_V6 = 'ipv6',
+  IP_V6 = "ipv6",
 }
 
 /**
@@ -1117,15 +1143,15 @@ export enum AuthenticationMode {
   /**
    * Authenticates using a Kubernetes ConfigMap.
    */
-  CONFIG_MAP = 'CONFIG_MAP',
+  CONFIG_MAP = "CONFIG_MAP",
   /**
    * Authenticates using both the Kubernetes API server and a ConfigMap.
    */
-  API_AND_CONFIG_MAP = 'API_AND_CONFIG_MAP',
+  API_AND_CONFIG_MAP = "API_AND_CONFIG_MAP",
   /**
    * Authenticates using the Kubernetes API server.
    */
-  API = 'API',
+  API = "API",
 }
 
 abstract class ClusterBase extends Resource implements ICluster {
@@ -1195,8 +1221,11 @@ abstract class ClusterBase extends Resource implements ICluster {
     const cdk8sChart = chart as any;
 
     // see https://github.com/awslabs/cdk8s/blob/master/packages/cdk8s/src/chart.ts#L84
-    if (typeof cdk8sChart.toJson !== 'function') {
-      throw new ValidationError(`Invalid cdk8s chart. Must contain a 'toJson' method, but found ${typeof cdk8sChart.toJson}`, this);
+    if (typeof cdk8sChart.toJson !== "function") {
+      throw new ValidationError(
+        `Invalid cdk8s chart. Must contain a 'toJson' method, but found ${typeof cdk8sChart.toJson}`,
+        this,
+      );
     }
 
     const manifest = new KubernetesManifest(this, id, {
@@ -1221,11 +1250,11 @@ abstract class ClusterBase extends Resource implements ICluster {
    */
   private addSpotInterruptHandler() {
     if (!this._spotInterruptHandler) {
-      this._spotInterruptHandler = this.addHelmChart('spot-interrupt-handler', {
-        chart: 'aws-node-termination-handler',
-        version: '0.27.0',
-        repository: 'oci://public.ecr.aws/aws-ec2/helm/aws-node-termination-handler',
-        namespace: 'kube-system',
+      this._spotInterruptHandler = this.addHelmChart("spot-interrupt-handler", {
+        chart: "aws-node-termination-handler",
+        version: "0.27.0",
+        repository: "oci://public.ecr.aws/aws-ec2/helm/aws-node-termination-handler",
+        namespace: "kube-system",
         values: {
           nodeSelector: {
             lifecycle: LifecycleLabel.SPOT,
@@ -1282,23 +1311,26 @@ abstract class ClusterBase extends Resource implements ICluster {
     }
 
     if (bootstrapEnabled) {
-      const userData = options.machineImageType === MachineImageType.BOTTLEROCKET ?
-        renderBottlerocketUserData(this) :
-        renderAmazonLinuxUserData(this, autoScalingGroup, options.bootstrapOptions);
+      const userData =
+        options.machineImageType === MachineImageType.BOTTLEROCKET
+          ? renderBottlerocketUserData(this)
+          : renderAmazonLinuxUserData(this, autoScalingGroup, options.bootstrapOptions);
       autoScalingGroup.addUserData(...userData);
     }
 
-    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'));
-    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'));
-    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
+    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEKSWorkerNodePolicy"));
+    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEKS_CNI_Policy"));
+    autoScalingGroup.role.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEC2ContainerRegistryReadOnly"),
+    );
 
     // EKS Required Tags
     // https://docs.aws.amazon.com/eks/latest/userguide/worker.html
-    Tags.of(autoScalingGroup).add(`kubernetes.io/cluster/${this.clusterName}`, 'owned', {
+    Tags.of(autoScalingGroup).add(`kubernetes.io/cluster/${this.clusterName}`, "owned", {
       applyToLaunchedInstances: true,
       // exclude security groups to avoid multiple "owned" security groups.
       // (the cluster security group already has this tag)
-      excludeResourceTypes: ['AWS::EC2::SecurityGroup'],
+      excludeResourceTypes: ["AWS::EC2::SecurityGroup"],
     });
 
     // do not attempt to map the role if `kubectl` is not enabled for this
@@ -1306,22 +1338,22 @@ abstract class ClusterBase extends Resource implements ICluster {
     let mapRole = options.mapRole ?? true;
     if (mapRole && !(this instanceof Cluster)) {
       // do the mapping...
-      Annotations.of(autoScalingGroup).addWarningV2('@aws-cdk/aws-eks:clusterUnsupportedAutoMappingAwsAutoRole', 'Auto-mapping aws-auth role for imported cluster is not supported, please map role manually');
+      Annotations.of(autoScalingGroup).addWarningV2(
+        "@aws-cdk/aws-eks:clusterUnsupportedAutoMappingAwsAutoRole",
+        "Auto-mapping aws-auth role for imported cluster is not supported, please map role manually",
+      );
       mapRole = false;
     }
     if (mapRole) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
       this.awsAuth.addRoleMapping(autoScalingGroup.role, {
-        username: 'system:node:{{EC2PrivateDNSName}}',
-        groups: [
-          'system:bootstrappers',
-          'system:nodes',
-        ],
+        username: "system:node:{{EC2PrivateDNSName}}",
+        groups: ["system:bootstrappers", "system:nodes"],
       });
     } else {
       // since we are not mapping the instance role to RBAC, synthesize an
       // output so it can be pasted into `aws-auth-cm.yaml`
-      new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
+      new CfnOutput(autoScalingGroup, "InstanceRoleARN", {
         value: autoScalingGroup.role.roleArn,
       });
     }
@@ -1344,7 +1376,6 @@ abstract class ClusterBase extends Resource implements ICluster {
  * Options for fetching a ServiceLoadBalancerAddress.
  */
 export interface ServiceLoadBalancerAddressOptions {
-
   /**
    * Timeout for waiting on the load balancer address.
    *
@@ -1358,7 +1389,6 @@ export interface ServiceLoadBalancerAddressOptions {
    * @default 'default'
    */
   readonly namespace?: string;
-
 }
 
 /**
@@ -1377,7 +1407,7 @@ export class Cluster extends ClusterBase {
   /**
    * Uniquely identifies this class.
    */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.Cluster';
+  public static readonly PROPERTY_INJECTION_ID: string = "aws-cdk-lib.aws-eks.Cluster";
 
   /**
    * Import an existing cluster
@@ -1606,7 +1636,7 @@ export class Cluster extends ClusterBase {
 
   private readonly version: KubernetesVersion;
 
-  private readonly logging?: { [key: string]: [ { [key: string]: any } ] };
+  private readonly logging?: { [key: string]: [{ [key: string]: any }] };
 
   /**
    * A dummy CloudFormation resource that is used as a wait barrier which
@@ -1641,51 +1671,63 @@ export class Cluster extends ClusterBase {
     const stack = Stack.of(this);
 
     this.prune = props.prune ?? true;
-    this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
+    this.vpc = props.vpc || new ec2.Vpc(this, "DefaultVpc");
 
     this.version = props.version;
 
     // since this lambda role needs to be added to the trust policy of the creation role,
     // we must create it in this scope (instead of the KubectlProvider nested stack) to avoid
     // a circular dependency.
-    this.kubectlLambdaRole = props.kubectlLambdaRole ? props.kubectlLambdaRole : new iam.Role(this, 'KubectlHandlerRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
-    });
+    this.kubectlLambdaRole = props.kubectlLambdaRole
+      ? props.kubectlLambdaRole
+      : new iam.Role(this, "KubectlHandlerRole", {
+          assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
+          managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole")],
+        });
 
     this.tagSubnets();
 
     // this is the role used by EKS when interacting with AWS resources
-    this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSClusterPolicy'),
-      ],
-    });
+    this.role =
+      props.role ||
+      new iam.Role(this, "Role", {
+        assumedBy: new iam.ServicePrincipal("eks.amazonaws.com"),
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEKSClusterPolicy")],
+      });
 
-    const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'ControlPlaneSecurityGroup', {
-      vpc: this.vpc,
-      description: 'EKS Control Plane Security Group',
-    });
+    const securityGroup =
+      props.securityGroup ||
+      new ec2.SecurityGroup(this, "ControlPlaneSecurityGroup", {
+        vpc: this.vpc,
+        description: "EKS Control Plane Security Group",
+      });
 
-    this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }];
+    this.vpcSubnets = props.vpcSubnets ?? [
+      { subnetType: ec2.SubnetType.PUBLIC },
+      { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    ];
 
-    const selectedSubnetIdsPerGroup = this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds);
+    const selectedSubnetIdsPerGroup = this.vpcSubnets.map((s) => this.vpc.selectSubnets(s).subnetIds);
     if (selectedSubnetIdsPerGroup.some(Token.isUnresolved) && selectedSubnetIdsPerGroup.length > 1) {
-      throw new ValidationError('eks.Cluster: cannot select multiple subnet groups from a VPC imported from list tokens with unknown length. Select only one subnet group, pass a length to Fn.split, or switch to Vpc.fromLookup.', this);
+      throw new ValidationError(
+        "eks.Cluster: cannot select multiple subnet groups from a VPC imported from list tokens with unknown length. Select only one subnet group, pass a length to Fn.split, or switch to Vpc.fromLookup.",
+        this,
+      );
     }
 
     // Get subnetIds for all selected subnets
     const subnetIds = Array.from(new Set(flatten(selectedSubnetIdsPerGroup)));
 
-    this.logging = props.clusterLogging ? {
-      clusterLogging: [
-        {
-          enabled: true,
-          types: Object.values(props.clusterLogging),
-        },
-      ],
-    } : undefined;
+    this.logging = props.clusterLogging
+      ? {
+          clusterLogging: [
+            {
+              enabled: true,
+              types: Object.values(props.clusterLogging),
+            },
+          ],
+        }
+      : undefined;
 
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
     this.kubectlEnvironment = props.kubectlEnvironment;
@@ -1698,25 +1740,24 @@ export class Cluster extends ClusterBase {
 
     const privateSubnets = this.selectPrivateSubnets().slice(0, 16);
     const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
-    const publicAccessRestricted = !publicAccessDisabled
-      && this.endpointAccess._config.publicCidrs
-      && this.endpointAccess._config.publicCidrs.length !== 0;
+    const publicAccessRestricted =
+      !publicAccessDisabled &&
+      this.endpointAccess._config.publicCidrs &&
+      this.endpointAccess._config.publicCidrs.length !== 0;
 
     // Check if any subnet selection is pending lookup
-    const hasPendingLookup = this.vpcSubnets.some(placement =>
-      this.vpc.selectSubnets(placement).isPendingLookup,
-    );
+    const hasPendingLookup = this.vpcSubnets.some((placement) => this.vpc.selectSubnets(placement).isPendingLookup);
 
     // validate endpoint access configuration
     if (!hasPendingLookup) {
       if (privateSubnets.length === 0 && publicAccessDisabled) {
         // no private subnets and no public access at all, no good.
-        throw new ValidationError('Vpc must contain private subnets when public endpoint access is disabled', this);
+        throw new ValidationError("Vpc must contain private subnets when public endpoint access is disabled", this);
       }
 
       if (privateSubnets.length === 0 && publicAccessRestricted) {
-      // no private subnets and public access is restricted, no good.
-        throw new ValidationError('Vpc must contain private subnets when public endpoint access is restricted', this);
+        // no private subnets and public access is restricted, no good.
+        throw new ValidationError("Vpc must contain private subnets when public endpoint access is restricted", this);
       }
     }
 
@@ -1724,28 +1765,34 @@ export class Cluster extends ClusterBase {
 
     if (!hasPendingLookup) {
       if (placeClusterHandlerInVpc && privateSubnets.length === 0) {
-        throw new ValidationError('Cannot place cluster handler in the VPC since no private subnets could be selected', this);
+        throw new ValidationError(
+          "Cannot place cluster handler in the VPC since no private subnets could be selected",
+          this,
+        );
       }
     }
 
     if (props.clusterHandlerSecurityGroup && !placeClusterHandlerInVpc) {
-      throw new ValidationError('Cannot specify clusterHandlerSecurityGroup without placeClusterHandlerInVpc set to true', this);
+      throw new ValidationError(
+        "Cannot specify clusterHandlerSecurityGroup without placeClusterHandlerInVpc set to true",
+        this,
+      );
     }
 
     if (props.serviceIpv4Cidr && props.ipFamily == IpFamily.IP_V6) {
-      throw new ValidationError('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6', this);
+      throw new ValidationError("Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6", this);
     }
 
     // Check if the cluster name exceeds 100 characters
     if (!Token.isUnresolved(this.physicalName) && this.physicalName.length > 100) {
-      throw new ValidationError('Cluster name cannot be more than 100 characters', this);
+      throw new ValidationError("Cluster name cannot be more than 100 characters", this);
     }
 
     this.validateRemoteNetworkConfig(props);
 
     this.authenticationMode = props.authenticationMode;
 
-    const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
+    const resource = (this._clusterResource = new ClusterResource(this, "Resource", {
       name: this.physicalName,
       environment: props.clusterHandlerEnvironment,
       roleArn: this.role.roleArn,
@@ -1754,26 +1801,34 @@ export class Cluster extends ClusterBase {
         authenticationMode: props.authenticationMode,
         bootstrapClusterCreatorAdminPermissions: props.bootstrapClusterCreatorAdminPermissions,
       },
-      ...(props.remoteNodeNetworks ? {
-        remoteNetworkConfig: {
-          remoteNodeNetworks: props.remoteNodeNetworks,
-          ...(props.remotePodNetworks ? {
-            remotePodNetworks: props.remotePodNetworks,
-          }: {}),
-        },
-      } : {}),
+      ...(props.remoteNodeNetworks
+        ? {
+            remoteNetworkConfig: {
+              remoteNodeNetworks: props.remoteNodeNetworks,
+              ...(props.remotePodNetworks
+                ? {
+                    remotePodNetworks: props.remotePodNetworks,
+                  }
+                : {}),
+            },
+          }
+        : {}),
       resourcesVpcConfig: {
         securityGroupIds: [securityGroup.securityGroupId],
         subnetIds,
       },
-      ...(props.secretsEncryptionKey ? {
-        encryptionConfig: [{
-          provider: {
-            keyArn: props.secretsEncryptionKey.keyRef.keyArn,
-          },
-          resources: ['secrets'],
-        }],
-      } : {}),
+      ...(props.secretsEncryptionKey
+        ? {
+            encryptionConfig: [
+              {
+                provider: {
+                  keyArn: props.secretsEncryptionKey.keyRef.keyArn,
+                },
+                resources: ["secrets"],
+              },
+            ],
+          }
+        : {}),
       kubernetesNetworkConfig: {
         ipFamily: this.ipFamily,
         serviceIpv4Cidr: props.serviceIpv4Cidr,
@@ -1789,7 +1844,7 @@ export class Cluster extends ClusterBase {
       tags: props.tags,
       logging: this.logging,
       bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
-    });
+    }));
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
       // when private access is enabled and the vpc has private subnets, lets connect
@@ -1797,7 +1852,10 @@ export class Cluster extends ClusterBase {
 
       // validate VPC properties according to: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
       if (this.vpc instanceof ec2.Vpc && !(this.vpc.dnsHostnamesEnabled && this.vpc.dnsSupportEnabled)) {
-        throw new ValidationError('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.', this);
+        throw new ValidationError(
+          "Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.",
+          this,
+        );
       }
 
       this.kubectlPrivateSubnets = privateSubnets;
@@ -1810,11 +1868,11 @@ export class Cluster extends ClusterBase {
     this.adminRole = resource.adminRole;
 
     // we use an SSM parameter as a barrier because it's free and fast.
-    this._kubectlReadyBarrier = new CfnResource(this, 'KubectlReadyBarrier', {
-      type: 'AWS::SSM::Parameter',
+    this._kubectlReadyBarrier = new CfnResource(this, "KubectlReadyBarrier", {
+      type: "AWS::SSM::Parameter",
       properties: {
-        Type: 'String',
-        Value: 'aws:cdk:eks:kubectl-ready',
+        Type: "String",
+        Value: "aws:cdk:eks:kubectl-ready",
       },
     });
 
@@ -1829,7 +1887,11 @@ export class Cluster extends ClusterBase {
     this.clusterSecurityGroupId = resource.attrClusterSecurityGroupId;
     this.clusterEncryptionConfigKeyArn = resource.attrEncryptionConfigKeyArn;
 
-    this.clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
+    this.clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(
+      this,
+      "ClusterSecurityGroup",
+      this.clusterSecurityGroupId,
+    );
 
     this.connections = new ec2.Connections({
       securityGroups: [this.clusterSecurityGroup, securityGroup],
@@ -1840,10 +1902,12 @@ export class Cluster extends ClusterBase {
     // and configured to allow connections from itself.
     this.kubectlSecurityGroup = this.clusterSecurityGroup;
 
-    this.adminRole.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
-      actions: ['sts:AssumeRole'],
-      principals: [this.kubectlLambdaRole],
-    }));
+    this.adminRole.assumeRolePolicy?.addStatements(
+      new iam.PolicyStatement({
+        actions: ["sts:AssumeRole"],
+        principals: [this.kubectlLambdaRole],
+      }),
+    );
 
     // use the cluster creation role to issue kubectl commands against the cluster because when the
     // cluster is first created, that's the only role that has "system:masters" permissions
@@ -1856,11 +1920,14 @@ export class Cluster extends ClusterBase {
     const commonCommandOptions = [`--region ${stack.region}`];
 
     if (props.outputClusterName) {
-      new CfnOutput(this, 'ClusterName', { value: this.clusterName });
+      new CfnOutput(this, "ClusterName", { value: this.clusterName });
     }
 
-    const supportAuthenticationApi = (this.authenticationMode === AuthenticationMode.API ||
-      this.authenticationMode === AuthenticationMode.API_AND_CONFIG_MAP) ? true : false;
+    const supportAuthenticationApi =
+      this.authenticationMode === AuthenticationMode.API ||
+      this.authenticationMode === AuthenticationMode.API_AND_CONFIG_MAP
+        ? true
+        : false;
 
     // do not create a masters role if one is not provided. Trusting the accountRootPrincipal() is too permissive.
     if (props.mastersRole) {
@@ -1869,8 +1936,8 @@ export class Cluster extends ClusterBase {
       // if we support authentication API we create an access entry for this mastersRole
       // with cluster scope.
       if (supportAuthenticationApi) {
-        this.grantAccess('mastersRoleAccess', props.mastersRole.roleArn, [
-          AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+        this.grantAccess("mastersRoleAccess", props.mastersRole.roleArn, [
+          AccessPolicy.fromAccessPolicyName("AmazonEKSClusterAdminPolicy", {
             accessScopeType: AccessScopeType.CLUSTER,
           }),
         ]);
@@ -1881,7 +1948,7 @@ export class Cluster extends ClusterBase {
       }
 
       if (props.outputMastersRoleArn) {
-        new CfnOutput(this, 'MastersRoleArn', { value: mastersRole.roleArn });
+        new CfnOutput(this, "MastersRoleArn", { value: mastersRole.roleArn });
       }
 
       commonCommandOptions.push(`--role-arn ${mastersRole.roleArn}`);
@@ -1895,22 +1962,29 @@ export class Cluster extends ClusterBase {
     const minCapacity = props.defaultCapacity ?? DEFAULT_CAPACITY_COUNT;
     if (minCapacity > 0) {
       const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
-      this.defaultCapacity = props.defaultCapacityType === DefaultCapacityType.EC2 ?
-        this.addAutoScalingGroupCapacity('DefaultCapacity', { instanceType, minCapacity }) : undefined;
+      this.defaultCapacity =
+        props.defaultCapacityType === DefaultCapacityType.EC2
+          ? this.addAutoScalingGroupCapacity("DefaultCapacity", { instanceType, minCapacity })
+          : undefined;
 
-      this.defaultNodegroup = props.defaultCapacityType !== DefaultCapacityType.EC2 ?
-        this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity }) : undefined;
+      this.defaultNodegroup =
+        props.defaultCapacityType !== DefaultCapacityType.EC2
+          ? this.addNodegroupCapacity("DefaultCapacity", { instanceTypes: [instanceType], minSize: minCapacity })
+          : undefined;
     }
 
     if (props.outputConfigCommand && !props.mastersRole) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:clusterMastersroleNotSpecified', '\'outputConfigCommand\' will be ignored as \'mastersRole\' has not been specified.');
+      Annotations.of(this).addWarningV2(
+        "@aws-cdk/aws-eks:clusterMastersroleNotSpecified",
+        "'outputConfigCommand' will be ignored as 'mastersRole' has not been specified.",
+      );
     }
 
     const outputConfigCommand = (props.outputConfigCommand ?? true) && props.mastersRole;
     if (outputConfigCommand) {
-      const postfix = commonCommandOptions.join(' ');
-      new CfnOutput(this, 'ConfigCommand', { value: `${updateConfigCommandPrefix} ${postfix}` });
-      new CfnOutput(this, 'GetTokenCommand', { value: `${getTokenCommandPrefix} ${postfix}` });
+      const postfix = commonCommandOptions.join(" ");
+      new CfnOutput(this, "ConfigCommand", { value: `${updateConfigCommandPrefix} ${postfix}` });
+      new CfnOutput(this, "GetTokenCommand", { value: `${getTokenCommandPrefix} ${postfix}` });
     }
 
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
@@ -1947,10 +2021,10 @@ export class Cluster extends ClusterBase {
   public getServiceLoadBalancerAddress(serviceName: string, options: ServiceLoadBalancerAddressOptions = {}): string {
     const loadBalancerAddress = new KubernetesObjectValue(this, `${serviceName}LoadBalancerAddress`, {
       cluster: this,
-      objectType: 'service',
+      objectType: "service",
       objectName: serviceName,
       objectNamespace: options.namespace,
-      jsonPath: '.status.loadBalancer.ingress[0].hostname',
+      jsonPath: ".status.loadBalancer.ingress[0].hostname",
       timeout: options.timeout,
     });
 
@@ -1967,10 +2041,10 @@ export class Cluster extends ClusterBase {
   public getIngressLoadBalancerAddress(ingressName: string, options: IngressLoadBalancerAddressOptions = {}): string {
     const loadBalancerAddress = new KubernetesObjectValue(this, `${ingressName}LoadBalancerAddress`, {
       cluster: this,
-      objectType: 'ingress',
+      objectType: "ingress",
       objectName: ingressName,
       objectNamespace: options.namespace,
-      jsonPath: '.status.loadBalancer.ingress[0].hostname',
+      jsonPath: ".status.loadBalancer.ingress[0].hostname",
       timeout: options.timeout,
     });
 
@@ -1995,20 +2069,21 @@ export class Cluster extends ClusterBase {
   @MethodMetadata()
   public addAutoScalingGroupCapacity(id: string, options: AutoScalingGroupCapacityOptions): autoscaling.AutoScalingGroup {
     if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined) {
-      throw new ValidationError('bootstrapOptions is not supported for Bottlerocket', this);
+      throw new ValidationError("bootstrapOptions is not supported for Bottlerocket", this);
     }
     const asg = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
       vpc: this.vpc,
-      machineImage: options.machineImageType === MachineImageType.BOTTLEROCKET ?
-        new BottleRocketImage({
-          kubernetesVersion: this.version.version,
-        }) :
-        new EksOptimizedImage({
-          nodeType: nodeTypeForInstanceType(options.instanceType),
-          cpuArch: cpuArchForInstanceType(options.instanceType),
-          kubernetesVersion: this.version.version,
-        }),
+      machineImage:
+        options.machineImageType === MachineImageType.BOTTLEROCKET
+          ? new BottleRocketImage({
+              kubernetesVersion: this.version.version,
+            })
+          : new EksOptimizedImage({
+              nodeType: nodeTypeForInstanceType(options.instanceType),
+              cpuArch: cpuArchForInstanceType(options.instanceType),
+              kubernetesVersion: this.version.version,
+            }),
     });
 
     this.connectAutoScalingGroupCapacity(asg, {
@@ -2019,8 +2094,10 @@ export class Cluster extends ClusterBase {
       spotInterruptHandler: options.spotInterruptHandler,
     });
 
-    if (nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA ||
-      nodeTypeForInstanceType(options.instanceType) === NodeType.TRAINIUM) {
+    if (
+      nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA ||
+      nodeTypeForInstanceType(options.instanceType) === NodeType.TRAINIUM
+    ) {
       this.addNeuronDevicePlugin();
     }
 
@@ -2038,11 +2115,9 @@ export class Cluster extends ClusterBase {
    */
   @MethodMetadata()
   public addNodegroupCapacity(id: string, options?: NodegroupOptions): Nodegroup {
-    const hasInferentiaOrTrainiumInstanceType = [
-      options?.instanceType,
-      ...options?.instanceTypes ?? [],
-    ].some(i => i && (nodeTypeForInstanceType(i) === NodeType.INFERENTIA ||
-      nodeTypeForInstanceType(i) === NodeType.TRAINIUM));
+    const hasInferentiaOrTrainiumInstanceType = [options?.instanceType, ...(options?.instanceTypes ?? [])].some(
+      (i) => i && (nodeTypeForInstanceType(i) === NodeType.INFERENTIA || nodeTypeForInstanceType(i) === NodeType.TRAINIUM),
+    );
 
     if (hasInferentiaOrTrainiumInstanceType) {
       this.addNeuronDevicePlugin();
@@ -2058,7 +2133,7 @@ export class Cluster extends ClusterBase {
    */
   public get awsAuth() {
     if (!this._awsAuth) {
-      this._awsAuth = new AwsAuth(this, 'AwsAuth', { cluster: this });
+      this._awsAuth = new AwsAuth(this, "AwsAuth", { cluster: this });
     }
 
     return this._awsAuth;
@@ -2094,7 +2169,7 @@ export class Cluster extends ClusterBase {
    */
   public get openIdConnectProvider() {
     if (!this._openIdConnectProvider) {
-      this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
+      this._openIdConnectProvider = new OpenIdConnectProvider(this, "OpenIdConnectProvider", {
         url: this.clusterOpenIdConnectIssuerUrl,
       });
     }
@@ -2113,9 +2188,9 @@ export class Cluster extends ClusterBase {
    */
   public get eksPodIdentityAgent(): IAddon | undefined {
     if (!this._eksPodIdentityAgent) {
-      this._eksPodIdentityAgent = new Addon(this, 'EksPodIdentityAgentAddon', {
+      this._eksPodIdentityAgent = new Addon(this, "EksPodIdentityAgentAddon", {
         cluster: this,
-        addonName: 'eks-pod-identity-agent',
+        addonName: "eks-pod-identity-agent",
       });
     }
 
@@ -2198,13 +2273,13 @@ export class Cluster extends ClusterBase {
   }
 
   private defineKubectlProvider() {
-    const uid = '@aws-cdk/aws-eks.KubectlProvider';
+    const uid = "@aws-cdk/aws-eks.KubectlProvider";
 
     // since we can't have the provider connect to multiple networks, and we
     // wanted to avoid resource tear down, we decided for now that we will only
     // support a single EKS cluster per CFN stack.
     if (this.stack.node.tryFindChild(uid)) {
-      throw new ValidationError('Only a single EKS cluster can be defined within a CloudFormation stack', this);
+      throw new ValidationError("Only a single EKS cluster can be defined within a CloudFormation stack", this);
     }
 
     return new KubectlProvider(this.stack, uid, { cluster: this });
@@ -2212,8 +2287,8 @@ export class Cluster extends ClusterBase {
 
   private selectPrivateSubnets(): ec2.ISubnet[] {
     const privateSubnets: ec2.ISubnet[] = [];
-    const vpcPrivateSubnetIds = this.vpc.privateSubnets.map(s => s.subnetId);
-    const vpcPublicSubnetIds = this.vpc.publicSubnets.map(s => s.subnetId);
+    const vpcPrivateSubnetIds = this.vpc.privateSubnets.map((s) => s.subnetId);
+    const vpcPublicSubnetIds = this.vpc.publicSubnets.map((s) => s.subnetId);
 
     for (const placement of this.vpcSubnets) {
       for (const subnet of this.vpc.selectSubnets(placement).subnets) {
@@ -2244,9 +2319,9 @@ export class Cluster extends ClusterBase {
    */
   private addNeuronDevicePlugin() {
     if (!this._neuronDevicePlugin) {
-      const fileContents = fs.readFileSync(path.join(__dirname, 'addons', 'neuron-device-plugin.yaml'), 'utf8');
+      const fileContents = fs.readFileSync(path.join(__dirname, "addons", "neuron-device-plugin.yaml"), "utf8");
       const sanitized = YAML.parse(fileContents);
-      this._neuronDevicePlugin = this.addManifest('NeuronDevicePlugin', sanitized);
+      this._neuronDevicePlugin = this.addManifest("NeuronDevicePlugin", sanitized);
     }
 
     return this._neuronDevicePlugin;
@@ -2266,18 +2341,22 @@ export class Cluster extends ClusterBase {
         if (!ec2.Subnet.isVpcSubnet(subnet)) {
           // message (if token): "could not auto-tag public/private subnet with tag..."
           // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
-          const subnetID = Token.isUnresolved(subnet.subnetId) || Token.isUnresolved([subnet.subnetId]) ? '' : ` ${subnet.subnetId}`;
-          Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:clusterMustManuallyTagSubnet', `Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
+          const subnetID =
+            Token.isUnresolved(subnet.subnetId) || Token.isUnresolved([subnet.subnetId]) ? "" : ` ${subnet.subnetId}`;
+          Annotations.of(this).addWarningV2(
+            "@aws-cdk/aws-eks:clusterMustManuallyTagSubnet",
+            `Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`,
+          );
           continue;
         }
 
-        Tags.of(subnet).add(tag, '1');
+        Tags.of(subnet).add(tag, "1");
       }
     };
 
     // https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
-    tagAllSubnets('private', this.vpc.privateSubnets, 'kubernetes.io/role/internal-elb');
-    tagAllSubnets('public', this.vpc.publicSubnets, 'kubernetes.io/role/elb');
+    tagAllSubnets("private", this.vpc.privateSubnets, "kubernetes.io/role/internal-elb");
+    tagAllSubnets("public", this.vpc.publicSubnets, "kubernetes.io/role/elb");
   }
 
   /**
@@ -2301,31 +2380,36 @@ export class Cluster extends ClusterBase {
         template: {
           metadata: {
             annotations: {
-              'eks.amazonaws.com/compute-type': computeType,
+              "eks.amazonaws.com/compute-type": computeType,
             },
           },
         },
       },
     });
 
-    new KubernetesPatch(this, 'CoreDnsComputeTypePatch', {
+    new KubernetesPatch(this, "CoreDnsComputeTypePatch", {
       cluster: this,
-      resourceName: 'deployment/coredns',
-      resourceNamespace: 'kube-system',
+      resourceName: "deployment/coredns",
+      resourceNamespace: "kube-system",
       applyPatch: renderPatch(CoreDnsComputeType.FARGATE),
       restorePatch: renderPatch(CoreDnsComputeType.EC2),
     });
   }
 
   private validateRemoteNetworkConfig(props: ClusterProps) {
-    if (!props.remoteNodeNetworks) { return;}
+    if (!props.remoteNodeNetworks) {
+      return;
+    }
     // validate that no two CIDRs overlap within the same remote node network
     props.remoteNodeNetworks.forEach((network, index) => {
       const { cidrs } = network;
       if (cidrs.length > 1) {
         cidrs.forEach((cidr1, j) => {
-          if (cidrs.slice(j + 1).some(cidr2 => validateCidrPairOverlap(cidr1, cidr2))) {
-            throw new ValidationError(`CIDR ${cidr1} should not overlap with another CIDR in remote node network #${index + 1}`, this);
+          if (cidrs.slice(j + 1).some((cidr2) => validateCidrPairOverlap(cidr1, cidr2))) {
+            throw new ValidationError(
+              `CIDR ${cidr1} should not overlap with another CIDR in remote node network #${index + 1}`,
+              this,
+            );
           }
         });
       }
@@ -2336,7 +2420,10 @@ export class Cluster extends ClusterBase {
       props.remoteNodeNetworks!.slice(i + 1).forEach((network2, j) => {
         const [overlap, remoteNodeCidr1, remoteNodeCidr2] = validateCidrBlocksOverlap(network1.cidrs, network2.cidrs);
         if (overlap) {
-          throw new ValidationError(`CIDR block ${remoteNodeCidr1} in remote node network #${i + 1} should not overlap with CIDR block ${remoteNodeCidr2} in remote node network #${i + j + 2}`, this);
+          throw new ValidationError(
+            `CIDR block ${remoteNodeCidr1} in remote node network #${i + 1} should not overlap with CIDR block ${remoteNodeCidr2} in remote node network #${i + j + 2}`,
+            this,
+          );
         }
       });
     });
@@ -2347,8 +2434,11 @@ export class Cluster extends ClusterBase {
         const { cidrs } = network;
         if (cidrs.length > 1) {
           cidrs.forEach((cidr1, j) => {
-            if (cidrs.slice(j + 1).some(cidr2 => validateCidrPairOverlap(cidr1, cidr2))) {
-              throw new ValidationError(`CIDR ${cidr1} should not overlap with another CIDR in remote pod network #${index + 1}`, this);
+            if (cidrs.slice(j + 1).some((cidr2) => validateCidrPairOverlap(cidr1, cidr2))) {
+              throw new ValidationError(
+                `CIDR ${cidr1} should not overlap with another CIDR in remote pod network #${index + 1}`,
+                this,
+              );
             }
           });
         }
@@ -2359,7 +2449,10 @@ export class Cluster extends ClusterBase {
         props.remotePodNetworks!.slice(i + 1).forEach((network2, j) => {
           const [overlap, remotePodCidr1, remotePodCidr2] = validateCidrBlocksOverlap(network1.cidrs, network2.cidrs);
           if (overlap) {
-            throw new ValidationError(`CIDR block ${remotePodCidr1} in remote pod network #${i + 1} should not overlap with CIDR block ${remotePodCidr2} in remote pod network #${i + j + 2}`, this);
+            throw new ValidationError(
+              `CIDR block ${remotePodCidr1} in remote pod network #${i + 1} should not overlap with CIDR block ${remotePodCidr2} in remote pod network #${i + j + 2}`,
+              this,
+            );
           }
         });
       });
@@ -2369,7 +2462,10 @@ export class Cluster extends ClusterBase {
         for (const podNetwork of props.remotePodNetworks) {
           const [overlap, remoteNodeCidr, remotePodCidr] = validateCidrBlocksOverlap(nodeNetwork.cidrs, podNetwork.cidrs);
           if (overlap) {
-            throw new ValidationError(`Remote node network CIDR block ${remoteNodeCidr} should not overlap with remote pod network CIDR block ${remotePodCidr}`, this);
+            throw new ValidationError(
+              `Remote node network CIDR block ${remoteNodeCidr} should not overlap with remote pod network CIDR block ${remotePodCidr}`,
+              this,
+            );
           }
         }
       }
@@ -2570,7 +2666,7 @@ export interface RemotePodNetwork {
 @propertyInjectable
 class ImportedCluster extends ClusterBase {
   /** Uniquely identifies this class. */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.ImportedCluster';
+  public static readonly PROPERTY_INJECTION_ID: string = "aws-cdk-lib.aws-eks.ImportedCluster";
   public readonly clusterName: string;
   public readonly clusterArn: string;
   public readonly connections = new ec2.Connections();
@@ -2592,23 +2688,35 @@ class ImportedCluster extends ClusterBase {
   // to null check on an instance of `Cluster`, which will always have this configured.
   private readonly _clusterSecurityGroup?: ec2.ISecurityGroup;
 
-  constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: ClusterAttributes,
+  ) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
     this.clusterName = props.clusterName;
     this.clusterArn = this.stack.formatArn(clusterArnComponents(props.clusterName));
-    this.kubectlRole = props.kubectlRoleArn ? iam.Role.fromRoleArn(this, 'KubectlRole', props.kubectlRoleArn) : undefined;
+    this.kubectlRole = props.kubectlRoleArn ? iam.Role.fromRoleArn(this, "KubectlRole", props.kubectlRoleArn) : undefined;
     this.kubectlLambdaRole = props.kubectlLambdaRole;
-    this.kubectlSecurityGroup = props.kubectlSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'KubectlSecurityGroup', props.kubectlSecurityGroupId) : undefined;
+    this.kubectlSecurityGroup = props.kubectlSecurityGroupId
+      ? ec2.SecurityGroup.fromSecurityGroupId(this, "KubectlSecurityGroup", props.kubectlSecurityGroupId)
+      : undefined;
     this.kubectlEnvironment = props.kubectlEnvironment;
-    this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
+    this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds
+      ? props.kubectlPrivateSubnetIds.map((subnetid, index) =>
+          ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid),
+        )
+      : undefined;
     this.kubectlLayer = props.kubectlLayer;
     this.ipFamily = props.ipFamily;
     this.awscliLayer = props.awscliLayer;
     this.kubectlMemory = props.kubectlMemory;
-    this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterHandlerSecurityGroup', props.clusterHandlerSecurityGroupId) : undefined;
+    this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroupId
+      ? ec2.SecurityGroup.fromSecurityGroupId(this, "ClusterHandlerSecurityGroup", props.clusterHandlerSecurityGroupId)
+      : undefined;
     this.kubectlProvider = props.kubectlProvider;
     this.onEventLayer = props.onEventLayer;
     this.prune = props.prune ?? true;
@@ -2620,7 +2728,11 @@ class ImportedCluster extends ClusterBase {
     }
 
     if (props.clusterSecurityGroupId) {
-      this._clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
+      this._clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(
+        this,
+        "ClusterSecurityGroup",
+        this.clusterSecurityGroupId,
+      );
       this.connections.addSecurityGroup(this._clusterSecurityGroup);
     }
   }
@@ -2723,13 +2835,17 @@ export class EksOptimizedImage implements ec2.IMachineImage {
     this.kubernetesVersion = props.kubernetesVersion ?? LATEST_KUBERNETES_VERSION;
 
     // set the SSM parameter name
-    this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
-      + (this.nodeType === NodeType.STANDARD ? this.cpuArch === CpuArch.X86_64 ?
-        'amazon-linux-2/' : 'amazon-linux-2-arm64/' : '')
-      + (this.nodeType === NodeType.GPU ? 'amazon-linux-2-gpu/' : '')
-      + (this.nodeType === NodeType.INFERENTIA ? 'amazon-linux-2-gpu/' : '')
-      + (this.nodeType === NodeType.TRAINIUM ? 'amazon-linux-2-gpu/' : '')
-      + 'recommended/image_id';
+    this.amiParameterName =
+      `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/` +
+      (this.nodeType === NodeType.STANDARD
+        ? this.cpuArch === CpuArch.X86_64
+          ? "amazon-linux-2/"
+          : "amazon-linux-2-arm64/"
+        : "") +
+      (this.nodeType === NodeType.GPU ? "amazon-linux-2-gpu/" : "") +
+      (this.nodeType === NodeType.INFERENTIA ? "amazon-linux-2-gpu/" : "") +
+      (this.nodeType === NodeType.TRAINIUM ? "amazon-linux-2-gpu/" : "") +
+      "recommended/image_id";
   }
 
   /**
@@ -2746,7 +2862,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
 }
 
 // MAINTAINERS: use ./scripts/kube_bump.sh to update LATEST_KUBERNETES_VERSION
-const LATEST_KUBERNETES_VERSION = '1.24';
+const LATEST_KUBERNETES_VERSION = "1.24";
 
 /**
  * Whether the worker nodes should support GPU or just standard instances
@@ -2755,22 +2871,22 @@ export enum NodeType {
   /**
    * Standard instances
    */
-  STANDARD = 'Standard',
+  STANDARD = "Standard",
 
   /**
    * GPU instances
    */
-  GPU = 'GPU',
+  GPU = "GPU",
 
   /**
    * Inferentia instances
    */
-  INFERENTIA = 'INFERENTIA',
+  INFERENTIA = "INFERENTIA",
 
   /**
    * Trainium instances
    */
-  TRAINIUM = 'TRAINIUM',
+  TRAINIUM = "TRAINIUM",
 }
 
 /**
@@ -2780,12 +2896,12 @@ export enum CpuArch {
   /**
    * arm64 CPU type
    */
-  ARM_64 = 'arm64',
+  ARM_64 = "arm64",
 
   /**
    * x86_64 CPU type
    */
-  X86_64 = 'x86_64',
+  X86_64 = "x86_64",
 }
 
 /**
@@ -2795,12 +2911,12 @@ export enum CoreDnsComputeType {
   /**
    * Deploy CoreDNS on EC2 instances.
    */
-  EC2 = 'ec2',
+  EC2 = "ec2",
 
   /**
    * Deploy CoreDNS on Fargate-managed instances.
    */
-  FARGATE = 'fargate',
+  FARGATE = "fargate",
 }
 
 /**
@@ -2843,10 +2959,13 @@ function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
 }
 
 function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
-  return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
-    INSTANCE_TYPES.graviton3.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
-      INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
-        CpuArch.X86_64;
+  return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3))
+    ? CpuArch.ARM_64
+    : INSTANCE_TYPES.graviton3.includes(instanceType.toString().substring(0, 3))
+      ? CpuArch.ARM_64
+      : INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2))
+        ? CpuArch.ARM_64
+        : CpuArch.X86_64;
 }
 
 function flatten<A>(xss: A[][]): A[] {
@@ -2863,7 +2982,7 @@ function validateCidrBlocksOverlap(cidrBlocks1: string[], cidrBlocks2: string[])
     }
   }
 
-  return [false, '', ''];
+  return [false, "", ""];
 }
 
 function validateCidrPairOverlap(cidr1: string, cidr2: string): boolean {

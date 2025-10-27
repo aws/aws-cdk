@@ -1,31 +1,42 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { Construct, Node } from 'constructs';
-import * as YAML from 'yaml';
-import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
-import { IAddon, Addon } from './addon';
-import { AlbController, AlbControllerOptions } from './alb-controller';
-import { FargateProfile, FargateProfileOptions } from './fargate-profile';
-import { HelmChart, HelmChartOptions } from './helm-chart';
-import { INSTANCE_TYPES } from './instance-types';
-import { KubernetesManifest, KubernetesManifestOptions } from './k8s-manifest';
-import { KubernetesObjectValue } from './k8s-object-value';
-import { KubernetesPatch } from './k8s-patch';
-import { IKubectlProvider, KubectlProvider, KubectlProviderOptions } from './kubectl-provider';
-import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
-import { OpenIdConnectProvider } from './oidc-provider';
-import { BottleRocketImage } from './private/bottlerocket';
-import { ServiceAccount, ServiceAccountOptions } from './service-account';
-import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
-import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Tags, Token, Duration, ArnComponents, Stack } from 'aws-cdk-lib/core';
-import { CfnCluster } from 'aws-cdk-lib/aws-eks';
-import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import * as fs from "fs";
+import * as path from "path";
+import { Construct, Node } from "constructs";
+import * as YAML from "yaml";
+import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from "./access-entry";
+import { IAddon, Addon } from "./addon";
+import { AlbController, AlbControllerOptions } from "./alb-controller";
+import { FargateProfile, FargateProfileOptions } from "./fargate-profile";
+import { HelmChart, HelmChartOptions } from "./helm-chart";
+import { INSTANCE_TYPES } from "./instance-types";
+import { KubernetesManifest, KubernetesManifestOptions } from "./k8s-manifest";
+import { KubernetesObjectValue } from "./k8s-object-value";
+import { KubernetesPatch } from "./k8s-patch";
+import { IKubectlProvider, KubectlProvider, KubectlProviderOptions } from "./kubectl-provider";
+import { Nodegroup, NodegroupOptions } from "./managed-nodegroup";
+import { OpenIdConnectProvider } from "./oidc-provider";
+import { BottleRocketImage } from "./private/bottlerocket";
+import { ServiceAccount, ServiceAccountOptions } from "./service-account";
+import { renderAmazonLinuxUserData, renderBottlerocketUserData } from "./user-data";
+import * as autoscaling from "aws-cdk-lib/aws-autoscaling";
+import * as ec2 from "aws-cdk-lib/aws-ec2";
+import * as iam from "aws-cdk-lib/aws-iam";
+import * as kms from "aws-cdk-lib/aws-kms";
+import * as ssm from "aws-cdk-lib/aws-ssm";
+import {
+  Annotations,
+  CfnOutput,
+  CfnResource,
+  IResource,
+  Resource,
+  Tags,
+  Token,
+  Duration,
+  ArnComponents,
+  Stack,
+} from "aws-cdk-lib/core";
+import { CfnCluster } from "aws-cdk-lib/aws-eks";
+import { MethodMetadata, addConstructMetadata } from "aws-cdk-lib/core/lib/metadata-resource";
+import { propertyInjectable } from "aws-cdk-lib/core/lib/prop-injectable";
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -426,7 +437,6 @@ export interface ClusterCommonOptions {
  * Group access configuration together.
  */
 interface EndpointAccessConfig {
-
   /**
    * Indicates if private access is enabled.
    */
@@ -443,7 +453,6 @@ interface EndpointAccessConfig {
    * @default - No restrictions.
    */
   readonly publicCidrs?: string[];
-
 }
 
 /**
@@ -488,9 +497,10 @@ export class EndpointAccess {
      *
      * @internal
      */
-    public readonly _config: EndpointAccessConfig) {
+    public readonly _config: EndpointAccessConfig,
+  ) {
     if (!_config.publicAccess && _config.publicCidrs && _config.publicCidrs.length > 0) {
-      throw new Error('CIDR blocks can only be configured when public access is enabled');
+      throw new Error("CIDR blocks can only be configured when public access is enabled");
     }
   }
 
@@ -504,7 +514,9 @@ export class EndpointAccess {
     if (!this._config.privateAccess) {
       // when private access is disabled, we can't restric public
       // access since it will render the kubectl provider unusable.
-      throw new Error('Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom() instead.');
+      throw new Error(
+        "Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom() instead.",
+      );
     }
     return new EndpointAccess({
       ...this._config,
@@ -538,7 +550,6 @@ export interface ComputeConfig {
    * @default - generated by the CDK
    */
   readonly nodeRole?: iam.IRole;
-
 }
 
 /**
@@ -611,7 +622,7 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV25Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v25`.
    */
-  public static readonly V1_25 = KubernetesVersion.of('1.25');
+  public static readonly V1_25 = KubernetesVersion.of("1.25");
 
   /**
    * Kubernetes version 1.26
@@ -620,7 +631,7 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV26Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v26`.
    */
-  public static readonly V1_26 = KubernetesVersion.of('1.26');
+  public static readonly V1_26 = KubernetesVersion.of("1.26");
 
   /**
    * Kubernetes version 1.27
@@ -629,7 +640,7 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV27Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v27`.
    */
-  public static readonly V1_27 = KubernetesVersion.of('1.27');
+  public static readonly V1_27 = KubernetesVersion.of("1.27");
 
   /**
    * Kubernetes version 1.28
@@ -638,7 +649,7 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV28Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v28`.
    */
-  public static readonly V1_28 = KubernetesVersion.of('1.28');
+  public static readonly V1_28 = KubernetesVersion.of("1.28");
 
   /**
    * Kubernetes version 1.29
@@ -647,7 +658,7 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV29Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v29`.
    */
-  public static readonly V1_29 = KubernetesVersion.of('1.29');
+  public static readonly V1_29 = KubernetesVersion.of("1.29");
 
   /**
    * Kubernetes version 1.30
@@ -656,7 +667,7 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV30Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v30`.
    */
-  public static readonly V1_30 = KubernetesVersion.of('1.30');
+  public static readonly V1_30 = KubernetesVersion.of("1.30");
 
   /**
    * Kubernetes version 1.31
@@ -665,7 +676,7 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV31Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v31`.
    */
-  public static readonly V1_31 = KubernetesVersion.of('1.31');
+  public static readonly V1_31 = KubernetesVersion.of("1.31");
 
   /**
    * Kubernetes version 1.32
@@ -674,7 +685,7 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV32Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v32`.
    */
-  public static readonly V1_32 = KubernetesVersion.of('1.32');
+  public static readonly V1_32 = KubernetesVersion.of("1.32");
 
   /**
    * Kubernetes version 1.33
@@ -683,18 +694,29 @@ export class KubernetesVersion {
    * `kubectlLayer` property with a `KubectlV33Layer` from
    * `@aws-cdk/lambda-layer-kubectl-v33`.
    */
-  public static readonly V1_33 = KubernetesVersion.of('1.33');
+  public static readonly V1_33 = KubernetesVersion.of("1.33");
+
+  /**
+   * Kubernetes version 1.34
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV33Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v34`.
+   */
+  public static readonly V1_34 = KubernetesVersion.of("1.34");
 
   /**
    * Custom cluster version
    * @param version custom version number
    */
-  public static of(version: string) { return new KubernetesVersion(version); }
+  public static of(version: string) {
+    return new KubernetesVersion(version);
+  }
   /**
    *
    * @param version cluster version number
    */
-  private constructor(public readonly version: string) { }
+  private constructor(public readonly version: string) {}
 }
 
 // Shared definition with packages/@aws-cdk/custom-resource-handlers/test/aws-eks/compare-log.test.ts
@@ -705,23 +727,23 @@ export enum ClusterLoggingTypes {
   /**
    * Logs pertaining to API requests to the cluster.
    */
-  API = 'api',
+  API = "api",
   /**
    * Logs pertaining to cluster access via the Kubernetes API.
    */
-  AUDIT = 'audit',
+  AUDIT = "audit",
   /**
    * Logs pertaining to authentication requests into the cluster.
    */
-  AUTHENTICATOR = 'authenticator',
+  AUTHENTICATOR = "authenticator",
   /**
    * Logs pertaining to state of cluster controllers.
    */
-  CONTROLLER_MANAGER = 'controllerManager',
+  CONTROLLER_MANAGER = "controllerManager",
   /**
    * Logs pertaining to scheduling decisions.
    */
-  SCHEDULER = 'scheduler',
+  SCHEDULER = "scheduler",
 }
 
 /**
@@ -731,11 +753,11 @@ export enum IpFamily {
   /**
    * Use IPv4 for pods and services in your cluster.
    */
-  IP_V4 = 'ipv4',
+  IP_V4 = "ipv4",
   /**
    * Use IPv6 for pods and services in your cluster.
    */
-  IP_V6 = 'ipv6',
+  IP_V6 = "ipv6",
 }
 
 abstract class ClusterBase extends Resource implements ICluster {
@@ -787,7 +809,7 @@ abstract class ClusterBase extends Resource implements ICluster {
     const cdk8sChart = chart as any;
 
     // see https://github.com/awslabs/cdk8s/blob/master/packages/cdk8s/src/chart.ts#L84
-    if (typeof cdk8sChart.toJson !== 'function') {
+    if (typeof cdk8sChart.toJson !== "function") {
       throw new Error(`Invalid cdk8s chart. Must contain a 'toJson' method, but found ${typeof cdk8sChart.toJson}`);
     }
 
@@ -846,28 +868,31 @@ abstract class ClusterBase extends Resource implements ICluster {
     }
 
     if (bootstrapEnabled) {
-      const userData = options.machineImageType === MachineImageType.BOTTLEROCKET ?
-        renderBottlerocketUserData(this) :
-        renderAmazonLinuxUserData(this, autoScalingGroup, options.bootstrapOptions);
+      const userData =
+        options.machineImageType === MachineImageType.BOTTLEROCKET
+          ? renderBottlerocketUserData(this)
+          : renderAmazonLinuxUserData(this, autoScalingGroup, options.bootstrapOptions);
       autoScalingGroup.addUserData(...userData);
     }
 
-    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'));
-    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'));
-    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
+    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEKSWorkerNodePolicy"));
+    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEKS_CNI_Policy"));
+    autoScalingGroup.role.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEC2ContainerRegistryReadOnly"),
+    );
 
     // EKS Required Tags
     // https://docs.aws.amazon.com/eks/latest/userguide/worker.html
-    Tags.of(autoScalingGroup).add(`kubernetes.io/cluster/${this.clusterName}`, 'owned', {
+    Tags.of(autoScalingGroup).add(`kubernetes.io/cluster/${this.clusterName}`, "owned", {
       applyToLaunchedInstances: true,
       // exclude security groups to avoid multiple "owned" security groups.
       // (the cluster security group already has this tag)
-      excludeResourceTypes: ['AWS::EC2::SecurityGroup'],
+      excludeResourceTypes: ["AWS::EC2::SecurityGroup"],
     });
 
     // since we are not mapping the instance role to RBAC, synthesize an
     // output so it can be pasted into `aws-auth-cm.yaml`
-    new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
+    new CfnOutput(autoScalingGroup, "InstanceRoleARN", {
       value: autoScalingGroup.role.roleArn,
     });
 
@@ -883,7 +908,6 @@ abstract class ClusterBase extends Resource implements ICluster {
  * Options for fetching a ServiceLoadBalancerAddress.
  */
 export interface ServiceLoadBalancerAddressOptions {
-
   /**
    * Timeout for waiting on the load balancer address.
    *
@@ -897,7 +921,6 @@ export interface ServiceLoadBalancerAddressOptions {
    * @default 'default'
    */
   readonly namespace?: string;
-
 }
 
 /**
@@ -915,7 +938,7 @@ export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAd
 @propertyInjectable
 export class Cluster extends ClusterBase {
   /** Uniquely identifies this class. */
-  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-eks-v2-alpha.Cluster';
+  public static readonly PROPERTY_INJECTION_ID: string = "@aws-cdk.aws-eks-v2-alpha.Cluster";
 
   /**
    * Import an existing cluster
@@ -1049,7 +1072,7 @@ export class Cluster extends ClusterBase {
   private readonly version: KubernetesVersion;
 
   // TODO: revisit logging format
-  private readonly logging?: { [key: string]: { [key:string]: any} };
+  private readonly logging?: { [key: string]: { [key: string]: any } };
 
   /**
    * A dummy CloudFormation resource that is used as a wait barrier which
@@ -1086,7 +1109,7 @@ export class Cluster extends ClusterBase {
     addConstructMetadata(this, props);
 
     this.prune = props.prune ?? true;
-    this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
+    this.vpc = props.vpc || new ec2.Vpc(this, "DefaultVpc");
     this.version = props.version;
 
     this._kubectlProviderOptions = props.kubectlProviderOptions;
@@ -1094,12 +1117,12 @@ export class Cluster extends ClusterBase {
     this.tagSubnets();
 
     // this is the role used by EKS when interacting with AWS resources
-    this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSClusterPolicy'),
-      ],
-    });
+    this.role =
+      props.role ||
+      new iam.Role(this, "Role", {
+        assumedBy: new iam.ServicePrincipal("eks.amazonaws.com"),
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEKSClusterPolicy")],
+      });
 
     // validate all automode relevant configurations
     const autoModeEnabled = this.isValidAutoModeConfig(props);
@@ -1107,10 +1130,12 @@ export class Cluster extends ClusterBase {
     if (autoModeEnabled) {
       // attach required managed policy for the cluster role in EKS Auto Mode
       // see - https://docs.aws.amazon.com/eks/latest/userguide/auto-cluster-iam-role.html
-      ['AmazonEKSComputePolicy',
-        'AmazonEKSBlockStoragePolicy',
-        'AmazonEKSLoadBalancingPolicy',
-        'AmazonEKSNetworkingPolicy'].forEach((policyName) => {
+      [
+        "AmazonEKSComputePolicy",
+        "AmazonEKSBlockStoragePolicy",
+        "AmazonEKSLoadBalancingPolicy",
+        "AmazonEKSNetworkingPolicy",
+      ].forEach((policyName) => {
         this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName(policyName));
       });
 
@@ -1121,65 +1146,75 @@ export class Cluster extends ClusterBase {
         this.role.assumeRolePolicy?.addStatements(
           new iam.PolicyStatement({
             effect: iam.Effect.ALLOW,
-            principals: [new iam.ServicePrincipal('eks.amazonaws.com')],
-            actions: ['sts:TagSession'],
+            principals: [new iam.ServicePrincipal("eks.amazonaws.com")],
+            actions: ["sts:TagSession"],
           }),
         );
       }
     }
 
-    const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'ControlPlaneSecurityGroup', {
-      vpc: this.vpc,
-      description: 'EKS Control Plane Security Group',
-    });
+    const securityGroup =
+      props.securityGroup ||
+      new ec2.SecurityGroup(this, "ControlPlaneSecurityGroup", {
+        vpc: this.vpc,
+        description: "EKS Control Plane Security Group",
+      });
 
-    this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }];
+    this.vpcSubnets = props.vpcSubnets ?? [
+      { subnetType: ec2.SubnetType.PUBLIC },
+      { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    ];
 
-    const selectedSubnetIdsPerGroup = this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds);
+    const selectedSubnetIdsPerGroup = this.vpcSubnets.map((s) => this.vpc.selectSubnets(s).subnetIds);
     if (selectedSubnetIdsPerGroup.some(Token.isUnresolved) && selectedSubnetIdsPerGroup.length > 1) {
-      throw new Error('eks.Cluster: cannot select multiple subnet groups from a VPC imported from list tokens with unknown length. Select only one subnet group, pass a length to Fn.split, or switch to Vpc.fromLookup.');
+      throw new Error(
+        "eks.Cluster: cannot select multiple subnet groups from a VPC imported from list tokens with unknown length. Select only one subnet group, pass a length to Fn.split, or switch to Vpc.fromLookup.",
+      );
     }
 
     // Get subnetIds for all selected subnets
     const subnetIds = Array.from(new Set(flatten(selectedSubnetIdsPerGroup)));
 
-    this.logging = props.clusterLogging ? {
-      clusterLogging: {
-        enabledTypes: props.clusterLogging.map((type) => ({ type })),
-      },
-    } : undefined;
+    this.logging = props.clusterLogging
+      ? {
+          clusterLogging: {
+            enabledTypes: props.clusterLogging.map((type) => ({ type })),
+          },
+        }
+      : undefined;
 
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
     this.ipFamily = props.ipFamily ?? IpFamily.IP_V4;
 
     const privateSubnets = this.selectPrivateSubnets().slice(0, 16);
     const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
-    const publicAccessRestricted = !publicAccessDisabled
-      && this.endpointAccess._config.publicCidrs
-      && this.endpointAccess._config.publicCidrs.length !== 0;
+    const publicAccessRestricted =
+      !publicAccessDisabled &&
+      this.endpointAccess._config.publicCidrs &&
+      this.endpointAccess._config.publicCidrs.length !== 0;
 
     // validate endpoint access configuration
 
     if (privateSubnets.length === 0 && publicAccessDisabled) {
       // no private subnets and no public access at all, no good.
-      throw new Error('Vpc must contain private subnets when public endpoint access is disabled');
+      throw new Error("Vpc must contain private subnets when public endpoint access is disabled");
     }
 
     if (privateSubnets.length === 0 && publicAccessRestricted) {
       // no private subnets and public access is restricted, no good.
-      throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
+      throw new Error("Vpc must contain private subnets when public endpoint access is restricted");
     }
 
     if (props.serviceIpv4Cidr && props.ipFamily == IpFamily.IP_V6) {
-      throw new Error('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6');
+      throw new Error("Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6");
     }
 
-    const resource = this._clusterResource = new CfnCluster(this, 'Resource', {
+    const resource = (this._clusterResource = new CfnCluster(this, "Resource", {
       name: this.physicalName,
       roleArn: this.role.roleArn,
       version: props.version.version,
       accessConfig: {
-        authenticationMode: 'API',
+        authenticationMode: "API",
         bootstrapClusterCreatorAdminPermissions: props.bootstrapClusterCreatorAdminPermissions,
       },
       computeConfig: {
@@ -1187,10 +1222,11 @@ export class Cluster extends ClusterBase {
         // If the computeConfig enabled flag is set to false when creating a cluster with Auto Mode,
         // the request must not include values for the nodeRoleArn or nodePools fields.
         // Also, if nodePools is empty, nodeRoleArn should not be included to prevent deployment failures
-        nodePools: !autoModeEnabled ? undefined : props.compute?.nodePools ?? ['system', 'general-purpose'],
-        nodeRoleArn: !autoModeEnabled || (props.compute?.nodePools && props.compute.nodePools.length === 0) ?
-          undefined :
-          props.compute?.nodeRole?.roleArn ?? this.addNodePoolRole(`${id}nodePoolRole`).roleArn,
+        nodePools: !autoModeEnabled ? undefined : (props.compute?.nodePools ?? ["system", "general-purpose"]),
+        nodeRoleArn:
+          !autoModeEnabled || (props.compute?.nodePools && props.compute.nodePools.length === 0)
+            ? undefined
+            : (props.compute?.nodeRole?.roleArn ?? this.addNodePoolRole(`${id}nodePoolRole`).roleArn),
       },
       storageConfig: {
         blockStorage: {
@@ -1211,17 +1247,21 @@ export class Cluster extends ClusterBase {
         endpointPublicAccess: this.endpointAccess._config.publicAccess,
         publicAccessCidrs: this.endpointAccess._config.publicCidrs,
       },
-      ...(props.secretsEncryptionKey ? {
-        encryptionConfig: [{
-          provider: {
-            keyArn: props.secretsEncryptionKey.keyRef.keyArn,
-          },
-          resources: ['secrets'],
-        }],
-      } : {}),
-      tags: Object.keys(props.tags ?? {}).map(k => ({ key: k, value: props.tags![k] })),
+      ...(props.secretsEncryptionKey
+        ? {
+            encryptionConfig: [
+              {
+                provider: {
+                  keyArn: props.secretsEncryptionKey.keyRef.keyArn,
+                },
+                resources: ["secrets"],
+              },
+            ],
+          }
+        : {}),
+      tags: Object.keys(props.tags ?? {}).map((k) => ({ key: k, value: props.tags![k] })),
       logging: this.logging,
-    });
+    }));
 
     let kubectlSubnets = this._kubectlProviderOptions?.privateSubnets;
 
@@ -1231,7 +1271,9 @@ export class Cluster extends ClusterBase {
 
       // validate VPC properties according to: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
       if (this.vpc instanceof ec2.Vpc && !(this.vpc.dnsHostnamesEnabled && this.vpc.dnsSupportEnabled)) {
-        throw new Error('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
+        throw new Error(
+          "Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.",
+        );
       }
 
       kubectlSubnets = privateSubnets;
@@ -1242,11 +1284,11 @@ export class Cluster extends ClusterBase {
     }
 
     // we use an SSM parameter as a barrier because it's free and fast.
-    this._kubectlReadyBarrier = new CfnResource(this, 'KubectlReadyBarrier', {
-      type: 'AWS::SSM::Parameter',
+    this._kubectlReadyBarrier = new CfnResource(this, "KubectlReadyBarrier", {
+      type: "AWS::SSM::Parameter",
       properties: {
-        Type: 'String',
-        Value: 'aws:cdk:eks:kubectl-ready',
+        Type: "String",
+        Value: "aws:cdk:eks:kubectl-ready",
       },
     });
 
@@ -1261,7 +1303,11 @@ export class Cluster extends ClusterBase {
     this.clusterSecurityGroupId = resource.attrClusterSecurityGroupId;
     this.clusterEncryptionConfigKeyArn = resource.attrEncryptionConfigKeyArn;
 
-    this.clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
+    this.clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(
+      this,
+      "ClusterSecurityGroup",
+      this.clusterSecurityGroupId,
+    );
 
     this.connections = new ec2.Connections({
       securityGroups: [this.clusterSecurityGroup, securityGroup],
@@ -1274,7 +1320,7 @@ export class Cluster extends ClusterBase {
     const commonCommandOptions = [`--region ${stack.region}`];
 
     if (props.kubectlProviderOptions) {
-      this._kubectlProvider = new KubectlProvider(this, 'KubectlProvider', {
+      this._kubectlProvider = new KubectlProvider(this, "KubectlProvider", {
         cluster: this,
         role: this._kubectlProviderOptions?.role,
         awscliLayer: this._kubectlProviderOptions?.awscliLayer,
@@ -1286,14 +1332,14 @@ export class Cluster extends ClusterBase {
 
       // give the handler role admin access to the cluster
       // so it can deploy/query any resource.
-      this._clusterAdminAccess = this.grantClusterAdmin('ClusterAdminRoleAccess', this._kubectlProvider?.role!.roleArn);
+      this._clusterAdminAccess = this.grantClusterAdmin("ClusterAdminRoleAccess", this._kubectlProvider?.role!.roleArn);
     }
 
     // do not create a masters role if one is not provided. Trusting the accountRootPrincipal() is too permissive.
     if (props.mastersRole) {
       const mastersRole = props.mastersRole;
-      this.grantAccess('mastersRoleAccess', props.mastersRole.roleArn, [
-        AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+      this.grantAccess("mastersRoleAccess", props.mastersRole.roleArn, [
+        AccessPolicy.fromAccessPolicyName("AmazonEKSClusterAdminPolicy", {
           accessScopeType: AccessScopeType.CLUSTER,
         }),
       ]);
@@ -1306,9 +1352,11 @@ export class Cluster extends ClusterBase {
     }
 
     // if any of defaultCapacity* properties are set, we need a default capacity(nodegroup)
-    if (props.defaultCapacity !== undefined ||
-        props.defaultCapacityType !== undefined ||
-        props.defaultCapacityInstance !== undefined) {
+    if (
+      props.defaultCapacity !== undefined ||
+      props.defaultCapacityType !== undefined ||
+      props.defaultCapacityInstance !== undefined
+    ) {
       const minCapacity = props.defaultCapacity ?? DEFAULT_CAPACITY_COUNT;
       if (minCapacity > 0) {
         const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
@@ -1317,9 +1365,12 @@ export class Cluster extends ClusterBase {
 
         // Only create EC2 or Nodegroup capacity if not using AUTOMODE
         if (capacityType === DefaultCapacityType.EC2) {
-          this.defaultCapacity = this.addAutoScalingGroupCapacity('DefaultCapacity', { instanceType, minCapacity });
+          this.defaultCapacity = this.addAutoScalingGroupCapacity("DefaultCapacity", { instanceType, minCapacity });
         } else if (capacityType === DefaultCapacityType.NODEGROUP) {
-          this.defaultNodegroup = this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity });
+          this.defaultNodegroup = this.addNodegroupCapacity("DefaultCapacity", {
+            instanceTypes: [instanceType],
+            minSize: minCapacity,
+          });
         }
         // For AUTOMODE, we don't create any explicit capacity as it's managed by EKS
       }
@@ -1332,9 +1383,9 @@ export class Cluster extends ClusterBase {
 
     const outputConfigCommand = (props.outputConfigCommand ?? true) && props.mastersRole;
     if (outputConfigCommand) {
-      const postfix = commonCommandOptions.join(' ');
-      new CfnOutput(this, 'ConfigCommand', { value: `${updateConfigCommandPrefix} ${postfix}` });
-      new CfnOutput(this, 'GetTokenCommand', { value: `${getTokenCommandPrefix} ${postfix}` });
+      const postfix = commonCommandOptions.join(" ");
+      new CfnOutput(this, "ConfigCommand", { value: `${updateConfigCommandPrefix} ${postfix}` });
+      new CfnOutput(this, "GetTokenCommand", { value: `${getTokenCommandPrefix} ${postfix}` });
     }
   }
 
@@ -1371,7 +1422,7 @@ export class Cluster extends ClusterBase {
       principal,
       cluster: this,
       accessPolicies: [
-        AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+        AccessPolicy.fromAccessPolicyName("AmazonEKSClusterAdminPolicy", {
           accessScopeType: AccessScopeType.CLUSTER,
         }),
       ],
@@ -1390,10 +1441,10 @@ export class Cluster extends ClusterBase {
   public getServiceLoadBalancerAddress(serviceName: string, options: ServiceLoadBalancerAddressOptions = {}): string {
     const loadBalancerAddress = new KubernetesObjectValue(this, `${serviceName}LoadBalancerAddress`, {
       cluster: this,
-      objectType: 'service',
+      objectType: "service",
       objectName: serviceName,
       objectNamespace: options.namespace,
-      jsonPath: '.status.loadBalancer.ingress[0].hostname',
+      jsonPath: ".status.loadBalancer.ingress[0].hostname",
       timeout: options.timeout,
     });
 
@@ -1410,10 +1461,10 @@ export class Cluster extends ClusterBase {
   public getIngressLoadBalancerAddress(ingressName: string, options: IngressLoadBalancerAddressOptions = {}): string {
     const loadBalancerAddress = new KubernetesObjectValue(this, `${ingressName}LoadBalancerAddress`, {
       cluster: this,
-      objectType: 'ingress',
+      objectType: "ingress",
       objectName: ingressName,
       objectNamespace: options.namespace,
-      jsonPath: '.status.loadBalancer.ingress[0].hostname',
+      jsonPath: ".status.loadBalancer.ingress[0].hostname",
       timeout: options.timeout,
     });
 
@@ -1434,20 +1485,21 @@ export class Cluster extends ClusterBase {
   @MethodMetadata()
   public addAutoScalingGroupCapacity(id: string, options: AutoScalingGroupCapacityOptions): autoscaling.AutoScalingGroup {
     if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined) {
-      throw new Error('bootstrapOptions is not supported for Bottlerocket');
+      throw new Error("bootstrapOptions is not supported for Bottlerocket");
     }
     const asg = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
       vpc: this.vpc,
-      machineImage: options.machineImageType === MachineImageType.BOTTLEROCKET ?
-        new BottleRocketImage({
-          kubernetesVersion: this.version.version,
-        }) :
-        new EksOptimizedImage({
-          nodeType: nodeTypeForInstanceType(options.instanceType),
-          cpuArch: cpuArchForInstanceType(options.instanceType),
-          kubernetesVersion: this.version.version,
-        }),
+      machineImage:
+        options.machineImageType === MachineImageType.BOTTLEROCKET
+          ? new BottleRocketImage({
+              kubernetesVersion: this.version.version,
+            })
+          : new EksOptimizedImage({
+              nodeType: nodeTypeForInstanceType(options.instanceType),
+              cpuArch: cpuArchForInstanceType(options.instanceType),
+              kubernetesVersion: this.version.version,
+            }),
     });
 
     this.connectAutoScalingGroupCapacity(asg, {
@@ -1456,8 +1508,10 @@ export class Cluster extends ClusterBase {
       machineImageType: options.machineImageType,
     });
 
-    if (nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA ||
-      nodeTypeForInstanceType(options.instanceType) === NodeType.TRAINIUM) {
+    if (
+      nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA ||
+      nodeTypeForInstanceType(options.instanceType) === NodeType.TRAINIUM
+    ) {
       this.addNeuronDevicePlugin();
     }
 
@@ -1475,11 +1529,9 @@ export class Cluster extends ClusterBase {
    */
   @MethodMetadata()
   public addNodegroupCapacity(id: string, options?: NodegroupOptions): Nodegroup {
-    const hasInferentiaOrTrainiumInstanceType = [
-      options?.instanceType,
-      ...options?.instanceTypes ?? [],
-    ].some(i => i && (nodeTypeForInstanceType(i) === NodeType.INFERENTIA ||
-      nodeTypeForInstanceType(i) === NodeType.TRAINIUM));
+    const hasInferentiaOrTrainiumInstanceType = [options?.instanceType, ...(options?.instanceTypes ?? [])].some(
+      (i) => i && (nodeTypeForInstanceType(i) === NodeType.INFERENTIA || nodeTypeForInstanceType(i) === NodeType.TRAINIUM),
+    );
 
     if (hasInferentiaOrTrainiumInstanceType) {
       this.addNeuronDevicePlugin();
@@ -1508,7 +1560,7 @@ export class Cluster extends ClusterBase {
    */
   public get openIdConnectProvider() {
     if (!this._openIdConnectProvider) {
-      this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
+      this._openIdConnectProvider = new OpenIdConnectProvider(this, "OpenIdConnectProvider", {
         url: this.clusterOpenIdConnectIssuerUrl,
       });
     }
@@ -1531,9 +1583,9 @@ export class Cluster extends ClusterBase {
    */
   public get eksPodIdentityAgent(): IAddon | undefined {
     if (!this._eksPodIdentityAgent) {
-      this._eksPodIdentityAgent = new Addon(this, 'EksPodIdentityAgentAddon', {
+      this._eksPodIdentityAgent = new Addon(this, "EksPodIdentityAgentAddon", {
         cluster: this,
-        addonName: 'eks-pod-identity-agent',
+        addonName: "eks-pod-identity-agent",
       });
     }
 
@@ -1580,27 +1632,32 @@ export class Cluster extends ClusterBase {
    *
    */
   private isValidAutoModeConfig(props: ClusterProps): boolean {
-    const autoModeEnabled = props.defaultCapacityType === undefined || props.defaultCapacityType == DefaultCapacityType.AUTOMODE;
+    const autoModeEnabled =
+      props.defaultCapacityType === undefined || props.defaultCapacityType == DefaultCapacityType.AUTOMODE;
     // if using AUTOMODE
     if (autoModeEnabled) {
       // When using AUTOMODE, nodePools values are case-sensitive and must be general-purpose and/or system
       if (props.compute?.nodePools) {
-        const validNodePools = ['general-purpose', 'system'];
-        const invalidPools = props.compute.nodePools.filter(pool => !validNodePools.includes(pool));
+        const validNodePools = ["general-purpose", "system"];
+        const invalidPools = props.compute.nodePools.filter((pool) => !validNodePools.includes(pool));
         if (invalidPools.length > 0) {
-          throw new Error(`Invalid node pool values: ${invalidPools.join(', ')}. Valid values are: ${validNodePools.join(', ')}`);
+          throw new Error(
+            `Invalid node pool values: ${invalidPools.join(", ")}. Valid values are: ${validNodePools.join(", ")}`,
+          );
         }
       }
 
       // When using AUTOMODE, defaultCapacity and defaultCapacityInstance cannot be specified
       if (props.defaultCapacity !== undefined || props.defaultCapacityInstance !== undefined) {
-        throw new Error('Cannot specify defaultCapacity or defaultCapacityInstance when using Auto Mode. Auto Mode manages compute resources automatically.');
+        throw new Error(
+          "Cannot specify defaultCapacity or defaultCapacityInstance when using Auto Mode. Auto Mode manages compute resources automatically.",
+        );
       }
     } else {
       // if NOT using AUTOMODE
       if (props.compute) {
         // When not using AUTOMODE, compute must be undefined
-        throw new Error('Cannot specify compute without using DefaultCapacityType.AUTOMODE');
+        throw new Error("Cannot specify compute without using DefaultCapacityType.AUTOMODE");
       }
     }
 
@@ -1609,12 +1666,12 @@ export class Cluster extends ClusterBase {
 
   private addNodePoolRole(id: string): iam.Role {
     const role = new iam.Role(this, id, {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal("ec2.amazonaws.com"),
       // to be able to access the AWSLoadBalancerController
       managedPolicies: [
         // see https://docs.aws.amazon.com/eks/latest/userguide/automode-get-started-cli.html#auto-mode-create-roles
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'),
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),
+        iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEKSWorkerNodePolicy"),
+        iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEC2ContainerRegistryReadOnly"),
       ],
     });
 
@@ -1659,8 +1716,8 @@ export class Cluster extends ClusterBase {
 
   private selectPrivateSubnets(): ec2.ISubnet[] {
     const privateSubnets: ec2.ISubnet[] = [];
-    const vpcPrivateSubnetIds = this.vpc.privateSubnets.map(s => s.subnetId);
-    const vpcPublicSubnetIds = this.vpc.publicSubnets.map(s => s.subnetId);
+    const vpcPrivateSubnetIds = this.vpc.privateSubnets.map((s) => s.subnetId);
+    const vpcPublicSubnetIds = this.vpc.publicSubnets.map((s) => s.subnetId);
 
     for (const placement of this.vpcSubnets) {
       for (const subnet of this.vpc.selectSubnets(placement).subnets) {
@@ -1691,9 +1748,9 @@ export class Cluster extends ClusterBase {
    */
   private addNeuronDevicePlugin() {
     if (!this._neuronDevicePlugin) {
-      const fileContents = fs.readFileSync(path.join(__dirname, 'addons', 'neuron-device-plugin.yaml'), 'utf8');
+      const fileContents = fs.readFileSync(path.join(__dirname, "addons", "neuron-device-plugin.yaml"), "utf8");
       const sanitized = YAML.parse(fileContents);
-      this._neuronDevicePlugin = this.addManifest('NeuronDevicePlugin', sanitized);
+      this._neuronDevicePlugin = this.addManifest("NeuronDevicePlugin", sanitized);
     }
 
     return this._neuronDevicePlugin;
@@ -1713,18 +1770,22 @@ export class Cluster extends ClusterBase {
         if (!ec2.Subnet.isVpcSubnet(subnet)) {
           // message (if token): "could not auto-tag public/private subnet with tag..."
           // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
-          const subnetID = Token.isUnresolved(subnet.subnetId) || Token.isUnresolved([subnet.subnetId]) ? '' : ` ${subnet.subnetId}`;
-          Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:clusterMustManuallyTagSubnet', `Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
+          const subnetID =
+            Token.isUnresolved(subnet.subnetId) || Token.isUnresolved([subnet.subnetId]) ? "" : ` ${subnet.subnetId}`;
+          Annotations.of(this).addWarningV2(
+            "@aws-cdk/aws-eks:clusterMustManuallyTagSubnet",
+            `Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`,
+          );
           continue;
         }
 
-        Tags.of(subnet).add(tag, '1');
+        Tags.of(subnet).add(tag, "1");
       }
     };
 
     // https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html
-    tagAllSubnets('private', this.vpc.privateSubnets, 'kubernetes.io/role/internal-elb');
-    tagAllSubnets('public', this.vpc.publicSubnets, 'kubernetes.io/role/elb');
+    tagAllSubnets("private", this.vpc.privateSubnets, "kubernetes.io/role/internal-elb");
+    tagAllSubnets("public", this.vpc.publicSubnets, "kubernetes.io/role/elb");
   }
 
   /**
@@ -1748,17 +1809,17 @@ export class Cluster extends ClusterBase {
         template: {
           metadata: {
             annotations: {
-              'eks.amazonaws.com/compute-type': computeType,
+              "eks.amazonaws.com/compute-type": computeType,
             },
           },
         },
       },
     });
 
-    const k8sPatch = new KubernetesPatch(this, 'CoreDnsComputeTypePatch', {
+    const k8sPatch = new KubernetesPatch(this, "CoreDnsComputeTypePatch", {
       cluster: this,
-      resourceName: 'deployment/coredns',
-      resourceNamespace: 'kube-system',
+      resourceName: "deployment/coredns",
+      resourceNamespace: "kube-system",
       applyPatch: renderPatch(CoreDnsComputeType.FARGATE),
       restorePatch: renderPatch(CoreDnsComputeType.EC2),
     });
@@ -1904,7 +1965,7 @@ export interface AutoScalingGroupOptions {
 @propertyInjectable
 class ImportedCluster extends ClusterBase {
   /** Uniquely identifies this class. */
-  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-eks-v2-alpha.ImportedCluster';
+  public static readonly PROPERTY_INJECTION_ID: string = "@aws-cdk.aws-eks-v2-alpha.ImportedCluster";
   public readonly clusterName: string;
   public readonly clusterArn: string;
   public readonly connections = new ec2.Connections();
@@ -1916,7 +1977,11 @@ class ImportedCluster extends ClusterBase {
   // to null check on an instance of `Cluster`, which will always have this configured.
   private readonly _clusterSecurityGroup?: ec2.ISecurityGroup;
 
-  constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: ClusterAttributes,
+  ) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
@@ -1934,7 +1999,11 @@ class ImportedCluster extends ClusterBase {
     }
 
     if (props.clusterSecurityGroupId) {
-      this._clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
+      this._clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(
+        this,
+        "ClusterSecurityGroup",
+        this.clusterSecurityGroupId,
+      );
       this.connections.addSecurityGroup(this._clusterSecurityGroup);
     }
   }
@@ -2033,13 +2102,17 @@ export class EksOptimizedImage implements ec2.IMachineImage {
     this.kubernetesVersion = props.kubernetesVersion ?? LATEST_KUBERNETES_VERSION;
 
     // set the SSM parameter name
-    this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
-      + (this.nodeType === NodeType.STANDARD ? this.cpuArch === CpuArch.X86_64 ?
-        'amazon-linux-2/' : 'amazon-linux-2-arm64/' : '')
-      + (this.nodeType === NodeType.GPU ? 'amazon-linux-2-gpu/' : '')
-      + (this.nodeType === NodeType.INFERENTIA ? 'amazon-linux-2-gpu/' : '')
-      + (this.nodeType === NodeType.TRAINIUM ? 'amazon-linux-2-gpu/' : '')
-      + 'recommended/image_id';
+    this.amiParameterName =
+      `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/` +
+      (this.nodeType === NodeType.STANDARD
+        ? this.cpuArch === CpuArch.X86_64
+          ? "amazon-linux-2/"
+          : "amazon-linux-2-arm64/"
+        : "") +
+      (this.nodeType === NodeType.GPU ? "amazon-linux-2-gpu/" : "") +
+      (this.nodeType === NodeType.INFERENTIA ? "amazon-linux-2-gpu/" : "") +
+      (this.nodeType === NodeType.TRAINIUM ? "amazon-linux-2-gpu/" : "") +
+      "recommended/image_id";
   }
 
   /**
@@ -2056,7 +2129,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
 }
 
 // MAINTAINERS: use ./scripts/kube_bump.sh to update LATEST_KUBERNETES_VERSION
-const LATEST_KUBERNETES_VERSION = '1.24';
+const LATEST_KUBERNETES_VERSION = "1.24";
 
 /**
  * Whether the worker nodes should support GPU or just standard instances
@@ -2065,22 +2138,22 @@ export enum NodeType {
   /**
    * Standard instances
    */
-  STANDARD = 'Standard',
+  STANDARD = "Standard",
 
   /**
    * GPU instances
    */
-  GPU = 'GPU',
+  GPU = "GPU",
 
   /**
    * Inferentia instances
    */
-  INFERENTIA = 'INFERENTIA',
+  INFERENTIA = "INFERENTIA",
 
   /**
    * Trainium instances
    */
-  TRAINIUM = 'TRAINIUM',
+  TRAINIUM = "TRAINIUM",
 }
 
 /**
@@ -2090,12 +2163,12 @@ export enum CpuArch {
   /**
    * arm64 CPU type
    */
-  ARM_64 = 'arm64',
+  ARM_64 = "arm64",
 
   /**
    * x86_64 CPU type
    */
-  X86_64 = 'x86_64',
+  X86_64 = "x86_64",
 }
 
 /**
@@ -2105,12 +2178,12 @@ export enum CoreDnsComputeType {
   /**
    * Deploy CoreDNS on EC2 instances.
    */
-  EC2 = 'ec2',
+  EC2 = "ec2",
 
   /**
    * Deploy CoreDNS on Fargate-managed instances.
    */
-  FARGATE = 'fargate',
+  FARGATE = "fargate",
 }
 
 /**
@@ -2157,10 +2230,13 @@ function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
 }
 
 function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
-  return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
-    INSTANCE_TYPES.graviton3.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
-      INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
-        CpuArch.X86_64;
+  return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3))
+    ? CpuArch.ARM_64
+    : INSTANCE_TYPES.graviton3.includes(instanceType.toString().substring(0, 3))
+      ? CpuArch.ARM_64
+      : INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2))
+        ? CpuArch.ARM_64
+        : CpuArch.X86_64;
 }
 
 function flatten<A>(xss: A[][]): A[] {
@@ -2169,8 +2245,8 @@ function flatten<A>(xss: A[][]): A[] {
 
 function clusterArnComponents(clusterName: string): ArnComponents {
   return {
-    service: 'eks',
-    resource: 'cluster',
+    service: "eks",
+    resource: "cluster",
     resourceName: clusterName,
   };
 }
