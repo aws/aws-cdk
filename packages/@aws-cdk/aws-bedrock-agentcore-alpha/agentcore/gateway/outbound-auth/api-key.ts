@@ -1,5 +1,5 @@
 import { Grant, IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { CredentialProviderType, ICredentialProvider } from './credential-provider';
+import { CredentialProviderType, IOpenApiCredentialProvider } from './credential-provider';
 import { GatewayPerms } from '../perms';
 
 /******************************************************************************
@@ -121,8 +121,9 @@ export interface ApiKeyCredentialProviderProps {
 
 /**
  * API Key credential provider configuration implementation
+ * Can be used with OpenAPI targets
  */
-export class ApiKeyCredentialProviderConfiguration implements ICredentialProvider {
+export class ApiKeyCredentialProviderConfiguration implements IOpenApiCredentialProvider {
   public readonly credentialProviderType = CredentialProviderType.API_KEY;
   /**
    * The ARN of the API key provider

@@ -254,13 +254,13 @@ describe('Gateway Add Target Methods Tests', () => {
   });
 
   test('Should add OpenAPI target using addOpenApiTarget method', () => {
-    const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0');
+    const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0', false);
 
     const target = gateway.addOpenApiTarget('TestTarget', {
       gatewayTargetName: 'added-openapi-target',
       apiSchema: apiSchema,
       credentialProviderConfigurations: [
-        GatewayCredentialProvider.apiKey({
+        GatewayCredentialProvider.fromApiKeyIdentityArn({
           providerArn: 'arn:aws:bedrock:us-east-1:123456789012:api-key/test',
           secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
           credentialLocation: ApiKeyCredentialLocation.queryParameter(),
@@ -275,7 +275,7 @@ describe('Gateway Add Target Methods Tests', () => {
   });
 
   test('Should add Smithy target using addSmithyTarget method', () => {
-    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }');
+    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }', false);
 
     const target = gateway.addSmithyTarget('TestTarget', {
       gatewayTargetName: 'added-smithy-target',
@@ -416,14 +416,14 @@ describe('Gateway Target Core Tests', () => {
   });
 
   test('Should create OpenAPI target using convenience method', () => {
-    const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0');
+    const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0', false);
 
     const target = GatewayTarget.forOpenApi(stack, 'TestTarget', {
       gatewayTargetName: 'test-openapi-target',
       gateway: gateway,
       apiSchema: apiSchema,
       credentialProviderConfigurations: [
-        GatewayCredentialProvider.apiKey({
+        GatewayCredentialProvider.fromApiKeyIdentityArn({
           providerArn: 'arn:aws:bedrock:us-east-1:123456789012:api-key/test',
           secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
           credentialLocation: ApiKeyCredentialLocation.header(),
@@ -438,14 +438,14 @@ describe('Gateway Target Core Tests', () => {
   });
 
   test('Should create Smithy target using convenience method', () => {
-    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }');
+    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }', false);
 
     const target = GatewayTarget.forSmithy(stack, 'TestTarget', {
       gatewayTargetName: 'test-smithy-target',
       gateway: gateway,
       smithyModel: smithyModel,
       credentialProviderConfigurations: [
-        GatewayCredentialProvider.oauth({
+        GatewayCredentialProvider.fromOauthIdentityArn({
           providerArn: 'arn:aws:bedrock:us-east-1:123456789012:oauth/test',
           secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
           scopes: ['read'],
@@ -525,7 +525,7 @@ describe('Gateway Target Core Tests', () => {
       gateway: gateway,
       apiSchema: apiSchema,
       credentialProviderConfigurations: [
-        GatewayCredentialProvider.apiKey({
+        GatewayCredentialProvider.fromApiKeyIdentityArn({
           providerArn: 'arn:aws:bedrock:us-east-1:123456789012:api-key/test',
           secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
 
@@ -728,14 +728,14 @@ describe('Gateway Target Core Tests', () => {
   });
 
   test('Should create target with API Key in header', () => {
-    const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0');
+    const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0', false);
 
     GatewayTarget.forOpenApi(stack, 'TestTarget', {
       gatewayTargetName: 'test-target',
       gateway: gateway,
       apiSchema: apiSchema,
       credentialProviderConfigurations: [
-        GatewayCredentialProvider.apiKey({
+        GatewayCredentialProvider.fromApiKeyIdentityArn({
           providerArn: 'arn:aws:bedrock:us-east-1:123456789012:api-key/test',
           secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
           credentialLocation: ApiKeyCredentialLocation.header(),
@@ -748,14 +748,14 @@ describe('Gateway Target Core Tests', () => {
   });
 
   test('Should create target with OAuth provider', () => {
-    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }');
+    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }', false);
 
     GatewayTarget.forSmithy(stack, 'TestTarget', {
       gatewayTargetName: 'test-target',
       gateway: gateway,
       smithyModel: smithyModel,
       credentialProviderConfigurations: [
-        GatewayCredentialProvider.oauth({
+        GatewayCredentialProvider.fromOauthIdentityArn({
           providerArn: 'arn:aws:bedrock:us-east-1:123456789012:oauth/test',
           secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
           scopes: ['read'],
@@ -809,7 +809,7 @@ describe('Credential Provider Tests', () => {
   });
 
   test('Should create OAuth credential provider with custom parameters', () => {
-    const provider = GatewayCredentialProvider.oauth({
+    const provider = GatewayCredentialProvider.fromOauthIdentityArn({
       providerArn: 'arn:aws:bedrock:us-east-1:123456789012:oauth/test',
       secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
       scopes: ['read', 'write'],
@@ -828,7 +828,7 @@ describe('Credential Provider Tests', () => {
   });
 
   test('Should create OAuth credential provider with only scopes', () => {
-    const provider = GatewayCredentialProvider.oauth({
+    const provider = GatewayCredentialProvider.fromOauthIdentityArn({
       providerArn: 'arn:aws:bedrock:us-east-1:123456789012:oauth/test',
       secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
       scopes: ['read'],
@@ -839,7 +839,7 @@ describe('Credential Provider Tests', () => {
   });
 
   test('Should create OAuth credential provider with minimal scopes', () => {
-    const provider = GatewayCredentialProvider.oauth({
+    const provider = GatewayCredentialProvider.fromOauthIdentityArn({
       providerArn: 'arn:aws:bedrock:us-east-1:123456789012:oauth/test',
       secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
       scopes: [],
@@ -850,7 +850,7 @@ describe('Credential Provider Tests', () => {
   });
 
   test('Should create OAuth credential provider with empty arrays', () => {
-    const provider = GatewayCredentialProvider.oauth({
+    const provider = GatewayCredentialProvider.fromOauthIdentityArn({
       providerArn: 'arn:aws:bedrock:us-east-1:123456789012:oauth/test',
       secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
       scopes: [],
@@ -863,7 +863,7 @@ describe('Credential Provider Tests', () => {
   });
 
   test('Should create IAM role credential provider', () => {
-    const provider = GatewayCredentialProvider.iamRole();
+    const provider = GatewayCredentialProvider.fromIamRole();
 
     expect(provider.credentialProviderType).toBe('GATEWAY_IAM_ROLE');
   });
@@ -948,7 +948,7 @@ paths:
         '200':
           description: Success
 `;
-    const schema = ApiSchema.fromInline(openApiSpec);
+    const schema = ApiSchema.fromInline(openApiSpec, false);
 
     // Just verify the schema object is created successfully
     expect(schema).toBeDefined();
@@ -1298,6 +1298,80 @@ describe('Gateway Error Handling Tests', () => {
   });
 });
 
+describe('Tool Schema Error Cases', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('AssetToolSchema should throw error when rendering without binding', () => {
+    const toolSchema = ToolSchema.fromLocalAsset('path/to/schema.json');
+
+    // Attempt to render without binding should throw
+    expect(() => {
+      (toolSchema as any)._render();
+    }).toThrow('ToolSchema must be bound to a scope before rendering. Call bind() first.');
+  });
+
+  test('AssetToolSchema should throw error when granting permissions without binding', () => {
+    const toolSchema = ToolSchema.fromLocalAsset('path/to/schema.json');
+    const role = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // Attempt to grant permissions without binding should throw
+    expect(() => {
+      (toolSchema as any).grantPermissionsToRole(role);
+    }).toThrow('ToolSchema must be bound to a scope before rendering. Call bind() first.');
+  });
+
+  test('InlineToolSchema bind method should handle scope parameter', () => {
+    const toolSchema = ToolSchema.fromInline([{
+      name: 'test_tool',
+      description: 'Test tool',
+      inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
+    }]);
+
+    // Should not throw when binding with scope
+    expect(() => {
+      (toolSchema as any).bind(stack);
+    }).not.toThrow();
+
+    // Should not throw when binding with null/undefined
+    expect(() => {
+      (toolSchema as any).bind(null);
+    }).not.toThrow();
+  });
+
+  test('S3ToolSchema bind method should handle scope parameter', () => {
+    const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'test-bucket');
+    const toolSchema = ToolSchema.fromS3File(bucket, 'schema.json');
+
+    // Should not throw when binding with scope
+    expect(() => {
+      (toolSchema as any).bind(stack);
+    }).not.toThrow();
+
+    // Should not throw when binding with null/undefined
+    expect(() => {
+      (toolSchema as any).bind(null);
+    }).not.toThrow();
+  });
+
+  test('S3ToolSchema should render with bucketOwnerAccountId when provided', () => {
+    const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'test-bucket');
+    const toolSchema = ToolSchema.fromS3File(bucket, 'schema.json', '123456789012');
+
+    const rendered = (toolSchema as any)._render();
+
+    expect(rendered.s3.bucketOwnerAccountId).toBe('123456789012');
+  });
+});
+
 describe('Gateway Import Tests', () => {
   let stack: cdk.Stack;
 
@@ -1525,7 +1599,7 @@ describe('Gateway Schema Binding Tests', () => {
   });
 
   test('Should bind OpenAPI target configuration properly', () => {
-    const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0');
+    const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0', false);
     const config = OpenApiTargetConfiguration.create(apiSchema);
     const boundConfig = config.bind(stack, gateway);
 
@@ -1534,7 +1608,7 @@ describe('Gateway Schema Binding Tests', () => {
   });
 
   test('Should bind Smithy target configuration properly', () => {
-    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }');
+    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }', false);
     const config = SmithyTargetConfiguration.create(smithyModel);
     const boundConfig = config.bind(stack, gateway);
 
@@ -1590,13 +1664,13 @@ describe('Gateway Integration Tests', () => {
     });
 
     // Add OpenAPI target
-    const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0');
+    const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0', false);
 
     gateway.addOpenApiTarget('OpenApiTarget', {
       gatewayTargetName: 'openapi-target',
       apiSchema: apiSchema,
       credentialProviderConfigurations: [
-        GatewayCredentialProvider.apiKey({
+        GatewayCredentialProvider.fromApiKeyIdentityArn({
           providerArn: 'arn:aws:bedrock:us-east-1:123456789012:api-key/test',
           secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
           credentialLocation: ApiKeyCredentialLocation.header(),

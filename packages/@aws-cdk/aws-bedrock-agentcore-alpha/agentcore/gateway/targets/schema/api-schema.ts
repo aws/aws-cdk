@@ -3,7 +3,9 @@ import { Grant, IRole } from 'aws-cdk-lib/aws-iam';
 import { IBucket, Location } from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import { Construct } from 'constructs';
+import * as fs from 'fs';
 import { TargetSchema } from './base-schema';
+import { validateOpenApiSchema, ValidationError } from '../../validation-helpers';
 
 /**
  * Error thrown when an ApiSchema is not properly initialized.
@@ -33,9 +35,10 @@ export abstract class ApiSchema extends TargetSchema {
   /**
    * Creates an API Schema from an inline string.
    * @param schema - the JSON or YAML payload defining the OpenAPI schema for the action group
+   * @param validateAsOpenApi - whether to validate this as an OpenAPI schema (default: true)
    */
-  public static fromInline(schema: string): InlineApiSchema {
-    return new InlineApiSchema(schema);
+  public static fromInline(schema: string, validateAsOpenApi: boolean = true): InlineApiSchema {
+    return new InlineApiSchema(schema, validateAsOpenApi);
   }
 
   /**
@@ -110,6 +113,25 @@ export class AssetApiSchema extends ApiSchema {
   public bind(scope: Construct): void {
     // If the same AssetApiSchema is used multiple times, retain only the first instantiation
     if (!this.asset) {
+      // Validate the schema before creating the asset
+      try {
+        const schemaContent = fs.readFileSync(this.path, 'utf-8');
+        const errors = validateOpenApiSchema({
+          schema: schemaContent,
+          schemaName: `OpenAPI schema from file ${this.path}`,
+        });
+        if (errors.length > 0) {
+          throw new ValidationError(`OpenAPI schema validation failed:\n${errors.join('\n')}`);
+        }
+      } catch (e) {
+        if (e instanceof ValidationError) {
+          throw e;
+        }
+        throw new ApiSchemaError(
+          `Failed to read or validate OpenAPI schema from ${this.path}: ${e instanceof Error ? e.message : String(e)}`,
+        );
+      }
+
       this.asset = new s3_assets.Asset(scope, 'Schema', {
         path: this.path,
         ...this.options,
@@ -150,8 +172,14 @@ export class AssetApiSchema extends ApiSchema {
  * The schema can be provided directly as a string in either JSON or YAML format.
  */
 export class InlineApiSchema extends ApiSchema {
-  constructor(private readonly schema: string) {
+  /**
+   * Whether to validate as OpenAPI schema (vs Smithy or other formats)
+   */
+  private readonly validateAsOpenApi: boolean;
+
+  constructor(private readonly schema: string, validateAsOpenApi: boolean = true) {
     super(undefined, undefined, schema);
+    this.validateAsOpenApi = validateAsOpenApi;
   }
 
   /**
@@ -168,9 +196,17 @@ export class InlineApiSchema extends ApiSchema {
   }
 
   public bind(scope: Construct): void {
-    if (scope) {
+    if (scope && this.validateAsOpenApi) {
+      // Only validate if this is intended to be an OpenAPI schema
+      // Smithy schemas have different format and shouldn't be validated as OpenAPI
+      const errors = validateOpenApiSchema({
+        schema: this.schema,
+        schemaName: 'Inline OpenAPI schema',
+      });
+      if (errors.length > 0) {
+        throw new ValidationError(`OpenAPI schema validation failed:\n${errors.join('\n')}`);
+      }
     }
-    // No-op
   }
 }
 

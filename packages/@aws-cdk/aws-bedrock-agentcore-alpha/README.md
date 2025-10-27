@@ -1021,7 +1021,7 @@ credential provider attached enabling you to securely access targets whether the
 | `description` | `string` | No | Optional description for the gateway target. Maximum 200 characters |
 | `gateway` | `IGateway` | Yes | The gateway this target belongs to |
 | `targetConfiguration` | `ITargetConfiguration` | Yes | The target configuration (Lambda, OpenAPI, or Smithy). Use `LambdaTargetConfiguration.create()`, `OpenApiTargetConfiguration.create()`, or `SmithyTargetConfiguration.create()` |
-| `credentialProviderConfigurations` | `IGatewayCredentialProvider[]` | No | Credential providers for authentication. Defaults to `[GatewayCredentialProvider.iamRole()]`. Use `GatewayCredentialProvider.apiKey()`, `GatewayCredentialProvider.oauth()`, or `GatewayCredentialProvider.iamRole()` |
+| `credentialProviderConfigurations` | `IGatewayCredentialProvider[]` | No | Credential providers for authentication. Defaults to `[GatewayCredentialProvider.fromIamRole()]`. Use `GatewayCredentialProvider.fromApiKeyIdentityArn()`, `GatewayCredentialProvider.fromOauthIdentityArn()`, or `GatewayCredentialProvider.fromIamRole()` |
 
 ### Targets types
 
@@ -1034,25 +1034,61 @@ when you want to execute custom code in response to tool invocations.
 - Ideal for custom serverless function integration
 - Need tool schema (tool schema is a blueprint that describes the functions your Lambda provides to AI agents).
   The construct provide 3 ways to upload a tool schema to Lambda target
+- **IAM Permissions**: When using the default IAM authentication (no `credentialProviderConfigurations` specified),
+  the construct **automatically grants** the gateway role permission to invoke your Lambda function (`lambda:InvokeFunction`).
+  No additional IAM configuration is needed.
 
 **OpenAPI Schema Target** : OpenAPI widely used standard for describing RESTful APIs. Gateway supports OpenAPI 3.0
-specifications for defining API targets. It onnects to REST APIs using OpenAPI specifications
+specifications for defining API targets. It connects to REST APIs using OpenAPI specifications
 
 - Supports OAUTH and API_KEY credential providers
+- **Does NOT support IAM authentication** - you must provide OAuth or API key credentials
 - Ideal for integrating with external REST services
 - Need API schema. The construct provide 3 ways to upload a API schema to OpenAPI target
+- **IAM Permissions**: Not applicable - OpenAPI targets cannot use IAM role authentication.
+  You must configure either OAuth or API key credentials using `credentialProviderConfigurations`.
 
 **Smithy Model Target** : Smithy is a language for defining services and software development kits (SDKs). Smithy models provide
 a more structured approach to defining APIs compared to OpenAPI, and are particularly useful for connecting to AWS services.
-AgentCore Gateway supports built-in AWS service models only. It Connects to services using Smithy model definitions
+AgentCore Gateway supports built-in AWS service models only. It connects to services using Smithy model definitions
 
-- Supports OAUTH and API_KEY credential providers
+- Supports GATEWAY_IAM_ROLE credential provider (default)
 - Ideal for AWS service integrations
-- Need API schema. The construct provide 3 ways to upload a API schema to Smity target
+- Need API schema. The construct provide 3 ways to upload a API schema to Smithy target
+- **IAM Permissions**: When using the default IAM authentication (no `credentialProviderConfigurations` specified):
+  - The construct **only grants** permission to read the Smithy schema file from S3
+  - You **MUST manually grant** permissions for the gateway role to invoke the actual Smithy API endpoints
+  - This is intentional as the CDK cannot automatically determine what permissions are needed for arbitrary Smithy endpoints
 
-> Note: For Smithy model targets that access AWS services, your Gateway's execution role needs permissions to access those services.
-For example, for a DynamoDB target, your execution role needs permissions to perform DynamoDB operations.
-This is not managed by the construct due to the large number of options.
+**Important for Smithy Targets**: You must explicitly grant API permissions to the gateway role. For example:
+
+```typescript
+// Create Smithy target - uses IAM by default
+const smithyTarget = gateway.addSmithyTarget("MySmithyTarget", {
+  gatewayTargetName: "my-smithy-target",
+  smithyModel: mySmithySchema,
+  // No credentialProviderConfigurations needed - defaults to IAM
+});
+
+// REQUIRED: Grant permissions for the specific AWS service
+// Example 1: For DynamoDB operations
+gateway.role.addToPolicy(new iam.PolicyStatement({
+  actions: ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:Query'],
+  resources: ['arn:aws:dynamodb:*:*:table/MyTable']
+}));
+
+// Example 2: For API Gateway invocation
+gateway.role.addToPolicy(new iam.PolicyStatement({
+  actions: ['execute-api:Invoke'],
+  resources: ['arn:aws:execute-api:region:account:api-id/*']
+}));
+
+// Example 3: For S3 operations
+gateway.role.addToPolicy(new iam.PolicyStatement({
+  actions: ['s3:GetObject', 's3:PutObject'],
+  resources: ['arn:aws:s3:::my-bucket/*']
+}));
+```
 
 ### Tools schema For Lambda target
 
@@ -1192,7 +1228,7 @@ const target = gateway.addOpenApiTarget("MyTarget", {
   description: "Target for external API integration",
   apiSchema: s3mySchema,
   credentialProviderConfigurations: [
-    agentcore.GatewayCredentialProvider.apiKey({
+    agentcore.GatewayCredentialProvider.fromApiKeyIdentityArn({
       providerArn: apiKeyProviderArn,
       secretArn: apiKeySecretArn, 
       credentialLocation: agentcore.ApiKeyCredentialLocation.header({
@@ -1245,7 +1281,7 @@ const smithyTarget = gateway.addSmithyTarget("MySmithyTarget", {
   description: "Smithy model target",
   smithyModel: smithySchema,
   credentialProviderConfigurations: [
-    agentcore.GatewayCredentialProvider.iamRole(),
+    agentcore.GatewayCredentialProvider.fromIamRole(),
   ],
 });
 ```
@@ -1273,7 +1309,7 @@ const openApitarget = agentcore.GatewayTarget.forOpenApi(this, "MyTarget", {
   gateway: gateway,  // Note: you need to pass the gateway reference
   apiSchema: s3Schema,
   credentialProviderConfigurations: [
-    agentcore.GatewayCredentialProvider.apiKey({
+    agentcore.GatewayCredentialProvider.fromApiKeyIdentityArn({
      providerArn: apiKeyIdentityArn,
      secretArn: apiKeySecretArn,
       credentialLocation: agentcore.ApiKeyCredentialLocation.header({
@@ -1330,7 +1366,7 @@ const lambdaTarget = agentcore.GatewayTarget.forLambda(this, "MyLambdaTarget", {
       },
     },
   ]),
-  credentialProviderConfigurations: [agentcore.GatewayCredentialProvider.iamRole()],
+  credentialProviderConfigurations: [agentcore.GatewayCredentialProvider.fromIamRole()],
 });
 
 
@@ -1348,7 +1384,7 @@ const target = agentcore.GatewayTarget.forSmithy(this, "MySmithyTarget", {
   gateway: gateway,
   smithyModel: s3SmithySchema,
   credentialProviderConfigurations: [
-    agentcore.GatewayCredentialProvider.oauth({
+    agentcore.GatewayCredentialProvider.fromOauthIdentityArn({
       providerArn: oauthIdentityArn,
       secretArn: oauthSecretArn,
       scopes: ["read", "write"],
