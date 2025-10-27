@@ -1816,7 +1816,12 @@ describe('Memory with custom execution role and strategies tests', () => {
         Statement: Match.arrayWith([
           Match.objectLike({
             Effect: 'Allow',
-            Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+            Action: ['kms:CreateGrant',
+              'kms:Decrypt',
+              'kms:DescribeKey',
+              'kms:GenerateDataKey',
+              'kms:GenerateDataKeyWithoutPlaintext',
+              'kms:ReEncrypt*'],
             Resource: {
               'Fn::GetAtt': [
                 Match.stringLikeRegexp('MemoryEncryptionKey*'),

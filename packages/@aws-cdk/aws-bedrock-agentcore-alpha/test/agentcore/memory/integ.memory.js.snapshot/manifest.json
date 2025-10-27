@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2669479749cc4902dd50ec63100384d7a7d490064758f0b72b68261d28f4d792.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/945e8462128beb5e693a3dbfc85f3f5018406ff6743e954b8a3c491e76f0368a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -84,6 +84,18 @@
         "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies": [
           {
             "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
             "data": "*"
           }
         ],
@@ -179,6 +191,10 @@
         "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies": [
           {
             "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
             "data": "*"
           }
         ],
@@ -361,6 +377,14 @@
         "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy": [
           {
             "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
             "data": "*"
           }
         ],

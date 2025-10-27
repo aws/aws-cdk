@@ -675,8 +675,16 @@ export class Memory extends MemoryBase {
     // ------------------------------------------------------
     // Permissions
     // ------------------------------------------------------
+    // For KMS permissions see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/storage-encryption.html
     if (this.kmsKey) {
-      this.kmsKey.grant(this.executionRole, 'kms:Decrypt', 'kms:GenerateDataKey');
+      this.kmsKey.grant(this.executionRole,
+        'kms:CreateGrant',
+        'kms:Decrypt',
+        'kms:DescribeKey',
+        'kms:GenerateDataKey',
+        'kms:GenerateDataKeyWithoutPlaintext',
+        'kms:ReEncrypt*',
+      );
     }
 
     // ------------------------------------------------------
