@@ -267,7 +267,7 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
     return iam.Grant.addToPrincipal({
       grantee,
       actions: RUNTIME_INVOKE_PERMS,
-      resourceArns: [this.agentRuntimeArn],
+      resourceArns: [this.agentRuntimeArn, `${this.agentRuntimeArn}/*`], // * is needed because it invoke the endpoint as subresource
     });
   }
 
@@ -281,7 +281,7 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
     return iam.Grant.addToPrincipal({
       grantee,
       actions: RUNTIME_INVOKE_USER_PERMS,
-      resourceArns: [this.agentRuntimeArn],
+      resourceArns: [this.agentRuntimeArn, `${this.agentRuntimeArn}/*`],
     });
   }
 
@@ -294,7 +294,7 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
     return iam.Grant.addToPrincipal({
       grantee,
       actions: [...RUNTIME_INVOKE_PERMS, ...RUNTIME_INVOKE_USER_PERMS],
-      resourceArns: [this.agentRuntimeArn],
+      resourceArns: [this.agentRuntimeArn, `${this.agentRuntimeArn}/*`],
     });
   }
 
