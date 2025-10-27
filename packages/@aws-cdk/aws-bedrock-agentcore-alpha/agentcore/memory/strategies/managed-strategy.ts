@@ -15,22 +15,12 @@ import { IBedrockInvokable } from '@aws-cdk/aws-bedrock-alpha';
 import { Arn, ArnFormat } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import { Grant, IRole } from 'aws-cdk-lib/aws-iam';
-import { MemoryStrategyCommonProps, IMemoryStrategy, MemoryStrategyType } from '../memory-strategy';
+import { MemoryStrategyCommonProps, IMemoryStrategy, MemoryStrategyType, MEMORY_NAME_MIN_LENGTH, MEMORY_NAME_MAX_LENGTH } from '../memory-strategy';
 import { validateStringFieldLength, throwIfInvalid, validateFieldPattern } from '../validation-helpers';
 
 /******************************************************************************
  *                              CONSTANTS
  *****************************************************************************/
-/**
- * Minimum length for memory strategy name
- * @internal
- */
-const MEMORY_NAME_MIN_LENGTH = 1;
-/**
- * Maximum length for memory strategy name
- * @internal
- */
-const MEMORY_NAME_MAX_LENGTH = 48;
 /**
  * Minimum length for prompt
  * @internal
@@ -65,7 +55,7 @@ export interface OverrideConfig {
  * Configuration parameters for a memory strategy that can override
  * existing built-in default prompts/models
  */
-export interface UnifiedStrategyProps extends MemoryStrategyCommonProps {
+export interface ManagedStrategyProps extends MemoryStrategyCommonProps {
   /**
    * The configuration for the custom extraction.
    * This configuration provides customization to how the model identifies
@@ -105,11 +95,11 @@ export interface UnifiedStrategyProps extends MemoryStrategyCommonProps {
 }
 
 /**
- * Unified memory strategy that handles both built-in and override configurations.
+ * Managed memory strategy that handles both built-in and override configurations.
  * This strategy can be used for quick setup with built-in defaults or customized
  * with specific models and prompt templates.
  */
-export class UnifiedMemoryStrategy implements IMemoryStrategy {
+export class ManagedMemoryStrategy implements IMemoryStrategy {
   public readonly name: string;
   public readonly description?: string;
   /**
@@ -127,11 +117,11 @@ export class UnifiedMemoryStrategy implements IMemoryStrategy {
   public readonly strategyType: MemoryStrategyType;
 
   /**
-   * Constructor to create a new unified memory strategy
+   * Constructor to create a new managed memory strategy
    * @param strategyType the strategy type
    * @param props the properties for the strategy
    */
-  constructor(strategyType: MemoryStrategyType, props: UnifiedStrategyProps) {
+  constructor(strategyType: MemoryStrategyType, props: ManagedStrategyProps) {
     // ------------------------------------------------------
     // Set properties and defaults
     // ------------------------------------------------------

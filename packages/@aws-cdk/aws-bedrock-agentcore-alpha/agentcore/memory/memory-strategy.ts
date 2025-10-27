@@ -14,8 +14,22 @@
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
 // Internal libs
-import { UnifiedMemoryStrategy, UnifiedStrategyProps } from './strategies/unified-strategy';
+import { ManagedMemoryStrategy, ManagedStrategyProps } from './strategies/managed-strategy';
 import { SelfManagedMemoryStrategy, SelfManagedStrategyProps } from './strategies/self-managed-strategy';
+
+/******************************************************************************
+ *                              CONSTANTS
+ *****************************************************************************/
+/**
+ * Minimum length for memory strategy name
+ * @internal
+ */
+export const MEMORY_NAME_MIN_LENGTH = 1;
+/**
+ * Maximum length for memory strategy name
+ * @internal
+ */
+export const MEMORY_NAME_MAX_LENGTH = 48;
 
 /**
  * Long-term memory extraction strategy types.
@@ -106,10 +120,10 @@ export class MemoryStrategy {
    * Default strategies for organizing and extracting memory data, each optimized for specific use cases.
    * This strategy compresses conversations into concise overviews, preserving essential context and key insights for quick recall.
    * Extracted memory example: Users confused by cloud setup during onboarding.
-   * @returns A UnifiedMemoryStrategy.
+   * @returns A ManagedMemoryStrategy.
    */
-  public static usingBuiltInSummarization(): UnifiedMemoryStrategy {
-    return new UnifiedMemoryStrategy(MemoryStrategyType.SUMMARIZATION, {
+  public static usingBuiltInSummarization(): ManagedMemoryStrategy {
+    return new ManagedMemoryStrategy(MemoryStrategyType.SUMMARIZATION, {
       name: 'summary_builtin_cdkGen0001',
       description: 'Summarize interactions to preserve critical context and key insights',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
@@ -119,10 +133,10 @@ export class MemoryStrategy {
    * Default strategies for organizing and extracting memory data, each optimized for specific use cases.
    * Distills general facts, concepts, and underlying meanings from raw conversational data, presenting the information in a context-independent format.
    * Extracted memory example: In-context learning = task-solving via examples, no training needed.
-   * @returns A UnifiedMemoryStrategy.
+   * @returns A ManagedMemoryStrategy.
    */
-  public static usingBuiltInSemantic(): UnifiedMemoryStrategy {
-    return new UnifiedMemoryStrategy(MemoryStrategyType.SEMANTIC, {
+  public static usingBuiltInSemantic(): ManagedMemoryStrategy {
+    return new ManagedMemoryStrategy(MemoryStrategyType.SEMANTIC, {
       name: 'semantic_builtin_cdkGen0001',
       description:
       'Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.',
@@ -133,10 +147,10 @@ export class MemoryStrategy {
    * Default strategies for organizing and extracting memory data, each optimized for specific use cases.
    * Captures individual preferences, interaction patterns, and personalized settings to enhance future experiences.
    * Extracted memory example: User needs clear guidance on cloud storage account connection during onboarding.
-   * @returns A UnifiedMemoryStrategy.
+   * @returns A ManagedMemoryStrategy.
    */
-  public static usingBuiltInUserPreference(): UnifiedMemoryStrategy {
-    return new UnifiedMemoryStrategy(MemoryStrategyType.USER_PREFERENCE, {
+  public static usingBuiltInUserPreference(): ManagedMemoryStrategy {
+    return new ManagedMemoryStrategy(MemoryStrategyType.USER_PREFERENCE, {
       name: 'preference_builtin_cdkGen0001',
       description: 'Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
@@ -147,30 +161,30 @@ export class MemoryStrategy {
    * Distills general facts, concepts, and underlying meanings from raw conversational data, presenting the information in a context-independent format.
    * Extracted memory example: In-context learning = task-solving via examples, no training needed.
    * @param config - The configuration for the semantic memory strategy.
-   * @returns A UnifiedMemoryStrategy.
+   * @returns A ManagedMemoryStrategy.
    */
-  public static usingSemantic(config: UnifiedStrategyProps): UnifiedMemoryStrategy {
-    return new UnifiedMemoryStrategy(MemoryStrategyType.SEMANTIC, config);
+  public static usingSemantic(config: ManagedStrategyProps): ManagedMemoryStrategy {
+    return new ManagedMemoryStrategy(MemoryStrategyType.SEMANTIC, config);
   }
   /**
    * Creates a user preference memory strategy with custom configuration.
    * Captures individual preferences, interaction patterns, and personalized settings to enhance future experiences.
    * Extracted memory example: User needs clear guidance on cloud storage account connection during onboarding.
    * @param config - The configuration for the user preference memory strategy.
-   * @returns A UnifiedMemoryStrategy.
+   * @returns A ManagedMemoryStrategy.
    */
-  public static usingUserPreference(config: UnifiedStrategyProps): UnifiedMemoryStrategy {
-    return new UnifiedMemoryStrategy(MemoryStrategyType.USER_PREFERENCE, config);
+  public static usingUserPreference(config: ManagedStrategyProps): ManagedMemoryStrategy {
+    return new ManagedMemoryStrategy(MemoryStrategyType.USER_PREFERENCE, config);
   }
   /**
    * Creates a summarization memory strategy with custom configuration.
    * This strategy compresses conversations into concise overviews, preserving essential context and key insights for quick recall.
    * Extracted memory example: Users confused by cloud setup during onboarding.
    * @param config - The configuration for the summarization memory strategy.
-   * @returns A UnifiedMemoryStrategy.
+   * @returns A ManagedMemoryStrategy.
    */
-  public static usingSummarization(config: UnifiedStrategyProps): UnifiedMemoryStrategy {
-    return new UnifiedMemoryStrategy(MemoryStrategyType.SUMMARIZATION, config);
+  public static usingSummarization(config: ManagedStrategyProps): ManagedMemoryStrategy {
+    return new ManagedMemoryStrategy(MemoryStrategyType.SUMMARIZATION, config);
   }
   /**
    * Creates a self-managed memory strategy.

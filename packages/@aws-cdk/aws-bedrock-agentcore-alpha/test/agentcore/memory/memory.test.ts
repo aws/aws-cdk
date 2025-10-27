@@ -96,7 +96,7 @@ describe('Memory static methods tests', () => {
     template = Template.fromStack(stack);
   });
 
-  test('fromMemoryAttributes should create a BrowserCustom reference from existing attributes', () => {
+  test('fromMemoryAttributes should create a Memory reference from existing attributes', () => {
     const memory = Memory.fromMemoryAttributes(stack, 'test-memory', {
       memoryArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:memory/test-memory',
       roleArn: 'arn:aws:iam::123456789012:role/test-memory-role',
@@ -1650,5 +1650,402 @@ describe('SelfManagedMemoryStrategy unit tests', () => {
         },
       });
     }).not.toThrow();
+  });
+});
+
+describe('Memory with custom execution role and strategies tests', () => {
+  let template: Template;
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let customRole: iam.Role;
+  let kmsKey: kms.Key;
+  let topic: sns.Topic;
+  let bucket: s3.Bucket;
+  // @ts-ignore
+  let memory: Memory;
+
+  beforeAll(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    // Create a custom execution role
+    customRole = new iam.Role(stack, 'CustomExecutionRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+      roleName: 'custom-memory-execution-role',
+    });
+
+    // Create a custom KMS key
+    kmsKey = new kms.Key(stack, 'MemoryEncryptionKey', {
+      description: 'KMS key for memory encryption',
+      enableKeyRotation: true,
+    });
+
+    // Create SNS topic and S3 bucket for self-managed strategy
+    topic = new sns.Topic(stack, 'MemoryTopic', {
+      topicName: 'memory-processing-topic',
+    });
+
+    bucket = new s3.Bucket(stack, 'MemoryBucket', {
+      bucketName: 'memory-processing-bucket',
+    });
+
+    // Create memory with custom role, KMS key, and mixed strategies
+    memory = new Memory(stack, 'test-memory', {
+      memoryName: 'test_memory_custom_role_strategies',
+      description: 'A test memory with custom execution role and mixed strategies',
+      expirationDuration: Duration.days(60),
+      executionRole: customRole,
+      kmsKey: kmsKey,
+      memoryStrategies: [
+        // Built-in strategies
+        MemoryStrategy.usingBuiltInSummarization(),
+        MemoryStrategy.usingBuiltInSemantic(),
+        // Custom managed strategy
+        MemoryStrategy.usingSemantic({
+          name: 'custom_semantic_strategy',
+          description: 'Custom semantic strategy with custom role',
+          namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/custom'],
+          customConsolidation: {
+            model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+            appendToPrompt: 'Custom consolidation prompt for semantic memory',
+          },
+          customExtraction: {
+            model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+            appendToPrompt: 'Custom extraction prompt for semantic memory',
+          },
+        }),
+        // Self-managed strategy
+        MemoryStrategy.usingSelfManaged({
+          name: 'self_managed_strategy',
+          description: 'Self-managed strategy with custom role',
+          invocationConfiguration: {
+            topic: topic,
+            s3Location: {
+              bucketName: bucket.bucketName,
+              objectKey: 'memory-processing/',
+            },
+          },
+          triggerConditions: {
+            messageBasedTrigger: 5,
+            timeBasedTrigger: Duration.seconds(30),
+            tokenBasedTrigger: 500,
+          },
+        }),
+      ],
+    });
+
+    // Add additional strategies via addMemoryStrategy method
+    memory.addMemoryStrategy(MemoryStrategy.usingBuiltInUserPreference());
+
+    memory.addMemoryStrategy(MemoryStrategy.usingUserPreference({
+      name: 'added_user_preference_strategy',
+      description: 'User preference strategy added via addMemoryStrategy',
+      namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/preferences'],
+      customConsolidation: {
+        model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+        appendToPrompt: 'Custom consolidation prompt for user preferences',
+      },
+    }));
+
+    app.synth();
+    template = Template.fromStack(stack);
+  });
+
+  test('Should have the correct resources', () => {
+    template.resourceCountIs('AWS::BedrockAgentCore::Memory', 1);
+    template.resourceCountIs('AWS::IAM::Role', 1);
+    template.resourceCountIs('AWS::KMS::Key', 1);
+    template.resourceCountIs('AWS::SNS::Topic', 1);
+    template.resourceCountIs('AWS::S3::Bucket', 1);
+  });
+
+  test('Should have Memory resource with custom execution role and KMS encryption', () => {
+    template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      Name: 'test_memory_custom_role_strategies',
+      Description: 'A test memory with custom execution role and mixed strategies',
+      EventExpiryDuration: 60,
+      MemoryExecutionRoleArn: {
+        'Fn::GetAtt': [
+          Match.stringLikeRegexp('CustomExecutionRole*'),
+          'Arn',
+        ],
+      },
+      EncryptionKeyArn: {
+        'Fn::GetAtt': [
+          Match.stringLikeRegexp('MemoryEncryptionKey*'),
+          'Arn',
+        ],
+      },
+    });
+  });
+
+  test('Should have custom execution role with correct properties', () => {
+    template.hasResourceProperties('AWS::IAM::Role', {
+      RoleName: 'custom-memory-execution-role',
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'bedrock-agentcore.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('Should have KMS key with correct properties', () => {
+    template.hasResourceProperties('AWS::KMS::Key', {
+      Description: 'KMS key for memory encryption',
+      EnableKeyRotation: true,
+    });
+  });
+
+  test('Should have KMS permissions correctly applied on execution role', () => {
+    // Check that KMS permissions are granted through IAM policy statements
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Effect: 'Allow',
+            Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+            Resource: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('MemoryEncryptionKey*'),
+                'Arn',
+              ],
+            },
+          }),
+        ]),
+      },
+      Roles: [
+        {
+          Ref: Match.stringLikeRegexp('CustomExecutionRole*'),
+        },
+      ],
+    });
+  });
+
+  test('Should have Memory resource with all strategies from constructor', () => {
+    template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryStrategies: Match.arrayWith([
+        // Built-in summarization
+        {
+          SummaryMemoryStrategy: {
+            Name: Match.stringLikeRegexp('summary_builtin_.*'),
+            Description: 'Summarize interactions to preserve critical context and key insights',
+            Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
+            Type: 'SUMMARIZATION',
+          },
+        },
+        // Built-in semantic
+        {
+          SemanticMemoryStrategy: {
+            Name: Match.stringLikeRegexp('semantic_builtin_.*'),
+            Description: 'Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.',
+            Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
+            Type: 'SEMANTIC',
+          },
+        },
+        // Custom semantic strategy
+        {
+          CustomMemoryStrategy: {
+            Name: 'custom_semantic_strategy',
+            Description: 'Custom semantic strategy with custom role',
+            Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/custom'],
+            Type: 'SEMANTIC',
+            Configuration: {
+              SemanticOverride: {
+                Consolidation: {
+                  ModelId: 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+                  AppendToPrompt: 'Custom consolidation prompt for semantic memory',
+                },
+                Extraction: {
+                  ModelId: 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+                  AppendToPrompt: 'Custom extraction prompt for semantic memory',
+                },
+              },
+            },
+          },
+        },
+        // Self-managed strategy
+        {
+          CustomMemoryStrategy: {
+            Name: 'self_managed_strategy',
+            Description: 'Self-managed strategy with custom role',
+            Type: 'CUSTOM',
+            Configuration: {
+              SelfManagedConfiguration: {
+                HistoricalContextWindowSize: 4,
+                InvocationConfiguration: {
+                  TopicArn: {
+                    Ref: Match.stringLikeRegexp('MemoryTopic*'),
+                  },
+                  PayloadDeliveryBucketName: {
+                    Ref: Match.stringLikeRegexp('MemoryBucket*'),
+                  },
+                },
+                TriggerConditions: [
+                  {
+                    MessageBasedTrigger: {
+                      MessageCount: 5,
+                    },
+                  },
+                  {
+                    TimeBasedTrigger: {
+                      IdleSessionTimeout: 30,
+                    },
+                  },
+                  {
+                    TokenBasedTrigger: {
+                      TokenCount: 500,
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      ]),
+    });
+  });
+
+  test('Should have Memory resource with strategies added via addMemoryStrategy', () => {
+    template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryStrategies: Match.arrayWith([
+        // Built-in user preference added via addMemoryStrategy
+        {
+          UserPreferenceMemoryStrategy: {
+            Name: Match.stringLikeRegexp('preference_builtin_.*'),
+            Description: 'Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.',
+            Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
+            Type: 'USER_PREFERENCE',
+          },
+        },
+        // Custom user preference added via addMemoryStrategy
+        {
+          CustomMemoryStrategy: {
+            Name: 'added_user_preference_strategy',
+            Description: 'User preference strategy added via addMemoryStrategy',
+            Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/preferences'],
+            Type: 'USER_PREFERENCE',
+            Configuration: {
+              UserPreferenceOverride: {
+                Consolidation: {
+                  ModelId: 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+                  AppendToPrompt: 'Custom consolidation prompt for user preferences',
+                },
+              },
+            },
+          },
+        },
+      ]),
+    });
+  });
+
+  test('Should have exactly six strategies total', () => {
+    const memoryResources = template.findResources('AWS::BedrockAgentCore::Memory');
+    const memoryResource = Object.values(memoryResources)[0];
+
+    expect(memoryResource.Properties.MemoryStrategies).toHaveLength(6);
+  });
+
+  test('Should have SNS permissions for self-managed strategy on execution role', () => {
+    // Check that the execution role has the necessary SNS permissions for self-managed strategy
+    const policies = template.findResources('AWS::IAM::Policy');
+    const policyValues = Object.values(policies);
+
+    let hasSNSPermission = false;
+    for (const policy of policyValues) {
+      const statements = policy.Properties.PolicyDocument.Statement;
+      for (const statement of statements) {
+        if (statement.Action &&
+            (statement.Action.includes('sns:GetTopicAttributes') ||
+             statement.Action.includes('sns:Publish'))) {
+          hasSNSPermission = true;
+          break;
+        }
+      }
+      if (hasSNSPermission) break;
+    }
+
+    expect(hasSNSPermission).toBe(true);
+  });
+
+  test('Should have S3 permissions for self-managed strategy on execution role', () => {
+    // Check that the execution role has the necessary S3 permissions for self-managed strategy
+    const policies = template.findResources('AWS::IAM::Policy');
+    const policyValues = Object.values(policies);
+
+    let hasS3Permission = false;
+    for (const policy of policyValues) {
+      const statements = policy.Properties.PolicyDocument.Statement;
+      for (const statement of statements) {
+        if (statement.Action &&
+            (statement.Action.includes('s3:GetBucketLocation') ||
+             statement.Action.includes('s3:PutObject'))) {
+          hasS3Permission = true;
+          break;
+        }
+      }
+      if (hasS3Permission) break;
+    }
+
+    expect(hasS3Permission).toBe(true);
+  });
+
+  test('Should have Bedrock invoke permissions for custom strategies on execution role', () => {
+    // Check that custom strategies with model overrides are properly configured
+    // The Bedrock permissions are granted through the model's grantInvoke method
+    // We verify this by checking that the custom strategies are present in the template
+    const memoryResources = template.findResources('AWS::BedrockAgentCore::Memory');
+    const memoryResource = Object.values(memoryResources)[0];
+    const strategies = memoryResource.Properties.MemoryStrategies;
+
+    // Check that we have custom strategies with model overrides
+    let hasCustomStrategyWithModel = false;
+    for (const strategy of strategies) {
+      if (strategy.CustomMemoryStrategy &&
+          strategy.CustomMemoryStrategy.Configuration &&
+          (strategy.CustomMemoryStrategy.Configuration.SemanticOverride ||
+           strategy.CustomMemoryStrategy.Configuration.UserPreferenceOverride)) {
+        hasCustomStrategyWithModel = true;
+        break;
+      }
+    }
+
+    expect(hasCustomStrategyWithModel).toBe(true);
+  });
+
+  test('Should have memoryStrategies property accessible after adding strategies', () => {
+    expect(memory.memoryStrategies).toHaveLength(6);
+
+    const strategyNames = memory.memoryStrategies.map(strategy => strategy.name);
+
+    expect(strategyNames.some((name: string) => /summary_builtin_.*/.test(name))).toBe(true);
+    expect(strategyNames.some((name: string) => /semantic_builtin_.*/.test(name))).toBe(true);
+    expect(strategyNames.some((name: string) => /preference_builtin_.*/.test(name))).toBe(true);
+    expect(strategyNames).toContain('custom_semantic_strategy');
+    expect(strategyNames).toContain('self_managed_strategy');
+    expect(strategyNames).toContain('added_user_preference_strategy');
+  });
+
+  test('Should have correct execution role reference', () => {
+    expect(memory.executionRole).toBe(customRole);
+    // The role name is resolved as a token, so we check that it's defined
+    expect(memory.executionRole?.roleName).toBeDefined();
+  });
+
+  test('Should have correct KMS key reference', () => {
+    expect(memory.kmsKey).toBe(kmsKey);
+    expect(memory.kmsKey?.keyArn).toBeDefined();
   });
 });

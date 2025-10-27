@@ -670,7 +670,6 @@ export class Memory extends MemoryBase {
     this.kmsKey = props.kmsKey;
     this.executionRole = props.executionRole ?? this._createMemoryRole();
     this.grantPrincipal = this.executionRole;
-    this.memoryStrategies = props.memoryStrategies ?? [];
     this.tags = props.tags;
 
     // ------------------------------------------------------
@@ -720,10 +719,8 @@ export class Memory extends MemoryBase {
     this.createdAt = this.__resource.attrCreatedAt;
     this.failureReason = this.__resource.attrFailureReason;
 
-    this.memoryStrategies.forEach((strategy) => {
-      const grant = strategy.grant(this.executionRole as iam.IRole);
-      grant?.applyBefore(this.__resource);
-    });
+    // Add memory strategies to the memory
+    for (const strategy of props.memoryStrategies ?? []) {this.addMemoryStrategy(strategy);}
   }
 
   // ------------------------------------------------------

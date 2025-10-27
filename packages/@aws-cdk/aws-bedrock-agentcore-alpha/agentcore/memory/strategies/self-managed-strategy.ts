@@ -16,90 +16,67 @@ import * as cdk from 'aws-cdk-lib';
 import { Location } from 'aws-cdk-lib/aws-s3';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
-import { IMemoryStrategy, MemoryStrategyCommonProps, MemoryStrategyType } from '../memory-strategy';
+import { IMemoryStrategy, MemoryStrategyCommonProps, MemoryStrategyType, MEMORY_NAME_MIN_LENGTH, MEMORY_NAME_MAX_LENGTH } from '../memory-strategy';
 import { validateStringFieldLength, throwIfInvalid, validateFieldPattern } from '../validation-helpers';
 
 /******************************************************************************
  *                              CONSTANTS
  *****************************************************************************/
 /**
- * Minimum length for memory strategy name
- * @internal
- */
-const MEMORY_NAME_MIN_LENGTH = 1;
-
-/**
- * Maximum length for memory strategy name
- * @internal
- */
-const MEMORY_NAME_MAX_LENGTH = 48;
-
-/**
  * Minimum value for time-based trigger in seconds
  * @internal
  */
 const TIME_BASED_TRIGGER_MIN = 10;
-
 /**
  * Maximum value for time-based trigger in seconds
  * @internal
  */
 const TIME_BASED_TRIGGER_MAX = 3000;
-
 /**
  * Minimum value for token-based trigger
  * @internal
  */
 const TOKEN_BASED_TRIGGER_MIN = 100;
-
 /**
  * Maximum value for token-based trigger
  * @internal
  */
 const TOKEN_BASED_TRIGGER_MAX = 500000;
-
 /**
  * Minimum value for message-based trigger
  * @internal
  */
 const MESSAGE_BASED_TRIGGER_MIN = 1;
-
 /**
  * Maximum value for message-based trigger
  * @internal
  */
 const MESSAGE_BASED_TRIGGER_MAX = 50;
-
 /**
  * Minimum value for historical context window size
  * @internal
  */
 const HISTORICAL_CONTEXT_WINDOW_SIZE_MIN = 0;
-
 /**
  * Maximum value for historical context window size
  * @internal
  */
 const HISTORICAL_CONTEXT_WINDOW_SIZE_MAX = 50;
-
 /**
  * Default value for historical context window size
  * @internal
  */
 const DEFAULT_HISTORICAL_CONTEXT_WINDOW_SIZE = 4;
-
 /**
  * Default value for message-based trigger
  * @internal
  */
 const DEFAULT_MESSAGE_BASED_TRIGGER = 1;
-
 /**
  * Default value for time-based trigger
  * @internal
  */
 const DEFAULT_TIME_BASED_TRIGGER = cdk.Duration.seconds(10);
-
 /**
  * Default value for token-based trigger
  * @internal
