@@ -97,5 +97,3 @@ new cdk.CfnOutput(stack, 'V2EndpointId', {
 new integ.IntegTest(app, 'BedrockAgentCoreRuntimeTest', {
   testCases: [stack],
 });
-
-app.synth();
