@@ -117,7 +117,7 @@
     "node": ">= 18.0.0"
   },
   "stability": "experimental",
-  "maturity": "experimental",
+  "maturity": "developer-preview",
   "awslint": {
     "exclude": [
       "*:*"
