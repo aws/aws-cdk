@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "4a3982053de51e0eb0da53907e90a089c77fda978894b1655890075aaecfe0da": {
+      "displayName": "aws-ecs-integ-alb-fg-smart-defaults Template",
+      "source": {
+        "path": "aws-ecs-integ-alb-fg-smart-defaults.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-d868818d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4a3982053de51e0eb0da53907e90a089c77fda978894b1655890075aaecfe0da.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

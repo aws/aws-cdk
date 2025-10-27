@@ -7,7 +7,7 @@ import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
-import { App, Aws, CfnDeletionPolicy, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '../../core';
+import { App, ArnFormat, Aws, CfnDeletionPolicy, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '../../core';
 import * as cr from '../../custom-resources';
 import * as cxapi from '../../cx-api';
 import {
@@ -26,6 +26,7 @@ import {
   InputCompressionType,
   InputFormat,
   ApproximateCreationDateTimePrecision,
+  ContributorInsightsMode,
 } from '../lib';
 import { ReplicaProvider } from '../lib/replica-provider';
 
@@ -392,6 +393,50 @@ describe('default properties', () => {
     // so the name should not be filled
     Template.fromStack(stack).hasResource('AWS::DynamoDB::Table', {
       TableName: Match.absent(),
+    });
+  });
+});
+
+describe('L1 static factory methods', () => {
+  test('fromTableArn', () => {
+    const stack = new Stack();
+    const table = CfnTable.fromTableArn(stack, 'MyBucket', 'arn:aws:dynamodb:eu-west-1:123456789012:table/MyTable');
+    expect(table.tableRef.tableName).toEqual('MyTable');
+    expect(table.tableRef.tableArn).toEqual('arn:aws:dynamodb:eu-west-1:123456789012:table/MyTable');
+
+    const env = stack.resolve((table as unknown as Resource).env);
+    expect(env).toEqual({
+      region: 'eu-west-1',
+      account: '123456789012',
+    });
+  });
+
+  test('fromTableName', () => {
+    const app = new App();
+    const stack = new Stack(app, 'MyStack', {
+      env: { account: '23432424', region: 'us-east-1' },
+    });
+
+    const table = CfnTable.fromTableName(stack, 'Table', 'MyTable');
+    const arnComponents = stack.splitArn(table.tableRef.tableArn, ArnFormat.SLASH_RESOURCE_NAME);
+
+    expect(table.tableRef.tableName).toEqual('MyTable');
+    expect(arnComponents).toMatchObject({
+      account: '23432424',
+      region: 'us-east-1',
+      resource: 'table',
+      resourceName: 'MyTable',
+      service: 'dynamodb',
+    });
+
+    expect(stack.resolve(arnComponents.partition)).toEqual({
+      Ref: 'AWS::Partition',
+    });
+
+    const env = stack.resolve((table as unknown as Resource).env);
+    expect(env).toEqual({
+      region: 'us-east-1',
+      account: '23432424',
     });
   });
 });
@@ -4118,4 +4163,133 @@ test('Kinesis Stream - precision timestamp', () => {
       ApproximateCreationDateTimePrecision: 'MILLISECOND',
     },
   });
+});
+
+test('Contributor Insights Specification - table', () => {
+  const stack = new Stack();
+
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    partitionKey: TABLE_PARTITION_KEY,
+    sortKey: TABLE_SORT_KEY,
+    contributorInsightsSpecification: {
+      enabled: true,
+      mode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+    {
+      AttributeDefinitions: [
+        { AttributeName: 'hashKey', AttributeType: 'S' },
+        { AttributeName: 'sortKey', AttributeType: 'N' },
+      ],
+      KeySchema: [
+        { AttributeName: 'hashKey', KeyType: 'HASH' },
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
+      ],
+      ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+      ContributorInsightsSpecification: {
+        Enabled: true,
+        Mode: 'ACCESSED_AND_THROTTLED_KEYS',
+      },
+    },
+  );
+});
+
+test('Contributor Insights Specification - table - without mode', () => {
+  const stack = new Stack();
+
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    partitionKey: TABLE_PARTITION_KEY,
+    sortKey: TABLE_SORT_KEY,
+    contributorInsightsSpecification: {
+      enabled: true,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+    {
+      AttributeDefinitions: [
+        { AttributeName: 'hashKey', AttributeType: 'S' },
+        { AttributeName: 'sortKey', AttributeType: 'N' },
+      ],
+      KeySchema: [
+        { AttributeName: 'hashKey', KeyType: 'HASH' },
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
+      ],
+      ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+      ContributorInsightsSpecification: {
+        Enabled: true,
+      },
+    },
+  );
+});
+
+test('Contributor Insights Specification - index', () => {
+  const stack = new Stack();
+
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    partitionKey: TABLE_PARTITION_KEY,
+    sortKey: TABLE_SORT_KEY,
+    contributorInsightsSpecification: {
+      enabled: true,
+      mode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+    },
+  });
+
+  table.addGlobalSecondaryIndex({
+    indexName: GSI_NAME,
+    partitionKey: GSI_PARTITION_KEY,
+    contributorInsightsSpecification: {
+      enabled: true,
+      mode: ContributorInsightsMode.THROTTLED_KEYS,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+    {
+      AttributeDefinitions: [
+        { AttributeName: 'hashKey', AttributeType: 'S' },
+        { AttributeName: 'sortKey', AttributeType: 'N' },
+        { AttributeName: 'gsiHashKey', AttributeType: 'S' },
+      ],
+      KeySchema: [
+        { AttributeName: 'hashKey', KeyType: 'HASH' },
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
+      ],
+      ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+      ContributorInsightsSpecification: {
+        Enabled: true,
+        Mode: 'ACCESSED_AND_THROTTLED_KEYS',
+      },
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'MyGSI',
+          KeySchema: [
+            { AttributeName: 'gsiHashKey', KeyType: 'HASH' },
+          ],
+          ContributorInsightsSpecification: {
+            Enabled: true,
+            Mode: 'THROTTLED_KEYS',
+          },
+        },
+      ],
+    },
+  );
+});
+
+test('ContributorInsightsSpecification && ContributorInsightsEnabled', () => {
+  const stack = new Stack();
+
+  expect(() => {
+    new Table(stack, 'Table', {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+      contributorInsightsEnabled: true,
+      contributorInsightsSpecification: {
+        enabled: true,
+        mode: ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+      },
+    });
+  }).toThrow('`contributorInsightsSpecification` and `contributorInsightsEnabled` are set. Use `contributorInsightsSpecification` only.');
 });

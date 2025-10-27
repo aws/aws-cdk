@@ -179,6 +179,7 @@
     "DestinationBucketName": {
      "Ref": "SourceBucketDDD2130A"
     },
+    "WaitForDistributionInvalidation": true,
     "Prune": true,
     "OutputObjectKeys": true
    },
@@ -308,7 +309,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-234567890123-test-region",
-     "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
+     "S3Key": "3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9.zip"
     },
     "Environment": {
      "Variables": {
@@ -327,7 +328,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.11",
+    "Runtime": "python3.13",
     "Timeout": 900
    },
    "DependsOn": [

@@ -62,7 +62,7 @@ export class InstanceDrainHook extends Construct {
     const fn = new lambda.Function(this, 'Function', {
       code: lambda.Code.fromInline(fs.readFileSync(path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'aws-ecs', 'lambda-source', 'index.py'), { encoding: 'utf-8' })),
       handler: 'index.lambda_handler',
-      runtime: lambda.Runtime.PYTHON_3_9,
+      runtime: lambda.Runtime.determineLatestPythonRuntime(this),
       // Timeout: some extra margin for additional API calls made by the Lambda,
       // up to a maximum of 15 minutes.
       timeout: cdk.Duration.seconds(Math.min(drainTime.toSeconds() + 10, 900)),

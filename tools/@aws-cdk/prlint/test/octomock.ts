@@ -23,11 +23,11 @@ export function createOctomock() {
     search: {
       issuesAndPullRequests: jest.fn(),
     },
-    repos: {
-      listCommitStatusesForRef: jest.fn(),
-    },
     checks: {
       listForRef: jest.fn(),
+    },
+    actions: {
+      listWorkflowRuns: jest.fn(),
     },
     paginate: async (method: any, args: any) => { return (await method(args)).data; },
   };
