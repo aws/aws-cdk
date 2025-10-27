@@ -117,7 +117,7 @@ To grant the runtime permission to invoke a Bedrock model or inference profile:
 
 ```typescript fixture=default
 // Note: This example uses @aws-cdk/aws-bedrock-alpha which must be installed separately
-declare runtime: agentcore.Runtime;
+declare const runtime: agentcore.Runtime;
 
 // Create a cross-region inference profile for Claude 3.7 Sonnet
 const inferenceProfile = bedrock.CrossRegionInferenceProfile.fromConfig({
