@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.209.0](https://github.com/aws/aws-cdk/compare/v2.208.0...v2.209.0) (2025-08-05)
+
+
+### Features
+
+* **ecs:** add support for native blue/green deployments in ECS L2 ([#35061](https://github.com/aws/aws-cdk/issues/35061)) ([3723aca](https://github.com/aws/aws-cdk/commit/3723acab5e97b92a8be5cbeb1bc950469d614050)), closes [#35010](https://github.com/aws/aws-cdk/issues/35010)
+* add new field to feature flag report ([#35108](https://github.com/aws/aws-cdk/issues/35108)) ([8bff8f9](https://github.com/aws/aws-cdk/commit/8bff8f9ba540a28596fe150cef83b5da6f501c2e))
+* **inferenceprofiles:** add inference and cross-region inference pro… ([#35048](https://github.com/aws/aws-cdk/issues/35048)) ([87770ef](https://github.com/aws/aws-cdk/commit/87770efbe2edc7b923c0a63e7c78fe6fe030f0b8))
+* deprecating delete existing field in ARecord ([#35039](https://github.com/aws/aws-cdk/issues/35039)) ([49b2627](https://github.com/aws/aws-cdk/commit/49b26273a3c549ba56b22a3c0d86fa95c06d909b)), closes [#34230](https://github.com/aws/aws-cdk/issues/34230)
+* **s3-tables:** add L2 construct support for Table and Namespace resources ([#35023](https://github.com/aws/aws-cdk/issues/35023)) ([576c9ec](https://github.com/aws/aws-cdk/commit/576c9ecb6dd618f0cba497306e29fb44a0ce33a8)), closes [#33054](https://github.com/aws/aws-cdk/issues/33054)
+
+
+### Bug Fixes
+
+* **app-staging-synthesizer:** custom bootstrap qualifier is not passed through to deployment role name ([#35118](https://github.com/aws/aws-cdk/issues/35118)) ([6525d51](https://github.com/aws/aws-cdk/commit/6525d5116052553b693abf0aa6611b129240fbd2)), closes [#28195](https://github.com/aws/aws-cdk/issues/28195) [#28195](https://github.com/aws/aws-cdk/issues/28195)
+* **codebuild:** support Windows Server Core 2022 image with on-demand capacity ([#35152](https://github.com/aws/aws-cdk/issues/35152)) ([a595884](https://github.com/aws/aws-cdk/commit/a59588468277179c7ba0e75d3a97fbb84498f4aa)), closes [#29754](https://github.com/aws/aws-cdk/issues/29754)
+* **eks:** remove usage of shell=True in helm commands ([#35148](https://github.com/aws/aws-cdk/issues/35148)) ([918593d](https://github.com/aws/aws-cdk/commit/918593d9a1b0bbf2068d2f160579f8d361712338))
+* **eks-v2:** remove usage of shell=True in helm commands ([#35141](https://github.com/aws/aws-cdk/issues/35141)) ([cd9d69c](https://github.com/aws/aws-cdk/commit/cd9d69c1069a8b366797c19ad6989206e3f4205e))
+* **rds:** can not lookup VPC Security Groups with fromLookup method ([#34906](https://github.com/aws/aws-cdk/issues/34906)) ([ae87e26](https://github.com/aws/aws-cdk/commit/ae87e2610cf82f88ed84a7bac774447a10b9667f))
+
+## [2.208.0](https://github.com/aws/aws-cdk/compare/v2.207.0...v2.208.0) (2025-07-29)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#35054](https://github.com/aws/aws-cdk/issues/35054)) ([a2b3e78](https://github.com/aws/aws-cdk/commit/a2b3e788fdedff02ce2abd8998c37d4da5a5dc2d))
+* **region-info:** add support for region ap-southeast-6 ([#35036](https://github.com/aws/aws-cdk/pull/35036))
+
+
+### Bug Fixes
+
+* **core:** `Tag must have a value` error is impossible to attribute to a specific tag ([#35091](https://github.com/aws/aws-cdk/issues/35091)) ([6c4181b](https://github.com/aws/aws-cdk/commit/6c4181bbe1c28b8080ba5f12716ad91475b2b3f5))
+* **custom-resources:** use loggingFormat instead of deprecated logFormat ([#35015](https://github.com/aws/aws-cdk/issues/35015)) ([81fe660](https://github.com/aws/aws-cdk/commit/81fe66029bba42135143874072f16387f7edc741)), closes [#35002](https://github.com/aws/aws-cdk/issues/35002)
+* **logs:** query strings can have multiple stats commands ([#34590](https://github.com/aws/aws-cdk/issues/34590)) ([57ae6f9](https://github.com/aws/aws-cdk/commit/57ae6f92949623d93c73ff23057291ba0f5eb95b)), closes [#34578](https://github.com/aws/aws-cdk/issues/34578) [#34578](https://github.com/aws/aws-cdk/issues/34578)
+* **logs:** revert "exposed metric from the metric filter will now include the dimension map ([#34648](https://github.com/aws/aws-cdk/issues/34648))" ([#35102](https://github.com/aws/aws-cdk/issues/35102)) ([24bbced](https://github.com/aws/aws-cdk/commit/24bbced7e67ec6265713cf46c51b110f38b6cf7d)), closes [#35097](https://github.com/aws/aws-cdk/issues/35097)
+
 ## [2.207.0](https://github.com/aws/aws-cdk/compare/v2.206.0...v2.207.0) (2025-07-24)
 
 
