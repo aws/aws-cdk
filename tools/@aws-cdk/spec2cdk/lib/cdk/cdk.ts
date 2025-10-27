@@ -22,11 +22,6 @@ export interface ModuleImportLocations {
    * @default 'aws-cdk-lib/aws-cloudwatch'
    */
   readonly cloudwatch?: string;
-  /**
-   * The root location of all the modules
-   * @default '../..'
-   */
-  readonly modulesRoot?: string;
 }
 
 export class CdkCore extends ExternalModule {

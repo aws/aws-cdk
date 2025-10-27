@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "TestBucketDeploymentContent.assets": {
+    "integ-managedinstances-no-default-capacity-provider.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "TestBucketDeploymentContent.assets.json",
+        "file": "integ-managedinstances-no-default-capacity-provider.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "TestBucketDeploymentContent": {
+    "integ-managedinstances-no-default-capacity-provider": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "TestBucketDeploymentContent.template.json",
+        "templateFile": "integ-managedinstances-no-default-capacity-provider.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/993a3b52980fa656b2b6a74b91bb5b8f632737ad1bb7aef4b61b665c851746dd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7b3c6e30b8c0bf249b862e552da0dcb05d4d518dc804e22a432b39d673415f20.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "TestBucketDeploymentContent.assets"
+          "integ-managedinstances-no-default-capacity-provider.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,228 +31,357 @@
         }
       },
       "dependencies": [
-        "TestBucketDeploymentContent.assets"
+        "integ-managedinstances-no-default-capacity-provider.assets"
       ],
       "metadata": {
-        "/TestBucketDeploymentContent/Bucket": [
+        "/integ-managedinstances-no-default-capacity-provider/Vpc": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "removalPolicy": "destroy",
-              "autoDeleteObjects": true
+              "maxAzs": "*",
+              "restrictDefaultSecurityGroup": false
             }
           }
         ],
-        "/TestBucketDeploymentContent/Bucket/Resource": [
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Bucket83908E77"
+            "data": "Vpc8378EB38"
           }
         ],
-        "/TestBucketDeploymentContent/Bucket/Policy": [
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "bucket": "*"
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
             }
-          }
-        ],
-        "/TestBucketDeploymentContent/Bucket/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketPolicyE9A3008A"
-          }
-        ],
-        "/TestBucketDeploymentContent/Bucket/AutoDeleteObjectsCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/TestBucketDeploymentContent/Bucket/AutoDeleteObjectsCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
-          }
-        ],
-        "/TestBucketDeploymentContent/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/TestBucketDeploymentContent/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-          }
-        ],
-        "/TestBucketDeploymentContent/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
-          }
-        ],
-        "/TestBucketDeploymentContent/TestSecret": [
+          },
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "generateSecretString": {
-                "secretStringTemplate": "*",
-                "generateStringKey": "*"
-              }
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
             }
           }
         ],
-        "/TestBucketDeploymentContent/TestSecret/Resource": [
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestSecret16AF87B1"
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
-        "/TestBucketDeploymentContent/SecretParam": [
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "stringValue": "*"
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
             }
           }
         ],
-        "/TestBucketDeploymentContent/SecretParam/Resource": [
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SecretParam0C31D215"
+            "data": "VpcPublicSubnet2Subnet691E08A3"
           }
         ],
-        "/TestBucketDeploymentContent/IsToken": [
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IsToken"
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
           }
         ],
-        "/TestBucketDeploymentContent/SecretValue": [
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SecretValue"
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
           }
         ],
-        "/TestBucketDeploymentContent/DeployMeHere/AwsCliLayer": [
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2EIP3C605A87"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2NATGateway9182C01D"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
             "data": {}
           }
         ],
-        "/TestBucketDeploymentContent/DeployMeHere/AwsCliLayer/Resource": [
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeployMeHereAwsCliLayerDDC2FE7D"
+            "data": "VpcPrivateSubnet1Subnet536B997A"
           }
         ],
-        "/TestBucketDeploymentContent/DeployMeHere/CustomResourceHandler": [
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PrivateSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "uuid": "*",
-              "layers": [
-                "*"
-              ],
-              "environment": "*",
-              "lambdaPurpose": "*",
-              "timeout": "*",
-              "role": "*",
-              "memorySize": "*",
-              "ephemeralStorageSize": "*",
-              "vpc": "*",
-              "vpcSubnets": "*",
-              "filesystem": "*",
-              "logGroup": "*",
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/ManagedInstancesCluster": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
             }
           },
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addMetadata": [
-                "*",
-                true
+              "addManagedInstancesCapacityProvider": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/ManagedInstancesCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ManagedInstancesClusterDC139296"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/InfrastructureRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
               ]
             }
           },
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addMetadata": [
+              "grantPassRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grant": [
                 "*",
                 "*"
               ]
             }
           }
         ],
-        "/TestBucketDeploymentContent/DeployMeHere/CustomResource": [
+        "/integ-managedinstances-no-default-capacity-provider/InfrastructureRole/ImportInfrastructureRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/TestBucketDeploymentContent/DeployMeHere/CustomResource/Default": [
+        "/integ-managedinstances-no-default-capacity-provider/InfrastructureRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeployMeHereCustomResourceE86627A6"
+            "data": "InfrastructureRoleB0C76DC8"
           }
         ],
-        "/TestBucketDeploymentContent/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+        "/integ-managedinstances-no-default-capacity-provider/InstanceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "layers": [
-                "*"
-              ],
-              "environment": "*",
-              "timeout": "*",
-              "role": "*",
-              "memorySize": "*",
-              "ephemeralStorageSize": "*",
-              "vpc": "*",
-              "vpcSubnets": "*",
-              "filesystem": "*",
-              "logGroup": "*",
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEnvironment": [
-                "*",
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addLayers": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:is-custom-resource-handler-singleton",
-            "data": true
-          },
-          {
-            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-            "data": 2
-          }
-        ],
-        "/TestBucketDeploymentContent/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
+              "roleName": "*",
               "assumedBy": {
                 "principalAccount": "*",
                 "assumeRoleAction": "*"
@@ -287,85 +416,21 @@
                 "*"
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
           }
         ],
-        "/TestBucketDeploymentContent/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
+        "/integ-managedinstances-no-default-capacity-provider/InstanceRole/ImportInstanceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/TestBucketDeploymentContent/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+        "/integ-managedinstances-no-default-capacity-provider/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+            "data": "InstanceRole3CCE2F1D"
           }
         ],
-        "/TestBucketDeploymentContent/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+        "/integ-managedinstances-no-default-capacity-provider/InstanceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -393,133 +458,163 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
-        "/TestBucketDeploymentContent/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+        "/integ-managedinstances-no-default-capacity-provider/InstanceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+            "data": "InstanceRoleDefaultPolicy1531605C"
           }
         ],
-        "/TestBucketDeploymentContent/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+        "/integ-managedinstances-no-default-capacity-provider/InstanceProfile": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "instanceProfileName": "*",
+              "role": "*"
+            }
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/InstanceProfile/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+            "data": "InstanceProfile9F2F41CB"
           }
         ],
-        "/TestBucketDeploymentContent/BucketName": [
+        "/integ-managedinstances-no-default-capacity-provider/ManagedInstancesSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "description": "*",
+              "allowAllOutbound": true
+            }
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/ManagedInstancesSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BucketName"
+            "data": "ManagedInstancesSecurityGroupC479A9F6"
           }
         ],
-        "/TestBucketDeploymentContent/Exports/Output{\"Ref\":\"Bucket83908E77\"}": [
+        "/integ-managedinstances-no-default-capacity-provider/ManagedInstancesCapacityProvider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/ManagedInstancesCapacityProvider/ManagedInstancesCapacityProvider": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefBucket83908E7781C90AC0"
+            "data": "ManagedInstancesCapacityProviderC2946447"
           }
         ],
-        "/TestBucketDeploymentContent/BootstrapVersion": [
+        "/integ-managedinstances-no-default-capacity-provider/TaskDef": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/TaskDef/TaskRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/TaskDef/TaskRole/ImportTaskRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefTaskRole1EDB4A67"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDef54694570"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/ManagedInstancesService": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/ManagedInstancesService/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ManagedInstancesServiceDFC92B6D"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/ManagedInstancesService/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/ManagedInstancesService/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ManagedInstancesServiceSecurityGroupF72D809E"
+          }
+        ],
+        "/integ-managedinstances-no-default-capacity-provider/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/TestBucketDeploymentContent/CheckBootstrapVersion": [
+        "/integ-managedinstances-no-default-capacity-provider/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "TestBucketDeploymentContent"
+      "displayName": "integ-managedinstances-no-default-capacity-provider"
     },
-    "integtestbucketdeploymentdataDefaultTestDeployAssert6FF3075D.assets": {
+    "ManagedInstancesCapacityProvidersDefaultTestDeployAssert3628EE88.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integtestbucketdeploymentdataDefaultTestDeployAssert6FF3075D.assets.json",
+        "file": "ManagedInstancesCapacityProvidersDefaultTestDeployAssert3628EE88.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integtestbucketdeploymentdataDefaultTestDeployAssert6FF3075D": {
+    "ManagedInstancesCapacityProvidersDefaultTestDeployAssert3628EE88": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integtestbucketdeploymentdataDefaultTestDeployAssert6FF3075D.template.json",
+        "templateFile": "ManagedInstancesCapacityProvidersDefaultTestDeployAssert3628EE88.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c4cbdda7b4f272c93b216583e0934134be8ccd16390377771077521fe837c0d7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integtestbucketdeploymentdataDefaultTestDeployAssert6FF3075D.assets"
+          "ManagedInstancesCapacityProvidersDefaultTestDeployAssert3628EE88.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -528,88 +623,23 @@
         }
       },
       "dependencies": [
-        "TestBucketDeploymentContent",
-        "integtestbucketdeploymentdataDefaultTestDeployAssert6FF3075D.assets"
+        "ManagedInstancesCapacityProvidersDefaultTestDeployAssert3628EE88.assets"
       ],
       "metadata": {
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/AwsApiCallS3getObject780d452f7611fd1c0e0b1c423e1bda6d/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/AwsApiCallS3getObject780d452f7611fd1c0e0b1c423e1bda6d/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3getObject780d452f7611fd1c0e0b1c423e1bda6d"
-          }
-        ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/AwsApiCallS3getObject780d452f7611fd1c0e0b1c423e1bda6d/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallS3getObject780d452f7611fd1c0e0b1c423e1bda6d"
-          }
-        ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/AwsApiCallS3getObjectf9e2d3ce58742177bed058632f0fe5f9/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/AwsApiCallS3getObjectf9e2d3ce58742177bed058632f0fe5f9/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3getObjectf9e2d3ce58742177bed058632f0fe5f9"
-          }
-        ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/AwsApiCallS3getObjectf9e2d3ce58742177bed058632f0fe5f9/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallS3getObjectf9e2d3ce58742177bed058632f0fe5f9"
-          }
-        ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/ManagedInstancesCapacityProviders/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/ManagedInstancesCapacityProviders/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-test-bucket-deployment-data/DefaultTest/DeployAssert"
+      "displayName": "ManagedInstancesCapacityProviders/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -944,7 +974,7 @@
             "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
           },
           "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
+            "userValue": false,
             "recommendedValue": true,
             "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
@@ -1088,20 +1118,9 @@
             "explanation": "When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined."
           },
           "@aws-cdk/aws-lambda:useCdkManagedLogGroup": {
-            "userValue": false,
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
-          },
-          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
-            "recommendedValue": true,
-            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
-            "recommendedValue": true,
-            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           }
         }
       }
