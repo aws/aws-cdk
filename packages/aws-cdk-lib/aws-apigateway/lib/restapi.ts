@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
 import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
-import { CfnAccount, CfnRestApi } from './apigateway.generated';
+import { CfnAccount, CfnRestApi, IRestApiRef, RestApiReference } from './apigateway.generated';
 import { CorsOptions } from './cors';
 import { Deployment } from './deployment';
 import { DomainName, DomainNameOptions } from './domain-name';
@@ -17,7 +17,18 @@ import { UsagePlan, UsagePlanProps } from './usage-plan';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token, FeatureFlags, RemovalPolicy, Size, Lazy } from '../../core';
+import {
+  ArnFormat,
+  CfnOutput,
+  FeatureFlags,
+  IResource as IResourceBase,
+  Lazy,
+  RemovalPolicy,
+  Resource,
+  Size,
+  Stack,
+  Token,
+} from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -27,7 +38,7 @@ import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
 const APIGATEWAY_RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApi');
 
-export interface IRestApi extends IResourceBase {
+export interface IRestApi extends IResourceBase, IRestApiRef {
   /**
    * The ID of this API Gateway RestApi.
    * @attribute
@@ -393,7 +404,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
 
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
-  private _allowedVpcEndpoints: Set<ec2.IVpcEndpoint> = new Set();
+  private _allowedVpcEndpoints: Set<ec2.IVPCEndpointRef> = new Set();
 
   protected resourcePolicy?: iam.PolicyDocument;
   protected cloudWatchAccount?: CfnAccount;
@@ -495,7 +506,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
 
     const endpoints = Lazy.list({
       produce: () => {
-        return Array.from(this._allowedVpcEndpoints).map(endpoint => endpoint.vpcEndpointId);
+        return Array.from(this._allowedVpcEndpoints).map(endpoint => endpoint.vpcEndpointRef.vpcEndpointId);
       },
     });
 
@@ -737,6 +748,12 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
       ...fn({ ApiName: this.restApiName }),
       ...props,
     }).attachTo(this);
+  }
+
+  public get restApiRef(): RestApiReference {
+    return {
+      restApiId: this.restApiId,
+    };
   }
 }
 

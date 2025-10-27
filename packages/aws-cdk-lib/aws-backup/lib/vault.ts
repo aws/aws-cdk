@@ -58,7 +58,7 @@ export interface BackupVaultProps {
    *
    * @default - an Amazon managed KMS key
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKeyRef;
 
   /**
    * A SNS topic to send vault events to.
@@ -301,7 +301,7 @@ export class BackupVault extends BackupVaultBase {
     const vault = new CfnBackupVault(this, 'Resource', {
       backupVaultName: props.backupVaultName || this.uniqueVaultName(),
       accessPolicy: Lazy.any({ produce: () => this.accessPolicy.toJSON() }),
-      encryptionKeyArn: props.encryptionKey && props.encryptionKey.keyArn,
+      encryptionKeyArn: props.encryptionKey && props.encryptionKey.keyRef.keyArn,
       notifications,
       lockConfiguration: renderLockConfiguration(this, props.lockConfiguration),
     });

@@ -74,10 +74,11 @@ describe('AlternateTarget', () => {
       productionListener: ecs.ListenerRuleConfiguration.applicationListenerRule(prodRule),
     });
 
-    const target = service.loadBalancerTarget(
-      { containerName: 'web', containerPort: 80 },
+    const target = service.loadBalancerTarget({
+      containerName: 'web',
+      containerPort: 80,
       alternateTarget,
-    );
+    });
     target.attachToApplicationTargetGroup(blueTargetGroup);
 
     // THEN
@@ -117,10 +118,11 @@ describe('AlternateTarget', () => {
       testListener: ecs.ListenerRuleConfiguration.applicationListenerRule(testRule),
     });
 
-    const target = service.loadBalancerTarget(
-      { containerName: 'web', containerPort: 80 },
+    const target = service.loadBalancerTarget({
+      containerName: 'web',
+      containerPort: 80,
       alternateTarget,
-    );
+    });
     target.attachToApplicationTargetGroup(blueTargetGroup);
 
     // THEN
@@ -169,10 +171,11 @@ describe('AlternateTarget', () => {
       role: customRole,
     });
 
-    const target = service.loadBalancerTarget(
-      { containerName: 'web', containerPort: 80 },
+    const target = service.loadBalancerTarget({
+      containerName: 'web',
+      containerPort: 80,
       alternateTarget,
-    );
+    });
     target.attachToApplicationTargetGroup(blueTargetGroup);
 
     // THEN
@@ -235,10 +238,11 @@ describe('AlternateTarget', () => {
       productionListener: ecs.ListenerRuleConfiguration.networkListener(nlbListener),
     });
 
-    const target = service.loadBalancerTarget(
-      { containerName: 'web', containerPort: 80 },
+    const target = service.loadBalancerTarget({
+      containerName: 'web',
+      containerPort: 80,
       alternateTarget,
-    );
+    });
     target.attachToNetworkTargetGroup(nlbBlueTargetGroup);
 
     // THEN
@@ -258,6 +262,71 @@ describe('AlternateTarget', () => {
               Ref: Match.stringLikeRegexp('NlbListener'),
             },
           },
+        },
+      ],
+    });
+  });
+
+  test('Service without alternate target works correctly (regression test)', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN - No alternate target provided
+    const target = service.loadBalancerTarget({
+      containerName: 'web',
+      containerPort: 80,
+    });
+    target.attachToApplicationTargetGroup(blueTargetGroup);
+
+    // THEN - Should not have AdvancedConfiguration
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      LoadBalancers: [
+        {
+          ContainerName: 'web',
+          ContainerPort: 80,
+          TargetGroupArn: {
+            Ref: Match.stringLikeRegexp('BlueTG'),
+          },
+          AdvancedConfiguration: Match.absent(),
+        },
+      ],
+    });
+  });
+
+  test('Service without alternate target works with NLB (regression test)', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    const nlb = new elbv2.NetworkLoadBalancer(stack, 'NLB', { vpc });
+    const nlbBlueTargetGroup = new elbv2.NetworkTargetGroup(stack, 'NlbBlueTG', {
+      vpc,
+      port: 80,
+      targetType: elbv2.TargetType.IP,
+    });
+
+    // WHEN - No alternate target provided
+    const target = service.loadBalancerTarget({
+      containerName: 'web',
+      containerPort: 80,
+    });
+    target.attachToNetworkTargetGroup(nlbBlueTargetGroup);
+
+    // THEN - Should not have AdvancedConfiguration
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      LoadBalancers: [
+        {
+          ContainerName: 'web',
+          ContainerPort: 80,
+          TargetGroupArn: {
+            Ref: Match.stringLikeRegexp('NlbBlueTG'),
+          },
+          AdvancedConfiguration: Match.absent(),
         },
       ],
     });
