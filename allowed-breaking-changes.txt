@@ -966,3 +966,9 @@ removed:aws-cdk-lib.lambda_layer_kubectl.KubectlLayer
 # Fixing the JsonSchema interface to be consistent with JSON Schema spec
 changed-type:aws-cdk-lib.aws_apigateway.JsonSchema.additionalItems
 strengthened:aws-cdk-lib.aws_apigateway.JsonSchema
+
+# We want to reduce the requirements on this interface on purpose. That also means we reduce its guarantees.
+base-types:aws-cdk-lib.aws_iam.IResourceWithPolicy
+removed:aws-cdk-lib.aws_iam.IResourceWithPolicy.applyRemovalPolicy
+removed:aws-cdk-lib.aws_iam.IResourceWithPolicy.node
+removed:aws-cdk-lib.aws_iam.IResourceWithPolicy.stack
