@@ -1,4 +1,4 @@
-import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 import { Template } from '../../assertions';
 import { App, Stack } from '../../core';
 import {
@@ -17,9 +17,9 @@ describe('AccessEntry', () => {
     app = new App();
     stack = new Stack(app, 'test-stack');
     cluster = new Cluster(stack, 'Cluster', {
-      version: KubernetesVersion.V1_33,
+      version: KubernetesVersion.V1_34,
       authenticationMode: AuthenticationMode.API,
-      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      kubectlLayer: new KubectlV34Layer(stack, 'KubectlLayer'),
     });
 
     mockAccessPolicies = [

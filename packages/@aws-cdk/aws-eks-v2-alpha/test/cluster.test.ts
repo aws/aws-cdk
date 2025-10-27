@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as cdk8s from 'cdk8s';
 import { Construct } from 'constructs';
 import * as YAML from 'yaml';
-import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 import { testFixture, testFixtureNoVpc } from './util';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as asg from 'aws-cdk-lib/aws-autoscaling';
@@ -19,7 +19,7 @@ import { BottleRocketImage } from '../lib/private/bottlerocket';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_33;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_34;
 const commonProps = {
   version: CLUSTER_VERSION,
   defaultCapacity: 0,
@@ -36,7 +36,7 @@ describe('cluster', () => {
         version: eks.AlbControllerVersion.V2_4_1,
       },
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
+        kubectlLayer: new KubectlV34Layer(stack, 'kubectlLayer'),
       },
     });
 
