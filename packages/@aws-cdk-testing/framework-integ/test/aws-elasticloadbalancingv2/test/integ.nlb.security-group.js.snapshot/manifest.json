@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/84fc0f444c75c834e7be42d482280d32fcf6e914b3060776f825e2099e3733f9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4e2d4a548248d23dc479552bbc6dbed73e753c0f3fd2ee7ab11e439d4f53e588.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -165,12 +165,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "StackRestrictDefaultSecurityGroupCustomResource804DC9E2"
-          }
-        ],
-        "/NlbSecurityGroupStack/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/NlbSecurityGroupStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
@@ -342,7 +336,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/04c33fd7b63203071fe05060dacedb320a98a552d8e730e000659f1b005baad5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7e84274ea7b11cff5041f78947655de14edc07561c9ebfb2a7055f5a3711655d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -395,12 +389,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/NlbSecurityGroupInteg/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/NlbSecurityGroupInteg/DefaultTest/DeployAssert/BootstrapVersion": [
@@ -903,6 +891,17 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           }
         }
       }
