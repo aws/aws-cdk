@@ -63,17 +63,6 @@ export function interfaceNameFromResource(res: Resource, suffix?: string) {
   return `I${classNameFromResource(res, suffix)}`;
 }
 
-export function namespaceFromResource(res: Resource) {
-  return res.cloudFormationType.split('::').slice(0, 2).join('::');
-}
-
-/**
- * Get the AWS namespace prefix from a resource in PascalCase for use as a type alias prefix.
- */
-export function typeAliasPrefixFromResource(res: Resource) {
-  return camelcase(res.cloudFormationType.split('::')[1], { pascalCase: true });
-}
-
 export function cfnProducerNameFromType(struct: TypeDeclaration) {
   return `convert${qualifiedName(struct)}ToCloudFormation`;
 }
@@ -84,10 +73,6 @@ export function cfnParserNameFromType(struct: TypeDeclaration) {
 
 export function cfnPropsValidatorNameFromType(struct: TypeDeclaration) {
   return `${qualifiedName(struct)}Validator`;
-}
-
-export function flattenFunctionNameFromType(struct: TypeDeclaration) {
-  return `flatten${qualifiedName(struct)}`;
 }
 
 export function metricsClassNameFromService(namespace: string) {
@@ -123,14 +108,6 @@ export function referencePropertyName(propName: string, resourceName: string) {
   }
 
   return camelcase(propName);
-}
-
-export function referenceInterfaceName(resourceName: string, suffix?: string) {
-  return `I${resourceName}${suffix ?? ''}Ref`;
-}
-
-export function referenceInterfaceAttributeName(resourceName: string) {
-  return `${camelcase(resourceName)}Ref`;
 }
 
 /**
