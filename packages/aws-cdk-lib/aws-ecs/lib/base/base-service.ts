@@ -1787,7 +1787,7 @@ export enum LaunchType {
   EXTERNAL = 'EXTERNAL',
 
   /**
-   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   * The service will be launched using Amazon ECS Managed Instances
    */
   MANAGED_INSTANCES = 'MANAGED_INSTANCES',
 }
