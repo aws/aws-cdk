@@ -44,7 +44,7 @@ export interface GrantWithResourceOptions extends CommonGrantOptions {
    * The statement will be added to the resource policy if it couldn't be
    * added to the principal policy.
    */
-  readonly resource: IResourceWithPolicy;
+  readonly resource: IResourceWithPolicyV2;
 
   /**
    * When referring to the resource in a resource policy, use this as ARN.
@@ -68,7 +68,7 @@ export interface GrantPolicyWithResourceOptions extends GrantWithResourceOptions
    * The policy statement to add to the resource's policy
    *
    * This statement will be passed to the resource's addToResourcePolicy method.
-   * The actual handling of the statement depends on the specific IResourceWithPolicy
+   * The actual handling of the statement depends on the specific IResourceWithPolicyV2
    * implementation.
    */
   readonly statement: PolicyStatement;
@@ -98,7 +98,7 @@ export interface GrantOnPrincipalAndResourceOptions extends CommonGrantOptions {
    *
    * The statement will always be added to the resource policy.
    */
-  readonly resource: IResourceWithPolicy;
+  readonly resource: IResourceWithPolicyV2;
 
   /**
    * When referring to the resource in a resource policy, use this as ARN.
@@ -421,11 +421,22 @@ interface GrantProps {
 /**
  * A resource with a resource policy that can be added to
  */
-export interface IResourceWithPolicy extends cdk.IEnvironmentAware {
+export interface IResourceWithPolicyV2 extends cdk.IEnvironmentAware {
   /**
    * Add a statement to the resource's resource policy
    */
   addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult;
+}
+
+/**
+ * A resource with a resource policy that can be added to
+ *
+ * This interface is maintained for backwards compatibility, but should
+ * not be used in new code. Prefer `IResourceWithPolicyV2` instead.
+ *
+ * @deprecated Implement `IResourceWithPolicyV2` instead.
+ */
+export interface IResourceWithPolicy extends IResourceWithPolicyV2, cdk.IResource {
 }
 
 /**
