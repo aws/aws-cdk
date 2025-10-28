@@ -1436,10 +1436,10 @@ test('overflow policies have deterministic statement ordering', () => {
     const app = new App();
     const stack = new Stack(app, 'Stack');
     const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('service.amazonaws.com') });
-    
+
     role.addToPrincipalPolicy(new PolicyStatement({ actions: ['s3:GetObject'], resources: ['arn:aws:s3:::z/*'] }));
     role.addToPrincipalPolicy(new PolicyStatement({ actions: ['s3:PutObject'], resources: ['arn:aws:s3:::a/*'] }));
-    
+
     return Template.fromStack(stack);
   };
 
