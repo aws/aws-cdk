@@ -1,0 +1,49 @@
+#
+#####################################
+##          ECS GUARD RULES         ##
+#####################################
+# Service: Amazon Elastic Container Service (ECS)
+# Rules: ECS_AMAZON_DOCKERHUB_IMAGE, ECS_EXTERNAL_DOCKER_IMAGE
+# Coverage: Docker Image Validation, External Registry Usage
+
+let ecs_task_definitions = Resources.*[
+  Type == 'AWS::ECS::TaskDefinition'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* not in ["ECS_NO_DOCKERHUB_IMAGES", "ECS_NO_EXTERNAL_IMAGES"]
+]
+
+# ECS tasks should not use Amazon DockerHub images
+rule ECS_NO_DOCKERHUB_IMAGES when %ecs_task_definitions !empty {
+    %ecs_task_definitions {
+        Properties.ContainerDefinitions[*] {
+            when Image exists {
+                when Image is_string {
+                    Image != /^docker\.io\/.*/
+                    Image != /^[^\/]+\/[^\/]+$/  # Matches dockerhub shorthand format
+                }
+            }
+        }
+    }
+}
+
+# ECS tasks should not use external Docker registry images
+rule ECS_NO_EXTERNAL_IMAGES when %ecs_task_definitions !empty {
+    %ecs_task_definitions {
+        Properties.ContainerDefinitions[*] {
+            when Image exists {
+                when Image is_string {
+                    # Allow ECR images (AWS managed registries)
+                    Image == /^[0-9]{12}\.dkr\.ecr\.[a-z0-9\-]+\.amazonaws\.com\/.*/  or
+                    # Allow public ECR images
+                    Image == /^public\.ecr\.aws\/.*/  or
+                    # Allow specific approved registries (customize as needed)
+                    Image == /^gcr\.io\/distroless\/.*/  or
+                    # Allow local/internal registries
+                    Image == /^localhost:.*/  or
+                    Image == /^127\.0\.0\.1:.*/  or
+                    Image == /^internal\.registry\..*/
+                }
+            }
+        }
+    }
+}

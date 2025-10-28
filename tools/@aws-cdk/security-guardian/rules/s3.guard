@@ -1,0 +1,158 @@
+#
+#####################################
+##          S3 GUARD RULES          ##
+#####################################
+# Service: Amazon Simple Storage Service (S3)
+# Rules: EA006, EA015, S3_SECURE_TRANSPORT, S3_VERSIONING, S3_CONFUSED_DEPUTY
+# Coverage: Encryption, World Access, Secure Transport, Versioning, Confused Deputy
+
+let s3_buckets = Resources.*[
+  Type == 'AWS::S3::Bucket'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "S3_ENCRYPTION_ENABLED"
+]
+
+let s3_bucket_policies = Resources.*[
+  Type == 'AWS::S3::BucketPolicy'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* not in ["S3_NO_WORLD_READABLE", "S3_NO_WORLD_WRITABLE", "S3_SECURE_TRANSPORT", "S3_NO_CONFUSED_DEPUTY"]
+]
+
+# EA006: S3 bucket encryption must be enabled
+rule S3_ENCRYPTION_ENABLED when %s3_buckets !empty {
+    %s3_buckets {
+        Properties.BucketEncryption exists
+        Properties.BucketEncryption.ServerSideEncryptionConfiguration exists
+        Properties.BucketEncryption.ServerSideEncryptionConfiguration[*].ServerSideEncryptionByDefault exists
+    }
+}
+
+# EA015: No world readable bucket policies
+rule S3_NO_WORLD_READABLE when %s3_bucket_policies !empty {
+    %s3_bucket_policies {
+        Properties.PolicyDocument.Statement[*] {
+            when Effect == "Allow" {
+                when Action exists {
+                    when Action is_string {
+                        when Action in ["s3:GetObject", "s3:GetObjectVersion", "s3:ListBucket", "*"] {
+                            when Principal exists {
+                                when Principal != "*" {
+                                    when Principal.AWS exists {
+                                        when Principal.AWS is_string {
+                                            Principal.AWS != "*"
+                                        }
+                                        when Principal.AWS is_list {
+                                            Principal.AWS[*] != "*"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    when Action is_list {
+                        when Action[*] in ["s3:GetObject", "s3:GetObjectVersion", "s3:ListBucket", "*"] {
+                            when Principal exists {
+                                when Principal != "*" {
+                                    when Principal.AWS exists {
+                                        when Principal.AWS is_string {
+                                            Principal.AWS != "*"
+                                        }
+                                        when Principal.AWS is_list {
+                                            Principal.AWS[*] != "*"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+# S3 world writable bucket policies
+rule S3_NO_WORLD_WRITABLE when %s3_bucket_policies !empty {
+    %s3_bucket_policies {
+        Properties.PolicyDocument.Statement[*] {
+            when Effect == "Allow" {
+                when Action exists {
+                    when Action is_string {
+                        when Action in ["s3:PutObject", "s3:PutObjectAcl", "s3:DeleteObject", "*"] {
+                            when Principal exists {
+                                when Principal != "*" {
+                                    when Principal.AWS exists {
+                                        when Principal.AWS is_string {
+                                            Principal.AWS != "*"
+                                        }
+                                        when Principal.AWS is_list {
+                                            Principal.AWS[*] != "*"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    when Action is_list {
+                        when Action[*] in ["s3:PutObject", "s3:PutObjectAcl", "s3:DeleteObject", "*"] {
+                            when Principal exists {
+                                when Principal != "*" {
+                                    when Principal.AWS exists {
+                                        when Principal.AWS is_string {
+                                            Principal.AWS != "*"
+                                        }
+                                        when Principal.AWS is_list {
+                                            Principal.AWS[*] != "*"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+# S3 secure transport enforcement
+rule S3_SECURE_TRANSPORT when %s3_bucket_policies !empty {
+    %s3_bucket_policies {
+        Properties.PolicyDocument.Statement[*] {
+            when Effect == "Deny" {
+                when Condition exists {
+                    when Condition.Bool exists {
+                        Condition.Bool["aws:SecureTransport"] exists
+                        Condition.Bool["aws:SecureTransport"] == "false"
+                    }
+                }
+            }
+        }
+    }
+}
+
+# S3 versioning configuration
+rule S3_VERSIONING_ENABLED when %s3_buckets !empty {
+    %s3_buckets {
+        Properties.VersioningConfiguration exists
+        Properties.VersioningConfiguration.Status == "Enabled"
+    }
+}
+
+# S3 confused deputy protection
+rule S3_NO_CONFUSED_DEPUTY when %s3_bucket_policies !empty {
+    %s3_bucket_policies {
+        Properties.PolicyDocument.Statement[*] {
+            when Effect == "Allow" {
+                when Principal.Service exists {
+                    when Condition exists {
+                        Condition.StringEquals exists or
+                        Condition.StringLike exists or
+                        Condition.ArnEquals exists or
+                        Condition.ArnLike exists
+                    }
+                }
+            }
+        }
+    }
+}

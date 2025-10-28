@@ -1,0 +1,71 @@
+#
+#####################################
+##          SQS GUARD RULES         ##
+#####################################
+# Service: Amazon Simple Queue Service (SQS)
+# Rules: SQS_ENCRYPTION_ENABLED, SQS_NO_WORLD_ACCESSIBLE
+# Coverage: Queue Encryption, World Accessibility
+
+let sqs_queues = Resources.*[
+  Type == 'AWS::SQS::Queue'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* not in ["SQS_ENCRYPTION_ENABLED", "SQS_NO_WORLD_ACCESSIBLE"]
+]
+
+let sqs_queue_policies = Resources.*[
+  Type == 'AWS::SQS::QueuePolicy'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "SQS_NO_WORLD_ACCESSIBLE"
+]
+
+# SQS queue encryption must be enabled
+rule SQS_ENCRYPTION_ENABLED when %sqs_queues !empty {
+    %sqs_queues {
+        Properties.KmsMasterKeyId exists or
+        Properties.SqsManagedSseEnabled == true
+    }
+}
+
+# SQS queues should not be world accessible via queue policies
+rule SQS_NO_WORLD_ACCESSIBLE when %sqs_queue_policies !empty {
+    %sqs_queue_policies {
+        Properties.PolicyDocument.Statement[*] {
+            when Effect == "Allow" {
+                when Principal exists {
+                    when Principal != "*" {
+                        when Principal.AWS exists {
+                            when Principal.AWS is_string {
+                                Principal.AWS != "*"
+                            }
+                            when Principal.AWS is_list {
+                                Principal.AWS[*] != "*"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+# Check inline queue policies
+rule SQS_NO_WORLD_ACCESSIBLE_INLINE when %sqs_queues !empty {
+    %sqs_queues {
+        Properties.QueuePolicy.Statement[*] {
+            when Effect == "Allow" {
+                when Principal exists {
+                    when Principal != "*" {
+                        when Principal.AWS exists {
+                            when Principal.AWS is_string {
+                                Principal.AWS != "*"
+                            }
+                            when Principal.AWS is_list {
+                                Principal.AWS[*] != "*"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

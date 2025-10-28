@@ -1,0 +1,38 @@
+#
+#####################################
+##        KINESIS GUARD RULES       ##
+#####################################
+# Service: Amazon Kinesis
+# Rules: KINESIS_ENCRYPTION_ENABLED
+# Coverage: Stream Encryption
+
+let kinesis_streams = Resources.*[
+  Type == 'AWS::Kinesis::Stream'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "KINESIS_ENCRYPTION_ENABLED"
+]
+
+let kinesis_firehose = Resources.*[
+  Type == 'AWS::KinesisFirehose::DeliveryStream'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "KINESIS_FIREHOSE_ENCRYPTION_ENABLED"
+]
+
+# Kinesis stream encryption must be enabled
+rule KINESIS_ENCRYPTION_ENABLED when %kinesis_streams !empty {
+    %kinesis_streams {
+        Properties.StreamEncryption exists
+        Properties.StreamEncryption.EncryptionType exists
+        Properties.StreamEncryption.EncryptionType == "KMS"
+        Properties.StreamEncryption.KeyId exists
+    }
+}
+
+# Kinesis Firehose delivery stream encryption
+rule KINESIS_FIREHOSE_ENCRYPTION_ENABLED when %kinesis_firehose !empty {
+    %kinesis_firehose {
+        Properties.DeliveryStreamEncryptionConfigurationInput exists
+        Properties.DeliveryStreamEncryptionConfigurationInput.KeyType exists
+        Properties.DeliveryStreamEncryptionConfigurationInput.KeyType in ["AWS_OWNED_CMK", "CUSTOMER_MANAGED_CMK"]
+    }
+}

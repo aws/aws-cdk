@@ -1,0 +1,74 @@
+#
+#####################################
+##          EC2 GUARD RULES         ##
+#####################################
+# Service: Amazon Elastic Compute Cloud (EC2)
+# Rules: EA003, EC2_VPC_SECURITY_GROUP_OPEN
+# Coverage: EBS Encryption, VPC Security Groups
+
+let ebs_volumes = Resources.*[
+  Type == 'AWS::EC2::Volume'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "EBS_ENCRYPTION_ENABLED"
+]
+
+let security_groups = Resources.*[
+  Type == 'AWS::EC2::SecurityGroup'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "EC2_NO_OPEN_SECURITY_GROUPS"
+]
+
+# EA003: EBS volume encryption must be enabled
+rule EBS_ENCRYPTION_ENABLED when %ebs_volumes !empty {
+    %ebs_volumes {
+        Properties.Encrypted exists
+        Properties.Encrypted == true
+    }
+}
+
+# EC2 VPC Security Groups should not be overly permissive
+rule EC2_NO_OPEN_SECURITY_GROUPS when %security_groups !empty {
+    %security_groups {
+        Properties.SecurityGroupIngress[*] {
+            when IpProtocol exists {
+                when IpProtocol != "-1" {
+                    when CidrIp exists {
+                        CidrIp != "0.0.0.0/0"
+                    }
+                    when CidrIpv6 exists {
+                        CidrIpv6 != "::/0"
+                    }
+                }
+                when IpProtocol == "-1" {
+                    when CidrIp exists {
+                        CidrIp != "0.0.0.0/0"
+                    }
+                    when CidrIpv6 exists {
+                        CidrIpv6 != "::/0"
+                    }
+                }
+            }
+        }
+        
+        Properties.SecurityGroupEgress[*] {
+            when IpProtocol exists {
+                when IpProtocol != "-1" {
+                    when CidrIp exists {
+                        when FromPort exists and ToPort exists {
+                            when FromPort == 0 and ToPort == 65535 {
+                                CidrIp != "0.0.0.0/0"
+                            }
+                        }
+                    }
+                    when CidrIpv6 exists {
+                        when FromPort exists and ToPort exists {
+                            when FromPort == 0 and ToPort == 65535 {
+                                CidrIpv6 != "::/0"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

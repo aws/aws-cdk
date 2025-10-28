@@ -48,13 +48,14 @@ const EXEMPTION_RULES = {
 
 ## Inputs (GitHub Action)
 
-| Name             | Description                                          | Required | Default               |
-|------------------|------------------------------------------------------|----------|-----------------------|
-| `rule_set_path`  | Local path to the cfn-guard rules file               | No       | `./rules`             |
-| `show_summary`   | Show summary (`none`, `all`, `pass`, `fail`, `skip`) | No       | `fail`                |
-| `output_format`  | Output format (`single-line-summary`, `json`, etc.)  | No       | `single-line-summary` |
-| `base_sha`       | Commit SHA to compare against                        | No       | `origin/main`         |
-| `head_sha`       | The commit SHA for the head (current) branch or PR   | No       | `HEAD`                |
+| Name                      | Description                                          | Required | Default               |
+|---------------------------|------------------------------------------------------|----------|-----------------------|
+| `rule_set_path`           | Local path to the cfn-guard rules file               | No       | `./rules`             |
+| `show_summary`            | Show summary (`none`, `all`, `pass`, `fail`, `skip`) | No       | `fail`                |
+| `output_format`           | Output format (`single-line-summary`, `json`, etc.)  | No       | `single-line-summary` |
+| `base_sha`                | Commit SHA to compare against                        | No       | `origin/main`         |
+| `head_sha`                | The commit SHA for the head (current) branch or PR   | No       | `HEAD`                |
+| `enable_intrinsic_scanner`| Enable intrinsic scanner for resolved CF values      | No       | `false`               |
 
 ---
 
@@ -67,6 +68,7 @@ const EXEMPTION_RULES = {
     rule_set_path: './tools/@aws-cdk/security-guardian/rules'
     show_summary: 'fail'
     output_format: 'single-line-summary'
+    enable_intrinsic_scanner: 'true'  # Optional: Enable intrinsic scanning
 ```
 
 ---
@@ -89,6 +91,7 @@ yarn security-guardian
 > - `--base_sha=origin/main`  
 > - `--output_format=json`  
 > - `--show_summary=warn`
+> - `--enable_intrinsic_scanner=true`
 
 ---
 
