@@ -2283,29 +2283,6 @@ override this behavior.
 **Compatibility with old behavior:** You can pass `openListener: true` explicitly to maintain the old behavior.
 
 
-### @aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault
-
-*Default Lambda Function URL origins to dual-stack IPv4/IPv6*
-
-Flag type: New default behavior
-
-When enabled, Lambda Function URL origins in CloudFront distributions will default to
-dual-stack IPv4/IPv6 connectivity instead of IPv4-only. This aligns with Lambda Function
-URLs' native dual-stack support and provides better connectivity options.
-
-When disabled, maintains the current IPv4-only default behavior for backward compatibility.
-
-Users can still explicitly set ipAddressType to override the default behavior.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
-
-**Compatibility with old behavior:** Pass `ipAddressType: OriginIpAddressType.IPV4` explicitly to maintain IPv4-only behavior.
-
-
 ### @aws-cdk/aws-ecs-patterns:uniqueTargetGroupId
 
 *When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement*
@@ -2343,5 +2320,27 @@ When disabled, the JSONPath apiEndpoint property will only support a static stri
 | (not in v1) |  |  |
 | 2.221.0 | `true` | `true` |
 
+
+### @aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault
+
+*Default Lambda Function URL origins to dual-stack IPv4/IPv6*
+
+Flag type: New default behavior
+
+When enabled, Lambda Function URL origins in CloudFront distributions will default to
+dual-stack IPv4/IPv6 connectivity instead of IPv4-only. This aligns with Lambda Function
+URLs' native dual-stack support and provides better connectivity options.
+
+When disabled, maintains the current IPv4-only default behavior for backward compatibility.
+
+Users can still explicitly set ipAddressType to override the default behavior.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Pass `ipAddressType: OriginIpAddressType.IPV4` explicitly to maintain IPv4-only behavior.
 
 <!-- END details -->
