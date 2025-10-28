@@ -99,10 +99,10 @@ export interface IMemoryStrategy {
   render(): bedrockagentcore.CfnMemory.MemoryStrategyProperty;
   /**
    * Grants the necessary permissions to the role
-   * @param role - The role to grant permissions to
+   * @param grantee - The grantee to grant permissions to
    * @returns The Grant object for chaining
    */
-  grant(role: iam.IRole): iam.Grant | undefined;
+  grant(grantee: iam.IGrantable): iam.Grant | undefined;
 }
 
 /******************************************************************************

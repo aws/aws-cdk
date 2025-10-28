@@ -14,7 +14,7 @@
 import { IBedrockInvokable } from '@aws-cdk/aws-bedrock-alpha';
 import { Arn, ArnFormat } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
-import { Grant, IRole } from 'aws-cdk-lib/aws-iam';
+import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
 import { MemoryStrategyCommonProps, IMemoryStrategy, MemoryStrategyType, MEMORY_NAME_MIN_LENGTH, MEMORY_NAME_MAX_LENGTH } from '../memory-strategy';
 import { validateStringFieldLength, throwIfInvalid, validateFieldPattern } from '../validation-helpers';
 
@@ -206,12 +206,12 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
 
   /**
    * Grants the necessary permissions to the role
-   * @param role - The role to grant permissions to
+   * @param grantee - The grantee to grant permissions to
    * @returns The Grant object for chaining
    */
-  public grant(role: IRole): Grant | undefined {
-    const grant1 = this.consolidationOverride?.model.grantInvoke(role);
-    const grant2 = this.extractionOverride?.model.grantInvoke(role);
+  public grant(grantee: IGrantable): Grant | undefined {
+    const grant1 = this.consolidationOverride?.model.grantInvoke(grantee);
+    const grant2 = this.extractionOverride?.model.grantInvoke(grantee);
     return grant1 && grant2 ? grant1.combine(grant2) : grant1 || grant2;
   }
 

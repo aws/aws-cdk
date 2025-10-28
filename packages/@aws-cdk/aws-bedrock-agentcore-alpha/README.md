@@ -1071,7 +1071,7 @@ const topic = new sns.Topic(this, 'topic');
 
 // Create a custom semantic memory strategy
 const selfManagedStrategy = agentcore.MemoryStrategy.usingSelfManaged({
-  name: "selfMabagedStrategy",
+  name: "selfManagedStrategy",
   description: "self managed memory strategy",
   historicalContextWindowSize: 5,
   invocationConfiguration: {

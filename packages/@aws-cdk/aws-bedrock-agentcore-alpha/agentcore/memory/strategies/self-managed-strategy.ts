@@ -227,13 +227,13 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
 
   /**
    * Grants the necessary permissions to the role
-   * @param role - The role to grant permissions to
+   * @param grantee - The grantee to grant permissions to
    * @returns The Grant object for chaining
    */
-  public grant(role: iam.IRole): iam.Grant | undefined {
+  public grant(grantee: iam.IGrantable): iam.Grant | undefined {
     // no existing grant method that provides both required sns actions
     const grant1 = iam.Grant.addToPrincipal({
-      grantee: role,
+      grantee: grantee,
       actions: ['sns:GetTopicAttributes', 'sns:Publish'],
       resourceArns: [
         this.invocationConfiguration.topic.topicArn,
@@ -246,7 +246,7 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
     if (this.invocationConfiguration?.s3Location) {
       // Grant S3 permissions for the specified location
       grant2 = iam.Grant.addToPrincipal({
-        grantee: role,
+        grantee: grantee,
         actions: [
           's3:GetBucketLocation',
           's3:PutObject',
