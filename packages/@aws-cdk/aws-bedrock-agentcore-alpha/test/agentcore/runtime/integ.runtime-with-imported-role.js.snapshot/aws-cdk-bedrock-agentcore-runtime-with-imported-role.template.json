@@ -6,6 +6,16 @@
     "PolicyDocument": {
      "Statement": [
       {
+       "Action": "s3:GetObject",
+       "Effect": "Allow",
+       "Resource": "arn:aws:s3:::my-bucket/my-object"
+      },
+      {
+       "Action": "dynamodb:Query",
+       "Effect": "Allow",
+       "Resource": "arn:aws:dynamodb:us-east-1:123456789012:table/my-table"
+      },
+      {
        "Action": [
         "ecr:BatchCheckLayerAvailability",
         "ecr:BatchGetImage",
@@ -110,89 +120,10 @@
     "RoleArn": {
      "Fn::ImportValue": "pre-stack:ExportsOutputFnGetAttExecutionRole605A040BArnA891DEDE"
     }
-   }
-  },
-  "TestRuntimeCustomPolicy0BD35B9F3": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "s3:GetObject",
-       "Effect": "Allow",
-       "Resource": "arn:aws:s3:::my-bucket/my-object"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "TestRuntimeCustomPolicy0BD35B9F3",
-    "Roles": [
-     {
-      "Fn::Select": [
-       1,
-       {
-        "Fn::Split": [
-         "/",
-         {
-          "Fn::Select": [
-           5,
-           {
-            "Fn::Split": [
-             ":",
-             {
-              "Fn::ImportValue": "pre-stack:ExportsOutputFnGetAttExecutionRole605A040BArnA891DEDE"
-             }
-            ]
-           }
-          ]
-         }
-        ]
-       }
-      ]
-     }
-    ]
-   }
-  },
-  "TestRuntimeCustomPolicy16EAF0B5F": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "dynamodb:Query",
-       "Effect": "Allow",
-       "Resource": "arn:aws:dynamodb:us-east-1:123456789012:table/my-table"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "TestRuntimeCustomPolicy16EAF0B5F",
-    "Roles": [
-     {
-      "Fn::Select": [
-       1,
-       {
-        "Fn::Split": [
-         "/",
-         {
-          "Fn::Select": [
-           5,
-           {
-            "Fn::Split": [
-             ":",
-             {
-              "Fn::ImportValue": "pre-stack:ExportsOutputFnGetAttExecutionRole605A040BArnA891DEDE"
-             }
-            ]
-           }
-          ]
-         }
-        ]
-       }
-      ]
-     }
-    ]
-   }
+   },
+   "DependsOn": [
+    "ImportedRolePolicyawscdkbedrockagentcoreruntimewithimportedroleImportedRole261507D78EB91FCC"
+   ]
   }
  },
  "Parameters": {
