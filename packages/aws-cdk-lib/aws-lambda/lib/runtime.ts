@@ -241,7 +241,7 @@ export class Runtime {
   });
 
   /**
-   * The Java 25 runtime (java21)
+   * The Java 25 runtime (java25)
    */
   public static readonly JAVA_25 = new Runtime('java25', RuntimeFamily.JAVA, {
     supportsCodeGuruProfiling: true,
