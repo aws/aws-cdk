@@ -2305,6 +2305,22 @@ This is a breaking change as it will cause target group replacement when the fla
 | 2.221.0 | `false` | `true` |
 
 
+### @aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint
+
+*When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.*
+
+Flag type: Backwards incompatible bugfix
+
+When this feature flag is enabled, the JSONPath apiEndpoint value will be resolved dynamically at runtime, while slightly increasing the size of the state machine definition.
+When disabled, the JSONPath apiEndpoint property will only support a static string value.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.221.0 | `true` | `true` |
+
+
 ### @aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault
 
 *When enabled, Network Load Balancer will be created with a security group by default.*
@@ -2320,22 +2336,6 @@ When this feature flag is enabled, Network Load Balancer will be created with a 
 | V2NEXT | `false` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to create Network Load Balancer without a security group by default.
-
-
-### @aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint
-
-*When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.*
-
-Flag type: Backwards incompatible bugfix
-
-When this feature flag is enabled, the JSONPath apiEndpoint value will be resolved dynamically at runtime, while slightly increasing the size of the state machine definition.
-When disabled, the JSONPath apiEndpoint property will only support a static string value.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| 2.221.0 | `true` | `true` |
 
 
 <!-- END details -->
