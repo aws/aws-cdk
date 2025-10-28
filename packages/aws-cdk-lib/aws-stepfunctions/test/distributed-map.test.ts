@@ -219,6 +219,7 @@ describe('Distributed Map State', () => {
         bucket: readerBucket,
         prefix: 'test',
         maxItems: 10,
+        expectedBucketOwner: '1234567890',
       }),
       itemSelector: {
         foo: 'foo',
@@ -270,6 +271,7 @@ describe('Distributed Map State', () => {
                 Ref: stack.getLogicalId(readerBucket.node.defaultChild as s3.CfnBucket),
               },
               Prefix: 'test',
+              ExpectedBucketOwner: '1234567890',
             },
           },
           MaxConcurrency: 1,
@@ -289,6 +291,7 @@ describe('Distributed Map State', () => {
       itemReader: new jsonOrJsonlItemReader({
         bucket: readerBucket,
         key: 'test.json',
+        expectedBucketOwner: '1234567890',
       }),
       itemSelector: {
         foo: 'foo',
@@ -340,6 +343,7 @@ describe('Distributed Map State', () => {
                 Ref: stack.getLogicalId(readerBucket.node.defaultChild as s3.CfnBucket),
               },
               Key: 'test.json',
+              ExpectedBucketOwner: '1234567890',
             },
           },
           MaxConcurrency: 1,
@@ -360,6 +364,7 @@ describe('Distributed Map State', () => {
         bucket: readerBucket,
         key: 'test.csv',
         csvHeaders: CsvHeaders.useFirstRow(),
+        expectedBucketOwner: '1234567890',
       }),
       itemSelector: {
         foo: 'foo',
@@ -412,6 +417,7 @@ describe('Distributed Map State', () => {
                 Ref: stack.getLogicalId(readerBucket.node.defaultChild as s3.CfnBucket),
               },
               Key: 'test.csv',
+              ExpectedBucketOwner: '1234567890',
             },
           },
           MaxConcurrency: 1,
@@ -432,6 +438,7 @@ describe('Distributed Map State', () => {
         bucket: readerBucket,
         key: 'test.json',
         csvHeaders: CsvHeaders.use(['header1', 'header2']),
+        expectedBucketOwner: '1234567890',
       }),
       itemSelector: {
         foo: 'foo',
@@ -485,6 +492,7 @@ describe('Distributed Map State', () => {
                 Ref: stack.getLogicalId(readerBucket.node.defaultChild as s3.CfnBucket),
               },
               Key: 'test.json',
+              ExpectedBucketOwner: '1234567890',
             },
           },
           MaxConcurrency: 1,
@@ -707,6 +715,7 @@ describe('Distributed Map State', () => {
       itemReader: new stepfunctions.S3ObjectsItemReader({
         bucket: writerBucket,
         prefix: 'my-prefix',
+        expectedBucketOwner: '1234567890',
       }),
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
@@ -737,6 +746,7 @@ describe('Distributed Map State', () => {
                 Ref: 'TestBucket560B80BC',
               },
               Prefix: 'my-prefix',
+              ExpectedBucketOwner: '1234567890',
             },
             Resource: {
               'Fn::Join': [
