@@ -3,9 +3,9 @@ import { UnscopedValidationError } from '../../../core';
 import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from '../processor';
 
 /**
- * Options for CloudWatchLogProcessingProcessor.
+ * Options for CloudWatchLogProcessor.
  */
-export interface CloudWatchLogProcessingProcessorOptions {
+export interface CloudWatchLogProcessorOptions {
   /**
    * Extract message from CloudWatch logs.
    * This must be true.
@@ -19,10 +19,10 @@ export interface CloudWatchLogProcessingProcessorOptions {
  *
  * @see https://docs.aws.amazon.com/firehose/latest/dev/Message_extraction.html
  */
-export class CloudWatchLogProcessingProcessor implements IDataProcessor {
+export class CloudWatchLogProcessor implements IDataProcessor {
   public readonly props: DataProcessorProps = {};
 
-  constructor(options: CloudWatchLogProcessingProcessorOptions) {
+  constructor(options: CloudWatchLogProcessorOptions) {
     if (!options.dataMessageExtraction) {
       throw new UnscopedValidationError('dataMessageExtraction must be true.');
     }

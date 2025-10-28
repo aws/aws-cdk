@@ -97,7 +97,7 @@ export class S3Bucket implements IDestination {
     }) ?? {};
 
     if (this.props.processor && this.props.processors) {
-      throw new ValidationError("You can specify either 'processors' or 'processor', not both.", scope);
+      throw new cdk.ValidationError("You can specify either 'processors' or 'processor', not both.", scope);
     }
     const dataProcessors = this.props.processor ? [this.props.processor] : this.props.processors;
 

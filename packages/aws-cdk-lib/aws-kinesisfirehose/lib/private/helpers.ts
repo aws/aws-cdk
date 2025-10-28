@@ -115,7 +115,7 @@ export function createProcessingConfig(
   const procesorTypes = new Set(processors.map((p) => p.type));
 
   if (procesorTypes.has('CloudWatchLogProcessing') && !procesorTypes.has('Decompression')) {
-    throw new cdk.ValidationError('CloudWatchLogProcessingProcessor can only be enabled with DecompressionProcessor', scope);
+    throw new cdk.ValidationError('CloudWatchLogProcessor can only be enabled with DecompressionProcessor', scope);
   }
 
   return {
