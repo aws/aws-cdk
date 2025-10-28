@@ -45,6 +45,12 @@
       "DUAL_STACK"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/runtime/types.ts": {
+    "ProtocolType": [
+      "MCP",
+      "HTTP"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent-collaborator.ts": {
     "AgentCollaboratorType": [
       "SUPERVISOR",
@@ -955,7 +961,7 @@
   },
   "aws-cdk/packages/@aws-cdk/custom-resource-handlers/lib/custom-resources-framework/config.ts": {
     "Runtime": [
-      "nodejs18.x",
+      "nodejs20.x",
       "python3.9",
       "python3.10",
       "python3.11",
@@ -1801,6 +1807,7 @@
       "TLSv1.2_2018",
       "TLSv1.2_2019",
       "TLSv1.2_2021",
+      "TLSv1.2_2025",
       "TLSv1.3_2025"
     ],
     "LambdaEdgeEventType": [
@@ -4527,6 +4534,16 @@
       0,
       1,
       2
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/output.ts": {
+    "ParquetWriterVersion": [
+      "V1",
+      "V2"
+    ],
+    "OrcFormatVersion": [
+      "V0_11",
+      "V0_12"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.ts": {
