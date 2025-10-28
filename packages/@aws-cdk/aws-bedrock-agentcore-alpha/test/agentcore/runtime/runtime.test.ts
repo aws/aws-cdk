@@ -341,6 +341,7 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
     });
 
     const userPoolClient = userPool.addClient('MyUserPoolClient', {});
+    const anotherUserPoolClient = userPool.addClient('MyAnotherUserPoolClient', {});
 
     repository = new ecr.Repository(stack, 'TestRepository', {
       repositoryName: 'test-agent-runtime-cognito',
@@ -354,7 +355,7 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
       agentRuntimeArtifact: agentRuntimeArtifact,
       authorizerConfiguration: RuntimeAuthorizerConfiguration.usingCognito(
         userPool,
-        userPoolClient,
+        [userPoolClient, anotherUserPoolClient],
       ),
     });
 
@@ -397,7 +398,8 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
           ],
         ],
       });
-      expect(jwtConfig.AllowedClients).toEqual([{ Ref: 'MyUserPoolMyUserPoolClient01266CD6' }]);
+      expect(jwtConfig.AllowedClients).toContainEqual({ Ref: 'MyUserPoolMyUserPoolClient01266CD6' });
+      expect(jwtConfig.AllowedClients).toContainEqual({ Ref: 'MyUserPoolMyAnotherUserPoolClient4444CD16' });
     } else {
       // L1 construct might not be handling the authorizer configuration properly
       // This is acceptable as the configuration is still passed to the construct

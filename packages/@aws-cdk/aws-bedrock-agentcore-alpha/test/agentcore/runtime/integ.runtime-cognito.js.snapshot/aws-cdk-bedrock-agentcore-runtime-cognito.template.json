@@ -49,6 +49,40 @@
     "CallbackURLs": [
      "https://example.com"
     ],
+    "ExplicitAuthFlows": [
+     "ALLOW_ADMIN_USER_PASSWORD_AUTH",
+     "ALLOW_REFRESH_TOKEN_AUTH"
+    ],
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "UserPoolId": {
+     "Ref": "MyUserPoolD09D1D74"
+    }
+   }
+  },
+  "MyUserPoolMyAnotherUserPoolClient4444CD16": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AllowedOAuthFlows": [
+     "implicit",
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "profile",
+     "phone",
+     "email",
+     "openid",
+     "aws.cognito.signin.user.admin"
+    ],
+    "CallbackURLs": [
+     "https://example.com"
+    ],
+    "ExplicitAuthFlows": [
+     "ALLOW_ADMIN_USER_PASSWORD_AUTH",
+     "ALLOW_REFRESH_TOKEN_AUTH"
+    ],
     "SupportedIdentityProviders": [
      "COGNITO"
     ],
@@ -298,6 +332,9 @@
       "AllowedClients": [
        {
         "Ref": "MyUserPoolMyUserPoolClient01266CD6"
+       },
+       {
+        "Ref": "MyUserPoolMyAnotherUserPoolClient4444CD16"
        }
       ],
       "DiscoveryUrl": {
@@ -352,6 +389,24 @@
      "TestRuntime65042BB5",
      "AgentRuntimeArn"
     ]
+   }
+  },
+  "UserPoolId": {
+   "Description": "Cognito User Pool ID",
+   "Value": {
+    "Ref": "MyUserPoolD09D1D74"
+   }
+  },
+  "UserPoolClientId1": {
+   "Description": "Cognito User Pool Client ID 1 (MyUserPoolClient)",
+   "Value": {
+    "Ref": "MyUserPoolMyUserPoolClient01266CD6"
+   }
+  },
+  "UserPoolClientId2": {
+   "Description": "Cognito User Pool Client ID 2 (MyAnotherUserPoolClient)",
+   "Value": {
+    "Ref": "MyUserPoolMyAnotherUserPoolClient4444CD16"
    }
   }
  },

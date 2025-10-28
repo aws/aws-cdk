@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8b3b5ccbb02f625bb8999cbac47e7ece49098c2e8ff65d273db9d6a11f277ac7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7dc2d733a6eb443a09d5d29dcba1fd24568f7d52fa9db40b06fe6d0e5e1ad6c9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -52,7 +52,10 @@
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "userPool": "*"
+              "userPool": "*",
+              "authFlows": {
+                "adminUserPassword": true
+              }
             }
           }
         ],
@@ -60,6 +63,23 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyUserPoolMyUserPoolClient01266CD6"
+          }
+        ],
+        "/aws-cdk-bedrock-agentcore-runtime-cognito/MyUserPool/MyAnotherUserPoolClient": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "userPool": "*",
+              "authFlows": {
+                "adminUserPassword": true
+              }
+            }
+          }
+        ],
+        "/aws-cdk-bedrock-agentcore-runtime-cognito/MyUserPool/MyAnotherUserPoolClient/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyUserPoolMyAnotherUserPoolClient4444CD16"
           }
         ],
         "/aws-cdk-bedrock-agentcore-runtime-cognito/TestRuntime": [
@@ -333,6 +353,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "RuntimeArn"
+          }
+        ],
+        "/aws-cdk-bedrock-agentcore-runtime-cognito/UserPoolId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolId"
+          }
+        ],
+        "/aws-cdk-bedrock-agentcore-runtime-cognito/UserPoolClientId1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolClientId1"
+          }
+        ],
+        "/aws-cdk-bedrock-agentcore-runtime-cognito/UserPoolClientId2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolClientId2"
           }
         ],
         "/aws-cdk-bedrock-agentcore-runtime-cognito/BootstrapVersion": [

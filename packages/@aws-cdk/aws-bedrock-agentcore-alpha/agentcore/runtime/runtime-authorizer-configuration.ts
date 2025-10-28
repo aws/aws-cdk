@@ -55,16 +55,17 @@ export abstract class RuntimeAuthorizerConfiguration {
    * Validates Cognito-issued JWT tokens.
    *
    * @param userPool The Cognito User Pool
-   * @param userPoolClient The Cognito User Pool App Client
+   * @param userPoolClient The Cognito User Pool App Clients
    * @param allowedAudience Optional array of allowed audiences
    * @returns RuntimeAuthorizerConfiguration for Cognito authentication
    */
   public static usingCognito(
     userPool: IUserPool,
-    userPoolClient: IUserPoolClient,
+    userPoolClient: IUserPoolClient | IUserPoolClient[],
     allowedAudience?: string[],
   ): RuntimeAuthorizerConfiguration {
-    return new CognitoAuthorizerConfiguration(userPool, userPoolClient, allowedAudience);
+    const clientArray = Array.isArray(userPoolClient) ? userPoolClient : [userPoolClient];
+    return new CognitoAuthorizerConfiguration(userPool, clientArray, allowedAudience);
   }
 
   /**
@@ -133,7 +134,7 @@ class JwtAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
 class CognitoAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
   constructor(
     private readonly userPool: IUserPool,
-    private readonly userPoolClient: IUserPoolClient,
+    private readonly userPoolClient: IUserPoolClient[],
     private readonly allowedAudience?: string[],
   ) {
     super();
@@ -146,7 +147,7 @@ class CognitoAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
     return {
       customJwtAuthorizer: {
         discoveryUrl: discoveryUrl,
-        allowedClients: [this.userPoolClient.userPoolClientId],
+        allowedClients: this.userPoolClient.map(client => client.userPoolClientId),
         allowedAudience: this.allowedAudience,
       },
     };

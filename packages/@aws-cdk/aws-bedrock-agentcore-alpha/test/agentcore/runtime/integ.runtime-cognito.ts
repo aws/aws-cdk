@@ -11,7 +11,17 @@ const userPool = new cognito.UserPool(stack, 'MyUserPool', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-const userPoolClient = userPool.addClient('MyUserPoolClient', {});
+const userPoolClient = userPool.addClient('MyUserPoolClient', {
+  authFlows: {
+    adminUserPassword: true,
+  },
+});
+
+const anotherUserPoolClient = userPool.addClient('MyAnotherUserPoolClient', {
+  authFlows: {
+    adminUserPassword: true,
+  },
+});
 
 const runtimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
   path.join(__dirname, 'testArtifact'),
@@ -22,7 +32,7 @@ const runtime = new agentcore.Runtime(stack, 'TestRuntime', {
   runtimeName: 'integ_test_runtime_cognito',
   agentRuntimeArtifact: runtimeArtifact,
   networkConfiguration: agentcore.RuntimeNetworkConfiguration.usingPublicNetwork(),
-  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingCognito(userPool, userPoolClient),
+  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingCognito(userPool, [userPoolClient, anotherUserPoolClient]),
 });
 
 // Output runtime and endpoint information for verification
@@ -34,6 +44,22 @@ new cdk.CfnOutput(stack, 'RuntimeId', {
 new cdk.CfnOutput(stack, 'RuntimeArn', {
   value: runtime.agentRuntimeArn,
   description: 'Runtime ARN',
+});
+
+// Output Cognito information for authentication tests
+new cdk.CfnOutput(stack, 'UserPoolId', {
+  value: userPool.userPoolId,
+  description: 'Cognito User Pool ID',
+});
+
+new cdk.CfnOutput(stack, 'UserPoolClientId1', {
+  value: userPoolClient.userPoolClientId,
+  description: 'Cognito User Pool Client ID 1 (MyUserPoolClient)',
+});
+
+new cdk.CfnOutput(stack, 'UserPoolClientId2', {
+  value: anotherUserPoolClient.userPoolClientId,
+  description: 'Cognito User Pool Client ID 2 (MyAnotherUserPoolClient)',
 });
 
 // Create the integration test
