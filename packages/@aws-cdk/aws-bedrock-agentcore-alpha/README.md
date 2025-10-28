@@ -298,6 +298,9 @@ IAM authentication is the default mode, when no authorizerConfiguration is set t
 To configure AWS Cognito User Pool authentication:
 
 ```typescript
+declare const userPool: cognito.UserPool;
+declare const userPoolClient: cognito.UserPoolClient;
+
 const repository = new ecr.Repository(this, "TestRepository", {
   repositoryName: "test-agent-runtime",
 });
@@ -307,9 +310,8 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
   agentRuntimeArtifact: agentRuntimeArtifact,
   authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingCognito(
-    "us-west-2_ABC123",  // User Pool ID (required)
-    "client123",         // Client ID (required)
-    "us-west-2"         // Region (optional, defaults to stack region)
+    userPool, // User Pool (required)
+    userPoolClient, // User Pool Client
   ),
 });
 ```

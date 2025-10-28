@@ -11,7 +11,6 @@
  *  and limitations under the License.
  */
 
-import { Token } from 'aws-cdk-lib';
 import { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { ValidationError } from './validation-helpers';
 import { IUserPool, IUserPoolClient } from 'aws-cdk-lib/aws-cognito';
