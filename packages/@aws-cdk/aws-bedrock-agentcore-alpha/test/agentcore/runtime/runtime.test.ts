@@ -1118,7 +1118,7 @@ describe('Runtime authentication configuration error cases', () => {
       agentRuntimeArtifact: agentRuntimeArtifact,
       authorizerConfiguration: RuntimeAuthorizerConfiguration.usingCognito(
         userPool,
-        userPoolClient,
+        [userPoolClient],
       ),
     });
 

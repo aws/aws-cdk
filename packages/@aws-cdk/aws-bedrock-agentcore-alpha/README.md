@@ -300,6 +300,7 @@ To configure AWS Cognito User Pool authentication:
 ```typescript
 declare const userPool: cognito.UserPool;
 declare const userPoolClient: cognito.UserPoolClient;
+declare const anotherUserPoolClient: cognito.UserPoolClient;
 
 const repository = new ecr.Repository(this, "TestRepository", {
   repositoryName: "test-agent-runtime",
@@ -311,7 +312,7 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   agentRuntimeArtifact: agentRuntimeArtifact,
   authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingCognito(
     userPool, // User Pool (required)
-    userPoolClient, // User Pool Client
+    [userPoolClient, anotherUserPoolClient], // User Pool Clients
   ),
 });
 ```

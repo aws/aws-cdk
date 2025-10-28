@@ -61,11 +61,10 @@ export abstract class RuntimeAuthorizerConfiguration {
    */
   public static usingCognito(
     userPool: IUserPool,
-    userPoolClient: IUserPoolClient | IUserPoolClient[],
+    userPoolClients: IUserPoolClient[],
     allowedAudience?: string[],
   ): RuntimeAuthorizerConfiguration {
-    const clientArray = Array.isArray(userPoolClient) ? userPoolClient : [userPoolClient];
-    return new CognitoAuthorizerConfiguration(userPool, clientArray, allowedAudience);
+    return new CognitoAuthorizerConfiguration(userPool, userPoolClients, allowedAudience);
   }
 
   /**
@@ -134,7 +133,7 @@ class JwtAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
 class CognitoAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
   constructor(
     private readonly userPool: IUserPool,
-    private readonly userPoolClient: IUserPoolClient[],
+    private readonly userPoolClients: IUserPoolClient[],
     private readonly allowedAudience?: string[],
   ) {
     super();
@@ -147,7 +146,7 @@ class CognitoAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
     return {
       customJwtAuthorizer: {
         discoveryUrl: discoveryUrl,
-        allowedClients: this.userPoolClient.map(client => client.userPoolClientId),
+        allowedClients: this.userPoolClients.map(client => client.userPoolClientId),
         allowedAudience: this.allowedAudience,
       },
     };
