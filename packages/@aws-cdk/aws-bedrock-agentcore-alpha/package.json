@@ -120,5 +120,10 @@
     "exclude": [
       "props-physical-name:@aws-cdk/aws-bedrock-agentcore-alpha.RuntimeEndpointProps"
     ]
+  },
+  "jsiiRosetta": {
+    "exampleDependencies": {
+      "@aws-cdk/aws-bedrock-alpha": "^0.0.0"
+    }
   }
 }
