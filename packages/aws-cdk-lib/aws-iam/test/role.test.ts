@@ -1431,3 +1431,17 @@ test('roleName validation with Tokens', () =>{
 
   jest.clearAllMocks();
 });
+test('overflow policies have deterministic statement ordering', () => {
+  const createRole = () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('service.amazonaws.com') });
+    
+    role.addToPrincipalPolicy(new PolicyStatement({ actions: ['s3:GetObject'], resources: ['arn:aws:s3:::z/*'] }));
+    role.addToPrincipalPolicy(new PolicyStatement({ actions: ['s3:PutObject'], resources: ['arn:aws:s3:::a/*'] }));
+    
+    return Template.fromStack(stack);
+  };
+
+  expect(createRole().toJSON()).toEqual(createRole().toJSON());
+});

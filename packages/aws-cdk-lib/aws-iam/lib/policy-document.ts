@@ -213,6 +213,14 @@ export class PolicyDocument implements cdk.IResolvable {
 
     // Maps final statements to original statements
     this.freezeStatements();
+    
+    // Sort statements deterministically to prevent service interruption during overflow policy updates
+    this.statements.sort((a, b) => {
+      const hashA = JSON.stringify(a.toStatementJson(), Object.keys(a.toStatementJson()).sort());
+      const hashB = JSON.stringify(b.toStatementJson(), Object.keys(b.toStatementJson()).sort());
+      return hashA.localeCompare(hashB);
+    });
+    
     let statementsToOriginals = new Map(this.statements.map(s => [s, [s]]));
 
     // We always run 'mergeStatements' to minimize the policy before splitting.
