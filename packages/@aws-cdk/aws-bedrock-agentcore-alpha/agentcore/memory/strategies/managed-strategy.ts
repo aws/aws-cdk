@@ -13,6 +13,7 @@
 
 import { IBedrockInvokable } from '@aws-cdk/aws-bedrock-alpha';
 import { Arn, ArnFormat } from 'aws-cdk-lib';
+import { IConstruct } from 'constructs';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
 import { MemoryStrategyCommonProps, IMemoryStrategy, MemoryStrategyType, MEMORY_NAME_MIN_LENGTH, MEMORY_NAME_MAX_LENGTH } from '../memory-strategy';
@@ -223,7 +224,7 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
    * @param name - The name to validate
    * @returns Array of validation error messages, empty if valid
    */
-  private _validateMemoryStrategyName = (name: string): string[] => {
+  private _validateMemoryStrategyName = (name: string, scope?: IConstruct): string[] => {
     let errors: string[] = [];
 
     errors.push(...validateStringFieldLength({
@@ -231,12 +232,12 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
       fieldName: 'Memory name',
       minLength: MEMORY_NAME_MIN_LENGTH,
       maxLength: MEMORY_NAME_MAX_LENGTH,
-    }));
+    }, scope));
 
     // Check if name matches the AWS API pattern: [a-zA-Z][a-zA-Z0-9_]{0,47}
     // Must start with a letter, followed by up to 47 letters, numbers, or underscores
     const validNamePattern = /^[a-zA-Z][a-zA-Z0-9_]{0,47}$/;
-    errors.push(...validateFieldPattern(name, 'Memory name', validNamePattern));
+    errors.push(...validateFieldPattern(name, 'Memory name', validNamePattern, undefined, scope));
 
     return errors;
   };
@@ -246,7 +247,7 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
    * @param prompt - The prompt to validate
    * @returns Array of validation error messages, empty if valid
    */
-  private _validatePrompt = (prompt?: string): string[] => {
+  private _validatePrompt = (prompt?: string, scope?: IConstruct): string[] => {
     let errors: string[] = [];
     if (!prompt) {
       return errors;
@@ -256,7 +257,7 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
       fieldName: 'Prompt',
       minLength: PROMPT_MIN_LENGTH,
       maxLength: PROMPT_MAX_LENGTH,
-    }));
+    }, scope));
     return errors;
   };
 

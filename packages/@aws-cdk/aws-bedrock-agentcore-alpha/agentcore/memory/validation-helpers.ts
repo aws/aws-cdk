@@ -12,16 +12,8 @@
  */
 
 import { Token } from 'aws-cdk-lib';
-
-/**
- * Error thrown when validation fails
- */
-export class ValidationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'ValidationError';
-  }
-}
+import { ValidationError, UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { IConstruct } from 'constructs';
 interface IntervalValidation {
   fieldName: string;
   minLength: number;
@@ -34,14 +26,11 @@ interface StringLengthValidation extends IntervalValidation {
 
 /**
  * Validates the length of a string field against minimum and maximum constraints.
- * @param value - The string value to validate
- * @param fieldName - Name of the field being validated (for error messages)
- * @param minLength - Minimum allowed length (defaults to 0)
- * @param maxLength - Maximum allowed length
- * @returns true if validation passes
- * @throws Error if validation fails with current length information
+ * @param params - Validation parameters including value, fieldName, minLength, and maxLength
+ * @param scope - The construct scope for error reporting (optional)
+ * @returns Array of validation error messages, empty if valid
  */
-export function validateStringFieldLength(params: StringLengthValidation): string[] {
+export function validateStringFieldLength(params: StringLengthValidation, _scope?: IConstruct): string[] {
   const errors: string[] = [];
 
   // Handle null/undefined values
@@ -75,14 +64,15 @@ export function validateStringFieldLength(params: StringLengthValidation): strin
  * @param fieldName - Name of the field being validated (for error messages)
  * @param pattern - Regular expression pattern to test against
  * @param customMessage - Optional custom error message
- * @returns true if validation passes
- * @throws Error if validation fails with detailed message
+ * @param scope - The construct scope for error reporting (optional)
+ * @returns Array of validation error messages, empty if valid
  */
 export function validateFieldPattern(
   value: string,
   fieldName: string,
   pattern: RegExp,
   customMessage?: string,
+  _scope?: IConstruct,
 ): string[] {
   const errors: string[] = [];
 
@@ -112,12 +102,16 @@ export function validateFieldPattern(
   return errors;
 }
 
-export type ValidationFn<T> = (param: T) => string[];
+export type ValidationFn<T> = (param: T, scope?: IConstruct) => string[];
 
-export function throwIfInvalid<T>(validationFn: ValidationFn<T>, param: T): T {
-  const errors = validationFn(param);
+export function throwIfInvalid<T>(validationFn: ValidationFn<T>, param: T, scope?: IConstruct): T {
+  const errors = validationFn(param, scope);
   if (errors.length > 0) {
-    throw new ValidationError(errors.join('\n'));
+    if (scope) {
+      throw new ValidationError(errors.join('\n'), scope);
+    } else {
+      throw new UnscopedValidationError(errors.join('\n'));
+    }
   }
   return param;
 }

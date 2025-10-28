@@ -12,6 +12,7 @@
  */
 
 import { Arn, ArnFormat, Duration, IResource, Lazy, Resource } from 'aws-cdk-lib';
+import { IConstruct, Construct } from 'constructs';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import { CfnMemory, CfnMemoryProps } from 'aws-cdk-lib/aws-bedrockagentcore';
 import {
@@ -25,7 +26,6 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
 // Internal Libs
 import { IMemoryStrategy } from './memory-strategy';
 import { MemoryPerms } from './perms';
@@ -692,13 +692,13 @@ export class Memory extends MemoryBase {
     // ------------------------------------------------------
 
     // Validate memory name
-    throwIfInvalid(this._validateMemoryName, this.memoryName);
+    throwIfInvalid(this._validateMemoryName, this.memoryName, this);
 
     // Validate expiration duration
     throwIfInvalid(this._validateMemoryExpirationDays, this.expirationDuration.toDays());
 
     // Validate memory tags
-    throwIfInvalid(this._validateMemoryTags, this.tags);
+    throwIfInvalid(this._validateMemoryTags, this.tags, this);
 
     // Memory strategies are already validated when building them, so no need to validate them here
 
@@ -769,7 +769,7 @@ export class Memory extends MemoryBase {
    * @param tags The tags object to validate
    * @returns Array of validation error messages, empty if valid
    */
-  private _validateMemoryTags = (tags?: { [key: string]: string }): string[] => {
+  private _validateMemoryTags = (tags?: { [key: string]: string }, scope?: IConstruct): string[] => {
     let errors: string[] = [];
     if (!tags) {
       return errors; // Tags are optional
@@ -782,11 +782,11 @@ export class Memory extends MemoryBase {
         fieldName: 'Tag key',
         minLength: MEMORY_TAG_MIN_LENGTH,
         maxLength: MEMORY_TAG_MAX_LENGTH,
-      }));
+      }, scope));
 
       // Validate tag key pattern: ^[a-zA-Z0-9\s._:/=+@-]*$
       const validKeyPattern = /^[a-zA-Z0-9\s._:/=+@-]*$/;
-      errors.push(...validateFieldPattern(key, 'Tag key', validKeyPattern));
+      errors.push(...validateFieldPattern(key, 'Tag key', validKeyPattern, undefined, scope));
 
       // Validate tag value
       errors.push(...validateStringFieldLength({
@@ -794,11 +794,11 @@ export class Memory extends MemoryBase {
         fieldName: 'Tag value',
         minLength: MEMORY_TAG_MIN_LENGTH,
         maxLength: MEMORY_TAG_MAX_LENGTH,
-      }));
+      }, scope));
 
       // Validate tag value pattern: ^[a-zA-Z0-9\s._:/=+@-]*$
       const validValuePattern = /^[a-zA-Z0-9\s._:/=+@-]*$/;
-      errors.push(...validateFieldPattern(value, 'Tag value', validValuePattern));
+      errors.push(...validateFieldPattern(value, 'Tag value', validValuePattern, undefined, scope));
     }
 
     return errors;
@@ -809,7 +809,7 @@ export class Memory extends MemoryBase {
    * @param name The memory name to validate
    * @returns Array of validation error messages, empty if valid
    */
-  private _validateMemoryName = (name: string): string[] => {
+  private _validateMemoryName = (name: string, scope?: IConstruct): string[] => {
     let errors: string[] = [];
 
     errors.push(...validateStringFieldLength({
@@ -817,12 +817,12 @@ export class Memory extends MemoryBase {
       fieldName: 'Memory name',
       minLength: MEMORY_NAME_MIN_LENGTH,
       maxLength: MEMORY_NAME_MAX_LENGTH,
-    }));
+    }, scope));
 
     // Check if name matches the AWS API pattern: [a-zA-Z][a-zA-Z0-9_]{0,47}
     // Must start with a letter, followed by up to 47 letters, numbers, or underscores
     const validNamePattern = /^[a-zA-Z][a-zA-Z0-9_]{0,47}$/;
-    errors.push(...validateFieldPattern(name, 'Memory name', validNamePattern));
+    errors.push(...validateFieldPattern(name, 'Memory name', validNamePattern, undefined, scope));
 
     return errors;
   };

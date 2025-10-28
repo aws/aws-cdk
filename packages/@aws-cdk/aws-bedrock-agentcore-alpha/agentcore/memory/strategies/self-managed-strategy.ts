@@ -13,6 +13,7 @@
 
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib';
+import { IConstruct } from 'constructs';
 import { Location } from 'aws-cdk-lib/aws-s3';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
@@ -269,7 +270,7 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
    * @param name - The name to validate
    * @returns Array of validation error messages, empty if valid
    */
-  private _validateMemoryStrategyName = (name: string): string[] => {
+  private _validateMemoryStrategyName = (name: string, scope?: IConstruct): string[] => {
     let errors: string[] = [];
 
     errors.push(...validateStringFieldLength({
@@ -277,12 +278,12 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
       fieldName: 'Memory name',
       minLength: MEMORY_NAME_MIN_LENGTH,
       maxLength: MEMORY_NAME_MAX_LENGTH,
-    }));
+    }, scope));
 
     // Check if name matches the AWS API pattern: [a-zA-Z][a-zA-Z0-9_]{0,47}
     // Must start with a letter, followed by up to 47 letters, numbers, or underscores
     const validNamePattern = /^[a-zA-Z][a-zA-Z0-9_]{0,47}$/;
-    errors.push(...validateFieldPattern(name, 'Memory name', validNamePattern));
+    errors.push(...validateFieldPattern(name, 'Memory name', validNamePattern, undefined, scope));
 
     return errors;
   };
