@@ -365,7 +365,6 @@ abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
       grantee,
       actions,
       resourceArns,
-      scope: this,
     });
   }
 

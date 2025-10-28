@@ -1049,7 +1049,6 @@ abstract class UserPoolBase extends Resource implements IUserPool {
       grantee,
       actions,
       resourceArns: [this.userPoolArn],
-      scope: this,
     });
   }
 }
