@@ -10,6 +10,7 @@ export * from './processors/append-delimiter-to-record-processor';
 export * from './common';
 export * from './s3-bucket';
 export * from './logging-config';
+export * from './record-format';
 
 // AWS::KinesisFirehose CloudFormation Resources:
 export * from './kinesisfirehose.generated';

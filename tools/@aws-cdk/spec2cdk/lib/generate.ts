@@ -10,22 +10,38 @@ import { queryDb, log, PatternedString, TsFileWriter } from './util';
 
 export type PatternKeys = 'moduleName' | 'serviceName' | 'serviceShortName';
 
+export interface GenerateServiceRequest {
+  /**
+   * The namespace of the service to generate files for.
+   * In CloudFormation notation.
+   *
+   * @example "AWS::Lambda"
+   * @example "AWS::S3"
+   */
+  readonly namespace: string;
+
+  /**
+   * An optional suffix used for classes generated for the service.
+   *
+   * @example { name: "AWS::Lambda", suffix: "FooBar"} -> class CfnFunctionFooBar {}
+   *
+   * @default - no suffix is used
+   */
+  readonly suffix?: string;
+
+  /**
+   * Deprecate the complete service using the given message.
+   *
+   * @default - not deprecated
+   */
+  readonly deprecated?: string;
+}
+
 export interface GenerateModuleOptions {
   /**
    * List of services to generate files for.
-   *
-   * In CloudFormation notation.
-   *
-   * @example ["AWS::Lambda", "AWS::S3"]
    */
-  readonly services: string[];
-
-  /**
-   * Map of optional suffixes used for classes generated for a service.
-   *
-   * @example { "AWS::Lambda": "FooBar"} -> class CfnFunctionFooBar {}
-   */
-  readonly serviceSuffixes?: { [service: string]: string };
+  readonly services: GenerateServiceRequest[];
 
   /**
    * Override the default locations where modules are imported from on the module level
@@ -143,7 +159,7 @@ export async function generateAll(options: GenerateOptions) {
 
   for (const service of services) {
     modules[service.name] = {
-      services: [service.cloudFormationNamespace],
+      services: [{ namespace: service.cloudFormationNamespace }],
     };
   }
 
@@ -180,13 +196,14 @@ async function generator(
   // Go through the module map
   log.info('Generating %i modules...', Object.keys(modules).length);
   for (const [moduleName, moduleOptions] of Object.entries(modules)) {
-    const { moduleImportLocations: importLocations = options.importLocations, serviceSuffixes } = moduleOptions;
-    moduleMap[moduleName] = queryDb.getServicesByCloudFormationNamespace(db, moduleOptions.services).map((s) => {
+    const { moduleImportLocations: importLocations = options.importLocations, services } = moduleOptions;
+    moduleMap[moduleName] = queryDb.getServicesByGenerateServiceRequest(db, services).map(([req, s]) => {
       log.debug(moduleName, s.name, 'ast');
       const ast = AstBuilder.forService(s, {
         db,
         importLocations,
-        nameSuffix: serviceSuffixes?.[s.cloudFormationNamespace],
+        nameSuffix: req.suffix,
+        deprecated: req.deprecated,
       });
 
       log.debug(moduleName, s.name, 'render');

@@ -163,7 +163,7 @@ describe('Agent', () => {
   describe('custom orchestration', () => {
     test('sets custom orchestration and grants necessary permissions', () => {
       const fn = new lambda.Function(stack, 'TestFunction', {
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = async () => {};'),
       });
@@ -380,13 +380,13 @@ describe('Agent', () => {
       });
 
       const fn1 = new lambda.Function(stack, 'TestFunction1', {
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = async () => {};'),
       });
 
       const fn2 = new lambda.Function(stack, 'TestFunction2', {
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = async () => {};'),
       });
@@ -417,7 +417,7 @@ describe('Agent', () => {
       });
 
       const fn = new lambda.Function(stack, 'TestFunction', {
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = async () => {};'),
       });
@@ -766,6 +766,73 @@ describe('Agent', () => {
             RelayConversationHistory: 'TO_COLLABORATOR',
           },
         ],
+      });
+    });
+
+    test('creates agent with guardrail', () => {
+      const guardrail = new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+        description: 'Test guardrail for agent',
+        blockedInputMessaging: 'Input blocked by guardrail',
+        blockedOutputsMessaging: 'Output blocked by guardrail',
+      });
+
+      guardrail.addContentFilter({
+        type: bedrock.ContentFilterType.HATE,
+        inputStrength: bedrock.ContentFilterStrength.HIGH,
+        outputStrength: bedrock.ContentFilterStrength.HIGH,
+        inputAction: bedrock.GuardrailAction.BLOCK,
+        outputAction: bedrock.GuardrailAction.BLOCK,
+      });
+
+      new bedrock.Agent(stack, 'TestAgent', {
+        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+        foundationModel,
+        guardrail,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
+        GuardrailConfiguration: {
+          GuardrailIdentifier: {
+            'Fn::GetAtt': [Match.stringLikeRegexp('TestGuardrail.*'), 'GuardrailId'],
+          },
+          GuardrailVersion: {
+            'Fn::GetAtt': [Match.stringLikeRegexp('TestGuardrail.*'), 'Version'],
+          },
+        },
+      });
+    });
+
+    test('adds guardrail to existing agent', () => {
+      const guardrail = new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+        description: 'Test guardrail for agent',
+      });
+
+      guardrail.addContentFilter({
+        type: bedrock.ContentFilterType.HATE,
+        inputStrength: bedrock.ContentFilterStrength.HIGH,
+        outputStrength: bedrock.ContentFilterStrength.HIGH,
+        inputAction: bedrock.GuardrailAction.BLOCK,
+        outputAction: bedrock.GuardrailAction.BLOCK,
+      });
+
+      const agent = new bedrock.Agent(stack, 'TestAgent', {
+        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+        foundationModel,
+      });
+
+      agent.addGuardrail(guardrail);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
+        GuardrailConfiguration: {
+          GuardrailIdentifier: {
+            'Fn::GetAtt': [Match.stringLikeRegexp('TestGuardrail.*'), 'GuardrailId'],
+          },
+          GuardrailVersion: {
+            'Fn::GetAtt': [Match.stringLikeRegexp('TestGuardrail.*'), 'Version'],
+          },
+        },
       });
     });
   });

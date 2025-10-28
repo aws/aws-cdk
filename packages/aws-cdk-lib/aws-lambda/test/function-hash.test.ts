@@ -460,7 +460,7 @@ test('imported layer hashes are consistent', () => {
   const fn1 = new lambda.Function(stack1, 'Fn', {
     code: lambda.Code.fromInline('asdf'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_18_X,
+    runtime: lambda.Runtime.NODEJS_20_X,
     layers: [
       lambda.LayerVersion.fromLayerVersionArn(stack1, 'MyLayer',
         `arn:aws:lambda:${stack1.region}:<AccountID>:layer:IndexCFN:${param1.stringValue}`),
@@ -473,7 +473,7 @@ test('imported layer hashes are consistent', () => {
   const fn2 = new lambda.Function(stack2, 'Fn', {
     code: lambda.Code.fromInline('asdf'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_18_X,
+    runtime: lambda.Runtime.NODEJS_20_X,
     layers: [
       lambda.LayerVersion.fromLayerVersionArn(stack2, 'MyLayer',
         `arn:aws:lambda:${stack1.region}:<AccountID>:layer:IndexCFN:${param2.stringValue}`),
@@ -497,7 +497,7 @@ test.each([false, true])('can invalidate version hash using invalidateVersionBas
   const fn1 = new lambda.Function(stack1, 'Fn', {
     code: lambda.Code.fromInline('asdf'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_18_X,
+    runtime: lambda.Runtime.NODEJS_20_X,
   });
   if (doIt) {
     fn1.invalidateVersionBasedOn('abc');
@@ -508,7 +508,7 @@ test.each([false, true])('can invalidate version hash using invalidateVersionBas
   const fn2 = new lambda.Function(stack2, 'Fn', {
     code: lambda.Code.fromInline('asdf'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_18_X,
+    runtime: lambda.Runtime.NODEJS_20_X,
   });
   if (doIt) {
     fn1.invalidateVersionBasedOn('xyz');
