@@ -86,7 +86,7 @@ export class ResourceDecider {
    * Returns `undefined` if no ARN property is found, or if the ARN property is already
    * included in the primary identifier.
    */
-  private findArnProperty() {
+  public findArnProperty() {
     const possibleArnNames = ['Arn', `${this.resource.name}Arn`];
     for (const name of possibleArnNames) {
       const prop = this.resource.attributes[name];

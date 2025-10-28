@@ -292,5 +292,8 @@ function findDefiningFile(scope: Construct): string {
     throw new ValidationError('Cannot find defining file.', scope);
   }
 
-  return sites[definingIndex].getFileName();
+  // Fixes issue #21630.
+  // ESM modules return a 'file://' prefix to the filenames, this should be removed for
+  // compatibility with the NodeJS filesystem functions.
+  return sites[definingIndex].getFileName().replace(/^file:\/\//, '');
 }

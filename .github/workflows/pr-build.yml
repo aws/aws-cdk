@@ -25,13 +25,14 @@ jobs:
 
     env:
       PR_BUILD: true
+      JSII_SILENCE_WARNING_DEPRECATED_NODE_VERSION: true
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: "18"
           cache: "yarn"

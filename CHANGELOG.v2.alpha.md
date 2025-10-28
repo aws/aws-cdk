@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.221.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.220.0-alpha.0...v2.221.0-alpha.0) (2025-10-24)
+
+
+### Features
+
+* **msk-alpha:** support Kafka 4.1  ([#35759](https://github.com/aws/aws-cdk/issues/35759)) ([67539de](https://github.com/aws/aws-cdk/commit/67539de15ee70a61629fa8dfc7f7b42b187a82e0))
+
+
+### Bug Fixes
+
+* **elasticache-alpha:** cannot import Redis 7 serverless cache ([#35629](https://github.com/aws/aws-cdk/issues/35629)) ([2bde1a0](https://github.com/aws/aws-cdk/commit/2bde1a02ecb1fc3439249eb1bb756bf335ec3553))
+
+## [2.220.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.219.0-alpha.0...v2.220.0-alpha.0) (2025-10-14)
+
+
+### Bug Fixes
+
+* **amplify-alpha:** handle empty customResponseHeaders array ([#35700](https://github.com/aws/aws-cdk/issues/35700)) ([57f9068](https://github.com/aws/aws-cdk/commit/57f90687d56ebe2cdc3fd5cff1dc35329c502ee4)), closes [#35693](https://github.com/aws/aws-cdk/issues/35693)
+## [2.219.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.218.0-alpha.0...v2.219.0-alpha.0) (2025-10-01)
+
+## [2.218.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.217.0-alpha.0...v2.218.0-alpha.0) (2025-09-29)
+* **elasticache-alpha:** implement Serverless ElastiCache L2 Construct ([#35424](https://github.com/aws/aws-cdk/issues/35424)) ([0e08c8c](https://github.com/aws/aws-cdk/commit/0e08c8ccc17f45a9023433c17c22a951b23cad43))
+## [2.217.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.216.0-alpha.0...v2.217.0-alpha.0) (2025-09-25)
+
+## [2.216.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.215.0-alpha.0...v2.216.0-alpha.0) (2025-09-22)
+
 ## [2.215.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.214.0-alpha.0...v2.215.0-alpha.0) (2025-09-15)
 
 

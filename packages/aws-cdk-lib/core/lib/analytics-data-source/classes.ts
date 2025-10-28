@@ -71,6 +71,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'node': '*'
       },
+      'buildComputeType': 'BuildComputeType',
       'addCustomRule': [
         '*'
       ],
@@ -1152,6 +1153,177 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'ipv4IpamProvisionedCidrs': '*',
       'ipv6CidrBlock': '*',
       'ipv6Pool': '*'
+    }
+  },
+  '@aws-cdk.aws-elasticache-alpha': {
+    'IamUser': {
+      'userName': '*',
+      'engine': 'UserEngine',
+      'userId': '*',
+      'accessControl': '*',
+      'grantConnect': [
+        {
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        }
+      ],
+      'grant': [
+        {
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        },
+        '*'
+      ]
+    },
+    'NoPasswordUser': {
+      'userName': '*',
+      'engine': 'UserEngine',
+      'userId': '*',
+      'accessControl': '*'
+    },
+    'PasswordUser': {
+      'userName': '*',
+      'passwords': '*',
+      'engine': 'UserEngine',
+      'userId': '*',
+      'accessControl': '*'
+    },
+    'ServerlessCache': {
+      'engine': 'CacheEngine',
+      'serverlessCacheName': '*',
+      'description': '*',
+      'cacheUsageLimits': {
+        'dataStorageMinimumSize': '*',
+        'requestRateLimitMinimum': '*',
+        'requestRateLimitMaximum': '*'
+      },
+      'backup': {
+        'backupTime': '*',
+        'backupRetentionLimit': '*',
+        'backupNameBeforeDeletion': '*',
+        'backupArnsToRestore': '*'
+      },
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'vpc': {
+        'vpcId': '*',
+        'vpcArn': '*',
+        'vpcCidrBlock': '*',
+        'publicSubnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          },
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        },
+        'availabilityZones': '*',
+        'vpnGatewayId': '*'
+      },
+      'vpcSubnets': {
+        'subnetType': 'SubnetType',
+        'availabilityZones': '*',
+        'subnetGroupName': '*',
+        'subnetName': '*',
+        'onePerAz': 'boolean',
+        'subnetFilters': '*',
+        'subnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          },
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        }
+      },
+      'securityGroups': {
+        'securityGroupId': '*',
+        'allowAllOutbound': 'boolean',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*',
+        'canInlineRule': 'boolean',
+        'uniqueId': '*',
+        'connections': '*'
+      },
+      'userGroup': {
+        'userGroupName': '*',
+        'engine': 'UserEngine',
+        'users': {
+          'userId': '*',
+          'engine': 'UserEngine',
+          'userName': '*',
+          'userArn': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        },
+        'userGroupArn': '*'
+      }
+    },
+    'UserGroup': {
+      'userGroupName': '*',
+      'engine': 'UserEngine',
+      'users': {
+        'userId': '*',
+        'engine': 'UserEngine',
+        'userName': '*',
+        'userArn': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'addUser': [
+        {
+          'userId': '*',
+          'engine': 'UserEngine',
+          'userName': '*',
+          'userArn': '*',
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        }
+      ]
     }
   },
   '@aws-cdk.aws-gamelift-alpha': {
@@ -8727,6 +8899,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'JobQueue': {},
     'ManagedEc2EcsComputeEnvironment': {
+      'defaultInstanceClasses': 'DefaultInstanceClass',
       'useOptimalInstanceClasses': 'boolean',
       'images': {
         'imageType': 'EcsMachineImageType',
@@ -8944,6 +9117,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'prune': 'boolean',
         'authenticationMode': 'AuthenticationMode'
       },
+      'defaultInstanceClasses': 'DefaultInstanceClass',
       'useOptimalInstanceClasses': 'boolean',
       'images': {
         'imageType': 'EksMachineImageType',
@@ -10352,7 +10526,84 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'computeConfiguration': {
         'disk': '*',
         'machineType': 'MachineType',
-        'vCpu': '*'
+        'vCpu': '*',
+        'instanceType': '*'
+      },
+      'overflowBehavior': 'FleetOverflowBehavior',
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'vpc': {
+        'vpcId': '*',
+        'vpcArn': '*',
+        'vpcCidrBlock': '*',
+        'publicSubnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          },
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        },
+        'availabilityZones': '*',
+        'vpnGatewayId': '*'
+      },
+      'subnetSelection': {
+        'subnetType': 'SubnetType',
+        'availabilityZones': '*',
+        'subnetGroupName': '*',
+        'subnetName': '*',
+        'onePerAz': 'boolean',
+        'subnetFilters': '*',
+        'subnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          },
+          'stack': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'node': '*'
+        }
+      },
+      'securityGroups': {
+        'securityGroupId': '*',
+        'allowAllOutbound': 'boolean',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*',
+        'canInlineRule': 'boolean',
+        'uniqueId': '*',
+        'connections': '*'
       }
     },
     'PipelineProject': {},
@@ -10449,7 +10700,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'fleetArn': '*',
           'fleetName': '*',
           'computeType': 'FleetComputeType',
-          'environmentType': 'EnvironmentType'
+          'environmentType': 'EnvironmentType',
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
         },
         'privileged': 'boolean',
         'certificate': {
@@ -11633,10 +11889,14 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'node': '*'
       },
       'storageEncrypted': 'boolean',
-      'instances': '*',
       'dbClusterName': '*',
       'instanceIdentifierBase': '*',
       'instanceType': '*',
+      'instances': '*',
+      'serverlessV2ScalingConfiguration': {
+        'minCapacity': '*',
+        'maxCapacity': '*'
+      },
       'caCertificate': '*',
       'vpc': {
         'vpcId': '*',
@@ -12373,6 +12633,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'authorizeAllUsersToVpcCidr': 'boolean',
       'sessionTimeout': 'ClientVpnSessionTimeout',
+      'disconnectOnSessionTimeout': 'boolean',
       'clientLoginBanner': '*',
       'clientRouteEnforcementOptions': {
         'enforced': 'boolean'
@@ -13359,6 +13620,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'removalPolicy': 'RemovalPolicy',
       'imageScanOnPush': 'boolean',
       'imageTagMutability': 'TagMutability',
+      'imageTagMutabilityExclusionFilters': '*',
       'autoDeleteImages': 'boolean',
       'emptyOnDelete': 'boolean',
       'addToResourcePolicy': [
@@ -13705,6 +13967,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           },
           'machineImageType': 'MachineImageType'
         }
+      ],
+      'addManagedInstancesCapacityProvider': [
+        '*'
       ],
       'addAutoScalingGroup': [
         '*',
@@ -14362,6 +14627,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'remotePodNetworks': {
         'cidrs': '*'
       },
+      'removalPolicy': 'RemovalPolicy',
       'vpc': {
         'vpcId': '*',
         'vpcArn': '*',
@@ -14946,6 +15212,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'remotePodNetworks': {
         'cidrs': '*'
       },
+      'removalPolicy': 'RemovalPolicy',
       'vpc': {
         'vpcId': '*',
         'vpcArn': '*',
@@ -16324,7 +16591,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'node': '*'
       },
       'streamMode': 'StreamMode',
-      'removalPolicy': 'RemovalPolicy'
+      'removalPolicy': 'RemovalPolicy',
+      'shardLevelMetrics': 'ShardLevelMetrics'
     }
   },
   'aws-cdk-lib.aws-kinesisfirehose': {
@@ -17645,7 +17913,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'sourceAccount': '*',
           'sourceArn': '*',
           'organizationId': '*',
-          'functionUrlAuthType': 'FunctionUrlAuthType'
+          'functionUrlAuthType': 'FunctionUrlAuthType',
+          'invokedViaFunctionUrl': 'boolean'
         }
       ],
       'addDependency': [
@@ -18012,6 +18281,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'dimensions': '*',
       'unit': 'Unit',
       'filterName': '*',
+      'applyOnTransformedLogs': 'boolean',
       'metric': [
         {
           'period': '*',
@@ -21212,6 +21482,75 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'cidrRoutingConfig': '*'
     },
+    'SvcbRecord': {
+      'values': '*',
+      'zone': {
+        'hostedZoneId': '*',
+        'zoneName': '*',
+        'hostedZoneArn': '*',
+        'hostedZoneNameServers': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'geoLocation': '*',
+      'recordName': '*',
+      'ttl': '*',
+      'comment': '*',
+      'deleteExisting': 'boolean',
+      'weight': '*',
+      'region': '*',
+      'multiValueAnswer': 'boolean',
+      'setIdentifier': '*',
+      'healthCheck': {
+        'healthCheckId': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'cidrRoutingConfig': '*'
+    },
+    'HttpsRecord': {
+      'values': '*',
+      'target': '*',
+      'zone': {
+        'hostedZoneId': '*',
+        'zoneName': '*',
+        'hostedZoneArn': '*',
+        'hostedZoneNameServers': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'geoLocation': '*',
+      'recordName': '*',
+      'ttl': '*',
+      'comment': '*',
+      'deleteExisting': 'boolean',
+      'weight': '*',
+      'region': '*',
+      'multiValueAnswer': 'boolean',
+      'setIdentifier': '*',
+      'healthCheck': {
+        'healthCheckId': '*',
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'cidrRoutingConfig': '*'
+    },
     'ZoneDelegationRecord': {
       'nameServers': '*',
       'zone': {
@@ -21272,6 +21611,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'replicationRoleArn': '*'
       },
       'removalPolicy': 'RemovalPolicy',
+      'document': '*',
       'applyRemovalPolicy': [
         'RemovalPolicy'
       ]
@@ -22593,23 +22933,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'definitionBody': '*',
       'definitionSubstitutions': '*',
-      'role': {
-        'roleArn': '*',
-        'roleName': '*',
-        'assumeRoleAction': '*',
-        'policyFragment': '*',
-        'principalAccount': '*',
-        'grantPrincipal': {
-          'assumeRoleAction': '*',
-          'principalAccount': '*'
-        },
-        'stack': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        },
-        'node': '*'
-      },
+      'role': '*',
       'timeout': '*',
       'comment': '*',
       'queryLanguage': 'QueryLanguage',
@@ -23094,6 +23418,103 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         '*'
       ],
       'executeOnHandlerChange': 'boolean'
+    }
+  },
+  'aws-bedrock-agentcore-alpha.agentcore': {
+    'RuntimeEndpoint': {
+      'endpointName': '*',
+      'agentRuntimeId': '*',
+      'agentRuntimeVersion': '*',
+      'description': '*',
+      'tags': '*'
+    },
+    'Runtime': {
+      'runtimeName': '*',
+      'agentRuntimeArtifact': '*',
+      'executionRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'networkConfiguration': '*',
+      'description': '*',
+      'protocolConfiguration': 'ProtocolType',
+      'environmentVariables': '*',
+      'authorizerConfiguration': '*',
+      'tags': '*',
+      'addEndpoint': [
+        '*',
+        {
+          'description': '*',
+          'version': '*'
+        }
+      ]
+    },
+    'BrowserCustom': {
+      'browserCustomName': '*',
+      'description': '*',
+      'networkConfiguration': '*',
+      'recordingConfig': {
+        'enabled': 'boolean',
+        's3Location': {
+          'bucketName': '*',
+          'objectKey': '*',
+          'objectVersion': '*'
+        }
+      },
+      'executionRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'tags': '*'
+    },
+    'CodeInterpreterCustom': {
+      'codeInterpreterCustomName': '*',
+      'description': '*',
+      'executionRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'node': '*'
+      },
+      'networkConfiguration': '*',
+      'tags': '*'
     }
   },
   'aws-bedrock-alpha.bedrock': {
@@ -25278,7 +25699,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'sourceAccount': '*',
           'sourceArn': '*',
           'organizationId': '*',
-          'functionUrlAuthType': 'FunctionUrlAuthType'
+          'functionUrlAuthType': 'FunctionUrlAuthType',
+          'invokedViaFunctionUrl': 'boolean'
         }
       ],
       'addToRolePolicy': [
