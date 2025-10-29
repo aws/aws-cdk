@@ -5,6 +5,12 @@ import * as iam from '../../../aws-iam';
 import { ValidationError } from '../../../core';
 
 /**
+ * The subtype of the EventBridge PutEvents integration.
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html#http-api-develop-integrations-aws-services-reference-eventbridge-putevents
+ */
+export type HttpIntegrationSubtypeEventBridgePutEvents = apigwv2.HttpIntegrationSubtype.EVENTBRIDGE_PUT_EVENTS;
+
+/**
  * Properties to initialize `HttpEventBridgeIntegration`.
  */
 export interface HttpEventBridgeIntegrationProps {
@@ -30,7 +36,7 @@ export interface HttpEventBridgeIntegrationProps {
    *
    * @default HttpIntegrationSubtype.EVENTBRIDGE_PUT_EVENTS
    */
-  readonly subtype?: apigwv2.HttpIntegrationSubtype;
+  readonly subtype?: HttpIntegrationSubtypeEventBridgePutEvents;
 
   /**
    * EventBridge event bus that integrates with API Gateway
@@ -42,7 +48,7 @@ export interface HttpEventBridgeIntegrationProps {
  * The EventBridge PutEvents integration resource for HTTP API
  */
 export class HttpEventBridgeIntegration extends apigwv2.HttpRouteIntegration {
-  private readonly subtype: apigwv2.HttpIntegrationSubtype;
+  private readonly subtype: HttpIntegrationSubtypeEventBridgePutEvents;
   /**
    * @param id id of the underlying integration construct
    * @param props properties to configure the integration
@@ -76,7 +82,7 @@ export class HttpEventBridgeIntegration extends apigwv2.HttpRouteIntegration {
     return {
       payloadFormatVersion: apigwv2.PayloadFormatVersion.VERSION_1_0,
       type: apigwv2.HttpIntegrationType.AWS_PROXY,
-      subtype: apigwv2.HttpIntegrationSubtype.EVENTBRIDGE_PUT_EVENTS,
+      subtype: this.subtype,
       credentials: apigwv2.IntegrationCredentials.fromRole(invokeRole),
       connectionType: apigwv2.HttpConnectionType.INTERNET,
       parameterMapping: this.props.parameterMapping ?? this.createDefaultParameterMapping(options.scope),
