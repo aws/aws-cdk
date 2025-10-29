@@ -164,6 +164,11 @@
       "namespace": "AWS::Bedrock"
     }
   ],
+  "aws-bedrockagentcore": [
+    {
+      "namespace": "AWS::BedrockAgentCore"
+    }
+  ],
   "aws-billing": [
     {
       "namespace": "AWS::Billing"
@@ -1192,6 +1197,11 @@
   "aws-simspaceweaver": [
     {
       "namespace": "AWS::SimSpaceWeaver"
+    }
+  ],
+  "aws-smsvoice": [
+    {
+      "namespace": "AWS::SMSVOICE"
     }
   ],
   "aws-sns": [

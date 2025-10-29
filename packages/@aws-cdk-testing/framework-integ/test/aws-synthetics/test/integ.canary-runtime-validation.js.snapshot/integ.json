@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "SyntheticsCanaryRuntimeValidation/DefaultTest": {
+      "stacks": [
+        "SyntheticsCanaryRuntimeValidationStack"
+      ],
+      "assertionStack": "SyntheticsCanaryRuntimeValidation/DefaultTest/DeployAssert",
+      "assertionStackName": "SyntheticsCanaryRuntimeValidationDefaultTestDeployAssert9B35538B"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

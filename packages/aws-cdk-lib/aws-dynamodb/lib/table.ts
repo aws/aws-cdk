@@ -701,7 +701,6 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
       grantee,
       actions,
       resourceArns: [this.tableStreamArn],
-      scope: this,
     });
   }
 
