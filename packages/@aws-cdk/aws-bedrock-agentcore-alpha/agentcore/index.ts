@@ -1,3 +1,7 @@
+export * from './memory/memory';
+export * from './memory/strategies/managed-strategy';
+export * from './memory/strategies/self-managed-strategy';
+export * from './memory/memory-strategy';
 // ===================================
 // Network Configuration
 // ===================================
