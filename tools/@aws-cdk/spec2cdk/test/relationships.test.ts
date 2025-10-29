@@ -1,10 +1,15 @@
 import { Service, SpecDatabase, emptyDatabase } from '@aws-cdk/service-spec-types';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
 import { AstBuilder } from '../lib/cdk/ast';
+import { RELATIONSHIP_SERVICES } from '../lib/cdk/relationship-decider';
 
 const renderer = new TypeScriptRenderer();
 let db: SpecDatabase;
 let service: Service;
+
+// Only run these tests if we're rendering relationships for IAM
+const iamHasRelationships = RELATIONSHIP_SERVICES.includes('iam');
+const maybeTest = iamHasRelationships ? test : test.skip;
 
 beforeEach(() => {
   db = emptyDatabase();
@@ -17,7 +22,7 @@ beforeEach(() => {
   });
 });
 
-test('resource with relationship reference', () => {
+maybeTest('resource with relationship reference', () => {
   // Target resource
   const targetResource = db.allocate('resource', {
     name: 'Role',
@@ -54,7 +59,7 @@ test('resource with relationship reference', () => {
   expect(rendered).toMatchSnapshot();
 });
 
-test('resource with multiple relationship references', () => {
+maybeTest('resource with multiple relationship references', () => {
   // Target resource 1
   const roleResource = db.allocate('resource', {
     name: 'Role',
@@ -110,7 +115,7 @@ test('resource with multiple relationship references', () => {
   expect(rendered).toMatchSnapshot();
 });
 
-test('resource with nested relationship requiring flattening', () => {
+maybeTest('resource with nested relationship requiring flattening', () => {
   // Target resource
   const roleResource = db.allocate('resource', {
     name: 'Role',
@@ -158,7 +163,7 @@ test('resource with nested relationship requiring flattening', () => {
   expect(rendered).toMatchSnapshot();
 });
 
-test('resource with array of nested properties with relationship', () => {
+maybeTest('resource with array of nested properties with relationship', () => {
   // Target resource
   const roleResource = db.allocate('resource', {
     name: 'Role',
@@ -206,7 +211,7 @@ test('resource with array of nested properties with relationship', () => {
   expect(rendered).toMatchSnapshot();
 });
 
-test('resource with nested relationship with type history', () => {
+maybeTest('resource with nested relationship with type history', () => {
   // Target resource
   const roleResource = db.allocate('resource', {
     name: 'Role',
@@ -273,7 +278,7 @@ test('resource with nested relationship with type history', () => {
   expect(rendered).toMatchSnapshot();
 });
 
-test('relationship have arns appear first in the constructor chain', () => {
+maybeTest('relationship have arns appear first in the constructor chain', () => {
   // Target resource
   const roleResource = db.allocate('resource', {
     name: 'Role',
