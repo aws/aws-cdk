@@ -1,4 +1,5 @@
 /* eslint-disable @cdklabs/no-throw-default-error */
+import { UnscopedValidationError } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 // Internal Libs
 import { CfnBrowserCustom, CfnCodeInterpreterCustom, CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
@@ -103,7 +104,7 @@ export abstract class NetworkConfiguration {
    */
   private _validateAndConfigureVpcConfig = (vpcConfig?: VpcConfigProps): NetworkConfig | undefined => {
     if ((vpcConfig?.securityGroups || vpcConfig?.allowAllOutbound !== undefined) && !vpcConfig?.vpc) {
-      throw new Error('Cannot configure \'securityGroups\' or \'allowAllOutbound\' without configuring a VPC');
+      throw new UnscopedValidationError('Cannot configure \'securityGroups\' or \'allowAllOutbound\' without configuring a VPC');
     }
 
     if (!vpcConfig?.vpc) {
@@ -111,11 +112,11 @@ export abstract class NetworkConfiguration {
     }
 
     if ((vpcConfig?.securityGroups && vpcConfig?.securityGroups.length > 0) && vpcConfig?.allowAllOutbound !== undefined) {
-      throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroups');
+      throw new UnscopedValidationError('Configure \'allowAllOutbound\' directly on the supplied SecurityGroups');
     }
 
     if (!this.scope) {
-      throw new Error('Scope is required to create the security group');
+      throw new UnscopedValidationError('Scope is required to create the security group');
     }
 
     let securityGroups: ec2.ISecurityGroup[];
