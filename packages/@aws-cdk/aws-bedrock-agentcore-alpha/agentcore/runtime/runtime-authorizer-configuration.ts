@@ -11,9 +11,9 @@
  *  and limitations under the License.
  */
 
-import { Token } from 'aws-cdk-lib';
 import { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { ValidationError } from './validation-helpers';
+import { IUserPool, IUserPoolClient } from 'aws-cdk-lib/aws-cognito';
 
 /**
  * Abstract base class for runtime authorizer configurations.
@@ -54,19 +54,17 @@ export abstract class RuntimeAuthorizerConfiguration {
    * Use AWS Cognito User Pool authentication.
    * Validates Cognito-issued JWT tokens.
    *
-   * @param userPoolId The Cognito User Pool ID (e.g., 'us-west-2_ABC123')
-   * @param clientId The Cognito App Client ID
-   * @param region Optional AWS region where the User Pool is located (defaults to stack region)
+   * @param userPool The Cognito User Pool
+   * @param userPoolClient The Cognito User Pool App Clients
    * @param allowedAudience Optional array of allowed audiences
    * @returns RuntimeAuthorizerConfiguration for Cognito authentication
    */
   public static usingCognito(
-    userPoolId: string,
-    clientId: string,
-    region?: string,
+    userPool: IUserPool,
+    userPoolClients: IUserPoolClient[],
     allowedAudience?: string[],
   ): RuntimeAuthorizerConfiguration {
-    return new CognitoAuthorizerConfiguration(userPoolId, clientId, region, allowedAudience);
+    return new CognitoAuthorizerConfiguration(userPool, userPoolClients, allowedAudience);
   }
 
   /**
@@ -134,25 +132,21 @@ class JwtAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
  */
 class CognitoAuthorizerConfiguration extends RuntimeAuthorizerConfiguration {
   constructor(
-    private readonly userPoolId: string,
-    private readonly clientId: string,
-    private readonly region?: string,
+    private readonly userPool: IUserPool,
+    private readonly userPoolClients: IUserPoolClient[],
     private readonly allowedAudience?: string[],
   ) {
     super();
   }
 
   public _render(): CfnRuntime.AuthorizerConfigurationProperty {
-    // If region is not provided, use a token that will be resolved to the stack region
-    // This will be resolved during synthesis
-    const region = this.region ?? Token.asString({ Ref: 'AWS::Region' });
-    const discoveryUrl = `https://cognito-idp.${region}.amazonaws.com/${this.userPoolId}/.well-known/openid-configuration`;
+    const discoveryUrl = `https://cognito-idp.${this.userPool.env.region}.amazonaws.com/${this.userPool.userPoolId}/.well-known/openid-configuration`;
 
     // Use JWT format for Cognito (CloudFormation expects JWT format)
     return {
       customJwtAuthorizer: {
         discoveryUrl: discoveryUrl,
-        allowedClients: [this.clientId],
+        allowedClients: this.userPoolClients.map(client => client.userPoolClientId),
         allowedAudience: this.allowedAudience,
       },
     };
