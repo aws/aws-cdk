@@ -125,7 +125,6 @@ jobs:
               --body "This PR updates the enum values for ${moduleName#aws-}." \
               --base main \
               --head "$branchName" \
-              --label "contribution/core,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test"
               
             # Return to original branch
             echo "Returning to original branch: $original_branch"
