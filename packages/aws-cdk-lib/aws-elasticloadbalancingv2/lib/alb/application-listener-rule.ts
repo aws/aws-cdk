@@ -3,7 +3,7 @@ import { IApplicationListener } from './application-listener';
 import { ListenerAction } from './application-listener-action';
 import { IApplicationTargetGroup } from './application-target-group';
 import { ListenerCondition } from './conditions';
-import { ListenerTransform, HostHeaderRewriteTransform, UrlRewriteTransform } from './transforms';
+import { ListenerTransform, TransformType } from './transforms';
 import * as cdk from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
@@ -416,8 +416,8 @@ export class ApplicationListenerRule extends Construct {
     }
 
     // Validate: only one transform of each type is allowed
-    const hostHeaderRewriteCount = this.transforms.filter(t => t instanceof HostHeaderRewriteTransform).length;
-    const urlRewriteCount = this.transforms.filter(t => t instanceof UrlRewriteTransform).length;
+    const hostHeaderRewriteCount = this.transforms.filter(t => t.type === TransformType.HOST_HEADER_REWRITE).length;
+    const urlRewriteCount = this.transforms.filter(t => t.type === TransformType.URL_REWRITE).length;
 
     if (hostHeaderRewriteCount > 1) {
       throw new ValidationError('Only one host-header-rewrite transform is allowed per rule', this);

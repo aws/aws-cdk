@@ -5,22 +5,51 @@ import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
  * Properties for a rewrite rule
  */
 export interface RewriteRule {
-  /**
-   * The regular expression pattern to match
-   */
   readonly regex: string;
-
-  /**
-   * The replacement string
-   */
   readonly replace: string;
 }
 
 /**
- * Base class for listener rule transforms
+ * Transform types for listener rules
  */
-export abstract class ListenerTransform {
-  constructor(protected readonly rewrites: RewriteRule[]) {
+export enum TransformType {
+  HOST_HEADER_REWRITE = 'host-header-rewrite',
+  URL_REWRITE = 'url-rewrite',
+}
+
+/**
+ * Listener rule transforms
+ */
+export class ListenerTransform {
+  /**
+   * Create a host header rewrite transform
+   */
+  public static hostHeaderRewrite(rewrites: RewriteRule[]): ListenerTransform {
+    return new ListenerTransform(TransformType.HOST_HEADER_REWRITE, rewrites);
+  }
+
+  /**
+   * Create a URL rewrite transform
+   */
+  public static urlRewrite(rewrites: RewriteRule[]): ListenerTransform {
+    return new ListenerTransform(TransformType.URL_REWRITE, rewrites);
+  }
+
+  /**
+   * Get the transform type
+   */
+  public get type(): TransformType {
+    return this._type;
+  }
+
+  private constructor(
+    private readonly _type: TransformType,
+    private readonly rewrites: RewriteRule[],
+  ) {
+    this.validateRewrites(rewrites);
+  }
+
+  private validateRewrites(rewrites: RewriteRule[]): void {
     if (!rewrites || rewrites.length === 0) {
       throw new UnscopedValidationError('At least one rewrite rule must be specified');
     }
@@ -36,49 +65,31 @@ export abstract class ListenerTransform {
   }
 
   /**
-   * Render the raw Cfn listener rule transform object.
+   * Render the raw Cfn listener rule transform object
    */
-  public abstract renderRawTransform(): CfnListenerRule.TransformProperty;
-}
-
-/**
- * Host header rewrite transform for listener rules
- */
-export class HostHeaderRewriteTransform extends ListenerTransform {
-  constructor(rewrites: RewriteRule[]) {
-    super(rewrites);
-  }
-
   public renderRawTransform(): CfnListenerRule.TransformProperty {
-    return {
-      type: 'host-header-rewrite',
-      hostHeaderRewriteConfig: {
-        rewrites: this.rewrites.map(rewrite => ({
-          regex: rewrite.regex,
-          replace: rewrite.replace,
-        })),
-      },
-    };
-  }
-}
+    const rewritesConfig = this.rewrites.map(rewrite => ({
+      regex: rewrite.regex,
+      replace: rewrite.replace,
+    }));
 
-/**
- * URL rewrite transform for listener rules
- */
-export class UrlRewriteTransform extends ListenerTransform {
-  constructor(rewrites: RewriteRule[]) {
-    super(rewrites);
-  }
-
-  public renderRawTransform(): CfnListenerRule.TransformProperty {
-    return {
-      type: 'url-rewrite',
-      urlRewriteConfig: {
-        rewrites: this.rewrites.map(rewrite => ({
-          regex: rewrite.regex,
-          replace: rewrite.replace,
-        })),
-      },
-    };
+    switch (this._type) {
+      case TransformType.HOST_HEADER_REWRITE:
+        return {
+          type: this._type,
+          hostHeaderRewriteConfig: {
+            rewrites: rewritesConfig,
+          },
+        };
+      case TransformType.URL_REWRITE:
+        return {
+          type: this._type,
+          urlRewriteConfig: {
+            rewrites: rewritesConfig,
+          },
+        };
+      default:
+        throw new UnscopedValidationError(`Unsupported transform type: ${this._type}`);
+    }
   }
 }

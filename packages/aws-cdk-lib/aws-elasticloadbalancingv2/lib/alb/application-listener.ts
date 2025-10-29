@@ -5,6 +5,7 @@ import { ApplicationListenerRule, FixedResponse, RedirectResponse } from './appl
 import { IApplicationLoadBalancer } from './application-load-balancer';
 import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
 import { ListenerCondition } from './conditions';
+import { ListenerTransform } from './transforms';
 import { ITrustStore } from './trust-store';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
@@ -948,6 +949,13 @@ export interface AddApplicationActionProps extends AddRuleProps {
    * @default - use standard logicalId with the `Rule` suffix
    */
   readonly removeSuffix?: boolean;
+
+  /**
+   * Transforms to apply to requests and responses
+   *
+   * @default - No transforms
+   */
+  readonly transforms?: ListenerTransform[];
 }
 
 /**
