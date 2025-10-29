@@ -124,7 +124,7 @@ jobs:
             gh pr create --title "chore(${moduleName#aws-}): add new enum values for ${moduleName#aws-}" \
               --body "This PR updates the enum values for ${moduleName#aws-}." \
               --base main \
-              --head "$branchName" \
+              --head "$branchName"
               
             # Return to original branch
             echo "Returning to original branch: $original_branch"
