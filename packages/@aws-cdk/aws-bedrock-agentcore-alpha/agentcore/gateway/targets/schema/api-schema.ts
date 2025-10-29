@@ -141,8 +141,8 @@ export class AssetApiSchema extends ApiSchema {
     }
 
     return {
-      S3: {
-        Uri: `s3://${this.asset.s3BucketName}/${this.asset.s3ObjectKey}`,
+      s3: {
+        uri: `s3://${this.asset.s3BucketName}/${this.asset.s3ObjectKey}`,
       },
     };
   }
