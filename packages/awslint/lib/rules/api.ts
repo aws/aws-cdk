@@ -139,6 +139,11 @@ apiLinter.add({
         return;
       }
 
+      if (type.intersectionOfTypes) {
+        // Type intersections are okay
+        return;
+      }
+
       throw new Error(`invalid type reference: ${type.toString()}`);
     }
   },

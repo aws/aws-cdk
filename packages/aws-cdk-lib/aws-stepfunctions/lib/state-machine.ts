@@ -117,7 +117,7 @@ export interface StateMachineProps {
    *
    * @default A role is automatically created
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRoleRef & iam.IGrantable;
 
   /**
    * Maximum run time for this state machine
@@ -428,11 +428,6 @@ export class StateMachine extends StateMachineBase {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-stepfunctions.StateMachine';
 
   /**
-   * Execution role of this state machine
-   */
-  public readonly role: iam.IRole;
-
-  /**
    * The name of the state machine
    * @attribute
    */
@@ -455,6 +450,11 @@ export class StateMachine extends StateMachineBase {
    */
   public readonly stateMachineRevisionId: string;
 
+  /**
+   * Execution role of this state machine
+   */
+  private readonly _role: iam.IRoleRef & iam.IGrantable;
+
   constructor(scope: Construct, id: string, props: StateMachineProps) {
     super(scope, id, {
       physicalName: props.stateMachineName,
@@ -476,7 +476,7 @@ export class StateMachine extends StateMachineBase {
       this.validateLogOptions(props.logs);
     }
 
-    this.role = props.role || new iam.Role(this, 'Role', {
+    this._role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
     });
 
@@ -494,7 +494,7 @@ export class StateMachine extends StateMachineBase {
     }
 
     if (props.encryptionConfiguration instanceof CustomerManagedEncryptionConfiguration) {
-      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      this._role.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: [
           'kms:Decrypt', 'kms:GenerateDataKey',
@@ -513,7 +513,7 @@ export class StateMachine extends StateMachineBase {
       }));
 
       if (props.logs && props.logs.level !== LogLevel.OFF) {
-        this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+        this._role.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
           actions: [
             'kms:GenerateDataKey',
@@ -540,10 +540,10 @@ export class StateMachine extends StateMachineBase {
     const resource = new CfnStateMachine(this, 'Resource', {
       stateMachineName: this.physicalName,
       stateMachineType: props.stateMachineType ?? undefined,
-      roleArn: this.role.roleArn,
+      roleArn: this._role.roleRef.roleArn,
       loggingConfiguration: props.logs ? this.buildLoggingConfiguration(props.logs) : undefined,
       tracingConfiguration: this.buildTracingConfiguration(props.tracingEnabled),
-      ...definitionBody.bind(this, this.role, props, graph),
+      ...definitionBody.bind(this, this._role.grantPrincipal, props, graph),
       definitionSubstitutions: props.definitionSubstitutions,
       encryptionConfiguration: buildEncryptionConfiguration(props.encryptionConfiguration),
     });
@@ -569,7 +569,19 @@ export class StateMachine extends StateMachineBase {
    * The principal this state machine is running as
    */
   public get grantPrincipal() {
-    return this.role.grantPrincipal;
+    return this._role.grantPrincipal;
+  }
+
+  /**
+   * Execution role of this state machine
+   *
+   * Will throw if the Role object that was given does not implement IRole
+   */
+  public get role(): iam.IRole {
+    if (!isIRole(this._role)) {
+      throw new ValidationError(`The role given to this StateMachine is not an IRole, but ${this._role.constructor.name}`, this);
+    }
+    return this._role;
   }
 
   /**
@@ -577,7 +589,7 @@ export class StateMachine extends StateMachineBase {
    */
   @MethodMetadata()
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPrincipalPolicy(statement);
+    this._role.grantPrincipal.addToPrincipalPolicy(statement);
   }
 
   private validateStateMachineName(stateMachineName: string) {
@@ -845,4 +857,10 @@ export class ChainDefinitionBody extends DefinitionBody {
       }),
     };
   }
+}
+
+function isIRole(x: iam.IRoleRef): x is iam.IRole {
+  const xx = x as iam.IRole;
+  return (!!xx.addManagedPolicy && !!xx.addToPrincipalPolicy && !!xx.assumeRoleAction && !!xx.attachInlinePolicy
+   && !!xx.grant && !!xx.policyFragment);
 }
