@@ -6,7 +6,7 @@ on:
 
 jobs:
   update-l2-enums:
-    if: github.repository == 'aws/aws-cdk'
+    if: github.repository == 'abidhasan-aws/aws-cdk'
     runs-on: ubuntu-latest
     permissions:
       contents: write
