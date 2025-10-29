@@ -65,7 +65,7 @@ jobs:
           sudo sysctl -w vm.max_map_count=2251954
 
       - name: Build
-        run: /bin/bash ./build.sh --ci
+        run: /bin/bash ./build.sh --ci --concurrency=10
 
       - name: Run Rosetta
         run: /bin/bash ./scripts/run-rosetta.sh
