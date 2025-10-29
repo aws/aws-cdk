@@ -66,12 +66,12 @@
     "@aws-cdk/service-spec-types" "^0.0.158"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/aws-service-spec@^0.1.108":
-  version "0.1.108"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.108.tgz#db4b6335364af7d99a2c7eb370958b29bb377557"
-  integrity sha512-aCnBqp/fXXx4OhTuEuDsHlYF5fUrMQp07TiHnbUOGRVbqU72TT2AaruSPNeDmQ3XPA0VK9CNKnu7ENs9hJ3Uvw==
+"@aws-cdk/aws-service-spec@^0.1.110":
+  version "0.1.110"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.110.tgz#37d396f8e46f2faee23087204a83aa7a36d69606"
+  integrity sha512-dUlha3DinRxpLWa5l505AbruHhPDbUq9FVv9SXE9p3npfKGZY5jUtABjzwgwnZUsSEVXvUqEprEAASizeZaSAg==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.174"
+    "@aws-cdk/service-spec-types" "^0.0.176"
     "@cdklabs/tskb" "^0.0.3"
 
 "@aws-cdk/cloud-assembly-schema@^48.6.0":
@@ -122,12 +122,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v33/-/lambda-layer-kubectl-v33-2.0.0.tgz#0c521ad987bb3ac597a4b4ebeece8fd2721ca000"
   integrity sha512-osA3wkwWK2OfpymTcCZKhgaKSca9PQSr+7xi+UevKFRHtMdxHgygC345hdDpCtZlMmX9pKjtFpRUxeRrbGHMEw==
 
-"@aws-cdk/service-spec-importers@^0.0.90":
-  version "0.0.90"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.90.tgz#b1a140ccbec8525ec093b6c87a09c673e80a878c"
-  integrity sha512-b/2Z9YNd4Q+Yn+Qn/qKWqsJ134Yn8QYoj7h2zBRuNy1Vrp5tlbYxpoZIocWBhmk7jPU+orgYWu+5eo3L5WkdXg==
+"@aws-cdk/service-spec-importers@^0.0.92":
+  version "0.0.92"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.92.tgz#64820a8f8790cc7a048e1605e65586cc2a641121"
+  integrity sha512-6yi/5XYYHAQ0d5eAi1Uod9o6HaUhBn41Iv45XoSQGCvLN6BzTVKkwmLyriLDGWitjJ/nV4ToL7MtGq+r9KAm6A==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.174"
+    "@aws-cdk/service-spec-types" "^0.0.176"
     "@cdklabs/tskb" "^0.0.3"
     ajv "^6"
     canonicalize "^2.1.0"
@@ -145,10 +145,10 @@
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/service-spec-types@^0.0.174":
-  version "0.0.174"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.174.tgz#5bb2e05e46615356f512c3895ce84b46dca9a9bb"
-  integrity sha512-WIxP/5NVF7jD89tLMzAKG3gAktKR3Zq/hcRskTCSbqVE+Q8TrcdoJUCWrXZlJJztJZ0kT5Ycmp25p5cOtY6TGg==
+"@aws-cdk/service-spec-types@^0.0.176":
+  version "0.0.176"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.176.tgz#8dc1584c9de16921df2dbcacdb3db11660eae2ee"
+  integrity sha512-9CCwfLJovYXBWpEzPRZ8Z271ksyoGDitgIlm6id4pIwd4H3J0jLwHGhXM0fFiJhdvlfCVAwEIHrE8fluxZEHrA==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
@@ -3518,6 +3518,14 @@
     chalk "^4.1.2"
     semver "^7.7.2"
 
+"@jsii/check-node@1.118.0":
+  version "1.118.0"
+  resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.118.0.tgz#0be4fef43c7058764e3b4d146c6fbc80306de6bd"
+  integrity sha512-8IaXtUO6oq3Dmi9rxXqsBRnKxqbe0OARGt4tw46Li7kR5/GXE/DBGPKZ2rOvi2CekOh8b3VGBU+wd84RQciTAA==
+  dependencies:
+    chalk "^4.1.2"
+    semver "^7.7.2"
+
 "@jsii/spec@1.114.1":
   version "1.114.1"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.114.1.tgz#9c064d57f062d913bcfda25b5496bdf4c9c95c46"
@@ -3536,6 +3544,13 @@
   version "1.116.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.116.0.tgz#8da502da897f15b46ac969033cea5cbee4738f43"
   integrity sha512-BqsOMsE7Md6EwaLammXeCOi20GlsA4lAawIrPN0jHeFjZnEqUsiWRXZw+9EG3lTImW9QLVN1cF9kbQ3t3vAXeQ==
+  dependencies:
+    ajv "^8.17.1"
+
+"@jsii/spec@1.118.0":
+  version "1.118.0"
+  resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.118.0.tgz#66d6da3089e002ee3ee89dcc6e9d284a039acf94"
+  integrity sha512-aVe535/sN1EW88DYiEO3r0gqkKJ7ob0yfWC8+c1GVEayAecuvBjmwzzc7oDIIOthZ7PT3OBJ2xPqGqtbCyR3Uw==
   dependencies:
     ajv "^8.17.1"
 
@@ -6654,10 +6669,10 @@ code-block-writer@^13.0.3:
   resolved "https://registry.npmjs.org/code-block-writer/-/code-block-writer-13.0.3.tgz#90f8a84763a5012da7af61319dd638655ae90b5b"
   integrity sha512-Oofo0pq3IKnsFtuHqSF7TqBfr71aeyZDVJ0HpmqB7FBM2qEigL0iPONSCZSO9pE9dZTAxANe5XHG9Uy0YMv8cg==
 
-codemaker@^1.116.0:
-  version "1.116.0"
-  resolved "https://registry.npmjs.org/codemaker/-/codemaker-1.116.0.tgz#1fccbcb720f987ac3d21b0fb92ad6e749eedb6b3"
-  integrity sha512-o23BKz+Y0Yam/czEbe3UAXVqSY4HFKgUYTffx3YW6yPtAVSX0d50BgIU0RxCUGIWmFD9Go3tXqraRDpo7TxMLg==
+codemaker@^1.118.0:
+  version "1.118.0"
+  resolved "https://registry.npmjs.org/codemaker/-/codemaker-1.118.0.tgz#2587611d167bdece0beff9f2748b2baae04c655b"
+  integrity sha512-d6ddG2oKNwkYBRJtsdEaKbJLBaxZJO0ImSG89wi6j5y549olTB3ERsqGGRZ47HlRuaVpkbOXnG/kb8I6ELxtMA==
   dependencies:
     camelcase "^6.3.0"
     decamelize "^5.0.1"
@@ -10064,37 +10079,37 @@ jsesc@^3.0.2:
   resolved "https://registry.npmjs.org/jsesc/-/jsesc-3.1.0.tgz#74d335a234f67ed19907fdadfac7ccf9d409825d"
   integrity sha512-/sM3dO2FOzXjKQhJuo0Q173wf2KOo8t4I8vHy6lF9poUp7bKT0/NHE8fPX23PwfhnykfqnC2xRxOnVw5XuGIaA==
 
-jsii-diff@1.116.0:
-  version "1.116.0"
-  resolved "https://registry.npmjs.org/jsii-diff/-/jsii-diff-1.116.0.tgz#0445d7492e42f7b27c7c7e08703181a3cbcca5cf"
-  integrity sha512-6t7MJe9gWo/vnkQrHNLlOdOO7ZRnqqGoC2uk8M1C2Gc/Yc8mBuyQhF9Fj0+hPmChURI5cqHsFatFce9P79fS0Q==
+jsii-diff@1.118.0:
+  version "1.118.0"
+  resolved "https://registry.npmjs.org/jsii-diff/-/jsii-diff-1.118.0.tgz#d91be0448a29dc0aacca0b2350d20186dfb1243d"
+  integrity sha512-Po0jJU5ib3G7IZ411OZbILyTFcJ1veb1O1NK1OSg2iejquhEnViNhrZSwEgbCWIZyfu+BKTgrW7rG3KYgPgAhA==
   dependencies:
-    "@jsii/check-node" "1.116.0"
-    "@jsii/spec" "1.116.0"
+    "@jsii/check-node" "1.118.0"
+    "@jsii/spec" "1.118.0"
     fs-extra "^10.1.0"
-    jsii-reflect "^1.116.0"
+    jsii-reflect "^1.118.0"
     log4js "^6.9.1"
     yargs "^17.7.2"
 
-jsii-pacmak@1.116.0:
-  version "1.116.0"
-  resolved "https://registry.npmjs.org/jsii-pacmak/-/jsii-pacmak-1.116.0.tgz#c94d0141d56dbd4f3e9c0d6a5234a9a72ab28215"
-  integrity sha512-X3UQouUnp05/CbtZzORrBIDQBb26ChX6Ms5q3dXxsJyk5/DEJaCkd6pAnU3wiya7Tsrd8K09mSiuseMzxFvs8Q==
+jsii-pacmak@1.118.0:
+  version "1.118.0"
+  resolved "https://registry.npmjs.org/jsii-pacmak/-/jsii-pacmak-1.118.0.tgz#a4ad053535ffc4142a544c797272082e98289801"
+  integrity sha512-RY7l//WI8G3IN2u1R8S6rFDT2jcNwjiR3RWyWu6NtcPchn+V/8aqX+8j1PmyRGfop8qAKcPc0AL3rAx2OmcmAw==
   dependencies:
-    "@jsii/check-node" "1.116.0"
-    "@jsii/spec" "1.116.0"
+    "@jsii/check-node" "1.118.0"
+    "@jsii/spec" "1.118.0"
     clone "^2.1.2"
-    codemaker "^1.116.0"
+    codemaker "^1.118.0"
     commonmark "^0.31.2"
     escape-string-regexp "^4.0.0"
     fs-extra "^10.1.0"
-    jsii-reflect "^1.116.0"
+    jsii-reflect "^1.118.0"
     semver "^7.7.2"
     spdx-license-list "^6.10.0"
     xmlbuilder "^15.1.1"
     yargs "^17.7.2"
 
-jsii-reflect@1.116.0, jsii-reflect@^1.116.0:
+jsii-reflect@1.116.0:
   version "1.116.0"
   resolved "https://registry.npmjs.org/jsii-reflect/-/jsii-reflect-1.116.0.tgz#2dda056b311b9b7eed49ac27c45743f64f0057d7"
   integrity sha512-ZIHznFUMHQinqNLu48JibrnB0O0EeINCUgtkgV+SqEN7wsM1kxT3SBLHEbCQqPzB5ZsQzrdl9JW1vMi14/YqGA==
@@ -10104,6 +10119,18 @@ jsii-reflect@1.116.0, jsii-reflect@^1.116.0:
     chalk "^4"
     fs-extra "^10.1.0"
     oo-ascii-tree "^1.116.0"
+    yargs "^17.7.2"
+
+jsii-reflect@1.118.0, jsii-reflect@^1.118.0:
+  version "1.118.0"
+  resolved "https://registry.npmjs.org/jsii-reflect/-/jsii-reflect-1.118.0.tgz#ff33ffba10090e5903dd9ddb2a5c6252c1fbf1c3"
+  integrity sha512-P3iASRGS8j87uT66MZ2jQvxPZRLdXBMoSEBECn3+krKCauaZntymXm/iQmWCgTnpt43cwz+eYkY1D3KA1sGjzA==
+  dependencies:
+    "@jsii/check-node" "1.118.0"
+    "@jsii/spec" "1.118.0"
+    chalk "^4"
+    fs-extra "^10.1.0"
+    oo-ascii-tree "^1.118.0"
     yargs "^17.7.2"
 
 jsii-reflect@^1.115.0:
@@ -11751,6 +11778,11 @@ oo-ascii-tree@^1.116.0:
   version "1.116.0"
   resolved "https://registry.npmjs.org/oo-ascii-tree/-/oo-ascii-tree-1.116.0.tgz#2bd95d7de16b842289e01bd83e29f93ea463eaf5"
   integrity sha512-GI0n8coDIoZPywmZp5l2qPO1tqZxN40/tFPYBxWD2vpPeciKiB/nxZ7blDjp97ejxtmdkNouvAmtg4nCYgZihg==
+
+oo-ascii-tree@^1.118.0:
+  version "1.118.0"
+  resolved "https://registry.npmjs.org/oo-ascii-tree/-/oo-ascii-tree-1.118.0.tgz#1d222c348358f96362c6b65f766f2af39a42bb9c"
+  integrity sha512-ATGzZ+AxeHuGdNlniQNn9xvaVDo8IfET84Xep0XS33KXr19EZum7VpzBuKtcfNM/NQ7uk1d4ePXMqyiHeA9Dxw==
 
 open@^8.4.0:
   version "8.4.2"
