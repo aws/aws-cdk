@@ -1,9 +1,11 @@
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
+import * as fs from 'fs';
 import { IGateway } from '../gateway-base';
-import { ApiSchema } from './schema/api-schema';
+import { ApiSchema, AssetApiSchema } from './schema/api-schema';
 import { ToolSchema } from './schema/tool-schema';
 import { McpTargetType } from './target-base';
+import { validateOpenApiSchema, ValidationError } from '../validation-helpers';
 
 /******************************************************************************
  *                          Interface
@@ -165,10 +167,11 @@ export class OpenApiTargetConfiguration extends McpTargetConfiguration {
    * Create an OpenAPI target configuration
    *
    * @param apiSchema The OpenAPI schema
+   * @param validateSchema Whether to validate the OpenAPI schema (only applies to inline schemas)
    * @returns A new OpenApiTargetConfiguration instance
    */
-  public static create(apiSchema: ApiSchema): OpenApiTargetConfiguration {
-    return new OpenApiTargetConfiguration(apiSchema);
+  public static create(apiSchema: ApiSchema, validateSchema?: boolean): OpenApiTargetConfiguration {
+    return new OpenApiTargetConfiguration(apiSchema, validateSchema);
   }
 
   public readonly targetType = McpTargetType.OPENAPI_SCHEMA;
@@ -178,9 +181,15 @@ export class OpenApiTargetConfiguration extends McpTargetConfiguration {
    */
   public readonly apiSchema: ApiSchema;
 
-  constructor(apiSchema: ApiSchema) {
+  /**
+   * Whether to validate the OpenAPI schema
+   */
+  private readonly shouldValidateSchema: boolean;
+
+  constructor(apiSchema: ApiSchema, validateSchema?: boolean) {
     super();
     this.apiSchema = apiSchema;
+    this.shouldValidateSchema = validateSchema ?? true;
   }
 
   /**
@@ -191,6 +200,39 @@ export class OpenApiTargetConfiguration extends McpTargetConfiguration {
    * @param gateway The gateway that will use this target
    */
   public bind(scope: Construct, gateway: IGateway): TargetConfigurationConfig {
+    if (this.shouldValidateSchema) {
+      // For inline schemas
+      if (this.apiSchema.inlineSchema) {
+        const errors = validateOpenApiSchema({
+          schema: this.apiSchema.inlineSchema,
+          schemaName: 'OpenAPI schema for target',
+        });
+        if (errors.length > 0) {
+          throw new ValidationError(`OpenAPI schema validation failed:\n${errors.join('\n')}`);
+        }
+      } else if (this.apiSchema instanceof AssetApiSchema) {
+        // For asset schemas (local files)
+        try {
+          const schemaContent = fs.readFileSync(this.apiSchema._getFilePath(), 'utf-8');
+          const errors = validateOpenApiSchema({
+            schema: schemaContent,
+            schemaName: `OpenAPI schema from file ${this.apiSchema._getFilePath()}`,
+          });
+          if (errors.length > 0) {
+            throw new ValidationError(`OpenAPI schema validation failed:\n${errors.join('\n')}`);
+          }
+        } catch (e) {
+          if (e instanceof ValidationError) {
+            throw e;
+          }
+          throw new ValidationError(
+            `Failed to read OpenAPI schema from ${this.apiSchema._getFilePath()}: ${e instanceof Error ? e.message : String(e)}`,
+          );
+        }
+      }
+      // S3 schemas cannot be validated at synthesis time
+    }
+
     // Bind the API schema
     this.apiSchema.bind(scope);
     // Grant permissions to gateway role if schema is in S3

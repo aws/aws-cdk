@@ -102,6 +102,14 @@ export interface GatewayTargetOpenApiProps extends McpGatewayTargetCommonProps {
   readonly apiSchema: ApiSchema;
 
   /**
+   * Whether to validate the OpenAPI schema (only applies to inline schemas)
+   * Note: Validation is only performed for inline schemas during CDK synthesis.
+   * S3 and asset-based schemas cannot be validated at synthesis time.
+   * @default true
+   */
+  readonly validateOpenApiSchema?: boolean;
+
+  /**
    * Credential providers for authentication
    * OpenAPI targets support API key and OAuth authentication (not IAM)
    * @default: If not provided, defaults to IAM role which will fail at runtime
@@ -272,7 +280,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       gatewayTargetName: props.gatewayTargetName,
       description: props.description,
       credentialProviderConfigurations: props.credentialProviderConfigurations,
-      targetConfiguration: OpenApiTargetConfiguration.create(props.apiSchema),
+      targetConfiguration: OpenApiTargetConfiguration.create(props.apiSchema, props.validateOpenApiSchema),
     });
   }
 

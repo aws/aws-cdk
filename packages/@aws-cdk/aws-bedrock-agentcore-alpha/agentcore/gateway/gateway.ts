@@ -76,6 +76,14 @@ export interface AddOpenApiTargetOptions {
   readonly apiSchema: ApiSchema;
 
   /**
+   * Whether to validate the OpenAPI schema or not
+   * Note: Validation is only performed for inline and asset-based schema and  during CDK synthesis.
+   * S3 schemas cannot be validated at synthesis time.
+   * @default true
+   */
+  readonly validateOpenApiSchema?: boolean;
+
+  /**
    * Credential providers for authentication
    * @default - [GatewayCredentialProvider.iamRole()]
    */
@@ -449,6 +457,7 @@ export class Gateway extends GatewayBase {
       description: props.description,
       gateway: this,
       apiSchema: props.apiSchema,
+      validateOpenApiSchema: props.validateOpenApiSchema,
       credentialProviderConfigurations: props.credentialProviderConfigurations,
     });
 

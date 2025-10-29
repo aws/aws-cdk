@@ -147,7 +147,7 @@ export function validateOpenApiSchema(params: OpenApiSchemaValidationParams): st
   try {
     schemaObj = JSON.parse(schema);
   } catch (e) {
-    errors.push(`${schemaName} is not valid JSON: ${e instanceof Error ? e.message : String(e)}`);
+    errors.push(`${schemaName} must be in JSON format. YAML is not supported. Error: ${e instanceof Error ? e.message : String(e)}`);
     return errors;
   }
 

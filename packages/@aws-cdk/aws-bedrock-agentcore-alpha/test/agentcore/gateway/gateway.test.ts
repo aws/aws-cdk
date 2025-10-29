@@ -254,7 +254,19 @@ describe('Gateway Add Target Methods Tests', () => {
   });
 
   test('Should add OpenAPI target using addOpenApiTarget method', () => {
-    const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0', false);
+    const apiSchema = ApiSchema.fromInline(JSON.stringify({
+      openapi: '3.0.0',
+      info: { title: 'Test', version: '1.0.0' },
+      servers: [{ url: 'https://api.example.com' }],
+      paths: {
+        '/test': {
+          get: {
+            operationId: 'getTest',
+            responses: { 200: { description: 'Success' } },
+          },
+        },
+      },
+    }));
 
     const target = gateway.addOpenApiTarget('TestTarget', {
       gatewayTargetName: 'added-openapi-target',
@@ -275,7 +287,7 @@ describe('Gateway Add Target Methods Tests', () => {
   });
 
   test('Should add Smithy target using addSmithyTarget method', () => {
-    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }', false);
+    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }');
 
     const target = gateway.addSmithyTarget('TestTarget', {
       gatewayTargetName: 'added-smithy-target',
@@ -416,7 +428,19 @@ describe('Gateway Target Core Tests', () => {
   });
 
   test('Should create OpenAPI target using convenience method', () => {
-    const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0', false);
+    const apiSchema = ApiSchema.fromInline(JSON.stringify({
+      openapi: '3.0.0',
+      info: { title: 'Test', version: '1.0.0' },
+      servers: [{ url: 'https://api.example.com' }],
+      paths: {
+        '/test': {
+          get: {
+            operationId: 'getTest',
+            responses: { 200: { description: 'Success' } },
+          },
+        },
+      },
+    }));
 
     const target = GatewayTarget.forOpenApi(stack, 'TestTarget', {
       gatewayTargetName: 'test-openapi-target',
@@ -438,7 +462,7 @@ describe('Gateway Target Core Tests', () => {
   });
 
   test('Should create Smithy target using convenience method', () => {
-    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }', false);
+    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }');
 
     const target = GatewayTarget.forSmithy(stack, 'TestTarget', {
       gatewayTargetName: 'test-smithy-target',
@@ -728,7 +752,19 @@ describe('Gateway Target Core Tests', () => {
   });
 
   test('Should create target with API Key in header', () => {
-    const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0', false);
+    const apiSchema = ApiSchema.fromInline(JSON.stringify({
+      openapi: '3.0.0',
+      info: { title: 'Test', version: '1.0.0' },
+      servers: [{ url: 'https://api.example.com' }],
+      paths: {
+        '/test': {
+          get: {
+            operationId: 'getTest',
+            responses: { 200: { description: 'Success' } },
+          },
+        },
+      },
+    }));
 
     GatewayTarget.forOpenApi(stack, 'TestTarget', {
       gatewayTargetName: 'test-target',
@@ -748,7 +784,7 @@ describe('Gateway Target Core Tests', () => {
   });
 
   test('Should create target with OAuth provider', () => {
-    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }', false);
+    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }');
 
     GatewayTarget.forSmithy(stack, 'TestTarget', {
       gatewayTargetName: 'test-target',
@@ -935,20 +971,21 @@ describe('Schema Tests', () => {
   });
 
   test('Should create ApiSchema from inline content', () => {
-    const openApiSpec = `
-openapi: 3.0.3
-info:
-  title: Test API
-  version: 1.0.0
-paths:
-  /test:
-    get:
-      summary: Test endpoint
-      responses:
-        '200':
-          description: Success
-`;
-    const schema = ApiSchema.fromInline(openApiSpec, false);
+    const openApiSpec = JSON.stringify({
+      openapi: '3.0.3',
+      info: { title: 'Test API', version: '1.0.0' },
+      servers: [{ url: 'https://api.example.com' }],
+      paths: {
+        '/test': {
+          get: {
+            summary: 'Test endpoint',
+            operationId: 'testEndpoint',
+            responses: { 200: { description: 'Success' } },
+          },
+        },
+      },
+    });
+    const schema = ApiSchema.fromInline(openApiSpec);
 
     // Just verify the schema object is created successfully
     expect(schema).toBeDefined();
@@ -1599,7 +1636,19 @@ describe('Gateway Schema Binding Tests', () => {
   });
 
   test('Should bind OpenAPI target configuration properly', () => {
-    const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0', false);
+    const apiSchema = ApiSchema.fromInline(JSON.stringify({
+      openapi: '3.0.0',
+      info: { title: 'Test', version: '1.0.0' },
+      servers: [{ url: 'https://api.example.com' }],
+      paths: {
+        '/test': {
+          get: {
+            operationId: 'getTest',
+            responses: { 200: { description: 'Success' } },
+          },
+        },
+      },
+    }));
     const config = OpenApiTargetConfiguration.create(apiSchema);
     const boundConfig = config.bind(stack, gateway);
 
@@ -1608,7 +1657,7 @@ describe('Gateway Schema Binding Tests', () => {
   });
 
   test('Should bind Smithy target configuration properly', () => {
-    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }', false);
+    const smithyModel = ApiSchema.fromInline('{ "smithy": "1.0" }');
     const config = SmithyTargetConfiguration.create(smithyModel);
     const boundConfig = config.bind(stack, gateway);
 
@@ -1664,7 +1713,19 @@ describe('Gateway Integration Tests', () => {
     });
 
     // Add OpenAPI target
-    const apiSchema = ApiSchema.fromInline('openapi: 3.0.0\ninfo:\n  title: Test\n  version: 1.0.0', false);
+    const apiSchema = ApiSchema.fromInline(JSON.stringify({
+      openapi: '3.0.0',
+      info: { title: 'Test', version: '1.0.0' },
+      servers: [{ url: 'https://api.example.com' }],
+      paths: {
+        '/test': {
+          get: {
+            operationId: 'getTest',
+            responses: { 200: { description: 'Success' } },
+          },
+        },
+      },
+    }));
 
     gateway.addOpenApiTarget('OpenApiTarget', {
       gatewayTargetName: 'openapi-target',
