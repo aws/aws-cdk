@@ -470,7 +470,6 @@ export class AppSyncRdsDataSource extends AppSyncBackedDataSource {
         'rds-data:UpdateItems',
       ],
       resourceArns: [clusterArn, `${clusterArn}:*`],
-      scope: this,
     });
   }
 }
