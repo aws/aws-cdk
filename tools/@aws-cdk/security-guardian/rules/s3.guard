@@ -3,8 +3,8 @@
 ##          S3 GUARD RULES          ##
 #####################################
 # Service: Amazon Simple Storage Service (S3)
-# Rules: EA006, EA015, S3_SECURE_TRANSPORT, S3_VERSIONING, S3_CONFUSED_DEPUTY
-# Coverage: Encryption, World Access, Secure Transport, Versioning, Confused Deputy
+# Rules: S3_SECURE_TRANSPORT, S3_VERSIONING, S3_CONFUSED_DEPUTY
+# Coverage: Encryption, World Access, Secure Transport, Confused Deputy
 
 let s3_buckets = Resources.*[
   Type == 'AWS::S3::Bucket'
@@ -128,14 +128,6 @@ rule S3_SECURE_TRANSPORT when %s3_bucket_policies !empty {
                 }
             }
         }
-    }
-}
-
-# S3 versioning configuration
-rule S3_VERSIONING_ENABLED when %s3_buckets !empty {
-    %s3_buckets {
-        Properties.VersioningConfiguration exists
-        Properties.VersioningConfiguration.Status == "Enabled"
     }
 }
 

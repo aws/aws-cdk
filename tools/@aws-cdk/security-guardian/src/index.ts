@@ -86,8 +86,8 @@ async function run(): Promise<void> {
         'validate',
         '--data', workingDir,
         '--rules', ruleSetPath,
-        '--show-summary', 'none', // We'll handle summary ourselves
-        '--output-format', 'json'
+        '--show-summary', showSummary, 
+        '--output-format', outputFormat
       ], {
         listeners: {
           stdout: (data: Buffer) => {
