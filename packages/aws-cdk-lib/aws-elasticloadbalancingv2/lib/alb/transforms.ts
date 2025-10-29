@@ -20,19 +20,7 @@ export interface RewriteRule {
  * Base class for listener rule transforms
  */
 export abstract class ListenerTransform {
-  /**
-   * Render the raw Cfn listener rule transform object.
-   */
-  public abstract renderRawTransform(): CfnListenerRule.TransformProperty;
-}
-
-/**
- * Host header rewrite transform for listener rules
- */
-export class HostHeaderRewriteTransform extends ListenerTransform {
-  constructor(public readonly rewrites: RewriteRule[]) {
-    super();
-
+  constructor(protected readonly rewrites: RewriteRule[]) {
     if (!rewrites || rewrites.length === 0) {
       throw new UnscopedValidationError('At least one rewrite rule must be specified');
     }
@@ -45,6 +33,20 @@ export class HostHeaderRewriteTransform extends ListenerTransform {
         throw new UnscopedValidationError(`Rewrite rule at index ${index}: replace cannot be empty`);
       }
     });
+  }
+
+  /**
+   * Render the raw Cfn listener rule transform object.
+   */
+  public abstract renderRawTransform(): CfnListenerRule.TransformProperty;
+}
+
+/**
+ * Host header rewrite transform for listener rules
+ */
+export class HostHeaderRewriteTransform extends ListenerTransform {
+  constructor(rewrites: RewriteRule[]) {
+    super(rewrites);
   }
 
   public renderRawTransform(): CfnListenerRule.TransformProperty {
@@ -64,21 +66,8 @@ export class HostHeaderRewriteTransform extends ListenerTransform {
  * URL rewrite transform for listener rules
  */
 export class UrlRewriteTransform extends ListenerTransform {
-  constructor(public readonly rewrites: RewriteRule[]) {
-    super();
-
-    if (!rewrites || rewrites.length === 0) {
-      throw new UnscopedValidationError('At least one rewrite rule must be specified');
-    }
-
-    rewrites.forEach((rewrite, index) => {
-      if (!rewrite.regex) {
-        throw new UnscopedValidationError(`Rewrite rule at index ${index}: regex cannot be empty`);
-      }
-      if (!rewrite.replace) {
-        throw new UnscopedValidationError(`Rewrite rule at index ${index}: replace cannot be empty`);
-      }
-    });
+  constructor(rewrites: RewriteRule[]) {
+    super(rewrites);
   }
 
   public renderRawTransform(): CfnListenerRule.TransformProperty {
