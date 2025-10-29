@@ -80,9 +80,9 @@ jobs:
               continue
             fi
 
-            # Branch name for the module
+            # Branch name for the module            
             branchName="enum-update/${moduleName#aws-}"
-            
+
             # Check for existing PR with the same name
             prExists=$(gh pr list --state open --head ${branchName} --base main --json number,title -q '.[].number')
             
