@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "aws-cdk-iam-policy.assets": {
+    "aws-cdk-bedrock-agent-existing-role-1.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-iam-policy.assets.json",
+        "file": "aws-cdk-bedrock-agent-existing-role-1.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-iam-policy": {
+    "aws-cdk-bedrock-agent-existing-role-1": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-iam-policy.template.json",
+        "templateFile": "aws-cdk-bedrock-agent-existing-role-1.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f610dd853ec9155bff8652c80624b267774134ad7563037ff22c6ceb964a5d76.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/06eb7cf8af5cffaabec9d0fe8535793f3a0e525a5c69b73bb9a4b3e751e6a44e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-iam-policy.assets"
+          "aws-cdk-bedrock-agent-existing-role-1.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,28 +31,17 @@
         }
       },
       "dependencies": [
-        "aws-cdk-iam-policy.assets"
+        "aws-cdk-bedrock-agent-existing-role-1.assets"
       ],
       "metadata": {
-        "/aws-cdk-iam-policy/MyUser": [
+        "/aws-cdk-bedrock-agent-existing-role-1/AgentRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
             "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
             }
           },
           {
@@ -70,15 +59,29 @@
                 "*"
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
           }
         ],
-        "/aws-cdk-iam-policy/MyUser/Resource": [
+        "/aws-cdk-bedrock-agent-existing-role-1/AgentRole/ImportAgentRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-bedrock-agent-existing-role-1/AgentRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyUserDC45028B"
+            "data": "AgentRoleF4A42D6B"
           }
         ],
-        "/aws-cdk-iam-policy/MyUser/DefaultPolicy": [
+        "/aws-cdk-bedrock-agent-existing-role-1/AgentRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -86,7 +89,7 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachToUser": [
+              "attachToRole": [
                 "*"
               ]
             }
@@ -94,7 +97,7 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "attachToUser": [
+              "attachToRole": [
                 "*"
               ]
             }
@@ -108,228 +111,60 @@
             }
           }
         ],
-        "/aws-cdk-iam-policy/MyUser/DefaultPolicy/Resource": [
+        "/aws-cdk-bedrock-agent-existing-role-1/AgentRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyUserDefaultPolicy7B897426"
+            "data": "AgentRoleDefaultPolicy1027F5D2"
           }
         ],
-        "/aws-cdk-iam-policy/HelloPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "policyName": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToUser": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToUser": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-iam-policy/HelloPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HelloPolicyD59007DF"
-          }
-        ],
-        "/aws-cdk-iam-policy/GoodbyePolicy": [
+        "/aws-cdk-bedrock-agent-existing-role-1/Agent": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToUser": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToUser": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-iam-policy/GoodbyePolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GoodbyePolicy739B8974"
-          }
-        ],
-        "/aws-cdk-iam-policy/Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "grantAssumeRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "grant": [
-                "*",
-                "*"
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-iam-policy/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-iam-policy/Role/Resource": [
+        "/aws-cdk-bedrock-agent-existing-role-1/Agent/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Role1ABCC5F0"
+            "data": "Agent255F68E9"
           }
         ],
-        "/aws-cdk-iam-policy/Function": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "handler": "*",
-              "code": "*"
-            }
-          }
-        ],
-        "/aws-cdk-iam-policy/Function/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-iam-policy/Function/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-iam-policy/Function/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FunctionServiceRole675BB04A"
-          }
-        ],
-        "/aws-cdk-iam-policy/Function/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Function76856677"
-          }
-        ],
-        "/aws-cdk-iam-policy/Function/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "logGroupName": "*"
-            }
-          }
-        ],
-        "/aws-cdk-iam-policy/Function/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FunctionLogGroup55B80E27"
-          }
-        ],
-        "/aws-cdk-iam-policy/BootstrapVersion": [
+        "/aws-cdk-bedrock-agent-existing-role-1/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-iam-policy/CheckBootstrapVersion": [
+        "/aws-cdk-bedrock-agent-existing-role-1/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-iam-policy"
+      "displayName": "aws-cdk-bedrock-agent-existing-role-1"
     },
-    "PolicyIntegDefaultTestDeployAssert274BB918.assets": {
+    "BedrockAgentExistingRoleDefaultTestDeployAssertD5C55EAB.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "PolicyIntegDefaultTestDeployAssert274BB918.assets.json",
+        "file": "BedrockAgentExistingRoleDefaultTestDeployAssertD5C55EAB.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "PolicyIntegDefaultTestDeployAssert274BB918": {
+    "BedrockAgentExistingRoleDefaultTestDeployAssertD5C55EAB": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "PolicyIntegDefaultTestDeployAssert274BB918.template.json",
+        "templateFile": "BedrockAgentExistingRoleDefaultTestDeployAssertD5C55EAB.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -338,7 +173,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "PolicyIntegDefaultTestDeployAssert274BB918.assets"
+          "BedrockAgentExistingRoleDefaultTestDeployAssertD5C55EAB.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -347,23 +182,23 @@
         }
       },
       "dependencies": [
-        "PolicyIntegDefaultTestDeployAssert274BB918.assets"
+        "BedrockAgentExistingRoleDefaultTestDeployAssertD5C55EAB.assets"
       ],
       "metadata": {
-        "/PolicyInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/BedrockAgentExistingRole/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/PolicyInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/BedrockAgentExistingRole/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "PolicyInteg/DefaultTest/DeployAssert"
+      "displayName": "BedrockAgentExistingRole/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -376,48 +211,57 @@
       "properties": {
         "module": "aws-cdk-lib",
         "flags": {
-          "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+          "@aws-cdk/core:enableStackNameDuplicates": {
             "recommendedValue": true,
-            "explanation": "Pass signingProfileName to CfnSigningProfile"
+            "explanation": "Allow multiple stacks with the same name"
+          },
+          "aws-cdk:enableDiffNoFail": {
+            "recommendedValue": true,
+            "explanation": "Make `cdk diff` not fail when there are differences"
           },
           "@aws-cdk/core:newStyleStackSynthesis": {
             "recommendedValue": true,
-            "explanation": "Switch to new stack synthesis method which enables CI/CD",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Switch to new stack synthesis method which enables CI/CD"
           },
           "@aws-cdk/core:stackRelativeExports": {
             "recommendedValue": true,
-            "explanation": "Name exports based on the construct paths relative to the stack, rather than the global construct path",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Name exports based on the construct paths relative to the stack, rather than the global construct path"
           },
-          "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+          "@aws-cdk/aws-ecr-assets:dockerIgnoreSupport": {
             "recommendedValue": true,
-            "explanation": "Disable implicit openListener when custom security groups are provided"
+            "explanation": "DockerImageAsset properly supports `.dockerignore` files by default"
+          },
+          "@aws-cdk/aws-secretsmanager:parseOwnedSecretName": {
+            "recommendedValue": true,
+            "explanation": "Fix the referencing of SecretsManager names from ARNs"
+          },
+          "@aws-cdk/aws-kms:defaultKeyPolicies": {
+            "recommendedValue": true,
+            "explanation": "Tighten default KMS key policies"
+          },
+          "@aws-cdk/aws-s3:grantWriteWithoutAcl": {
+            "recommendedValue": true,
+            "explanation": "Remove `PutObjectAcl` from Bucket.grantWrite"
+          },
+          "@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount": {
+            "recommendedValue": true,
+            "explanation": "Do not specify a default DesiredCount for ECS services"
           },
           "@aws-cdk/aws-rds:lowercaseDbIdentifier": {
             "recommendedValue": true,
-            "explanation": "Force lowercasing of RDS Cluster names in CDK",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Force lowercasing of RDS Cluster names in CDK"
           },
           "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": {
             "recommendedValue": true,
-            "explanation": "Allow adding/removing multiple UsagePlanKeys independently",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Allow adding/removing multiple UsagePlanKeys independently"
+          },
+          "@aws-cdk/aws-efs:defaultEncryptionAtRest": {
+            "recommendedValue": true,
+            "explanation": "Enable this feature flag to have elastic file systems encrypted at rest by default."
           },
           "@aws-cdk/aws-lambda:recognizeVersionProps": {
             "recommendedValue": true,
-            "explanation": "Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the  `fn.currentVersion`.",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the  `fn.currentVersion`."
           },
           "@aws-cdk/aws-lambda:recognizeLayerVersion": {
             "userValue": true,
@@ -426,10 +270,7 @@
           },
           "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": {
             "recommendedValue": true,
-            "explanation": "Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default.",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default."
           },
           "@aws-cdk/core:checkSecretUsage": {
             "userValue": true,
@@ -650,10 +491,7 @@
           },
           "@aws-cdk/pipelines:reduceAssetRoleTrustScope": {
             "recommendedValue": true,
-            "explanation": "Remove the root account principal from PipelineAssetsFileRole trust policy",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Remove the root account principal from PipelineAssetsFileRole trust policy"
           },
           "@aws-cdk/aws-eks:nodegroupNameAttribute": {
             "userValue": true,
@@ -682,10 +520,7 @@
           },
           "@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask": {
             "recommendedValue": true,
-            "explanation": "When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model.",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model."
           },
           "@aws-cdk/core:explicitStackTags": {
             "userValue": true,
@@ -749,10 +584,7 @@
           },
           "@aws-cdk/core:aspectStabilization": {
             "recommendedValue": true,
-            "explanation": "When enabled, a stabilization loop will be run when invoking Aspects during synthesis.",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "When enabled, a stabilization loop will be run when invoking Aspects during synthesis."
           },
           "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": {
             "userValue": true,
@@ -786,10 +618,7 @@
           },
           "@aws-cdk/pipelines:reduceStageRoleTrustScope": {
             "recommendedValue": true,
-            "explanation": "Remove the root account principal from Stage addActions trust policy",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Remove the root account principal from Stage addActions trust policy"
           },
           "@aws-cdk/aws-events:requireEventBusPolicySid": {
             "userValue": true,
@@ -812,10 +641,7 @@
           },
           "@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope": {
             "recommendedValue": true,
-            "explanation": "When enabled, scopes down the trust policy for the cross-account action role",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "When enabled, scopes down the trust policy for the cross-account action role"
           },
           "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": {
             "userValue": true,
@@ -845,21 +671,10 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
-          },
-          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
-            "recommendedValue": true,
-            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
-            "recommendedValue": true,
-            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1023.0"
 }
