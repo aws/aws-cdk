@@ -301,6 +301,14 @@ export interface SpecRestApiProps extends RestApiBaseProps {
   readonly apiDefinition: ApiDefinition;
 
   /**
+   * The list of binary media mime-types that are supported by the SpecRestApi
+   * resource, such as "image/png" or "application/octet-stream"
+   *
+   * @default - SpecRestApi supports only UTF-8-encoded text payloads.
+   */
+  readonly binaryMediaTypes?: string[];
+
+  /**
    * A Size(in bytes, kibibytes, mebibytes etc) that is used to enable compression (with non-negative
    * between 0 and 10485760 (10M) bytes, inclusive) or disable compression
    * (when undefined) on an API. When compression is enabled, compression or
@@ -802,6 +810,7 @@ export class SpecRestApi extends RestApiBase {
       policy: Lazy.any({ produce: () => this.resourcePolicy }),
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minCompressionSize?.toBytes(),
+      binaryMediaTypes: props.binaryMediaTypes,
       body: apiDefConfig.inlineDefinition ?? undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
       endpointConfiguration: this._configureEndpoints(props),
