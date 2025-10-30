@@ -3,7 +3,6 @@
 ##          SNS GUARD RULES         ##
 #####################################
 # Service: Amazon Simple Notification Service (SNS)
-# Rules: SNS_ENCRYPTION_ENABLED, SNS_NO_WORLD_ACCESSIBLE
 # Coverage: Topic Encryption, World Accessibility
 
 let sns_topics = Resources.*[

@@ -3,7 +3,6 @@
 ##       REDSHIFT GUARD RULES       ##
 #####################################
 # Service: Amazon Redshift
-# Rules: REDSHIFT_ENCRYPTION_ENABLED
 # Coverage: Cluster Encryption
 
 let redshift_clusters = Resources.*[

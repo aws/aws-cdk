@@ -3,7 +3,6 @@
 ##        KINESIS GUARD RULES       ##
 #####################################
 # Service: Amazon Kinesis
-# Rules: KINESIS_ENCRYPTION_ENABLED
 # Coverage: Stream Encryption
 
 let kinesis_streams = Resources.*[

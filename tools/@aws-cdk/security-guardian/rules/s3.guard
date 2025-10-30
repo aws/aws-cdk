@@ -3,7 +3,6 @@
 ##          S3 GUARD RULES          ##
 #####################################
 # Service: Amazon Simple Storage Service (S3)
-# Rules: S3_SECURE_TRANSPORT, S3_VERSIONING, S3_CONFUSED_DEPUTY
 # Coverage: Encryption, World Access, Secure Transport, Confused Deputy
 
 let s3_buckets = Resources.*[

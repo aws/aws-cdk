@@ -3,7 +3,6 @@
 ##        NEPTUNE GUARD RULES       ##
 #####################################
 # Service: Amazon Neptune
-# Rules: NEPTUNE_ENCRYPTION_ENABLED
 # Coverage: Cluster Encryption
 
 let neptune_clusters = Resources.*[

@@ -3,7 +3,6 @@
 ##          EC2 GUARD RULES         ##
 #####################################
 # Service: Amazon Elastic Compute Cloud (EC2)
-# Rules: EA003, EC2_VPC_SECURITY_GROUP_OPEN
 # Coverage: EBS Encryption, VPC Security Groups
 
 let ebs_volumes = Resources.*[
@@ -18,7 +17,7 @@ let security_groups = Resources.*[
   Metadata.guard.SuppressedRules.* != "EC2_NO_OPEN_SECURITY_GROUPS"
 ]
 
-# EA003: EBS volume encryption must be enabled
+# EBS volume encryption must be enabled
 rule EBS_ENCRYPTION_ENABLED when %ebs_volumes !empty {
     %ebs_volumes {
         Properties.Encrypted exists

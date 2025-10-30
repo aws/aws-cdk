@@ -3,7 +3,6 @@
 ##          SQS GUARD RULES         ##
 #####################################
 # Service: Amazon Simple Queue Service (SQS)
-# Rules: SQS_ENCRYPTION_ENABLED, SQS_NO_WORLD_ACCESSIBLE
 # Coverage: Queue Encryption, World Accessibility
 
 let sqs_queues = Resources.*[

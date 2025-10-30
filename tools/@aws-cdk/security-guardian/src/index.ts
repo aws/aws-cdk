@@ -1,7 +1,8 @@
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import { detectChangedTemplates } from './get-changed-files';
-import { runScan } from './check-intrinsics';
+import { preprocessTemplates } from './template-preprocessor';
+import { runCfnGuardValidation } from './cfn-guard-runner';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -55,8 +56,9 @@ function getInput(name: string, options?: { required?: boolean, default?: string
 async function run(): Promise<void> {
   const errors: string[] = [];
   let workingDir: string = './changed_templates';
+  let resolvedDir: string = './changed_templates_resolved';
   let cfnGuardFailures = 0;
-  let intrinsicScannerFailures = 0;
+  let cfnGuardResolvedFailures = 0;
 
   try {
     const ruleSetPath = getInput('rule_set_path', { default: './rules' });
@@ -64,8 +66,8 @@ async function run(): Promise<void> {
     const headSha = getInput('head_sha', { default: 'HEAD' });
     const outputFormat = getInput('output_format', { default: 'json' });
     const showSummary = getInput('show_summary', { default: 'fail' });
-    const enableIntrinsicScanner = getInput('enable_intrinsic_scanner', { default: 'false' }).toLowerCase() === 'true';
     setupWorkingDir(workingDir);
+    setupWorkingDir(resolvedDir);
     
     const filesChanged = await detectChangedTemplates(baseSha, headSha, workingDir);
     if (!filesChanged) {
@@ -75,116 +77,50 @@ async function run(): Promise<void> {
 
     if (!ruleSetPath) throw new Error("Input 'rule_set_path' must be provided.");
 
-    // Run CFN-Guard validation
-    core.info(`Running cfn-guard with rule set: ${ruleSetPath}`);
-    let cfnGuardOutput = '';
-    let cfnGuardError = '';
-    const flaggedFiles: string[] = [];
-    
-    try {
-      await exec.exec('cfn-guard', [
-        'validate',
-        '--data', workingDir,
-        '--rules', ruleSetPath,
-        '--show-summary', showSummary, 
-        '--output-format', outputFormat
-      ], {
-        listeners: {
-          stdout: (data: Buffer) => {
-            cfnGuardOutput += data.toString();
-          },
-          stderr: (data: Buffer) => {
-            cfnGuardError += data.toString();
-          }
-        }
-      });
-      core.info('✅ CFN-Guard validation passed');
-    } catch (err) {
-      // Parse and count actual failures
-      if (cfnGuardOutput) {
-        try {
-          const results = JSON.parse(cfnGuardOutput);
-          let totalViolations = 0;
-          
-          for (const result of results) {
-            if (result.status === 'FAIL') {
-              const fileName = path.basename(result.name);
-              if (!flaggedFiles.includes(fileName)) {
-                flaggedFiles.push(fileName);
-              }
-              
-              const violations = result.not_compliant || [];
-              totalViolations += violations.length;
-              
-              core.info(`\n❌ ${fileName}:`);
-              for (const rule of violations) {
-                core.info(`  Rule: ${rule.Rule}`);
-                if (rule.message) {
-                  core.info(`  Message: ${rule.message}`);
-                }
-              }
-            }
-          }
-          
-          cfnGuardFailures = totalViolations;
-        } catch (parseErr) {
-          core.warning('Failed to parse cfn-guard output, showing raw output:');
-          core.info(cfnGuardOutput);
-          cfnGuardFailures = 1; // Fallback to 1 if parsing fails
-        }
-      } else {
-        cfnGuardFailures = 1; // Fallback if no output
-      }
-      
-      const message = `CFN-Guard validation failed with ${cfnGuardFailures} violation(s)`;
-      core.warning(message);
-      errors.push(message);
-    }
+    // Preprocess templates (resolve intrinsics and normalize policies)
+    core.info('Preprocessing templates (resolving intrinsics and normalizing policies)');
+    const processedFiles = preprocessTemplates(workingDir, resolvedDir);
+    core.info(`Processed ${processedFiles.length} template(s)`);
 
-    // Run Intrinsic Scanner (only if enabled)
-    if (enableIntrinsicScanner) {
-      core.info(`Running intrinsic scanner`);
-      try {
-        const issuesFound = await runScan(workingDir);
-        intrinsicScannerFailures = issuesFound;
-        if (issuesFound > 0) {
-          const msg = `Intrinsic scanner found ${issuesFound} issue(s)`;
-          core.warning(msg);
-          errors.push(msg);
-        } else {
-          core.info('✅ Intrinsic scanner passed');
-        }
-      } catch (err) {
-        const message = `Intrinsic scanner failed: ${(err as Error).message}`;
-        core.warning(message);
-        errors.push(message);
-      }
-    } else {
-      core.info('ℹ️ Intrinsic scanner disabled (use enable_intrinsic_scanner=true to enable)');
-    }
+    // Run CFN-Guard validation on original templates
+    core.info(`Running cfn-guard (static) with rule set: ${ruleSetPath}`);
+    const flaggedFiles: string[] = [];
+    cfnGuardFailures = await runCfnGuardValidation(workingDir, ruleSetPath, showSummary, outputFormat, 'Static', flaggedFiles, errors);
+
+    // Run CFN-Guard validation on resolved templates
+    core.info(`Running cfn-guard (resolved) with rule set: ${ruleSetPath}`);
+    const resolvedFlaggedFiles: string[] = [];
+    cfnGuardResolvedFailures = await runCfnGuardValidation(resolvedDir, ruleSetPath, showSummary, outputFormat, 'Resolved', resolvedFlaggedFiles, errors);
+
+
 
     // Generate Summary Report
     core.info('\n' + '='.repeat(60));
     core.info('🛡️  SECURITY GUARDIAN SUMMARY REPORT');
     core.info('='.repeat(60));
-    core.info(`📊 CFN-Guard Violations: ${cfnGuardFailures > 0 ? '❌ ' + cfnGuardFailures + ' violations in ' + flaggedFiles.length + ' file(s)' : '✅ 0'}`);
-    core.info(`📊 Intrinsic Scanner: ${enableIntrinsicScanner ? (intrinsicScannerFailures > 0 ? '❌ ' + intrinsicScannerFailures + ' failures' : '✅ 0 failures') : '⏭️ Disabled'}`);
-    core.info(`📊 Total Issues Found: ${cfnGuardFailures + intrinsicScannerFailures}`);
+    core.info(`📊 CFN-Guard (Static): ${cfnGuardFailures > 0 ? '❌ ' + cfnGuardFailures + ' violations in ' + flaggedFiles.length + ' file(s)' : '✅ 0'}`);
+    core.info(`🔧 CFN-Guard (Resolved): ${cfnGuardResolvedFailures > 0 ? '❌ ' + cfnGuardResolvedFailures + ' violations in ' + resolvedFlaggedFiles.length + ' file(s)' : '✅ 0'}`);
+    core.info(`📊 Total Issues Found: ${cfnGuardFailures + cfnGuardResolvedFailures}`);
     
     if (flaggedFiles.length > 0) {
-      core.info('\n📄 Files with CFN-Guard violations:');
+      core.info('\n📄 Files with Static violations:');
       flaggedFiles.forEach(file => core.info(`  - ${file}`));
+    }
+    
+    if (resolvedFlaggedFiles.length > 0) {
+      core.info('\n🔧 Files with Resolved violations:');
+      resolvedFlaggedFiles.forEach(file => core.info(`  - ${file} (intrinsics resolved)`));
     }
     
     core.info('='.repeat(60));
 
     // Set outputs for GitHub Actions
     core.setOutput('cfn_guard_failures', cfnGuardFailures);
-    core.setOutput('intrinsic_scanner_failures', intrinsicScannerFailures);
-    core.setOutput('total_failures', cfnGuardFailures + intrinsicScannerFailures);
+    core.setOutput('cfn_guard_resolved_failures', cfnGuardResolvedFailures);
+    core.setOutput('total_failures', cfnGuardFailures + cfnGuardResolvedFailures);
 
     if (errors.length > 0) {
-      core.setFailed(`Security validation failed with ${cfnGuardFailures + intrinsicScannerFailures} total issues`);
+      core.setFailed(`Security validation failed with ${cfnGuardFailures + cfnGuardResolvedFailures} total issues`);
     } else {
       core.info('🎉 All security validations passed!');
     }
@@ -193,6 +129,7 @@ async function run(): Promise<void> {
     core.setFailed(`Fatal error: ${(fatal as Error).message}`);
   } finally {
     cleanupWorkingDir(workingDir);
+    cleanupWorkingDir(resolvedDir);
   }
 }
 

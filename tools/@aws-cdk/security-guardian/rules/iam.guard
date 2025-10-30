@@ -3,7 +3,6 @@
 ##          IAM GUARD RULES        ##
 #####################################
 # Service: AWS Identity and Access Management (IAM)
-# Rules: EA016, EA017, EA020
 # Coverage: Policies, Roles, Trust Policies, Action Wildcards, PassRole
 
 let iam_policies = Resources.*[

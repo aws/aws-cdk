@@ -19,10 +19,7 @@ inputs:
     description: "cfn-guard output format. Options: json, yaml, single-line-summary"
     required: false
     default: "single-line-summary"
-  enable_intrinsic_scanner:
-    description: "Enable intrinsic scanner for resolved CloudFormation values"
-    required: false
-    default: "false"
+
 
 runs:
   using: node20
