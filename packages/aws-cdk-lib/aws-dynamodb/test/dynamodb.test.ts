@@ -7,7 +7,7 @@ import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
-import { App, ArnFormat, Aws, CfnDeletionPolicy, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '../../core';
+import { App, ArnFormat, Aws, CfnDeletionPolicy, Duration, Fn, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '../../core';
 import * as cr from '../../custom-resources';
 import * as cxapi from '../../cx-api';
 import {
@@ -3988,6 +3988,139 @@ test('Resource policy test', () => {
             'Effect': 'Allow',
             'Action': 'dynamodb:GetItem',
             'Resource': '*',
+          },
+        ],
+      },
+    },
+  });
+});
+
+test('addToResourcePolicy allows scoped ARN resources when table has explicit name', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  // WHEN - Create table with explicit name (enables scoped resource policies)
+  const table = new Table(stack, 'Table', {
+    tableName: 'my-explicit-table-name', // Explicit name enables scoped ARN construction
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+  });
+
+  // With explicit table name, we can use scoped resources without circular dependency
+  table.addToResourcePolicy(new iam.PolicyStatement({
+    actions: ['dynamodb:GetItem', 'dynamodb:Query'],
+    principals: [new iam.AccountRootPrincipal()],
+    resources: [
+      // This works because table name is known at synthesis time
+      Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/my-explicit-table-name'),
+    ],
+  }));
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::DynamoDB::Table', {
+    TableName: 'my-explicit-table-name',
+    ResourcePolicy: {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Principal: Match.anyValue(),
+            Action: ['dynamodb:GetItem', 'dynamodb:Query'],
+            Resource: {
+              'Fn::Sub': 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/my-explicit-table-name',
+            },
+          },
+        ],
+      },
+    },
+  });
+});
+
+test('addToResourcePolicy requires wildcard resources with auto-generated table names to prevent circular dependencies', () => {
+  // This test documents the fundamental limitation of resource policies with auto-generated names
+
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  const table = new Table(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+    // No explicit tableName - CDK will generate unique name
+  });
+
+  // LIMITATION: Cannot use table.tableArn or construct scoped ARN because it creates circular dependency
+  // This would fail: resources: [table.tableArn]
+  // This would also fail: resources: [Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${TableRef}', { TableRef: cfnTable.ref })]
+
+  // WORKAROUND: Must use wildcard resource (same pattern as KMS)
+  table.addToResourcePolicy(new iam.PolicyStatement({
+    actions: ['dynamodb:GetItem'],
+    principals: [new iam.AccountRootPrincipal()],
+    resources: ['*'], // Only option for auto-generated table names
+  }));
+
+  // THEN - Verify wildcard is preserved
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::DynamoDB::Table', {
+    ResourcePolicy: {
+      PolicyDocument: {
+        Statement: [
+          {
+            Resource: '*', // Wildcard is the only way to avoid circular dependency
+          },
+        ],
+      },
+    },
+  });
+});
+
+test('addToResourcePolicy supports multiple statements with wildcard resources to avoid circular dependencies', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  // WHEN
+  const table = new Table(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+  });
+
+  // Test multiple policy statements with different principals and actions
+  table.addToResourcePolicy(new iam.PolicyStatement({
+    actions: ['dynamodb:GetItem', 'dynamodb:PutItem'],
+    principals: [new iam.AccountRootPrincipal()],
+    resources: ['*'], // Wildcard avoids circular dependency - same pattern as KMS
+  }));
+
+  table.addToResourcePolicy(new iam.PolicyStatement({
+    actions: ['dynamodb:Query'],
+    principals: [new iam.ArnPrincipal('arn:aws:iam::111122223333:user/testuser')],
+    resources: ['*'], // Wildcard avoids circular dependency
+  }));
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::DynamoDB::Table', {
+    ResourcePolicy: {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Principal: {
+              AWS: Match.anyValue(), // Principal format can vary
+            },
+            Action: ['dynamodb:GetItem', 'dynamodb:PutItem'],
+            Resource: '*', // Wildcard resource to avoid circular dependency
+          },
+          {
+            Effect: 'Allow',
+            Principal: {
+              AWS: 'arn:aws:iam::111122223333:user/testuser',
+            },
+            Action: 'dynamodb:Query',
+            Resource: '*', // Wildcard resource
           },
         ],
       },
