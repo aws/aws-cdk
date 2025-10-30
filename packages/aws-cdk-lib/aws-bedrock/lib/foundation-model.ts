@@ -500,6 +500,9 @@ export class FoundationModelIdentifier {
   /** Base model "twelvelabs.pegasus-1-2-v1:0". */
   public static readonly TWELVELABS_PEGASUS_1_2_V1_0 = new FoundationModelIdentifier('twelvelabs.pegasus-1-2-v1:0');
 
+  /** Basic model "twelvelabs.marengo-embed-3-0-v1:0" */
+  public static readonly TWELVELABS_MARENGO_EMBED_3_0_V1_0 = new FoundationModelIdentifier('twelvelabs.marengo-embed-3-0-v1:0');
+
   /**
    * Constructor for foundation model identifier
    * @param modelId the model identifier
