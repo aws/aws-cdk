@@ -13,7 +13,7 @@ import { AddToPrincipalPolicyResult, ArnPrincipal, IGrantable, IPrincipal, Princ
 import { undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
-import { Arn, ArnFormat, Aws, Resource, Stack, UnscopedValidationError, ValidationError, Lazy } from '../../core';
+import { Arn, ArnFormat, Aws, Resource, ResourceEnvironment, Stack, UnscopedValidationError, ValidationError, Lazy } from '../../core';
 import { getCustomizeRolesConfig, PolicySynthesizer } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -194,6 +194,9 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         };
       }
       public get node(): Node {
+        throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
+      }
+      public get env(): ResourceEnvironment {
         throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
       }
     }
