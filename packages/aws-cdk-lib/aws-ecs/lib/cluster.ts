@@ -1860,7 +1860,7 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
               resources: [Lazy.string({
                 produce: () => {
                   if (!this._cluster) {
-                    throw new ValidationError('Managed instances capacity provider must be associated with a cluster. Call `addManagedInstancesCapacityProvider` to associate it with a cluster.', scope);
+                    throw new ValidationError('Managed instances capacity provider must be associated with a cluster.', scope);
                   }
                   return this._cluster.clusterArn;
                 },
@@ -1885,7 +1885,7 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
               resources: [Lazy.string({
                 produce: () => {
                   if (!this._cluster) {
-                    throw new ValidationError('Managed instances capacity provider must be associated with a cluster. Call `addManagedInstancesCapacityProvider` to associate it with a cluster.', scope);
+                    throw new ValidationError('Managed instances capacity provider must be associated with a cluster.', scope);
                   }
                   return this._cluster.clusterArn;
                 },
