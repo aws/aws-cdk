@@ -691,6 +691,11 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
   }
 
   /**
+   * Adds a statement to the resource policy associated with this table.
+   */
+  public abstract addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
+
+  /**
    * Adds an IAM policy statement associated with this table to an IAM
    * principal's policy.
    *
@@ -790,23 +795,6 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    */
   public grantFullAccess(grantee: iam.IGrantable) {
     return this.grants.fullAccess(grantee);
-  }
-
-  /**
-   * Adds a statement to the resource policy associated with this file system.
-   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
-   *
-   * Note that this does not work with imported file systems.
-   *
-   * @param statement The policy statement to add
-   */
-  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
-    this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument({ statements: [] });
-    this.resourcePolicy.addStatements(statement);
-    return {
-      statementAdded: true,
-      policyDependable: this,
-    };
   }
 
   /**
@@ -1115,6 +1103,11 @@ export class Table extends TableBase {
         this.tableStreamArn = tableStreamArn;
         this.encryptionKey = attrs.encryptionKey;
       }
+
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+        // Imported tables cannot have resource policies modified
+        return { statementAdded: false };
+      }
     }
 
     let name: string;
@@ -1170,7 +1163,7 @@ export class Table extends TableBase {
    */
   public readonly tableStreamArn: string | undefined;
 
-  private readonly table: CfnTable;
+  protected readonly table: CfnTable;
 
   private readonly keySchema = new Array<CfnTable.KeySchemaProperty>();
   private readonly attributeDefinitions = new Array<CfnTable.AttributeDefinitionProperty>();
@@ -1198,6 +1191,8 @@ export class Table extends TableBase {
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    this.resourcePolicy = props.resourcePolicy;
 
     const { sseSpecification, encryptionKey } = this.parseEncryption(props);
 
@@ -1255,12 +1250,14 @@ export class Table extends TableBase {
       kinesisStreamSpecification: kinesisStreamSpecification,
       deletionProtectionEnabled: props.deletionProtection,
       importSourceSpecification: this.renderImportSourceSpecification(props.importSource),
-      resourcePolicy: props.resourcePolicy
-        ? { policyDocument: props.resourcePolicy }
-        : undefined,
-      warmThroughput: props.warmThroughput?? undefined,
+      warmThroughput: props.warmThroughput ?? undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
+
+    // Set up dynamic resourcePolicy that can be modified by addToResourcePolicy
+    if (this.resourcePolicy) {
+      this.table.resourcePolicy = { policyDocument: this.resourcePolicy };
+    }
 
     this.encryptionKey = encryptionKey;
 
@@ -1299,6 +1296,28 @@ export class Table extends TableBase {
       encryptionKey: this.encryptionKey,
       hasIndex: this.hasIndex,
     });
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this table.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Note that this does not work with imported tables.
+   *
+   * @param statement The policy statement to add
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument({ statements: [] });
+
+    this.resourcePolicy.addStatements(statement);
+
+    // Update the CfnTable resourcePolicy property
+    this.table.resourcePolicy = { policyDocument: this.resourcePolicy };
+
+    return {
+      statementAdded: true,
+      policyDependable: this,
+    };
   }
 
   /**
@@ -1697,9 +1716,44 @@ export class Table extends TableBase {
     const onEventHandlerPolicy = new SourceTableAttachedPolicy(this, provider.onEventHandler.role!);
     const isCompleteHandlerPolicy = new SourceTableAttachedPolicy(this, provider.isCompleteHandler.role!);
 
-    // Permissions in the source region
-    this.grant(onEventHandlerPolicy, 'dynamodb:*');
-    this.grant(isCompleteHandlerPolicy, 'dynamodb:DescribeTable');
+    // IMPORTANT: Add permissions directly to Lambda role policies instead of using this.grant()
+    //
+    // WHY NOT this.grant()?
+    // - this.grant() uses Grant.addToPrincipalOrResource() which has decision logic
+    // - For cross-stack scenarios (nested stack Lambda roles), it falls back to resource policy
+    // - Resource policy tries to reference this.tableArn, creating circular dependency:
+    //   Table → ResourcePolicy → Table ARN → Table (CIRCULAR!)
+    // - This causes CloudFormation deployment to fail
+    //
+    // WHY DIRECT POLICY STATEMENTS?
+    // - Bypasses Grant decision logic entirely
+    // - Adds permissions directly to Lambda role policies (no resource policy)
+    // - Avoids circular dependency while ensuring Lambda functions have required permissions
+    // - Separates internal permission management from user-facing addToResourcePolicy()
+
+    (onEventHandlerPolicy.policy as iam.ManagedPolicy).addStatements(new iam.PolicyStatement({
+      actions: ['dynamodb:*'],
+      resources: [
+        this.tableArn,
+        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        ...this.regionalArns,
+        ...this.regionalArns.map(arn => Lazy.string({
+          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
+        })),
+      ],
+    }));
+
+    (isCompleteHandlerPolicy.policy as iam.ManagedPolicy).addStatements(new iam.PolicyStatement({
+      actions: ['dynamodb:DescribeTable'],
+      resources: [
+        this.tableArn,
+        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        ...this.regionalArns,
+        ...this.regionalArns.map(arn => Lazy.string({
+          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
+        })),
+      ],
+    }));
 
     let previousRegion: CustomResource | undefined;
     let previousRegionCondition: CfnCondition | undefined;
