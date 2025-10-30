@@ -4,48 +4,48 @@ import * as core from '@actions/core';
 import { resolveIntrinsics, buildResourceRegistry, setGlobalRegistry } from './cfn-resolver';
 import { IAMPolicyNormalizer } from './policy-normalizer';
 
+function processTemplate(obj: any, cfnResources: Record<string, any>): any {
+  // First resolve intrinsics at this level
+  const resolved = resolveIntrinsics(obj, cfnResources);
+  
+  if (typeof resolved !== 'object' || resolved === null) {
+    return resolved;
+  }
+
+  if (Array.isArray(resolved)) {
+    return resolved.map(item => processTemplate(item, cfnResources));
+  }
+
+  const processed: any = {};
+  for (const [key, value] of Object.entries(resolved)) {
+    if (key === 'PolicyDocument' || key === 'AssumeRolePolicyDocument' || key === 'Policy') {
+      // Normalize policies after resolving intrinsics
+      const normalizer = new IAMPolicyNormalizer(cfnResources);
+      processed[key] = normalizer.normalizeIAMPolicy(value, ['Principal', 'Resource']);
+    } else {
+      // Recursively process all other values
+      processed[key] = processTemplate(value, cfnResources);
+    }
+  }
+
+  return processed;
+}
+
+function walkDir(dir: string, callback: (filePath: string) => void) {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      walkDir(fullPath, callback);
+    } else if (entry.isFile() && entry.name.endsWith('.json')) {
+      callback(fullPath);
+    }
+  }
+}
+
 export function preprocessTemplates(sourceDir: string, targetDir: string): string[] {
   const processedFiles: string[] = [];
   const allTemplates: Record<string, any> = {};
-
-  function processTemplate(obj: any, cfnResources: Record<string, any>): any {
-    // First resolve intrinsics at this level
-    const resolved = resolveIntrinsics(obj, cfnResources);
-    
-    if (typeof resolved !== 'object' || resolved === null) {
-      return resolved;
-    }
-
-    if (Array.isArray(resolved)) {
-      return resolved.map(item => processTemplate(item, cfnResources));
-    }
-
-    const processed: any = {};
-    for (const [key, value] of Object.entries(resolved)) {
-      if (key === 'PolicyDocument' || key === 'AssumeRolePolicyDocument' || key === 'Policy') {
-        // Normalize policies after resolving intrinsics
-        const normalizer = new IAMPolicyNormalizer(cfnResources);
-        processed[key] = normalizer.normalizeIAMPolicy(value, ['Principal', 'Resource']);
-      } else {
-        // Recursively process all other values
-        processed[key] = processTemplate(value, cfnResources);
-      }
-    }
-
-    return processed;
-  }
-
-  function walkDir(dir: string, callback: (filePath: string) => void) {
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-    for (const entry of entries) {
-      const fullPath = path.join(dir, entry.name);
-      if (entry.isDirectory()) {
-        walkDir(fullPath, callback);
-      } else if (entry.isFile() && entry.name.endsWith('.json')) {
-        callback(fullPath);
-      }
-    }
-  }
 
   // Phase 1: Load all templates
   core.info('Phase 1: Loading all templates for cross-stack analysis');

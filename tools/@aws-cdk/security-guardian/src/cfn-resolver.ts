@@ -57,6 +57,144 @@ export function setGlobalRegistry(registry: ResourceRegistry): void {
   globalRegistry = registry;
 }
 
+function resolveRef(obj: any): any {
+  return CLOUDFORMATION_PSEUDOPARAMETERS[obj.Ref as keyof typeof CLOUDFORMATION_PSEUDOPARAMETERS] || obj.Ref;
+}
+
+function resolveJoin(content: any, cfnResources?: Record<string, any>): string {
+  const delimiter = resolveIntrinsics(content[0], cfnResources);
+  const parts = content[1].map((part: any) => resolveIntrinsics(part, cfnResources));
+  return parts.join(delimiter);
+}
+
+function resolveSub(content: any, cfnResources?: Record<string, any>): string {
+  let template: string;
+  let variables: Record<string, any> = {};
+  
+  if (typeof content === 'string') {
+    template = content;
+  } else {
+    template = resolveIntrinsics(content[0], cfnResources);
+    if (content.length > 1) {
+      for (const [k, v] of Object.entries(content[1])) {
+        variables[k] = resolveIntrinsics(v, cfnResources);
+      }
+    }
+  }
+  
+  // Replace variables first
+  for (const [k, v] of Object.entries(variables)) {
+    const value = typeof v === 'string' ? v : String(v);
+    template = template.replace(new RegExp(`\\$\\{${k}\\}`, 'g'), value);
+  }
+  
+  // Replace AWS pseudoparameters
+  for (const [k, v] of Object.entries(CLOUDFORMATION_PSEUDOPARAMETERS)) {
+    template = template.replace(new RegExp(`\\$\\{${k}\\}`, 'g'), v);
+  }
+  
+  // Handle .Arn pattern (common false positive fix)
+  template = template.replace(/\$\{([\w_-]+\.Arn)\}/g, 'arn:aws:s3:::examplebucket');
+  
+  // Replace remaining parameters
+  template = template.replace(/\$\{([\w_-]+)\}/g, '$1');
+  
+  return template;
+}
+
+function resolveGetAtt(content: any, cfnResources?: Record<string, any>): any {
+  let logicalName: string;
+  let attributeName: string;
+  
+  if (typeof content === 'string') {
+    [logicalName, attributeName] = content.split('.');
+  } else {
+    logicalName = content[0];
+    attributeName = content[1];
+  }
+  
+  // Try local resources first
+  if (cfnResources && cfnResources[logicalName]) {
+    const resourceType = cfnResources[logicalName].Type;
+    const attributes = RESOURCE_ATTRIBUTES[resourceType as keyof typeof RESOURCE_ATTRIBUTES];
+    if (attributes && attributes[attributeName as keyof typeof attributes]) {
+      const attrFunc = attributes[attributeName as keyof typeof attributes] as Function;
+      return attrFunc(logicalName);
+    }
+  }
+  
+  // Try global registry
+  if (globalRegistry.resources[logicalName]) {
+    const resourceType = globalRegistry.resources[logicalName].Type;
+    const attributes = RESOURCE_ATTRIBUTES[resourceType as keyof typeof RESOURCE_ATTRIBUTES];
+    if (attributes && attributes[attributeName as keyof typeof attributes]) {
+      const attrFunc = attributes[attributeName as keyof typeof attributes] as Function;
+      return attrFunc(logicalName);
+    }
+  }
+  
+  return `${logicalName}.${attributeName}`;
+}
+
+function resolveImportValue(exportName: string): any {
+  if (globalRegistry.exports[exportName]) {
+    return globalRegistry.exports[exportName];
+  }
+  // Parse export name for common patterns
+  if (exportName.includes('PublicIp')) return '203.0.113.12';
+  if (exportName.includes('PrivateIp')) return '10.0.0.1';
+  if (exportName.includes('Arn')) return 'arn:aws:s3:::example-bucket';
+  return `imported-${exportName}`;
+}
+
+function resolveSelect(content: any, cfnResources?: Record<string, any>): any {
+  const index = resolveIntrinsics(content[0], cfnResources);
+  const list = resolveIntrinsics(content[1], cfnResources);
+  if (Array.isArray(list) && typeof index === 'number') {
+    return list[index] || list[0] || 'selected-value';
+  }
+  return 'selected-value';
+}
+
+function resolveSplit(content: any, cfnResources?: Record<string, any>): string[] {
+  const delimiter = resolveIntrinsics(content[0], cfnResources);
+  const source = resolveIntrinsics(content[1], cfnResources);
+  if (typeof source === 'string' && typeof delimiter === 'string') {
+    return source.split(delimiter);
+  }
+  return ['split', 'result'];
+}
+
+function resolveCidr(content: any, cfnResources?: Record<string, any>): string[] {
+  const ipBlock = resolveIntrinsics(content[0], cfnResources);
+  const count = resolveIntrinsics(content[1], cfnResources);
+  const cidrBits = resolveIntrinsics(content[2], cfnResources);
+  const result = [];
+  for (let i = 0; i < Math.min(count, 4); i++) {
+    result.push(`10.0.${i * 64}.0/${32 - cidrBits}`);
+  }
+  return result;
+}
+
+function resolveBase64(content: any, cfnResources?: Record<string, any>): string {
+  const resolved = resolveIntrinsics(content, cfnResources);
+  return Buffer.from(String(resolved)).toString('base64');
+}
+
+function resolveNot(content: any, cfnResources?: Record<string, any>): boolean {
+  const condition = resolveIntrinsics(content, cfnResources);
+  return !condition;
+}
+
+function resolveContains(content: any, cfnResources?: Record<string, any>): boolean {
+  const list = resolveIntrinsics(content[0], cfnResources);
+  const value = resolveIntrinsics(content[1], cfnResources);
+  if (Array.isArray(list)) {
+    return list.includes(value);
+  }
+  return false;
+}
+
 export function resolveIntrinsics(obj: any, cfnResources?: Record<string, any>): any {
   if (obj === null || obj === undefined) return obj;
   
@@ -71,147 +209,60 @@ export function resolveIntrinsics(obj: any, cfnResources?: Record<string, any>):
   if (typeof obj === 'object') {
     // Handle Ref
     if (obj.Ref) {
-      return CLOUDFORMATION_PSEUDOPARAMETERS[obj.Ref as keyof typeof CLOUDFORMATION_PSEUDOPARAMETERS] || obj.Ref;
+      return resolveRef(obj);
     }
     
     // Handle Fn::Join
     if (obj['Fn::Join'] || obj['!Join']) {
       const content = obj['Fn::Join'] || obj['!Join'];
-      const delimiter = resolveIntrinsics(content[0], cfnResources);
-      const parts = content[1].map((part: any) => resolveIntrinsics(part, cfnResources));
-      return parts.join(delimiter);
+      return resolveJoin(content, cfnResources);
     }
     
     // Handle Fn::Sub
     if (obj['Fn::Sub'] || obj['!Sub']) {
       const content = obj['Fn::Sub'] || obj['!Sub'];
-      let template: string;
-      let variables: Record<string, any> = {};
-      
-      if (typeof content === 'string') {
-        template = content;
-      } else {
-        template = resolveIntrinsics(content[0], cfnResources);
-        if (content.length > 1) {
-          for (const [k, v] of Object.entries(content[1])) {
-            variables[k] = resolveIntrinsics(v, cfnResources);
-          }
-        }
-      }
-      
-      // Replace variables first
-      for (const [k, v] of Object.entries(variables)) {
-        const value = typeof v === 'string' ? v : String(v);
-        template = template.replace(new RegExp(`\\$\\{${k}\\}`, 'g'), value);
-      }
-      
-      // Replace AWS pseudoparameters
-      for (const [k, v] of Object.entries(CLOUDFORMATION_PSEUDOPARAMETERS)) {
-        template = template.replace(new RegExp(`\\$\\{${k}\\}`, 'g'), v);
-      }
-      
-      // Handle .Arn pattern (common false positive fix)
-      template = template.replace(/\$\{([\w_-]+\.Arn)\}/g, 'arn:aws:s3:::examplebucket');
-      
-      // Replace remaining parameters
-      template = template.replace(/\$\{([\w_-]+)\}/g, '$1');
-      
-      return template;
+      return resolveSub(content, cfnResources);
     }
     
     // Handle Fn::GetAtt
     if (obj['Fn::GetAtt'] || obj['!GetAtt']) {
       const content = obj['Fn::GetAtt'] || obj['!GetAtt'];
-      let logicalName: string;
-      let attributeName: string;
-      
-      if (typeof content === 'string') {
-        [logicalName, attributeName] = content.split('.');
-      } else {
-        logicalName = content[0];
-        attributeName = content[1];
-      }
-      
-      // Try local resources first
-      if (cfnResources && cfnResources[logicalName]) {
-        const resourceType = cfnResources[logicalName].Type;
-        const attributes = RESOURCE_ATTRIBUTES[resourceType as keyof typeof RESOURCE_ATTRIBUTES];
-        if (attributes && attributes[attributeName as keyof typeof attributes]) {
-          const attrFunc = attributes[attributeName as keyof typeof attributes] as Function;
-          return attrFunc(logicalName);
-        }
-      }
-      
-      // Try global registry
-      if (globalRegistry.resources[logicalName]) {
-        const resourceType = globalRegistry.resources[logicalName].Type;
-        const attributes = RESOURCE_ATTRIBUTES[resourceType as keyof typeof RESOURCE_ATTRIBUTES];
-        if (attributes && attributes[attributeName as keyof typeof attributes]) {
-          const attrFunc = attributes[attributeName as keyof typeof attributes] as Function;
-          return attrFunc(logicalName);
-        }
-      }
-      
-      return `${logicalName}.${attributeName}`;
+      return resolveGetAtt(content, cfnResources);
     }
     
     // Handle Fn::ImportValue
     if (obj['Fn::ImportValue']) {
       const exportName = resolveIntrinsics(obj['Fn::ImportValue'], cfnResources);
-      if (globalRegistry.exports[exportName]) {
-        return globalRegistry.exports[exportName];
-      }
-      // Parse export name for common patterns
-      if (exportName.includes('PublicIp')) return '203.0.113.12';
-      if (exportName.includes('PrivateIp')) return '10.0.0.1';
-      if (exportName.includes('Arn')) return 'arn:aws:s3:::example-bucket';
-      return `imported-${exportName}`;
+      return resolveImportValue(exportName);
     }
     
     // Handle Fn::Select
     if (obj['Fn::Select']) {
-      const content = obj['Fn::Select'];
-      const index = resolveIntrinsics(content[0], cfnResources);
-      const list = resolveIntrinsics(content[1], cfnResources);
-      if (Array.isArray(list) && typeof index === 'number') {
-        return list[index] || list[0] || 'selected-value';
-      }
-      return 'selected-value';
+      return resolveSelect(obj['Fn::Select'], cfnResources);
     }
     
     // Handle Fn::Split
     if (obj['Fn::Split']) {
-      const content = obj['Fn::Split'];
-      const delimiter = resolveIntrinsics(content[0], cfnResources);
-      const source = resolveIntrinsics(content[1], cfnResources);
-      if (typeof source === 'string' && typeof delimiter === 'string') {
-        return source.split(delimiter);
-      }
-      return ['split', 'result'];
+      return resolveSplit(obj['Fn::Split'], cfnResources);
     }
     
     // Handle Fn::Cidr
     if (obj['Fn::Cidr']) {
-      const content = obj['Fn::Cidr'];
-      const ipBlock = resolveIntrinsics(content[0], cfnResources);
-      const count = resolveIntrinsics(content[1], cfnResources);
-      const cidrBits = resolveIntrinsics(content[2], cfnResources);
-      const result = [];
-      for (let i = 0; i < Math.min(count, 4); i++) {
-        result.push(`10.0.${i * 64}.0/${32 - cidrBits}`);
-      }
-      return result;
+      return resolveCidr(obj['Fn::Cidr'], cfnResources);
     }
     
     // Handle other functions
     if (obj['Fn::Base64']) {
-      const content = resolveIntrinsics(obj['Fn::Base64'], cfnResources);
-      return Buffer.from(String(content)).toString('base64');
+      return resolveBase64(obj['Fn::Base64'], cfnResources);
+    }
+    if (obj['Fn::Not']) {
+      return resolveNot(obj['Fn::Not'], cfnResources);
+    }
+    if (obj['Fn::Contains']) {
+      return resolveContains(obj['Fn::Contains'], cfnResources);
     }
     if (obj['Fn::GetAZs']) return ['us-west-2a', 'us-west-2b', 'us-west-2c'];
     if (obj['Fn::FindInMap']) return 'mapped-value';
-    if (obj['Fn::Not']) return false;
-    if (obj['Fn::Contains']) return false;
     
     // Recursively resolve nested objects
     const resolved: any = {};

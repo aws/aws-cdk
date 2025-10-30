@@ -230,6 +230,27 @@ describe('Intrinsic Function Resolution', () => {
       const result = resolveIntrinsics(input);
       expect(result).toBe('10.0.0.0/24');
     });
+
+    test('resolves Fn::Not with nested condition', () => {
+      const input = {
+        'Fn::Not': {
+          'Fn::Contains': [['prod', 'staging'], 'dev']
+        }
+      };
+      const result = resolveIntrinsics(input);
+      expect(result).toBe(true); // !false = true
+    });
+
+    test('resolves Fn::Contains with nested Fn::Split', () => {
+      const input = {
+        'Fn::Contains': [
+          { 'Fn::Split': [',', 'apple,banana,cherry'] },
+          'banana'
+        ]
+      };
+      const result = resolveIntrinsics(input);
+      expect(result).toBe(true);
+    });
   });
 
   describe('Complex Scenarios', () => {
