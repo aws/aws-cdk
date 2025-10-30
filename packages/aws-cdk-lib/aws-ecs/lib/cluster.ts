@@ -1598,7 +1598,7 @@ export interface ManagedInstancesCapacityProviderProps {
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-instances-instance-profile.html
    * @see https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonECSInfrastructureRolePolicyForManagedInstances.html
    *
-   * @default - A new instance profile prefixed with 'ecsInstanceRole' will be created with the `AmazonECSInstanceRolePolicyForManagedInstances` managed policy
+   * @default - A new instance profile prefixed with 'ecsInstanceRole' will be created
    */
   readonly ec2InstanceProfile?: iam.IInstanceProfile;
 
@@ -1725,7 +1725,6 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
       ],
     });
 
-    // Create or use provided instance profile
     this.ec2InstanceProfile = props.ec2InstanceProfile ?? this.createDefaultInstanceProfile(scope);
 
     // Handle capacity provider name generation similar to AsgCapacityProvider
@@ -1823,7 +1822,7 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
               sid: 'ECSAgentDiscoverPollEndpointPermissions',
               effect: iam.Effect.ALLOW,
               actions: ['ecs:DiscoverPollEndpoint'],
-              resources: ['*'], // DiscoverPollEndpoint cannot be scoped to a resource.
+              resources: ['*'], // DiscoverPollEndpoint cannot be scoped to a resource. See https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonelasticcontainerservice.html
             }),
             new iam.PolicyStatement({
               sid: 'ECSAgentRegisterPermissions',
