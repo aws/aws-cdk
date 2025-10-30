@@ -1755,7 +1755,7 @@ const miCapacityProviderCustom = new ecs.ManagedInstancesCapacityProvider(this, 
 });
 
 // Add the capacity provider to the cluster
-cluster.addManagedInstancesCapacityProvider(miCapacityProvider);
+cluster.addManagedInstancesCapacityProvider(miCapacityProviderCustom);
 
 const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
   memoryMiB: '512',
