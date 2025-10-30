@@ -146,6 +146,7 @@ export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-c
 export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
 export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
+export const NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT = '@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault';
 export const STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT = '@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint';
 
 export const FLAGS: Record<string, FlagInfo> = {
@@ -1724,6 +1725,18 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
+  [NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, Network Load Balancer will be created with a security group by default.',
+    detailsMd: `
+      When this feature flag is enabled, Network Load Balancer will be created with a security group by default.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to create Network Load Balancer without a security group by default.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
   [STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT]: {
     type: FlagType.BugFix,
     summary: 'When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.',
@@ -1731,7 +1744,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, the JSONPath apiEndpoint value will be resolved dynamically at runtime, while slightly increasing the size of the state machine definition.
       When disabled, the JSONPath apiEndpoint property will only support a static string value.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.221.0' },
     unconfiguredBehavesLike: { v2: true },
     recommendedValue: true,
   },
@@ -1750,7 +1763,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       This is a breaking change as it will cause target group replacement when the flag is enabled.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.221.0' },
     recommendedValue: true,
   },
 };

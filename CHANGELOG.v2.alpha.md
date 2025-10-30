@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.221.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.220.0-alpha.0...v2.221.0-alpha.0) (2025-10-24)
+
+
+### Features
+
+* **msk-alpha:** support Kafka 4.1  ([#35759](https://github.com/aws/aws-cdk/issues/35759)) ([67539de](https://github.com/aws/aws-cdk/commit/67539de15ee70a61629fa8dfc7f7b42b187a82e0))
+
+
+### Bug Fixes
+
+* **elasticache-alpha:** cannot import Redis 7 serverless cache ([#35629](https://github.com/aws/aws-cdk/issues/35629)) ([2bde1a0](https://github.com/aws/aws-cdk/commit/2bde1a02ecb1fc3439249eb1bb756bf335ec3553))
+
 ## [2.220.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.219.0-alpha.0...v2.220.0-alpha.0) (2025-10-14)
 
 
