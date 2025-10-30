@@ -699,7 +699,6 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
       grantee,
       actions: DATA_API_ACTIONS,
       resourceArns: [this.clusterArn],
-      scope: this,
     });
     this.secret?.grantRead(grantee);
     return ret;

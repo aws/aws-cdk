@@ -1659,6 +1659,110 @@ new ecs.Ec2Service(this, 'EC2Service', {
 });
 ```
 
+### Managed Instances Capacity Providers
+
+Managed Instances Capacity Providers allow you to use AWS-managed EC2 instances for your ECS tasks while providing more control over instance selection than standard Fargate. AWS handles the instance lifecycle, patching, and maintenance while you can specify detailed instance requirements.
+
+To create a Managed Instances Capacity Provider, you need to specify the required EC2 instance profile, and networking configuration. You can also define detailed instance requirements to control which types of instances are used for your workloads.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const infrastructureRole: iam.Role;
+declare const instanceProfile: iam.InstanceProfile;
+
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
+
+// Create a Managed Instances Capacity Provider
+const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
+  infrastructureRole,
+  ec2InstanceProfile: instanceProfile,
+  subnets: vpc.privateSubnets,
+  securityGroups: [new ec2.SecurityGroup(this, 'MISecurityGroup', { vpc })],
+  instanceRequirements: {
+    vCpuCountMin: 1,
+    memoryMin: Size.gibibytes(2),
+    cpuManufacturers: [ec2.CpuManufacturer.INTEL],
+    acceleratorManufacturers: [ec2.AcceleratorManufacturer.NVIDIA],
+  },
+  propagateTags: ecs.PropagateManagedInstancesTags.CAPACITY_PROVIDER,
+});
+
+// Optionally configure security group rules using IConnectable interface
+miCapacityProvider.connections.allowFrom(ec2.Peer.ipv4(vpc.vpcCidrBlock), ec2.Port.tcp(80));
+
+// Add the capacity provider to the cluster
+cluster.addManagedInstancesCapacityProvider(miCapacityProvider);
+
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+
+taskDefinition.addContainer('web', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  memoryReservationMiB: 256,
+});
+
+new ecs.Ec2Service(this, 'EC2Service', {
+  cluster,
+  taskDefinition,
+  minHealthyPercent: 100,
+  capacityProviderStrategies: [
+    {
+      capacityProvider: miCapacityProvider.capacityProviderName,
+      weight: 1,
+    },
+  ],
+});
+```
+
+You can specify detailed instance requirements to control which types of instances are used:
+
+```ts
+declare const infrastructureRole: iam.Role;
+declare const instanceProfile: iam.InstanceProfile;
+declare const vpc: ec2.Vpc;
+
+const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
+  infrastructureRole,
+  ec2InstanceProfile: instanceProfile,
+  subnets: vpc.privateSubnets,
+  instanceRequirements: {
+    // Required: CPU and memory constraints
+    vCpuCountMin: 2,
+    vCpuCountMax: 8,
+    memoryMin: Size.gibibytes(4),
+    memoryMax: Size.gibibytes(32),
+    
+    // CPU preferences
+    cpuManufacturers: [ec2.CpuManufacturer.INTEL, ec2.CpuManufacturer.AMD],
+    instanceGenerations: [ec2.InstanceGeneration.CURRENT],
+    
+    // Instance type filtering
+    allowedInstanceTypes: ['m5.*', 'c5.*'],
+    
+    // Performance characteristics
+    burstablePerformance: ec2.BurstablePerformance.EXCLUDED,
+    bareMetal: ec2.BareMetal.EXCLUDED,
+    
+    // Accelerator requirements (for ML/AI workloads)
+    acceleratorTypes: [ec2.AcceleratorType.GPU],
+    acceleratorManufacturers: [ec2.AcceleratorManufacturer.NVIDIA],
+    acceleratorNames: [ec2.AcceleratorName.T4, ec2.AcceleratorName.V100],
+    acceleratorCountMin: 1,
+    
+    // Storage requirements
+    localStorage: ec2.LocalStorage.REQUIRED,
+    localStorageTypes: [ec2.LocalStorageType.SSD],
+    totalLocalStorageGBMin: 100,
+    
+    // Network requirements
+    networkInterfaceCountMin: 2,
+    networkBandwidthGbpsMin: 10,
+    
+    // Cost optimization
+    onDemandMaxPricePercentageOverLowestPrice: 10,
+  },
+});
+```
+
 ### Cluster Default Provider Strategy
 
 A capacity provider strategy determines whether ECS tasks are launched on EC2 instances or Fargate/Fargate Spot. It can be specified at the cluster, service, or task level, and consists of one or more capacity providers. You can specify an optional base and weight value for finer control of how tasks are launched. The `base` specifies a minimum number of tasks on one capacity provider, and the `weight`s of each capacity provider determine how tasks are distributed after `base` is satisfied.

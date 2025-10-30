@@ -407,6 +407,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       sourceArn: permission.sourceArn ?? sourceArn,
       principalOrgId: permission.organizationId ?? principalOrgID,
       functionUrlAuthType: permission.functionUrlAuthType,
+      invokedViaFunctionUrl: permission.invokedViaFunctionUrl,
     });
   }
 
@@ -540,13 +541,48 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    */
   public grantInvokeUrl(grantee: iam.IGrantable): iam.Grant {
     const identifier = `InvokeFunctionUrl${grantee.grantPrincipal}`; // calls the .toString() of the principal
+    const identifierDualAuth = `${identifier}-DualAuth`;
 
     // Memoize the result so subsequent grantInvoke() calls are idempotent
     let grant = this._functionUrlInvocationGrants[identifier];
     if (!grant) {
-      grant = this.grant(grantee, identifier, 'lambda:InvokeFunctionUrl', [this.functionArn], {
-        functionUrlAuthType: FunctionUrlAuthType.AWS_IAM,
-      });
+      // Build conditions for function URL with AWS_IAM auth type
+      const functionUrlConditions: Record<string, Record<string, unknown>> = {
+        StringEquals: {
+          'lambda:FunctionUrlAuthType': FunctionUrlAuthType.AWS_IAM,
+        },
+      };
+
+      grant = this.grant(
+        grantee,
+        identifier,
+        'lambda:InvokeFunctionUrl',
+        [this.functionArn],
+        {
+          functionUrlAuthType: FunctionUrlAuthType.AWS_IAM,
+        },
+        functionUrlConditions,
+      );
+
+      // Build conditions for dual auth (invoked via function URL)
+      const dualAuthConditions: Record<string, Record<string, unknown>> = {
+        Bool: {
+          'lambda:InvokedViaFunctionUrl': true,
+        },
+      };
+
+      // proceed to grant invokefunction for FURL Dual auth
+      grant = this.grant(
+        grantee,
+        identifierDualAuth,
+        'lambda:InvokeFunction',
+        [this.functionArn],
+        {
+          invokedViaFunctionUrl: true,
+        },
+        dualAuthConditions,
+      );
+
       this._functionUrlInvocationGrants[identifier] = grant;
     }
     return grant;
@@ -617,11 +653,13 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     action: string,
     resourceArns: string[],
     permissionOverrides?: Partial<Permission>,
+    conditions?: Record<string, Record<string, unknown>>,
   ): iam.Grant {
     const grant = iam.Grant.addToPrincipalOrResource({
       grantee,
       actions: [action],
       resourceArns,
+      conditions,
 
       // Fake resource-like object on which to call addToResourcePolicy(), which actually
       // calls addPermission()
@@ -642,10 +680,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
           }
           return { statementAdded: true, policyDependable: permissionNode };
         },
-        node: this.node,
-        stack: this.stack,
         env: this.env,
-        applyRemovalPolicy: x => this.applyRemovalPolicy(x),
       },
     });
 
@@ -866,12 +901,15 @@ class LatestVersion extends FunctionBase implements IVersion {
 
   public get versionRef(): VersionReference {
     return {
-      functionArn: this.functionRef.functionArn,
+      functionArn: this.functionArn,
     };
   }
 
-  public get functionRef() {
-    return this.lambda.functionRef;
+  public get functionRef(): FunctionReference {
+    return {
+      functionArn: this.functionArn,
+      functionName: this.functionName,
+    };
   }
 
   public get functionArn() {
