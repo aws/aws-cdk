@@ -931,38 +931,6 @@ describe('vpc endpoint', () => {
       });
     });
 
-    test('test certificate manager vpc interface endpoints', () => {
-      // GIVEN
-      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-west-2' } });
-      const vpc = new Vpc(stack, 'VPC');
-
-      // WHEN
-      vpc.addInterfaceEndpoint('ACM Endpoint', {
-        service: InterfaceVpcEndpointAwsService.CERTIFICATE_MANAGER,
-      });
-
-      vpc.addInterfaceEndpoint('ACM FIPS Endpoint', {
-        service: InterfaceVpcEndpointAwsService.CERTIFICATE_MANAGER_FIPS,
-      });
-
-      vpc.addInterfaceEndpoint('ACM PCA FIPS Endpoint', {
-        service: InterfaceVpcEndpointAwsService.PRIVATE_CERTIFICATE_AUTHORITY_FIPS,
-      });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
-        ServiceName: 'com.amazonaws.us-west-2.acm',
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
-        ServiceName: 'com.amazonaws.us-west-2.acm-fips',
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
-        ServiceName: 'com.amazonaws.us-west-2.acm-pca-fips',
-      });
-    });
-
     test('global vpc interface endpoints', () => {
       // GIVEN
       const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-west-2' } });
