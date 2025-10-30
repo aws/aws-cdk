@@ -35,6 +35,7 @@ import {
   FeatureFlags, Annotations,
   ValidationError,
   Size,
+  Lazy,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
@@ -1721,6 +1722,18 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
    */
   private capacityProvider: CfnCapacityProvider;
 
+  /**
+   * The cluster this capacity provider is associated with
+   */
+  private _cluster?: ICluster;
+
+  /**
+   * The cluster this capacity provider is associated with
+   */
+  public get cluster(): ICluster | undefined {
+    return this._cluster;
+  }
+
   constructor(scope: Construct, id: string, props: ManagedInstancesCapacityProviderProps) {
     super(scope, id);
 
@@ -1741,7 +1754,7 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
     });
 
     // Create or use provided instance profile
-    this.ec2InstanceProfile = props.ec2InstanceProfile ?? this.createDefaultInstanceProfile();
+    this.ec2InstanceProfile = props.ec2InstanceProfile ?? this.createDefaultInstanceProfile(scope);
 
     // Handle capacity provider name generation similar to AsgCapacityProvider
     let capacityProviderName = props.capacityProviderName;
@@ -1806,14 +1819,15 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
    */
   public bind(cluster: ICluster): void {
     this.capacityProvider.clusterName = cluster.clusterName;
+    this._cluster = cluster;
   }
 
   /**
    * Creates a default instance profile for ECS managed instances prefixed with "ecsInstanceRole".
-   * The created instance profile will have the `AmazonECSInstanceRolePolicyForManagedInstances` managed policy attached.
+   * The created instance profile will have a custom scoped-down policy attached.
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-instances-instance-profile.html
    */
-  private createDefaultInstanceProfile(): iam.IInstanceProfile {
+  private createDefaultInstanceProfile(scope: Construct): iam.IInstanceProfile {
     /**
      * The managed policy `AmazonECSInfrastructureRolePolicyForManagedInstances` requires
      * that the instance profile name starts with `ecsInstanceRole` to allow ECS to
@@ -1826,9 +1840,60 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
     const instanceRole = new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
       roleName,
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonECSInstanceRolePolicyForManagedInstances'),
-      ],
+      inlinePolicies: {
+        /**
+         * Scoped down version of AmazonECSInstanceRolePolicyForManagedInstances
+         * @see https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonECSInstanceRolePolicyForManagedInstances.html
+         */
+        ECSInstancePolicy: new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              sid: 'ECSAgentDiscoverPollEndpointPermissions',
+              effect: iam.Effect.ALLOW,
+              actions: ['ecs:DiscoverPollEndpoint'],
+              resources: ['*'], // DiscoverPollEndpoint cannot be scoped to a resource.
+            }),
+            new iam.PolicyStatement({
+              sid: 'ECSAgentRegisterPermissions',
+              effect: iam.Effect.ALLOW,
+              actions: ['ecs:RegisterContainerInstance'],
+              resources: [Lazy.string({
+                produce: () => {
+                  if (!this._cluster) {
+                    throw new ValidationError('Managed instances capacity provider must be associated with a cluster. Call `addManagedInstancesCapacityProvider` to associate it with a cluster.', scope);
+                  }
+                  return this._cluster.clusterArn;
+                },
+              })],
+            }),
+            new iam.PolicyStatement({
+              sid: 'ECSAgentPollPermissions',
+              effect: iam.Effect.ALLOW,
+              actions: ['ecs:Poll'],
+              resources: [`arn:${Aws.PARTITION}:ecs:${Stack.of(this).region}:${Stack.of(this).account}:container-instance/*`],
+            }),
+            new iam.PolicyStatement({
+              sid: 'ECSAgentTelemetryPermissions',
+              effect: iam.Effect.ALLOW,
+              actions: ['ecs:StartTelemetrySession', 'ecs:PutSystemLogEvents'],
+              resources: [`arn:${Aws.PARTITION}:ecs:${Stack.of(this).region}:${Stack.of(this).account}:container-instance/*`],
+            }),
+            new iam.PolicyStatement({
+              sid: 'ECSAgentStateChangePermissions',
+              effect: iam.Effect.ALLOW,
+              actions: ['ecs:SubmitAttachmentStateChanges', 'ecs:SubmitTaskStateChange'],
+              resources: [Lazy.string({
+                produce: () => {
+                  if (!this._cluster) {
+                    throw new ValidationError('Managed instances capacity provider must be associated with a cluster. Call `addManagedInstancesCapacityProvider` to associate it with a cluster.', scope);
+                  }
+                  return this._cluster.clusterArn;
+                },
+              })],
+            }),
+          ],
+        }),
+      },
     });
 
     const instanceProfile = new iam.InstanceProfile(this, 'InstanceProfile', {

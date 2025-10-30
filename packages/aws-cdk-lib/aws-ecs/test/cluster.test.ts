@@ -3318,11 +3318,14 @@ describe('cluster', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
       const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
       // WHEN
       const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         subnets: vpc.privateSubnets,
       });
+
+      cluster.addManagedInstancesCapacityProvider(capacityProvider);
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
@@ -3400,16 +3403,80 @@ describe('cluster', () => {
           ],
           Version: '2012-10-17',
         },
-        ManagedPolicyArns: [
+        Policies: [
           {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':iam::aws:policy/AmazonECSInstanceRolePolicyForManagedInstances',
+            PolicyName: 'ECSInstancePolicy',
+            PolicyDocument: {
+              Statement: [
+                {
+                  Sid: 'ECSAgentDiscoverPollEndpointPermissions',
+                  Effect: 'Allow',
+                  Action: 'ecs:DiscoverPollEndpoint',
+                  Resource: '*',
+                },
+                {
+                  Sid: 'ECSAgentRegisterPermissions',
+                  Effect: 'Allow',
+                  Action: 'ecs:RegisterContainerInstance',
+                  Resource: {
+                    'Fn::GetAtt': [
+                      'EcsCluster97242B84',
+                      'Arn',
+                    ],
+                  },
+                },
+                {
+                  Sid: 'ECSAgentPollPermissions',
+                  Effect: 'Allow',
+                  Action: 'ecs:Poll',
+                  Resource: {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        { Ref: 'AWS::Partition' },
+                        ':ecs:',
+                        { Ref: 'AWS::Region' },
+                        ':',
+                        { Ref: 'AWS::AccountId' },
+                        ':container-instance/*',
+                      ],
+                    ],
+                  },
+                },
+                {
+                  Sid: 'ECSAgentTelemetryPermissions',
+                  Effect: 'Allow',
+                  Action: ['ecs:StartTelemetrySession', 'ecs:PutSystemLogEvents'],
+                  Resource: {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        { Ref: 'AWS::Partition' },
+                        ':ecs:',
+                        { Ref: 'AWS::Region' },
+                        ':',
+                        { Ref: 'AWS::AccountId' },
+                        ':container-instance/*',
+                      ],
+                    ],
+                  },
+                },
+                {
+                  Sid: 'ECSAgentStateChangePermissions',
+                  Effect: 'Allow',
+                  Action: ['ecs:SubmitAttachmentStateChanges', 'ecs:SubmitTaskStateChange'],
+                  Resource: {
+                    'Fn::GetAtt': [
+                      'EcsCluster97242B84',
+                      'Arn',
+                    ],
+                  },
+                },
               ],
-            ],
+              Version: '2012-10-17',
+            },
           },
         ],
       });
