@@ -1,5 +1,24 @@
 // CFN Intrinsic Function Resolver
 // Enhanced version with cross-stack reference support
+// AWS CloudFormation Intrinsic Functions Reference:
+// https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference.html
+//
+// Supported Functions:
+// - Ref: Returns the value of the specified parameter or resource
+// - Fn::Join: Appends a set of values into a single value, separated by delimiter
+// - Fn::Sub: Substitutes variables in an input string with values you specify
+// - Fn::GetAtt: Returns the value of an attribute from a resource in the template
+// - Fn::ImportValue: Returns the value of an output exported by another stack
+// - Fn::Select: Returns a single object from a list of objects by index
+// - Fn::Split: Splits a string into a list of string values
+// - Fn::Cidr: Returns an array of CIDR address blocks
+// - Fn::Base64: Returns the Base64 representation of the input string
+// - Fn::Not: Returns true for a condition that evaluates to false
+// - Fn::Contains: Returns true if a specified string matches at least one value in a list
+// - Fn::GetAZs: Returns an array that lists Availability Zones for a specified region
+// - Fn::FindInMap: Returns the value corresponding to keys in a two-level nested map
+//
+// Note: CDK-generated templates are assumed to be syntactically correct
 
 interface ResourceRegistry {
   resources: Record<string, any>;
@@ -93,10 +112,7 @@ function resolveSub(content: any, cfnResources?: Record<string, any>): string {
     template = template.replace(new RegExp(`\\$\\{${k}\\}`, 'g'), v);
   }
   
-  // Handle .Arn pattern (common false positive fix)
-  template = template.replace(/\$\{([\w_-]+\.Arn)\}/g, 'arn:aws:s3:::examplebucket');
-  
-  // Replace remaining parameters
+  // Replace remaining parameters (CDK templates are well-formed)
   template = template.replace(/\$\{([\w_-]+)\}/g, '$1');
   
   return template;
