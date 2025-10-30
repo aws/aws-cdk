@@ -301,10 +301,10 @@ export interface SpecRestApiProps extends RestApiBaseProps {
   readonly apiDefinition: ApiDefinition;
 
   /**
-   * The list of binary media mime-types that are supported by the RestApi
+   * The list of binary media mime-types that are supported by the SpecRestApi
    * resource, such as "image/png" or "application/octet-stream"
    *
-   * @default - RestApi supports only UTF-8-encoded text payloads.
+   * @default - SpecRestApi supports only UTF-8-encoded text payloads.
    */
   readonly binaryMediaTypes?: string[];
 
