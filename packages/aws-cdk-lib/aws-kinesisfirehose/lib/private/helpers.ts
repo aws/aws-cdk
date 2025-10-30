@@ -131,7 +131,7 @@ function renderDataProcessor(
 ): CfnDeliveryStream.ProcessorProperty {
   const processorConfig = processor.bind(scope, { role });
 
-  if (processorConfig.useDirectParameters) {
+  if (processorConfig.parameters) {
     return {
       type: processorConfig.processorType,
       parameters: processorConfig.parameters ?? [],

@@ -51,7 +51,6 @@ export class DecompressionProcessor implements IDataProcessor {
       parameters: [
         { parameterName: 'CompressionFormat', parameterValue: this.options.compressionFormat?.compressionFormat ?? 'GZIP' },
       ],
-      useDirectParameters: true,
     };
   }
 }

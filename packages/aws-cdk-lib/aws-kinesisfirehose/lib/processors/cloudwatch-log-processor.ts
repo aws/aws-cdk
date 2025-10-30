@@ -35,7 +35,6 @@ export class CloudWatchLogProcessor implements IDataProcessor {
       parameters: [
         { parameterName: 'DataMessageExtraction', parameterValue: 'true' },
       ],
-      useDirectParameters: true,
     };
   }
 }

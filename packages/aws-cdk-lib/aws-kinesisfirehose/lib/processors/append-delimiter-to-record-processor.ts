@@ -15,7 +15,7 @@ export class AppendDelimiterToRecordProcessor implements IDataProcessor {
     return {
       processorType: 'AppendDelimiterToRecord',
       processorIdentifier: { parameterName: '', parameterValue: '' }, // Dummy value for backward compatibility
-      useDirectParameters: true,
+      parameters: [],
     };
   }
 }
