@@ -93,7 +93,7 @@ export class GrantsModule extends Module {
 
       const propsType = new InterfaceType(this, {
         name: `${className}Props`,
-        export: false,
+        export: true,
         properties: propsProperties,
       });
 
