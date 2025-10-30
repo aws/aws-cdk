@@ -181,8 +181,16 @@ export interface CommonDestinationProps extends DestinationLoggingProps {
    * The data transformation that should be performed on the data before writing to the destination.
    *
    * @default - no data transformation will occur.
+   * @deprecated Use `processors` instead.
    */
   readonly processor?: IDataProcessor;
+
+  /**
+   * The data transformation that should be performed on the data before writing to the destination.
+   *
+   * @default - no data transformation will occur.
+   */
+  readonly processors?: IDataProcessor[];
 
   /**
    * The configuration for backing up source records to S3.
