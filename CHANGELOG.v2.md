@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.222.0](https://github.com/aws/aws-cdk/compare/v2.221.0...v2.222.0) (2025-10-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bedrock-agentcore:** The signature of `RuntimeAuthorizerConfiguration.usingCognito()` has changed to accept IUserPool and IUserPoolClient constructs instead of string parameters, and now supports multiple clients.
+
+### Checklist
+- [x] My code adheres to the [CONTRIBUTING GUIDE](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and [DESIGN GUIDELINES](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)
+
+### Features
+
+* **bedrock-agentcore:** use IUserPool and IUserPoolClient interfaces instead of string identifiers  ([#35860](https://github.com/aws/aws-cdk/issues/35860)) ([a38afc9](https://github.com/aws/aws-cdk/commit/a38afc9bdc57143c971e4654fae2fd3c3a0dbef6)), closes [#35854](https://github.com/aws/aws-cdk/issues/35854)
+* **core:** `IEnvironmentAware` interface to retrieve a construct's environment ([#35817](https://github.com/aws/aws-cdk/issues/35817)) ([8ee5d4b](https://github.com/aws/aws-cdk/commit/8ee5d4b012b2d6a157b0e4915976e0a487cde115))
+* **elasticloadbalancingv2:** create security group settings for NLB by default (under feature flag) ([#34675](https://github.com/aws/aws-cdk/issues/34675)) ([ff83cfd](https://github.com/aws/aws-cdk/commit/ff83cfd883ab04a5137ca6d9f28629fc2f5676ad)), closes [#34606](https://github.com/aws/aws-cdk/issues/34606) [/github.com/aws/aws-cdk/issues/34606#issuecomment-2931313249](https://github.com/aws//github.com/aws/aws-cdk/issues/34606/issues/issuecomment-2931313249)
+* **events-targets:** support Amazon Data Firehose target using Firehose's `IDeliveryStream` ([#33798](https://github.com/aws/aws-cdk/issues/33798)) ([a374b6b](https://github.com/aws/aws-cdk/commit/a374b6b2dd071bbd15b3a824e1aaa1002d0dc018)), closes [#33757](https://github.com/aws/aws-cdk/issues/33757) [#33758](https://github.com/aws/aws-cdk/issues/33758)
+* **memory:** add agentcore memory l2 construct ([#35757](https://github.com/aws/aws-cdk/issues/35757)) ([6a2e17e](https://github.com/aws/aws-cdk/commit/6a2e17e8280affd152ad4e24d505bc4593b790eb))
+* **msk:** support Express brokers ([#34741](https://github.com/aws/aws-cdk/issues/34741)) ([0a69e5f](https://github.com/aws/aws-cdk/commit/0a69e5f165c20d5106d0d159ce6b023d228e5fea)), closes [#32923](https://github.com/aws/aws-cdk/issues/32923)
+
+
+### Bug Fixes
+
+* **agentcore:** `addToRolePolicy` for runtime with imported role destroys and recreates policies on every deployment ([#35842](https://github.com/aws/aws-cdk/issues/35842)) ([92525e4](https://github.com/aws/aws-cdk/commit/92525e45e4f8688ddd4892e43885e33e9d812c6c)), closes [#35844](https://github.com/aws/aws-cdk/issues/35844) [40aws-cdk/aws-bedrock-agentcore-alpha/agentcore/runtime/runtime-base.ts#L253](https://github.com/40aws-cdk/aws-bedrock-agentcore-alpha/agentcore/runtime/runtime-base.ts/issues/L253)
+* **dynamodb:** addToResourcePolicy has no effect ([#35554](https://github.com/aws/aws-cdk/issues/35554)) ([94d7e34](https://github.com/aws/aws-cdk/commit/94d7e34ebff8f8dbd17ee712d724974179fe7076)), closes [#35062](https://github.com/aws/aws-cdk/issues/35062)
+* compilation failure in Go ([#35871](https://github.com/aws/aws-cdk/issues/35871)) ([5e4f603](https://github.com/aws/aws-cdk/commit/5e4f603a17faf543dfacfba209b8e17b50ffbdca)), closes [aws/aws-cdk#35770](https://github.com/aws/aws-cdk/issues/35770) [#35862](https://github.com/aws/aws-cdk/issues/35862)
+* **ec2:** remove PassRole policy emitted by cloudwatch vpc flow destination ([#35762](https://github.com/aws/aws-cdk/issues/35762)) ([c4b80df](https://github.com/aws/aws-cdk/commit/c4b80df3e7611b55f7adbdc43673ec102a3a1a7b)), closes [#35729](https://github.com/aws/aws-cdk/issues/35729)
+* **ecs:** remove empty CfnClusterCapacityProviderAssociations resource ([#35783](https://github.com/aws/aws-cdk/issues/35783)) ([c8a131b](https://github.com/aws/aws-cdk/commit/c8a131b935af27726131fb670ee84b15152296e0)), closes [#35699](https://github.com/aws/aws-cdk/issues/35699) [#35742](https://github.com/aws/aws-cdk/issues/35742)
+
 ## [2.221.0](https://github.com/aws/aws-cdk/compare/v2.220.0...v2.221.0) (2025-10-24)
 
 
