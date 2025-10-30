@@ -134,7 +134,7 @@ function renderDataProcessor(
   if (processorConfig.parameters) {
     return {
       type: processorConfig.processorType,
-      parameters: processorConfig.parameters ?? [],
+      parameters: processorConfig.parameters,
     };
   }
 

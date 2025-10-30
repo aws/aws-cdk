@@ -67,7 +67,6 @@ export interface DataProcessorConfig {
   /**
    * The processor parameters.
    *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-kinesisfirehose-deliverystream-processor.html#cfn-kinesisfirehose-deliverystream-processor-parameters
    * @default - No processor parameters
    */
   readonly parameters?: CfnDeliveryStream.ProcessorParameterProperty[];
