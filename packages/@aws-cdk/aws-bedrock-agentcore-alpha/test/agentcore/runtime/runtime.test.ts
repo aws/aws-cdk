@@ -1312,13 +1312,18 @@ describe('Runtime metrics and grant methods tests', () => {
   });
 
   test('Should add policy statement to runtime role', () => {
-    const statement = new iam.PolicyStatement({
+    const result = runtime.addToRolePolicy(new iam.PolicyStatement({
       actions: ['s3:GetObject'],
       resources: ['arn:aws:s3:::bucket/*'],
-    });
-
-    const result = runtime.addToRolePolicy(statement);
+    }));
     expect(result).toBe(runtime);
+
+    // Can call multiple times
+    const result2 = runtime.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:Query'],
+      resources: ['arn:aws:dynamodb:us-east-1:123456789012:table/test-table'],
+    }));
+    expect(result2).toBe(runtime);
   });
 
   test('Should add policy to imported runtime role', () => {
@@ -1334,13 +1339,18 @@ describe('Runtime metrics and grant methods tests', () => {
       agentRuntimeVersion: '1',
     });
 
-    const statement = new iam.PolicyStatement({
+    const result = imported.addToRolePolicy(new iam.PolicyStatement({
       actions: ['s3:GetObject'],
       resources: ['arn:aws:s3:::bucket/*'],
-    });
-
-    const result = imported.addToRolePolicy(statement);
+    }));
     expect(result).toBe(imported);
+
+    // Can call multiple times
+    const result2 = imported.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:Query'],
+      resources: ['arn:aws:dynamodb:us-east-1:123456789012:table/test-table'],
+    }));
+    expect(result2).toBe(imported);
   });
 });
 

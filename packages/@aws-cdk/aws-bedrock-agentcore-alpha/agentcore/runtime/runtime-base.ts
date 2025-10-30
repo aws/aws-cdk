@@ -245,16 +245,7 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
    * @returns The runtime instance for chaining
    */
   public addToRolePolicy(statement: iam.PolicyStatement): IBedrockAgentRuntime {
-    // Check if role is a concrete Role instance
-    if (this.role instanceof iam.Role) {
-      this.role.addToPolicy(statement);
-    } else {
-      // For imported roles (IRole), we need to attach via a new policy
-      const policy = new iam.Policy(this, `CustomPolicy${Date.now()}`, {
-        statements: [statement],
-      });
-      this.role.attachInlinePolicy(policy);
-    }
+    this.role.addToPrincipalPolicy(statement);
     return this;
   }
 
