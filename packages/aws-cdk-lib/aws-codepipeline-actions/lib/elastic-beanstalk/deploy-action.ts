@@ -1,6 +1,6 @@
 import { Construct, Node } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
-import { Aws, UnscopedValidationError } from '../../../core';
+import { Aws, ResourceEnvironment, UnscopedValidationError } from '../../../core';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
 
@@ -55,6 +55,9 @@ export class ElasticBeanstalkDeployAction extends Action {
     const policyArn = `arn:${Aws.PARTITION}:iam::aws:policy/AdministratorAccess-AWSElasticBeanstalk`;
     options.role.addManagedPolicy({
       get node(): Node {
+        throw new UnscopedValidationError('This object can not be used in this API');
+      },
+      get env(): ResourceEnvironment {
         throw new UnscopedValidationError('This object can not be used in this API');
       },
       managedPolicyArn: policyArn,

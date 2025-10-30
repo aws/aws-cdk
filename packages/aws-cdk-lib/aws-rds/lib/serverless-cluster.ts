@@ -372,7 +372,6 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
       grantee,
       actions: DATA_API_ACTIONS,
       resourceArns: ['*'],
-      scope: this,
     });
     this.secret?.grantRead(grantee);
     return ret;

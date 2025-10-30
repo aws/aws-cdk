@@ -109,7 +109,6 @@ new ecs.FargateService(stack, 'ManagedInstancesService', {
 
 new integ.IntegTest(app, 'ManagedInstancesCapacityProviders', {
   testCases: [stack],
-  regions: ['us-west-2'],
 });
 
 app.synth();

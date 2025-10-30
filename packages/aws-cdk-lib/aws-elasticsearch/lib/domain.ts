@@ -1320,7 +1320,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
       grantee,
       actions: domainActions,
       resourceArns,
-      scope: this,
     });
 
     return grant;

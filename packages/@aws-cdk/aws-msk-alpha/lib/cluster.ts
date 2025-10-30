@@ -99,6 +99,15 @@ export interface ClusterProps {
   readonly instanceType?: ec2.InstanceType;
 
   /**
+   * The broker type for the cluster.
+   * When set to EXPRESS, the cluster will be created with Express Brokers.
+   * When this is set to EXPRESS, instanceType must also be specified.
+   *
+   * @default BrokerType.STANDARD
+   */
+  readonly brokerType?: BrokerType;
+
+  /**
    * The AWS security groups to associate with the elastic network interfaces in order to specify who can
    * connect to and communicate with the Amazon MSK cluster.
    *
@@ -197,6 +206,21 @@ export enum StorageMode {
    * Tiered storage mode utilizes EBS storage and Tiered storage.
    */
   TIERED = 'TIERED',
+}
+
+/**
+ * The broker type for the cluster.
+ */
+export enum BrokerType {
+  /**
+   * Standard brokers provide high-availability guarantees.
+   */
+  STANDARD = 'STANDARD',
+
+  /**
+   * Express brokers are a low-cost option for development, testing, and workloads that don't require the high availability guarantees of standard MSK cluster.
+   */
+  EXPRESS = 'EXPRESS',
 }
 
 /**
@@ -502,8 +526,36 @@ export class Cluster extends ClusterBase {
       throw new core.ValidationError('EBS volume size should be in the range 1-16384', this);
     }
 
+    const isExpress = props.brokerType === BrokerType.EXPRESS;
+
+    if (isExpress) {
+      // Validate Kafka version compatibility
+      const supportedVersions = ['3.6', '3.8'];
+      const kafkaVersionString = props.kafkaVersion.version;
+      const isCompatibleVersion = supportedVersions.some(version => kafkaVersionString.includes(version));
+      if (!isCompatibleVersion) {
+        throw new core.ValidationError(`Express brokers are only supported with Apache Kafka 3.6.x and 3.8.x, got ${kafkaVersionString}`, this);
+      }
+
+      if (!props.instanceType) {
+        throw new core.ValidationError('`instanceType` must also be specified when `brokerType` is `BrokerType.EXPRESS`.', this);
+      }
+      if (props.ebsStorageInfo) {
+        throw new core.ValidationError('`ebsStorageInfo` is not supported when `brokerType` is `BrokerType.EXPRESS`.', this);
+      }
+      if (props.storageMode) {
+        throw new core.ValidationError('`storageMode` is not supported when `brokerType` is `BrokerType.EXPRESS`.', this);
+      }
+      if (props.logging) {
+        throw new core.ValidationError('`logging` is not supported when `brokerType` is `BrokerType.EXPRESS`.', this);
+      }
+      if (subnetSelection.subnets.length < 3) {
+        throw new core.ValidationError(`Express cluster requires at least 3 subnets, got ${subnetSelection.subnets.length}`, this);
+      }
+    }
+
     const instanceType = props.instanceType
-      ? this.mskInstanceType(props.instanceType)
+      ? this.mskInstanceType(props.instanceType, isExpress)
       : this.mskInstanceType(
         ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
       );
@@ -598,7 +650,7 @@ export class Cluster extends ClusterBase {
         },
       }));
     }
-    const loggingInfo = {
+    const loggingInfo = isExpress ? undefined : {
       brokerLogs: {
         cloudWatchLogs: {
           enabled:
@@ -678,7 +730,7 @@ export class Cluster extends ClusterBase {
         securityGroups: this.connections.securityGroups.map(
           (group) => group.securityGroupId,
         ),
-        storageInfo: {
+        storageInfo: isExpress ? undefined : {
           ebsStorageInfo: {
             volumeSize: volumeSize,
           },
@@ -691,7 +743,7 @@ export class Cluster extends ClusterBase {
       configurationInfo: props.configurationInfo,
       enhancedMonitoring: props.monitoring?.clusterMonitoringLevel,
       openMonitoring: openMonitoring,
-      storageMode: props.storageMode,
+      storageMode: isExpress ? undefined : props.storageMode,
       loggingInfo: loggingInfo,
       clientAuthentication,
     });
@@ -706,8 +758,9 @@ export class Cluster extends ClusterBase {
     });
   }
 
-  private mskInstanceType(instanceType: ec2.InstanceType): string {
-    return `kafka.${instanceType.toString()}`;
+  private mskInstanceType(instanceType: ec2.InstanceType, express?:boolean): string {
+    const prefix = express ? 'express.' : 'kafka.';
+    return `${prefix}${instanceType.toString()}`;
   }
 
   /**

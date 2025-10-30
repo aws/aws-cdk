@@ -680,10 +680,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
           }
           return { statementAdded: true, policyDependable: permissionNode };
         },
-        node: this.node,
-        stack: this.stack,
         env: this.env,
-        applyRemovalPolicy: x => this.applyRemovalPolicy(x),
       },
     });
 

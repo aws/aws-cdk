@@ -570,16 +570,6 @@
          "Arn"
         ]
        }
-      },
-      {
-       "Action": "iam:PassRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "TransitGatewayFlowLogsIAMRole41FEC7F5",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
@@ -669,16 +659,6 @@
        "Resource": {
         "Fn::GetAtt": [
          "TransitGatewayAttachmentFlowLogsLogGroup9A4DB90C",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": "iam:PassRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "TransitGatewayAttachmentFlowLogsIAMRole991C72C2",
          "Arn"
         ]
        }
