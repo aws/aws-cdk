@@ -1715,7 +1715,7 @@ new ecs.FargateService(this, 'FargateService', {
 
 Option 2: If you don't want to use the `AmazonECSInfrastructureRolePolicyForManagedInstances` managed policy for the ECS infrastructure role, you can create a custom infrastructure role with the required permissions. See [documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/infrastructure_IAM_role.html) for what permissions are needed for the ECS infrastructure role.
 
-You can also choose not to use the the AWS managed policy for the instance role `AmazonECSInstanceRolePolicyForManagedInstances`. See [ECS documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-instances-instance-profile.html) for what permissions are required.
+You can also choose not to use the automatically created ec2InstanceProfile. See [ECS documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-instances-instance-profile.html) for what permissions are required for the profile's role.
 
 ```ts
 declare const vpc: ec2.Vpc;
