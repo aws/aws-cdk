@@ -828,7 +828,8 @@
       "WRITER_PALMYRA_X4_V1_0",
       "WRITER_PALMYRA_X5_V1_0",
       "TWELVELABS_MARENGO_EMBED_2_7_V1_0",
-      "TWELVELABS_PEGASUS_1_2_V1_0"
+      "TWELVELABS_PEGASUS_1_2_V1_0",
+      "TWELVELABS_MARENGO_EMBED_3_0_V1_0"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts": {
