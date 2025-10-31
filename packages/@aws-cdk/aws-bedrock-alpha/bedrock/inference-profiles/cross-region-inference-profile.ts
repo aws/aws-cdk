@@ -88,7 +88,7 @@ export enum CrossRegionInferenceProfileRegion {
 
 /**
  * Mapping of AWS regions to their corresponding geographic areas for cross-region inference.
- * This mapping is used to determine which cross-region inference profile to use based on the current region.
+ * This mapping is used to determine which cross-region inference profile to use based on the current region in prompt router.
  */
 export const REGION_TO_GEO_AREA: { [key: string]: CrossRegionInferenceProfileRegion } = {
   // US Regions
