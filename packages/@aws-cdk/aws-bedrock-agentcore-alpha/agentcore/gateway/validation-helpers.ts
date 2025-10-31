@@ -171,14 +171,23 @@ export function validateOpenApiSchema(params: OpenApiSchemaValidationParams): st
       if (!server.url || typeof server.url !== 'string') {
         errors.push(`${schemaName} server[${index}] must have a valid URL`);
       } else {
-        try {
-          // Validate URL format (allow variables in URLs like {protocol}://api.example.com)
-          const urlWithoutVars = server.url.replace(/\{[^}]+\}/g, 'placeholder');
-          if (!urlWithoutVars.match(/^https?:\/\/.+/)) {
-            errors.push(`${schemaName} server[${index}] URL must be a valid HTTP(S) URL`);
+        // Simple validation without regex to avoid ReDoS vulnerability
+        // Check if URL contains a protocol separator
+        if (!server.url.includes('://')) {
+          errors.push(`${schemaName} server[${index}] URL must contain a protocol (e.g., http:// or https://)`);
+        } else {
+          // Check if it starts with http or https (case-insensitive)
+          // Allow template variables like {protocol}://
+          const protocolEnd = server.url.indexOf('://');
+          const protocol = server.url.substring(0, protocolEnd);
+
+          // If protocol doesn't contain template variables, validate it
+          if (!protocol.includes('{')) {
+            if (protocol.toLowerCase() !== 'http' && protocol.toLowerCase() !== 'https') {
+              errors.push(`${schemaName} server[${index}] URL must use HTTP or HTTPS protocol`);
+            }
           }
-        } catch (e) {
-          errors.push(`${schemaName} server[${index}] has invalid URL: ${server.url}`);
+          // If protocol contains template variables, skip validation (will be validated at runtime)
         }
       }
     });
