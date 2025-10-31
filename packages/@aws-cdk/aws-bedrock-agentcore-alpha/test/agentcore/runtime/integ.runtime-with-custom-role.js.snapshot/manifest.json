@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "pre-stack.assets": {
+    "aws-cdk-bedrock-agentcore-runtime-with-custom-role.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "pre-stack.assets.json",
+        "file": "aws-cdk-bedrock-agentcore-runtime-with-custom-role.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "pre-stack": {
+    "aws-cdk-bedrock-agentcore-runtime-with-custom-role": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "pre-stack.template.json",
+        "templateFile": "aws-cdk-bedrock-agentcore-runtime-with-custom-role.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/84963acbb8dcd54d3d751c43e3c9a8fae7312f7babb4e5a55f5cc29a36cd930a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0a8c5c25cfe8e1272b4bffcf46837c224b8d9a23013b6de06ef3d4db1116f8d3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "pre-stack.assets"
+          "aws-cdk-bedrock-agentcore-runtime-with-custom-role.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,10 +31,10 @@
         }
       },
       "dependencies": [
-        "pre-stack.assets"
+        "aws-cdk-bedrock-agentcore-runtime-with-custom-role.assets"
       ],
       "metadata": {
-        "/pre-stack/ExecutionRole": [
+        "/aws-cdk-bedrock-agentcore-runtime-with-custom-role/ExecutionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -75,21 +75,69 @@
                 {}
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           }
         ],
-        "/pre-stack/ExecutionRole/ImportExecutionRole": [
+        "/aws-cdk-bedrock-agentcore-runtime-with-custom-role/ExecutionRole/ImportExecutionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/pre-stack/ExecutionRole/Resource": [
+        "/aws-cdk-bedrock-agentcore-runtime-with-custom-role/ExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExecutionRole605A040B"
           }
         ],
-        "/pre-stack/ExecutionRole/DefaultPolicy": [
+        "/aws-cdk-bedrock-agentcore-runtime-with-custom-role/ExecutionRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -125,234 +173,63 @@
                 {}
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
-        "/pre-stack/ExecutionRole/DefaultPolicy/Resource": [
+        "/aws-cdk-bedrock-agentcore-runtime-with-custom-role/ExecutionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExecutionRoleDefaultPolicyA5B92313"
           }
         ],
-        "/pre-stack/Exports/Output{\"Fn::GetAtt\":[\"ExecutionRole605A040B\",\"Arn\"]}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttExecutionRole605A040BArnA891DEDE"
-          }
-        ],
-        "/pre-stack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/pre-stack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
-      "displayName": "pre-stack"
-    },
-    "aws-cdk-bedrock-agentcore-runtime-with-imported-role.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "aws-cdk-bedrock-agentcore-runtime-with-imported-role.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "aws-cdk-bedrock-agentcore-runtime-with-imported-role": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
-      "properties": {
-        "templateFile": "aws-cdk-bedrock-agentcore-runtime-with-imported-role.template.json",
-        "terminationProtection": false,
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/770961f562ff5742804f73767c41668d7e0d5961496deb17c26347c4c9ed36d0.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "aws-cdk-bedrock-agentcore-runtime-with-imported-role.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "pre-stack",
-        "aws-cdk-bedrock-agentcore-runtime-with-imported-role.assets"
-      ],
-      "metadata": {
-        "/aws-cdk-bedrock-agentcore-runtime-with-imported-role/ImportedRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-with-imported-role/ImportedRole/PolicyawscdkbedrockagentcoreruntimewithimportedroleImportedRole261507D7": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "policyName": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-with-imported-role/ImportedRole/PolicyawscdkbedrockagentcoreruntimewithimportedroleImportedRole261507D7/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedRolePolicyawscdkbedrockagentcoreruntimewithimportedroleImportedRole261507D78EB91FCC"
-          }
-        ],
-        "/aws-cdk-bedrock-agentcore-runtime-with-imported-role/TestRuntime": [
+        "/aws-cdk-bedrock-agentcore-runtime-with-custom-role/TestRuntime": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -362,40 +239,40 @@
             "data": "Container URI validation skipped as it contains unresolved CDK tokens. The URI will be validated at deployment time."
           }
         ],
-        "/aws-cdk-bedrock-agentcore-runtime-with-imported-role/TestRuntime/Resource": [
+        "/aws-cdk-bedrock-agentcore-runtime-with-custom-role/TestRuntime/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestRuntime65042BB5"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-runtime-with-imported-role/BootstrapVersion": [
+        "/aws-cdk-bedrock-agentcore-runtime-with-custom-role/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-bedrock-agentcore-runtime-with-imported-role/CheckBootstrapVersion": [
+        "/aws-cdk-bedrock-agentcore-runtime-with-custom-role/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-bedrock-agentcore-runtime-with-imported-role"
+      "displayName": "aws-cdk-bedrock-agentcore-runtime-with-custom-role"
     },
-    "BedrockAgentCoreRuntimeWithImportedRoleDefaultTestDeployAssert640CC592.assets": {
+    "BedrockAgentCoreRuntimeWithCustomRoleDefaultTestDeployAssert81CD6146.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "BedrockAgentCoreRuntimeWithImportedRoleDefaultTestDeployAssert640CC592.assets.json",
+        "file": "BedrockAgentCoreRuntimeWithCustomRoleDefaultTestDeployAssert81CD6146.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "BedrockAgentCoreRuntimeWithImportedRoleDefaultTestDeployAssert640CC592": {
+    "BedrockAgentCoreRuntimeWithCustomRoleDefaultTestDeployAssert81CD6146": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "BedrockAgentCoreRuntimeWithImportedRoleDefaultTestDeployAssert640CC592.template.json",
+        "templateFile": "BedrockAgentCoreRuntimeWithCustomRoleDefaultTestDeployAssert81CD6146.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -404,7 +281,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "BedrockAgentCoreRuntimeWithImportedRoleDefaultTestDeployAssert640CC592.assets"
+          "BedrockAgentCoreRuntimeWithCustomRoleDefaultTestDeployAssert81CD6146.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -413,23 +290,23 @@
         }
       },
       "dependencies": [
-        "BedrockAgentCoreRuntimeWithImportedRoleDefaultTestDeployAssert640CC592.assets"
+        "BedrockAgentCoreRuntimeWithCustomRoleDefaultTestDeployAssert81CD6146.assets"
       ],
       "metadata": {
-        "/BedrockAgentCoreRuntimeWithImportedRole/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/BedrockAgentCoreRuntimeWithCustomRole/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/BedrockAgentCoreRuntimeWithImportedRole/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/BedrockAgentCoreRuntimeWithCustomRole/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "BedrockAgentCoreRuntimeWithImportedRole/DefaultTest/DeployAssert"
+      "displayName": "BedrockAgentCoreRuntimeWithCustomRole/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
