@@ -70,6 +70,20 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    * @default - none
    */
   readonly schemaRegistryConfig?: ISchemaRegistry;
+
+  /**
+   * Configuration for system logging from the event source mapping poller
+   *
+   * @default - No logging configuration specified
+   */
+  readonly loggingConfig?: lambda.LoggingConfig;
+
+  /**
+   * Configuration for enhanced monitoring metrics collection
+   *
+   * @default - Enhanced monitoring is disabled
+   */
+  readonly metricsConfig?: lambda.MetricsConfig;
 }
 
 /**
@@ -164,6 +178,12 @@ export class ManagedKafkaEventSource extends StreamEventSource {
   constructor(props: ManagedKafkaEventSourceProps) {
     super(props);
     this.innerProps = props;
+
+    if (props.metricsConfig) {
+      if (!props.metricsConfig.metrics || props.metricsConfig.metrics.length === 0) {
+        throw new UnscopedValidationError('MetricsConfig must contain at least one metric type. Specify one or more metrics from lambda.MetricType (EVENT_COUNT, ERROR_COUNT, KAFKA_METRICS)');
+      }
+    }
   }
 
   public bind(target: lambda.IFunction) {
@@ -190,6 +210,8 @@ export class ManagedKafkaEventSource extends StreamEventSource {
         supportS3OnFailureDestination: true,
         provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
         schemaRegistryConfig: this.innerProps.schemaRegistryConfig,
+        loggingConfig: this.innerProps.loggingConfig,
+        metricsConfig: this.innerProps.metricsConfig,
       }),
     );
 
@@ -274,6 +296,12 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
       throw new UnscopedValidationError('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
     }
 
+    if (props.metricsConfig) {
+      if (!props.metricsConfig.metrics || props.metricsConfig.metrics.length === 0) {
+        throw new UnscopedValidationError('MetricsConfig must contain at least one metric type. Specify one or more metrics from lambda.MetricType (EVENT_COUNT, ERROR_COUNT, KAFKA_METRICS)');
+      }
+    }
+
     this.innerProps = props;
   }
 
@@ -294,6 +322,8 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         supportS3OnFailureDestination: true,
         provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
         schemaRegistryConfig: this.innerProps.schemaRegistryConfig,
+        loggingConfig: this.innerProps.loggingConfig,
+        metricsConfig: this.innerProps.metricsConfig,
       }),
     );
 
