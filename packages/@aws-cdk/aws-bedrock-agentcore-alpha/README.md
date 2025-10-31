@@ -35,6 +35,7 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
     - [Creating a Runtime](#creating-a-runtime)
       - [Option 1: Use an existing image in ECR](#option-1-use-an-existing-image-in-ecr)
       - [Option 2: Use a local asset](#option-2-use-a-local-asset)
+    - [Granting Permissions to Invoke Bedrock Models or Inference Profiles](#granting-permissions-to-invoke-bedrock-models-or-inference-profiles)
     - [Runtime Versioning](#runtime-versioning)
       - [Managing Endpoints and Versions](#managing-endpoints-and-versions)
         - [Step 1: Initial Deployment](#step-1-initial-deployment)
@@ -150,27 +151,11 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
 });
 ```
 
-To grant the runtime permission to invoke a Bedrock model or inference profile:
-
-```typescript fixture=default
-// Note: This example uses @aws-cdk/aws-bedrock-alpha which must be installed separately
-declare const runtime: agentcore.Runtime;
-
-// Create a cross-region inference profile for Claude 3.7 Sonnet
-const inferenceProfile = bedrock.CrossRegionInferenceProfile.fromConfig({
-  geoRegion: bedrock.CrossRegionInferenceProfileRegion.US,
-  model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_7_SONNET_V1_0
-});
-
-// Grant the runtime permission to invoke the inference profile
-inferenceProfile.grantInvoke(runtime);
-```
-
 #### Option 2: Use a local asset
 
 Reference a local directory containing a Dockerfile.
 Images are built from a local Docker context directory (with a Dockerfile), uploaded to Amazon Elastic Container Registry (ECR)
-by the CDK toolkit,and can be naturally referenced in your CDK app .
+by the CDK toolkit,and can be naturally referenced in your CDK app.
 
 ```typescript
 const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
@@ -181,6 +166,30 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
   agentRuntimeArtifact: agentRuntimeArtifact,
 });
+```
+
+### Granting Permissions to Invoke Bedrock Models or Inference Profiles
+
+To grant the runtime permissions to invoke Bedrock models or inference profiles:
+
+```typescript fixture=default
+// Note: This example uses @aws-cdk/aws-bedrock-alpha which must be installed separately
+declare const runtime: agentcore.Runtime;
+
+// Define the Bedrock Foundation Model
+const model = bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_7_SONNET_V1_0;
+
+// Grant the runtime permissions to invoke the model
+model.grantInvoke(runtime);
+
+// Create a cross-region inference profile for Claude 3.7 Sonnet
+const inferenceProfile = bedrock.CrossRegionInferenceProfile.fromConfig({
+  geoRegion: bedrock.CrossRegionInferenceProfileRegion.US,
+  model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_7_SONNET_V1_0
+});
+
+// Grant the runtime permissions to invoke the inference profile
+inferenceProfile.grantInvoke(runtime);
 ```
 
 ### Runtime Versioning
