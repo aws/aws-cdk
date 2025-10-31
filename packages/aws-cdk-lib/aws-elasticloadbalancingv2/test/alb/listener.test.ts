@@ -1399,7 +1399,7 @@ describe('tests', () => {
       });
     });
 
-    test('Throws when specifying transforms without priority', () => {
+    test('throws when specifying transforms without priority', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1419,6 +1419,74 @@ describe('tests', () => {
           }]),
         ],
       })).toThrow('Setting \'transforms\' requires \'priority\' and at least one of \'conditions\', \'pathPattern\' or \'hostHeader\' to be set.');
+    });
+
+    test('throws when specifying multiple host header rewrites', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+        vpc,
+      });
+      const listener = lb.addListener('Listener', {
+        port: 80,
+      });
+
+      // WHEN
+      listener.addAction('Action', {
+        action: elbv2.ListenerAction.fixedResponse(500),
+        priority: 10,
+        conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
+        transforms: [
+          elbv2.ListenerTransform.hostHeaderRewrite([
+            {
+              regex: '^(.*)$', replace: 'example.com',
+            },
+          ]),
+          elbv2.ListenerTransform.hostHeaderRewrite([
+            {
+              regex: '^(.*)$', replace: 'example.org',
+            },
+          ]),
+        ],
+      });
+
+      expect(() => app.synth()).toThrow('Only one host-header-rewrite transform is allowed per rule');
+    });
+
+    test('throws when specifying multiple url rewrites', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+        vpc,
+      });
+      const listener = lb.addListener('Listener', {
+        port: 80,
+      });
+
+      // WHEN
+      listener.addAction('Action', {
+        action: elbv2.ListenerAction.fixedResponse(500),
+        priority: 10,
+        conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
+        transforms: [
+          elbv2.ListenerTransform.urlRewrite([
+            {
+              regex: '^(.*)$', replace: '/newpath/$1',
+            },
+          ]),
+          elbv2.ListenerTransform.urlRewrite([
+            {
+              regex: '^(.*)$', replace: '/otherpath/$1',
+            },
+          ]),
+        ],
+      });
+
+      expect(() => app.synth()).toThrow('Only one url-rewrite transform is allowed per rule');
     });
   });
 
