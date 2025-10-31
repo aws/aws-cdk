@@ -4,10 +4,12 @@ import * as kms from '../../../aws-kms';
 import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
+import { undefinedIfAllValuesAreEmpty } from '../../../core/lib/util';
 import { DestinationS3BackupProps } from '../common';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
 import { ILoggingConfig } from '../logging-config';
 import { IDataProcessor } from '../processor';
+import { DynamicPartitioningProps } from '../s3-bucket';
 
 export interface DestinationLoggingProps {
   /**
@@ -72,25 +74,41 @@ export function createBufferingHints(
   scope: Construct,
   interval?: cdk.Duration,
   size?: cdk.Size,
-  dataFormatConversionConfiguration?: CfnDeliveryStream.DataFormatConversionConfigurationProperty,
+  dataFormatConversionEnabled?: boolean,
+  dynamicPartitioningEnabled?: boolean,
 ): CfnDeliveryStream.BufferingHintsProperty | undefined {
-  if (!interval && !size) {
+  if (!interval && !size && !dataFormatConversionEnabled && !dynamicPartitioningEnabled) {
     return undefined;
   }
 
   const intervalInSeconds = interval?.toSeconds() ?? 300;
-  if (intervalInSeconds > 900) {
-    throw new cdk.ValidationError(`Buffering interval must be less than 900 seconds. Buffering interval provided was ${intervalInSeconds} seconds.`, scope);
-  }
-  const defaultSizeInMBs = dataFormatConversionConfiguration?.enabled ? 128 : 5;
-  const sizeInMBs = size?.toMebibytes() ?? defaultSizeInMBs;
-  if (sizeInMBs < 1 || sizeInMBs > 128) {
-    throw new cdk.ValidationError(`Buffering size must be between 1 and 128 MiBs. Buffering size provided was ${sizeInMBs} MiBs.`, scope);
-  }
+  cdk.withResolved(intervalInSeconds, () => {
+    if (intervalInSeconds > 900) {
+      throw new cdk.ValidationError(`Buffering interval must be less than 900 seconds, got ${intervalInSeconds} seconds.`, scope);
+    }
+    if (dynamicPartitioningEnabled && intervalInSeconds < 60) {
+      // From testing, CFN deployment will fail if `BufferingHints.IntervalInSeconds` is less than 60.
+      // The message is: "BufferingHints.IntervalInSeconds must be at least 60 seconds when Dynamic Partitioning is enabled."
+      throw new cdk.ValidationError(`When dynamic partitioning is enabled, buffering interval must be at least 60 seconds, got ${intervalInSeconds} seconds.`, scope);
+    }
+  });
 
-  if (dataFormatConversionConfiguration?.enabled && sizeInMBs < 64) {
-    throw new cdk.ValidationError(`When data format conversion is enabled, buffering size must be at least 64 MiBs. Buffering size provided was ${sizeInMBs} MiBs.`, scope);
-  }
+  const defaultSizeInMBs = (dataFormatConversionEnabled || dynamicPartitioningEnabled) ? 128 : 5;
+  const sizeInMBs = size?.toMebibytes() ?? defaultSizeInMBs;
+  cdk.withResolved(sizeInMBs, () => {
+    if (sizeInMBs > 128) {
+      throw new cdk.ValidationError(`Buffering size must be at most 128 MiBs, got ${sizeInMBs} MiBs.`, scope);
+    }
+    if ((dataFormatConversionEnabled || dynamicPartitioningEnabled) && sizeInMBs < 64) {
+      // From testing, CFN deployment will fail if `BufferingHints.SizeInMBs` is less than 64.
+      // The message is: "BufferingHints.SizeInMBs must be at least 64 when Dynamic Partitioning is enabled."
+      throw new cdk.ValidationError(`When data format conversion or dynamic partitioning is enabled, buffering size must be at least 64 MiBs, got ${sizeInMBs} MiBs.`, scope);
+    }
+    if (sizeInMBs < 1) {
+      throw new cdk.ValidationError(`Buffering size must be at least 1 MiB, got ${sizeInMBs} MiBs.`, scope);
+    }
+  });
+
   return { intervalInSeconds, sizeInMBs };
 }
 
@@ -181,5 +199,24 @@ export function createBackupConfig(scope: Construct, role: iam.IRole, props?: De
       cloudWatchLoggingOptions: loggingOptions,
     },
     dependables: [bucketGrant, ...(loggingDependables ?? [])],
+  };
+}
+
+export function createDynamicPartitioningConfiguration(
+  scope: Construct,
+  props?: DynamicPartitioningProps,
+): CfnDeliveryStream.DynamicPartitioningConfigurationProperty | undefined {
+  if (!props) return undefined;
+
+  const durationInSeconds = props.retryDuration?.toSeconds();
+  if (durationInSeconds != null && !cdk.Token.isUnresolved(durationInSeconds) && durationInSeconds > 7200) {
+    throw new cdk.ValidationError(`Retry duration must be less than 7200 seconds, got ${durationInSeconds} seconds.`, scope);
+  }
+
+  return {
+    enabled: props.enabled,
+    retryOptions: undefinedIfAllValuesAreEmpty({
+      durationInSeconds,
+    }),
   };
 }
