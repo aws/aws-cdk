@@ -35,20 +35,20 @@ class TestStack extends Stack {
             regex: '^(.*)\\.example\\.com$',
             replace: '$1.internal.example.com',
           },
-          {
-            regex: '^www\\.(.*)$',
-            replace: '$1.internal.example.com',
-          },
+          // {
+          //   regex: '^www\\.(.*)$',
+          //   replace: '$1.internal.example.com',
+          // },
         ]),
         elbv2.ListenerTransform.urlRewrite([
           {
             regex: '^/old-path/(.*)$',
             replace: '/new-path/$1',
           },
-          {
-            regex: '^/deprecated/(.*)$',
-            replace: '/updated/$1',
-          },
+          // {
+          //   regex: '^/deprecated/(.*)$',
+          //   replace: '/updated/$1',
+          // },
         ]),
       ],
     });

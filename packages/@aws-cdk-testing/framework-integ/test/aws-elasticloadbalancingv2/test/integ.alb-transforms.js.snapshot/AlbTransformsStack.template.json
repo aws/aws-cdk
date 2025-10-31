@@ -474,8 +474,8 @@
      {
       "FixedResponseConfig": {
        "ContentType": "text/plain",
-       "MessageBody": "Hello, world!",
-       "StatusCode": "200"
+       "MessageBody": "Not Found",
+       "StatusCode": "404"
       },
       "Type": "fixed-response"
      }
@@ -485,6 +485,59 @@
     },
     "Port": 80,
     "Protocol": "HTTP"
+   }
+  },
+  "AlbListenerTransformsActionRuleEC749553": {
+   "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+   "Properties": {
+    "Actions": [
+     {
+      "FixedResponseConfig": {
+       "ContentType": "text/plain",
+       "MessageBody": "Hello, world!",
+       "StatusCode": "200"
+      },
+      "Type": "fixed-response"
+     }
+    ],
+    "Conditions": [
+     {
+      "Field": "path-pattern",
+      "PathPatternConfig": {
+       "Values": [
+        "/api/*"
+       ]
+      }
+     }
+    ],
+    "ListenerArn": {
+     "Ref": "AlbListener86261768"
+    },
+    "Priority": 1,
+    "Transforms": [
+     {
+      "HostHeaderRewriteConfig": {
+       "Rewrites": [
+        {
+         "Regex": "^(.*)\\.example\\.com$",
+         "Replace": "$1.internal.example.com"
+        }
+       ]
+      },
+      "Type": "host-header-rewrite"
+     },
+     {
+      "Type": "url-rewrite",
+      "UrlRewriteConfig": {
+       "Rewrites": [
+        {
+         "Regex": "^/old-path/(.*)$",
+         "Replace": "/new-path/$1"
+        }
+       ]
+      }
+     }
+    ]
    }
   }
  },
