@@ -46,6 +46,9 @@
     },
     {
       "path": "../integ-tests-alpha"
+    },
+    {
+      "path": "../aws-bedrock-alpha"
     }
   ]
 }

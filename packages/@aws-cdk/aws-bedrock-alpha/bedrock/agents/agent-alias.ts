@@ -77,7 +77,6 @@ export abstract class AgentAliasBase extends Resource implements IAgentAlias {
       grantee,
       actions,
       resourceArns: [this.aliasArn],
-      scope: this,
     });
   }
 
