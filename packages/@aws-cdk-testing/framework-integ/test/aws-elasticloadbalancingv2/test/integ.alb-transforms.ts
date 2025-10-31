@@ -20,11 +20,12 @@ class TestStack extends Stack {
       port: 80,
     });
 
-    listener.addAction('Action', {
+    listener.addAction('TransformsAction', {
       action: elbv2.ListenerAction.fixedResponse(200, {
         contentType: 'text/plain',
         messageBody: 'Hello, world!',
       }),
+      priority: 1,
       transforms: [
         elbv2.ListenerTransform.hostHeaderRewrite([
           {
@@ -47,6 +48,12 @@ class TestStack extends Stack {
           },
         ]),
       ],
+    });
+    listener.addAction('DefaultAction', {
+      action: elbv2.ListenerAction.fixedResponse(404, {
+        contentType: 'text/plain',
+        messageBody: 'Not Found',
+      }),
     });
   }
 }
