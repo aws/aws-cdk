@@ -606,15 +606,15 @@ The partition keys can be referred as `!{partitionKeyFromQuery:key}` in prefixes
 ``` ts
 declare const bucket: s3.Bucket;
 const s3Destination = new firehose.S3Bucket(bucket, {
-  dynamigPartitioning: { enabled: true },
-  processor: [
+  dynamicPartitioning: { enabled: true },
+  processors: [
     firehose.MetadataExtractionProcessor.jq16({
       customer_id: '.customer_id',
       device: '.type.device',
       year: '.event_timestamp|strftime("%Y")',
     }),
   ],
-  outputDataPrefix: '!{partitionKeyFromQuery:year}/!{partitionKeyFromQuery:device}/!{partitionKeyFromQuery:customer_id}/',
+  dataOutputPrefix: '!{partitionKeyFromQuery:year}/!{partitionKeyFromQuery:device}/!{partitionKeyFromQuery:customer_id}/',
 });
 new firehose.DeliveryStream(this, 'DeliveryStream', {
   destination: s3Destination,
@@ -633,11 +633,11 @@ The partition keys can be referred as `!{partitionKeyFromLambda:key}` in prefixe
 declare const bucket: s3.Bucket;
 declare const lambdaFunction: lambda.Function;
 const s3Destination = new firehose.S3Bucket(bucket, {
-  dynamigPartitioning: { enabled: true },
-  processor: [
+  dynamicPartitioning: { enabled: true },
+  processors: [
     new firehose.LambdaFunctionProcessor(lambdaFunction),
   ],
-  outputDataPrefix: '!{partitionKeyFromLambda:year}/!{partitionKeyFromLambda:device}/!{partitionKeyFromLambda:customer_id}/',
+  dataOutputPrefix: '!{partitionKeyFromLambda:year}/!{partitionKeyFromLambda:device}/!{partitionKeyFromLambda:customer_id}/',
 });
 new firehose.DeliveryStream(this, 'DeliveryStream', {
   destination: s3Destination,
@@ -651,9 +651,10 @@ To apply dynamic partitioning to aggregated data (for example, multiple events, 
 When the input data is JSON objects on a single line with no delimiter or newline-delimited (JSONL), specify `RecordDeAggregationProcessor.json()`.
 
 ``` ts
+declare const bucket: s3.Bucket;
 const s3Destination = new firehose.S3Bucket(bucket, {
-  dynamigPartitioning: { enabled: true },
-  processor: [
+  dynamicPartitioning: { enabled: true },
+  processors: [
     firehose.RecordDeAggregationProcessor.json(),
   ],
 });
@@ -662,9 +663,10 @@ const s3Destination = new firehose.S3Bucket(bucket, {
 You can also specify custom delimiter using `RecordDeAggregationProcessor.delmited()`.
 
 ``` ts
+declare const bucket: s3.Bucket;
 const s3Destination = new firehose.S3Bucket(bucket, {
-  dynamigPartitioning: { enabled: true },
-  processor: [
+  dynamicPartitioning: { enabled: true },
+  processors: [
     firehose.RecordDeAggregationProcessor.delimited('####'),
   ],
 });
