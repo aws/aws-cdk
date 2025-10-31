@@ -1113,11 +1113,20 @@ function checkAddActionProps(scope: Construct, props: AddApplicationActionProps)
   const hasPriority = props.priority !== undefined;
   const hasTransforms = props.transforms !== undefined && props.transforms.length > 0;
 
-  if ((hasAnyConditions || hasTransforms) && !hasPriority) {
-    throw new ValidationError('Setting \'conditions\', \'pathPattern\', \'hostHeader\' or \'transforms\' requires \'priority\'', scope);
+  if (hasPriority || hasAnyConditions) {
+    const hasValidRuleConfig = hasPriority && hasAnyConditions;
+    if (!hasValidRuleConfig) {
+      throw new ValidationError(
+        'Setting \'conditions\', \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa.',
+        scope,
+      );
+    }
   }
-  if (hasPriority && !hasAnyConditions && !hasTransforms) {
-    throw new ValidationError('Setting \'priority\' requires either \'conditions\' or \'transforms\'', scope);
+  if (hasTransforms && !hasPriority) {
+    throw new ValidationError(
+      'Setting \'transforms\' requires \'priority\' and at least one of \'conditions\', \'pathPattern\' or \'hostHeader\' to be set.',
+      scope,
+    );
   }
 }
 

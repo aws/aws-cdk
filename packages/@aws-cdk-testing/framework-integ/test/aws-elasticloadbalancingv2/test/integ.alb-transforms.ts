@@ -26,6 +26,9 @@ class TestStack extends Stack {
         messageBody: 'Hello, world!',
       }),
       priority: 1,
+      conditions: [
+        elbv2.ListenerCondition.pathPatterns(['/api/*']),
+      ],
       transforms: [
         elbv2.ListenerTransform.hostHeaderRewrite([
           {
