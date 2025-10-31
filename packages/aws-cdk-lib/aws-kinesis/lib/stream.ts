@@ -493,10 +493,7 @@ abstract class StreamBase extends Resource implements IStream {
           }
           return { statementAdded: false };
         },
-        node: this.node,
-        stack: this.stack,
         env: this.env,
-        applyRemovalPolicy: x => this.applyRemovalPolicy(x),
       },
     });
   }

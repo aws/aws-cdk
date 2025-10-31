@@ -2,6 +2,7 @@
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import { Annotations, Template, Match } from 'aws-cdk-lib/assertions';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -343,6 +344,13 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
       },
     });
 
+    const userPool = new cognito.UserPool(stack, 'MyUserPool', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const userPoolClient = userPool.addClient('MyUserPoolClient', {});
+    const anotherUserPoolClient = userPool.addClient('MyAnotherUserPoolClient', {});
+
     repository = new ecr.Repository(stack, 'TestRepository', {
       repositoryName: 'test-agent-runtime-cognito',
     });
@@ -354,8 +362,8 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
       description: 'A test runtime with Cognito authorizer configuration',
       agentRuntimeArtifact: agentRuntimeArtifact,
       authorizerConfiguration: RuntimeAuthorizerConfiguration.usingCognito(
-        'us-west-2_ABC123',
-        'client123',
+        userPool,
+        [userPoolClient, anotherUserPoolClient],
       ),
     });
 
@@ -392,13 +400,14 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
         'Fn::Join': [
           '',
           [
-            'https://cognito-idp.',
-            { Ref: 'AWS::Region' },
-            '.amazonaws.com/us-west-2_ABC123/.well-known/openid-configuration',
+            'https://cognito-idp.us-east-1.amazonaws.com/',
+            { Ref: 'MyUserPoolD09D1D74' },
+            '/.well-known/openid-configuration',
           ],
         ],
       });
-      expect(jwtConfig.AllowedClients).toEqual(['client123']);
+      expect(jwtConfig.AllowedClients).toContainEqual({ Ref: 'MyUserPoolMyUserPoolClient01266CD6' });
+      expect(jwtConfig.AllowedClients).toContainEqual({ Ref: 'MyUserPoolMyAnotherUserPoolClient4444CD16' });
     } else {
       // L1 construct might not be handling the authorizer configuration properly
       // This is acceptable as the configuration is still passed to the construct
@@ -1106,12 +1115,18 @@ describe('Runtime authentication configuration error cases', () => {
   });
 
   test('Should create runtime with Cognito auth using static factory', () => {
+    const userPool = new cognito.UserPool(stack, 'MyUserPool', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const userPoolClient = userPool.addClient('MyUserPoolClient', {});
+
     const runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
       agentRuntimeArtifact: agentRuntimeArtifact,
       authorizerConfiguration: RuntimeAuthorizerConfiguration.usingCognito(
-        'us-west-2_ABC123',
-        'client456',
+        userPool,
+        [userPoolClient],
       ),
     });
 
@@ -1305,13 +1320,18 @@ describe('Runtime metrics and grant methods tests', () => {
   });
 
   test('Should add policy statement to runtime role', () => {
-    const statement = new iam.PolicyStatement({
+    const result = runtime.addToRolePolicy(new iam.PolicyStatement({
       actions: ['s3:GetObject'],
       resources: ['arn:aws:s3:::bucket/*'],
-    });
-
-    const result = runtime.addToRolePolicy(statement);
+    }));
     expect(result).toBe(runtime);
+
+    // Can call multiple times
+    const result2 = runtime.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:Query'],
+      resources: ['arn:aws:dynamodb:us-east-1:123456789012:table/test-table'],
+    }));
+    expect(result2).toBe(runtime);
   });
 
   test('Should add policy to imported runtime role', () => {
@@ -1327,13 +1347,18 @@ describe('Runtime metrics and grant methods tests', () => {
       agentRuntimeVersion: '1',
     });
 
-    const statement = new iam.PolicyStatement({
+    const result = imported.addToRolePolicy(new iam.PolicyStatement({
       actions: ['s3:GetObject'],
       resources: ['arn:aws:s3:::bucket/*'],
-    });
-
-    const result = imported.addToRolePolicy(statement);
+    }));
     expect(result).toBe(imported);
+
+    // Can call multiple times
+    const result2 = imported.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:Query'],
+      resources: ['arn:aws:dynamodb:us-east-1:123456789012:table/test-table'],
+    }));
+    expect(result2).toBe(imported);
   });
 });
 
