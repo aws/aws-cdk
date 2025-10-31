@@ -448,7 +448,6 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
         grantee,
         actions: options.streamActions,
         resourceArns: [this.tableStreamArn],
-        scope: this,
       });
     }
 
@@ -464,19 +463,12 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   }
 
   /**
-   * Adds a statement to the resource policy associated with this file system.
+   * Adds a statement to the resource policy associated with this table.
    * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
    *
-   * Note that this does not work with imported file systems.
+   * Note that this does not work with imported tables.
    *
    * @param statement The policy statement to add
    */
-  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
-    this.resourcePolicy = this.resourcePolicy ?? new PolicyDocument({ statements: [] });
-    this.resourcePolicy.addStatements(statement);
-    return {
-      statementAdded: true,
-      policyDependable: this,
-    };
-  }
+  public abstract addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult;
 }
