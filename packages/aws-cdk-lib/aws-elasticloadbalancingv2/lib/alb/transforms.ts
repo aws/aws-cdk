@@ -50,8 +50,8 @@ export class ListenerTransform {
   }
 
   private validateRewrites(rewrites: RewriteRule[]): void {
-    if (!rewrites || rewrites.length === 0) {
-      throw new UnscopedValidationError('At least one rewrite rule must be specified');
+    if (rewrites.length !== 1) {
+      throw new UnscopedValidationError(`Exactly one rewrite rule must be specified, got ${rewrites.length}.`);
     }
 
     rewrites.forEach((rewrite, index) => {
