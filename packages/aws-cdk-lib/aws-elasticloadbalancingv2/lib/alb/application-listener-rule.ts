@@ -229,8 +229,8 @@ export class ApplicationListenerRule extends Construct {
     this.transforms = props.transforms || [];
 
     const hasPathPatterns = props.pathPatterns || props.pathPattern;
-    if (this.conditions.length === 0 && !props.hostHeader && !hasPathPatterns && this.transforms.length === 0) {
-      throw new ValidationError('At least one of \'conditions\', \'hostHeader\', \'pathPattern\', \'pathPatterns\' or \'transforms\' is required when defining a load balancing rule.', this);
+    if (this.conditions.length === 0 && !props.hostHeader && !hasPathPatterns) {
+      throw new ValidationError('At least one of \'conditions\', \'hostHeader\', \'pathPattern\' or \'pathPatterns\' is required when defining a load balancing rule.', this);
     }
 
     const possibleActions: Array<keyof ApplicationListenerRuleProps> = ['action', 'targetGroups', 'fixedResponse', 'redirectResponse'];
