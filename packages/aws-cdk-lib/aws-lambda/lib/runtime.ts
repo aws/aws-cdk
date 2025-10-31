@@ -241,6 +241,14 @@ export class Runtime {
   });
 
   /**
+   * The Java 25 runtime (java25)
+   */
+  public static readonly JAVA_25 = new Runtime('java25', RuntimeFamily.JAVA, {
+    supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
+  });
+
+  /**
    * The .NET 6 runtime (dotnet6)
    */
   public static readonly DOTNET_6 = new Runtime('dotnet6', RuntimeFamily.DOTNET_CORE);
