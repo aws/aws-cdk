@@ -415,7 +415,6 @@ export class ApplicationListenerRule extends Construct {
       return undefined;
     }
 
-    // Validate: only one transform of each type is allowed
     const hostHeaderRewriteCount = this.transforms.filter(t => t.type === TransformType.HOST_HEADER_REWRITE).length;
     const urlRewriteCount = this.transforms.filter(t => t.type === TransformType.URL_REWRITE).length;
 
