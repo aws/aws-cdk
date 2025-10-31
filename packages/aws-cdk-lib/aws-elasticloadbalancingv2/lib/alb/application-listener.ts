@@ -953,7 +953,7 @@ export interface AddApplicationActionProps extends AddRuleProps {
   /**
    * Transforms to apply to requests and responses
    *
-   * @default - No transforms
+   * @default - No transforms are applied
    */
   readonly transforms?: ListenerTransform[];
 }
