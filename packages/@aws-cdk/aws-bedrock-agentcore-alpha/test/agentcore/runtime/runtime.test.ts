@@ -1668,123 +1668,139 @@ describe('Runtime role validation tests', () => {
   });
 });
 
+const logGroupPolicyStatement = {
+  Sid: 'LogGroupAccess',
+  Action: ['logs:DescribeLogStreams', 'logs:CreateLogGroup'],
+  Effect: 'Allow',
+  Resource: {
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/*',
+      ],
+    ],
+  },
+};
+
+const describeLogGroupsPolicyStatement = {
+  Sid: 'DescribeLogGroups',
+  Action: 'logs:DescribeLogGroups',
+  Effect: 'Allow',
+  Resource: {
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':logs:us-east-1:123456789012:log-group:*',
+      ],
+    ],
+  },
+};
+
+const logStreamPolicyStatement = {
+  Sid: 'LogStreamAccess',
+  Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+  Effect: 'Allow',
+  Resource: {
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/*:log-stream:*',
+      ],
+    ],
+  },
+};
+
+const xrayPolicyStatement = {
+  Sid: 'XRayAccess',
+  Action: [
+    'xray:PutTraceSegments',
+    'xray:PutTelemetryRecords',
+    'xray:GetSamplingRules',
+    'xray:GetSamplingTargets',
+  ],
+  Effect: 'Allow',
+  Resource: '*',
+};
+
+const cloudWatchMetricsPolicyStatement = {
+  Sid: 'CloudWatchMetrics',
+  Action: 'cloudwatch:PutMetricData',
+  Condition: {
+    StringEquals: {
+      'cloudwatch:namespace': 'bedrock-agentcore',
+    },
+  },
+  Effect: 'Allow',
+  Resource: '*',
+};
+
+const getAgentAccessTokenPolicyStatement = {
+  Sid: 'GetAgentAccessToken',
+  Action: [
+    'bedrock-agentcore:GetWorkloadAccessToken',
+    'bedrock-agentcore:GetWorkloadAccessTokenForJWT',
+    'bedrock-agentcore:GetWorkloadAccessTokenForUserId',
+  ],
+  Effect: 'Allow',
+  Resource: [
+    {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':bedrock-agentcore:us-east-1:123456789012:workload-identity-directory/default',
+        ],
+      ],
+    },
+    {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':bedrock-agentcore:us-east-1:123456789012:workload-identity-directory/default/workload-identity/*',
+        ],
+      ],
+    },
+  ],
+};
+
+const ecrReadPolicyStatement = {
+  Action: [
+    'ecr:BatchCheckLayerAvailability',
+    'ecr:GetDownloadUrlForLayer',
+    'ecr:BatchGetImage',
+  ],
+  Effect: 'Allow',
+  Resource: {
+    'Fn::GetAtt': ['TestRepositoryC0DA8195', 'Arn'],
+  },
+};
+
+const ecrAuthTokenPolicyStatement = {
+  Action: 'ecr:GetAuthorizationToken',
+  Effect: 'Allow',
+  Resource: '*',
+};
+
 const expectedExecutionRolePolicy = {
   PolicyDocument: {
     Statement: [
-      {
-        Sid: 'LogGroupAccess',
-        Action: ['logs:DescribeLogStreams', 'logs:CreateLogGroup'],
-        Effect: 'Allow',
-        Resource: {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/*',
-            ],
-          ],
-        },
-      },
-      {
-        Sid: 'DescribeLogGroups',
-        Action: 'logs:DescribeLogGroups',
-        Effect: 'Allow',
-        Resource: {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':logs:us-east-1:123456789012:log-group:*',
-            ],
-          ],
-        },
-      },
-      {
-        Sid: 'LogStreamAccess',
-        Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
-        Effect: 'Allow',
-        Resource: {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/*:log-stream:*',
-            ],
-          ],
-        },
-      },
-      {
-        Sid: 'XRayAccess',
-        Action: [
-          'xray:PutTraceSegments',
-          'xray:PutTelemetryRecords',
-          'xray:GetSamplingRules',
-          'xray:GetSamplingTargets',
-        ],
-        Effect: 'Allow',
-        Resource: '*',
-      },
-      {
-        Sid: 'CloudWatchMetrics',
-        Action: 'cloudwatch:PutMetricData',
-        Condition: {
-          StringEquals: {
-            'cloudwatch:namespace': 'bedrock-agentcore',
-          },
-        },
-        Effect: 'Allow',
-        Resource: '*',
-      },
-      {
-        Sid: 'GetAgentAccessToken',
-        Action: [
-          'bedrock-agentcore:GetWorkloadAccessToken',
-          'bedrock-agentcore:GetWorkloadAccessTokenForJWT',
-          'bedrock-agentcore:GetWorkloadAccessTokenForUserId',
-        ],
-        Effect: 'Allow',
-        Resource: [
-          {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':bedrock-agentcore:us-east-1:123456789012:workload-identity-directory/default',
-              ],
-            ],
-          },
-          {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':bedrock-agentcore:us-east-1:123456789012:workload-identity-directory/default/workload-identity/*',
-              ],
-            ],
-          },
-        ],
-      },
-      {
-        Action: [
-          'ecr:BatchCheckLayerAvailability',
-          'ecr:GetDownloadUrlForLayer',
-          'ecr:BatchGetImage',
-        ],
-        Effect: 'Allow',
-        Resource: {
-          'Fn::GetAtt': ['TestRepositoryC0DA8195', 'Arn'],
-        },
-      },
-      {
-        Action: 'ecr:GetAuthorizationToken',
-        Effect: 'Allow',
-        Resource: '*',
-      },
+      logGroupPolicyStatement,
+      describeLogGroupsPolicyStatement,
+      logStreamPolicyStatement,
+      xrayPolicyStatement,
+      cloudWatchMetricsPolicyStatement,
+      getAgentAccessTokenPolicyStatement,
+      ecrReadPolicyStatement,
+      ecrAuthTokenPolicyStatement,
     ],
   },
 };
