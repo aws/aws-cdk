@@ -1619,8 +1619,6 @@ describe('Distributed Map State', () => {
     expect(() => {
       // GIVEN
       const stack = new cdk.Stack();
-
-      stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, true);
       const writerBucket = new s3.Bucket(stack, 'TestBucket');
 
       // WHEN
@@ -1637,7 +1635,7 @@ describe('Distributed Map State', () => {
         definition: map,
         queryLanguage: stepfunctions.QueryLanguage.JSONATA,
       });
-    }).toThrow(/When StateMachine query language is JSONata, individual states cannot use JSONPath./);
+    }).toThrow(/'queryLanguage' can not be 'JSONPath' if set to 'JSONata' for whole state machine/);
   }),
 
   test('State Machine JSONPath With Distributed Map State and ItemReader, ResultWriterV2 in JSONATA', () => {
