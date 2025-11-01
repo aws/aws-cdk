@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6e5975fdc21648248b36e77a1a88e45221c11988abbab944334781bafe79c005.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21e5aa9be23680074328fe660084a0ac44cb80239c33c68db6a3a83f4c2e9509.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -115,16 +115,16 @@
             "data": "DistributionOrigin1FunctionUrlOriginAccessControl1DA0EA55"
           }
         ],
-        "/integ-cloudfront-function-url-origin-oac/Distribution/Origin1/InvokeFromApiForintegcloudfrontfunctionurloriginoacDistributionOrigin112C3D877": [
+        "/integ-cloudfront-function-url-origin-oac/Distribution/Origin1/InvokeFunctionUrlFromCloudFrontForintegcloudfrontfunctionurloriginoacDistributionOrigin112C3D877": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DistributionOrigin1InvokeFromApiForintegcloudfrontfunctionurloriginoacDistributionOrigin112C3D87785748A6F"
+            "data": "DistributionOrigin1InvokeFunctionUrlFromCloudFrontForintegcloudfrontfunctionurloriginoacDistributionOrigin112C3D87746A740D5"
           }
         ],
-        "/integ-cloudfront-function-url-origin-oac/Distribution/Origin1/InvokeFuncFromCfForintegcloudfrontfunctionurloriginoacDistributionOrigin112C3D877": [
+        "/integ-cloudfront-function-url-origin-oac/Distribution/Origin1/InvokeFunctionFromCloudFrontForintegcloudfrontfunctionurloriginoacDistributionOrigin112C3D877": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DistributionOrigin1InvokeFuncFromCfForintegcloudfrontfunctionurloriginoacDistributionOrigin112C3D8777F1FE6AC"
+            "data": "DistributionOrigin1InvokeFunctionFromCloudFrontForintegcloudfrontfunctionurloriginoacDistributionOrigin112C3D877B0412846"
           }
         ],
         "/integ-cloudfront-function-url-origin-oac/Distribution/Resource": [
@@ -162,6 +162,24 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "DistributionOrigin1InvokeFromApiForintegcloudfrontfunctionurloriginoacDistributionOrigin112C3D87785748A6F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DistributionOrigin1InvokeFromApiForintegcloudfrontfunctionurloriginoacDistributionOrigin112C3D87785748A6F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DistributionOrigin1InvokeFuncFromCfForintegcloudfrontfunctionurloriginoacDistributionOrigin112C3D8777F1FE6AC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DistributionOrigin1InvokeFuncFromCfForintegcloudfrontfunctionurloriginoacDistributionOrigin112C3D8777F1FE6AC",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "integ-cloudfront-function-url-origin-oac"
@@ -183,7 +201,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2fd921438fa96cd7d34be28d18080c6c0294014a32eac3290f12e2f4a889fe57.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2621c7dc5bc2543032abc8c31a163f2d420419240866064208e47236588339d7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -296,7 +314,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7226f7f2891a1cc814a7146c7b8706fd793e6770cf3338740071345c3f5a1ae3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a2b903b3df1e458ccda6acda53688f29879af3e4b33cbc46fe7491a86ae5029c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

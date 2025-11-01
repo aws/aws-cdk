@@ -106,7 +106,7 @@
     }
    }
   },
-  "AliasDistributionOrigin1InvokeFromApiForintegcloudfrontfunctionurloriginoacAliasDistributionOrigin11CF22ED58F6A0AB2": {
+  "AliasDistributionOrigin1InvokeFunctionUrlFromCloudFrontForintegcloudfrontfunctionurloriginoacAliasDistributionOrigin11CF22ED55E05EA4F": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunctionUrl",
@@ -116,6 +116,39 @@
       "FunctionArn"
      ]
     },
+    "Principal": "cloudfront.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":cloudfront::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":distribution/",
+       {
+        "Ref": "AliasDistribution1027E46E"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "AliasDistributionOrigin1InvokeFunctionFromCloudFrontForintegcloudfrontfunctionurloriginoacAliasDistributionOrigin11CF22ED50D032DE9": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MyFunctionAliasLiveFunctionUrl4C98949A",
+      "FunctionArn"
+     ]
+    },
+    "InvokedViaFunctionUrl": true,
     "Principal": "cloudfront.amazonaws.com",
     "SourceArn": {
      "Fn::Join": [

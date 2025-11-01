@@ -73,7 +73,7 @@
     }
    }
   },
-  "DistributionOrigin1InvokeFromApiForintegcloudfrontfunctionurlorigincustomoacDistributionOrigin187E79A3C7850B1CA": {
+  "DistributionOrigin1InvokeFunctionUrlFromCloudFrontForintegcloudfrontfunctionurlorigincustomoacDistributionOrigin187E79A3CB280019F": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunctionUrl",
@@ -105,7 +105,7 @@
     }
    }
   },
-  "DistributionOrigin1InvokeFuncFromCfForintegcloudfrontfunctionurlorigincustomoacDistributionOrigin187E79A3C5E722BF7": {
+  "DistributionOrigin1InvokeFunctionFromCloudFrontForintegcloudfrontfunctionurlorigincustomoacDistributionOrigin187E79A3C2AA0A629": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
