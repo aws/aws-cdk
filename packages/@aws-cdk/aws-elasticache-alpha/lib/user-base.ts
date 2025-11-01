@@ -41,13 +41,6 @@ class AccessControlString extends AccessControl {
  */
 export interface UserBaseProps {
   /**
-   * The engine type for the user.
-   * Enum options: UserEngine.VALKEY, UserEngine.REDIS.
-   *
-   * @default UserEngine.VALKEY.
-   */
-  readonly engine?: UserEngine;
-  /**
    * The ID of the user.
    */
   readonly userId: string;

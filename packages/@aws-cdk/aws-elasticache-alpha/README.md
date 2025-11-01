@@ -291,9 +291,6 @@ You can also create a no password required user by using `NoPasswordUser` constr
 
 ```ts
 const user = new elasticache.NoPasswordUser(this, 'User', {
-  // set user engine  
-  engine: elasticache.UserEngine.REDIS, 
-    
   // set user id
   userId: 'my-user-id',
  
@@ -304,6 +301,8 @@ const user = new elasticache.NoPasswordUser(this, 'User', {
   userName: 'my-user-name',
 });
 ```
+
+> NOTE: `NoPasswordUser` is only available for Redis Cache.
 
 ### Default user
 

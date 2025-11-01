@@ -19,6 +19,13 @@ export interface IamUserProps extends UserBaseProps {
    * @default - Same as userId.
    */
   readonly userName?: string;
+  /**
+   * The engine type for the user.
+   * Enum options: UserEngine.VALKEY, UserEngine.REDIS.
+   *
+   * @default UserEngine.VALKEY.
+   */
+  readonly engine?: UserEngine;
 }
 
 /**
