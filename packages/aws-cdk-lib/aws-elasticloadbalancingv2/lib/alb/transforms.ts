@@ -5,7 +5,13 @@ import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
  * Properties for a rewrite rule
  */
 export interface RewriteRule {
+  /**
+   * The regex pattern to match
+   */
   readonly regex: string;
+  /**
+   * The string to replace the matched pattern
+   */
   readonly replace: string;
 }
 
@@ -13,7 +19,13 @@ export interface RewriteRule {
  * Transform types for listener rules
  */
 export enum TransformType {
+  /**
+   * Host header rewrite transform
+   */
   HOST_HEADER_REWRITE = 'host-header-rewrite',
+  /**
+   * URL rewrite transform
+   */
   URL_REWRITE = 'url-rewrite',
 }
 
