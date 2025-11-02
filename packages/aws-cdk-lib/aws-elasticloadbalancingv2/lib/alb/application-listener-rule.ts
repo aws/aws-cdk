@@ -310,8 +310,8 @@ export class ApplicationListenerRule extends Construct {
   /**
    * Add a transform to this rule
    */
-  public addTransform(transform: ListenerTransform) {
-    this.transforms.push(transform);
+  public addTransform(transform: ListenerTransform[]) {
+    this.transforms.push(...transform);
   }
 
   /**

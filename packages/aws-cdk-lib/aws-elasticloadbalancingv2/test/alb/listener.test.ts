@@ -1399,6 +1399,84 @@ describe('tests', () => {
       });
     });
 
+    test('configure transforms via addTransforms', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+        vpc,
+      });
+      const listener = lb.addListener('Listener', {
+        port: 80,
+      });
+      listener.addAction('DefaultAction', {
+        action: elbv2.ListenerAction.fixedResponse(200),
+      });
+
+      const listenerRule = new elbv2.ApplicationListenerRule(stack, 'Rule', {
+        action: elbv2.ListenerAction.fixedResponse(500),
+        listener,
+        priority: 10,
+        conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
+      });
+      listenerRule.addTransform([
+        elbv2.ListenerTransform.hostHeaderRewrite([
+          {
+            regex: '^(.*)$', replace: 'example.com',
+          },
+        ]),
+        elbv2.ListenerTransform.urlRewrite([
+          {
+            regex: '^(.*)$', replace: '/newpath/$1',
+          },
+        ]),
+      ]);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+        Actions: [
+          {
+            FixedResponseConfig: {
+              StatusCode: '500',
+            },
+            Type: 'fixed-response',
+          },
+        ],
+        Conditions: [
+          {
+            PathPatternConfig: {
+              Values: ['/hello'],
+            },
+          },
+        ],
+        Priority: 10,
+        Transforms: [
+          {
+            Type: 'host-header-rewrite',
+            HostHeaderRewriteConfig: {
+              Rewrites: [
+                {
+                  Regex: '^(.*)$',
+                  Replace: 'example.com',
+                },
+              ],
+            },
+          },
+          {
+            Type: 'url-rewrite',
+            UrlRewriteConfig: {
+              Rewrites: [
+                {
+                  Regex: '^(.*)$',
+                  Replace: '/newpath/$1',
+                },
+              ],
+            },
+          },
+        ],
+      });
+    });
+
     test('throws when specifying transforms without priority', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1419,6 +1497,31 @@ describe('tests', () => {
           }]),
         ],
       })).toThrow('Setting \'transforms\' requires \'priority\' and at least one of \'conditions\', \'pathPattern\' or \'hostHeader\' to be set.');
+    });
+
+    test('throws when specifying transforms and priority without conditions', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', {
+        vpc,
+      });
+      const listener = lb.addListener('Listener', {
+        port: 80,
+      });
+      listener.addAction('DefaultAction', {
+        action: elbv2.ListenerAction.fixedResponse(200),
+      });
+      // THEN
+      expect(() => listener.addAction('Action', {
+        action: elbv2.ListenerAction.fixedResponse(500),
+        priority: 10,
+        transforms: [
+          elbv2.ListenerTransform.hostHeaderRewrite([{
+            regex: '^(.*)$', replace: 'example.com',
+          }]),
+        ],
+      })).toThrow('Setting \'transforms\' requires \'conditions\', \'pathPattern\' or \'hostHeader\' to be set when \'priority\' is set.');
     });
 
     test('throws when specifying multiple host header rewrites', () => {
