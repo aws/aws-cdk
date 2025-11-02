@@ -4,28 +4,6 @@ import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IamUser, AccessControl, UserEngine } from '../lib';
 
 describe('IamUser', () => {
-  describe('validation errors', () => {
-    let stack: Stack;
-    beforeEach(() => {
-      stack = new Stack();
-    });
-
-    test.each([
-      {
-        testDescription: 'when userName differs from userId throws validation error',
-        userId: 'test-user',
-        userName: 'different-name',
-        errorMessage: 'For IAM authentication, userName must be equal to userId.',
-      },
-    ])('$testDescription', ({ userId, userName, errorMessage }) => {
-      expect(() => new IamUser(stack, 'TestUser', {
-        userId,
-        userName,
-        accessControl: AccessControl.fromAccessString('on ~* +@all'),
-      })).toThrow(errorMessage);
-    });
-  });
-
   describe('constructor', () => {
     let stack: Stack;
     beforeEach(() => {
@@ -42,7 +20,7 @@ describe('IamUser', () => {
       template.hasResourceProperties('AWS::ElastiCache::User', {
         Engine: 'valkey',
         UserId: 'test-user',
-        UserName: 'test-user',
+        UserName: 'test-user', // userName should automatically be set to userId
         AccessString: 'on ~* +@all',
         AuthenticationMode: {
           Type: 'iam',
@@ -52,12 +30,32 @@ describe('IamUser', () => {
       });
     });
 
+    // Add this new test case
+    test('automatically sets userName to userId regardless of provided userName', () => {
+      const user = new IamUser(stack, 'TestUser', {
+        userId: 'test-user-id',
+        userName: 'different-name', // This should be ignored
+        accessControl: AccessControl.fromAccessString('on ~* +@all'),
+      });
+
+      expect(user.userName).toBe('test-user-id'); // Should be set to userId
+      expect(user.userId).toBe('test-user-id');
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ElastiCache::User', {
+        UserId: 'test-user-id',
+        UserName: 'test-user-id', // Should be userId, not the provided userName
+      });
+    });
+
     test('creates user with all possible properties', () => {
       new IamUser(stack, 'TestUser', {
         userId: 'test-user',
-        accessControl: AccessControl.fromAccessString('on ~app:* +@read +@write'),
+        accessControl: AccessControl.fromAccessString(
+          'on ~app:* +@read +@write',
+        ),
         engine: UserEngine.REDIS,
-        userName: 'test-user',
+        userName: 'test-user', // This matches userId but will be overridden anyway
       });
 
       const template = Template.fromStack(stack);
@@ -100,21 +98,22 @@ describe('IamUser', () => {
       });
 
       expect(user.userId).toBe('test-user-id');
-      expect(user.userName).toBe('test-user-id');
+      expect(user.userName).toBe('test-user-id'); // Should always equal userId
       expect(user.engine).toBe('valkey');
       expect(user.accessString).toBe('on ~app:* +@read');
       expect(user.userArn).toBeDefined();
       expect(user.userStatus).toBeDefined();
     });
 
-    test('userName defaults to userId when not provided', () => {
+    // Update this test description and expectation
+    test('userName is always set to userId', () => {
       const user = new IamUser(stack, 'TestUser', {
         userId: 'my-user-id',
         engine: UserEngine.REDIS,
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
       });
 
-      expect(user.userName).toBe('my-user-id');
+      expect(user.userName).toBe('my-user-id'); // Should equal userId
       expect(user.engine).toBe('redis');
     });
   });
@@ -141,7 +140,11 @@ describe('IamUser', () => {
 
     test('returns false for imported users (not actual IamUser instances)', () => {
       const stack = new Stack();
-      const importedUser = IamUser.fromUserId(stack, 'ImportedUser', 'test-user');
+      const importedUser = IamUser.fromUserId(
+        stack,
+        'ImportedUser',
+        'test-user',
+      );
 
       expect(IamUser.isIamUser(importedUser)).toBe(false);
     });
@@ -227,7 +230,9 @@ describe('IamUser', () => {
       });
 
       expect(user.userId).toBe('my-user');
-      expect(user.userArn).toBe('arn:aws:elasticache:us-east-1:123456789012:user:my-user');
+      expect(user.userArn).toBe(
+        'arn:aws:elasticache:us-east-1:123456789012:user:my-user',
+      );
       expect(user.userName).toBe(undefined);
       expect(user.engine).toBe(undefined);
     });
@@ -319,22 +324,27 @@ describe('IamUser', () => {
 
     test.each([
       {
-        testDescription: 'when passing both userId and userArn throws validation error',
+        testDescription:
+          'when passing both userId and userArn throws validation error',
         userArn: 'arn:aws:elasticache:us-east-1:999999999999:user:test-user',
         userId: 'test-user',
         errorMessage: 'Only one of userArn or userId can be provided.',
       },
       {
-        testDescription: 'when passing neither userId nor userArn throws validation error',
+        testDescription:
+          'when passing neither userId nor userArn throws validation error',
         errorMessage: 'One of userId or userArn is required.',
       },
       {
-        testDescription: 'when passing invalid userArn (no user id) throws validation error',
+        testDescription:
+          'when passing invalid userArn (no user id) throws validation error',
         userArn: 'arn:aws:elasticache:us-east-1:999999999999:user',
         errorMessage: 'Unable to extract user id from ARN.',
       },
     ])('$testDescription', ({ userArn, userId, errorMessage }) => {
-      expect(() => IamUser.fromUserAttributes(stack, 'ImportedUser', { userArn, userId })).toThrow(errorMessage);
+      expect(() =>
+        IamUser.fromUserAttributes(stack, 'ImportedUser', { userArn, userId }),
+      ).toThrow(errorMessage);
     });
   });
 });
