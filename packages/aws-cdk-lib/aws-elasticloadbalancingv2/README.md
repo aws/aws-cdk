@@ -226,7 +226,7 @@ listener.addAction('RewriteAction', {
     messageBody: 'Transformed request',
   }),
   transforms: [
-        // Rewrite URL path
+    // Rewrite URL path
     elbv2.ListenerTransform.urlRewrite([
       {
         regex: '^/api/(.*)$',
