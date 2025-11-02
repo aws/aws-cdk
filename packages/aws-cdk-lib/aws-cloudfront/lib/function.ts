@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import { Construct } from 'constructs';
 import { CfnFunction, FunctionReference, IFunctionRef, IKeyValueStoreRef } from './cloudfront.generated';
-import { IResource, Lazy, Names, Resource, Stack, ValidationError } from '../../core';
+import { FeatureFlags, IResource, Lazy, Names, Resource, Stack, ValidationError } from '../../core';
+import * as cxapi from '../../cx-api';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -165,14 +166,21 @@ export class Function extends Resource implements IFunction {
 
   /** Imports a function by its name and ARN */
   public static fromFunctionAttributes(scope: Construct, id: string, attrs: FunctionAttributes): IFunction {
-    return new class extends Resource implements IFunction {
+    class ImportedFunction extends Resource implements IFunction {
       public readonly functionName = attrs.functionName;
       public readonly functionArn = attrs.functionArn;
-      public readonly functionRuntime = attrs.functionRuntime ?? FunctionRuntime.JS_1_0.value;
+      public readonly functionRuntime: string;
       public readonly functionRef = {
         functionArn: attrs.functionArn,
       };
-    }(scope, id);
+
+      constructor(parentScope: Construct, resourceId: string) {
+        super(parentScope, resourceId);
+        const useV2Runtime = FeatureFlags.of(this).isEnabled(cxapi.CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0);
+        this.functionRuntime = attrs.functionRuntime ?? (useV2Runtime ? FunctionRuntime.JS_2_0.value : FunctionRuntime.JS_1_0.value);
+      }
+    }
+    return new ImportedFunction(scope, id);
   }
 
   /**
@@ -205,7 +213,10 @@ export class Function extends Resource implements IFunction {
 
     this.functionName = props.functionName ?? this.generateName();
 
-    const defaultFunctionRuntime = props.keyValueStore ? FunctionRuntime.JS_2_0.value : FunctionRuntime.JS_1_0.value;
+    const useV2Runtime = FeatureFlags.of(this).isEnabled(cxapi.CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0);
+    const defaultFunctionRuntime = props.keyValueStore
+      ? FunctionRuntime.JS_2_0.value
+      : (useV2Runtime ? FunctionRuntime.JS_2_0.value : FunctionRuntime.JS_1_0.value);
     this.functionRuntime = props.runtime?.value ?? defaultFunctionRuntime;
 
     if (props.keyValueStore && this.functionRuntime === FunctionRuntime.JS_1_0.value) {

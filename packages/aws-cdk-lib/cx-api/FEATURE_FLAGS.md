@@ -110,6 +110,7 @@ Flags come in three types:
 | [@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId](#aws-cdkaws-ecs-patternsuniquetargetgroupid) | When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement | 2.221.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | 2.221.0 | fix |
 | [@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault](#aws-cdkaws-elasticloadbalancingv2networkloadbalancerwithsecuritygroupbydefault) | When enabled, Network Load Balancer will be created with a security group by default. | V2NEXT | new default |
+| [@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0](#aws-cdkaws-cloudfrontdefaultfunctionruntimev2_0) | Use cloudfront-js-2.0 as the default runtime for CloudFront Functions | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -2336,6 +2337,27 @@ When this feature flag is enabled, Network Load Balancer will be created with a 
 | V2NEXT | `false` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to create Network Load Balancer without a security group by default.
+
+
+### @aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0
+
+*Use cloudfront-js-2.0 as the default runtime for CloudFront Functions*
+
+Flag type: New default behavior
+
+When enabled, CloudFront Functions will use cloudfront-js-2.0 runtime by default
+instead of cloudfront-js-1.0. The runtime can still be configured explicitly using
+the `runtime` property.
+
+Note: If `keyValueStore` is specified, the runtime will always be cloudfront-js-2.0
+regardless of this flag.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Set `runtime: FunctionRuntime.JS_1_0` explicitly to use the v1.0 runtime.
 
 
 <!-- END details -->
