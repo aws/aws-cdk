@@ -1740,7 +1740,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `ipAddressType: OriginIpAddressType.IPV4` explicitly to maintain IPv4-only behavior.',
-   },
+  },
 
   //////////////////////////////////////////////////////////////////////
   [NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT]: {
