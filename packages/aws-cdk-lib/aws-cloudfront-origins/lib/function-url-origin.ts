@@ -153,7 +153,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
       region: '', // CloudFront Distribution is a global resource, so we omit the region.
     });
 
-    new lambda.CfnPermission(scope, `InvokeFunctionUrlFromCloudFrontFor${options.originId}`, {
+    new lambda.CfnPermission(scope, `InvokeFromApiFor${options.originId}`, {
       principal: principal,
       action: 'lambda:InvokeFunctionUrl',
       functionName: this.functionUrl.functionArn,

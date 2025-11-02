@@ -106,7 +106,7 @@
     }
    }
   },
-  "AliasDistributionOrigin1InvokeFunctionUrlFromCloudFrontForintegcloudfrontfunctionurloriginoacAliasDistributionOrigin11CF22ED55E05EA4F": {
+  "AliasDistributionOrigin1InvokeFromApiForintegcloudfrontfunctionurloriginoacAliasDistributionOrigin11CF22ED58F6A0AB2": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunctionUrl",

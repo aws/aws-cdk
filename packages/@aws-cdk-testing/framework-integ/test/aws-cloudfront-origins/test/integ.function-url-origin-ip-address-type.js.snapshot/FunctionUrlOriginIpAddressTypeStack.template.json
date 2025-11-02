@@ -92,7 +92,7 @@
     }
    }
   },
-  "DistributionWithoutIpAddressTypePropIPv4Origin1InvokeFunctionUrlFromCloudFrontForFunctionUrlOriginIpAddressTypeStackDistributionWithoutIpAddressTypePropIPv4Origin19CE58A8D1FF3A265": {
+  "DistributionWithoutIpAddressTypePropIPv4Origin1InvokeFromApiForFunctionUrlOriginIpAddressTypeStackDistributionWithoutIpAddressTypePropIPv4Origin19CE58A8D68C10388": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunctionUrl",
@@ -217,7 +217,7 @@
     }
    }
   },
-  "DistributionWithIPv4Origin1InvokeFunctionUrlFromCloudFrontForFunctionUrlOriginIpAddressTypeStackDistributionWithIPv4Origin16D0979012F724D97": {
+  "DistributionWithIPv4Origin1InvokeFromApiForFunctionUrlOriginIpAddressTypeStackDistributionWithIPv4Origin16D09790128D49D13": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunctionUrl",
@@ -343,7 +343,7 @@
     }
    }
   },
-  "DistributionWithIPv6Origin1InvokeFunctionUrlFromCloudFrontForFunctionUrlOriginIpAddressTypeStackDistributionWithIPv6Origin13DB75E92D7080795": {
+  "DistributionWithIPv6Origin1InvokeFromApiForFunctionUrlOriginIpAddressTypeStackDistributionWithIPv6Origin13DB75E92367EAB99": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunctionUrl",
@@ -469,7 +469,7 @@
     }
    }
   },
-  "DistributionWithDualstackOrigin1InvokeFunctionUrlFromCloudFrontForFunctionUrlOriginIpAddressTypeStackDistributionWithDualstackOrigin1C9A16E089C88301D": {
+  "DistributionWithDualstackOrigin1InvokeFromApiForFunctionUrlOriginIpAddressTypeStackDistributionWithDualstackOrigin1C9A16E08C93B3E02": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunctionUrl",

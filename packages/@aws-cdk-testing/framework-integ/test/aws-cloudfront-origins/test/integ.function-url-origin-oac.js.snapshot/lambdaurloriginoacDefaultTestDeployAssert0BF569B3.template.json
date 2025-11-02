@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1761970654936"
+    "salt": "1762059677708"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -140,7 +140,7 @@
     "outputPaths": [
      "DistributionConfig.Origins.Items.0.OriginAccessControlId"
     ],
-    "salt": "1761970654936"
+    "salt": "1762059677709"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -175,7 +175,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1761970654937"
+    "salt": "1762059677709"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -204,7 +204,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"status\":200,\"body\":\"Hello!!\"}}",
     "flattenResponse": "false",
-    "salt": "1761970654938"
+    "salt": "1762059677710"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

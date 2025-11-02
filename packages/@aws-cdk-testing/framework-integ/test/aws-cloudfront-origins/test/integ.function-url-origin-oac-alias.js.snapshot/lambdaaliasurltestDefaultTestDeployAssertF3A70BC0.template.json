@@ -16,7 +16,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"status\":200,\"body\":\"Hello!!\"}}",
     "flattenResponse": "false",
-    "salt": "1761972135076"
+    "salt": "1762058433924"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -79,7 +79,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"status\":403,\"body\":\"Forbidden\"}}",
     "flattenResponse": "false",
-    "salt": "1761972135106"
+    "salt": "1762058433945"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
