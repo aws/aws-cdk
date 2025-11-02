@@ -20,6 +20,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
     - [Self-managed nodes](#self-managed-nodes)
       - [Spot Instances](#spot-instances)
       - [Bottlerocket](#bottlerocket)
+      - [Mixed Instances Policy Support][#mixed-instances-policy-support]
     - [Endpoint Access](#endpoint-access)
     - [Alb Controller](#alb-controller)
     - [VPC Support](#vpc-support)
@@ -667,6 +668,30 @@ cluster.addNodegroupCapacity('BottlerocketNvidiaNG', {
 ```
 
 For more details about Bottlerocket, see [Bottlerocket FAQs](https://aws.amazon.com/bottlerocket/faqs/) and [Bottlerocket Open Source Blog](https://aws.amazon.com/blogs/opensource/announcing-the-general-availability-of-bottlerocket-an-open-source-linux-distribution-purpose-built-to-run-containers/).
+
+#### Mixed Instances Policy Support
+
+You can specify a mixed instances policy when adding self-managed nodes. This is helpful if you want to specify multiple instance types for your auto-scaling group configuration. For more details about mixed instances policy see [Auto Scaling groups with multiple instance types and purchase options](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-mixed-instances-groups.html).
+
+```ts
+declare const cluster: eks.Cluster;
+cluster.addAutoScalingGroupCapacity('AsgMixedInstancesPolicy', {
+  mixedInstancesPolicy: {
+    launchTemplate: new ec2.LaunchTemplate(stack, 'template', {
+      launchTemplateName: launchTemplateName,
+      instanceType: new ec2.InstanceType('t2.medium'),
+      machineImage: new eks.EksOptimizedImage({
+        nodeType: eks.NodeType.STANDARD,
+        cpuArch: eks.CpuArch.X86_64,
+        kubernetesVersion: CLUSTER_VERSION.version,
+      }),
+      securityGroup: cluster.clusterSecurityGroup,
+      role: new iam.Role(stack, 'role', { assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com') }),
+    }),
+    launchTemplateOverrides: [],
+  },
+})
+```
 
 ### Endpoint Access
 
