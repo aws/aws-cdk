@@ -73,7 +73,7 @@ function stripTrailingDot(zoneName: string) {
   return zoneName.endsWith('.') ? zoneName.substring(0, zoneName.length - 1) : zoneName;
 }
 
-const octalConversionIgnoreRegex = /[a-zA-Z0-9-_\\.]/;
+const octalConversionIgnoreRegex = /[a-z0-9-_\\.]/;
 
 // Required to octal encode characters other than a–z, 0–9, - (hyphen), _ (underscore), and . (period) for IAM conditions
 // https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/specifying-conditions-route53.html#route53_rrset_conditionkeys_normalization
