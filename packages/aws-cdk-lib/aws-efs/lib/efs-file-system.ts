@@ -4,7 +4,7 @@ import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, IResource, Lazy, Names, RemovalPolicy, Resource, Size, Stack, Tags, Token, ValidationError } from '../../core';
+import { ArnFormat, FeatureFlags, Lazy, Names, RemovalPolicy, Resource, Size, Stack, Tags, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -141,7 +141,7 @@ export enum ReplicationOverwriteProtection {
 /**
  * Represents an Amazon EFS file system
  */
-export interface IFileSystem extends ec2.IConnectable, IResource, iam.IResourceWithPolicy {
+export interface IFileSystem extends ec2.IConnectable, iam.IResourceWithPolicy {
   /**
    * The ID of the file system, assigned by Amazon EFS.
    *
