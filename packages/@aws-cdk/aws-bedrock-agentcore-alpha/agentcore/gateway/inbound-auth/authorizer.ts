@@ -1,4 +1,4 @@
-import { IUserPoolClient, UserPool } from 'aws-cdk-lib/aws-cognito';
+import { IUserPoolClient, IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { ValidationError } from '../validation-helpers';
 
 /******************************************************************************
@@ -18,7 +18,7 @@ export enum GatewayAuthorizerType {
 /**
  * Abstract interface for gateway authorizer configuration
  */
-export interface IGatewayAuthorizer {
+export interface IGatewayAuthorizerConfig {
   /**
    * The authorizer type
    */
@@ -63,15 +63,18 @@ export interface CustomJwtConfiguration {
 /**
  * Custom JWT authorizer configuration implementation
  */
-export class CustomJwtAuthorizer implements IGatewayAuthorizer {
+export class CustomJwtAuthorizer implements IGatewayAuthorizerConfig {
   /**
    * Create a JWT authorizer from Cognito User Pool
    * @param props - The Cognito configuration
    * @returns CustomJwtAuthorizer configured for Cognito
    */
   public static fromCognito(props: CognitoAuthorizerProps) {
+    // Construct the discovery URL from the User Pool properties
+    const discoveryUrl = `https://cognito-idp.${props.userPool.env.region}.amazonaws.com/${props.userPool.userPoolId}/.well-known/openid-configuration`;
+
     return new CustomJwtAuthorizer({
-      discoveryUrl: `${props.userPool.userPoolProviderUrl}/.well-known/openid-configuration`,
+      discoveryUrl: discoveryUrl,
       allowedClients: props.allowedClients?.flatMap((client) => client.userPoolClientId),
       allowedAudience: props.allowedAudiences,
     });
@@ -110,7 +113,7 @@ export class CustomJwtAuthorizer implements IGatewayAuthorizer {
  * AWS IAM authorizer configuration implementation
  *
  */
-export class IamAuthorizer implements IGatewayAuthorizer {
+export class IamAuthorizer implements IGatewayAuthorizerConfig {
   public readonly authorizerType = GatewayAuthorizerType.AWS_IAM;
 
   /**
@@ -131,7 +134,7 @@ export interface CognitoAuthorizerProps {
   /**
    * The Cognito User Pool to use for authentication
    */
-  readonly userPool: UserPool;
+  readonly userPool: IUserPool;
   /**
    * The allowed User Pool clients
    * @default - All clients are allowed
@@ -155,9 +158,9 @@ export abstract class GatewayAuthorizer {
   /**
    * Create a custom JWT authorizer
    * @param configuration - The JWT configuration
-   * @returns IGatewayAuthorizer configured for custom JWT
+   * @returns IGatewayAuthorizerConfig configured for custom JWT
    */
-  public static usingCustomJwt(configuration: CustomJwtConfiguration): IGatewayAuthorizer {
+  public static usingCustomJwt(configuration: CustomJwtConfiguration): IGatewayAuthorizerConfig {
     // At least one of allowedAudience or allowedClients must be defined for CUSTOM_JWT authorizer
     if (!configuration.allowedAudience && !configuration.allowedClients) {
       throw new ValidationError('At least one of allowedAudience or allowedClients must be defined for CUSTOM_JWT authorizer');
@@ -168,7 +171,7 @@ export abstract class GatewayAuthorizer {
   /**
    * Static method for creating a Cognito authorizer
    */
-  public static usingCognito(props: CognitoAuthorizerProps): IGatewayAuthorizer {
+  public static usingCognito(props: CognitoAuthorizerProps): IGatewayAuthorizerConfig {
     return CustomJwtAuthorizer.fromCognito(props);
   }
 }

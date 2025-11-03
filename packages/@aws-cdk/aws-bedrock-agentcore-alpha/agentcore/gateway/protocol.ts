@@ -21,7 +21,7 @@ export enum GatewayProtocolType {
 /**
  * Abstract interface for gateway protocol configuration
  */
-export interface IGatewayProtocol {
+export interface IGatewayProtocolConfig {
   /**
    * The protocol type
    */
@@ -41,9 +41,9 @@ export abstract class GatewayProtocol {
   /**
    * Create an MCP protocol configuration
    * @param props - Optional MCP configuration properties
-   * @returns IGatewayProtocol configured for MCP
+   * @returns IGatewayProtocolConfig configured for MCP
    */
-  public static mcp(props?: McpConfiguration): IGatewayProtocol {
+  public static mcp(props?: McpConfiguration): IGatewayProtocolConfig {
     return new McpProtocolConfiguration(props);
   }
 }
@@ -112,7 +112,7 @@ export interface McpConfiguration {
 /**
  * MCP (Model Context Protocol) configuration implementation
  */
-export class McpProtocolConfiguration implements IGatewayProtocol {
+export class McpProtocolConfiguration implements IGatewayProtocolConfig {
   public readonly protocolType: string;
   /**
    * The supported MCP protocol versions

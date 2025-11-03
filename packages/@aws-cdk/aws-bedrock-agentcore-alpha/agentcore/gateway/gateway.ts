@@ -8,10 +8,10 @@ import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 // Internal imports
 import { GatewayBase, GatewayExceptionLevel, IGateway } from './gateway-base';
-import { GatewayAuthorizer, IGatewayAuthorizer } from './inbound-auth/authorizer';
+import { GatewayAuthorizer, IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
 import { ICredentialProvider } from './outbound-auth/credential-provider';
 import { GatewayPerms } from './perms';
-import { IGatewayProtocol, McpGatewaySearchType, McpProtocolConfiguration, MCPProtocolVersion } from './protocol';
+import { IGatewayProtocolConfig, McpGatewaySearchType, McpProtocolConfiguration, MCPProtocolVersion } from './protocol';
 import { ApiSchema } from './targets/schema/api-schema';
 import { ToolSchema } from './targets/schema/tool-schema';
 import { GatewayTarget } from './targets/target';
@@ -144,13 +144,13 @@ export interface GatewayProps {
    *  searchType: McpGatewaySearchType.SEMANTIC,
    *  instructions: "Default gateway to connect to external MCP tools",
    */
-  readonly protocolConfiguration?: IGatewayProtocol;
+  readonly protocolConfiguration?: IGatewayProtocolConfig;
 
   /**
    * The authorizer configuration for the gateway
    * @default - A default authorizer will be created using Cognito
    */
-  readonly authorizerConfiguration?: IGatewayAuthorizer;
+  readonly authorizerConfiguration?: IGatewayAuthorizerConfig;
 
   /**
    * The verbosity of exception messages
@@ -236,8 +236,8 @@ export class Gateway extends GatewayBase {
       public readonly gatewayId = attrs.gatewayId;
       public readonly name = attrs.gatewayName;
       public readonly description = undefined;
-      public readonly protocolConfiguration: IGatewayProtocol;
-      public readonly authorizerConfiguration: IGatewayAuthorizer;
+      public readonly protocolConfiguration: IGatewayProtocolConfig;
+      public readonly authorizerConfiguration: IGatewayAuthorizerConfig;
       public readonly exceptionLevel = undefined;
       public readonly kmsKey = undefined;
       public readonly role = attrs.role;
@@ -311,12 +311,12 @@ export class Gateway extends GatewayBase {
   /**
    * The protocol configuration for the gateway
    */
-  public readonly protocolConfiguration: IGatewayProtocol;
+  public readonly protocolConfiguration: IGatewayProtocolConfig;
 
   /**
    * The authorizer configuration for the gateway
    */
-  public readonly authorizerConfiguration: IGatewayAuthorizer;
+  public readonly authorizerConfiguration: IGatewayAuthorizerConfig;
 
   /**
    * The exception level for the gateway
@@ -594,7 +594,7 @@ export class Gateway extends GatewayBase {
    * Creates a default Cognito authorizer for the gateway
    * Provisions a Cognito User Pool and configures JWT authentication
    */
-  private createDefaultCognitoAuthorizer(): IGatewayAuthorizer {
+  private createDefaultCognitoAuthorizer(): IGatewayAuthorizerConfig {
     const userPool = new cognito.UserPool(this, 'UserPool', {
       userPoolName: `${this.name}-gw-userpool`,
       signInCaseSensitive: false,
@@ -614,7 +614,7 @@ export class Gateway extends GatewayBase {
    * Creates a default MCP protocol configuration for the gateway
    * Provides sensible defaults for MCP protocol settings
    */
-  private createDefaultMcpProtocolConfiguration(): IGatewayProtocol {
+  private createDefaultMcpProtocolConfiguration(): IGatewayProtocolConfig {
     return new McpProtocolConfiguration({
       supportedVersions: [MCPProtocolVersion.MCP_2025_03_26],
       searchType: McpGatewaySearchType.SEMANTIC,

@@ -4,9 +4,9 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { Construct } from 'constructs';
 // Internal imports
-import { IGatewayAuthorizer } from './inbound-auth/authorizer';
+import { IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
 import { GatewayPerms } from './perms';
-import { IGatewayProtocol } from './protocol';
+import { IGatewayProtocolConfig } from './protocol';
 
 /******************************************************************************
  *                                 Enums
@@ -60,12 +60,12 @@ export interface IGateway extends IResource {
   /**
    * The protocol configuration for the gateway
    */
-  readonly protocolConfiguration: IGatewayProtocol;
+  readonly protocolConfiguration: IGatewayProtocolConfig;
 
   /**
    * The authorizer configuration for the gateway
    */
-  readonly authorizerConfiguration: IGatewayAuthorizer;
+  readonly authorizerConfiguration: IGatewayAuthorizerConfig;
 
   /**
    * The exception level for the gateway
@@ -185,8 +185,8 @@ export abstract class GatewayBase extends Resource implements IGateway {
   public abstract readonly gatewayId: string;
   public abstract readonly name: string;
   public abstract readonly description?: string;
-  public abstract readonly protocolConfiguration: IGatewayProtocol;
-  public abstract readonly authorizerConfiguration: IGatewayAuthorizer;
+  public abstract readonly protocolConfiguration: IGatewayProtocolConfig;
+  public abstract readonly authorizerConfiguration: IGatewayAuthorizerConfig;
   public abstract readonly exceptionLevel?: GatewayExceptionLevel;
   public abstract readonly kmsKey?: kms.IKey;
   public abstract readonly role: iam.IRole;

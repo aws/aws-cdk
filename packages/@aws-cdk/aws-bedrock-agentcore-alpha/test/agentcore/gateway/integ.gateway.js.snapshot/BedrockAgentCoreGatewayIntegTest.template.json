@@ -164,11 +164,9 @@
        "Fn::Join": [
         "",
         [
+         "https://cognito-idp.us-east-1.amazonaws.com/",
          {
-          "Fn::GetAtt": [
-           "TestGatewayUserPool545AA49A",
-           "ProviderURL"
-          ]
+          "Ref": "TestGatewayUserPool545AA49A"
          },
          "/.well-known/openid-configuration"
         ]
