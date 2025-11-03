@@ -230,6 +230,27 @@ export class ResourceClass extends ClassType {
     });
   }
 
+  /**
+   * ```ts
+   *  public static fromApplicationInstanceArn(scope: constructs.Construct, id: string, arn: string): IApplicationInstanceRef {
+   *    class Import extends cdk.Resource {
+   *      public applicationInstanceRef: ApplicationInstanceReference;
+   *
+   *      public constructor(scope: constructs.Construct, id: string, arn: string) {
+   *        super(scope, id, {
+   *          "environmentFromArn": arn
+   *        });
+   *
+   *        const variables = new cfn_parse.TemplateString("arn:${Partition}:panorama:${Region}:${Account}:applicationInstance/${ApplicationInstanceId}").parse(arn);
+   *        this.applicationInstanceRef = {
+   *          "applicationInstanceId": variables.ApplicationInstanceId,
+   *          "applicationInstanceArn": arn
+   *        };
+   *      }
+   *    }
+   *    return new Import(scope, id, arn);
+   *  }
+   */
   private makeFromArnFactory() {
     const arnTemplate = this.resource.arnTemplate;
     if (!(arnTemplate && this.referenceStruct)) {
