@@ -11,21 +11,14 @@ import type { UserBaseProps } from './user-base';
 import { UserBase } from './user-base';
 
 const ELASTICACHE_IAMUSER_SYMBOL = Symbol.for(
-  '@aws-cdk/aws-elasticache.IamUser',
+  '@aws-cdk/aws-elasticache.IamUser'
 );
 
 /**
  * Properties for defining an ElastiCache user with IAM authentication.
  */
 export interface IamUserProps extends UserBaseProps {
-  /**
-   * The name of the user.
-   * For IAM authentication, this will automatically be set to the same value as userId.
-   * Any value provided here will be ignored.
-   *
-   * @default - Same as userId (automatically set).
-   */
-  readonly userName?: string;
+  // userName property removed - it's automatically set to userId internally
 }
 
 /**
