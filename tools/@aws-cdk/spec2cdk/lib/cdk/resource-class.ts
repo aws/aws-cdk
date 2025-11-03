@@ -6,8 +6,10 @@ import {
   Block,
   ClassType,
   code,
+  DocsSpec,
   DummyScope,
-  expr, Expression,
+  expr,
+  Expression,
   Initializer,
   InterfaceType,
   IScope,
@@ -16,7 +18,8 @@ import {
   MemberVisibility,
   Module,
   ObjectLiteral,
-  Stability, Statement,
+  Stability,
+  Statement,
   stmt,
   StructType,
   SuperInitializer,
@@ -24,9 +27,8 @@ import {
   TruthyOr,
   Type,
   TypeDeclarationStatement,
-  DocsSpec,
 } from '@cdklabs/typewriter';
-import { findNonIdentifierArnProperty } from './arn';
+import { findArnProperty, findNonIdentifierArnProperty } from './arn';
 import { CDK_CORE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
 import { ResourceDecider } from './resource-decider';
@@ -35,13 +37,17 @@ import {
   cfnParserNameFromType,
   cfnProducerNameFromType,
   classNameFromResource,
-  cloudFormationDocLink, propertyNameFromCloudFormation,
-  propStructNameFromResource, referenceInterfaceName, referenceInterfaceAttributeName, referencePropertyName,
+  cloudFormationDocLink,
+  propertyNameFromCloudFormation,
+  propStructNameFromResource,
+  referenceInterfaceAttributeName,
+  referenceInterfaceName,
+  referencePropertyName,
   staticRequiredTransform,
   staticResourceTypeName,
 } from '../naming';
 import { splitDocumentation } from '../util';
-import { SelectiveImport, RelationshipDecider } from './relationship-decider';
+import { RelationshipDecider, SelectiveImport } from './relationship-decider';
 
 export interface ITypeHost {
   typeFromSpecType(type: PropertyType): Type;
@@ -156,6 +162,7 @@ export class ResourceClass extends ClassType {
     this.makeFromCloudFormationFactory();
     this.makeFromArnFactory();
     this.makeFromNameFactory();
+    this.addArnForResourceMethod();
 
     if (this.resource.cloudFormationTransform) {
       this.addProperty({
@@ -337,6 +344,83 @@ export class ResourceClass extends ClassType {
       new TypeDeclarationStatement(innerClass),
       stmt.ret(innerClass.newInstance(expr.ident('scope'), expr.ident('id'), expr.ident('arn'))),
     );
+  }
+
+  /**
+   * Generates a static method that returns the ARN of the provided resource.
+   * If the resource's ref interface already has an ARN, that's what's returned:
+   *
+   *     public static arnForTable(resource: ITableRef): string {
+   *       return resource.tableRef.tableArn;
+   *     }
+   *
+   * Otherwise, we fall back to using the ARN template:
+   *
+   *    public static arnForRestApi(resource: IRestApiRef): string {
+   *       return new cfn_parse.TemplateString("arn:${Partition}:apigateway:${Region}::/restapis/${RestApiId}").interpolate({
+   *         "Partition": cdk.Stack.of(resource).partition,
+   *         "Region": cdk.Stack.of(resource).region,
+   *         "Account": cdk.Stack.of(resource).account,
+   *         "RestApiId": resource.restApiRef.restApiId
+   *       });
+   *     }
+   */
+  private addArnForResourceMethod() {
+    const doAddMethod = () => {
+      const method = this.addMethod({
+        name: `arnFor${this.resource.name}`,
+        static: true,
+        visibility: MemberVisibility.Public,
+        returnType: Type.STRING,
+      });
+
+      method.addParameter({
+        name: 'resource',
+        type: this.refInterface.type,
+      });
+
+      return method;
+    };
+
+    const arnTemplate = this.resource.arnTemplate;
+    const arnPropertyName = findArnProperty(this.resource);
+
+    const refAttributeName = referenceInterfaceAttributeName(this.decider.camelResourceName);
+    if (arnPropertyName != null) {
+      const method = doAddMethod();
+      const arn = referencePropertyName(arnPropertyName, this.resource.name);
+      method.addBody(
+        stmt.ret($E(method.parameters[0])[refAttributeName][arn]),
+      );
+    } else if (arnTemplate != null) {
+      const propsWithoutArn = this.decider.referenceProps.filter(prop => !prop.declaration.name.endsWith('Arn'));
+
+      if (propsWithoutArn.length !== 1) {
+        // Only generate the method if there is exactly one non-ARN prop in the Reference interface
+        // and only one variable in the ARN template that is not Partition, Region or Account
+        return;
+      }
+
+      const allVariables = extractVariables(arnTemplate);
+      const propName = propsWithoutArn[0].declaration.name;
+      const variableName = allVariables.find(v => propertyNameFromCloudFormation(v) === propName);
+      if (variableName == null) {
+        return;
+      }
+
+      const resourceIdentifier = expr.ident('resource');
+      const method = doAddMethod();
+      const stackOfResource = $T(CDK_CORE.Stack).of(resourceIdentifier);
+      const interpolateArn = CDK_CORE.helpers.TemplateString.newInstance(expr.lit(arnTemplate)).prop('interpolate').call(expr.object({
+        Partition: stackOfResource.prop('partition'),
+        Region: stackOfResource.prop('region'),
+        Account: stackOfResource.prop('account'),
+        [variableName]: $E(resourceIdentifier)[refAttributeName][propName],
+      }));
+      method.addBody(
+        stmt.ret(interpolateArn),
+      );
+    }
   }
 
   private makeFromNameFactory() {

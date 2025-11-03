@@ -1,21 +1,37 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`asdas 1`] = `
+exports[`generates grants for methods with and without key actions 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
 import * as sns from "aws-cdk-lib/aws-sns";
 import * as iam from "aws-cdk-lib/aws-iam";
 
+export interface TopicGrantsProps {
+  readonly resource: sns.ITopicRef;
+
+  readonly policyResource?: iam.IResourceWithPolicy;
+
+  readonly encryptedResource?: iam.IEncryptedResource;
+}
+
 export class TopicGrants {
+  public static fromTopic(resource: sns.ITopicRef): TopicGrants {
+    return new TopicGrants({
+      "resource": resource,
+      "encryptedResource": (iam.GrantableResources.isEncryptedResource(resource) ? resource : undefined),
+      "policyResource": (iam.GrantableResources.isResourceWithPolicy(resource) ? resource : undefined)
+    });
+  }
+
   public readonly resource: sns.ITopicRef;
 
   public readonly encryptedResource?: iam.IEncryptedResource;
 
   public readonly policyResource?: iam.IResourceWithPolicy;
 
-  public constructor(resource: sns.ITopicRef, encryptedResource?: iam.IEncryptedResource, policyResource?: iam.IResourceWithPolicy) {
-    this.resource = resource;
-    this.encryptedResource = encryptedResource;
-    this.policyResource = policyResource;
+  public constructor(props: TopicGrantsProps) {
+    this.resource = props.resource;
+    this.encryptedResource = props.encryptedResource;
+    this.policyResource = props.policyResource;
   }
 
   public publish(grantee: iam.IGrantable): iam.Grant {

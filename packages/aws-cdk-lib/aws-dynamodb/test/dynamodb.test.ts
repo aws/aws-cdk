@@ -439,6 +439,31 @@ describe('L1 static factory methods', () => {
       account: '23432424',
     });
   });
+
+  test('arnForTable created with fromTableName', () => {
+    const app = new App();
+    const stack = new Stack(app, 'MyStack', {
+      env: { account: '23432424', region: 'us-east-1' },
+    });
+
+    const table = CfnTable.fromTableName(stack, 'Table', 'MyTable');
+    const arn = CfnTable.arnForTable(table);
+
+    expect(stack.resolve(arn)).toEqual(stack.resolve(table.tableRef.tableArn));
+  });
+
+  test('arnForTable output matches input ARN', () => {
+    const app = new App();
+    const stack = new Stack(app, 'MyStack', {
+      env: { account: '23432424', region: 'us-east-1' },
+    });
+
+    const inputArn = 'arn:aws:dynamodb:us-east-2:123456789012:table/myDynamoDBTable';
+    const table = CfnTable.fromTableArn(stack, 'Table', 'arn:aws:dynamodb:us-east-2:123456789012:table/myDynamoDBTable');
+    const outputArn = CfnTable.arnForTable(table);
+
+    expect(stack.resolve(outputArn)).toEqual(stack.resolve(inputArn));
+  });
 });
 
 testDeprecated('when specifying every property', () => {

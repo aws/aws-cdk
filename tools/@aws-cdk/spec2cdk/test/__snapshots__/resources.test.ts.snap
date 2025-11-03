@@ -389,6 +389,10 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
     return ret;
   }
 
+  public static arnForSomething(resource: ISomethingRef): string {
+    return resource.somethingRef.somethingArn;
+  }
+
   /**
    * The identifier of the resource
    *
@@ -564,6 +568,10 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  public static arnForResource(resource: IResourceRef): string {
+    return resource.resourceRef.resourceArn;
   }
 
   /**
@@ -923,6 +931,10 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     return ret;
   }
 
+  public static arnForResource(resource: IResourceRef): string {
+    return resource.resourceRef.resourceArn;
+  }
+
   /**
    * The arn of the resource
    *
@@ -946,7 +958,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   public get resourceRef(): ResourceReference {
     return {
-      "resourceArn": this.attrArn
+      "resourceArn": this.ref
     };
   }
 
@@ -989,11 +1001,6 @@ export interface CfnResourceProps {
 export interface ResourceReference {
   /**
    * The Arn of the Resource resource.
-   */
-  readonly resourceArn: string;
-
-  /**
-   * The ARN of the Resource resource.
    */
   readonly resourceArn: string;
 }
@@ -1288,6 +1295,15 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       }
     }
     return new Import(scope, id, resourceId);
+  }
+
+  public static arnForResource(resource: IResourceRef): string {
+    return new cfn_parse.TemplateString("arn:\${Partition}:some:\${Region}:\${Account}:resource/\${ResourceId}").interpolate({
+      "Partition": cdk.Stack.of(resource).partition,
+      "Region": cdk.Stack.of(resource).region,
+      "Account": cdk.Stack.of(resource).account,
+      "ResourceId": resource.resourceRef.resourceId
+    });
   }
 
   /**
