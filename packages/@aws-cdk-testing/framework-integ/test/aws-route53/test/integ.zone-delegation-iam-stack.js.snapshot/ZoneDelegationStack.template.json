@@ -77,7 +77,7 @@
          ],
          "route53:ChangeResourceRecordSetsNormalizedRecordNames": [
           "sub1.uniqueexample.com",
-          "sub2.uniqueexample.com"
+          "sub2_\\052\\044.uniqueexample.com"
          ]
         }
        },
@@ -114,13 +114,13 @@
     ]
    }
   },
-  "SubZone1D8A18689": {
+  "SubZoneF7955E1A": {
    "Type": "AWS::Route53::HostedZone",
    "Properties": {
     "Name": "sub1.uniqueexample.com."
    }
   },
-  "SubZone1ZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZone1ZoneDelegationcrossaccountzonedelegationhandlerrole3B7BF93FFA2749E6": {
+  "SubZoneZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZoneZoneDelegationcrossaccountzonedelegationhandlerrole9EBB2EA476FBB2F1": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -138,7 +138,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "PolicyZoneDelegationStackSubZone1ZoneDelegationcrossaccountzonedelegationhandlerrole3B7BF93F",
+    "PolicyName": "PolicyZoneDelegationStackSubZoneZoneDelegationcrossaccountzonedelegationhandlerrole9EBB2EA4",
     "Roles": [
      {
       "Fn::Select": [
@@ -172,7 +172,7 @@
     "ZoneDelegationRoleDefaultPolicy2187EBE7"
    ]
   },
-  "SubZone1ZoneDelegationCrossAccountZoneDelegationCustomResource59C2B413": {
+  "SubZoneZoneDelegationCrossAccountZoneDelegationCustomResource688D1556": {
    "Type": "Custom::CrossAccountZoneDelegation",
    "Properties": {
     "ServiceToken": {
@@ -191,14 +191,14 @@
     "DelegatedZoneName": "sub1.uniqueexample.com",
     "DelegatedZoneNameServers": {
      "Fn::GetAtt": [
-      "SubZone1D8A18689",
+      "SubZoneF7955E1A",
       "NameServers"
      ]
     },
     "TTL": 172800
    },
    "DependsOn": [
-    "SubZone1ZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZone1ZoneDelegationcrossaccountzonedelegationhandlerrole3B7BF93FFA2749E6",
+    "SubZoneZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZoneZoneDelegationcrossaccountzonedelegationhandlerrole9EBB2EA476FBB2F1",
     "ZoneDelegationRoleDefaultPolicy2187EBE7"
    ],
    "UpdateReplacePolicy": "Delete",
@@ -250,13 +250,13 @@
     "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B"
    ]
   },
-  "SubZone25FFB0233": {
+  "SubZoneSpecialChars13B7A67B": {
    "Type": "AWS::Route53::HostedZone",
    "Properties": {
-    "Name": "sub2.uniqueexample.com."
+    "Name": "sub2_*$.uniqueexample.com."
    }
   },
-  "SubZone2ZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZone2ZoneDelegationcrossaccountzonedelegationhandlerrole36D1478DA98EDD29": {
+  "SubZoneSpecialCharsZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZoneSpecialCharsZoneDelegationcrossaccountzonedelegationhandlerroleD01CC77D6D37D8F2": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -274,7 +274,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "PolicyZoneDelegationStackSubZone2ZoneDelegationcrossaccountzonedelegationhandlerrole36D1478D",
+    "PolicyName": "PolicyZoneDelegationStackSubZoneSpecialCharsZoneDelegationcrossaccountzonedelegationhandlerroleD01CC77D",
     "Roles": [
      {
       "Fn::Select": [
@@ -308,7 +308,7 @@
     "ZoneDelegationRoleDefaultPolicy2187EBE7"
    ]
   },
-  "SubZone2ZoneDelegationCrossAccountZoneDelegationCustomResourceEC5E24F9": {
+  "SubZoneSpecialCharsZoneDelegationCrossAccountZoneDelegationCustomResourceC4CC9C77": {
    "Type": "Custom::CrossAccountZoneDelegation",
    "Properties": {
     "ServiceToken": {
@@ -324,17 +324,17 @@
      ]
     },
     "ParentZoneName": "uniqueexample.com",
-    "DelegatedZoneName": "sub2.uniqueexample.com",
+    "DelegatedZoneName": "sub2_*$.uniqueexample.com",
     "DelegatedZoneNameServers": {
      "Fn::GetAtt": [
-      "SubZone25FFB0233",
+      "SubZoneSpecialChars13B7A67B",
       "NameServers"
      ]
     },
     "TTL": 172800
    },
    "DependsOn": [
-    "SubZone2ZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZone2ZoneDelegationcrossaccountzonedelegationhandlerrole36D1478DA98EDD29",
+    "SubZoneSpecialCharsZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZoneSpecialCharsZoneDelegationcrossaccountzonedelegationhandlerroleD01CC77D6D37D8F2",
     "ZoneDelegationRoleDefaultPolicy2187EBE7"
    ],
    "UpdateReplacePolicy": "Delete",

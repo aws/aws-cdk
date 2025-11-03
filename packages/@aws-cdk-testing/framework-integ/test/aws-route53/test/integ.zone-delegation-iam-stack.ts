@@ -29,31 +29,31 @@ class ZoneDelegationIamStack extends cdk.Stack {
     });
 
     const delegationGrant = parentZone.grantDelegation(delegationRole, {
-      delegatedZoneNames: ['sub1.uniqueexample.com', 'sub2.uniqueexample.com'],
+      delegatedZoneNames: [
+        'sub1.uniqueexample.com',
+        'sub2_*$.uniqueexample.com', // should result in octal codes in iam condition
+      ],
     });
 
-    const subZone1 = new route53.PublicHostedZone(this, 'SubZone1', {
+    const subZone = new route53.PublicHostedZone(this, 'SubZone', {
       zoneName: 'sub1.uniqueexample.com',
     });
 
-    const delegation1 = new route53.CrossAccountZoneDelegationRecord(subZone1, 'ZoneDelegation', {
-      delegatedZone: subZone1,
+    new route53.CrossAccountZoneDelegationRecord(subZone, 'ZoneDelegation', {
+      delegatedZone: subZone,
       parentHostedZoneName: parentZone.zoneName,
       delegationRole: delegationRole,
+    }).node.addDependency(delegationGrant);
+
+    const subZoneWithSpecialChars = new route53.PublicHostedZone(this, 'SubZoneSpecialChars', {
+      zoneName: 'sub2_*$.uniqueexample.com',
     });
 
-    const subZone2 = new route53.PublicHostedZone(this, 'SubZone2', {
-      zoneName: 'sub2.uniqueexample.com',
-    });
-
-    const delegation2 = new route53.CrossAccountZoneDelegationRecord(subZone2, 'ZoneDelegation', {
-      delegatedZone: subZone2,
+    new route53.CrossAccountZoneDelegationRecord(subZoneWithSpecialChars, 'ZoneDelegation', {
+      delegatedZone: subZoneWithSpecialChars,
       parentHostedZoneName: parentZone.zoneName,
       delegationRole: delegationRole,
-    });
-
-    delegation1.node.addDependency(delegationGrant);
-    delegation2.node.addDependency(delegationGrant);
+    }).node.addDependency(delegationGrant);
   }
 }
 

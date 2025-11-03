@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { GrantDelegationOptions, IHostedZone } from './hosted-zone-ref';
 import * as iam from '../../aws-iam';
-import { Stack, UnscopedValidationError } from '../../core';
+import { Stack, Token, UnscopedValidationError } from '../../core';
 
 /**
  * Validates a zone name is valid by Route53 specific naming rules,
@@ -73,7 +73,35 @@ function stripTrailingDot(zoneName: string) {
   return zoneName.endsWith('.') ? zoneName.substring(0, zoneName.length - 1) : zoneName;
 }
 
+const octalConversionIgnoreRegex = /[a-zA-Z0-9-_\\.]/;
+
+// Required to octal encode characters other than a–z, 0–9, - (hyphen), _ (underscore), and . (period) for IAM conditions
+// https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/specifying-conditions-route53.html#route53_rrset_conditionkeys_normalization
+function octalEncodeDelegatedZoneName(delegatedZoneName: string): string {
+  if (Token.isUnresolved(delegatedZoneName)) {
+    return delegatedZoneName;
+  }
+
+  return delegatedZoneName.split('')
+    .map(c => {
+      if (octalConversionIgnoreRegex.test(c)) {
+        return c;
+      }
+      return '\\' + c.charCodeAt(0).toString(8).padStart(3, '0');
+    }).join('');
+}
+
 function validateDelegatedZoneName(parentZoneName: string, delegatedZoneName: string) {
+  if (delegatedZoneName.endsWith('.')) {
+    throw new UnscopedValidationError(
+      `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name cannot have a trailing period`,
+    );
+  }
+
+  if (Token.isUnresolved(delegatedZoneName)) {
+    return;
+  }
+
   try {
     validateZoneName(delegatedZoneName);
   } catch (error) {
@@ -84,16 +112,25 @@ function validateDelegatedZoneName(parentZoneName: string, delegatedZoneName: st
     }
   }
 
-  const parentZoneNameNoTrailingDot = stripTrailingDot(parentZoneName);
-  const delegatedZoneNameNoTrailingDot = stripTrailingDot(delegatedZoneName);
+  if (Token.isUnresolved(parentZoneName)) {
+    return;
+  }
 
-  if (!delegatedZoneNameNoTrailingDot.endsWith(parentZoneNameNoTrailingDot)) {
+  const parentZoneNameNoTrailingDot = stripTrailingDot(parentZoneName);
+
+  if (delegatedZoneName.toLowerCase() !== delegatedZoneName) {
+    throw new UnscopedValidationError(
+      `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name cannot contain uppercase characters`,
+    );
+  }
+
+  if (!delegatedZoneName.endsWith(parentZoneNameNoTrailingDot)) {
     throw new UnscopedValidationError(
       `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name must be suffixed by parent zone name`,
     );
   }
 
-  if (delegatedZoneNameNoTrailingDot === parentZoneNameNoTrailingDot) {
+  if (delegatedZoneName === parentZoneNameNoTrailingDot) {
     throw new UnscopedValidationError(
       `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name cannot be the same as the parent zone name`,
     );
@@ -101,8 +138,10 @@ function validateDelegatedZoneName(parentZoneName: string, delegatedZoneName: st
 }
 
 export function makeGrantDelegation(grantee: iam.IGrantable, hostedZone: IHostedZone, delegationOptions?: GrantDelegationOptions): iam.Grant {
-  const delegatedZoneNames = delegationOptions?.delegatedZoneNames;
-  delegatedZoneNames?.forEach(zoneName => validateDelegatedZoneName(hostedZone.zoneName, zoneName));
+  const delegatedZoneNames = delegationOptions?.delegatedZoneNames?.map(delegatedZoneName => {
+    validateDelegatedZoneName(hostedZone.zoneName, delegatedZoneName);
+    return octalEncodeDelegatedZoneName(delegatedZoneName);
+  });
   const g1 = iam.Grant.addToPrincipal({
     grantee,
     actions: ['route53:ChangeResourceRecordSets'],
@@ -112,7 +151,7 @@ export function makeGrantDelegation(grantee: iam.IGrantable, hostedZone: IHosted
         'route53:ChangeResourceRecordSetsRecordTypes': ['NS'],
         'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
         ...(delegationOptions?.delegatedZoneNames ? {
-          'route53:ChangeResourceRecordSetsNormalizedRecordNames': delegationOptions.delegatedZoneNames,
+          'route53:ChangeResourceRecordSetsNormalizedRecordNames': delegatedZoneNames,
         } : {}),
       },
     },

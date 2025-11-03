@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3ddb25aa913266be158b3023005f611257cee134f98440373e08c65c8e7d37f5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6d8a7dc9318b45fe9086898bd60f3453daea9b3a9693fb2d331e24f291396f7d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -158,7 +158,7 @@
             "data": "ZoneDelegationRoleDefaultPolicy2187EBE7"
           }
         ],
-        "/ZoneDelegationStack/SubZone1": [
+        "/ZoneDelegationStack/SubZone": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -172,13 +172,13 @@
             }
           }
         ],
-        "/ZoneDelegationStack/SubZone1/Resource": [
+        "/ZoneDelegationStack/SubZone/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SubZone1D8A18689"
+            "data": "SubZoneF7955E1A"
           }
         ],
-        "/ZoneDelegationStack/SubZone1/ZoneDelegation/cross-account-zone-delegation-handler-role": [
+        "/ZoneDelegationStack/SubZone/ZoneDelegation/cross-account-zone-delegation-handler-role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -196,7 +196,7 @@
             "data": "*"
           }
         ],
-        "/ZoneDelegationStack/SubZone1/ZoneDelegation/cross-account-zone-delegation-handler-role/PolicyZoneDelegationStackSubZone1ZoneDelegationcrossaccountzonedelegationhandlerrole3B7BF93F": [
+        "/ZoneDelegationStack/SubZone/ZoneDelegation/cross-account-zone-delegation-handler-role/PolicyZoneDelegationStackSubZoneZoneDelegationcrossaccountzonedelegationhandlerrole9EBB2EA4": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -228,22 +228,22 @@
             }
           }
         ],
-        "/ZoneDelegationStack/SubZone1/ZoneDelegation/cross-account-zone-delegation-handler-role/PolicyZoneDelegationStackSubZone1ZoneDelegationcrossaccountzonedelegationhandlerrole3B7BF93F/Resource": [
+        "/ZoneDelegationStack/SubZone/ZoneDelegation/cross-account-zone-delegation-handler-role/PolicyZoneDelegationStackSubZoneZoneDelegationcrossaccountzonedelegationhandlerrole9EBB2EA4/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SubZone1ZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZone1ZoneDelegationcrossaccountzonedelegationhandlerrole3B7BF93FFA2749E6"
+            "data": "SubZoneZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZoneZoneDelegationcrossaccountzonedelegationhandlerrole9EBB2EA476FBB2F1"
           }
         ],
-        "/ZoneDelegationStack/SubZone1/ZoneDelegation/CrossAccountZoneDelegationCustomResource": [
+        "/ZoneDelegationStack/SubZone/ZoneDelegation/CrossAccountZoneDelegationCustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/ZoneDelegationStack/SubZone1/ZoneDelegation/CrossAccountZoneDelegationCustomResource/Default": [
+        "/ZoneDelegationStack/SubZone/ZoneDelegation/CrossAccountZoneDelegationCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SubZone1ZoneDelegationCrossAccountZoneDelegationCustomResource59C2B413"
+            "data": "SubZoneZoneDelegationCrossAccountZoneDelegationCustomResource688D1556"
           }
         ],
         "/ZoneDelegationStack/Custom::CrossAccountZoneDelegationCustomResourceProvider": [
@@ -264,7 +264,7 @@
             "data": "CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265"
           }
         ],
-        "/ZoneDelegationStack/SubZone2": [
+        "/ZoneDelegationStack/SubZoneSpecialChars": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -278,13 +278,13 @@
             }
           }
         ],
-        "/ZoneDelegationStack/SubZone2/Resource": [
+        "/ZoneDelegationStack/SubZoneSpecialChars/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SubZone25FFB0233"
+            "data": "SubZoneSpecialChars13B7A67B"
           }
         ],
-        "/ZoneDelegationStack/SubZone2/ZoneDelegation/cross-account-zone-delegation-handler-role": [
+        "/ZoneDelegationStack/SubZoneSpecialChars/ZoneDelegation/cross-account-zone-delegation-handler-role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -302,7 +302,7 @@
             "data": "*"
           }
         ],
-        "/ZoneDelegationStack/SubZone2/ZoneDelegation/cross-account-zone-delegation-handler-role/PolicyZoneDelegationStackSubZone2ZoneDelegationcrossaccountzonedelegationhandlerrole36D1478D": [
+        "/ZoneDelegationStack/SubZoneSpecialChars/ZoneDelegation/cross-account-zone-delegation-handler-role/PolicyZoneDelegationStackSubZoneSpecialCharsZoneDelegationcrossaccountzonedelegationhandlerroleD01CC77D": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -334,22 +334,22 @@
             }
           }
         ],
-        "/ZoneDelegationStack/SubZone2/ZoneDelegation/cross-account-zone-delegation-handler-role/PolicyZoneDelegationStackSubZone2ZoneDelegationcrossaccountzonedelegationhandlerrole36D1478D/Resource": [
+        "/ZoneDelegationStack/SubZoneSpecialChars/ZoneDelegation/cross-account-zone-delegation-handler-role/PolicyZoneDelegationStackSubZoneSpecialCharsZoneDelegationcrossaccountzonedelegationhandlerroleD01CC77D/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SubZone2ZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZone2ZoneDelegationcrossaccountzonedelegationhandlerrole36D1478DA98EDD29"
+            "data": "SubZoneSpecialCharsZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZoneSpecialCharsZoneDelegationcrossaccountzonedelegationhandlerroleD01CC77D6D37D8F2"
           }
         ],
-        "/ZoneDelegationStack/SubZone2/ZoneDelegation/CrossAccountZoneDelegationCustomResource": [
+        "/ZoneDelegationStack/SubZoneSpecialChars/ZoneDelegation/CrossAccountZoneDelegationCustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/ZoneDelegationStack/SubZone2/ZoneDelegation/CrossAccountZoneDelegationCustomResource/Default": [
+        "/ZoneDelegationStack/SubZoneSpecialChars/ZoneDelegation/CrossAccountZoneDelegationCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SubZone2ZoneDelegationCrossAccountZoneDelegationCustomResourceEC5E24F9"
+            "data": "SubZoneSpecialCharsZoneDelegationCrossAccountZoneDelegationCustomResourceC4CC9C77"
           }
         ],
         "/ZoneDelegationStack/BootstrapVersion": [
@@ -362,6 +362,60 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "SubZone1D8A18689": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubZone1D8A18689",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "SubZone1ZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZone1ZoneDelegationcrossaccountzonedelegationhandlerrole3B7BF93FFA2749E6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubZone1ZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZone1ZoneDelegationcrossaccountzonedelegationhandlerrole3B7BF93FFA2749E6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "SubZone1ZoneDelegationCrossAccountZoneDelegationCustomResource59C2B413": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubZone1ZoneDelegationCrossAccountZoneDelegationCustomResource59C2B413",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "SubZone25FFB0233": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubZone25FFB0233",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "SubZone2ZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZone2ZoneDelegationcrossaccountzonedelegationhandlerrole36D1478DA98EDD29": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubZone2ZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZone2ZoneDelegationcrossaccountzonedelegationhandlerrole36D1478DA98EDD29",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "SubZone2ZoneDelegationCrossAccountZoneDelegationCustomResourceEC5E24F9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubZone2ZoneDelegationCrossAccountZoneDelegationCustomResourceEC5E24F9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
