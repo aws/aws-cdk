@@ -1,6 +1,5 @@
 # AWS CDK Docker Image Assets
 
-
 This module allows bundling Docker images as assets.
 
 ## Images from Dockerfile
@@ -27,7 +26,7 @@ to an Amazon ECR repository and wire the name of the repository as CloudFormatio
 parameters to your stack.
 
 By default, all files in the given directory will be copied into the docker
-*build context*. If there is a large directory that you know you definitely
+_build context_. If there is a large directory that you know you definitely
 don't need in the build context you can improve the performance by adding the
 names of files and directories to ignore to a file called `.dockerignore`, or
 pass them via the `exclude` property. If both are available, the patterns
@@ -58,6 +57,28 @@ Also, similarly to `@aws-cdk/aws-s3-assets`, you can set the CDK_DOCKER environm
 variable in order to provide a custom Docker executable command or path. This may sometimes
 be needed when building in environments where the standard docker cannot be executed
 (see https://github.com/aws/aws-cdk/issues/8460 for details).
+
+### Docker Alternatives
+
+The CDK supports several Docker alternatives through the `CDK_DOCKER` environment variable:
+
+#### Finch (AWS-supported)
+
+```bash
+export CDK_DOCKER=finch
+export DOCKER_HOST=$(finch machine inspect --format 'unix://{{.ConnectionInfo.PodmanSocket.Path}}')
+```
+
+#### Podman (Community-tested)
+
+```bash
+export CDK_DOCKER=podman
+export DOCKER_HOST=$(podman machine inspect --format 'unix://{{.ConnectionInfo.PodmanSocket.Path}}')
+```
+
+**Note**: While Finch receives official AWS support, Podman is community-tested and may work for many use cases. The CDK doesn't check which Docker replacement you are using to determine if it's supported. If the tool has equivalent Docker commands and behaves similarly, it should work.
+
+For some container runtimes, you may need to set the `DOCKER_HOST` environment variable to specify the correct socket path for the CDK to communicate with the container daemon.
 
 SSH agent sockets or keys may be passed to docker build via `buildSsh`.
 
@@ -96,7 +117,7 @@ import { DockerImageAsset, NetworkMode } from 'aws-cdk-lib/aws-ecr-assets';
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
   networkMode: NetworkMode.HOST,
-})
+});
 ```
 
 You can optionally pass an alternate platform to the `docker build` command by specifying
@@ -108,7 +129,7 @@ import { DockerImageAsset, Platform } from 'aws-cdk-lib/aws-ecr-assets';
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
   platform: Platform.LINUX_ARM64,
-})
+});
 ```
 
 You can optionally pass an array of outputs to the `docker build` command by specifying
@@ -120,7 +141,7 @@ import { DockerImageAsset, Platform } from 'aws-cdk-lib/aws-ecr-assets';
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
   outputs: ['type=local,dest=out'],
-})
+});
 ```
 
 You can optionally pass cache from and cache to options to cache images:
@@ -130,9 +151,18 @@ import { DockerImageAsset, Platform } from 'aws-cdk-lib/aws-ecr-assets';
 
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
-  cacheFrom: [{ type: 'registry', params: { ref: 'ghcr.io/myorg/myimage:cache' }}],
-  cacheTo: { type: 'registry', params: { ref: 'ghcr.io/myorg/myimage:cache', mode: 'max', compression: 'zstd' }}
-})
+  cacheFrom: [
+    { type: 'registry', params: { ref: 'ghcr.io/myorg/myimage:cache' } },
+  ],
+  cacheTo: {
+    type: 'registry',
+    params: {
+      ref: 'ghcr.io/myorg/myimage:cache',
+      mode: 'max',
+      compression: 'zstd',
+    },
+  },
+});
 ```
 
 You can optionally disable the cache:
@@ -143,7 +173,7 @@ import { DockerImageAsset, Platform } from 'aws-cdk-lib/aws-ecr-assets';
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
   cacheDisabled: true,
-})
+});
 ```
 
 ## Images from Tarball
@@ -163,8 +193,8 @@ This will instruct the toolkit to add the tarball as a file asset. During deploy
 from `local-image.tar`, push it to an Amazon ECR repository and wire the name of the repository as CloudFormation parameters
 to your stack.
 
-Similar to `DockerImageAsset`, you can set the `CDK_DOCKER` environment variable to provide a custom Docker executable 
-command or path. This may be needed when building in environments where the standard docker cannot be executed or when 
+Similar to `DockerImageAsset`, you can set the `CDK_DOCKER` environment variable to provide a custom Docker executable
+command or path. This may be needed when building in environments where the standard docker cannot be executed or when
 using alternative container runtimes like Finch.
 
 ## Publishing images to ECR repositories
