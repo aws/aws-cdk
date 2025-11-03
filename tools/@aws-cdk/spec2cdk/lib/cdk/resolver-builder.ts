@@ -93,7 +93,9 @@ export class ResolverBuilder {
     ].join(' ?? ');
     const resolver = (_: Expression) => {
       if (resolvableType.arrayOfType) {
-        return expr.directCode(`props.${name}?.map((item: any) => ${ buildChain('item') })`);
+        return expr.directCode(
+          `(props.${name}?.forEach((item: ${propType.arrayOfType!.toString()}, i: number, arr: ${propType.toString()}) => { arr[i] = ${buildChain('item')}; }), props.${name} as ${resolvableType.toString()})`,
+        );
       } else {
         return expr.directCode(buildChain(`props.${name}`));
       }
@@ -118,11 +120,11 @@ export class ResolverBuilder {
       const isArray = baseType.arrayOfType !== undefined;
 
       const flattenCall = isArray
-        ? propValue.callMethod('map', expr.ident(functionName))
+        ? expr.directCode(`props.${name}.forEach((item: any, i: number, arr: any[]) => { arr[i] = ${functionName}(item) }), props.${name}`)
         : expr.ident(functionName).call(propValue);
 
       const condition = optional
-        ? expr.cond(propValue).then(flattenCall).else(expr.UNDEFINED)
+        ? expr.cond(expr.not(propValue)).then(expr.UNDEFINED).else(flattenCall)
         : flattenCall;
 
       return isArray
