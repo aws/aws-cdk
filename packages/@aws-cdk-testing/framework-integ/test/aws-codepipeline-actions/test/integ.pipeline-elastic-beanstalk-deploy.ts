@@ -5,7 +5,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { IManagedPolicy, ManagedPolicyReference } from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as deploy from 'aws-cdk-lib/aws-s3-deployment';
-import { App, Fn, RemovalPolicy, Stack, UnscopedValidationError } from 'aws-cdk-lib';
+import { App, Fn, RemovalPolicy, ResourceEnvironment, Stack, UnscopedValidationError } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 import { Node } from 'constructs';
@@ -54,6 +54,9 @@ function makePolicy(arn: string): IManagedPolicy {
       };
     },
     get node(): Node {
+      throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
+    },
+    get env(): ResourceEnvironment {
       throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
     },
   };
