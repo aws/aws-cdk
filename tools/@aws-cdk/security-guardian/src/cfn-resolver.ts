@@ -77,7 +77,15 @@ export function setGlobalRegistry(registry: ResourceRegistry): void {
 }
 
 function resolveRef(obj: any): any {
-  return CLOUDFORMATION_PSEUDOPARAMETERS[obj.Ref as keyof typeof CLOUDFORMATION_PSEUDOPARAMETERS] || obj.Ref;
+  // Check pseudoparameters first
+  if (CLOUDFORMATION_PSEUDOPARAMETERS[obj.Ref as keyof typeof CLOUDFORMATION_PSEUDOPARAMETERS]) {
+    return CLOUDFORMATION_PSEUDOPARAMETERS[obj.Ref as keyof typeof CLOUDFORMATION_PSEUDOPARAMETERS];
+  }
+  // Check template parameters
+  if (globalRegistry.parameters[obj.Ref]) {
+    return globalRegistry.parameters[obj.Ref];
+  }
+  return obj.Ref;
 }
 
 function resolveJoin(content: any, cfnResources?: Record<string, any>): string {
@@ -101,6 +109,15 @@ function resolveSub(content: any, cfnResources?: Record<string, any>): string {
     }
   }
   
+  // First, temporarily replace literal escapes with placeholders
+  const literalPlaceholders: Record<string, string> = {};
+  let placeholderCounter = 0;
+  template = template.replace(/\$\{!([^}]+)\}/g, (match, literal) => {
+    const placeholder = `__LITERAL_${placeholderCounter++}__`;
+    literalPlaceholders[placeholder] = `\${${literal}}`;
+    return placeholder;
+  });
+  
   // Replace variables first
   for (const [k, v] of Object.entries(variables)) {
     const value = typeof v === 'string' ? v : String(v);
@@ -109,11 +126,23 @@ function resolveSub(content: any, cfnResources?: Record<string, any>): string {
   
   // Replace AWS pseudoparameters
   for (const [k, v] of Object.entries(CLOUDFORMATION_PSEUDOPARAMETERS)) {
-    template = template.replace(new RegExp(`\\$\\{${k}\\}`, 'g'), v);
+    const escapedKey = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    template = template.replace(new RegExp(`\\$\\{${escapedKey}\\}`, 'g'), v);
+  }
+  
+  // Replace template parameters
+  for (const [k, v] of Object.entries(globalRegistry.parameters)) {
+    const escapedKey = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    template = template.replace(new RegExp(`\\$\\{${escapedKey}\\}`, 'g'), String(v));
   }
   
   // Replace remaining parameters (CDK templates are well-formed)
-  template = template.replace(/\$\{([\w_-]+)\}/g, '$1');
+  template = template.replace(/\$\{([\w_:-]+)\}/g, '$1');
+  
+  // Finally, restore literal escapes
+  for (const [placeholder, literal] of Object.entries(literalPlaceholders)) {
+    template = template.replace(new RegExp(placeholder, 'g'), literal);
+  }
   
   return template;
 }
@@ -166,8 +195,8 @@ function resolveImportValue(exportName: string): any {
 function resolveSelect(content: any, cfnResources?: Record<string, any>): any {
   const index = resolveIntrinsics(content[0], cfnResources);
   const list = resolveIntrinsics(content[1], cfnResources);
-  if (Array.isArray(list) && typeof index === 'number') {
-    return list[index] || list[0] || 'selected-value';
+  if (Array.isArray(list) && typeof index === 'number' && index >= 0 && index < list.length) {
+    return list[index];
   }
   return 'selected-value';
 }
@@ -247,38 +276,38 @@ export function resolveIntrinsics(obj: any, cfnResources?: Record<string, any>):
     }
     
     // Handle Fn::ImportValue
-    if (obj['Fn::ImportValue']) {
-      const exportName = resolveIntrinsics(obj['Fn::ImportValue'], cfnResources);
+    if (obj['Fn::ImportValue'] || obj['!ImportValue']) {
+      const exportName = resolveIntrinsics(obj['Fn::ImportValue'] || obj['!ImportValue'], cfnResources);
       return resolveImportValue(exportName);
     }
     
     // Handle Fn::Select
-    if (obj['Fn::Select']) {
-      return resolveSelect(obj['Fn::Select'], cfnResources);
+    if (obj['Fn::Select'] || obj['!Select']) {
+      return resolveSelect(obj['Fn::Select'] || obj['!Select'], cfnResources);
     }
     
     // Handle Fn::Split
-    if (obj['Fn::Split']) {
-      return resolveSplit(obj['Fn::Split'], cfnResources);
+    if (obj['Fn::Split'] || obj['!Split']) {
+      return resolveSplit(obj['Fn::Split'] || obj['!Split'], cfnResources);
     }
     
     // Handle Fn::Cidr
-    if (obj['Fn::Cidr']) {
-      return resolveCidr(obj['Fn::Cidr'], cfnResources);
+    if (obj['Fn::Cidr'] || obj['!Cidr']) {
+      return resolveCidr(obj['Fn::Cidr'] || obj['!Cidr'], cfnResources);
     }
     
     // Handle other functions
-    if (obj['Fn::Base64']) {
-      return resolveBase64(obj['Fn::Base64'], cfnResources);
+    if (obj['Fn::Base64'] || obj['!Base64']) {
+      return resolveBase64(obj['Fn::Base64'] || obj['!Base64'], cfnResources);
     }
-    if (obj['Fn::Not']) {
-      return resolveNot(obj['Fn::Not'], cfnResources);
+    if (obj['Fn::Not'] || obj['!Not']) {
+      return resolveNot(obj['Fn::Not'] || obj['!Not'], cfnResources);
     }
-    if (obj['Fn::Contains']) {
-      return resolveContains(obj['Fn::Contains'], cfnResources);
+    if (obj['Fn::Contains'] || obj['!Contains']) {
+      return resolveContains(obj['Fn::Contains'] || obj['!Contains'], cfnResources);
     }
-    if (obj['Fn::GetAZs']) return ['us-west-2a', 'us-west-2b', 'us-west-2c'];
-    if (obj['Fn::FindInMap']) return 'mapped-value';
+    if (obj['Fn::GetAZs'] !== undefined || obj['!GetAZs'] !== undefined) return ['us-west-2a', 'us-west-2b', 'us-west-2c'];
+    if (obj['Fn::FindInMap'] || obj['!FindInMap']) return 'mapped-value';
     
     // Recursively resolve nested objects
     const resolved: any = {};

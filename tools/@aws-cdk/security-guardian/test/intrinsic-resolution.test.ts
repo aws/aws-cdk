@@ -26,6 +26,245 @@ describe('Intrinsic Function Resolution', () => {
     }
   });
 
+  describe('Parameter Resolution and Short Forms', () => {
+    beforeEach(() => {
+      // Reset global registry before each test
+      setGlobalRegistry({ resources: {}, exports: {}, parameters: {} });
+    });
+
+    describe('Ref Function - Parameter Resolution', () => {
+      test('should resolve template parameters from globalRegistry', () => {
+        // Test: Ref resolves custom template parameters
+        setGlobalRegistry({
+          resources: {},
+          exports: {},
+          parameters: {
+            'EnvironmentName': 'production',
+            'InstanceType': 't3.large'
+          }
+        });
+
+        const result = resolveIntrinsics({ Ref: 'EnvironmentName' });
+        expect(result).toBe('production');
+      });
+
+      test('should prioritize pseudoparameters over template parameters', () => {
+        // Test: AWS::Region pseudoparameter takes precedence over custom parameter
+        setGlobalRegistry({
+          resources: {},
+          exports: {},
+          parameters: {
+            'AWS::Region': 'should-not-use-this'
+          }
+        });
+
+        const result = resolveIntrinsics({ Ref: 'AWS::Region' });
+        expect(result).toBe('us-west-2');
+      });
+
+      test('should return literal name if not found in parameters or pseudoparameters', () => {
+        // Test: Unknown parameter names are returned as-is
+        const result = resolveIntrinsics({ Ref: 'UnknownParameter' });
+        expect(result).toBe('UnknownParameter');
+      });
+    });
+
+    describe('Fn::Sub - Literal Escaping', () => {
+      test('should handle literal escaping with ${!Literal} syntax', () => {
+        // Test: ${!AWS::Region} becomes literal ${AWS::Region} in output
+        const result = resolveIntrinsics({
+          'Fn::Sub': 'echo ${!AWS::Region} > /tmp/region.txt'
+        });
+        expect(result).toBe('echo ${AWS::Region} > /tmp/region.txt');
+      });
+
+      test('should handle multiple literal escapes', () => {
+        // Test: Multiple ${!...} patterns are all escaped properly
+        const result = resolveIntrinsics({
+          'Fn::Sub': '${!Literal1} and ${!Literal2}'
+        });
+        expect(result).toBe('${Literal1} and ${Literal2}');
+      });
+
+      test('should resolve template parameters in Sub', () => {
+        // Test: ${BucketPrefix} resolves to actual parameter value in Sub
+        setGlobalRegistry({
+          resources: {},
+          exports: {},
+          parameters: {
+            'BucketPrefix': 'my-app'
+          }
+        });
+
+        const result = resolveIntrinsics({
+          'Fn::Sub': '${BucketPrefix}-${AWS::Region}-bucket'
+        });
+        expect(result).toBe('my-app-us-west-2-bucket');
+      });
+
+      test('should handle both literals and parameters', () => {
+        // Test: Mix of ${!literal} and ${parameter} in same Sub string
+        setGlobalRegistry({
+          resources: {},
+          exports: {},
+          parameters: {
+            'AppName': 'myapp'
+          }
+        });
+
+        const result = resolveIntrinsics({
+          'Fn::Sub': 'export ${!AppName}=${AppName}'
+        });
+        expect(result).toBe('export ${AppName}=myapp');
+      });
+    });
+
+    describe('Fn::Select - Bounds Checking', () => {
+      test('should return correct value for valid index', () => {
+        // Test: Select[1, [a,b,c]] returns 'b'
+        const result = resolveIntrinsics({
+          'Fn::Select': [1, ['a', 'b', 'c']]
+        });
+        expect(result).toBe('b');
+      });
+
+      test('should return fallback for out of bounds index', () => {
+        // Test: Select[5, [a,b,c]] returns fallback value
+        const result = resolveIntrinsics({
+          'Fn::Select': [5, ['a', 'b', 'c']]
+        });
+        expect(result).toBe('selected-value');
+      });
+
+      test('should return fallback for negative index', () => {
+        // Test: Select[-1, array] returns fallback value
+        const result = resolveIntrinsics({
+          'Fn::Select': [-1, ['a', 'b', 'c']]
+        });
+        expect(result).toBe('selected-value');
+      });
+
+      test('should return fallback for non-array input', () => {
+        // Test: Select[0, 'not-array'] returns fallback value
+        const result = resolveIntrinsics({
+          'Fn::Select': [0, 'not-an-array']
+        });
+        expect(result).toBe('selected-value');
+      });
+    });
+
+    describe('Fn::Contains - Parameter Order', () => {
+      test('should check if value exists in list (correct order)', () => {
+        // Test: Contains([list], value) checks if value is in list
+        const result = resolveIntrinsics({
+          'Fn::Contains': [['t3.large', 't3.small'], 't3.large']
+        });
+        expect(result).toBe(true);
+      });
+
+      test('should return false if value not in list', () => {
+        // Test: Contains returns false when value not found in list
+        const result = resolveIntrinsics({
+          'Fn::Contains': [['t3.large', 't3.small'], 't3.medium']
+        });
+        expect(result).toBe(false);
+      });
+
+      test('should handle non-array first parameter', () => {
+        // Test: Contains('not-array', value) returns false
+        const result = resolveIntrinsics({
+          'Fn::Contains': ['not-array', 'value']
+        });
+        expect(result).toBe(false);
+      });
+    });
+
+    describe('Short Forms Support', () => {
+      test('should handle !Base64 short form', () => {
+        // Test: !Base64 shorthand works same as Fn::Base64
+        const result = resolveIntrinsics({
+          '!Base64': 'hello world'
+        });
+        expect(result).toBe(Buffer.from('hello world').toString('base64'));
+      });
+
+      test('should handle !Select short form', () => {
+        // Test: !Select shorthand works same as Fn::Select
+        const result = resolveIntrinsics({
+          '!Select': [0, ['first', 'second']]
+        });
+        expect(result).toBe('first');
+      });
+
+      test('should handle !Split short form', () => {
+        // Test: !Split shorthand works same as Fn::Split
+        const result = resolveIntrinsics({
+          '!Split': ['-', 'my-test-bucket']
+        });
+        expect(result).toEqual(['my', 'test', 'bucket']);
+      });
+
+      test('should handle !GetAZs short form', () => {
+        // Test: !GetAZs shorthand returns mock availability zones
+        const result = resolveIntrinsics({
+          '!GetAZs': ''
+        });
+        expect(result).toEqual(['us-west-2a', 'us-west-2b', 'us-west-2c']);
+      });
+
+      test('should handle !FindInMap short form', () => {
+        // Test: !FindInMap shorthand returns mock mapped value
+        const result = resolveIntrinsics({
+          '!FindInMap': ['RegionMap', 'us-west-2', 'AMI']
+        });
+        expect(result).toBe('mapped-value');
+      });
+
+      test('should handle !ImportValue short form', () => {
+        // Test: !ImportValue shorthand resolves from global exports
+        setGlobalRegistry({
+          resources: {},
+          exports: {
+            'MyExport': 'exported-value'
+          },
+          parameters: {}
+        });
+
+        const result = resolveIntrinsics({
+          '!ImportValue': 'MyExport'
+        });
+        expect(result).toBe('exported-value');
+      });
+    });
+
+    describe('Complex Nested Examples with Phase 1 Fixes', () => {
+      test('should handle nested functions with parameters', () => {
+        // Test: Sub with parameters and literal escaping combined
+        setGlobalRegistry({
+          resources: {},
+          exports: {},
+          parameters: {
+            'Environment': 'prod',
+            'AppName': 'myapp'
+          }
+        });
+
+        const result = resolveIntrinsics({
+          'Fn::Sub': '${AppName}-${Environment}-${!AWS::Region}'
+        });
+        expect(result).toBe('myapp-prod-${AWS::Region}');
+      });
+
+      test('should handle Select with Split using short forms', () => {
+        // Test: !Select[0, !Split['-', 'my-test-bucket']] = 'my'
+        const result = resolveIntrinsics({
+          '!Select': [0, { '!Split': ['-', 'my-test-bucket'] }]
+        });
+        expect(result).toBe('my');
+      });
+    });
+  });
+
   describe('Basic Intrinsic Functions', () => {
     test('resolves Fn::Join', () => {
       const input = { 'Fn::Join': ['', ['http://', '192.168.1.1', ':8080']] };
