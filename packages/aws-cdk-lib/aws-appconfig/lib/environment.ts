@@ -421,8 +421,10 @@ export abstract class Monitor {
       throw new UnscopedValidationError('You must specify an alarmArn property to use "fromCfnMonitorsProperty".');
     }
     return {
-      alarmArn: monitorsProperty.alarmArn,
-      alarmRoleArn: monitorsProperty.alarmRoleArn,
+      alarmArn: (monitorsProperty.alarmArn as cloudwatch.IAlarmRef)?.alarmRef?.alarmArn
+        ?? (monitorsProperty.alarmArn as cloudwatch.ICompositeAlarmRef)?.compositeAlarmRef?.compositeAlarmArn
+        ?? monitorsProperty.alarmArn,
+      alarmRoleArn: (monitorsProperty.alarmRoleArn as iam.IRoleRef)?.roleRef?.roleArn ?? monitorsProperty.alarmRoleArn,
       monitorType: MonitorType.CFN_MONITORS_PROPERTY,
     };
   }
