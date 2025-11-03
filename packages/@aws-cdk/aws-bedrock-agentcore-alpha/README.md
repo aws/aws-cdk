@@ -442,6 +442,7 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
     // securityGroups: [mySecurityGroup],
   }),
 });
+
 ```
 
 #### Managing Security Groups with VPC Configuration
@@ -1028,7 +1029,7 @@ credential provider attached enabling you to securely access targets whether the
 | `gatewayTargetName` | `string` | Yes | The name of the gateway target. Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen) |
 | `description` | `string` | No | Optional description for the gateway target. Maximum 200 characters |
 | `gateway` | `IGateway` | Yes | The gateway this target belongs to |
-| `targetConfiguration` | `ITargetConfiguration` | Yes | The target configuration (Lambda, OpenAPI, or Smithy). **Note:** This property is automatically handled when using convenience methods ( `LambdaTargetConfiguration.create()`, `OpenApiTargetConfiguration.create()`, or `SmithyTargetConfiguration.create()`) or gateway `addTarget` methods. Only needed when using the GatewayTarget constructor directly for[advanced scenarios](#advanced-usage-direct-configuration).  |
+| `targetConfiguration` | `ITargetConfiguration` | Yes | The target configuration (Lambda, OpenAPI, or Smithy). **Note:** Users typically don't create this directly. When using convenience methods like `GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()` or the gateway's `addLambdaTarget()`, `addOpenApiTarget()`, `addSmithyTarget()` methods, this configuration is created internally for you. Only needed when using the GatewayTarget constructor directly for [advanced scenarios](#advanced-usage-direct-configuration-for-gateway-target). |
 | `credentialProviderConfigurations` | `IGatewayCredentialProvider[]` | No | Credential providers for authentication. Defaults to `[GatewayCredentialProvider.fromIamRole()]`. Use `GatewayCredentialProvider.fromApiKeyIdentityArn()`, `GatewayCredentialProvider.fromOauthIdentityArn()`, or `GatewayCredentialProvider.fromIamRole()` |
 | `validateOpenApiSchema` | `boolean` | No | (OpenAPI targets only) Whether to validate the OpenAPI schema at synthesis time. Defaults to `true`. Only applies to inline and local asset schemas. For more information refer here <https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-schema-openapi.html> |
 
@@ -1123,6 +1124,7 @@ The OpenAPI and Smithy target need API Schema. The Gateway construct provide thr
 ```typescript fixture=default
 // When using ApiSchema.fromLocalAsset, you must bind the schema to a scope
 const schema = agentcore.ApiSchema.fromLocalAsset(path.join(__dirname, "mySchema.yml"));
+
 schema.bind(this);
 ```
 
@@ -1323,7 +1325,7 @@ const apiKeyIdentityArn = "arn:aws:bedrock-agentcore:us-east-1:123456789012:toke
 const apiKeySecretArn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-apikey-secret-abc123"
 
 const opneapiSchema = agentcore.ApiSchema.fromLocalAsset(path.join(__dirname, "mySchema.yml"));
-schema.bind(this);
+opneapiSchema.bind(this);
 
 // Create a gateway target with OpenAPI Schema 
 const target = agentcore.GatewayTarget.forOpenApi(this, "MyTarget", {
@@ -1366,9 +1368,40 @@ const target = agentcore.GatewayTarget.forSmithy(this, "MySmithyTarget", {
 
 ### Advanced Usage: Direct Configuration for gateway target
 
-For advanced use cases, you can create the target configuration manually and use the GatewayTarget constructor directly:
+For advanced use cases where you need full control over the target configuration, you can create configurations manually using the static factory methods and use the GatewayTarget constructor directly.
+
+#### Configuration Factory Methods
+
+Each target type has a corresponding configuration class with a static `create()` method:
+
+- **Lambda**: `LambdaTargetConfiguration.create(lambdaFunction, toolSchema)`
+- **OpenAPI**: `OpenApiTargetConfiguration.create(apiSchema, validateSchema?)`
+- **Smithy**: `SmithyTargetConfiguration.create(smithyModel)`
+
+#### Example: Lambda Target with Custom Configuration
 
 ```typescript
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+const myLambdaFunction = new lambda.Function(this, "MyFunction", {
+  runtime: lambda.Runtime.NODEJS_22_X,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+    exports.handler = async (event) => ({ statusCode: 200 });
+  `),
+});
+
+const myToolSchema = agentcore.ToolSchema.fromInline([{
+  name: "my_tool",
+  description: "My custom tool",
+  inputSchema: {
+    type: agentcore.SchemaDefinitionType.OBJECT,
+    properties: {},
+  },
+}]);
+
 // Create a custom Lambda configuration
 const customConfig = agentcore.LambdaTargetConfiguration.create(
   myLambdaFunction,
@@ -1377,7 +1410,7 @@ const customConfig = agentcore.LambdaTargetConfiguration.create(
 
 // Use the GatewayTarget constructor directly
 const target = new agentcore.GatewayTarget(this, "AdvancedTarget", {
-  gateway: myGateway,
+  gateway: gateway,
   gatewayTargetName: "advanced-target",
   targetConfiguration: customConfig,  // Manually created configuration
   credentialProviderConfigurations: [
@@ -1385,6 +1418,8 @@ const target = new agentcore.GatewayTarget(this, "AdvancedTarget", {
   ]
 });
 ```
+
+This approach gives you full control over the configuration but is typically not necessary for most use cases. The convenience methods (`GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()`) handle all of this internally.
 
 ### Gateway Target IAM Permissions
 
