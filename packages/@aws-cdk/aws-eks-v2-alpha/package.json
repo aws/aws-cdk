@@ -30,7 +30,7 @@
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdkeks-v2alpha"
+        "packageName": "awscdkeksv2alpha"
       }
     },
     "metadata": {
