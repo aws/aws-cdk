@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.221.1](https://github.com/aws/aws-cdk/compare/v2.221.0...v2.221.1) (2025-10-29)
+
+
+### Bug Fixes
+
+* compilation failure in Go ([#35871](https://github.com/aws/aws-cdk/issues/35871)) ([4379f66](https://github.com/aws/aws-cdk/commit/4379f66f42ee9adaffbc2836399c75f86d6bf784)), closes [aws/aws-cdk#35770](https://github.com/aws/aws-cdk/issues/35770) [#35862](https://github.com/aws/aws-cdk/issues/35862)
+
 ## [2.221.0](https://github.com/aws/aws-cdk/compare/v2.220.0...v2.221.0) (2025-10-24)
 
 
@@ -9,7 +16,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
 - **aws-datazone**: AWS::DataZone::ProjectProfile: Id property removed.
-- **aws-logs**: AWS::Logs::DeliveryDestination: DeliveryDestinationType attribute removed. 
+- **aws-logs**: AWS::Logs::DeliveryDestination: DeliveryDestinationType attribute removed.
 - **aws-s3**: AWS::S3::AccessGrantsLocation: IamRoleArn property is now required.
 - **aws-s3**: AWS::S3::AccessGrantsLocation: LocationScope property is now required.
 - **aws-servicecatalog**: AWS::ServiceCatalog::TagOptionAssociation: Id attribute removed.
@@ -39,16 +46,16 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES
 
-* ** 
+* **
 L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
 
-- **aws-neptune**: AWS::Neptune::EventSubscription: SnsTopicArn property is now required.  
-- **aws-neptune**: AWS::Neptune::EventSubscription: Id attribute removed.  
+- **aws-neptune**: AWS::Neptune::EventSubscription: SnsTopicArn property is now required.
+- **aws-neptune**: AWS::Neptune::EventSubscription: Id attribute removed.
 - **aws-servicecatalog**: AWS::ServiceCatalog::PortfolioShare: Id attribute removed.
 - **aws-lex**: AWS::Lex::ResourcePolicy: ResourceArn property is now immutable.
 
 Co-authored-by: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
-* ** 
+* **
 ### Features
 
 * **batch:** ec2 Managed Compute Environment support default instance classes, deprecate `useOptimalInstanceClasses` ([#35537](https://github.com/aws/aws-cdk/issues/35537)) ([9d59dd8](https://github.com/aws/aws-cdk/commit/9d59dd8676bdfbba6f562d82411a527e1f7b6296)), closes [#35515](https://github.com/aws/aws-cdk/issues/35515)
