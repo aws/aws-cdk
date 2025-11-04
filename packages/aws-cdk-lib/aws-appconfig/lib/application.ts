@@ -610,7 +610,7 @@ export class Application extends ApplicationBase {
   }
 }
 
-const lambdaLayerVersions: { [key: string]: { [key: string]: string } } = {
+const lambdaLayerVersions: {[key: string]: {[key: string]: string}} = {
   [Platform.X86_64]: {
     'us-east-1': 'arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension:128',
     'us-east-2': 'arn:aws:lambda:us-east-2:728743619870:layer:AWS-AppConfig-Extension:93',
