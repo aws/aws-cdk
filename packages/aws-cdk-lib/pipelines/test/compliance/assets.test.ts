@@ -680,3 +680,169 @@ function unsingleton<A>(xs: A[]): A | A[] {
   }
   return xs;
 }
+
+describe('Asset Existence Checking', () => {
+  test('checkAssetExistence is disabled by default', () => {
+    const app = new TestApp();
+    const pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+    pipeline.addStage(new FileAssetApp(app, 'App'));
+
+    CDKP_ENV.synthesize(app);
+
+    const buildProject = pipelineStack.node.findAll().filter(
+      (n) => n instanceof codebuild.Project && n.node.id.includes('FileAsset'),
+    )[0] as codebuild.Project;
+
+    Template.fromStack(Stack.of(buildProject)).hasResourceProperties('AWS::CodeBuild::Project', {
+      Source: {
+        BuildSpec: Match.serializedJson(
+          Match.objectLike({
+            phases: {
+              build: {
+                commands: Match.not(Match.arrayWith([
+                  Match.stringLikeRegexp('.*Checking if.*asset.*exists.*'),
+                ])),
+              },
+            },
+          }),
+        ),
+      },
+    });
+    app.cleanup();
+  });
+
+  test('file asset existence checking adds S3 head-object commands', () => {
+    const app = new TestApp();
+    const pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+    const pipeline = new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
+      synth: new cdkp.ShellStep('Synth', {
+        input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+        commands: ['build'],
+      }),
+      checkAssetExistence: true,
+    });
+    pipeline.addStage(new FileAssetApp(app, 'App'));
+
+    CDKP_ENV.synthesize(app);
+
+    const buildProject = pipelineStack.node.findAll().filter(
+      (n) => n instanceof codebuild.Project && n.node.id.includes('FileAsset'),
+    )[0] as codebuild.Project;
+
+    Template.fromStack(Stack.of(buildProject)).hasResourceProperties('AWS::CodeBuild::Project', {
+      Source: {
+        BuildSpec: Match.serializedJson(
+          Match.objectLike({
+            phases: {
+              build: {
+                commands: Match.arrayWith([
+                  'echo \'Checking if file asset $ASSET_ID exists...\'',
+                  Match.stringLikeRegexp('.*s3api head-object.*'),
+                ]),
+              },
+            },
+          }),
+        ),
+      },
+    });
+    app.cleanup();
+  });
+
+  test('Docker asset existence checking adds ECR describe-images commands', () => {
+    const app = new TestApp();
+    const pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+    const pipeline = new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
+      synth: new cdkp.ShellStep('Synth', {
+        input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+        commands: ['build'],
+      }),
+      checkAssetExistence: true,
+    });
+    pipeline.addStage(new DockerAssetApp(app, 'App'));
+
+    CDKP_ENV.synthesize(app);
+
+    const buildProject = pipelineStack.node.findAll().filter(
+      (n) => n instanceof codebuild.Project && n.node.id.includes('DockerAsset'),
+    )[0] as codebuild.Project;
+
+    Template.fromStack(Stack.of(buildProject)).hasResourceProperties('AWS::CodeBuild::Project', {
+      Source: {
+        BuildSpec: Match.serializedJson(
+          Match.objectLike({
+            phases: {
+              build: {
+                commands: Match.arrayWith([
+                  'echo \'Checking if Docker image asset $ASSET_ID exists...\'',
+                  Match.stringLikeRegexp('.*ecr describe-images.*'),
+                ]),
+              },
+            },
+          }),
+        ),
+      },
+    });
+    app.cleanup();
+  });
+
+  test('asset role has S3 permissions when checkAssetExistence is enabled for file assets', () => {
+    const app = new TestApp();
+    const pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+    const pipeline = new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
+      synth: new cdkp.ShellStep('Synth', {
+        input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+        commands: ['build'],
+      }),
+      checkAssetExistence: true,
+    });
+    pipeline.addStage(new FileAssetApp(app, 'App'));
+
+    CDKP_ENV.synthesize(app);
+
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith(['s3:HeadObject', 's3:GetObject']),
+            Effect: 'Allow',
+            Resource: '*',
+          }),
+        ]),
+      },
+    });
+    app.cleanup();
+  });
+
+  test('asset role has ECR permissions when checkAssetExistence is enabled for Docker assets', () => {
+    const app = new TestApp();
+    const pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+    const pipeline = new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
+      synth: new cdkp.ShellStep('Synth', {
+        input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+        commands: ['build'],
+      }),
+      checkAssetExistence: true,
+    });
+    pipeline.addStage(new DockerAssetApp(app, 'App'));
+
+    CDKP_ENV.synthesize(app);
+
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith([
+              'ecr:DescribeImages',
+              'ecr:BatchGetImage',
+              'ecr:GetDownloadUrlForLayer',
+            ]),
+            Effect: 'Allow',
+            Resource: '*',
+          }),
+        ]),
+      },
+    });
+    app.cleanup();
+  });
+});

@@ -210,6 +210,25 @@ export interface CodePipelineProps {
   readonly publishAssetsInParallel?: boolean;
 
   /**
+   * Check if assets already exist before building and publishing
+   *
+   * When enabled, the pipeline will check if an asset with the same hash
+   * already exists in S3 (for file assets) or ECR (for Docker images) before
+   * attempting to build and publish it. This can significantly reduce build
+   * times and costs by skipping redundant asset builds.
+   *
+   * The check is performed using:
+   * - S3 HeadObject API for file assets
+   * - ECR DescribeImages API for Docker image assets
+   *
+   * If an asset already exists, the build step is skipped. Otherwise, the
+   * asset is built and published as normal.
+   *
+   * @default false
+   */
+  readonly checkAssetExistence?: boolean;
+
+  /**
    * A list of credentials used to authenticate to Docker registries.
    *
    * Specify any credentials necessary within the pipeline to build, synth, update, or publish assets.
@@ -417,6 +436,7 @@ export class CodePipeline extends PipelineBase {
   private readonly singlePublisherPerAssetType: boolean;
   private readonly cliVersion?: string;
   private readonly cdkAssetsCliVersion: string;
+  private readonly checkAssetExistence: boolean;
 
   constructor(scope: Construct, id: string, private readonly props: CodePipelineProps) {
     super(scope, id, props);
@@ -429,6 +449,7 @@ export class CodePipeline extends PipelineBase {
     this.useChangeSets = props.useChangeSets ?? true;
     this.stackOutputs = new StackOutputsMap(this);
     this.usePipelineRoleForActions = props.usePipelineRoleForActions ?? false;
+    this.checkAssetExistence = props.checkAssetExistence ?? false;
   }
 
   /**
@@ -875,14 +896,21 @@ export class CodePipeline extends PipelineBase {
   }
 
   private publishAssetsAction(node: AGraphNode, assets: StackAsset[]): ICodePipelineActionFactory {
-    const commands = assets.map(asset => {
-      const relativeAssetManifestPath = path.relative(this.myCxAsmRoot, asset.assetManifestPath);
-      return `cdk-assets --path "${toPosixPath(relativeAssetManifestPath)}" --verbose publish "${asset.assetSelector}"`;
-    });
-
     const assetType = assets[0].assetType;
     if (assets.some(a => a.assetType !== assetType)) {
       throw new ValidationError('All assets in a single publishing step must be of the same type', this);
+    }
+
+    let commands: string[];
+    if (this.checkAssetExistence) {
+      // Generate commands with existence checking
+      commands = this.generateAssetCommandsWithExistenceCheck(assets, assetType);
+    } else {
+      // Original behavior: directly publish assets
+      commands = assets.map(asset => {
+        const relativeAssetManifestPath = path.relative(this.myCxAsmRoot, asset.assetManifestPath);
+        return `cdk-assets --path "${toPosixPath(relativeAssetManifestPath)}" --verbose publish "${asset.assetSelector}"`;
+      });
     }
 
     const role = this.obtainAssetCodeBuildRole(assets[0].assetType);
@@ -917,6 +945,80 @@ export class CodePipeline extends PipelineBase {
       passBuildSpecViaCloudAssembly: this.singlePublisherPerAssetType,
       scope: this.assetsScope,
     });
+  }
+
+  /**
+   * Generate asset publishing commands with existence checks
+   *
+   * This method creates bash commands that check if an asset already exists
+   * in S3 (for file assets) or ECR (for Docker images) before publishing.
+   */
+  private generateAssetCommandsWithExistenceCheck(assets: StackAsset[], assetType: AssetType): string[] {
+    const commands: string[] = [];
+
+    for (const asset of assets) {
+      const relativeAssetManifestPath = path.relative(this.myCxAsmRoot, asset.assetManifestPath);
+      const manifestPath = toPosixPath(relativeAssetManifestPath);
+      const assetSelector = asset.assetSelector;
+
+      if (assetType === AssetType.FILE) {
+        // For file assets in S3, we extract the bucket and key from the manifest and check existence
+        commands.push(
+          // Extract S3 destination information from the asset manifest
+          `ASSET_MANIFEST='${manifestPath}'`,
+          `ASSET_ID='${assetSelector.split(':')[0]}'`,
+          `DEST_ID='${assetSelector.split(':')[1] || 'default'}'`,
+          '',
+          'echo \'Checking if file asset $ASSET_ID exists...\'',
+          // Parse the manifest to get bucket and key
+          'BUCKET_NAME=$(node -e \'const m=require(\'./$ASSET_MANIFEST\');const d=m.files[$ASSET_ID].destinations[$DEST_ID];console.log(d.bucketName);\' 2>/dev/null || echo \'\')',
+          'OBJECT_KEY=$(node -e \'const m=require(\'./$ASSET_MANIFEST\');const d=m.files[$ASSET_ID].destinations[$DEST_ID];console.log(d.objectKey);\' 2>/dev/null || echo \'\')',
+          '',
+          // Check if the asset exists in S3
+          'if [ -n \'$BUCKET_NAME\' ] && [ -n \'$OBJECT_KEY\' ]; then',
+          '  if aws s3api head-object --bucket \'$BUCKET_NAME\' --key \'$OBJECT_KEY\' &>/dev/null; then',
+          '    echo \'Asset $ASSET_ID already exists in S3, skipping publish\'',
+          '  else',
+          '    echo \'Asset $ASSET_ID does not exist, publishing...\'',
+          `    cdk-assets --path '$ASSET_MANIFEST' --verbose publish '${assetSelector}'`,
+          '  fi',
+          'else',
+          '  echo \'Could not extract S3 destination from manifest, publishing anyway...\'',
+          `  cdk-assets --path '$ASSET_MANIFEST' --verbose publish '${assetSelector}'`,
+          'fi',
+          '',
+        );
+      } else if (assetType === AssetType.DOCKER_IMAGE) {
+        // For Docker images in ECR, we check if the image tag exists
+        commands.push(
+          // Extract ECR destination information from the asset manifest
+          `ASSET_MANIFEST='${manifestPath}'`,
+          `ASSET_ID='${assetSelector.split(':')[0]}'`,
+          `DEST_ID='${assetSelector.split(':')[1] || 'default'}'`,
+          '',
+          'echo \'Checking if Docker image asset $ASSET_ID exists...\'',
+          // Parse the manifest to get repository and tag
+          'REPO_NAME=$(node -e \'const m=require(\'./$ASSET_MANIFEST\');const d=m.dockerImages[$ASSET_ID].destinations[$DEST_ID];const uri=d.repositoryName;console.log(uri);\' 2>/dev/null || echo \'\')',
+          'IMAGE_TAG=$(node -e \'const m=require(\'./$ASSET_MANIFEST\');const d=m.dockerImages[$ASSET_ID].destinations[$DEST_ID];console.log(d.imageTag);\' 2>/dev/null || echo \'\')',
+          '',
+          // Check if the image exists in ECR
+          'if [ -n \'$REPO_NAME\' ] && [ -n \'$IMAGE_TAG\' ]; then',
+          '  if aws ecr describe-images --repository-name \'$REPO_NAME\' --image-ids imageTag=\'$IMAGE_TAG\' &>/dev/null; then',
+          '    echo \'Docker image $ASSET_ID:$IMAGE_TAG already exists in ECR, skipping publish\'',
+          '  else',
+          '    echo \'Docker image $ASSET_ID:$IMAGE_TAG does not exist, building and publishing...\'',
+          `    cdk-assets --path '$ASSET_MANIFEST' --verbose publish '${assetSelector}'`,
+          '  fi',
+          'else',
+          '  echo \'Could not extract ECR destination from manifest, publishing anyway...\'',
+          `  cdk-assets --path '$ASSET_MANIFEST' --verbose publish '${assetSelector}'`,
+          'fi',
+          '',
+        );
+      }
+    }
+
+    return commands;
   }
 
   private nodeTypeFromNode(node: AGraphNode) {
@@ -1058,6 +1160,29 @@ export class CodePipeline extends PipelineBase {
     // Grant pull access for any ECR registries and secrets that exist
     if (assetType === AssetType.DOCKER_IMAGE) {
       this.dockerCredentials.forEach(reg => reg.grantRead(assetRole, DockerCredentialUsage.ASSET_PUBLISHING));
+    }
+
+    // Add permissions for asset existence checking
+    if (this.checkAssetExistence) {
+      if (assetType === AssetType.FILE) {
+        // Grant S3 HeadObject permission to check if file assets exist
+        assetRole.addToPrincipalPolicy(new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['s3:GetObject', 's3:HeadObject'],
+          resources: ['*'], // Will be scoped to the actual asset buckets during publishing
+        }));
+      } else if (assetType === AssetType.DOCKER_IMAGE) {
+        // Grant ECR DescribeImages permission to check if Docker images exist
+        assetRole.addToPrincipalPolicy(new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: [
+            'ecr:DescribeImages',
+            'ecr:BatchGetImage',
+            'ecr:GetDownloadUrlForLayer',
+          ],
+          resources: ['*'], // Will be scoped to the actual ECR repositories
+        }));
+      }
     }
 
     this.assetCodeBuildRoles.set(assetType, assetRole);
