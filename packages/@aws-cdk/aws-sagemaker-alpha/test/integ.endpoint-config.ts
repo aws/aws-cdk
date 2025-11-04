@@ -54,7 +54,7 @@ const modelWithoutArtifactAndVpc = new sagemaker.Model(stack, 'ModelWithoutArtif
   containers: [{ image }],
 });
 
-const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig2', {
   instanceProductionVariants: [
     {
       model: modelWithArtifactAndVpc,
