@@ -1,5 +1,3 @@
-import { promises as fs } from 'fs';
-import * as path from 'node:path';
 import { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
 import {
   $E,
@@ -14,8 +12,7 @@ import {
   Type,
 } from '@cdklabs/typewriter';
 import { PropertySpec } from '@cdklabs/typewriter/lib/property';
-import { camelcasedResourceName, classNameFromResource, referencePropertyName } from '../naming';
-import { findArnProperty } from './arn';
+import { classNameFromResource } from '../naming';
 
 const $this = $E(expr.this_());
 
@@ -35,18 +32,6 @@ export class GrantsModule extends Module {
     return new GrantsModule(service, db, schema);
   }
 
-  public static async forServiceFromFile(db: SpecDatabase, service: Service, sourceFile: string): Promise<GrantsModule | undefined> {
-    try {
-      const location = path.join(__dirname, '../../../../../packages/aws-cdk-lib', sourceFile);
-      return GrantsModule.forServiceFromString(db, service, await fs.readFile(location, 'utf-8'));
-    } catch (e: any) {
-      if (e.code === 'ENOENT') {
-        return undefined;
-      }
-      throw e;
-    }
-  }
-
   private constructor(private readonly service: Service, private readonly db: SpecDatabase, private readonly schema: GrantsFileSchema) {
     super(`${service.shortName}.grants`);
   }
@@ -64,9 +49,6 @@ export class GrantsModule extends Module {
       const hasPolicy = config.hasResourcePolicy ?? false;
       const hasKeyActions = Object.values(config.grants)
         .some(grant => grant.keyActions && grant.keyActions.length > 0);
-
-      const arnMap = resourceArnMap(resource, config.grants);
-      if (Object.keys(arnMap).length === 0) continue;
 
       const arnCalls = arnCallsForResource(this.service.shortName, resource, config.grants, arnContainers);
       if (Object.keys(arnCalls).length === 0) continue;
@@ -265,17 +247,6 @@ export interface GrantSchema {
   readonly keyActions?: string[];
 }
 
-function resourceArnMap(resource: Resource, grants: Record<string, GrantSchema>): Record<string, Expression> {
-  const result: Record<string, Expression> = {};
-  for (const [methodName, grantSchema] of Object.entries(grants)) {
-    let expression = arns(resource, grantSchema);
-    if (expression != null) {
-      result[methodName] = expression;
-    }
-  }
-  return result;
-}
-
 function arnCallsForResource(
   serviceName: string,
   resource: Resource,
@@ -296,40 +267,5 @@ function arnCallsForResource(
   for (const methodName of Object.keys(grants)) {
     result[methodName] = expression;
   }
-  return result;
-}
-
-function arns(resource: Resource, grantSchema?: GrantSchema): Expression | undefined {
-  const arnFormat = grantSchema?.arnFormat;
-  const refName = `this.resource.${camelcasedResourceName(resource)}Ref`;
-
-  if (arnFormat != null) {
-    return expr.list([expr.strConcat(...replace(refName, arnFormat))]);
-  }
-
-  const cfnArnProperty = findArnProperty(resource);
-  return cfnArnProperty == null
-    ? undefined
-    : expr.list([expr.ident(`${refName}.${referencePropertyName(cfnArnProperty, resource.name)}`)]);
-}
-
-// TODO better name
-function replace(refName: string, arnFormat: string): Expression[] {
-  const i = arnFormat.indexOf('${');
-  const j = arnFormat.indexOf('}', i);
-
-  const prefix = arnFormat.substring(0, i);
-  const varName = arnFormat.substring(i + 2, j);
-  const suffix = arnFormat.substring(j + 1);
-
-  const result: Expression[] = [];
-  if (prefix !== '') {
-    result.push(expr.lit(prefix));
-  }
-  result.push(expr.ident(`${refName}.${varName}`));
-  if (suffix !== '') {
-    result.push(expr.lit(suffix));
-  }
-
   return result;
 }
