@@ -244,6 +244,27 @@ const mySecretFromAttrs = secretsmanager.Secret.fromSecretAttributes(this, 'Secr
 });
 ```
 
+### ECS Compatibility
+
+When using imported secrets with Amazon ECS, you must use `fromSecretCompleteArn()` or `fromSecretAttributes()` with the complete ARN. The other import methods (`fromSecretNameV2()` and `fromSecretPartialArn()`) will cause ECS deployment failures.
+
+**ECS Compatible methods:**
+- `Secret.fromSecretCompleteArn()` - Works with ECS
+- `Secret.fromSecretAttributes()` with `secretCompleteArn` - Works with ECS
+
+**Not ECS Compatible:**
+- `Secret.fromSecretNameV2()` - Causes ECS "Access Denied" errors
+- `Secret.fromSecretPartialArn()` - Causes ECS "Access Denied" errors
+
+**Why:** ECS task definitions require exact ARNs including the 6-character suffix that AWS Secrets Manager automatically appends. Unlike IAM policies, ECS doesn't support wildcards in the secret ARN.
+
+**Getting the complete ARN:**
+```bash
+aws secretsmanager describe-secret --secret-id my-secret-name --query ARN --output text
+```
+
+For ECS usage examples, see the [ECS documentation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ecs-readme.html#importing-existing-secrets-for-ecs).
+
 ## Replicating secrets
 
 Secrets can be replicated to multiple regions by specifying `replicaRegions`:
