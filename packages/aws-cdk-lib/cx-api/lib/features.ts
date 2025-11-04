@@ -660,7 +660,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME]: {
     type: FlagType.BugFix,
-    summary: 'Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in.',
+    summary: 'Enable this feature to create default policy names for imported roles that depend on the stack the role is in.',
     detailsMd: `
       Without this, importing the same role in multiple places could lead to the permissions given for one version of the imported role
       to overwrite permissions given to the role at a different place where it was imported. This was due to all imported instances
@@ -677,7 +677,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'Use S3 Bucket Policy instead of ACLs for Server Access Logging',
     detailsMd: `
-      Enable this feature flag to use S3 Bucket Policy for granting permission fo Server Access Logging
+      Enable this feature flag to use S3 Bucket Policy for granting permission for Server Access Logging
       rather than using the canned \`LogDeliveryWrite\` ACL. ACLs do not work when Object Ownership is
       enabled on the bucket.
 
@@ -976,7 +976,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     summary: 'Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default',
     detailsMd: `
       If this is set, and a \`runtime\` prop is not passed to, Lambda NodeJs
-      functions will us the latest version of the runtime provided by the Lambda
+      functions will use the latest version of the runtime provided by the Lambda
       service. Do not use this if you your lambda function is reliant on dependencies
       shipped as part of the runtime environment.
     `,
@@ -1162,7 +1162,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.ApiDefault,
     summary: 'When enabled, remove default deployment alarm settings',
     detailsMd: `
-      When this featuer flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
+      When this feature flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
     `,
     introducedIn: { v2: '2.143.0' },
     recommendedValue: true,
@@ -1415,8 +1415,8 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.VisibleContext,
     summary: 'When enabled, a stabilization loop will be run when invoking Aspects during synthesis.',
     detailsMd: `
-      Currently, when Aspects are invoked in one single pass of the construct tree.
-      This means that the Aspects that create other Aspects are not run and Aspects that create new nodes of the tree sometimes do not inherit their parent Aspects.
+      Previously, Aspects were invoked in a single pass of the construct tree.
+      This meant that Aspects which created other Aspects were not run, and Aspects that created new nodes in the tree sometimes did not inherit their parent Aspects.
 
       When this feature flag is enabled, a stabilization loop is run to recurse the construct tree multiple times when invoking Aspects.
     `,
@@ -1606,7 +1606,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.ApiDefault,
     summary: 'When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs.',
     detailsMd: `
-      When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom
+      When this feature flag is enabled, the SDK API call response to describe user pool client values will be logged in the custom
       resource lambda function logs.
 
       When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom
@@ -1712,7 +1712,7 @@ export const FLAGS: Record<string, FlagInfo> = {
         of the function (existing behavior).
         LogGroups created in this way do not support Tag propagation, Property Injectors, Aspects.
 
-        DO NOT ENABLE: If you have and existing app defining a lambda function and
+        DO NOT ENABLE: If you have an existing app defining a lambda function and
         have not supplied a logGroup or logRetention prop and your lambda function has
         executed at least once, the logGroup has been already created with the same name
         so your deployment will start failing.
@@ -1731,7 +1731,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       When this feature flag is enabled, Network Load Balancer will be created with a security group by default.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.222.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to create Network Load Balancer without a security group by default.',
   },

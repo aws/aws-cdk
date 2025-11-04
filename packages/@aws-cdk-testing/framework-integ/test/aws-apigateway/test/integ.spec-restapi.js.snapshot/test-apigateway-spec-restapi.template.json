@@ -3,6 +3,10 @@
   "myapi4C7BF186": {
    "Type": "AWS::ApiGateway::RestApi",
    "Properties": {
+    "BinaryMediaTypes": [
+     "image/png",
+     "application/pdf"
+    ],
     "BodyS3Location": {
      "Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
@@ -518,7 +522,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "myapiDeployment92F2CB491b0e40e722acabc99cc39958c957686d": {
+  "myapiDeployment92F2CB49a6f2b34c48304b5ea39e505074a5a8ee": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "beta stage",
@@ -550,7 +554,7 @@
     "CacheClusterEnabled": true,
     "CacheClusterSize": "0.5",
     "DeploymentId": {
-     "Ref": "myapiDeployment92F2CB491b0e40e722acabc99cc39958c957686d"
+     "Ref": "myapiDeployment92F2CB49a6f2b34c48304b5ea39e505074a5a8ee"
     },
     "Description": "beta stage",
     "MethodSettings": [
