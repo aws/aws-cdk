@@ -1,6 +1,5 @@
 # AWS S3 Deployment Construct Library
 
-
 This library allows populating an S3 bucket with the contents of .zip files
 from other S3 buckets or from local disk.
 
@@ -83,7 +82,7 @@ User: *** is not authorized to perform: kms:Decrypt on the resource associated w
 because no identity-based policy allows the kms:Decrypt action
 ```
 
-When this happens, users can use the public `handlerRole` property of `BucketDeployment` to manually 
+When this happens, users can use the public `handlerRole` property of `BucketDeployment` to manually
 add the KMS permissions:
 
 ```ts
@@ -463,7 +462,7 @@ to make from placeholders in a local file which will be resolved during deployme
 is especially useful in situations like creating an API from a spec file, where users might
 want to reference other CDK resources they have created.
 
-The syntax for template variables is `{{ variableName }}` in your local file. Then, you would 
+The syntax for template variables is `{{ variableName }}` in your local file. Then, you would
 specify the substitutions in CDK like this:
 
 ```ts
@@ -487,7 +486,7 @@ new s3deploy.DeployTimeSubstitutedFile(this, 'MyFile', {
 ```
 
 Nested variables, like `{{ {{ foo }} }}` or `{{ foo {{ bar }} }}`, are not supported by this
-construct. In the first case of a single variable being is double nested `{{ {{ foo }} }}`, only 
+construct. In the first case of a single variable being is double nested `{{ {{ foo }} }}`, only
 the `{{ foo }}` would be replaced by the substitution, and the extra brackets would remain in the file.
 In the second case of two nexted variables `{{ foo {{ bar }} }}`, only the `{{ bar }}` would be replaced
 in the file.
@@ -555,7 +554,7 @@ new s3deploy.BucketDeployment(this, 'DeployToS3', {
 
 ### Specifying Subnets for Deployment
 
-By default, when you specify a VPC, the BucketDeployment function is deployed in the private subnets of that VPC. 
+By default, when you specify a VPC, the BucketDeployment function is deployed in the private subnets of that VPC.
 However, you can customize the subnet selection using the vpcSubnets property.
 
 ```ts
@@ -572,7 +571,7 @@ new s3deploy.BucketDeployment(this, 'DeployToS3', {
 
 ### Defining Custom Security Groups
 
-For enhanced network security, you can now specify custom security groups in BucketDeploymentProps. 
+For enhanced network security, you can now specify custom security groups in BucketDeploymentProps.
 This allows fine-grained control over ingress and egress rules for the deployment Lambda function.
 
 ```ts
