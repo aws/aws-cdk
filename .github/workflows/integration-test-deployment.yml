@@ -102,7 +102,7 @@ jobs:
         
       # Build integration test packages: @aws-cdk-testing/framework-integ (stable tests) and @aws-cdk/* (alpha tests)
       - name: Build Integration Test packages 
-        run: npx lerna run build --scope="{@aws-cdk/*,@aws-cdk-testing}"
+        run: npx lerna run build --scope="{@aws-cdk/*,@aws-cdk-testing/framework-integ}"
 
       - name: Run integration tests using integration-test-deployment script
         run: yarn run atmosphere-integ-test
