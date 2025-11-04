@@ -44,15 +44,9 @@ describe('appconfig', () => {
     });
   });
 
-  test('get lambda layer arn (legacy method)', () => {
-    // Test legacy method still works for backward compatibility
+  test('get lambda layer arn', () => {
     expect(Application.getLambdaLayerVersionArn('us-east-1')).toEqual('arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension:128');
     expect(Application.getLambdaLayerVersionArn('us-east-1', Platform.ARM_64)).toEqual('arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension-Arm64:61');
-    
-    // Test error case for unsupported region
-    expect(() => {
-      Application.getLambdaLayerVersionArn('unsupported-region');
-    }).toThrow('AppConfig Lambda layer is not supported in region unsupported-region for platform x86-64');
   });
 
   test('get lambda layer arn with options', () => {

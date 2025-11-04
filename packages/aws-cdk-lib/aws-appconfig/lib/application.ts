@@ -507,32 +507,9 @@ export class Application extends ApplicationBase {
    * @param region The region for the Lambda layer (for example, 'us-east-1')
    * @param platform The platform for the Lambda layer (default is Platform.X86_64)
    * @returns Lambda layer version ARN
-   * 
-   * @deprecated Use getLambdaLayerVersionArnWithOptions() with an explicit version to avoid
-   * unexpected Lambda function replacements during CDK upgrades. This method uses a default
-   * version that may change in future CDK releases.
-   * 
-   * @example
-   * ```typescript
-   * // Instead of this:
-   * Application.getLambdaLayerVersionArn('us-east-1', Platform.ARM_64);
-   * 
-   * // Use this:
-   * Application.getLambdaLayerVersionArnWithOptions('us-east-1', {
-   *   version: AppConfigLambdaVersion.V2_0_2037,
-   *   platform: Platform.ARM_64
-   * });
-   * ```
    */
   public static getLambdaLayerVersionArn(region: string, platform?: Platform): string {
-    const selectedPlatform = platform || Platform.X86_64;
-    const arn = lambdaLayerVersions[selectedPlatform][region];
-
-    if (!arn) {
-      throw new UnscopedValidationError(`AppConfig Lambda layer is not supported in region ${region} for platform ${selectedPlatform}`);
-    }
-
-    return arn;
+    return lambdaLayerVersions[platform || Platform.X86_64][region];
   }
 
   /**
