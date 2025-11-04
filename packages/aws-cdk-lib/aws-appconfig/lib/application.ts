@@ -21,14 +21,14 @@ export enum Platform {
 
 /**
  * Supported versions of the AWS AppConfig Lambda extension.
- * 
+ *
  * @remarks
  * These versions correspond to the AppConfig Lambda layer versions available
  * in the CDK RegionInfo fact tables. Only versions that are available in the
  * fact tables are included to ensure reliable deployments.
- * 
+ *
  * For production use, prefer versions with full platform and regional coverage.
- * 
+ *
  * @see https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-integration-lambda-extensions-versions.html
  */
 export enum AppConfigLambdaVersion {
@@ -103,12 +103,12 @@ export enum AppConfigLambdaVersion {
 export interface AppConfigLambdaLayerOptions {
   /**
    * The AppConfig Lambda extension version
-   * 
+   *
    * @remarks
    * Version must be explicitly specified to prevent unexpected Lambda function
    * replacements during CDK upgrades. This ensures predictable deployments and
    * follows infrastructure-as-code best practices.
-   * 
+   *
    * Use the AppConfigLambdaVersion enum for type safety and IntelliSense support.
    */
   readonly version: AppConfigLambdaVersion;
@@ -518,11 +518,11 @@ export class Application extends ApplicationBase {
    * @param region The region for the Lambda layer (for example, 'us-east-1')
    * @param options Configuration options for the Lambda layer (version is required)
    * @returns Lambda layer version ARN
-   * 
+   *
    * @remarks
-   * The version must be explicitly specified using the AppConfigLambdaVersion enum to ensure 
+   * The version must be explicitly specified using the AppConfigLambdaVersion enum to ensure
    * predictable deployments and prevent unexpected Lambda function replacements during CDK upgrades.
-   * 
+   *
    * @example
    * // Type-safe version specification with enum
    * const layerArn = Application.getLambdaLayerVersionArnWithOptions('us-east-1', {
