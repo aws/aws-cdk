@@ -719,6 +719,7 @@ export class TableV2 extends TableBaseV2 {
    *
    * @param statement The policy statement to add
    */
+  @MethodMetadata()
   public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
     // Initialize resourcePolicy if it doesn't exist
     if (!this.resourcePolicy) {
