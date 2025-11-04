@@ -6,8 +6,10 @@ import { Environment, EnvironmentOptions, IEnvironment } from './environment';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
 import * as ecs from '../../aws-ecs';
 import * as cdk from '../../core';
+import { UnscopedValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { RegionInfo } from '../../region-info';
 
 /**
  * Defines the platform for the AWS AppConfig Lambda extension.
@@ -15,6 +17,118 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 export enum Platform {
   X86_64 = 'x86-64',
   ARM_64 = 'ARM64',
+}
+
+/**
+ * Supported versions of the AWS AppConfig Lambda extension.
+ * 
+ * @remarks
+ * These versions correspond to the AppConfig Lambda layer versions available
+ * in the CDK RegionInfo fact tables. Only versions that are available in the
+ * fact tables are included to ensure reliable deployments.
+ * 
+ * For production use, prefer versions with full platform and regional coverage.
+ * 
+ * @see https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-integration-lambda-extensions-versions.html
+ */
+export enum AppConfigLambdaVersion {
+  /**
+   * Version 2.0.2037 - Latest version (RECOMMENDED)
+   * Released: 05/12/2025
+   * Features: Added /ping path for health checks, minor enhancements and bug fixes
+   * Coverage: Full x86_64 and ARM64 support across all AWS regions
+   */
+  V2_0_2037 = '2.0.2037',
+
+  /**
+   * Version 2.0.358 - Previous CDK default (DEPRECATED)
+   * Released: 12/01/2023
+   * Features: Multi-account retrieval, write configuration copy to disk
+   * Coverage: Not available in CDK fact tables - use 2.0.165 or newer instead
+   * @deprecated This version is not available in CDK RegionInfo fact tables
+   */
+  V2_0_358 = '2.0.358',
+
+  /**
+   * Version 2.0.165 - Stable version with broad support (RECOMMENDED)
+   * Released: 02/21/2023
+   * Features: Multi-region support, enhanced regional coverage
+   * Coverage: Full x86_64 and ARM64 support across most AWS regions
+   */
+  V2_0_165 = '2.0.165',
+
+  /**
+   * Version 2.0.181 - Limited coverage
+   * Released: 08/14/2023
+   * Features: Support for il-central-1 region
+   * Coverage: ARM64 only, limited regional coverage
+   */
+  V2_0_181 = '2.0.181',
+
+  /**
+   * Version 2.0.122 - Limited coverage
+   * Released: 08/23/2022
+   * Features: Tunneling proxy support, .NET 6 runtime support
+   * Coverage: ARM64 only, limited regional coverage
+   */
+  V2_0_122 = '2.0.122',
+
+  /**
+   * Version 2.0.58 - Limited coverage
+   * Released: 05/03/2022
+   * Features: Enhanced ARM64 processor support
+   * Coverage: ARM64 only, limited regional coverage
+   */
+  V2_0_58 = '2.0.58',
+
+  /**
+   * Version 2.0.45 - Limited coverage
+   * Released: 03/15/2022
+   * Features: Single feature flag calls, initial Graviton2 (ARM64) support
+   * Coverage: ARM64 only, limited regional coverage
+   */
+  V2_0_45 = '2.0.45',
+
+  /**
+   * Version 2.0.30 - Limited coverage
+   * Features: Core AppConfig functionality
+   * Coverage: x86_64 only, limited regional coverage
+   */
+  V2_0_30 = '2.0.30',
+}
+
+/**
+ * Options for retrieving the AWS AppConfig Lambda layer ARN
+ */
+export interface AppConfigLambdaLayerOptions {
+  /**
+   * The AppConfig Lambda extension version
+   * 
+   * @remarks
+   * Version must be explicitly specified to prevent unexpected Lambda function
+   * replacements during CDK upgrades. This ensures predictable deployments and
+   * follows infrastructure-as-code best practices.
+   * 
+   * Use the AppConfigLambdaVersion enum for type safety and IntelliSense support.
+   */
+  readonly version: AppConfigLambdaVersion;
+
+  /**
+   * The platform for the Lambda layer
+   * @default Platform.X86_64
+   */
+  readonly platform?: Platform;
+}
+
+/**
+ * Maps Platform enum values to RegionInfo architecture names
+ */
+function platformToArchitecture(platform: Platform): string {
+  switch (platform) {
+    case Platform.X86_64: return 'x86_64';
+    case Platform.ARM_64: return 'arm64';
+    default: return 'x86_64';
+  }
 }
 
 export interface IApplication extends cdk.IResource {
@@ -393,9 +507,65 @@ export class Application extends ApplicationBase {
    * @param region The region for the Lambda layer (for example, 'us-east-1')
    * @param platform The platform for the Lambda layer (default is Platform.X86_64)
    * @returns Lambda layer version ARN
+   * 
+   * @deprecated Use getLambdaLayerVersionArnWithOptions() with an explicit version to avoid
+   * unexpected Lambda function replacements during CDK upgrades. This method uses a default
+   * version that may change in future CDK releases.
+   * 
+   * @example
+   * ```typescript
+   * // Instead of this:
+   * Application.getLambdaLayerVersionArn('us-east-1', Platform.ARM_64);
+   * 
+   * // Use this:
+   * Application.getLambdaLayerVersionArnWithOptions('us-east-1', {
+   *   version: AppConfigLambdaVersion.V2_0_2037,
+   *   platform: Platform.ARM_64
+   * });
+   * ```
    */
   public static getLambdaLayerVersionArn(region: string, platform?: Platform): string {
-    return lambdaLayerVersions[platform || Platform.X86_64][region];
+    const selectedPlatform = platform || Platform.X86_64;
+    const arn = lambdaLayerVersions[selectedPlatform][region];
+
+    if (!arn) {
+      throw new UnscopedValidationError(`AppConfig Lambda layer is not supported in region ${region} for platform ${selectedPlatform}`);
+    }
+
+    return arn;
+  }
+
+  /**
+   * Retrieves the Lambda layer version Amazon Resource Name (ARN) for the AWS AppConfig Lambda extension.
+   *
+   * @param region The region for the Lambda layer (for example, 'us-east-1')
+   * @param options Configuration options for the Lambda layer (version is required)
+   * @returns Lambda layer version ARN
+   * 
+   * @remarks
+   * The version must be explicitly specified using the AppConfigLambdaVersion enum to ensure 
+   * predictable deployments and prevent unexpected Lambda function replacements during CDK upgrades.
+   * 
+   * @example
+   * ```typescript
+   * // Type-safe version specification with enum
+   * const layerArn = Application.getLambdaLayerVersionArnWithOptions('us-east-1', {
+   *   version: AppConfigLambdaVersion.V2_0_2037,
+   *   platform: Platform.ARM_64
+   * });
+   * ```
+   */
+  public static getLambdaLayerVersionArnWithOptions(region: string, options: AppConfigLambdaLayerOptions): string {
+    const platform = options.platform || Platform.X86_64;
+    const version = options.version;
+    const architecture = platformToArchitecture(platform);
+    const arn = RegionInfo.get(region).appConfigLambdaArn(version, architecture);
+
+    if (!arn) {
+      throw new UnscopedValidationError(`AppConfig Lambda layer version ${version} is not supported in region ${region} for architecture ${architecture}`);
+    }
+
+    return arn;
   }
 
   /**
@@ -463,7 +633,7 @@ export class Application extends ApplicationBase {
   }
 }
 
-const lambdaLayerVersions: {[key: string]: {[key: string]: string}} = {
+const lambdaLayerVersions: { [key: string]: { [key: string]: string } } = {
   [Platform.X86_64]: {
     'us-east-1': 'arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension:128',
     'us-east-2': 'arn:aws:lambda:us-east-2:728743619870:layer:AWS-AppConfig-Extension:93',
