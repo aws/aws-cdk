@@ -4922,6 +4922,96 @@ describe('bucket', () => {
       });
     });
 
+    describe('replication metrics behavior', () => {
+      test('replication metrics can be enabled without replication time control', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'ReplicationMetricsStackNoRTC');
+        const dstBucket = new s3.Bucket(stack, 'DstBucket');
+
+        new s3.Bucket(stack, 'SrcBucket', {
+          versioned: true,
+          replicationRules: [
+            {
+              destination: dstBucket,
+              metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES, // metrics only
+            },
+          ],
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+          VersioningConfiguration: { Status: 'Enabled' },
+          ReplicationConfiguration: {
+            Role: {
+              'Fn::GetAtt': ['SrcBucketReplicationRole5B31865A', 'Arn'],
+            },
+            Rules: [
+              {
+                Destination: {
+                  Bucket: {
+                    'Fn::GetAtt': ['DstBucket3E241BF2', 'Arn'],
+                  },
+                  Metrics: {
+                    Status: 'Enabled',
+                  },
+                },
+                Status: 'Enabled',
+                Filter: { Prefix: '' },
+                DeleteMarkerReplication: { Status: 'Disabled' },
+              },
+            ],
+          },
+        });
+      });
+
+      test('replication metrics includes eventThreshold when replication time control is defined', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'ReplicationMetricsStackWithRTC');
+        const dstBucket = new s3.Bucket(stack, 'DstBucket');
+
+        new s3.Bucket(stack, 'SrcBucket', {
+          versioned: true,
+          replicationRules: [
+            {
+              destination: dstBucket,
+              replicationTimeControl: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
+              metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
+            },
+          ],
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+          VersioningConfiguration: { Status: 'Enabled' },
+          ReplicationConfiguration: {
+            Role: {
+              'Fn::GetAtt': ['SrcBucketReplicationRole5B31865A', 'Arn'],
+            },
+            Rules: [
+              {
+                Destination: {
+                  Bucket: {
+                    'Fn::GetAtt': ['DstBucket3E241BF2', 'Arn'],
+                  },
+                  ReplicationTime: {
+                    Status: 'Enabled',
+                    Time: { Minutes: 15 },
+                  },
+                  Metrics: {
+                    Status: 'Enabled',
+                    EventThreshold: {
+                      Minutes: 15,
+                    },
+                  },
+                },
+                Status: 'Enabled',
+                Filter: { Prefix: '' },
+                DeleteMarkerReplication: { Status: 'Disabled' },
+              },
+            ],
+          },
+        });
+      });
+    });
+
     describe('filter', () => {
       test('specify only prefix filter', () => {
         const app = new cdk.App();
