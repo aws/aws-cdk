@@ -533,6 +533,72 @@ new cdk.CfnOutput(this, 'ObjectKey', {
 });
 ```
 
+## Specifying a Custom VPC, Subnets, and Security Groups in BucketDeployment
+
+By default, the AWS CDK BucketDeployment construct runs in a publicly accessible environment. However, for enhanced security and compliance, you may need to deploy your assets from within a VPC while restricting network access through custom subnets and security groups.
+
+### Using a Custom VPC
+
+To deploy assets within a private network, specify the vpc property in BucketDeploymentProps. This ensures that the deployment Lambda function executes within your specified VPC.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+
+const vpc = ec2.Vpc.fromLookup(this, 'ExistingVPC', { vpcId: 'vpc-12345678' });
+const bucket = new s3.Bucket(this, 'MyBucket');
+
+new s3deploy.BucketDeployment(this, 'DeployToS3', {
+    destinationBucket: bucket,
+    vpc: vpc, 
+    sources: [s3deploy.Source.asset('./website')],
+});
+```
+
+### Specifying Subnets for Deployment
+
+By default, when you specify a VPC, the BucketDeployment function is deployed in the private subnets of that VPC. 
+However, you can customize the subnet selection using the vpcSubnets property.
+
+```ts
+const vpc = ec2.Vpc.fromLookup(this, 'ExistingVPC', { vpcId: 'vpc-12345678' });
+const bucket = new s3.Bucket(this, 'MyBucket');
+
+new s3deploy.BucketDeployment(this, 'DeployToS3', {
+    destinationBucket: bucket,
+    vpc: vpc,
+    vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+    sources: [s3deploy.Source.asset('./website')],
+});
+```
+
+### Defining Custom Security Groups
+
+For enhanced network security, you can now specify custom security groups in BucketDeploymentProps. 
+This allows fine-grained control over ingress and egress rules for the deployment Lambda function.
+
+```ts
+
+const vpc = ec2.Vpc.fromLookup(this, 'ExistingVPC', { vpcId: 'vpc-12345678' });
+const bucket = new s3.Bucket(this, 'MyBucket');
+
+const securityGroup = new ec2.SecurityGroup(this, 'CustomSG', {
+    vpc: vpc,
+    description: 'Allow HTTPS outbound access',
+    allowAllOutbound: false,
+});
+
+securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443), 'Allow HTTPS traffic');
+
+new s3deploy.BucketDeployment(this, 'DeployWithSecurityGroup', {
+    destinationBucket: bucket,
+    vpc: vpc,
+    securityGroups: [securityGroup],
+    sources: [s3deploy.Source.asset('./website')],
+});
+```
+
 ## Notes
 
 - This library uses an AWS CloudFormation custom resource which is about 10MiB in
