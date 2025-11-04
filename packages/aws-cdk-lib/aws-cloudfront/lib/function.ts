@@ -166,21 +166,14 @@ export class Function extends Resource implements IFunction {
 
   /** Imports a function by its name and ARN */
   public static fromFunctionAttributes(scope: Construct, id: string, attrs: FunctionAttributes): IFunction {
-    class ImportedFunction extends Resource implements IFunction {
+    return new class extends Resource implements IFunction {
       public readonly functionName = attrs.functionName;
       public readonly functionArn = attrs.functionArn;
-      public readonly functionRuntime: string;
+      public readonly functionRuntime = attrs.functionRuntime ?? FunctionRuntime.JS_1_0.value;
       public readonly functionRef = {
         functionArn: attrs.functionArn,
       };
-
-      constructor(parentScope: Construct, resourceId: string) {
-        super(parentScope, resourceId);
-        const useV2Runtime = FeatureFlags.of(this).isEnabled(cxapi.CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0);
-        this.functionRuntime = attrs.functionRuntime ?? (useV2Runtime ? FunctionRuntime.JS_2_0.value : FunctionRuntime.JS_1_0.value);
-      }
-    }
-    return new ImportedFunction(scope, id);
+    }(scope, id);
   }
 
   /**
