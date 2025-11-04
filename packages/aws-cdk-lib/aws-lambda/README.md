@@ -642,6 +642,15 @@ new CfnOutput(this, 'TheUrl', {
 });
 ```
 
+### Important Function URL Permission Update - Oct 2025
+Starting Oct 2025, Function URL invocation will require two permissions
+- lambda:InvokeFunctionUrl
+- lambda:InvokeFunction (New)
+
+CDK has updated `grantInvokeUrl` and `addFunctionUrl` to add both permission above.
+
+If your existing CDK stack uses `grantInvokeUrl` or `addFunctionUrl`, your next deployment will automatically add the `lambda:InvokeFunction` permission without requiring any code changes. This ensures your Function URLs continue working seamlessly. No additional actions are needed.
+
 ### CORS configuration for Function URLs
 
 If you want your Function URLs to be invokable from a web page in browser, you
@@ -1177,7 +1186,7 @@ const version = fn.currentVersion;
 You can use Application AutoScaling to automatically configure the provisioned concurrency for your functions. AutoScaling can be set to track utilization or be based on a schedule. To configure AutoScaling on a function alias:
 
 ```ts
-import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
+import * as appscaling from 'aws-cdk-lib/aws-applicationautoscaling';
 
 declare const fn: lambda.Function;
 const alias = fn.addAlias('prod');
@@ -1192,7 +1201,7 @@ as.scaleOnUtilization({
 
 // Configure Scheduled Scaling
 as.scaleOnSchedule('ScaleUpInTheMorning', {
-  schedule: autoscaling.Schedule.cron({ hour: '8', minute: '0'}),
+  schedule: appscaling.Schedule.cron({ hour: '8', minute: '0'}),
   minCapacity: 20,
 });
 ```

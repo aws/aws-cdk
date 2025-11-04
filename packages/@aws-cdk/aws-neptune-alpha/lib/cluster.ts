@@ -134,7 +134,18 @@ export class EngineVersion {
    * Neptune engine version 1.4.5.0
    */
   public static readonly V1_4_5_0 = new EngineVersion('1.4.5.0');
-
+  /**
+   * Neptune engine version 1.4.5.1
+   */
+  public static readonly V1_4_5_1 = new EngineVersion('1.4.5.1');
+  /**
+   * Neptune engine version 1.4.6.0
+   */
+  public static readonly V1_4_6_0 = new EngineVersion('1.4.6.0');
+  /**
+   * Neptune engine version 1.4.6.1
+   */
+  public static readonly V1_4_6_1 = new EngineVersion('1.4.6.1');
   /**
    * Constructor for specifying a custom engine version
    * @param version the engine version of Neptune
@@ -209,7 +220,7 @@ export interface DatabaseClusterProps {
    *
    * @default - default master key.
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 
   /**
    * Whether to enable storage encryption
@@ -683,7 +694,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       // Encryption
-      kmsKeyId: props.kmsKey?.keyArn,
+      kmsKeyId: props.kmsKey?.keyRef.keyArn,
       // CloudWatch Logs exports
       enableCloudwatchLogsExports: props.cloudwatchLogsExports?.map(logType => logType.value),
       storageEncrypted,

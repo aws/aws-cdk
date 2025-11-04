@@ -71,7 +71,7 @@ export interface FargateServiceProps extends BaseServiceOptions {
    * of a Classic Load Balancer.
    *
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-rebalancing.html
-   * @default AvailabilityZoneRebalancing.DISABLED
+   * @default AvailabilityZoneRebalancing.ENABLED
    */
   readonly availabilityZoneRebalancing?: AvailabilityZoneRebalancing;
 }
@@ -110,6 +110,9 @@ export interface FargateServiceAttributes {
 /**
  * This creates a service using the Fargate launch type on an ECS cluster.
  *
+ * Can also be used with Managed Instances compatible task definitions when using
+ * capacity provider strategies.
+ *
  * @resource AWS::ECS::Service
  */
 @propertyInjectable
@@ -143,8 +146,8 @@ export class FargateService extends BaseService implements IFargateService {
    * Constructs a new instance of the FargateService class.
    */
   constructor(scope: Construct, id: string, props: FargateServiceProps) {
-    if (!props.taskDefinition.isFargateCompatible) {
-      throw new ValidationError('Supplied TaskDefinition is not configured for compatibility with Fargate', scope);
+    if (!props.taskDefinition.isFargateCompatible && !props.taskDefinition.isManagedInstancesCompatible) {
+      throw new ValidationError('Supplied TaskDefinition is not configured for compatibility with Fargate or Managed Instances', scope);
     }
 
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
