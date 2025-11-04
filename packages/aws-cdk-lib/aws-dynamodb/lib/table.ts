@@ -1338,6 +1338,7 @@ export class Table extends TableBase {
    *
    * @param statement The policy statement to add
    */
+  @MethodMetadata()
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument({ statements: [] });
 
