@@ -33,8 +33,9 @@ test('can codegen deprecated service', () => {
   });
   db.link('hasResource', service, resource);
 
-  const ast = AstBuilder.forService(service, { db, deprecated: 'in favour of something else' });
+  const ast = new AstBuilder({ db });
+  const info = ast.addService(service, { deprecated: 'in favour of something else' });
 
-  const rendered = renderer.render(ast.module);
+  const rendered = renderer.render(info.resourceModule);
   expect(rendered).toMatchSnapshot();
 });

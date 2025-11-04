@@ -53,8 +53,9 @@ maybeTest('resource with relationship reference', () => {
   });
   db.link('hasResource', service, sourceResource);
 
-  const ast = AstBuilder.forService(service, { db });
-  const rendered = renderer.render(ast.module);
+  const module = new AstBuilder({ db }).addService(service).resourceModule;
+
+  const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
 });
@@ -109,8 +110,9 @@ maybeTest('resource with multiple relationship references', () => {
   });
   db.link('hasResource', service, policyResource);
 
-  const ast = AstBuilder.forService(service, { db });
-  const rendered = renderer.render(ast.module);
+  const module = new AstBuilder({ db }).addService(service).resourceModule;
+
+  const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
 });
@@ -157,8 +159,9 @@ maybeTest('resource with nested relationship requiring flattening', () => {
   db.link('hasResource', service, taskResource);
   db.link('usesType', taskResource, configType);
 
-  const ast = AstBuilder.forService(service, { db });
-  const rendered = renderer.render(ast.module);
+  const module = new AstBuilder({ db }).addService(service).resourceModule;
+
+  const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
 });
@@ -205,8 +208,9 @@ maybeTest('resource with array of nested properties with relationship', () => {
   db.link('hasResource', service, resourceResource);
   db.link('usesType', resourceResource, permissionType);
 
-  const ast = AstBuilder.forService(service, { db });
-  const rendered = renderer.render(ast.module);
+  const module = new AstBuilder({ db }).addService(service).resourceModule;
+
+  const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
 });
@@ -272,8 +276,9 @@ maybeTest('resource with nested relationship with type history', () => {
   db.link('usesType', jobResource, configType);
   db.link('usesType', jobResource, oldConfigType);
 
-  const ast = AstBuilder.forService(service, { db });
-  const rendered = renderer.render(ast.module);
+  const module = new AstBuilder({ db }).addService(service).resourceModule;
+
+  const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
 });
@@ -327,8 +332,9 @@ maybeTest('relationship have arns appear first in the constructor chain', () => 
   db.link('hasResource', service, taskResource);
   db.link('usesType', taskResource, configType);
 
-  const ast = AstBuilder.forService(service, { db });
-  const rendered = renderer.render(ast.module);
+  const module = new AstBuilder({ db }).addService(service).resourceModule;
+
+  const rendered = renderer.render(module);
 
   const chain = '"roleArn": (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? (props.roleArn as IRoleRef)?.roleRef?.roleName ?? (props.roleArn as IRoleRef)?.roleRef?.otherPrimaryId ?? props.roleArn';
 

@@ -5,32 +5,9 @@ import { CannedMetricsModule } from './canned-metrics';
 import { CDK_CORE, CONSTRUCTS, ModuleImportLocations } from './cdk';
 import { SelectiveImport } from './relationship-decider';
 import { ResourceClass } from './resource-class';
+import { FilePatternValues, IWriter, substituteFilePattern } from '../util';
 
-/**
- * A module containing a single resource
- */
-export class ResourceModule extends Module {
-  public constructor(public readonly service: string, public readonly resource: string) {
-    super(`@aws-cdk/${service}/${resource}-l1`);
-  }
-}
-
-/**
- * A module containing a service
- */
-export class ServiceModule extends Module {
-  public constructor(public readonly service: string, public readonly shortName: string) {
-    super(`@aws-cdk/${service}`);
-  }
-}
-
-export interface AstBuilderProps {
-  readonly db: SpecDatabase;
-  /**
-   * Override the locations modules are imported from
-   */
-  readonly importLocations?: ModuleImportLocations;
-
+export interface AddServiceProps {
   /**
    * Append a suffix at the end of generated names.
    */
@@ -42,82 +19,112 @@ export interface AstBuilderProps {
    * @default - not deprecated
    */
   readonly deprecated?: string;
+
+  /**
+   * The target resource module we want to generate these resources into
+   *
+   * (Practically, only used to render CloudFormation resources into the `core` module.)
+   */
+  readonly destinationModule?: string;
+
+  /**
+   * Override the locations modules are imported from
+   */
+  readonly importLocations?: ModuleImportLocations;
 }
 
-export class AstBuilder<T extends Module> {
+export interface AstBuilderProps {
+  readonly db: SpecDatabase;
+
+  readonly modulesRoot?: string;
+}
+
+export interface GenerateFilePatterns {
   /**
-   * Build a module for all resources in a service
+   * The pattern used to name resource files.
+   * @default "%serviceName%/%serviceShortName%.generated.ts"
    */
-  public static forService(service: Service, props: AstBuilderProps): AstBuilder<ServiceModule> {
-    const scope = new ServiceModule(service.name, service.shortName);
-    const aug = new AugmentationsModule(props.db, service.name, props.importLocations?.cloudwatch);
-    const metrics = CannedMetricsModule.forService(props.db, service);
-
-    const ast = new AstBuilder(scope, props, aug, metrics);
-
-    const resources = props.db.follow('hasResource', service);
-
-    for (const link of resources) {
-      ast.addResource(link.entity);
-    }
-    ast.renderImports();
-    return ast;
-  }
+  readonly resources: string;
 
   /**
-   * Build an module for a single resource
+   * The pattern used to name augmentations.
+   * @default "%serviceName%/%serviceShortName%-augmentations.generated.ts"
    */
-  public static forResource(resource: Resource, props: AstBuilderProps): AstBuilder<ResourceModule> {
-    const parts = resource.cloudFormationType.toLowerCase().split('::');
-    const scope = new ResourceModule(parts[1], parts[2]);
-    const aug = new AugmentationsModule(props.db, parts[1], props.importLocations?.cloudwatch);
-    const metrics = CannedMetricsModule.forResource(props.db, resource);
+  readonly augmentations: string;
 
-    const ast = new AstBuilder(scope, props, aug, metrics);
-    ast.addResource(resource);
-    ast.renderImports();
+  /**
+   * The pattern used to name canned metrics.
+   * @default "%serviceName%/%serviceShortName%-canned-metrics.generated.ts"
+   */
+  readonly cannedMetrics: string;
+}
 
-    return ast;
-  }
+export const DEFAULT_FILE_PATTERNS: GenerateFilePatterns = {
+  resources: '%serviceName%/%serviceShortName%.generated.ts',
+  augmentations: '%serviceName%/%serviceShortName%-augmentations.generated.ts',
+  cannedMetrics: '%serviceName%/%serviceShortName%-canned-metrics.generated.ts',
+};
 
+export class AstBuilder {
   public readonly db: SpecDatabase;
-  /**
-   * Map of CloudFormation resource name to generated class name
-   */
-  public readonly resources: Record<string, string> = {};
-  private nameSuffix?: string;
-  private deprecated?: string;
+
   public readonly selectiveImports = new Array<SelectiveImport>();
+
+  public readonly serviceModules = new Map<string, SubmoduleInfo>();
   private readonly modulesRootLocation: string;
 
-  protected constructor(
-    public readonly module: T,
+  constructor(
     props: AstBuilderProps,
-    public readonly augmentations?: AugmentationsModule,
-    public readonly cannedMetrics?: CannedMetricsModule,
   ) {
     this.db = props.db;
-    this.nameSuffix = props.nameSuffix;
-    this.deprecated = props.deprecated;
-    this.modulesRootLocation = props.importLocations?.modulesRoot ?? '../..';
-
-    CDK_CORE.import(this.module, 'cdk', { fromLocation: props.importLocations?.core });
-    CONSTRUCTS.import(this.module, 'constructs');
-    CDK_CORE.helpers.import(this.module, 'cfn_parse', { fromLocation: props.importLocations?.coreHelpers });
-    CDK_CORE.errors.import(this.module, 'cdk_errors', { fromLocation: props.importLocations?.coreErrors });
+    this.modulesRootLocation = props.modulesRoot ?? '../..';
   }
 
-  public addResource(resource: Resource) {
-    const resourceClass = new ResourceClass(this.module, this.db, resource, {
-      suffix: this.nameSuffix,
-      deprecated: this.deprecated,
+  /**
+   * Add all resources in a service
+   */
+  public addService(service: Service, props?: AddServiceProps) {
+    const resources = this.db.follow('hasResource', service);
+    const submod = this.createSubmodule(service, props?.destinationModule, props?.importLocations);
+
+    for (const { entity: resource } of resources) {
+      this.addResourceToSubmodule(submod, resource, props);
+    }
+
+    this.renderImports(submod);
+    return submod;
+  }
+
+  /**
+   * Build an module for a single resource (only used for testing)
+   */
+  public addResource(resource: Resource, props?: AddServiceProps) {
+    const service = this.db.incoming('hasResource', resource).only().entity;
+    const submod = this.createSubmodule(service, props?.destinationModule, props?.importLocations);
+
+    this.addResourceToSubmodule(submod, resource, props);
+
+    this.renderImports(submod);
+    return submod;
+  }
+
+  public writeAll(writer: IWriter, filePatterns: GenerateFilePatterns) {
+    for (const submodule of this.serviceModules.values()) {
+      writeSubmodule(writer, submodule, filePatterns);
+    }
+  }
+
+  private addResourceToSubmodule(submodule: SubmoduleInfo, resource: Resource, props?: AddServiceProps) {
+    const resourceClass = new ResourceClass(submodule.resourceModule, this.db, resource, {
+      suffix: props?.nameSuffix,
+      deprecated: props?.deprecated,
     });
-    this.resources[resource.cloudFormationType] = resourceClass.spec.name;
+    submodule.resources[resource.cloudFormationType] = resourceClass.spec.name;
 
     resourceClass.build();
 
     this.addImports(resourceClass);
-    this.augmentations?.augmentResource(resource, resourceClass);
+    submodule.augmentationsModule.augmentResource(resource, resourceClass);
   }
 
   private addImports(resourceClass: ResourceClass) {
@@ -140,11 +147,79 @@ export class AstBuilder<T extends Module> {
     }
   }
 
-  public renderImports() {
+  private renderImports(serviceModules: SubmoduleInfo) {
     const sortedImports = this.selectiveImports.sort((a, b) => a.moduleName.localeCompare(b.moduleName));
     for (const selectiveImport of sortedImports) {
       const sourceModule = new Module(selectiveImport.moduleName);
-      sourceModule.importSelective(this.module, selectiveImport.types.map((t) => `${t.originalType} as ${t.aliasedType}`), { fromLocation: `${this.modulesRootLocation}/${sourceModule.name}` });
+      sourceModule.importSelective(serviceModules.resourceModule, selectiveImport.types.map((t) => `${t.originalType} as ${t.aliasedType}`), {
+        fromLocation: `${this.modulesRootLocation}/${sourceModule.name}`,
+      });
     }
+  }
+
+  private createSubmodule(service: Service, targetServiceModule?: string, importLocations?: ModuleImportLocations): SubmoduleInfo {
+    const moduleName = targetServiceModule ?? service.name;
+
+    const mods = this.serviceModules.get(moduleName);
+    if (mods) {
+      // eslint-disable-next-line @cdklabs/no-throw-default-error
+      throw new Error(`A submodule named ${moduleName} was already created`);
+    }
+
+    const resourceModule = new Module(`@aws-cdk/${moduleName}`);
+    CDK_CORE.import(resourceModule, 'cdk', { fromLocation: importLocations?.core });
+    CONSTRUCTS.import(resourceModule, 'constructs');
+    CDK_CORE.helpers.import(resourceModule, 'cfn_parse', { fromLocation: importLocations?.coreHelpers });
+    CDK_CORE.errors.import(resourceModule, 'cdk_errors', { fromLocation: importLocations?.coreErrors });
+
+    const augmentationsModule = new AugmentationsModule(this.db, service.shortName, importLocations?.cloudwatch);
+    const cannedMetricsModule = CannedMetricsModule.forService(this.db, service);
+
+    const ret: SubmoduleInfo = {
+      service,
+      moduleName,
+      resourceModule,
+      augmentationsModule,
+      cannedMetricsModule,
+      resources: {},
+    };
+    this.serviceModules.set(moduleName, ret);
+    return ret;
+  }
+}
+
+export interface SubmoduleInfo {
+  readonly service: Service;
+
+  /**
+   * The name of the submodule of aws-cdk-lib
+   */
+  readonly moduleName: string;
+
+  readonly resourceModule: Module;
+  readonly augmentationsModule: AugmentationsModule;
+  readonly cannedMetricsModule: CannedMetricsModule;
+
+  /**
+   * Map of CloudFormation resource name to generated class name
+   */
+  readonly resources: Record<string, string>;
+}
+
+export function writeSubmodule(writer: IWriter, mods: SubmoduleInfo, filePatterns: GenerateFilePatterns) {
+  const pattern: FilePatternValues = {
+    serviceName: mods.service.name,
+    serviceShortName: mods.service.shortName,
+    moduleName: mods.moduleName,
+  };
+
+  writer.write(mods.resourceModule, substituteFilePattern(filePatterns.resources, pattern));
+
+  if (mods.augmentationsModule.hasAugmentations) {
+    writer.write(mods.augmentationsModule, substituteFilePattern(filePatterns.augmentations, pattern));
+  }
+
+  if (mods.cannedMetricsModule.hasCannedMetrics) {
+    writer.write(mods.cannedMetricsModule, substituteFilePattern(filePatterns.cannedMetrics, pattern));
   }
 }

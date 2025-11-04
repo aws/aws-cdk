@@ -1,29 +1,34 @@
 import * as path from 'node:path';
 import { Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
-import { PatternValues, PatternedString } from './patterned-name';
-import { PatternKeys } from '../generate';
 
-export class TsFileWriter {
+export interface IWriter {
+  write(module: Module, filePath: string): string;
+}
+
+export class TsFileWriter implements IWriter {
   public outputFiles = new Array<string>();
 
   constructor(
-    private readonly outputPath: string,
+    private readonly rootDir: string,
     private readonly renderer: TypeScriptRenderer,
-    private readonly values: PatternValues<PatternKeys>,
   ) {}
 
-  public write(module: Module, filePath: string | PatternedString<PatternKeys>): string {
-    const output = this.resolveFilePath(filePath);
-    fs.outputFileSync(output, this.renderer.render(module));
-    this.outputFiles.push(output);
-    return output;
+  public write(module: Module, filePath: string): string {
+    const fullPath = path.join(this.rootDir, filePath);
+    fs.outputFileSync(fullPath, this.renderer.render(module));
+    this.outputFiles.push(fullPath);
+    return fullPath;
   }
+}
 
-  private resolveFilePath(filePath: string | PatternedString<PatternKeys>): string {
-    if (typeof filePath === 'function') {
-      return path.join(this.outputPath, filePath(this.values));
-    }
-    return filePath;
+export class FilenameCollectingWriter implements IWriter {
+  public readonly outputFiles: string[] = [];
+  constructor(private readonly rootDir: string) { }
+
+  write(_module: Module, filePath: string): string {
+    const fullPath = path.join(this.rootDir, filePath);
+    this.outputFiles.push(fullPath);
+    return fullPath;
   }
 }
