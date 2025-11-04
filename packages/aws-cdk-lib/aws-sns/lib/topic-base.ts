@@ -94,6 +94,9 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
 
   public abstract readonly contentBasedDeduplication: boolean;
 
+  /**
+   * Collection of grant methods for a Topic
+   */
   public grants: TopicGrants = TopicGrants.fromTopic(this);
 
   /**

@@ -55,10 +55,14 @@ export class GrantsModule extends Module {
 
       const className = `${name}Grants`;
 
+      const interfaceName = `${this.service.shortName}.I${resource.name}Ref`;
       const propsProperties: PropertySpec[] = [{
         name: 'resource',
-        type: Type.fromName(this, `${this.service.shortName}.I${resource.name}Ref`),
+        type: Type.fromName(this, interfaceName),
         immutable: true,
+        docs: {
+          summary: 'The resource on which actions will be allowed',
+        },
       }];
 
       if (hasPolicy) {
@@ -82,21 +86,28 @@ export class GrantsModule extends Module {
         name: `${className}Props`,
         export: true,
         properties: propsProperties,
+        docs: {
+          summary: `Properties for ${className}`,
+        },
       });
 
       const classType = new ClassType(this, {
         name: className,
         export: true,
+        docs: {
+          summary: `Collection of grant methods for a ${interfaceName}`,
+        },
       });
 
       // IBucketRef
       // FIXME: Not sure that Type.fromName() is the best to be used here.
-      const resourceRefType = Type.fromName(this, `${this.service.shortName}.I${resource.name}Ref`);
+      const resourceRefType = Type.fromName(this, interfaceName);
 
       classType.addProperty({
         name: 'resource',
         immutable: true,
         type: resourceRefType,
+        protected: true,
       });
 
       const init = classType.addInitializer({
@@ -138,6 +149,9 @@ export class GrantsModule extends Module {
         name: `from${resource.name}`,
         static: true,
         returnType: Type.fromName(this, `${classType.name}`),
+        docs: {
+          summary: `Creates grants for ${className}`,
+        },
       });
 
       const staticResourceParam = factoryMethod.addParameter({

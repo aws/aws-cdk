@@ -104,6 +104,9 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
    */
   public abstract readonly mesh: IMesh;
 
+  /**
+   * Collection of grant methods for a VirtualGateway
+   */
   public grants: VirtualGatewayGrants = VirtualGatewayGrants.fromVirtualGateway(this);
 
   public get virtualGatewayRef(): VirtualGatewayReference {

@@ -419,7 +419,13 @@ interface GrantProps {
   readonly policyDependable?: IDependable;
 }
 
+/**
+ * A resource that contains data that can be encrypted, using a KMS key.
+ */
 export interface IEncryptedResource extends cdk.IResource {
+  /**
+   * Gives permissions to a grantable entity to perform actions on the encryption key.
+   */
   grantOnKey(grantee: IGrantable, ...actions: string[]): void;
 }
 
