@@ -375,6 +375,7 @@ resource handler.
 > of memory and storage size.
 
 ## JSON-Aware Source Processing
+
 When using `Source.jsonData` with CDK Tokens (references to construct properties), you may need to enable the escaping option. This is particularly important when the referenced properties might contain special characters that require proper JSON escaping (like double quotes, line breaks, etc.).
 
 ```ts
@@ -542,10 +543,6 @@ By default, the AWS CDK BucketDeployment construct runs in a publicly accessible
 To deploy assets within a private network, specify the vpc property in BucketDeploymentProps. This ensures that the deployment Lambda function executes within your specified VPC.
 
 ```ts
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
-
 const vpc = ec2.Vpc.fromLookup(this, 'ExistingVPC', { vpcId: 'vpc-12345678' });
 const bucket = new s3.Bucket(this, 'MyBucket');
 
@@ -579,7 +576,6 @@ For enhanced network security, you can now specify custom security groups in Buc
 This allows fine-grained control over ingress and egress rules for the deployment Lambda function.
 
 ```ts
-
 const vpc = ec2.Vpc.fromLookup(this, 'ExistingVPC', { vpcId: 'vpc-12345678' });
 const bucket = new s3.Bucket(this, 'MyBucket');
 
