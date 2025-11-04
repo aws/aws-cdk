@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.222.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.221.1-alpha.0...v2.222.0-alpha.0) (2025-11-04)
+
+
+### Features
+
+* **eks-v2-alpha:** eks-v2-alpha is now in developer preview ([#35801](https://github.com/aws/aws-cdk/issues/35801)) ([32afc0f](https://github.com/aws/aws-cdk/commit/32afc0ff940394da737714e599ddc3c25ff738e3))
+
+
+### Bug Fixes
+
+* **bedrock-alpha:** apply permission dependency to existing and non-existing roles ([#35123](https://github.com/aws/aws-cdk/issues/35123)) ([b39ccf3](https://github.com/aws/aws-cdk/commit/b39ccf3a874401c2a0a7ae0806f1be02b9b75d5e)), closes [#35120](https://github.com/aws/aws-cdk/issues/35120)
+* **eks-v2-alpha:** remove hyphen from Go package name ([#35927](https://github.com/aws/aws-cdk/issues/35927)) ([2cdfc8a](https://github.com/aws/aws-cdk/commit/2cdfc8a909ce3752833e46dd2ed0106fee0e785a))
+
 ## [2.221.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.221.0-alpha.0...v2.221.1-alpha.0) (2025-10-29)
 
 ## [2.221.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.220.0-alpha.0...v2.221.0-alpha.0) (2025-10-24)
