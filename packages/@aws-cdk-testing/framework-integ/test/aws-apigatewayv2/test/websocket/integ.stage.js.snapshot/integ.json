@@ -1,14 +1,13 @@
 {
-  "version": "39.0.0",
+  "version": "45.0.0",
   "testCases": {
-    "integ.stage": {
+    "aws-cdk-aws-apigatewayv2-websocket-stage-test/DefaultTest": {
       "stacks": [
         "aws-cdk-aws-apigatewayv2-websocket-stage"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "aws-cdk-aws-apigatewayv2-websocket-stage-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkawsapigatewayv2websocketstagetestDefaultTestDeployAssert19BC2E43"
     }
   },
-  "synthContext": {},
-  "enableLookups": false
+  "minimumCliVersion": "2.1020.2"
 }

@@ -1168,6 +1168,30 @@ describe('SpecRestApi', () => {
     });
   });
 
+  test('SpecRestApi binaryMediaTypes', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/aws-apigateway:disableCloudWatchRole': true,
+      },
+    });
+
+    stack = new Stack(app);
+    const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
+      apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
+      binaryMediaTypes: ['image/png', 'application/octet-stream'],
+    });
+
+    // WHEN
+    api.root.addMethod('GET');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
+      Name: 'SpecRestApi',
+      BinaryMediaTypes: ['image/png', 'application/octet-stream'],
+    });
+  });
+
   test('"endpointConfiguration" can be used to specify endpoint types for the api', () => {
     // WHEN
     const api = new apigw.SpecRestApi(stack, 'api', {

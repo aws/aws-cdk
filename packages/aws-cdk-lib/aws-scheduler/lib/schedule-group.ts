@@ -244,7 +244,6 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
       grantee,
       actions,
       resourceArns: [this.scheduleGroupArn],
-      scope: this,
     });
   }
 
@@ -267,7 +266,6 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
       grantee: identity,
       actions: ['scheduler:GetSchedule', 'scheduler:ListSchedules'],
       resourceArns: [this.arnForScheduleInGroup('*')],
-      scope: this,
     });
   }
 
@@ -279,7 +277,6 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
       grantee: identity,
       actions: ['scheduler:CreateSchedule', 'scheduler:UpdateSchedule'],
       resourceArns: [this.arnForScheduleInGroup('*')],
-      scope: this,
     });
   }
 
@@ -291,7 +288,6 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
       grantee: identity,
       actions: ['scheduler:DeleteSchedule'],
       resourceArns: [this.arnForScheduleInGroup('*')],
-      scope: this,
     });
   }
 }

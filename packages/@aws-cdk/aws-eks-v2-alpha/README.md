@@ -3,13 +3,13 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are in **developer preview** before they
+> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
+> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
+> will be announced in release notes. This means that while you may use them, you may need to
+> update your source code when upgrading to a newer version of this package.
 
 ---
 
@@ -39,33 +39,88 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 
 ## Architecture
 
-```text
- +-----------------------------------------------+
- | EKS Cluster      | kubectl |  |
- | -----------------|<--------+| Kubectl Handler |
- | AWS::EKS::Cluster             (Optional)      |
- | +--------------------+    +-----------------+ |
- | |                    |    |                 | |
- | | Managed Node Group |    | Fargate Profile | |
- | |                    |    |                 | |
- | +--------------------+    +-----------------+ |
- +-----------------------------------------------+
-    ^
-    | connect self managed capacity
-    +
- +--------------------+
- | Auto Scaling Group |
- +--------------------+
+```text                                             +-----------------+
+                                         kubectl    |                 |
+                                      +------------>| Kubectl Handler |
+                                      |             |   (Optional)    |
+                                      |             +-----------------+
++-------------------------------------+-------------------------------------+
+|                        EKS Cluster (Auto Mode)                            |
+|                          AWS::EKS::Cluster                                |
+|                                                                           |
+|  +---------------------------------------------------------------------+  |
+|  |           Auto Mode Compute (Managed by EKS) (Default)              |  |
+|  |                                                                     |  |
+|  |  - Automatically provisions EC2 instances                           |  |
+|  |  - Auto scaling based on pod requirements                           |  |
+|  |  - No manual node group configuration needed                        |  |
+|  |                                                                     |  |
+|  +---------------------------------------------------------------------+  |
+|                                                                           |
++---------------------------------------------------------------------------+
 ```
 
 In a nutshell:
 
-- EKS Cluster - The cluster endpoint created by EKS.
-- Managed Node Group - EC2 worker nodes managed by EKS.
-- Fargate Profile - Fargate worker nodes managed by EKS.
-- Auto Scaling Group - EC2 worker nodes managed by the user.
-- Kubectl Handler (Optional) - Custom resource (i.e Lambda Function) for invoking kubectl commands on the
-  cluster - created by CDK
+- **[Auto Mode](#eks-auto-mode)** (Default) – The fully managed capacity mode in EKS.  
+  EKS automatically provisions and scales  EC2 capacity based on pod requirements.  
+  It manages internal *system* and *general-purpose* NodePools, handles networking and storage setup, and removes the need for user-managed node groups or Auto Scaling Groups.
+
+  ```ts
+  const cluster = new eks.Cluster(this, 'AutoModeCluster', {
+    version: eks.KubernetesVersion.V1_33,
+    // Auto Mode is enabled by default
+  });
+  ```
+
+- **[Managed Node Groups](#managed-node-groups)** – The semi-managed capacity mode.  
+  EKS provisions and manages EC2 nodes on your behalf but you configure the instance types, scaling ranges, and update strategy.  
+  AWS handles node health, draining, and rolling updates while you retain control over scaling and cost optimization.
+
+  You can also define *Fargate Profiles* that determine which pods or namespaces run on Fargate infrastructure.
+
+  ```ts
+  const cluster = new eks.Cluster(this, 'ManagedNodeCluster', {
+    version: eks.KubernetesVersion.V1_33,
+    defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
+  });
+  
+  // Add a Fargate Profile for specific workloads (e.g., default namespace)
+  cluster.addFargateProfile('FargateProfile', {
+    selectors: [
+      { namespace: 'default' }, // Run pods in 'default' on Fargate
+  ],
+  });
+  ```
+
+- **[Fargate Mode](#fargate-profiles)** – The Fargate capacity mode.  
+  EKS runs your pods directly on AWS Fargate without provisioning EC2 nodes.
+
+  ```ts
+  const cluster = new eks.FargateCluster(this, 'FargateCluster', {
+    version: eks.KubernetesVersion.V1_33,
+  });
+  ```
+
+- **[Self-Managed Nodes](#self-managed-capacity)** – The fully manual capacity mode.  
+  You create and manage EC2 instances (via an Auto Scaling Group) and connect them to the cluster manually.  
+  This provides maximum flexibility for custom AMIs or configurations but also the highest operational overhead.
+
+  ```ts
+  const cluster = new eks.Cluster(this, 'SelfManagedCluster', {
+    version: eks.KubernetesVersion.V1_33,
+  });
+  
+  // Add self-managed Auto Scaling Group
+  cluster.addAutoScalingGroupCapacity('self-managed-asg', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+    minCapacity: 1,
+    maxCapacity: 5,
+  });
+  ```
+
+- **[Kubectl Handler](#kubectl-support) (Optional)** – A Lambda-backed custom resource created by the AWS CDK to execute `kubectl` commands (like `apply` or `patch`) during deployment.  
+  Regardless of the capacity mode, this handler may still be created to apply Kubernetes manifests as part of CDK provisioning.
 
 ## Provisioning cluster
 
@@ -326,6 +381,38 @@ const cluster = new eks.FargateCluster(this, 'MyCluster', {
 pods running on Fargate. For ingress, we recommend that you use the [ALB Ingress
 Controller](https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html)
 on Amazon EKS (minimum version v1.1.4).
+
+### Self-managed capacity
+
+Self-managed capacity gives you the most control over your worker nodes by allowing you to create and manage your own EC2 Auto Scaling Groups. This approach provides maximum flexibility for custom AMIs, instance configurations, and scaling policies, but requires more operational overhead.
+
+You can add self-managed capacity to any cluster using the `addAutoScalingGroupCapacity` method:
+
+```ts
+const cluster = new eks.Cluster(this, 'Cluster', {
+  version: eks.KubernetesVersion.V1_33,
+});
+
+cluster.addAutoScalingGroupCapacity('self-managed-nodes', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+  minCapacity: 1,
+  maxCapacity: 10,
+  desiredCapacity: 3,
+});
+```
+
+You can specify custom subnets for the Auto Scaling Group:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const cluster: eks.Cluster;
+
+cluster.addAutoScalingGroupCapacity('custom-subnet-nodes', {
+  vpcSubnets: { subnets: vpc.privateSubnets },
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+  minCapacity: 2,
+});
+```
 
 ### Endpoint Access
 

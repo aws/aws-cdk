@@ -10,20 +10,35 @@ const app = new App({
 });
 const stack = new Stack(app, 'aws-cdk-lambda-runtime-fromasset');
 
-const lambdaFunction = new Function(stack, 'MyFunction', {
+const lambdaFunctionJava21 = new Function(stack, 'MyFunctionJava21', {
   runtime: Runtime.JAVA_21,
+  handler: 'com.mycompany.app.LambdaMethodHandler::handleRequest',
+  code: Code.fromAsset(path.join(__dirname, 'my-app-1.0-SNAPSHOT.zip')),
+});
+
+const lambdaFunctionJava25 = new Function(stack, 'MyFunctionJava25', {
+  runtime: Runtime.JAVA_25,
   handler: 'com.mycompany.app.LambdaMethodHandler::handleRequest',
   code: Code.fromAsset(path.join(__dirname, 'my-app-1.0-SNAPSHOT.zip')),
 });
 
 const integTest = new integ.IntegTest(app, 'Integ', { testCases: [stack] });
 
-const invoke = integTest.assertions.invokeFunction({
-  functionName: lambdaFunction.functionName,
+const invokeJava21 = integTest.assertions.invokeFunction({
+  functionName: lambdaFunctionJava21.functionName,
   payload: '123',
 });
 
-invoke.expect(integ.ExpectedResult.objectLike({
+invokeJava21.expect(integ.ExpectedResult.objectLike({
+  Payload: '"123"',
+}));
+
+const invokeJava25 = integTest.assertions.invokeFunction({
+  functionName: lambdaFunctionJava25.functionName,
+  payload: '123',
+});
+
+invokeJava25.expect(integ.ExpectedResult.objectLike({
   Payload: '"123"',
 }));
 

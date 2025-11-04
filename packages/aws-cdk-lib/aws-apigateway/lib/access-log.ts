@@ -638,6 +638,30 @@ export class AccessLogField {
   public static contextWafStatus() {
     return '$context.waf.status';
   }
+
+  /**
+   * The event type: CONNECT, MESSAGE, or DISCONNECT.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-logging.html
+   */
+  public static contextEventType() {
+    return '$context.eventType';
+  }
+
+  /**
+   * The selected route key.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-logging.html
+   */
+  public static contextRouteKey() {
+    return '$context.routeKey';
+  }
+
+  /**
+   * A unique ID for the connection that can be used to make a callback to the client.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-logging.html
+   */
+  public static contextConnectionId() {
+    return '$context.connectionId';
+  }
 }
 
 /**
@@ -752,7 +776,7 @@ export class AccessLogFormat {
    */
   private readonly format: string;
 
-  private constructor(format: string) {
+  constructor(format: string) {
     this.format = format;
   }
 
