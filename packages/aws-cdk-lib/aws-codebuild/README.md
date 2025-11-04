@@ -651,7 +651,6 @@ const project = new codebuild.Project(this, 'MyProject', {
   // vpc,
 });
 ```
->>>>>>> 39ec36ec6a (feat(codebuild): add custom instance type and VPC to Fleets)
 
 ## Logs
 
