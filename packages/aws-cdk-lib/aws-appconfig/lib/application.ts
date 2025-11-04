@@ -524,13 +524,11 @@ export class Application extends ApplicationBase {
    * predictable deployments and prevent unexpected Lambda function replacements during CDK upgrades.
    * 
    * @example
-   * ```typescript
    * // Type-safe version specification with enum
    * const layerArn = Application.getLambdaLayerVersionArnWithOptions('us-east-1', {
    *   version: AppConfigLambdaVersion.V2_0_2037,
    *   platform: Platform.ARM_64
    * });
-   * ```
    */
   public static getLambdaLayerVersionArnWithOptions(region: string, options: AppConfigLambdaLayerOptions): string {
     const platform = options.platform || Platform.X86_64;
