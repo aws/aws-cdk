@@ -100,9 +100,9 @@ jobs:
       - name: Build deployment-integ
         run: yarn --cwd tools/@aws-cdk/integration-test-deployment build
         
-      # Build entire CDK for integration test packages: @aws-cdk-testing/framework-integ (stable tests) and @aws-cdk (alpha tests)
+      # Build integration test packages: @aws-cdk-testing/framework-integ (stable tests) and @aws-cdk/* (alpha tests)
       - name: Build Integration Test packages 
-        run: npx lerna run build --skip-nx-cache
+        run: npx lerna run build --scope="{@aws-cdk/*,@aws-cdk-testing}"
 
       - name: Run integration tests using integration-test-deployment script
         run: yarn run atmosphere-integ-test
