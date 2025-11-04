@@ -96,6 +96,11 @@ export class S3Bucket implements IDestination {
       streamId: 'S3Destination',
     }) ?? {};
 
+    if (this.props.processor && this.props.processors) {
+      throw new cdk.ValidationError("You can specify either 'processors' or 'processor', not both.", scope);
+    }
+    const dataProcessors = this.props.processor ? [this.props.processor] : this.props.processors;
+
     const { backupConfig, dependables: backupDependables } = createBackupConfig(scope, role, this.props.s3Backup) ?? {};
 
     const fileExtension = this.props.fileExtension;
@@ -120,7 +125,7 @@ export class S3Bucket implements IDestination {
     return {
       extendedS3DestinationConfiguration: {
         cloudWatchLoggingOptions: loggingOptions,
-        processingConfiguration: createProcessingConfig(scope, role, this.props.processor),
+        processingConfiguration: createProcessingConfig(scope, role, dataProcessors),
         roleArn: role.roleArn,
         s3BackupConfiguration: backupConfig,
         s3BackupMode: this.getS3BackupMode(),

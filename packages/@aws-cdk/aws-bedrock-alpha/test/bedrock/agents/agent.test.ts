@@ -780,6 +780,35 @@ describe('Agent', () => {
       });
     });
 
+    test('applies dependency for existing role', () => {
+      const existingRole = new iam.Role(stack, 'ExistingRole', {
+        assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com'),
+      });
+
+      new bedrock.Agent(stack, 'Agent', {
+        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+        foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+        existingRole,
+      });
+
+      // Verify CloudFormation template has DependsOn
+      Template.fromStack(stack).hasResource('AWS::Bedrock::Agent', {
+        DependsOn: [Match.stringLikeRegexp('ExistingRoleDefaultPolicy.*')],
+      });
+    });
+
+    test('applies dependency for role created by Agent', () => {
+      new bedrock.Agent(stack, 'Agent', {
+        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+        foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+      });
+
+      // Verify CloudFormation template has DependsOn
+      Template.fromStack(stack).hasResource('AWS::Bedrock::Agent', {
+        DependsOn: [Match.stringLikeRegexp('AgentRoleDefaultPolicy.*')],
+      });
+    });
+
     test('creates agent with guardrail', () => {
       const guardrail = new bedrock.Guardrail(stack, 'TestGuardrail', {
         guardrailName: 'TestGuardrail',
