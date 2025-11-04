@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import * as sns from '../lib';
-import { TopicGrants } from "../lib/sns-grants.generated";
+import { TopicGrants } from '../lib/sns-grants.generated';
 
 /* eslint-disable quote-props */
 

@@ -3,6 +3,7 @@ import { Module } from '@cdklabs/typewriter';
 import { AugmentationsModule } from './augmentation-generator';
 import { CannedMetricsModule } from './canned-metrics';
 import { CDK_CORE, CONSTRUCTS, ModuleImportLocations } from './cdk';
+import { GrantsModule } from './grants-module';
 import { SelectiveImport } from './relationship-decider';
 import { ResourceClass } from './resource-class';
 
@@ -42,6 +43,8 @@ export interface AstBuilderProps {
    * @default - not deprecated
    */
   readonly deprecated?: string;
+
+  readonly grantsConfig?: string;
 }
 
 export class AstBuilder<T extends Module> {
@@ -52,15 +55,21 @@ export class AstBuilder<T extends Module> {
     const scope = new ServiceModule(service.name, service.shortName);
     const aug = new AugmentationsModule(props.db, service.name, props.importLocations?.cloudwatch);
     const metrics = CannedMetricsModule.forService(props.db, service);
+    const grants = GrantsModule.forServiceFromString(props.db, service, props.grantsConfig);
 
-    const ast = new AstBuilder(scope, props, aug, metrics);
+    const ast = new AstBuilder(scope, props, aug, metrics, grants);
 
     const resources = props.db.follow('hasResource', service);
 
+    const arnContainers: Set<string> = new Set();
     for (const link of resources) {
-      ast.addResource(link.entity);
+      const resourceClass = ast.addResource(link.entity);
+      if (resourceClass.methods.some(method => method.name === `arnFor${link.entity.name}`)) {
+        arnContainers.add(link.entity.cloudFormationType);
+      }
     }
     ast.renderImports();
+    ast.buildGrants(arnContainers);
     return ast;
   }
 
@@ -95,6 +104,7 @@ export class AstBuilder<T extends Module> {
     props: AstBuilderProps,
     public readonly augmentations?: AugmentationsModule,
     public readonly cannedMetrics?: CannedMetricsModule,
+    public readonly grants?: GrantsModule,
   ) {
     this.db = props.db;
     this.nameSuffix = props.nameSuffix;
@@ -118,6 +128,8 @@ export class AstBuilder<T extends Module> {
 
     this.addImports(resourceClass);
     this.augmentations?.augmentResource(resource, resourceClass);
+
+    return resourceClass;
   }
 
   private addImports(resourceClass: ResourceClass) {
@@ -146,5 +158,9 @@ export class AstBuilder<T extends Module> {
       const sourceModule = new Module(selectiveImport.moduleName);
       sourceModule.importSelective(this.module, selectiveImport.types.map((t) => `${t.originalType} as ${t.aliasedType}`), { fromLocation: `${this.modulesRootLocation}/${sourceModule.name}` });
     }
+  }
+
+  public buildGrants(arnContainers: Set<string>) {
+    this.grants?.build(arnContainers);
   }
 }

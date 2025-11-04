@@ -6,7 +6,6 @@ import { TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { AstBuilder, ServiceModule } from './cdk/ast';
 import { ModuleImportLocations } from './cdk/cdk';
-import { GrantsModule } from './cdk/grants-module';
 import { queryDb, log, PatternedString, TsFileWriter, PatternValues, PatternKeys } from './util';
 
 export interface GenerateServiceRequest {
@@ -211,6 +210,7 @@ async function generator(
         importLocations,
         nameSuffix: req.suffix,
         deprecated: req.deprecated,
+        grantsConfig: await readGrantsConfig(filePatterns.grantsJson({ moduleName })),
       });
 
       log.debug(moduleName, s.name, 'render');
@@ -239,10 +239,8 @@ async function generator(
         writer.write(ast.cannedMetrics, filePatterns.cannedMetrics);
       }
 
-      // Grants from a separate file
-      const grantsModule = await GrantsModule.forServiceFromFile(db, s, filePatterns.grantsJson(filenamePlaceHolders));
-      if (grantsModule) {
-        writer.write(grantsModule, filePatterns.grantsClass);
+      if (ast.grants) {
+        writer.write(ast.grants, filePatterns.grantsClass);
       }
 
       moduleMap[moduleName].push({
@@ -291,5 +289,18 @@ function mergeObjects<T>(all: T, res: T) {
     ...res,
   };
 }
+
+async function readGrantsConfig(filename: string): Promise<undefined | string> {
+  try {
+    const location = path.join(__dirname, '../../../../packages/aws-cdk-lib', filename);
+    return await fs.readFile(location, 'utf-8');
+  } catch (e: any) {
+    if (e.code === 'ENOENT') {
+      return undefined;
+    }
+    throw e;
+  }
+}
+
 export { PatternKeys };
 

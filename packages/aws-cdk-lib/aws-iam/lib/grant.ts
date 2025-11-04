@@ -2,7 +2,7 @@ import { Dependable, IConstruct, IDependable } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import { IGrantable, IPrincipal } from './principals';
 import * as cdk from '../../core';
-import * as iam from "../index";
+import * as iam from '../index';
 
 /**
  * Basic options for a grant operation

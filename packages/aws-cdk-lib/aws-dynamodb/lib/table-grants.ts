@@ -101,7 +101,7 @@ export class TableGrants {
     this.encryptionKey?.grant(grantee, ...perms.KEY_READ_ACTIONS);
     return iam.Grant.addToPrincipalOrResource({
       grantee,
-      actions: [...perms.READ_DATA_ACTIONS, ...perms.DESCRIBE_TABLE],
+      actions: [...perms.READ_DATA_ACTIONS, perms.DESCRIBE_TABLE],
       resourceArns: this.arns,
       resource: this.table,
     });
@@ -120,7 +120,7 @@ export class TableGrants {
     this.encryptionKey?.grant(grantee, ...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS);
     return iam.Grant.addToPrincipalOrResource({
       grantee,
-      actions: [...perms.WRITE_DATA_ACTIONS, ...perms.DESCRIBE_TABLE],
+      actions: [...perms.WRITE_DATA_ACTIONS, perms.DESCRIBE_TABLE],
       resourceArns: this.arns,
       resource: this.table,
     });

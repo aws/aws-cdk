@@ -14,7 +14,7 @@ import {
   Type,
 } from '@cdklabs/typewriter';
 import { PropertySpec } from '@cdklabs/typewriter/lib/property';
-import { camelcasedResourceName, referencePropertyName } from '../naming';
+import { camelcasedResourceName, classNameFromResource, referencePropertyName } from '../naming';
 import { findArnProperty } from './arn';
 
 const $this = $E(expr.this_());
@@ -27,7 +27,10 @@ const $this = $E(expr.this_());
  * repository.
  */
 export class GrantsModule extends Module {
-  public static async forServiceFromString(db: SpecDatabase, service: Service, config: string): Promise<GrantsModule | undefined> {
+  public static forServiceFromString(db: SpecDatabase, service: Service, config?: string): GrantsModule | undefined {
+    if (config == null) {
+      return undefined;
+    }
     const schema = JSON.parse(config);
     return new GrantsModule(service, db, schema);
   }
@@ -35,7 +38,7 @@ export class GrantsModule extends Module {
   public static async forServiceFromFile(db: SpecDatabase, service: Service, sourceFile: string): Promise<GrantsModule | undefined> {
     try {
       const location = path.join(__dirname, '../../../../../packages/aws-cdk-lib', sourceFile);
-      return await GrantsModule.forServiceFromString(db, service, await fs.readFile(location, 'utf-8'));
+      return GrantsModule.forServiceFromString(db, service, await fs.readFile(location, 'utf-8'));
     } catch (e: any) {
       if (e.code === 'ENOENT') {
         return undefined;
@@ -46,10 +49,9 @@ export class GrantsModule extends Module {
 
   private constructor(private readonly service: Service, private readonly db: SpecDatabase, private readonly schema: GrantsFileSchema) {
     super(`${service.shortName}.grants`);
-    this.build();
   }
 
-  private build() {
+  public build(arnContainers: Set<string>) {
     let hasContent = false;
     const resources = this.db.follow('hasResource', this.service);
     const resourceIndex = Object.fromEntries(resources.map(r => [r.entity.name, r.entity]));
@@ -65,6 +67,9 @@ export class GrantsModule extends Module {
 
       const arnMap = resourceArnMap(resource, config.grants);
       if (Object.keys(arnMap).length === 0) continue;
+
+      const arnCalls = arnCallsForResource(this.service.shortName, resource, config.grants, arnContainers);
+      if (Object.keys(arnCalls).length === 0) continue;
 
       const className = `${name}Grants`;
 
@@ -183,7 +188,7 @@ export class GrantsModule extends Module {
       );
 
       for (const [methodName, grantSchema] of Object.entries(config.grants)) {
-        const resourceArns = arnMap[methodName];
+        const resourceArns = arnCalls[methodName];
         if (resourceArns == null) {
           // Without ARNs, we cannot generate grants.
           continue;
@@ -233,7 +238,7 @@ export class GrantsModule extends Module {
     }
 
     if (hasContent) {
-      new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`).import(this, this.service.shortName);
+      new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`).import(this, this.service.shortName, { fromLocation: `./${this.service.shortName}.generated` });
       new ExternalModule('aws-cdk-lib/aws-iam').import(this, 'iam');
     }
   }
@@ -267,6 +272,29 @@ function resourceArnMap(resource: Resource, grants: Record<string, GrantSchema>)
     if (expression != null) {
       result[methodName] = expression;
     }
+  }
+  return result;
+}
+
+function arnCallsForResource(
+  serviceName: string,
+  resource: Resource,
+  grants: Record<string, GrantSchema>,
+  arnContainers: Set<string>): Record<string, Expression> {
+  const result: Record<string, Expression> = {};
+  if (!arnContainers.has(resource.cloudFormationType)) {
+    return result;
+  }
+
+  const expression = expr.list([
+    $E(expr
+      .ident(`${serviceName}`)
+      .prop(classNameFromResource(resource)) // TODO What about the suffix?
+      .callMethod(`arnFor${resource.name}`, $this.resource),
+    ),
+  ]);
+  for (const methodName of Object.keys(grants)) {
+    result[methodName] = expression;
   }
   return result;
 }

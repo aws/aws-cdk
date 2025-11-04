@@ -2329,17 +2329,12 @@ describe('grants', () => {
               'dynamodb:action2',
             ],
             'Effect': 'Allow',
-            'Resource': [
-              {
-                'Fn::GetAtt': [
-                  'mytable0324D45C',
-                  'Arn',
-                ],
-              },
-              {
-                'Ref': 'AWS::NoValue',
-              },
-            ],
+            'Resource': {
+              'Fn::GetAtt': [
+                'mytable0324D45C',
+                'Arn',
+              ],
+            },
           },
         ],
         'Version': '2012-10-17',
@@ -2587,31 +2582,26 @@ describe('grants', () => {
           {
             Action: 'dynamodb:*',
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':dynamodb:',
-                    {
-                      Ref: 'AWS::Region',
-                    },
-                    ':',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':table/my-table',
-                  ],
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':dynamodb:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':table/my-table',
                 ],
-              },
-              {
-                Ref: 'AWS::NoValue',
-              },
-            ],
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -2689,10 +2679,7 @@ describe('import', () => {
               'dynamodb:DescribeTable',
             ],
             'Effect': 'Allow',
-            'Resource': [
-              tableArn,
-              { 'Ref': 'AWS::NoValue' },
-            ],
+            'Resource': tableArn,
           },
         ],
         'Version': '2012-10-17',
@@ -2736,31 +2723,26 @@ describe('import', () => {
               'dynamodb:DescribeTable',
             ],
             'Effect': 'Allow',
-            'Resource': [
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      'Ref': 'AWS::Partition',
-                    },
-                    ':dynamodb:',
-                    {
-                      'Ref': 'AWS::Region',
-                    },
-                    ':',
-                    {
-                      'Ref': 'AWS::AccountId',
-                    },
-                    ':table/MyTable',
-                  ],
+            'Resource': {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    'Ref': 'AWS::Partition',
+                  },
+                  ':dynamodb:',
+                  {
+                    'Ref': 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    'Ref': 'AWS::AccountId',
+                  },
+                  ':table/MyTable',
                 ],
-              },
-              {
-                'Ref': 'AWS::NoValue',
-              },
-            ],
+              ],
+            },
           },
         ],
         'Version': '2012-10-17',
@@ -3177,20 +3159,6 @@ describe('global', () => {
                 'Fn::Join': [
                   '',
                   [
-                    {
-                      'Fn::GetAtt': [
-                        'TableCD117FA1',
-                        'Arn',
-                      ],
-                    },
-                    '/index/*',
-                  ],
-                ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
                     'arn:',
                     {
                       Ref: 'AWS::Partition',
@@ -3222,6 +3190,20 @@ describe('global', () => {
                     {
                       Ref: 'TableCD117FA1',
                     },
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'TableCD117FA1',
+                        'Arn',
+                      ],
+                    },
+                    '/index/*',
                   ],
                 ],
               },
@@ -3346,22 +3328,6 @@ describe('global', () => {
                     {
                       Ref: 'AWS::Partition',
                     },
-                    ':dynamodb:us-east-1:',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':table/my-table/index/*',
-                  ],
-                ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
                     ':dynamodb:eu-west-2:',
                     {
                       Ref: 'AWS::AccountId',
@@ -3383,6 +3349,22 @@ describe('global', () => {
                       Ref: 'AWS::AccountId',
                     },
                     ':table/my-table',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:us-east-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table/index/*',
                   ],
                 ],
               },
@@ -3756,17 +3738,12 @@ function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal,
         {
           'Action': action,
           'Effect': 'Allow',
-          'Resource': [
-            {
-              'Fn::GetAtt': [
-                'mytable0324D45C',
-                'Arn',
-              ],
-            },
-            {
-              'Ref': 'AWS::NoValue',
-            },
-          ],
+          'Resource': {
+            'Fn::GetAtt': [
+              'mytable0324D45C',
+              'Arn',
+            ],
+          },
         },
       ],
       'Version': '2012-10-17',

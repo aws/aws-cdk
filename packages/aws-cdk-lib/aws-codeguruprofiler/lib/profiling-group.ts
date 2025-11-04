@@ -1,10 +1,10 @@
 import { Construct } from 'constructs';
+import { ProfilingGroupGrants } from './codeguruprofiler-grants.generated';
 import { CfnProfilingGroup, IProfilingGroupRef, ProfilingGroupReference } from './codeguruprofiler.generated';
 import { Grant, IGrantable } from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ProfilingGroupGrants } from "./codeguruprofiler-grants.generated";
 
 /**
  * The compute platform of the profiling group.
