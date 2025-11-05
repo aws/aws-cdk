@@ -601,7 +601,7 @@ To enable dynamic partitioning with inline parsing, specify `MetadataExtractionP
 
 Only supported mechanism currently is [jq 1.6 parser](https://stedolan.github.io/jq/).
 
-The partition keys can be referred as `!{partitionKeyFromQuery:key}` in prefixes.
+The partition keys can be referred as `!{partitionKeyFromQuery:key}` in `dataOutputPrefix`.
 
 ``` ts
 declare const bucket: s3.Bucket;
@@ -627,7 +627,7 @@ For compressed or encrypted data records, or data that is in any file format oth
 
 The lambda function must return `metadata` in your result records.
 
-The partition keys can be referred as `!{partitionKeyFromLambda:key}` in prefixes.
+The partition keys can be referred as `!{partitionKeyFromLambda:key}` in `dataOutputPrefix`.
 
 ``` ts
 declare const bucket: s3.Bucket;
