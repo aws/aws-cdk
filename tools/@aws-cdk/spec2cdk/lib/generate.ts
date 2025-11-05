@@ -191,7 +191,7 @@ async function generator(
         destinationSubmodule: moduleName,
         nameSuffix: req.suffix,
         deprecated: req.deprecated,
-        importLocations: moduleOptions.moduleImportLocations,
+        importLocations: moduleOptions.moduleImportLocations ?? options.importLocations,
       });
 
       return {
