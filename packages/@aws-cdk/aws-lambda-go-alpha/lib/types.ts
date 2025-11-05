@@ -25,7 +25,7 @@ export interface BundlingOptions extends DockerRunOptions {
    * For example:
    * ['ldflags "-s -w"']
    *
-   * **Security Warning**: These flags are passed directly to the Go build command.
+   * ⚠️ **Security Warning**: These flags are passed directly to the Go build command.
    * Only use trusted values as they can execute arbitrary commands during bundling.
    * Avoid flags like `-toolexec` with untrusted arguments, and be cautious with
    * third-party CDK constructs that may contain malicious build flags.
