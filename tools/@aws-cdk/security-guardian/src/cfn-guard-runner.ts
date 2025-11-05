@@ -9,20 +9,10 @@ export async function runCfnGuardValidation(
   type: string
 ): Promise<boolean> {
   try {
-    await exec.exec('cfn-guard', [
-      'validate',
-      '--data', dataDir,
-      '--rules', ruleSetPath,
-      '--output-format', 'junit',
-      '--structured',
-      '--show-summary', 'none'
-    ], {
-      listeners: {
-        stdout: (data: Buffer) => {
-          fs.writeFileSync(outputFile, data.toString());
-        }
-      }
-    });
+    await exec.exec('sh', [
+      '-c',
+      `cfn-guard validate --data "${dataDir}" --rules "${ruleSetPath}" --output-format junit --structured --show-summary none > "${outputFile}"`
+    ]);
     core.info(`✅ CFN-Guard (${type}) validation passed`);
     return true;
   } catch (err) {
