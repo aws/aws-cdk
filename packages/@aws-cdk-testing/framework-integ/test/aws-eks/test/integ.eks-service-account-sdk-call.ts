@@ -57,7 +57,7 @@ new kplus.Deployment(chart, 'Deployment', {
 
 cluster.addCdk8sChart('sdk-call', chart).node.addDependency(serviceAccount);
 
-serviceAccount.role.addToPrincipalPolicy(
+serviceAccount.role!.addToPrincipalPolicy(
   new iam.PolicyStatement({
     actions: ['s3:CreateBucket'],
     resources: [`arn:aws:s3:::${bucketName}`],
