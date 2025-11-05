@@ -27,6 +27,22 @@ describe('vpc flow logs', () => {
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Action: [
+            'logs:CreateLogStream',
+            'logs:PutLogEvents',
+            'logs:DescribeLogStreams',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': ['FlowLogsLogGroup9853A85F', 'Arn'],
+          },
+        }],
+      },
+    });
     Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 0);
   });
   test('with cloudwatch logs as the destination, allows use of existing resources', () => {

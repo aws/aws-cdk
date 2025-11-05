@@ -111,3 +111,30 @@ test('lazy within a string is not resolved', () => {
     },
   });
 });
+
+test('renderData can render empty string data', () => {
+  const stack = new Stack();
+  expect(renderData('')).toStrictEqual({
+    markers: {},
+    text: '',
+  });
+});
+
+test('Source.data with empty string does not throw error', () => {
+  const stack = new Stack();
+  const handler = new lambda.Function(stack, 'Handler', {
+    runtime: lambda.Runtime.NODEJS_LATEST,
+    code: lambda.Code.fromInline('foo'),
+    handler: 'index.handler',
+  });
+
+  // This is the exact reproduction case from issue #35809
+  // Before the fix, this would throw: "The "data" argument must be of type string... Received undefined"
+  expect(() => {
+    const source = Source.data('path/to/empty', '');
+    const actual = source.bind(stack, { handlerRole: handler.role! });
+    expect(actual.markers).toStrictEqual({});
+    expect(actual.bucket).toBeDefined();
+    expect(actual.zipObjectKey).toBeDefined();
+  }).not.toThrow();
+});

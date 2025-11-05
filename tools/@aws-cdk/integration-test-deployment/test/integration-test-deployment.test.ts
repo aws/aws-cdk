@@ -1,11 +1,19 @@
 import { describe, expect, jest, test, beforeEach } from '@jest/globals';
 import { AtmosphereAllocationMock } from './atmosphere-mock';
-import { AtmosphereAllocation } from '../lib/atmosphere';
 import { gitDiffMock } from './git-mock';
-import * as utils from '../lib/utils';
+import { AtmosphereAllocation } from '../lib/atmosphere';
 import * as integRunner from '../lib/integration-test-runner';
+import * as utils from '../lib/utils';
 
 jest.mock('../lib/atmosphere');
+
+const env = {
+  AWS_ACCESS_KEY_ID: 'XXXXXXXXXXXXX',
+  AWS_SECRET_ACCESS_KEY: '123456789',
+  AWS_SESSION_TOKEN: '123456789',
+  AWS_REGION: 'us-east-1',
+  AWS_ACCOUNT_ID: '123456789',
+};
 
 describe('Run Inegration Tests with Atmosphere', () => {
   let mockAtmosphereAllocation: AtmosphereAllocationMock;
@@ -18,6 +26,7 @@ describe('Run Inegration Tests with Atmosphere', () => {
     jest.spyOn(utils, 'gitDiff').mockImplementation(gitDiffMock);
     jest.spyOn(mockAtmosphereAllocation, 'release');
     jest.spyOn(integRunner, 'deployIntegrationTests').mockImplementation(async () => {});
+    jest.spyOn(integRunner, 'bootstrap').mockImplementation(async () => {});
   });
 
   test('successful integration test', async () => {
@@ -26,13 +35,8 @@ describe('Run Inegration Tests with Atmosphere', () => {
 
     await integRunner.deployInegTestsWithAtmosphere({ endpoint, pool });
     expect(AtmosphereAllocation.acquire).toHaveBeenCalled();
-    expect(integRunner.deployIntegrationTests).toHaveBeenCalledWith(expect.objectContaining({
-      AWS_ACCESS_KEY_ID: 'XXXXXXXXXXXXX',
-      AWS_SECRET_ACCESS_KEY: '123456789',
-      AWS_SESSION_TOKEN: '123456789',
-      AWS_REGION: 'us-east-1',
-      AWS_ACCOUNT_ID: '123456789',
-    }));
+    expect(integRunner.bootstrap).toHaveBeenCalledWith(expect.objectContaining(env));
+    expect(integRunner.deployIntegrationTests).toHaveBeenCalledWith(expect.objectContaining(env));
     expect(mockAtmosphereAllocation.release).toHaveBeenCalled();
   });
 
@@ -49,13 +53,8 @@ describe('Run Inegration Tests with Atmosphere', () => {
     );
 
     expect(AtmosphereAllocation.acquire).toHaveBeenCalled();
-    expect(integRunner.deployIntegrationTests).toHaveBeenCalledWith(expect.objectContaining({
-      AWS_ACCESS_KEY_ID: 'XXXXXXXXXXXXX',
-      AWS_SECRET_ACCESS_KEY: '123456789',
-      AWS_SESSION_TOKEN: '123456789',
-      AWS_REGION: 'us-east-1',
-      AWS_ACCOUNT_ID: '123456789',
-    }));
+    expect(integRunner.bootstrap).toHaveBeenCalledWith(expect.objectContaining(env));
+    expect(integRunner.deployIntegrationTests).toHaveBeenCalledWith(expect.objectContaining(env));
     expect(mockAtmosphereAllocation.release).toHaveBeenCalled();
   });
 });

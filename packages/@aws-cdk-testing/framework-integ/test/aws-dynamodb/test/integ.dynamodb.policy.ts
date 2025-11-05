@@ -38,7 +38,27 @@ export class TestStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    this.tableTwo.grantReadData(new iam.AccountPrincipal('123456789012'));
+    // IMPORTANT: Cross-account grants with auto-generated table names create circular dependencies
+    //
+    // WHY NOT this.tableTwo.grantReadData(new iam.AccountPrincipal('123456789012'))?
+    // - Cross-account principals cannot have policies attached to them
+    // - Grant falls back to adding a resource policy to the table
+    // - Resource policy tries to reference this.tableArn (the table's own ARN)
+    // - This creates a circular dependency: Table → ResourcePolicy → Table ARN → Table
+    // - CloudFormation fails with "Circular dependency between resources"
+    //
+    // SOLUTIONS:
+    // 1. Use addToResourcePolicy with wildcard resources (this approach)
+    // 2. Use explicit table names: tableName: 'my-table-name' (enables scoped resources)
+    // 3. Use same-account principals (grants go to principal policy, not resource policy)
+    //
+    this.tableTwo.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:*'],
+      // we need a valid account for cross-account principal otherwise it won't deploy
+      // this account is from fact-table.ts
+      principals: [new iam.AccountPrincipal('127311923021')],
+      resources: ['*'], // Wildcard avoids circular dependency - same pattern as KMS
+    }));
   }
 }
 

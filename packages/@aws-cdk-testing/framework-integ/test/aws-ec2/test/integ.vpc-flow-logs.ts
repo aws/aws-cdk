@@ -72,6 +72,10 @@ class TestStack extends Stack {
       destination: FlowLogDestination.toS3(),
     });
 
+    vpc.addFlowLog('FlowLogsCloudwatch', {
+      destination: FlowLogDestination.toCloudWatchLogs(),
+    });
+
     const bucket = new s3.Bucket(this, 'Bucket', {
       removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true,

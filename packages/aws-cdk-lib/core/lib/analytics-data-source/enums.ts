@@ -14,7 +14,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "amazon-web-services",
     "amd",
     "nvidia",
-    "xilinx"
+    "xilinx",
+    "habana"
   ],
   "AcceleratorName": [
     "a100",
@@ -23,7 +24,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "radeon-pro-v520",
     "t4",
     "v100",
-    "vu9p"
+    "vu9p",
+    "a10g",
+    "h100",
+    "inferentia",
+    "k520",
+    "t4g"
   ],
   "AcceleratorType": [
     "gpu",
@@ -449,6 +455,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "aws-ecs-1-nvidia",
     "aws-ecs-2",
     "aws-ecs-2-nvidia"
+  ],
+  "BrokerType": [
+    "STANDARD",
+    "EXPRESS"
   ],
   "BrowserType": [
     "CHROME",
@@ -2516,6 +2526,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "HD",
     "SD"
   ],
+  "MemoryStrategyType": [
+    "SUMMARIZATION",
+    "SEMANTIC",
+    "USER_PREFERENCE",
+    "CUSTOM"
+  ],
   "MemoryType": [
     "SESSION_SUMMARY"
   ],
@@ -2744,6 +2760,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "name",
     "position"
   ],
+  "OrcFormatVersion": [
+    "V0_11",
+    "V0_12"
+  ],
   "OrchestrationType": [
     "DEFAULT",
     "CUSTOM_ORCHESTRATION"
@@ -2824,6 +2844,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "ParamsAndSecretsVersions": [
     "1.0.103"
+  ],
+  "ParquetWriterVersion": [
+    "V1",
+    "V2"
   ],
   "ParserProcessorType": [
     0,
@@ -3042,6 +3066,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TLS",
     "UDP",
     "TCP_UDP"
+  ],
+  "ProtocolType": [
+    "MCP",
+    "HTTP",
+    "A2A"
   ],
   "ProviderType": [
     "CodeStarSourceConnection"
@@ -3274,7 +3303,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "MULTIVALUE"
   ],
   "Runtime": [
-    "nodejs18.x",
+    "nodejs20.x",
     "python3.9",
     "python3.10",
     "python3.11",
@@ -3352,6 +3381,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TLSv1.2_2018",
     "TLSv1.2_2019",
     "TLSv1.2_2021",
+    "TLSv1.2_2025",
     "TLSv1.3_2025"
   ],
   "ServerSideEncryption": [

@@ -21,7 +21,7 @@ If your constructs do not meet these guidelines, see the [publishing your own pa
 
 Whether you want to pursue inclusion of your new constructs in aws-cdk-lib or not, the easiest way to get started is to create your own package. This will allow you to create, publish, test, and gather feedback on your new constructs as fast as possible without waiting for the aws cdk team to review the design and implementation of them. This also will allow you to deviate from the design and conventions of `aws-cdk-lib` if you wish to explore a more experimental or alternative api design. This also will enable you to gather feedback from users, make additions and changes, including breaking changes, without worrying about the versioning and support lifecycle of `aws-cdk-lib`.
 
-To get started creating your own construct package, we recommend using [`projen`](https://github.com/projen/projen). Additionally you can follow [this guide](https://dev.to/aws-builders/a-beginner-s-guide-to-create-aws-cdk-construct-library-with-projen-5eh4) which will help you setup your repository, packages and tooling step by step.
+To get started creating your own construct package, we recommend using [`projen`](https://github.com/projen/projen). Additionally you can follow [this guide](https://dev.to/aws-builders/a-beginner-s-guide-to-create-aws-cdk-construct-library-with-projen-5eh4) which will help you set up your repository, packages and tooling step by step.
 
 Once your constructs have been published for some time and you feel that the apis are stable and bugs have been identified, you can continue to distribute it as a separate package and/or attempt to add them to `aws-cdk-lib` via a PR.
 
@@ -54,7 +54,7 @@ Whether publishing your own package or making a PR against aws-cdk-lib immediate
 
 ### Alpha CDK Package
 1. Design: create a draft PR with the new README detailing the API, socialize, and gain consensus
-1. Implement: write the construct as designed and create a new pull requests
+1. Implement: write the construct as designed and create a new pull request
 1. Iterate: respond to feedback from pull request reviewers on the aws-cdk team
 1. Publish: publish your new constructs as an alpha module
 1. Iterate: respond to issues from users, fix bugs and optimize usage patterns
