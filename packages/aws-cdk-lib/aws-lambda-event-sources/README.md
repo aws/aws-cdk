@@ -434,7 +434,6 @@ You can configure system logging for your Kafka event source mappings to control
 
 ```ts
 import { ManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 // Your MSK cluster arn
 const clusterArn = 'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/abcd1234-abcd-cafe-abab-9876543210ab-4';
