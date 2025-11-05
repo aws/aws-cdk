@@ -1253,6 +1253,9 @@ const target = gateway.addOpenApiTarget("MyTarget", {
     }),
   ],
 });
+
+// This make sure your s3 bucket is available before target 
+target.node.addDependency(bucket);
 ```
 
 - Smithy Target

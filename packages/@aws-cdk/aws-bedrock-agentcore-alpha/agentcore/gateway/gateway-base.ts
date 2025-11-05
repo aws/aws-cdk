@@ -132,46 +132,92 @@ export interface IGateway extends IResource {
   // ------------------------------------------------------
   /**
    * Return the given named metric for this gateway.
+   *
+   * @param metricName The name of the metric
+   * @param dimensions Additional dimensions for the metric
+   * @param props Optional metric configuration
    */
   metric(metricName: string, dimensions: DimensionsMap, props?: MetricOptions): Metric;
 
   /**
    * Return a metric containing the total number of invocations for this gateway.
+   *
+   * This metric tracks all successful invocations of the gateway.
+   *
+   * @param props Optional metric configuration
+   * @default - Sum statistic over 5 minutes
    */
   metricInvocations(props?: MetricOptions): Metric;
 
   /**
    * Return a metric containing the number of throttled requests (429 status code) for this gateway.
+   *
+   * This metric helps identify when the gateway is rate limiting requests.
+   *
+   * @param props Optional metric configuration
+   * @default - Sum statistic over 5 minutes
    */
   metricThrottles(props?: MetricOptions): Metric;
 
   /**
    * Return a metric containing the number of system errors (5xx status code) for this gateway.
+   *
+   * This metric tracks internal server errors and system failures.
+   *
+   * @param props Optional metric configuration
+   * @default - Sum statistic over 5 minutes
    */
   metricSystemErrors(props?: MetricOptions): Metric;
 
   /**
    * Return a metric containing the number of user errors (4xx status code, excluding 429) for this gateway.
+   *
+   * This metric tracks client errors like bad requests, unauthorized access, etc.
+   *
+   * @param props Optional metric configuration
+   * @default - Sum statistic over 5 minutes
    */
   metricUserErrors(props?: MetricOptions): Metric;
 
   /**
    * Return a metric measuring the latency of requests for this gateway.
+   *
+   * The latency metric represents the time elapsed between when the service receives
+   * the request and when it begins sending the first response token.
+   *
+   * @param props Optional metric configuration
+   * @default - Average statistic over 5 minutes
    */
   metricLatency(props?: MetricOptions): Metric;
 
   /**
    * Return a metric measuring the duration of requests for this gateway.
+   *
+   * The duration metric represents the total time elapsed between receiving the request
+   * and sending the final response token, representing complete end-to-end processing time.
+   *
+   * @param props Optional metric configuration
+   * @default - Average statistic over 5 minutes
    */
   metricDuration(props?: MetricOptions): Metric;
 
   /**
    * Return a metric measuring the target execution time for this gateway.
+   *
+   * This metric helps determine the contribution of the target (Lambda, OpenAPI, etc.)
+   * to the total latency.
+   *
+   * @param props Optional metric configuration
+   * @default - Average statistic over 5 minutes
    */
   metricTargetExecutionTime(props?: MetricOptions): Metric;
 
   /**
    * Return a metric containing the number of requests served by each target type for this gateway.
+   *
+   * @param targetType The type of target (e.g., 'Lambda', 'OpenAPI', 'Smithy')
+   * @param props Optional metric configuration
+   * @default - Sum statistic over 5 minutes
    */
   metricTargetType(targetType: string, props?: MetricOptions): Metric;
 }
@@ -205,6 +251,9 @@ export abstract class GatewayBase extends Resource implements IGateway {
   // ------------------------------------------------------
   /**
    * Grants IAM actions to the IAM Principal
+   *
+   * @param grantee The principal to grant permissions to
+   * @param actions The actions to grant
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
@@ -216,6 +265,8 @@ export abstract class GatewayBase extends Resource implements IGateway {
 
   /**
    * Grants `Get` and `List` actions on the Gateway
+   *
+   * @param grantee The principal to grant read permissions to
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     const resourceSpecificGrant = this.grant(grantee, ...GatewayPerms.GET_PERMS);
@@ -231,6 +282,8 @@ export abstract class GatewayBase extends Resource implements IGateway {
 
   /**
    * Grants `Create`, `Update`, and `Delete` actions on the Gateway
+   *
+   * @param grantee The principal to grant manage permissions to
    */
   public grantManage(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...GatewayPerms.MANAGE_PERMS);
@@ -238,6 +291,8 @@ export abstract class GatewayBase extends Resource implements IGateway {
 
   /**
    * Grants permission to invoke this Gateway
+   *
+   * @param grantee The principal to grant invoke permissions to
    */
   public grantInvoke(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...GatewayPerms.INVOKE_PERMS);
@@ -247,9 +302,14 @@ export abstract class GatewayBase extends Resource implements IGateway {
   // Metric Methods
   // ------------------------------------------------------
   /**
-   * Return the given named metric for this gateway.   *
+   * Return the given named metric for this gateway.
+   *
    * By default, the metric will be calculated as a sum over a period of 5 minutes.
    * You can customize this by using the `statistic` and `period` properties.
+   *
+   * @param metricName The name of the metric
+   * @param dimensions Additional dimensions for the metric
+   * @param props Optional metric configuration
    */
   public metric(metricName: string, dimensions: DimensionsMap, props?: MetricOptions): Metric {
     const metricProps: MetricProps = {
@@ -328,6 +388,7 @@ export abstract class GatewayBase extends Resource implements IGateway {
 
   /**
    * Internal method to create a metric.
+   * @internal
    */
   private configureMetric(props: MetricProps) {
     return new Metric({

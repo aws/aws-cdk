@@ -441,8 +441,9 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
    * Max length: 100 characters
    * @param gatewayTargetName The gateway target name to validate
    * @throws Error if the name is invalid
+   * @internal
    */
-  protected validateGatewayTargetName(gatewayTargetName: string): void {
+  private validateGatewayTargetName(gatewayTargetName: string): void {
     if (Token.isUnresolved(gatewayTargetName)) {
       return;
     }
@@ -471,6 +472,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
    * Validates the description format
    * Must be between 1 and 200 characters
    * @throws Error if validation fails
+   * @internal
    */
   private validateDescription(description: string): void {
     if (Token.isUnresolved(description)) {

@@ -292,10 +292,16 @@ export class Gateway extends GatewayBase {
     });
   }
 
-  /** @attribute */
+  /**
+   * The ARN of the gateway
+   * @attribute
+   */
   public readonly gatewayArn: string;
 
-  /** @attribute */
+  /**
+   * The unique identifier of the gateway
+   * @attribute
+   */
   public readonly gatewayId: string;
 
   /**
@@ -333,19 +339,34 @@ export class Gateway extends GatewayBase {
    */
   public readonly role: iam.IRole;
 
-  /** @attribute */
+  /**
+   * The URL endpoint for the gateway
+   * @attribute
+   */
   public readonly gatewayUrl?: string;
 
-  /** @attribute */
+  /**
+   * The status of the gateway
+   * @attribute
+   */
   public readonly status?: string;
 
-  /** @attribute */
+  /**
+   * The status reasons for the gateway
+   * @attribute
+   */
   public readonly statusReason?: string[];
 
-  /** @attribute */
+  /**
+   * Timestamp when the gateway was created
+   * @attribute
+   */
   public readonly createdAt?: string;
 
-  /** @attribute */
+  /**
+   * Timestamp when the gateway was last updated
+   * @attribute
+   */
   public readonly updatedAt?: string;
 
   /**
@@ -434,7 +455,6 @@ export class Gateway extends GatewayBase {
       gateway: this,
       lambdaFunction: props.lambdaFunction,
       toolSchema: props.toolSchema,
-      credentialProviderConfigurations: props.credentialProviderConfigurations,
     });
 
     return target;
@@ -481,7 +501,6 @@ export class Gateway extends GatewayBase {
       description: props.description,
       gateway: this,
       smithyModel: props.smithyModel,
-      credentialProviderConfigurations: props.credentialProviderConfigurations,
     });
 
     return target;
@@ -495,6 +514,7 @@ export class Gateway extends GatewayBase {
    * - KMS encryption: Automatically grants encrypt/decrypt permissions
    *
    * For other target types, manually grant permissions using standard CDK grant methods:
+   * @internal
    */
   private createGatewayRole(): iam.Role {
     const role = new iam.Role(this, 'ServiceRole', {
@@ -538,6 +558,7 @@ export class Gateway extends GatewayBase {
    * Max length: 48 characters
    * @param name The gateway name to validate
    * @throws Error if the name is invalid
+   * @internal
    */
   private validateGatewayName(name: string): void {
     if (Token.isUnresolved(name)) {
@@ -572,6 +593,7 @@ export class Gateway extends GatewayBase {
    * Max length: 200 characters
    * @param description The description to validate
    * @throws Error if validation fails
+   * @internal
    */
   private validateDescription(description: string): void {
     if (Token.isUnresolved(description)) {
@@ -593,6 +615,7 @@ export class Gateway extends GatewayBase {
   /**
    * Creates a default Cognito authorizer for the gateway
    * Provisions a Cognito User Pool and configures JWT authentication
+   * @internal
    */
   private createDefaultCognitoAuthorizer(): IGatewayAuthorizerConfig {
     const userPool = new cognito.UserPool(this, 'UserPool', {
@@ -613,6 +636,7 @@ export class Gateway extends GatewayBase {
   /**
    * Creates a default MCP protocol configuration for the gateway
    * Provides sensible defaults for MCP protocol settings
+   * @internal
    */
   private createDefaultMcpProtocolConfiguration(): IGatewayProtocolConfig {
     return new McpProtocolConfiguration({

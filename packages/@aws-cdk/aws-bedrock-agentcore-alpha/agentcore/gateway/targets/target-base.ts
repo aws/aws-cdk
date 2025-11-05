@@ -6,6 +6,9 @@ import { ICredentialProvider } from '../outbound-auth/credential-provider';
 /******************************************************************************
  *                                 ENUM
  *****************************************************************************/
+/**
+ * Protocol types supported by gateway targets
+ */
 export enum GatewayTargetProtocolType {
   /** Model Context Protocol type */
   MCP = 'MCP',
@@ -29,6 +32,9 @@ export enum McpTargetType {
 
 /**
  * Interface for GatewayTarget resources
+ *
+ * Represents a target that hosts tools for the gateway.
+ * Targets can be Lambda functions, OpenAPI schemas, or Smithy models.
  */
 export interface IGatewayTarget extends IResource {
   /**
@@ -110,10 +116,13 @@ export interface IGatewayTarget extends IResource {
 
 /**
  * Interface for MCP gateway targets
+ *
+ * Extends the base gateway target interface with MCP-specific properties.
+ * MCP targets expose tools using the Model Context Protocol.
  */
 export interface IMcpGatewayTarget extends IGatewayTarget {
   /**
-   * The type of target
+   * The type of target (Lambda, OpenAPI, or Smithy)
    */
   readonly targetType: McpTargetType;
 }
@@ -121,7 +130,12 @@ export interface IMcpGatewayTarget extends IGatewayTarget {
 /******************************************************************************
  *                                Base Class
  *****************************************************************************/
-
+/**
+ * Base class for gateway target implementations
+ *
+ * Provides common functionality for all gateway target types including
+ * permission management and property definitions.
+ */
 export abstract class GatewayTargetBase extends Resource implements IGatewayTarget {
   public abstract readonly targetArn: string;
   public abstract readonly targetId: string;
@@ -137,6 +151,9 @@ export abstract class GatewayTargetBase extends Resource implements IGatewayTarg
 
   /**
    * Grants IAM actions to the IAM Principal
+   *
+   * @param grantee The principal to grant permissions to
+   * @param actions The IAM actions to grant
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
@@ -148,6 +165,8 @@ export abstract class GatewayTargetBase extends Resource implements IGatewayTarg
 
   /**
    * Grants `Get` and `List` actions on the Gateway Target
+   *
+   * @param grantee The principal to grant read permissions to
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     const resourceSpecificGrant = this.grant(grantee, 'bedrock-agentcore:GetGatewayTarget');
@@ -163,6 +182,8 @@ export abstract class GatewayTargetBase extends Resource implements IGatewayTarg
 
   /**
    * Grants `Create`, `Update`, and `Delete` actions on the Gateway Target
+   *
+   * @param grantee The principal to grant manage permissions to
    */
   public grantManage(grantee: iam.IGrantable): iam.Grant {
     return this.grant(
