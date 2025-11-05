@@ -18,7 +18,6 @@ const ELASTICACHE_IAMUSER_SYMBOL = Symbol.for(
  * Properties for defining an ElastiCache user with IAM authentication.
  */
 export interface IamUserProps extends UserBaseProps {
-  // userName property removed - it's automatically set to userId internally
 }
 
 /**
