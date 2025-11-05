@@ -519,16 +519,9 @@ export class Application extends ApplicationBase {
    * @param options Configuration options for the Lambda layer (version is required)
    * @returns Lambda layer version ARN
    *
-   * @remarks
    * The version must be explicitly specified using the AppConfigLambdaVersion enum to ensure
    * predictable deployments and prevent unexpected Lambda function replacements during CDK upgrades.
    *
-   * @example
-   * // Type-safe version specification with enum
-   * const layerArn = Application.getLambdaLayerVersionArnWithOptions('us-east-1', {
-   *   version: AppConfigLambdaVersion.V2_0_2037,
-   *   platform: Platform.ARM_64
-   * });
    */
   public static getLambdaLayerVersionArnWithOptions(region: string, options: AppConfigLambdaLayerOptions): string {
     const platform = options.platform || Platform.X86_64;
