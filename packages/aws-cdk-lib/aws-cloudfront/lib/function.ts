@@ -2,9 +2,9 @@ import * as fs from 'fs';
 import { Construct } from 'constructs';
 import { CfnFunction, FunctionReference, IFunctionRef, IKeyValueStoreRef } from './cloudfront.generated';
 import { FeatureFlags, IResource, Lazy, Names, Resource, Stack, ValidationError } from '../../core';
-import * as cxapi from '../../cx-api';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as cxapi from '../../cx-api';
 
 /**
  * Represents the function's source code
