@@ -23,7 +23,8 @@ export interface AddServiceProps {
   /**
    * The target resource module we want to generate these resources into
    *
-   * (Practically, only used to render CloudFormation resources into the `core` module.)
+   * Practically, only used to render CloudFormation resources into the `core` module, and as a failed
+   * experiment to emit `aws-kinesisanalyticsv2` into `aws-kinesisanalytics`.
    */
   readonly destinationModule?: string;
 
@@ -85,7 +86,10 @@ export class AstBuilder {
    */
   public addService(service: Service, props?: AddServiceProps) {
     const resources = this.db.follow('hasResource', service);
-    const submod = this.createSubmodule(service, props?.destinationModule, props?.importLocations);
+    // Sometimes we emit multiple services into the same submodule
+    // (aws-kinesisanalyticsv2 gets emitted into aws-kinesisanalytics with a
+    // suffix. This was a failed experiment we still need to maintain.)
+    const submod = this.obtainSubmodule(service, props?.destinationModule, props?.importLocations);
 
     for (const { entity: resource } of resources) {
       this.addResourceToSubmodule(submod, resource, props);
@@ -100,7 +104,7 @@ export class AstBuilder {
    */
   public addResource(resource: Resource, props?: AddServiceProps) {
     const service = this.db.incoming('hasResource', resource).only().entity;
-    const submod = this.createSubmodule(service, props?.destinationModule, props?.importLocations);
+    const submod = this.obtainSubmodule(service, props?.destinationModule, props?.importLocations);
 
     this.addResourceToSubmodule(submod, resource, props);
 
@@ -157,13 +161,12 @@ export class AstBuilder {
     }
   }
 
-  private createSubmodule(service: Service, targetServiceModule?: string, importLocations?: ModuleImportLocations): SubmoduleInfo {
+  private obtainSubmodule(service: Service, targetServiceModule?: string, importLocations?: ModuleImportLocations): SubmoduleInfo {
     const moduleName = targetServiceModule ?? service.name;
 
-    const mods = this.serviceModules.get(moduleName);
-    if (mods) {
-      // eslint-disable-next-line @cdklabs/no-throw-default-error
-      throw new Error(`A submodule named ${moduleName} was already created`);
+    const submod = this.serviceModules.get(moduleName);
+    if (submod) {
+      return submod;
     }
 
     const resourceModule = new Module(`@aws-cdk/${moduleName}`);
