@@ -59,6 +59,7 @@ export const assumeAtmosphereRole = async (roleArn: string) => {
   const response = await sts.send(new AssumeRoleCommand({
     RoleArn: roleArn,
     RoleSessionName: 'run-tests@aws-cdk-deployment-integ',
+    DurationSeconds: 3600
   }));
 
   if (response.Credentials === undefined) throw new Error('Failed to assume atmopshere role');
