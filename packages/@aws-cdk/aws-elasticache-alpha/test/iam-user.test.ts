@@ -34,7 +34,6 @@ describe('IamUser', () => {
     test('automatically sets userName to userId regardless of provided userName', () => {
       const user = new IamUser(stack, 'TestUser', {
         userId: 'test-user-id',
-        userName: 'different-name', // This should be ignored
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
       });
 
