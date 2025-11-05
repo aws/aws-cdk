@@ -91,21 +91,18 @@ const DEFAULT_TOKEN_BASED_TRIGGER = 100;
 export interface TriggerConditions {
   /**
    * Triggers memory processing when specified number of new messages is reached
-   * @default - 1
-   * @required - No
+   * @default 1
    */
   readonly messageBasedTrigger?: number;
   /**
    * Triggers memory processing when the session has been idle for the specified duration.
    * Value in seconds.
-   * @default - 10
-   * @required - No
+   * @default - 10 seconds
    */
   readonly timeBasedTrigger?: cdk.Duration;
   /**
    * Triggers memory processing when the token size reaches the specified threshold.
-   * @default - 100
-   * @required - No
+   * @default 100
    */
   readonly tokenBasedTrigger?: number;
 }
@@ -116,12 +113,10 @@ export interface TriggerConditions {
 export interface InvocationConfiguration {
   /**
    * SNS Topic Configuration
-   * @required - Yes
    */
   readonly topic: sns.ITopic;
   /**
    * S3 Location Configuration
-   * @required - Yes
    */
   readonly s3Location: Location;
 }
@@ -133,19 +128,16 @@ export interface InvocationConfiguration {
 export interface SelfManagedStrategyProps extends MemoryStrategyCommonProps {
   /**
    * Define the number of previous events to be included when processing memory. A larger history window provides more context from past conversations.
-   * @default - 4
-   * @required - No
+   * @default 4
    */
   readonly historicalContextWindowSize?: number;
   /**
    * Invocation configuration for self managed memory strategy
-   * @required - Yes
    */
   readonly invocationConfiguration: InvocationConfiguration;
   /**
    * Trigger conditions for self managed memory strategy
-   * @default - undefined
-   * @required - No
+   * @default undefined
    */
   readonly triggerConditions?: TriggerConditions;
 }
