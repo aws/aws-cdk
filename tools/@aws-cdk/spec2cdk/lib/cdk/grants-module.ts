@@ -43,7 +43,7 @@ export class GrantsModule extends Module {
     const encryptedResourcePropName = 'encryptedResource';
 
     for (const [name, config] of Object.entries(this.schema.resources ?? {})) {
-      if (!resourceIndex[name]) continue;
+      if (!resourceIndex[name] || Object.keys(config.grants ?? {}).length === 0) continue;
       const resource = resourceIndex[name];
 
       const hasPolicy = config.hasResourcePolicy ?? false;
@@ -184,6 +184,7 @@ export class GrantsModule extends Module {
         stmt.ret(Type.fromName(this, className).newInstance(expr.object(props))),
       );
 
+      // Add one method per entry in the config
       for (const [methodName, grantSchema] of Object.entries(config.grants)) {
         const resourceArns = expr.list([
           makeArnCall(this.service.shortName, resource, grantSchema),
