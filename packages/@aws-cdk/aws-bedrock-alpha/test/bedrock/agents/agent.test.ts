@@ -293,16 +293,27 @@ describe('Agent', () => {
 
       const rule = agent.onEvent('TestRule', {
         description: 'Custom rule description',
+        ruleName: 'MyCustomEventRuleName',
+        eventPattern: {
+          account: ['123456789012'],
+          region: ['us-east-1'],
+          detail: {
+            test: 'value',
+          },
+        },
       });
 
       expect(rule).toBeDefined();
       Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
         Description: 'Custom rule description',
+        Name: 'MyCustomEventRuleName',
         EventPattern: {
           source: ['aws.bedrock'],
           detail: {
             'agent-id': [{ 'Fn::GetAtt': [Match.stringLikeRegexp('TestAgent[A-Z0-9]+'), 'AgentId'] }],
           },
+          account: ['123456789012'],
+          region: ['us-east-1'],
         },
       });
     });
