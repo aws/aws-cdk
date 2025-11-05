@@ -54,20 +54,18 @@ function getInput(name: string, options?: { required?: boolean, default?: string
 }
 
 async function run(): Promise<void> {
-  const errors: string[] = [];
   let workingDir: string = './changed_templates';
   let resolvedDir: string = './changed_templates_resolved';
-  let cfnGuardFailures = 0;
-  let cfnGuardResolvedFailures = 0;
+  const testResultsDir = './test-results';
 
   try {
     const ruleSetPath = getInput('rule_set_path', { default: './rules' });
     const baseSha = getInput('base_sha', { default: 'origin/main' });
     const headSha = getInput('head_sha', { default: 'HEAD' });
-    const outputFormat = getInput('output_format', { default: 'json' });
-    const showSummary = getInput('show_summary', { default: 'fail' });
+    
     setupWorkingDir(workingDir);
     setupWorkingDir(resolvedDir);
+    setupWorkingDir(testResultsDir);
     
     const filesChanged = await detectChangedTemplates(baseSha, headSha, workingDir);
     if (!filesChanged) {
@@ -82,45 +80,31 @@ async function run(): Promise<void> {
     const processedFiles = preprocessTemplates(workingDir, resolvedDir);
     core.info(`Processed ${processedFiles.length} template(s)`);
 
-    // Run CFN-Guard validation on original templates
+    // Generate XML output files
+    const staticXmlFile = path.join(testResultsDir, 'cfn-guard-static.xml');
+    const resolvedXmlFile = path.join(testResultsDir, 'cfn-guard-resolved.xml');
+
+    // Run CFN-Guard validation and generate XML
     core.info(`Running cfn-guard (static) with rule set: ${ruleSetPath}`);
-    const flaggedFiles: string[] = [];
-    cfnGuardFailures = await runCfnGuardValidation(workingDir, ruleSetPath, showSummary, outputFormat, 'Static', flaggedFiles, errors);
+    const staticPassed = await runCfnGuardValidation(workingDir, ruleSetPath, staticXmlFile, 'Static');
 
-    // Run CFN-Guard validation on resolved templates
     core.info(`Running cfn-guard (resolved) with rule set: ${ruleSetPath}`);
-    const resolvedFlaggedFiles: string[] = [];
-    cfnGuardResolvedFailures = await runCfnGuardValidation(resolvedDir, ruleSetPath, showSummary, outputFormat, 'Resolved', resolvedFlaggedFiles, errors);
-
-
+    const resolvedPassed = await runCfnGuardValidation(resolvedDir, ruleSetPath, resolvedXmlFile, 'Resolved');
 
     // Generate Summary Report
     core.info('\n' + '='.repeat(60));
     core.info('🛡️  SECURITY GUARDIAN SUMMARY REPORT');
     core.info('='.repeat(60));
-    core.info(`📊 CFN-Guard (Static): ${cfnGuardFailures > 0 ? '❌ ' + cfnGuardFailures + ' violations in ' + flaggedFiles.length + ' file(s)' : '✅ 0'}`);
-    core.info(`🔧 CFN-Guard (Resolved): ${cfnGuardResolvedFailures > 0 ? '❌ ' + cfnGuardResolvedFailures + ' violations in ' + resolvedFlaggedFiles.length + ' file(s)' : '✅ 0'}`);
-    core.info(`📊 Total Issues Found: ${cfnGuardFailures + cfnGuardResolvedFailures}`);
-    
-    if (flaggedFiles.length > 0) {
-      core.info('\n📄 Files with Static violations:');
-      flaggedFiles.forEach(file => core.info(`  - ${file}`));
-    }
-    
-    if (resolvedFlaggedFiles.length > 0) {
-      core.info('\n🔧 Files with Resolved violations:');
-      resolvedFlaggedFiles.forEach(file => core.info(`  - ${file} (intrinsics resolved)`));
-    }
-    
+    core.info(`📊 CFN-Guard (Static): ${staticPassed ? '✅ Passed' : '❌ Failed'}`);
+    core.info(`🔧 CFN-Guard (Resolved): ${resolvedPassed ? '✅ Passed' : '❌ Failed'}`);
     core.info('='.repeat(60));
 
     // Set outputs for GitHub Actions
-    core.setOutput('cfn_guard_failures', cfnGuardFailures);
-    core.setOutput('cfn_guard_resolved_failures', cfnGuardResolvedFailures);
-    core.setOutput('total_failures', cfnGuardFailures + cfnGuardResolvedFailures);
+    core.setOutput('junit_files', `${staticXmlFile},${resolvedXmlFile}`);
+    core.setOutput('all_passed', staticPassed && resolvedPassed);
 
-    if (errors.length > 0) {
-      core.setFailed(`Security validation failed with ${cfnGuardFailures + cfnGuardResolvedFailures} total issues`);
+    if (!staticPassed || !resolvedPassed) {
+      core.setFailed('Security validation failed. Check JUnit report for details.');
     } else {
       core.info('🎉 All security validations passed!');
     }

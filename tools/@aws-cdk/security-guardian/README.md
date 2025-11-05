@@ -48,14 +48,18 @@ const EXEMPTION_RULES = {
 
 ## Inputs (GitHub Action)
 
-| Name                      | Description                                          | Required | Default               |
-|---------------------------|------------------------------------------------------|----------|-----------------------|
-| `rule_set_path`           | Local path to the cfn-guard rules file               | No       | `./rules`             |
-| `show_summary`            | Show summary (`none`, `all`, `pass`, `fail`, `skip`) | No       | `fail`                |
-| `output_format`           | Output format (`single-line-summary`, `json`, etc.)  | No       | `single-line-summary` |
-| `base_sha`                | Commit SHA to compare against                        | No       | `origin/main`         |
-| `head_sha`                | The commit SHA for the head (current) branch or PR   | No       | `HEAD`                |
-| `enable_intrinsic_scanner`| Enable intrinsic scanner for resolved CF values      | No       | `false`               |
+| Name            | Description                               | Required | Default       |
+|-----------------|-------------------------------------------|----------|---------------|
+| `rule_set_path` | Local path to the cfn-guard rules file   | Yes      | N/A           |
+| `base_sha`      | Commit SHA to compare against             | No       | `origin/main` |
+| `head_sha`      | The commit SHA for the head branch or PR | No       | `HEAD`        |
+
+## Outputs (GitHub Action)
+
+| Name         | Description                               |
+|--------------|-------------------------------------------|
+| `junit_files`| Comma-separated list of JUnit XML files  |
+| `all_passed` | Whether all validations passed            |
 
 ---
 
@@ -63,12 +67,20 @@ const EXEMPTION_RULES = {
 
 ```yaml
 - name: Run Security Guardian
+  id: security-guardian
   uses: ./tools/@aws-cdk/security-guardian
   with:
     rule_set_path: './tools/@aws-cdk/security-guardian/rules'
-    show_summary: 'fail'
-    output_format: 'single-line-summary'
-    enable_intrinsic_scanner: 'true'  # Optional: Enable intrinsic scanning
+
+- name: Publish Security Test Results
+  uses: mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6  # v6.0.1
+  if: always()
+  with:
+    report_paths: 'test-results/*.xml'
+    check_name: 'Security Guardian Results'
+    detailed_summary: true
+    include_passed: true
+    fail_on_failure: true
 ```
 
 ---
@@ -89,32 +101,21 @@ yarn security-guardian
 
 > You can override defaults using:
 > - `--base_sha=origin/main`  
-> - `--output_format=json`  
-> - `--show_summary=warn`
-> - `--enable_intrinsic_scanner=true`
+> - `--rule_set_path=./custom-rules`
 
 ---
 
 ## Output
 
-In addition to validation results from `cfn-guard`, the tool logs detailed findings from the intrinsic scan (if applicable), such as:
+The tool generates JUnit XML reports that can be consumed by GitHub Actions:
 
-```
-detailed_output File: changed_templates/example.template.json
-{
-  "Action": "kms:*",
-  "Effect": "Allow",
-  "Principal": {
-    "AWS": {
-      "Fn::Join": [
-        "",
-        ["arn:", { "Ref": "AWS::Partition" }, ":iam::", { "Ref": "AWS::AccountId" }, ":root"]
-      ]
-    }
-  },
-  "Resource": "*"
-}
-```
+- `test-results/cfn-guard-static.xml` - Results from original templates
+- `test-results/cfn-guard-resolved.xml` - Results from templates with resolved intrinsics
+
+Use `mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6` (v6.0.1) to display rich test results in GitHub PRs with:
+- Detailed failure messages
+- File and line number references
+- Rule descriptions and remediation guidance
 
 ---
 

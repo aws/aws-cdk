@@ -34,10 +34,19 @@ jobs:
         run: yarn install --frozen-lockfile && cd tools/@aws-cdk/security-guardian && yarn build
 
       - name: Run Security Guardian
+        id: security-guardian
         uses: ./tools/@aws-cdk/security-guardian
         with:
           base_sha: ${{ github.event.pull_request.base.sha }}
           head_sha: ${{ github.event.pull_request.head.sha }}
           rule_set_path: './tools/@aws-cdk/security-guardian/rules'
-          show_summary: 'fail'
-          output_format: 'json'
+
+      - name: Publish Security Test Results
+        uses: mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6  # v6.0.1
+        if: always()
+        with:
+          report_paths: 'test-results/*.xml'
+          check_name: 'Security Guardian Results'
+          detailed_summary: true
+          include_passed: true
+          fail_on_failure: true

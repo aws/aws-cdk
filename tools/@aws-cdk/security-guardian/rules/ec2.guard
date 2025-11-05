@@ -53,16 +53,24 @@ rule EC2_NO_OPEN_SECURITY_GROUPS when %security_groups !empty {
             when IpProtocol exists {
                 when IpProtocol != "-1" {
                     when CidrIp exists {
-                        when FromPort exists and ToPort exists {
-                            when FromPort == 0 and ToPort == 65535 {
-                                CidrIp != "0.0.0.0/0"
+                        when FromPort exists {
+                            when ToPort exists {
+                                when FromPort == 0 {
+                                    when ToPort == 65535 {
+                                        CidrIp != "0.0.0.0/0"
+                                    }
+                                }
                             }
                         }
                     }
                     when CidrIpv6 exists {
-                        when FromPort exists and ToPort exists {
-                            when FromPort == 0 and ToPort == 65535 {
-                                CidrIpv6 != "::/0"
+                        when FromPort exists {
+                            when ToPort exists {
+                                when FromPort == 0 {
+                                    when ToPort == 65535 {
+                                        CidrIpv6 != "::/0"
+                                    }
+                                }
                             }
                         }
                     }

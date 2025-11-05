@@ -23,7 +23,7 @@ let iam_passrole_resources = Resources.*[
   Metadata.guard.SuppressedRules.* != "IAM_NO_OVERLY_PERMISSIVE_PASSROLE"
 ]
 
-# EA017: Check for service:* action wildcards
+# Check for service:* action wildcards
 rule IAM_NO_WILDCARD_ACTIONS when %iam_policies !empty {
     %iam_policies {
         Properties.PolicyDocument.Statement[*] {
@@ -43,7 +43,7 @@ rule IAM_NO_WILDCARD_ACTIONS when %iam_policies !empty {
     }
 }
 
-# EA017: Check inline policies in roles for wildcards
+#Check inline policies in roles for wildcards
 rule IAM_NO_WILDCARD_ACTIONS_INLINE when %iam_roles !empty {
     %iam_roles {
         Properties.Policies[*].PolicyDocument.Statement[*] {
@@ -63,15 +63,13 @@ rule IAM_NO_WILDCARD_ACTIONS_INLINE when %iam_roles !empty {
     }
 }
 
-# EA020: Trust policies allowing world accessibility
+# Trust policies allowing world accessibility
 rule IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY when %iam_roles !empty {
     %iam_roles {
         Properties.AssumeRolePolicyDocument.Statement[*] {
             when Effect == "Allow" {
                 when Principal exists {
-                    when Principal == "*" {
-                        <<Trust policy allows world accessibility>>
-                    }
+                    Principal != "*"
                     when Principal.AWS exists {
                         when Principal.AWS is_string {
                             Principal.AWS != "*"
@@ -86,7 +84,7 @@ rule IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY when %iam_roles !empty {
     }
 }
 
-# EA016: Overly permissive PassRole policies
+# Overly permissive PassRole policies
 rule IAM_NO_OVERLY_PERMISSIVE_PASSROLE when %iam_passrole_resources !empty {
     %iam_passrole_resources {
         # Check managed/standalone policies
