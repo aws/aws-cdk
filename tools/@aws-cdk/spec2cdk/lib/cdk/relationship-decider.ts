@@ -5,15 +5,7 @@ import { createModuleDefinitionFromCfnNamespace } from '../cfn2ts/pkglint';
 import { log } from '../util';
 
 // For now we want relationships to be applied only for these services
-const RELATIONSHIP_SERVICES = [
-  'iam',
-  'apigateway',
-  'ec2',
-  'cloudfront',
-  'kms',
-  's3',
-  'lambda',
-];
+export const RELATIONSHIP_SERVICES: string[] = [];
 
 /**
  * Represents a cross-service property relationship that enables references
