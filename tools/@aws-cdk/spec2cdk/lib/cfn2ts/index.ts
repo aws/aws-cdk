@@ -45,7 +45,7 @@ export default async function generate(
       outputPath: outPath ?? 'lib',
       clearOutput: false,
       filePatterns: {
-        resources: '%serviceShortName.generated.ts',
+        resources: '%serviceShortName%.generated.ts',
         augmentations: '%serviceShortName%-augmentations.generated.ts',
         cannedMetrics: '%serviceShortName%-canned-metrics.generated.ts',
       },

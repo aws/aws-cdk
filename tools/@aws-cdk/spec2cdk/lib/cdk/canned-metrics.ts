@@ -1,5 +1,6 @@
 import { DimensionSet, Metric, Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { ClassType, expr, InterfaceType, IScope, Method, Module, stmt, Type } from '@cdklabs/typewriter';
+import { IShouldRenderModule } from './ast';
 import {
   metricFunctionName,
   metricsClassNameFromService as metricsClassNameFromNamespace,
@@ -8,7 +9,7 @@ import {
 /**
  * Generate Canned Metrics
  */
-export class CannedMetricsModule extends Module {
+export class CannedMetricsModule extends Module implements IShouldRenderModule {
   public static forService(db: SpecDatabase, service: Service): CannedMetricsModule {
     const metrics = db.follow('serviceHasMetric', service);
     const namespaces = Array.from(new Set(metrics.map((r) => r.entity.namespace)));
@@ -45,6 +46,10 @@ export class CannedMetricsModule extends Module {
     for (const namespace of namespaces) {
       this.metrics[namespace] = new MetricsClass(this, namespace, returnType);
     }
+  }
+
+  public get shouldRender(): boolean {
+    return this.hasCannedMetrics;
   }
 
   public get hasCannedMetrics() {

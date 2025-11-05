@@ -4,9 +4,9 @@ import { DatabaseBuilder } from '@aws-cdk/service-spec-importers';
 import { SpecDatabase } from '@aws-cdk/service-spec-types';
 import { Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
-import { AstBuilder, DEFAULT_FILE_PATTERNS, GenerateFilePatterns, writeSubmodule } from './cdk/ast';
+import { AstBuilder, DEFAULT_FILE_PATTERNS, GenerateFilePatterns, submoduleFiles } from './cdk/ast';
 import { ModuleImportLocations } from './cdk/cdk';
-import { queryDb, log, TsFileWriter, FilenameCollectingWriter } from './util';
+import { queryDb, log, TsFileWriter } from './util';
 
 export interface GenerateServiceRequest {
   /**
@@ -173,12 +173,11 @@ async function generator(
   const ast = new AstBuilder({
     db,
     modulesRoot: options.importLocations?.modulesRoot,
+    filePatterns: {
+      ...DEFAULT_FILE_PATTERNS,
+      ...noUndefined(options.filePatterns),
+    },
   });
-
-  const filePatterns = {
-    ...DEFAULT_FILE_PATTERNS,
-    ...noUndefined(options.filePatterns),
-  };
 
   // Go through the module map
   log.info('Generating %i modules...', Object.keys(modules).length);
@@ -189,27 +188,23 @@ async function generator(
       log.debug(moduleName, s.name, 'ast');
 
       const submod = ast.addService(s, {
-        destinationModule: moduleName,
+        destinationSubmodule: moduleName,
         nameSuffix: req.suffix,
         deprecated: req.deprecated,
         importLocations: moduleOptions.moduleImportLocations,
       });
 
-      // Fake write this submodule just to collect the files that belong to it
-      const collect = new FilenameCollectingWriter(outputPath);
-      writeSubmodule(collect, submod, filePatterns);
-
       return {
-        module: submod.resourceModule,
+        module: submod.resourcesMod.module,
         options: moduleOptions,
         resources: submod.resources,
-        outputFiles: collect.outputFiles,
+        outputFiles: submoduleFiles(submod),
       } satisfies GenerateOutput['modules'][string][number];
     });
   }
 
   const writer = new TsFileWriter(outputPath, renderer);
-  ast.writeAll(writer, filePatterns);
+  ast.writeAll(writer);
 
   const result: GenerateOutput = {
     modules: moduleMap,

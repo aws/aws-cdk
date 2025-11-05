@@ -21,14 +21,3 @@ export class TsFileWriter implements IWriter {
     return fullPath;
   }
 }
-
-export class FilenameCollectingWriter implements IWriter {
-  public readonly outputFiles: string[] = [];
-  constructor(private readonly rootDir: string) { }
-
-  write(_module: Module, filePath: string): string {
-    const fullPath = path.join(this.rootDir, filePath);
-    this.outputFiles.push(fullPath);
-    return fullPath;
-  }
-}

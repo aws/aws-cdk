@@ -13,7 +13,7 @@ beforeAll(async () => {
 test('can codegen service with arbitrary suffix', () => {
   const service = db.lookup('service', 'name', 'equals', 'aws-kinesisanalyticsv2').only();
 
-  const module = new AstBuilder({ db }).addService(service, { nameSuffix: 'V2' }).resourceModule;
+  const module = new AstBuilder({ db }).addService(service, { nameSuffix: 'V2' }).resourcesMod;
 
   const rendered = renderer.render(module);
 

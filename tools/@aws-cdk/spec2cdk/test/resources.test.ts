@@ -302,5 +302,5 @@ test('resource interface with Arn as primaryIdentifier', () => {
 function moduleForResource(resource: Resource, props: AstBuilderProps) {
   const ast = new AstBuilder(props);
   const info = ast.addResource(resource);
-  return info.resourceModule;
+  return info.resourcesMod;
 }

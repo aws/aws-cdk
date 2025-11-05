@@ -14,7 +14,7 @@ beforeAll(async () => {
 test('Previous types are rendered', () => {
   const resource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::CloudFormation::StackSet')[0];
   const info = new AstBuilder({ db }).addResource(resource);
-  const stackSet = info.resourceModule.tryFindType('@aws-cdk/aws-cloudformation.CfnStackSet') as unknown as IScope;
+  const stackSet = info.resourcesMod.tryFindType('@aws-cdk/aws-cloudformation.CfnStackSet') as unknown as IScope;
 
   expect(stackSet.tryFindType('@aws-cdk/aws-cloudformation.CfnStackSet.ManagedExecutionProperty')).toBeTruthy();
 });
