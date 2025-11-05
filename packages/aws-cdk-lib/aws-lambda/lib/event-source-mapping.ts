@@ -385,8 +385,6 @@ export interface MetricsConfig {
  * of the event source mapping, including connection status, polling behavior, and error conditions.
  *
  * @example
- * import * as lambda from 'aws-cdk-lib/aws-lambda';
- *
  * const loggingConfig: lambda.LoggingConfig = {
  *   systemLogLevel: lambda.EventSourceMappingLogLevel.INFO
  * };

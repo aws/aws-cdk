@@ -461,7 +461,6 @@ The same logging configuration works for self-managed Kafka:
 
 ```ts
 import { SelfManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 declare const myFunction: lambda.Function;
 
@@ -486,7 +485,6 @@ Enhanced metrics provide detailed insights into your Kafka event source performa
 
 ```ts
 import { ManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 // Your MSK cluster arn
 const clusterArn = 'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/abcd1234-abcd-cafe-abab-9876543210ab-4';
@@ -516,7 +514,6 @@ For self-managed Kafka clusters:
 
 ```ts
 import { SelfManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 declare const myFunction: lambda.Function;
 
