@@ -1,4 +1,3 @@
-import { inspect } from 'node:util';
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
 import { Service } from '@aws-cdk/service-spec-types';
 import * as fs from 'fs-extra';
@@ -174,8 +173,6 @@ export async function generateAll(
     moduleMap[moduleName].resources = generated.modules[moduleName].map((m) => m.resources).reduce(mergeObjects, {});
     moduleMap[moduleName].files = generated.modules[moduleName].flatMap((m) => m.outputFiles);
   });
-
-  console.log(inspect(moduleMap, { depth: 5 }));
 
   return moduleMap;
 }
