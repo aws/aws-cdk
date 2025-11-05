@@ -5,6 +5,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2 } from 'aws-cdk-lib/cx-api';
 
 const CSV_KEY = 'my-key.csv';
+const RESULT_BUCKET_PREFIX = 'my-prefix';
 
 class DistributedMapStack extends cdk.Stack {
   readonly stateMachine: sfn.StateMachine;
@@ -26,7 +27,7 @@ class DistributedMapStack extends cdk.Stack {
       }),
       resultWriterV2: new sfn.ResultWriterV2({
         bucket: this.bucket,
-        prefix: 'my-prefix',
+        prefix: RESULT_BUCKET_PREFIX,
       }),
     });
 
@@ -82,9 +83,23 @@ const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecut
 start.next(describe);
 
 // assert the results
-describe.expect(ExpectedResult.objectLike({
+const describeExecution = describe.expect(ExpectedResult.objectLike({
   status: 'SUCCEEDED',
 })).waitForAssertions({
   interval: cdk.Duration.seconds(10),
   totalTimeout: cdk.Duration.minutes(5),
 });
+
+const s3ApiCall = testCase.assertions.awsApiCall('S3', 'listObjectsV2', {
+  Bucket: stack.bucket.bucketName,
+  MaxKeys: 2,
+  Prefix: RESULT_BUCKET_PREFIX,
+}).expect(ExpectedResult.objectLike({
+  KeyCount: 2,
+}));
+s3ApiCall.provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['s3:GetObject', 's3:ListBucket'],
+  Resource: ['*'],
+});
+describeExecution.next(s3ApiCall);
