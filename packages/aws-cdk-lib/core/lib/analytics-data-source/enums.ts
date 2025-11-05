@@ -14,7 +14,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "amazon-web-services",
     "amd",
     "nvidia",
-    "xilinx"
+    "xilinx",
+    "habana"
   ],
   "AcceleratorName": [
     "a100",
@@ -23,7 +24,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "radeon-pro-v520",
     "t4",
     "v100",
-    "vu9p"
+    "vu9p",
+    "a10g",
+    "h100",
+    "inferentia",
+    "k520",
+    "t4g"
   ],
   "AcceleratorType": [
     "gpu",
@@ -449,6 +455,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "aws-ecs-1-nvidia",
     "aws-ecs-2",
     "aws-ecs-2-nvidia"
+  ],
+  "BrokerType": [
+    "STANDARD",
+    "EXPRESS"
   ],
   "BrowserType": [
     "CHROME",
@@ -2516,6 +2526,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "HD",
     "SD"
   ],
+  "MemoryStrategyType": [
+    "SUMMARIZATION",
+    "SEMANTIC",
+    "USER_PREFERENCE",
+    "CUSTOM"
+  ],
   "MemoryType": [
     "SESSION_SUMMARY"
   ],
@@ -3053,7 +3069,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "ProtocolType": [
     "MCP",
-    "HTTP"
+    "HTTP",
+    "A2A"
   ],
   "ProviderType": [
     "CodeStarSourceConnection"
