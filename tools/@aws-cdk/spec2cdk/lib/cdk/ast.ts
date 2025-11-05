@@ -76,7 +76,7 @@ export const DEFAULT_FILE_PATTERNS: GenerateFilePatterns = {
 
 export class AstBuilder {
   public readonly db: SpecDatabase;
-  public readonly modules = new Map<string, Module & IShouldRenderModule>();
+  public readonly modules = new Map<string, Module>();
 
   public readonly selectiveImports = new Array<SelectiveImport>();
 
@@ -128,7 +128,7 @@ export class AstBuilder {
 
   public writeAll(writer: IWriter) {
     for (const [fileName, module] of this.modules.entries()) {
-      if (module.shouldRender) {
+      if (shouldRender(module)) {
         writer.write(module, fileName);
       }
     }
@@ -213,7 +213,7 @@ export class AstBuilder {
   }
 
   private createResourceModule(moduleName: string, serviceName: string, importLocations?: ModuleImportLocations) {
-    const resourceModule = new AlwaysRenderModule(`@aws-cdk/${moduleName}/${serviceName}`);
+    const resourceModule = new Module(`@aws-cdk/${moduleName}/${serviceName}`);
     CDK_CORE.import(resourceModule, 'cdk', { fromLocation: importLocations?.core });
     CONSTRUCTS.import(resourceModule, 'constructs');
     CDK_CORE.helpers.import(resourceModule, 'cfn_parse', { fromLocation: importLocations?.coreHelpers });
@@ -229,7 +229,7 @@ export class AstBuilder {
     return ret;
   }
 
-  private rememberModule<M extends Module & IShouldRenderModule>(
+  private rememberModule<M extends Module>(
     module: M,
     filePath: string,
   ): LocatedModule<M> {
@@ -255,7 +255,7 @@ export interface SubmoduleInfo {
 
   readonly service: Service;
 
-  readonly resourcesMod: LocatedModule<AlwaysRenderModule>;
+  readonly resourcesMod: LocatedModule<Module>;
   readonly augmentations: LocatedModule<AugmentationsModule>;
   readonly cannedMetrics: LocatedModule<CannedMetricsModule>;
 
@@ -280,17 +280,13 @@ function noUndefined<A extends object>(x: A | undefined): A | undefined {
 export function submoduleFiles(x: SubmoduleInfo): string[] {
   const ret = [];
   for (const mod of [x.resourcesMod, x.augmentations, x.cannedMetrics]) {
-    if (mod.module.shouldRender) {
+    if (shouldRender(mod.module)) {
       ret.push(mod.filePath);
     }
   }
   return ret;
 }
 
-export interface IShouldRenderModule {
-  readonly shouldRender: boolean;
-}
-
-export class AlwaysRenderModule extends Module implements IShouldRenderModule {
-  public readonly shouldRender: boolean = true;
+function shouldRender(m: Module) {
+  return m.types.length > 0 || m.initialization.length > 0;
 }

@@ -1,6 +1,5 @@
 import { DimensionSet, Metric, Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { ClassType, expr, InterfaceType, IScope, Method, Module, stmt, Type } from '@cdklabs/typewriter';
-import { IShouldRenderModule } from './ast';
 import {
   metricFunctionName,
   metricsClassNameFromService as metricsClassNameFromNamespace,
@@ -9,7 +8,7 @@ import {
 /**
  * Generate Canned Metrics
  */
-export class CannedMetricsModule extends Module implements IShouldRenderModule {
+export class CannedMetricsModule extends Module {
   public static forService(db: SpecDatabase, service: Service): CannedMetricsModule {
     const metrics = db.follow('serviceHasMetric', service);
     const namespaces = Array.from(new Set(metrics.map((r) => r.entity.namespace)));
@@ -37,19 +36,14 @@ export class CannedMetricsModule extends Module implements IShouldRenderModule {
 
   private metrics: Record<string, MetricsClass> = {};
   private _hasCannedMetrics: boolean = false;
+  private _returnType: MetricsReturnType | undefined;
 
   private constructor(private readonly db: SpecDatabase, service: Service, namespaces: string[]) {
     super(`${service.name}.canned-metrics`);
 
-    const returnType = new MetricsReturnType(this);
-
     for (const namespace of namespaces) {
-      this.metrics[namespace] = new MetricsClass(this, namespace, returnType);
+      this.metrics[namespace] = new MetricsClass(this, namespace, this.returnType());
     }
-  }
-
-  public get shouldRender(): boolean {
-    return this.hasCannedMetrics;
   }
 
   public get hasCannedMetrics() {
@@ -63,6 +57,18 @@ export class CannedMetricsModule extends Module implements IShouldRenderModule {
     this._hasCannedMetrics = true;
     const dimensions = this.db.follow('usesDimensionSet', metric).map((m) => m.entity);
     this.metrics[metric.namespace].addMetricWithDimensions(metric, dimensions);
+  }
+
+  /**
+   * Create and return the ReturnType class
+   *
+   * Do this only once, and lazily so we don't generate the type if it goes unused.
+   */
+  private returnType() {
+    if (!this._returnType) {
+      this._returnType = new MetricsReturnType(this);
+    }
+    return this._returnType;
   }
 }
 

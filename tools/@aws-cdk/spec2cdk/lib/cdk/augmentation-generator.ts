@@ -11,7 +11,6 @@ import {
   stmt,
   Type,
 } from '@cdklabs/typewriter';
-import { IShouldRenderModule } from './ast';
 import { CDK_CLOUDWATCH, CONSTRUCTS } from './cdk';
 import { ResourceClass } from './resource-class';
 
@@ -47,7 +46,7 @@ import { ResourceClass } from './resource-class';
  * This code may not have been factored the best in terms of how it should
  * be modeled in typewriter.
  */
-export class AugmentationsModule extends Module implements IShouldRenderModule {
+export class AugmentationsModule extends Module {
   private _hasAugmentations: boolean = false;
 
   /**
@@ -65,10 +64,6 @@ export class AugmentationsModule extends Module implements IShouldRenderModule {
     CDK_CLOUDWATCH.import(this, 'cw', {
       fromLocation: cloudWatchModuleImport,
     });
-  }
-
-  public get shouldRender(): boolean {
-    return this.hasAugmentations;
   }
 
   public get hasAugmentations() {
