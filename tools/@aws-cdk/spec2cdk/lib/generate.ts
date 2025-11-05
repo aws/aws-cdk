@@ -198,7 +198,7 @@ async function generator(
         module: submod.resourcesMod.module,
         options: moduleOptions,
         resources: submod.resources,
-        outputFiles: submoduleFiles(submod),
+        outputFiles: submoduleFiles(submod).map((x) => path.resolve(x)),
       } satisfies GenerateOutput['modules'][string][number];
     });
   }

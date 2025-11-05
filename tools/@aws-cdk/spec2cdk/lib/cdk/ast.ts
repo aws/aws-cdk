@@ -1,5 +1,4 @@
 /* eslint-disable @cdklabs/no-throw-default-error */
-import * as path from 'path';
 import { SpecDatabase, Resource, Service } from '@aws-cdk/service-spec-types';
 import { Module } from '@cdklabs/typewriter';
 import { AugmentationsModule } from './augmentation-generator';
@@ -232,9 +231,8 @@ export class AstBuilder {
 
   private rememberModule<M extends Module & IShouldRenderModule>(
     module: M,
-    fullPath: string,
+    filePath: string,
   ): LocatedModule<M> {
-    const filePath = path.relative(this.modulesRootLocation, fullPath);
     if (this.modules.has(filePath)) {
       throw new Error(`Duplicate module key: ${filePath}`);
     }
