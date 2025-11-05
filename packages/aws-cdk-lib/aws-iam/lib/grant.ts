@@ -439,11 +439,20 @@ export interface IResourceWithPolicyV2 extends cdk.IEnvironmentAware {
   addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult;
 }
 
+/**
+ * Utility methods to check for specific types of grantable resources
+ */
 export class GrantableResources {
+  /**
+   * Whether this resource admits a resource policy.
+   */
   static isResourceWithPolicy(resource: IConstruct): resource is iam.IResourceWithPolicy {
     return (resource as unknown as iam.IResourceWithPolicy).addToResourcePolicy !== undefined;
   }
 
+  /**
+   * Whether this resource holds data that can be encrypted using a KMS key.
+   */
   static isEncryptedResource(resource: IConstruct): resource is iam.IEncryptedResource {
     return (resource as unknown as iam.IEncryptedResource).grantOnKey !== undefined;
   }

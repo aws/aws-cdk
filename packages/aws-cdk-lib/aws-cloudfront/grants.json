@@ -5,7 +5,8 @@
         "createInvalidation": {
           "actions": [
             "cloudfront:CreateInvalidation"
-          ]
+          ],
+          "docSummary": "Grant to create invalidations for this bucket to an IAM principal (Role/Group/User)."
         }
       }
     }

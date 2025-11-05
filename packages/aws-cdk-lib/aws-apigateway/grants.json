@@ -5,7 +5,8 @@
         "read": {
           "actions": [
             "apigateway:GET"
-          ]
+          ],
+          "docSummary": "Permits the IAM principal all read operations through this key"
         },
         "write": {
           "actions": [
@@ -13,7 +14,8 @@
             "apigateway:PUT",
             "apigateway:PATCH",
             "apigateway:DELETE"
-          ]
+          ],
+          "docSummary": "Permits the IAM principal all write operations through this key"
         },
         "readWrite": {
           "actions": [
@@ -22,7 +24,8 @@
             "apigateway:PUT",
             "apigateway:PATCH",
             "apigateway:DELETE"
-          ]
+          ],
+          "docSummary": "Permits the IAM principal all read and write operations through this key"
         }
       }
     },

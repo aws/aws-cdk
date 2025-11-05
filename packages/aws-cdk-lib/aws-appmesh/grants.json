@@ -5,7 +5,8 @@
         "streamAggregatedResources": {
           "actions": [
             "appmesh:StreamAggregatedResources"
-          ]
+          ],
+          "docSummary": "Grants the given entity `appmesh:StreamAggregatedResources`."
         }
       }
     },

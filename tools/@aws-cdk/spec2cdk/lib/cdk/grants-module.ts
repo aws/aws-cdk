@@ -72,6 +72,10 @@ export class GrantsModule extends Module {
           type: Type.fromName(this, 'iam.IResourceWithPolicy'),
           optional: true,
           immutable: true,
+          docs: {
+            summary: 'The resource with policy on which actions will be allowed',
+            default: 'No resource policy is created',
+          },
         });
       }
       if (hasKeyActions) {
@@ -80,6 +84,10 @@ export class GrantsModule extends Module {
           type: Type.fromName(this, 'iam.IEncryptedResource'),
           optional: true,
           immutable: true,
+          docs: {
+            summary: 'The encrypted resource on which actions will be allowed',
+            default: 'No permission is added to the KMS key, even if it exists',
+          },
         });
       }
 
@@ -130,6 +138,7 @@ export class GrantsModule extends Module {
           immutable: true,
           type: iEncryptedResourceType,
           optional: true,
+          protected: true,
         });
 
         init.addBody(stmt.assign($this[encryptedResourcePropName], propsParameter.prop(encryptedResourcePropName)));
@@ -142,6 +151,7 @@ export class GrantsModule extends Module {
           immutable: true,
           type: resourceWithPolicy,
           optional: true,
+          protected: true,
         });
         init.addBody(stmt.assign($this.policyResource, propsParameter.prop('policyResource')));
       }
@@ -193,6 +203,9 @@ export class GrantsModule extends Module {
         const method = classType.addMethod({
           name: methodName,
           returnType: Type.fromName(this, 'iam.Grant'),
+          docs: {
+            summary: grantSchema.docSummary ?? `Grants ${methodName} permissions`,
+          },
         });
 
         const grantee = method.addParameter({
@@ -260,6 +273,7 @@ export interface GrantSchema {
   readonly arnFormat?: string;
   readonly actions: string[];
   readonly keyActions?: string[];
+  readonly docSummary?: string;
 }
 
 function makeArnCall(serviceName: string, resource: Resource, grantSchema?: GrantSchema): Expression {
