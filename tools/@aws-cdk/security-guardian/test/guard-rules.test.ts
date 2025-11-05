@@ -41,8 +41,9 @@ describe('Guard Rules Validation', () => {
         'Trust Scope'
       );
       
-      // Should process templates successfully
+      // Should detect broad principals (validation should fail)
       expect(typeof failures).toBe('boolean');
+      expect(failures).toBe(false);
     });
   });
 
@@ -62,8 +63,9 @@ describe('Guard Rules Validation', () => {
         'Guard Hooks'
       );
       
-      // Should process templates successfully (KMS keys with root are allowed)
+      // Should detect violations in non-KMS resources (validation should fail)
       expect(typeof failures).toBe('boolean');
+      expect(failures).toBe(false);
     });
   });
 
@@ -83,8 +85,9 @@ describe('Guard Rules Validation', () => {
         'IAM'
       );
       
-      // Should process templates and check for IAM violations
+      // Should detect IAM violations (validation should fail)
       expect(typeof failures).toBe('boolean');
+      expect(failures).toBe(false);
     });
   });
 
@@ -104,8 +107,9 @@ describe('Guard Rules Validation', () => {
         'S3'
       );
       
-      // Should process templates and check for S3 violations
+      // Should detect S3 violations (validation should fail)
       expect(typeof failures).toBe('boolean');
+      expect(failures).toBe(false);
     });
   });
 
@@ -177,8 +181,55 @@ describe('Guard Rules Validation', () => {
         'CodePipeline'
       );
       
-      // Should process templates and check for CodePipeline violations
+      // Should detect CodePipeline violations (validation should fail)
       expect(typeof failures).toBe('boolean');
+      expect(failures).toBe(false);
+    });
+  });
+
+  describe('Compliant Templates', () => {
+    const compliantTemplate = path.join(templatesDir, 'compliant-secure.template.json');
+
+    test('should pass validation with compliant IAM role', async () => {
+      // Run validation with trust scope rules on compliant template
+      const failures = await runCfnGuardValidation(
+        compliantTemplate,
+        path.join(rulesDir, 'trust_scope_rules.guard'),
+        path.join(outputDir, 'compliant-trust-test.xml'),
+        'Compliant Trust'
+      );
+      
+      // Should pass validation (no violations found)
+      expect(typeof failures).toBe('boolean');
+      expect(failures).toBe(true);
+    });
+
+    test('should pass validation with compliant S3 bucket', async () => {
+      // Run validation with S3 rules on compliant template
+      const failures = await runCfnGuardValidation(
+        compliantTemplate,
+        path.join(rulesDir, 's3.guard'),
+        path.join(outputDir, 'compliant-s3-test.xml'),
+        'Compliant S3'
+      );
+      
+      // Should pass validation (encryption enabled)
+      expect(typeof failures).toBe('boolean');
+      expect(failures).toBe(true);
+    });
+
+    test('should pass validation with compliant EBS volume', async () => {
+      // Run validation with EC2 rules on compliant template
+      const failures = await runCfnGuardValidation(
+        compliantTemplate,
+        path.join(rulesDir, 'ec2.guard'),
+        path.join(outputDir, 'compliant-ebs-test.xml'),
+        'Compliant EBS'
+      );
+      
+      // Should pass validation (encryption enabled)
+      expect(typeof failures).toBe('boolean');
+      expect(failures).toBe(true);
     });
   });
 });
