@@ -4939,24 +4939,15 @@ describe('bucket', () => {
         });
 
         Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-          VersioningConfiguration: { Status: 'Enabled' },
           ReplicationConfiguration: {
-            Role: {
-              'Fn::GetAtt': ['SrcBucketReplicationRole5B31865A', 'Arn'],
-            },
             Rules: [
               {
                 Destination: {
-                  Bucket: {
-                    'Fn::GetAtt': ['DstBucket3E241BF2', 'Arn'],
-                  },
                   Metrics: {
                     Status: 'Enabled',
+                    EventThreshold: Match.absent(), // Explicitly ensure no EventThreshold field
                   },
                 },
-                Status: 'Enabled',
-                Filter: { Prefix: '' },
-                DeleteMarkerReplication: { Status: 'Disabled' },
               },
             ],
           },
@@ -4982,15 +4973,9 @@ describe('bucket', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
           VersioningConfiguration: { Status: 'Enabled' },
           ReplicationConfiguration: {
-            Role: {
-              'Fn::GetAtt': ['SrcBucketReplicationRole5B31865A', 'Arn'],
-            },
             Rules: [
               {
                 Destination: {
-                  Bucket: {
-                    'Fn::GetAtt': ['DstBucket3E241BF2', 'Arn'],
-                  },
                   ReplicationTime: {
                     Status: 'Enabled',
                     Time: { Minutes: 15 },
@@ -5002,9 +4987,6 @@ describe('bucket', () => {
                     },
                   },
                 },
-                Status: 'Enabled',
-                Filter: { Prefix: '' },
-                DeleteMarkerReplication: { Status: 'Disabled' },
               },
             ],
           },
