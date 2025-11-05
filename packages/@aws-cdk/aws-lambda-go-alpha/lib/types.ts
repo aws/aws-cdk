@@ -164,7 +164,7 @@ export interface ICommandHooks {
   /**
    * Returns commands to run before bundling.
    *
-   * ⚠️ **Security**: Ensure commands come from trusted sources only.
+   * ⚠️ **Security Warning**: Ensure commands come from trusted sources only.
    * Commands are executed directly in the shell environment.
    *
    * Commands are chained with `&&`.
@@ -174,7 +174,7 @@ export interface ICommandHooks {
   /**
    * Returns commands to run after bundling.
    *
-   * ⚠️ **Security**: Ensure commands come from trusted sources only.
+   * ⚠️ **Security Warning**: Ensure commands come from trusted sources only.
    * Commands are executed directly in the shell environment.
    *
    * Commands are chained with `&&`.
