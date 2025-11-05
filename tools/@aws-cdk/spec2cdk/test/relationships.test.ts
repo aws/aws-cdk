@@ -53,7 +53,7 @@ maybeTest('resource with relationship reference', () => {
   });
   db.link('hasResource', service, sourceResource);
 
-  const module = new AstBuilder({ db }).addService(service).resourcesMod;
+  const module = new AstBuilder({ db }).addService(service).resourcesMod.module;
 
   const rendered = renderer.render(module);
 
@@ -110,7 +110,7 @@ maybeTest('resource with multiple relationship references', () => {
   });
   db.link('hasResource', service, policyResource);
 
-  const module = new AstBuilder({ db }).addService(service).resourcesMod;
+  const module = new AstBuilder({ db }).addService(service).resourcesMod.module;
 
   const rendered = renderer.render(module);
 
@@ -159,7 +159,7 @@ maybeTest('resource with nested relationship requiring flattening', () => {
   db.link('hasResource', service, taskResource);
   db.link('usesType', taskResource, configType);
 
-  const module = new AstBuilder({ db }).addService(service).resourcesMod;
+  const module = new AstBuilder({ db }).addService(service).resourcesMod.module;
 
   const rendered = renderer.render(module);
 
@@ -208,7 +208,7 @@ maybeTest('resource with array of nested properties with relationship', () => {
   db.link('hasResource', service, resourceResource);
   db.link('usesType', resourceResource, permissionType);
 
-  const module = new AstBuilder({ db }).addService(service).resourcesMod;
+  const module = new AstBuilder({ db }).addService(service).resourcesMod.module;
 
   const rendered = renderer.render(module);
 
@@ -276,7 +276,7 @@ maybeTest('resource with nested relationship with type history', () => {
   db.link('usesType', jobResource, configType);
   db.link('usesType', jobResource, oldConfigType);
 
-  const module = new AstBuilder({ db }).addService(service).resourcesMod;
+  const module = new AstBuilder({ db }).addService(service).resourcesMod.module;
 
   const rendered = renderer.render(module);
 
@@ -332,7 +332,7 @@ maybeTest('relationship have arns appear first in the constructor chain', () => 
   db.link('hasResource', service, taskResource);
   db.link('usesType', taskResource, configType);
 
-  const module = new AstBuilder({ db }).addService(service).resourcesMod;
+  const module = new AstBuilder({ db }).addService(service).resourcesMod.module;
 
   const rendered = renderer.render(module);
 
