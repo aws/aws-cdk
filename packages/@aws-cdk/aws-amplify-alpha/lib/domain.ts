@@ -200,7 +200,7 @@ export class Domain extends Resource {
   private renderSubDomainSettings() {
     return this.subDomains.map(s => ({
       branchName: s.branch.branchName,
-      prefix: s.prefix ?? s.branch.branchName,
+      ...(s.prefix !== '' ? { prefix: s.prefix ?? s.branch.branchName } : {}),
     }));
   }
 }
