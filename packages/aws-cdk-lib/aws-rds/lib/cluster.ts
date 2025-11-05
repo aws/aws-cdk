@@ -193,6 +193,18 @@ interface DatabaseClusterBaseProps {
   readonly deletionProtection?: boolean;
 
   /**
+   * Specifies whether to manage the master user password with AWS Secrets Manager.
+   *
+   * When enabled, RDS creates and rotates a Secrets Manager secret for the master user.
+   * You cannot supply `credentials` that include a password or reference a secret when this is set to `true`.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-secrets-manager.html
+   *
+   * @default false
+   */
+  readonly manageMasterUserPassword?: boolean;
+
+  /**
    * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
    *
    * Example: 'Sun:23:45-Mon:00:15'
@@ -935,6 +947,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableIamDatabaseAuthentication: props.iamAuthentication,
+      manageMasterUserPassword: props.manageMasterUserPassword,
       enableHttpEndpoint: Lazy.any({ produce: () => this.enableDataApi }),
       networkType: props.networkType,
       serverlessV2ScalingConfiguration: Lazy.any({
@@ -1427,8 +1440,14 @@ export class DatabaseCluster extends DatabaseClusterNew {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const credentials = renderCredentials(this, props.engine, props.credentials);
-    const secret = credentials.secret;
+    const manageMasterUserPassword = props.manageMasterUserPassword === true;
+
+    validateCredentialsForManagedPassword(manageMasterUserPassword, props.credentials, this);
+
+    const credentials = manageMasterUserPassword
+      ? (props.credentials ?? Credentials.fromUsername(props.engine.defaultUsername ?? 'admin')) // For backwards compatibility
+      : renderCredentials(this, props.engine, props.credentials);
+    const secret = manageMasterUserPassword ? undefined : credentials.secret;
 
     const canHaveCredentials = props.replicationSourceIdentifier == undefined;
 
@@ -1436,7 +1455,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
       ...this.newCfnProps,
       // Admin
       masterUsername: canHaveCredentials ? credentials.username : undefined,
-      masterUserPassword: canHaveCredentials ? credentials.password?.unsafeUnwrap() : undefined,
+      masterUserPassword: canHaveCredentials && !manageMasterUserPassword ? credentials.password?.unsafeUnwrap() : undefined,
       replicationSourceIdentifier: props.replicationSourceIdentifier,
     });
 
@@ -1479,6 +1498,29 @@ export class DatabaseCluster extends DatabaseClusterNew {
       this.instanceIdentifiers = [];
       this.instanceEndpoints = [];
     }
+  }
+}
+
+/**
+ * Validates that credentials are compatible with manageMasterUserPassword.
+ * When manageMasterUserPassword is enabled, RDS manages the master password automatically.
+ * This is incompatible with CDK-managed credentials that set MasterUserPassword explicitly.
+ */
+function validateCredentialsForManagedPassword(manageMasterUserPassword: boolean, credentials: Credentials | undefined, scope: Construct): void {
+  if (!manageMasterUserPassword || !credentials) {
+    return;
+  }
+
+  const hasPasswordOrSecretOptions =
+    credentials.password ||
+    credentials.secret ||
+    credentials.encryptionKey ||
+    credentials.excludeCharacters ||
+    credentials.secretName ||
+    credentials.replicaRegions;
+
+  if (hasPasswordOrSecretOptions) {
+    throw new ValidationError('`credentials` cannot include a password, secret, or secret generation options when `manageMasterUserPassword` is set to true.', scope);
   }
 }
 
@@ -1620,23 +1662,37 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    if (props.credentials && !props.credentials.password && !props.credentials.secret) {
+    const manageMasterUserPassword = props.manageMasterUserPassword === true;
+
+    // Note: `credentials` is deprecated in favor of `snapshotCredentials`,
+    // but we still validate it for backward compatibility and to provide clear error messages.
+    validateCredentialsForManagedPassword(manageMasterUserPassword, props.credentials, this);
+    // When manageMasterUserPassword is enabled, RDS manages the master password automatically.
+    // SnapshotCredentials explicitly sets or generates a new master password when restoring
+    // from a snapshot, so it is inherently incompatible with RDS-managed password mode.
+    if (manageMasterUserPassword && props.snapshotCredentials) {
+      throw new ValidationError('`snapshotCredentials` cannot be used when `manageMasterUserPassword` is set to true.', this);
+    }
+
+    if (!manageMasterUserPassword && props.credentials && !props.credentials.password && !props.credentials.secret) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-rds:useSnapshotCredentials', 'Use `snapshotCredentials` to modify password of a cluster created from a snapshot.');
     }
-    if (!props.credentials && !props.snapshotCredentials) {
+    if (!manageMasterUserPassword && !props.credentials && !props.snapshotCredentials) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-rds:generatedCredsNotApplied', 'Generated credentials will not be applied to cluster. Use `snapshotCredentials` instead. `addRotationSingleUser()` and `addRotationMultiUser()` cannot be used on this cluster.');
     }
 
-    const deprecatedCredentials = !FeatureFlags.of(this).isEnabled(cxapi.RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS)
+    const deprecatedCredentials = !manageMasterUserPassword && !FeatureFlags.of(this).isEnabled(cxapi.RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS)
       ? renderCredentials(this, props.engine, props.credentials)
       : undefined;
 
-    const credentials = renderSnapshotCredentials(this, props.snapshotCredentials);
+    const credentials = manageMasterUserPassword ? undefined : renderSnapshotCredentials(this, props.snapshotCredentials);
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       snapshotIdentifier: props.snapshotIdentifier,
-      masterUserPassword: credentials?.secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
+      masterUserPassword: manageMasterUserPassword
+        ? undefined
+        : (credentials?.secret?.secretValueFromJson('password') ?? credentials?.password)?.unsafeUnwrap(), // Safe usage
     });
 
     this.clusterIdentifier = cluster.ref;

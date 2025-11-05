@@ -512,6 +512,23 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
 
 **Note**: Cannot create a read replica cluster with `credentials` as the value is inherited from the source DB cluster.
 
+## Let RDS manage the master password
+
+To delegate password management to RDS, set `manageMasterUserPassword` to `true`. When enabled, RDS creates and rotates the password in AWS Secrets Manager. Supply username-only credentials if you need to override the default username, and do not pass credentials that include a password or secret.
+
+```ts
+declare const vpc: ec2.Vpc;
+new rds.DatabaseCluster(this, 'ManagedPasswordCluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_03_0 }),
+  manageMasterUserPassword: true,
+  credentials: rds.Credentials.fromUsername('clusteradmin'),
+  instanceProps: {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+    vpc,
+  },
+});
+```
+
 ## Starting an instance database
 
 To set up an instance database, define a `DatabaseInstance`. You must

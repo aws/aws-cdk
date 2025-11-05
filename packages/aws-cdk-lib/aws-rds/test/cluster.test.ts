@@ -4684,6 +4684,34 @@ describe('cluster', () => {
     Annotations.fromStack(stack).hasWarning('/Default/Database', Match.stringLikeRegexp('Generated credentials will not be applied to cluster'));
   });
 
+  test('manageMasterUserPassword cannot be combined with snapshotCredentials for cluster from snapshot', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    expect(() => new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      manageMasterUserPassword: true,
+      snapshotIdentifier: 'mySnapshot',
+      snapshotCredentials: SnapshotCredentials.fromPassword(cdk.SecretValue.unsafePlainText('not-allowed')),
+      instanceProps: {
+        vpc,
+      },
+    })).toThrow('`snapshotCredentials` cannot be used when `manageMasterUserPassword` is set to true.');
+  });
+
+  test('manageMasterUserPassword rejects credentials with password for cluster from snapshot', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    expect(() => new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      manageMasterUserPassword: true,
+      credentials: Credentials.fromPassword('admin', cdk.SecretValue.unsafePlainText('not-allowed')),
+      snapshotIdentifier: 'mySnapshot',
+      instanceProps: { vpc },
+    })).toThrow('`credentials` cannot include a password, secret, or secret generation options when `manageMasterUserPassword` is set to true.');
+  });
+
   test('can generate a new snapshot password', () => {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -5356,6 +5384,81 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       CopyTagsToSnapshot: true,
     });
+  });
+
+  test('cluster can delegate master password management to RDS', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      manageMasterUserPassword: true,
+      credentials: Credentials.fromUsername('clusteradmin'),
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::RDS::DBCluster', {
+      ManageMasterUserPassword: true,
+      MasterUserPassword: Match.absent(),
+      MasterUsername: 'clusteradmin',
+    });
+    template.resourceCountIs('AWS::SecretsManager::Secret', 0);
+  });
+
+  test('manageMasterUserPassword cannot be used with password credentials', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN / THEN
+    expect(() => {
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        manageMasterUserPassword: true,
+        credentials: Credentials.fromPassword('clusteradmin', cdk.SecretValue.unsafePlainText('not-allowed')),
+        instanceProps: {
+          vpc,
+        },
+      });
+    }).toThrow('`credentials` cannot include a password, secret, or secret generation options when `manageMasterUserPassword` is set to true.');
+  });
+
+  test('manageMasterUserPassword rejects credentials with secret', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const secret = new DatabaseSecret(stack, 'Secret', { username: 'clusteradmin' });
+
+    expect(() => new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      manageMasterUserPassword: true,
+      credentials: Credentials.fromSecret(secret),
+      instanceProps: { vpc },
+    })).toThrow('`credentials` cannot include a password, secret, or secret generation options when `manageMasterUserPassword` is set to true.');
+  });
+
+  test('manageMasterUserPassword works without credentials', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      manageMasterUserPassword: true,
+      instanceProps: { vpc },
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::RDS::DBCluster', {
+      ManageMasterUserPassword: true,
+      MasterUserPassword: Match.absent(),
+      MasterUsername: 'admin',
+    });
+    template.resourceCountIs('AWS::SecretsManager::Secret', 0);
   });
 
   test('cluster has BacktrackWindow in seconds', () => {
