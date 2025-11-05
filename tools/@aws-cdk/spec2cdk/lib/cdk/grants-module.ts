@@ -50,8 +50,9 @@ export class GrantsModule extends Module {
       const hasKeyActions = Object.values(config.grants)
         .some(grant => grant.keyActions && grant.keyActions.length > 0);
 
-      const arnCalls = arnCallsForResource(this.service.shortName, resource, config.grants, arnContainers);
-      if (Object.keys(arnCalls).length === 0) continue;
+      if (!arnContainers.has(resource.cloudFormationType)) {
+        continue;
+      }
 
       const className = `${name}Grants`;
 
@@ -184,11 +185,9 @@ export class GrantsModule extends Module {
       );
 
       for (const [methodName, grantSchema] of Object.entries(config.grants)) {
-        const resourceArns = arnCalls[methodName];
-        if (resourceArns == null) {
-          // Without ARNs, we cannot generate grants.
-          continue;
-        }
+        const resourceArns = expr.list([
+          makeArnCall(this.service.shortName, resource, grantSchema),
+        ]);
 
         const method = classType.addMethod({
           name: methodName,
@@ -234,7 +233,8 @@ export class GrantsModule extends Module {
     }
 
     if (hasContent) {
-      new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`).import(this, this.service.shortName, { fromLocation: `./${this.service.shortName}.generated` });
+      new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`)
+        .import(this, this.service.shortName, { fromLocation: `./${this.service.shortName}.generated` });
       new ExternalModule('aws-cdk-lib/aws-iam').import(this, 'iam');
     }
   }
@@ -261,25 +261,39 @@ export interface GrantSchema {
   readonly keyActions?: string[];
 }
 
-function arnCallsForResource(
-  serviceName: string,
-  resource: Resource,
-  grants: Record<string, GrantSchema>,
-  arnContainers: Set<string>): Record<string, Expression> {
-  const result: Record<string, Expression> = {};
-  if (!arnContainers.has(resource.cloudFormationType)) {
-    return result;
+function makeArnCall(serviceName: string, resource: Resource, grantSchema?: GrantSchema): Expression {
+  const arnFormat = grantSchema?.arnFormat;
+  const arnCall = $E(expr
+    .ident(`${serviceName}`)
+    .prop(classNameFromResource(resource)) // TODO What about the suffix?
+    .callMethod(`arnFor${resource.name}`, $this.resource),
+  );
+
+  return arnFormat != null
+    ? expr.strConcat(...replaceVariableWithExpression(arnFormat, arnCall))
+    : arnCall;
+}
+
+/**
+ * Replaces the single variable in the ARN format with an expression. The result may contain up to
+ * three elements: prefix, expression and suffix, depending on the arn format.
+ * Example: "Foo/${somethingArn}/Bar" -> ["Foo/", CfnSomething.arnForSomething(...), "/Bar"]
+ */
+function replaceVariableWithExpression(arnFormat: string, expression: Expression): Expression[] {
+  const i = arnFormat.indexOf('${');
+  const j = arnFormat.indexOf('}', i);
+
+  const prefix = arnFormat.substring(0, i);
+  const suffix = arnFormat.substring(j + 1);
+
+  const result: Expression[] = [];
+  if (prefix !== '') {
+    result.push(expr.lit(prefix));
+  }
+  result.push(expression);
+  if (suffix !== '') {
+    result.push(expr.lit(suffix));
   }
 
-  const expression = expr.list([
-    $E(expr
-      .ident(`${serviceName}`)
-      .prop(classNameFromResource(resource)) // TODO What about the suffix?
-      .callMethod(`arnFor${resource.name}`, $this.resource),
-    ),
-  ]);
-  for (const methodName of Object.keys(grants)) {
-    result[methodName] = expression;
-  }
   return result;
 }
