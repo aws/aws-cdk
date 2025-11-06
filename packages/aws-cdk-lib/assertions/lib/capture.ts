@@ -19,7 +19,7 @@ export class Capture extends Matcher {
    * @param pattern a nested pattern or Matcher.
    * If a nested pattern is provided `objectLike()` matching is applied.
    */
-  constructor(private readonly pattern?: any) { //hwere we go again
+  constructor(private readonly pattern?: any) {
     super();
     this.name = 'Capture';
   }
