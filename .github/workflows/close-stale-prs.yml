@@ -22,7 +22,7 @@ jobs:
           response-days: 14
 
           # Optional
-          important-checks-regex: AutoBuildv2Project1C6BFA3F
+          important-checks-regex: "validate-pr|build|Collect Coverage"
           merge-conflict-warning: |
             This PR cannot be merged because it has conflicts. Please resolve them. Note that PRs with merge conflicts considered stale and will be closed if not resolved.
 
