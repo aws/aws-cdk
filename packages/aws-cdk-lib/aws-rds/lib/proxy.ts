@@ -518,8 +518,8 @@ export class DatabaseProxy extends DatabaseProxyBase
 
     const bindResult = props.proxyTarget.bind(this);
 
-    if (props.defaultAuthScheme === DefaultAuthScheme.NONE && !props.secrets?.length) {
-      throw new ValidationError('One or more secrets are required.', this);
+    if ((props.defaultAuthScheme === DefaultAuthScheme.NONE || !props.defaultAuthScheme) && !props.secrets?.length) {
+      throw new ValidationError('One or more secrets are required when the `defaultAuthScheme` is not specified or is set to NONE.', this);
     }
     this.secrets = props.secrets;
 

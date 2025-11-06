@@ -216,7 +216,7 @@ describe('proxy', () => {
     });
   });
 
-  test('One or more secrets are required.', () => {
+  test('One or more secrets are required when defaultAuthScheme is NONE.', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
       engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_10_7 }),
@@ -231,7 +231,25 @@ describe('proxy', () => {
         vpc,
         defaultAuthScheme: rds.DefaultAuthScheme.NONE,
       });
-    }).toThrow('One or more secrets are required.');
+    }).toThrow('One or more secrets are required when the `defaultAuthScheme` is not specified or is set to NONE.');
+  });
+
+  test('One or more secrets are required when defaultAuthScheme is undefined.', () => {
+    // GIVEN
+    const cluster = new rds.DatabaseCluster(stack, 'Database', {
+      engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_10_7 }),
+      instanceProps: { vpc },
+    });
+
+    // WHEN
+    expect(() => {
+      new rds.DatabaseProxy(stack, 'Proxy', {
+        proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+        secrets: [], // No secret
+        vpc,
+        // defaultAuthScheme is not specified (undefined)
+      });
+    }).toThrow('One or more secrets are required when the `defaultAuthScheme` is not specified or is set to NONE.');
   });
 
   test('fails when trying to create a proxy for a target without an engine', () => {
