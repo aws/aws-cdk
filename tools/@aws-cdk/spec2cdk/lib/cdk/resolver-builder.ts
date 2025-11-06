@@ -83,8 +83,8 @@ export class ResolverBuilder {
     ].join(' | ');
 
     // Generates code like:
-    // For single value: (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? (props.roleArn as IUserRef)?.userRef?.userArn ?? props.roleArn
-    // For array: props.roleArns?.map((item: any) => (item as IRoleRef)?.roleRef?.roleArn ?? (item as IUserRef)?.userRef?.userArn ?? item)
+    // For single value T | string : (props.xx as IxxxRef)?.xxxRef?.xxxArn ?? cdk.ensureStringOrUndefined(props.xxx, "xxx", "iam.IxxxRef | string");
+    // For array <T | string>[]: (props.xx?.forEach((item: T | string, i: number, arr: Array<T | string>) => { arr[i] = (item as T)?.xxxRef?.xx ?? cdk.ensureStringOrUndefined(item, "xxx", "lambda.T | string"); }), props.xxx as Array<string>);
     // Ensures that arn properties always appear first in the chain as they are more general
     const arnRels = relationships.filter(r => r.propName.toLowerCase().endsWith('arn'));
     const otherRels = relationships.filter(r => !r.propName.toLowerCase().endsWith('arn'));
