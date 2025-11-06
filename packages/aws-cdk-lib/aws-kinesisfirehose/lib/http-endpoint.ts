@@ -56,7 +56,7 @@ export interface HttpEndpointProps extends CommonDestinationProps {
    *
    * @default - no metadata
    */
-  readonly commonAttributes?: Record<string, string>;
+  readonly parameters?: Record<string, string>;
 
   /**
    * The content encoding to compress the body of a request before sending the request to the destination.
@@ -136,8 +136,8 @@ export class HttpEndpoint implements IDestination {
         },
         processingConfiguration: createProcessingConfig(scope, role, this.props),
         requestConfiguration: undefinedIfAllValuesAreEmpty({
-          commonAttributes: this.props.commonAttributes
-            && Object.entries(this.props.commonAttributes).map(([key, value]) => ({ attributeName: key, attributeValue: value })),
+          commonAttributes: this.props.parameters
+            && Object.entries(this.props.parameters).map(([key, value]) => ({ attributeName: key, attributeValue: value })),
           contentEncoding: this.props.contentEncoding,
         }),
         retryOptions: undefinedIfAllValuesAreEmpty({

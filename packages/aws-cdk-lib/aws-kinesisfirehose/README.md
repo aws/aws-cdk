@@ -133,7 +133,7 @@ Defining a delivery stream with an HTTP endpoint destination:
 const httpDestination = new firehose.HttpEndpoint({
   url: 'https://example.com/',
   name: 'MyEndpointName', // HTTP endpoint name - optional
-  commonAttributes: { // Parameters - optional
+  parameters: { // Parameters - optional
     'deployment-context': 'pre-prod-gamma',
   },
   contentEncoding: firehose.ContentEncoding.GZIP, // Content encoding - optional

@@ -51,7 +51,7 @@ describe('HTTP endpoint destination', () => {
         url: 'https://example.com/',
         name: 'MyEndpointName',
         accessKey: 'my-access-key',
-        commonAttributes: {
+        parameters: {
           'my-header-name1': 'my-header-value1',
           'my-header-name2': 'my-header-value2',
         },
