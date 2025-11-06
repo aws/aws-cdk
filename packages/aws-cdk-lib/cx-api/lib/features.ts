@@ -1773,12 +1773,10 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.ApiDefault,
     summary: 'Use cloudfront-js-2.0 as the default runtime for CloudFront Functions',
     detailsMd: `
-      When enabled, CloudFront Functions will use cloudfront-js-2.0 runtime by default
-      instead of cloudfront-js-1.0. The runtime can still be configured explicitly using
-      the \`runtime\` property.
+      When enabled, CloudFront Functions will use cloudfront-js-2.0 runtime by default instead of cloudfront-js-1.0.
+      The runtime can still be configured explicitly using the \`runtime\` property.
 
-      Note: If \`keyValueStore\` is specified, the runtime will always be cloudfront-js-2.0
-      regardless of this flag.`,
+      If \`keyValueStore\` is specified, the runtime will always be cloudfront-js-2.0 regardless of this flag.`,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Set `runtime: FunctionRuntime.JS_1_0` explicitly to use the v1.0 runtime.',
