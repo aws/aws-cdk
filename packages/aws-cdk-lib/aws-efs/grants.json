@@ -1,0 +1,43 @@
+{
+  "resources": {
+    "FileSystem": {
+      "grants": {
+        "read": {
+          "actions": [
+            "elasticfilesystem:ClientMount"
+          ],
+          "docSummary": "Grant read permissions for this file system to an IAM principal.",
+          "conditions": {
+            "Bool": {
+              "elasticfilesystem:AccessedViaMountTarget": "true"
+            }
+          }
+        },
+        "readWrite": {
+          "actions": [
+            "elasticfilesystem:ClientMount",
+            "elasticfilesystem:ClientWrite"
+          ],
+          "docSummary": "Grant read and write permissions for this file system to an IAM principal.",
+          "conditions": {
+            "Bool": {
+              "elasticfilesystem:AccessedViaMountTarget": "true"
+            }
+          }
+        },
+        "rootAccess": {
+          "actions": [
+            "elasticfilesystem:ClientMount",
+            "elasticfilesystem:ClientWrite",
+            "elasticfilesystem:ClientRootAccess"
+          ],
+          "conditions": {
+            "Bool": {
+              "elasticfilesystem:AccessedViaMountTarget": "true"
+            }
+          }
+        }
+      }
+    }
+  }
+}

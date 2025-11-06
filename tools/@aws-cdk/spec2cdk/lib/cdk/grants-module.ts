@@ -97,6 +97,7 @@ export class GrantsModule extends Module {
         properties: propsProperties,
         docs: {
           summary: `Properties for ${className}`,
+          remarks: '@internal',
         },
       });
 
@@ -105,6 +106,7 @@ export class GrantsModule extends Module {
         export: true,
         docs: {
           summary: `Collection of grant methods for a ${interfaceName}`,
+          remarks: '@internal',
         },
       });
 
@@ -162,6 +164,7 @@ export class GrantsModule extends Module {
         returnType: Type.fromName(this, `${classType.name}`),
         docs: {
           summary: `Creates grants for ${className}`,
+          remarks: '@internal',
         },
       });
 
@@ -215,17 +218,23 @@ export class GrantsModule extends Module {
 
         const actions = expr.ident('actions');
 
-        const addToPrincipalExpr = $E(expr.ident('iam.Grant')).addToPrincipal(expr.object({
+        const commonStatement: Record<string, Expression> = {
           actions,
           grantee,
           resourceArns,
-        }));
-        const addToBothExpr = $E(expr.ident('iam.Grant')).addToPrincipalOrResource(expr.object({
-          actions,
-          grantee,
-          resourceArns,
-          resource: $this.policyResource,
-        }));
+        };
+        if (grantSchema.conditions != null) {
+          commonStatement.conditions = expr.lit(grantSchema.conditions);
+        }
+
+        const addToPrincipalExpr = $E(expr.ident('iam.Grant'))
+          .addToPrincipal(expr.object(commonStatement));
+
+        const addToBothExpr = $E(expr.ident('iam.Grant'))
+          .addToPrincipalOrResource(expr.object({
+            ...commonStatement,
+            resource: $this.policyResource,
+          }));
 
         method.addBody(stmt.constVar(actions, expr.lit(grantSchema.actions)));
 
@@ -274,6 +283,7 @@ export interface GrantSchema {
   readonly actions: string[];
   readonly keyActions?: string[];
   readonly docSummary?: string;
+  readonly conditions?: Record<string, Record<string, unknown>>;
 }
 
 function makeArnCall(serviceName: string, resource: Resource, grantSchema?: GrantSchema): Expression {
@@ -305,7 +315,11 @@ function replaceVariableWithExpression(arnFormat: string, expression: Expression
   if (prefix !== '') {
     result.push(expr.lit(prefix));
   }
-  result.push(expression);
+  if (i >= 0) {
+    // Only replace with an expression if there is
+    // a variable in the format to begin with
+    result.push(expression);
+  }
   if (suffix !== '') {
     result.push(expr.lit(suffix));
   }
