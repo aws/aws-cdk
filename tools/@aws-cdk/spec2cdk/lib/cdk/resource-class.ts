@@ -63,12 +63,13 @@ export interface ResourceClassProps {
 
 export class ResourceClass extends ClassType {
   private readonly propsType: StructType;
-  private readonly refInterface: InterfaceType;
+  public readonly refInterface: InterfaceType;
   private readonly decider: ResourceDecider;
   private readonly relationshipDecider: RelationshipDecider;
   private readonly converter: TypeConverter;
   private readonly module: Module;
   private referenceStruct?: StructType;
+  private _hasArnGetter: boolean = false;
   public readonly imports = new Array<SelectiveImport>();
 
   constructor(
@@ -392,6 +393,7 @@ export class ResourceClass extends ClassType {
       method.addBody(
         stmt.ret($E(method.parameters[0])[refAttributeName][arn]),
       );
+      this._hasArnGetter = true;
     } else if (arnTemplate != null) {
       const propsWithoutArn = this.decider.referenceProps.filter(prop => !prop.declaration.name.endsWith('Arn'));
 
@@ -420,6 +422,7 @@ export class ResourceClass extends ClassType {
       method.addBody(
         stmt.ret(interpolateArn),
       );
+      this._hasArnGetter = true;
     }
   }
 
@@ -742,6 +745,10 @@ export class ResourceClass extends ClassType {
       .filter((t) => t.mustRenderForBwCompat)) {
       this.converter.convertTypeDefinitionType(typeDef);
     }
+  }
+
+  public get hasArnGetter(): boolean {
+    return this._hasArnGetter;
   }
 }
 

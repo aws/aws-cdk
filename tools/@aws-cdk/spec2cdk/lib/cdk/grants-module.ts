@@ -13,6 +13,7 @@ import {
 } from '@cdklabs/typewriter';
 import { PropertySpec } from '@cdklabs/typewriter/lib/property';
 import { classNameFromResource } from '../naming';
+import { ResourceClass } from './resource-class';
 
 const $this = $E(expr.this_());
 
@@ -36,12 +37,13 @@ export class GrantsModule extends Module {
     super(`${service.shortName}.grants`);
   }
 
-  public build(arnContainers: Set<string>) {
+  public build(resourceClasses: Record<string, ResourceClass>, nameSuffix?: string) {
     let hasContent = false;
     const resources = this.db.follow('hasResource', this.service);
     const resourceIndex = Object.fromEntries(resources.map(r => [r.entity.name, r.entity]));
     const encryptedResourcePropName = 'encryptedResource';
 
+    // Generate one <Resource>Grants class per construct available in the schema, for this module.
     for (const [name, config] of Object.entries(this.schema.resources ?? {})) {
       if (!resourceIndex[name] || Object.keys(config.grants ?? {}).length === 0) continue;
       const resource = resourceIndex[name];
@@ -50,16 +52,22 @@ export class GrantsModule extends Module {
       const hasKeyActions = Object.values(config.grants)
         .some(grant => grant.keyActions && grant.keyActions.length > 0);
 
-      if (!arnContainers.has(resource.cloudFormationType)) {
+      const resourceClass = resourceClasses[resource.cloudFormationType];
+
+      const refSymbol = resourceClass.refInterface.symbol;
+      this.linkSymbol(refSymbol, expr.ident(this.service.shortName).prop(refSymbol.name));
+
+      if (!resourceClass.hasArnGetter) {
+        // Without an ARN we can't create policies
         continue;
       }
 
       const className = `${name}Grants`;
+      const refInterfaceType = resourceClass.refInterface.type;
 
-      const interfaceName = `${this.service.shortName}.I${resource.name}Ref`;
       const propsProperties: PropertySpec[] = [{
         name: 'resource',
-        type: Type.fromName(this, interfaceName),
+        type: refInterfaceType,
         immutable: true,
         docs: {
           summary: 'The resource on which actions will be allowed',
@@ -91,13 +99,16 @@ export class GrantsModule extends Module {
         });
       }
 
+      // Generate a <Resource>GrantsProps that contains at least one property, called resource, of type I<Resource>Ref.
+      // Additionally, depending on what is available in the config for this class, two other properties will be added:
+      //  - policyResource?: iam.IResourceWithPolicy, which can be used to generate a resource policy.
+      //  - encryptedResource?: iam.IEncryptedResource, which can be used to add permission to the KMS key associated with this resource.
       const propsType = new InterfaceType(this, {
         name: `${className}Props`,
         export: true,
         properties: propsProperties,
         docs: {
           summary: `Properties for ${className}`,
-          remarks: '@internal',
         },
       });
 
@@ -105,24 +116,18 @@ export class GrantsModule extends Module {
         name: className,
         export: true,
         docs: {
-          summary: `Collection of grant methods for a ${interfaceName}`,
-          remarks: '@internal',
+          summary: `Collection of grant methods for a ${refInterfaceType.fqn}`,
         },
       });
-
-      // IBucketRef
-      // FIXME: Not sure that Type.fromName() is the best to be used here.
-      const resourceRefType = Type.fromName(this, interfaceName);
 
       classType.addProperty({
         name: 'resource',
         immutable: true,
-        type: resourceRefType,
+        type: refInterfaceType, // IBucketRef
         protected: true,
       });
 
       const init = classType.addInitializer({
-        // FIXME this is not having any effect
         visibility: MemberVisibility.Private,
       });
 
@@ -159,7 +164,7 @@ export class GrantsModule extends Module {
       }
 
       const factoryMethod = classType.addMethod({
-        name: `from${resource.name}`,
+        name: `_from${resource.name}`,
         static: true,
         returnType: Type.fromName(this, `${classType.name}`),
         docs: {
@@ -170,7 +175,7 @@ export class GrantsModule extends Module {
 
       const staticResourceParam = factoryMethod.addParameter({
         name: 'resource',
-        type: resourceRefType,
+        type: refInterfaceType,
       });
 
       const props: Record<string, Expression> = {
@@ -200,7 +205,7 @@ export class GrantsModule extends Module {
       // Add one method per entry in the config
       for (const [methodName, grantSchema] of Object.entries(config.grants)) {
         const resourceArns = expr.list([
-          makeArnCall(this.service.shortName, resource, grantSchema),
+          makeArnCall(this.service.shortName, resource, nameSuffix, grantSchema),
         ]);
 
         const method = classType.addMethod({
@@ -218,21 +223,21 @@ export class GrantsModule extends Module {
 
         const actions = expr.ident('actions');
 
-        const commonStatement: Record<string, Expression> = {
+        const commonStatementProps: Record<string, Expression> = {
           actions,
           grantee,
           resourceArns,
         };
         if (grantSchema.conditions != null) {
-          commonStatement.conditions = expr.lit(grantSchema.conditions);
+          commonStatementProps.conditions = expr.lit(grantSchema.conditions);
         }
 
         const addToPrincipalExpr = $E(expr.ident('iam.Grant'))
-          .addToPrincipal(expr.object(commonStatement));
+          .addToPrincipal(expr.object(commonStatementProps));
 
         const addToBothExpr = $E(expr.ident('iam.Grant'))
           .addToPrincipalOrResource(expr.object({
-            ...commonStatement,
+            ...commonStatementProps,
             resource: $this.policyResource,
           }));
 
@@ -286,11 +291,11 @@ export interface GrantSchema {
   readonly conditions?: Record<string, Record<string, unknown>>;
 }
 
-function makeArnCall(serviceName: string, resource: Resource, grantSchema?: GrantSchema): Expression {
+function makeArnCall(serviceName: string, resource: Resource, nameSuffix?: string, grantSchema?: GrantSchema): Expression {
   const arnFormat = grantSchema?.arnFormat;
   const arnCall = $E(expr
     .ident(`${serviceName}`)
-    .prop(classNameFromResource(resource)) // TODO What about the suffix?
+    .prop(classNameFromResource(resource, nameSuffix))
     .callMethod(`arnFor${resource.name}`, $this.resource),
   );
 

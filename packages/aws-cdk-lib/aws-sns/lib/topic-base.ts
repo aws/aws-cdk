@@ -97,7 +97,7 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
   /**
    * Collection of grant methods for a Topic
    */
-  public grants: TopicGrants = TopicGrants.fromTopic(this);
+  public grants: TopicGrants = TopicGrants._fromTopic(this);
 
   /**
    * Controls automatic creation of policy objects.

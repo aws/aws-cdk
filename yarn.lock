@@ -2920,6 +2920,11 @@
   resolved "https://registry.npmjs.org/@cdklabs/typewriter/-/typewriter-0.0.6.tgz#4f70afd8e70761785f09bfbee9b4678ffd6413a1"
   integrity sha512-uOKGbxFG+J1ig2Cdn24d8wlELcS2MF6Z0Fsfawx+MiYLnRZJ3kgSZExui+QSm7PyXARW5rcpB+ZGh2maGNQbKw==
 
+"@cdklabs/typewriter@^0.0.9":
+  version "0.0.9"
+  resolved "https://registry.npmjs.org/@cdklabs/typewriter/-/typewriter-0.0.9.tgz#16d0b8feb1b16b862ed19515437f564c24e2a493"
+  integrity sha512-GdCZ3tHOBVQjp+Vh/kUpnBUldd/wBqP1A9Xl10ZGfbIqENYrNBZTWN8HEbr9YQ6Z05wHfIEmmGqkCmJt7FbTGQ==
+
 "@colors/colors@1.6.0", "@colors/colors@^1.6.0":
   version "1.6.0"
   resolved "https://registry.npmjs.org/@colors/colors/-/colors-1.6.0.tgz#ec6cd237440700bc23ca23087f513c75508958b0"

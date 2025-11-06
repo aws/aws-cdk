@@ -1,5 +1,5 @@
-import { SpecDatabase, Resource, Service } from '@aws-cdk/service-spec-types';
-import { Module } from '@cdklabs/typewriter';
+import { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
+import { Module, Type } from '@cdklabs/typewriter';
 import { AugmentationsModule } from './augmentation-generator';
 import { CannedMetricsModule } from './canned-metrics';
 import { CDK_CORE, CONSTRUCTS, ModuleImportLocations } from './cdk';
@@ -47,6 +47,11 @@ export interface AstBuilderProps {
   readonly grantsConfig?: string;
 }
 
+export interface Foo {
+  readonly hasArnGetter: boolean;
+  readonly refInterfaceType: Type;
+}
+
 export class AstBuilder<T extends Module> {
   /**
    * Build a module for all resources in a service
@@ -61,15 +66,12 @@ export class AstBuilder<T extends Module> {
 
     const resources = props.db.follow('hasResource', service);
 
-    const arnContainers: Set<string> = new Set();
+    const resourceClasses: Record<string, ResourceClass> = {};
     for (const link of resources) {
-      const resourceClass = ast.addResource(link.entity);
-      if (resourceClass.methods.some(method => method.name === `arnFor${link.entity.name}`)) {
-        arnContainers.add(link.entity.cloudFormationType);
-      }
+      resourceClasses[link.entity.cloudFormationType] = ast.addResource(link.entity);
     }
     ast.renderImports();
-    ast.buildGrants(arnContainers);
+    ast.buildGrants(resourceClasses);
     return ast;
   }
 
@@ -160,7 +162,7 @@ export class AstBuilder<T extends Module> {
     }
   }
 
-  public buildGrants(arnContainers: Set<string>) {
-    this.grants?.build(arnContainers);
+  public buildGrants(resourceClasses: Record<string, ResourceClass>) {
+    this.grants?.build(resourceClasses, this.nameSuffix);
   }
 }
