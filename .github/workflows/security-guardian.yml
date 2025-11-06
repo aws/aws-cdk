@@ -52,3 +52,4 @@ jobs:
           fail_on_failure: false
           annotate_only: true
           group_suite: true
+          include_skipped: true

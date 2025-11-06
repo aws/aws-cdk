@@ -2,6 +2,13 @@ import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import * as fs from 'fs';
 
+function reverseFilenames(xmlContent: string): string {
+  return xmlContent.replace(/<testsuite name="([^"]*_[^"]*)"/g, (match, filename) => {
+    const originalName = filename.replace(/_/g, '/');
+    return `<testsuite name="${originalName}"`;
+  });
+}
+
 export async function runCfnGuardValidation(
   dataDir: string,
   ruleSetPath: string,
@@ -13,10 +20,26 @@ export async function runCfnGuardValidation(
       '-c',
       `cfn-guard validate --data "${dataDir}" --rules "${ruleSetPath}" --output-format junit --structured --show-summary none > "${outputFile}"`
     ]);
+    
+    // Post-process XML to reverse filename transformation
+    if (fs.existsSync(outputFile)) {
+      const xmlContent = fs.readFileSync(outputFile, 'utf8');
+      const correctedXml = reverseFilenames(xmlContent);
+      fs.writeFileSync(outputFile, correctedXml);
+    }
+    
     core.info(`✅ CFN-Guard (${type}) validation passed`);
     return true;
   } catch (err) {
     core.warning(`⚠️ CFN-Guard (${type}) validation found issues`);
+    
+    // Post-process XML even on failure
+    if (fs.existsSync(outputFile)) {
+      const xmlContent = fs.readFileSync(outputFile, 'utf8');
+      const correctedXml = reverseFilenames(xmlContent);
+      fs.writeFileSync(outputFile, correctedXml);
+    }
+    
     return false;
   }
 }
