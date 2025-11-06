@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ-test-bucket-deployment-vpc-efs/DefaultTest": {
+      "stacks": [
+        "test-bucket-deployment-vpc-efs"
+      ],
+      "diffAssets": false,
+      "assertionStack": "integ-test-bucket-deployment-vpc-efs/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentvpcefsDefaultTestDeployAssert40A85EB7"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
