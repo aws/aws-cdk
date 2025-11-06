@@ -1,4 +1,9 @@
 #!/usr/bin/env node
+/**
+ * CLI entry point for `cfn2ts` when run as a CLI
+ *
+ * !!! THIS CODE IS PROBABLY UNUSED !!!
+ */
 import * as fs from 'fs-extra';
 import * as yargs from 'yargs';
 import generate from './';
@@ -42,7 +47,6 @@ async function main() {
   }
 
   await generate(argv.scope, argv.out, {
-    coreImport: argv['core-import'],
     autoGenerateSuffixes: true, // for backwards compat
   });
 }

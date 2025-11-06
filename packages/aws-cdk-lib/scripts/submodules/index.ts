@@ -4,12 +4,13 @@ import * as fs from 'fs-extra';
 import cloudformationInclude from './cloudformation-include';
 import { ModuleMap, ModuleMapEntry } from '../codegen';
 
-export default async function submodulesGen(modules: ModuleMap, outPath: string) {
+/**
+ * Make sure that a number of expected files exist for every service submodule
+ *
+ * Non-service submodules should not be passed to this function.
+ */
+export default async function generateServiceSubmoduleFiles(modules: ModuleMap, outPath: string) {
   for (const submodule of Object.values(modules)) {
-    if (submodule.name === 'core') {
-      continue;
-    }
-
     const submodulePath = path.join(outPath, submodule.name);
     await ensureSubmodule(submodule, submodulePath);
   }

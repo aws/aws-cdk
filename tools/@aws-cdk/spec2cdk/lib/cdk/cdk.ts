@@ -1,34 +1,5 @@
 import { $E, $T, expr, Expression, ExternalModule, IScope, ThingSymbol, Type } from '@cdklabs/typewriter';
 
-export interface ModuleImportLocations {
-  /**
-   * The import name used import the core module
-   * @default 'aws-cdk-lib'
-   */
-  readonly core?: string;
-  /**
-   * The import name used to import core helpers module
-   * @default 'aws-cdk-lib/core/lib/helpers-internal'
-   */
-  readonly coreHelpers?: string;
-  /**
-   * The import name used to import core errors module
-   * @default 'aws-cdk-lib/core/lib/errors'
-   */
-  readonly coreErrors?: string;
-  /**
-   * The import name used to import the CloudWatch module
-   *
-   * @default 'aws-cdk-lib/aws-cloudwatch'
-   */
-  readonly cloudwatch?: string;
-  /**
-   * The root location of all the modules
-   * @default '../..'
-   */
-  readonly modulesRoot?: string;
-}
-
 export class CdkCore extends ExternalModule {
   public readonly helpers = new CdkInternalHelpers(this);
   public readonly errors = new CdkErrors(this);

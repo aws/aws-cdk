@@ -1,12 +1,14 @@
 import * as path from 'node:path';
 import * as fs from 'fs-extra';
 import { generateAll, ModuleMap } from './codegen';
-import submodulesGen from './submodules';
+import generateServiceSubmoduleFiles from './submodules';
 
 const awsCdkLibDir = path.join(__dirname, '..');
 const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
 const topLevelIndexFilePath = path.join(awsCdkLibDir, 'index.ts');
 const scopeMapPath = path.join(__dirname, 'scope-map.json');
+
+const NON_SERVICE_SUBMODULES = ['core', 'interfaces'];
 
 main().catch(e => {
   // eslint-disable-next-line no-console
@@ -18,17 +20,22 @@ async function main() {
   // Generate all L1s based on config in scope-map.json
 
   const generated = (await generateAll(awsCdkLibDir, {
-    coreImport: '../../core',
-    cloudwatchImport: '../../aws-cloudwatch',
     skippedServices: [],
     scopeMapPath,
   }));
 
   await updateExportsAndEntryPoints(generated);
   await writeScopeMap(generated);
-  await submodulesGen(generated, awsCdkLibDir);
+
+  for (const nss of NON_SERVICE_SUBMODULES) {
+    delete generated[nss];
+  }
+  await generateServiceSubmoduleFiles(generated, awsCdkLibDir);
 }
 
+/**
+ * Generates `scope-map.json`, which maps every `aws-cdk-lib` submodule to the AWS service prefix in that submodule
+ */
 async function writeScopeMap(modules: ModuleMap) {
   const newScopeMap = Object.entries(modules)
     .sort(([modA], [modB]) => modA.localeCompare(modB))
@@ -41,6 +48,12 @@ async function writeScopeMap(modules: ModuleMap) {
   await fs.writeJson(scopeMapPath, newScopeMap, { spaces: 2 });
 }
 
+/**
+ * Make every module in the module map visible
+ *
+ * Read `index.ts` and `package.json#exports`, and add exports for every
+ * submodule that's not in there yet.
+ */
 async function updateExportsAndEntryPoints(modules: ModuleMap) {
   const pkgJson = await fs.readJson(pkgJsonPath);
 

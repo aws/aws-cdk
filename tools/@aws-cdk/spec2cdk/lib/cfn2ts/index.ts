@@ -2,8 +2,7 @@ import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
 import { Service } from '@aws-cdk/service-spec-types';
 import * as fs from 'fs-extra';
 import * as pkglint from './pkglint';
-import { CodeGeneratorOptions, GenerateAllOptions, ModuleMap, ModuleMapScope } from './types';
-import type { ModuleImportLocations } from '../cdk/cdk';
+import { CodeGeneratorOptions, GenerateAllOptions, ModuleMap, ModuleMapEntry, ModuleMapScope } from './types';
 import { generate as generateModules } from '../generate';
 import { log } from '../util';
 
@@ -20,12 +19,16 @@ async function getAllScopes(field: keyof Service = 'name'): Promise<ModuleMapSco
   return serviceCache.map((s) => ({ namespace: s[field] }));
 }
 
+/**
+ * Called by cfn2ts when it's run as a CLI.
+ *
+ * !!! THIS CODE IS PROBABLY UNUSED !!!
+ */
 export default async function generate(
   scopes: string | string[],
   outPath: string,
   options: CodeGeneratorOptions = {},
 ): Promise<void> {
-  const coreImport = options.coreImport ?? 'aws-cdk-lib';
   let moduleScopes: ModuleMapScope[] = [];
   if (scopes === '*') {
     moduleScopes = await getAllScopes('cloudFormationNamespace');
@@ -43,15 +46,11 @@ export default async function generate(
     {
       outputPath: outPath ?? 'lib',
       clearOutput: false,
+      inCdkLib: true,
       filePatterns: {
         resources: '%serviceShortName%.generated.ts',
         augmentations: '%serviceShortName%-augmentations.generated.ts',
         cannedMetrics: '%serviceShortName%-canned-metrics.generated.ts',
-      },
-      importLocations: {
-        core: coreImport,
-        coreHelpers: `${coreImport}/${coreImport === '.' ? '' : 'lib/'}helpers-internal`,
-        coreErrors: `${coreImport}/${coreImport === '.' ? '' : 'lib/'}errors`,
       },
     },
   );
@@ -100,15 +99,20 @@ function computeSuffix(scope: string, allScopes: string[]): string | undefined {
 
 /**
  * Generates L1s for all submodules of a monomodule. Modules to generate are
- * chosen based on the contents of the `scopeMapPath` file. This is intended for
- * use in generated L1s in aws-cdk-lib.
+ * chosen based on the contents of the `scopeMapPath` file.
+ *
+ * This is intended for use in generated L1s in aws-cdk-lib, and gets called whenever
+ * `yarn gen` is run.
+ *
+ * Code-generates all L1s, and writes the necessary index files.
+ *
  * @param outPath The root directory to generate L1s in
  * @param param1  Options
  * @returns       A ModuleMap containing the ModuleDefinition and CFN scopes for each generated module.
  */
 export async function generateAll(
   outPath: string,
-  { scopeMapPath, skippedServices, ...options }: GenerateAllOptions,
+  { scopeMapPath, skippedServices }: GenerateAllOptions,
 ): Promise<ModuleMap> {
   const allScopes = await getAllScopes('cloudFormationNamespace');
   const scopes = skippedServices ? allScopes.filter((scope) => !skippedServices.includes(scope.namespace)) : allScopes;
@@ -134,47 +138,37 @@ export async function generateAll(
     };
   }
 
-  const coreModule = 'core';
-  const coreImportLocations: ModuleImportLocations = {
-    core: '.',
-    coreHelpers: './helpers-internal',
-    coreErrors: './errors',
-  };
+  const moduleGenerationRequests = Object.fromEntries(
+    Object.entries(moduleMap).map(([moduleName, { scopes: services }]) => [
+      moduleName,
+      { services },
+    ]),
+  );
 
   const generated = await generateModules(
-    Object.fromEntries(
-      Object.entries(moduleMap).map(([moduleName, { scopes: services }]) => [
-        moduleName,
-        {
-          services,
-          moduleImportLocations: moduleName === coreModule ? coreImportLocations : undefined,
-        },
-      ]),
-    ),
+    moduleGenerationRequests,
     {
       outputPath: outPath,
       clearOutput: false,
+      inCdkLib: true,
       filePatterns: {
         resources: '%moduleName%/lib/%serviceShortName%.generated.ts',
         augmentations: '%moduleName%/lib/%serviceShortName%-augmentations.generated.ts',
         cannedMetrics: '%moduleName%/lib/%serviceShortName%-canned-metrics.generated.ts',
       },
-      importLocations: {
-        core: options.coreImport,
-        coreHelpers: `${options.coreImport}/lib/helpers-internal`,
-        coreErrors: `${options.coreImport}/lib/errors`,
-        cloudwatch: options.cloudwatchImport,
-      },
     },
   );
 
-  Object.keys(moduleMap).forEach((moduleName) => {
-    // Add generated resources and files to module in map
-    moduleMap[moduleName].resources = generated.modules[moduleName].map((m) => m.resources).reduce(mergeObjects, {});
-    moduleMap[moduleName].files = generated.modules[moduleName].flatMap((m) => m.outputFiles);
-  });
-
-  return moduleMap;
+  return Object.fromEntries(Object.entries(generated.modules).map(([moduleName, moduleInfo]) => [
+    moduleName,
+    {
+      files: moduleInfo.outputFiles,
+      name: moduleName,
+      resources: moduleInfo.resources,
+      scopes: moduleMap[moduleName]?.scopes ?? [],
+      definition: moduleMap[moduleName]?.definition,
+    } satisfies ModuleMapEntry,
+  ]));
 }
 
 /**
@@ -189,11 +183,8 @@ async function readScopeMap(filepath: string): Promise<ModuleMap> {
         name,
         scopes: moduleScopes.map(s => {
           if (typeof s === 'string') {
-            return {
-              namespace: s,
-            };
+            return { namespace: s };
           }
-
           return s;
         }),
         resources: {},
@@ -201,14 +192,4 @@ async function readScopeMap(filepath: string): Promise<ModuleMap> {
       },
     };
   }, {});
-}
-
-/**
- * Reduce compatible merge objects
- */
-function mergeObjects<T>(all: T, res: T) {
-  return {
-    ...all,
-    ...res,
-  };
 }

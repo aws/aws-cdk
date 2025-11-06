@@ -134,6 +134,13 @@ export function referenceInterfaceAttributeName(resourceName: string) {
 }
 
 /**
+ * Submodule identifier from name (`aws-s3` -> `aws_s3`)
+ */
+export function submoduleSymbolFromName(name: string) {
+  return name.replace(/-/g, '_');
+}
+
+/**
  * Generate a name for the given declaration so that we can generate helper symbols for it that won't class
  *
  * We assume that the helpers get generated at module level, so we add in the names of the
