@@ -112,17 +112,17 @@ function validateDelegatedZoneName(parentZoneName: string, delegatedZoneName: st
     }
   }
 
-  if (Token.isUnresolved(parentZoneName)) {
-    return;
-  }
-
-  const parentZoneNameNoTrailingDot = stripTrailingDot(parentZoneName);
-
   if (delegatedZoneName.toLowerCase() !== delegatedZoneName) {
     throw new UnscopedValidationError(
       `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name cannot contain uppercase characters`,
     );
   }
+
+  if (Token.isUnresolved(parentZoneName)) {
+    return;
+  }
+
+  const parentZoneNameNoTrailingDot = stripTrailingDot(parentZoneName);
 
   if (!delegatedZoneName.endsWith(parentZoneNameNoTrailingDot)) {
     throw new UnscopedValidationError(
