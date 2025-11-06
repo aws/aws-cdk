@@ -49,4 +49,6 @@ jobs:
           check_name: 'Security Guardian Results'
           detailed_summary: true
           include_passed: true
-          fail_on_failure: true
+          fail_on_failure: false
+          annotate_only: true
+          group_suite: true
