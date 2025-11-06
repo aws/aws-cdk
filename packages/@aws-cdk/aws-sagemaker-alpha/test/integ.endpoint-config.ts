@@ -1,61 +1,11 @@
 import * as path from 'path';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import * as sagemaker from '../lib';
 
 /*
- * Stack verification steps:
- * aws sagemaker describe-endpoint-config --endpoint-config-name <endpoint config name>
- *
- * For instance-based endpoint config, the above command will result in the following output:
- *   {
- *     "EndpointConfigName": "EndpointConfig...",
- *     "EndpointConfigArn": "arn:aws:sagemaker:...",
- *     "ProductionVariants": [
- *         {
- *             "VariantName": "firstVariant",
- *             "ModelName": "ModelWithArtifactAndVpcModel...",
- *             "InitialInstanceCount": 1,
- *             "InstanceType": "ml.m5.large",
- *             "InitialVariantWeight": 1.0
- *         },
- *         {
- *             "VariantName": "secondVariant",
- *             "ModelName": "ModelWithArtifactAndVpcModel...",
- *             "InitialInstanceCount": 1,
- *             "InstanceType": "ml.t2.medium",
- *             "InitialVariantWeight": 1.0
- *         },
- *         {
- *             "VariantName": "thirdVariant",
- *             "ModelName": "ModelWithoutArtifactAndVpcModel...",
- *             "InitialInstanceCount": 1,
- *             "InstanceType": "ml.t2.medium",
- *             "InitialVariantWeight": 2.0
- *         }
- *     ],
- *     "CreationTime": "..."
- *   }
- *
- * For serverless endpoint config, the command will show:
- *   {
- *     "EndpointConfigName": "ServerlessEndpointConfig...",
- *     "EndpointConfigArn": "arn:aws:sagemaker:...",
- *     "ProductionVariants": [
- *         {
- *             "VariantName": "serverlessVariant",
- *             "ModelName": "ModelWithoutArtifactAndVpcModel...",
- *             "InitialVariantWeight": 1.0,
- *             "ServerlessConfig": {
- *                 "MaxConcurrency": 10,
- *                 "MemorySizeInMB": 2048,
- *                 "ProvisionedConcurrency": 5
- *             }
- *         }
- *     ],
- *     "CreationTime": "..."
- *   }
+ * Stack verification is performed using API assertions below.
  */
 
 const app = new cdk.App();
@@ -92,7 +42,7 @@ endpointConfig.addInstanceProductionVariant({
 });
 
 // Test serverless endpoint configuration with all properties
-new sagemaker.EndpointConfig(stack, 'ServerlessEndpointConfig', {
+const serverlessEndpointConfig = new sagemaker.EndpointConfig(stack, 'ServerlessEndpointConfig', {
   serverlessProductionVariant: {
     model: modelWithoutArtifactAndVpc,
     variantName: 'serverlessVariant',
@@ -104,7 +54,7 @@ new sagemaker.EndpointConfig(stack, 'ServerlessEndpointConfig', {
 });
 
 // Test serverless endpoint configuration with minimal properties
-new sagemaker.EndpointConfig(stack, 'MinimalServerlessEndpointConfig', {
+const minimalServerlessEndpointConfig = new sagemaker.EndpointConfig(stack, 'MinimalServerlessEndpointConfig', {
   serverlessProductionVariant: {
     model: modelWithoutArtifactAndVpc,
     variantName: 'minimalServerlessVariant',
@@ -115,7 +65,7 @@ new sagemaker.EndpointConfig(stack, 'MinimalServerlessEndpointConfig', {
 });
 
 // Test serverless endpoint configuration with boundary values
-new sagemaker.EndpointConfig(stack, 'BoundaryServerlessEndpointConfig', {
+const boundaryServerlessEndpointConfig = new sagemaker.EndpointConfig(stack, 'BoundaryServerlessEndpointConfig', {
   serverlessProductionVariant: {
     model: modelWithoutArtifactAndVpc,
     variantName: 'boundaryServerlessVariant',
@@ -125,6 +75,58 @@ new sagemaker.EndpointConfig(stack, 'BoundaryServerlessEndpointConfig', {
   },
 });
 
-new IntegTest(app, 'integtest-endpointconfig', {
+const integ = new IntegTest(app, 'integtest-endpointconfig', {
   testCases: [stack],
 });
+
+// Verify instance-based endpoint config
+integ.assertions.awsApiCall('SageMaker', 'describeEndpointConfig', {
+  EndpointConfigName: endpointConfig.endpointConfigName,
+}).expect(ExpectedResult.objectLike({
+  ProductionVariants: [
+    { VariantName: 'firstVariant', InstanceType: 'ml.m5.large' },
+    { VariantName: 'secondVariant' },
+    { VariantName: 'thirdVariant' },
+  ],
+}));
+
+// Verify serverless endpoint config with all properties
+integ.assertions.awsApiCall('SageMaker', 'describeEndpointConfig', {
+  EndpointConfigName: serverlessEndpointConfig.endpointConfigName,
+}).expect(ExpectedResult.objectLike({
+  ProductionVariants: [{
+    VariantName: 'serverlessVariant',
+    ServerlessConfig: {
+      MaxConcurrency: 10,
+      MemorySizeInMB: 2048,
+      ProvisionedConcurrency: 5,
+    },
+  }],
+}));
+
+// Verify minimal serverless endpoint config
+integ.assertions.awsApiCall('SageMaker', 'describeEndpointConfig', {
+  EndpointConfigName: minimalServerlessEndpointConfig.endpointConfigName,
+}).expect(ExpectedResult.objectLike({
+  ProductionVariants: [{
+    VariantName: 'minimalServerlessVariant',
+    ServerlessConfig: {
+      MaxConcurrency: 1,
+      MemorySizeInMB: 1024,
+    },
+  }],
+}));
+
+// Verify boundary serverless endpoint config
+integ.assertions.awsApiCall('SageMaker', 'describeEndpointConfig', {
+  EndpointConfigName: boundaryServerlessEndpointConfig.endpointConfigName,
+}).expect(ExpectedResult.objectLike({
+  ProductionVariants: [{
+    VariantName: 'boundaryServerlessVariant',
+    ServerlessConfig: {
+      MaxConcurrency: 200,
+      MemorySizeInMB: 6144,
+      ProvisionedConcurrency: 200,
+    },
+  }],
+}));

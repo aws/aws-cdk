@@ -739,6 +739,49 @@
      }
     ]
    }
+  },
+  "MinimalServerlessEndpointConfig68CC9C3F": {
+   "Type": "AWS::SageMaker::EndpointConfig",
+   "Properties": {
+    "ProductionVariants": [
+     {
+      "InitialVariantWeight": 1,
+      "ModelName": {
+       "Fn::GetAtt": [
+        "ModelWithoutArtifactAndVpcModel9A8AD144",
+        "ModelName"
+       ]
+      },
+      "ServerlessConfig": {
+       "MaxConcurrency": 1,
+       "MemorySizeInMB": 1024
+      },
+      "VariantName": "minimalServerlessVariant"
+     }
+    ]
+   }
+  },
+  "BoundaryServerlessEndpointConfig0B181608": {
+   "Type": "AWS::SageMaker::EndpointConfig",
+   "Properties": {
+    "ProductionVariants": [
+     {
+      "InitialVariantWeight": 1,
+      "ModelName": {
+       "Fn::GetAtt": [
+        "ModelWithoutArtifactAndVpcModel9A8AD144",
+        "ModelName"
+       ]
+      },
+      "ServerlessConfig": {
+       "MaxConcurrency": 200,
+       "MemorySizeInMB": 6144,
+       "ProvisionedConcurrency": 200
+      },
+      "VariantName": "boundaryServerlessVariant"
+     }
+    ]
+   }
   }
  },
  "Parameters": {

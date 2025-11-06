@@ -216,7 +216,7 @@ const endpointConfig = new sagemaker.EndpointConfig(this, 'EndpointConfig', {
 
 ### Serverless Inference
 
-Amazon SageMaker Serverless Inference is a purpose-built inference option that makes it easy for you to deploy and scale ML models. Serverless endpoints automatically launch compute resources and scale them in and out depending on traffic, eliminating the need to choose instance types or manage scaling policies.
+Amazon SageMaker Serverless Inference is a purpose-built inference option that makes it easy for you to deploy and scale ML models. Serverless endpoints automatically launch compute resources and scale them in and out depending on traffic, eliminating the need to choose instance types or manage scaling policies. For more information, see [SageMaker Serverless Inference](https://docs.aws.amazon.com/sagemaker/latest/dg/serverless-endpoints.html).
 
 To create a serverless endpoint configuration, use the `serverlessProductionVariant` property:
 

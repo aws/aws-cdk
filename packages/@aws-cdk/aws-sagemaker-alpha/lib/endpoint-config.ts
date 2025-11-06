@@ -370,21 +370,20 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
   }
 
   private validateProductionVariants(): void {
-    const hasInstanceVariants = this._instanceProductionVariants.length > 0;
     const hasServerlessVariant = this.serverlessProductionVariant !== undefined;
 
     // validate at least one production variant
-    if (!hasInstanceVariants && !hasServerlessVariant) {
+    if (this._instanceProductionVariants.length === 0 && !hasServerlessVariant) {
       throw new Error('Must configure at least 1 production variant');
     }
 
     // validate mutual exclusivity
-    if (hasInstanceVariants && hasServerlessVariant) {
+    if (this._instanceProductionVariants.length > 0 && hasServerlessVariant) {
       throw new Error('Cannot configure both instance and serverless production variants');
     }
 
     // validate instance variant limits
-    if (hasInstanceVariants && this._instanceProductionVariants.length > 10) {
+    if (this._instanceProductionVariants.length > 10) {
       throw new Error('Can\'t have more than 10 production variants');
     }
   }
@@ -474,6 +473,10 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    * Render the list of instance production variants.
    */
   private renderInstanceProductionVariants(): CfnEndpointConfig.ProductionVariantProperty[] {
+    if (this._instanceProductionVariants.length === 0) {
+      throw new Error('renderInstanceProductionVariants called but no instance variants are configured');
+    }
+    
     return this._instanceProductionVariants.map( v => ({
       acceleratorType: v.acceleratorType?.toString(),
       initialInstanceCount: v.initialInstanceCount,
@@ -489,7 +492,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    */
   private renderServerlessProductionVariant(): CfnEndpointConfig.ProductionVariantProperty[] {
     if (!this.serverlessProductionVariant) {
-      return [];
+      throw new Error('renderServerlessProductionVariant called but no serverless variant is configured');
     }
 
     const variant = this.serverlessProductionVariant;

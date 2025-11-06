@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/41917d944a0cbc261b42ff261bf561288f84dca1d1401a2d07999bda9cbed993.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e782c46ff9c6f2581c48d8a1310484e655f0359928aa279246e5185aef7da0a0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -627,6 +627,38 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ServerlessEndpointConfig0EF1560E"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpointconfig/MinimalServerlessEndpointConfig": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpointconfig/MinimalServerlessEndpointConfig/EndpointConfig": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MinimalServerlessEndpointConfig68CC9C3F"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpointconfig/BoundaryServerlessEndpointConfig": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpointconfig/BoundaryServerlessEndpointConfig/EndpointConfig": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BoundaryServerlessEndpointConfig0B181608"
           }
         ],
         "/aws-cdk-sagemaker-endpointconfig/BootstrapVersion": [
