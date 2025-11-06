@@ -147,7 +147,7 @@ new firehose.DeliveryStream(stack, 'IcebergDeliveryStreamAllProperties', {
 
 const testCase = new IntegTest(app, 'integ-tests', {
   testCases: [stack],
-  regions: ["us-east-1"],
+  regions: ['us-east-1'],
 });
 
 // Test actual data ingestion - send record to Firehose
