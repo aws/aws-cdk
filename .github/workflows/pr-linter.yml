@@ -76,7 +76,7 @@ jobs:
       - name: Validate
         uses: ./tools/@aws-cdk/prlint
         env:
-          GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.OOPSPROJEN_GITHUB_TOKEN }}
           PR_NUMBER: ${{ needs.download-if-workflow-run.outputs.pr_number }}
           PR_SHA: ${{ needs.download-if-workflow-run.outputs.pr_sha }}
           LINTER_LOGIN: ${{ vars.LINTER_LOGIN }}
