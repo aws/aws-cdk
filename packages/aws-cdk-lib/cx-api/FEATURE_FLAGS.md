@@ -2345,12 +2345,11 @@ When this feature flag is enabled, Network Load Balancer will be created with a 
 
 Flag type: New default behavior
 
-When enabled, CloudFront Functions will use cloudfront-js-2.0 runtime by default
-instead of cloudfront-js-1.0. The runtime can still be configured explicitly using
+When enabled, CloudFront Functions will use cloudfront-js-2.0 runtime by default instead of cloudfront-js-1.0.
+The runtime can still be configured explicitly using
 the `runtime` property.
 
-Note: If `keyValueStore` is specified, the runtime will always be cloudfront-js-2.0
-regardless of this flag.
+If `keyValueStore` is specified, the runtime will always be cloudfront-js-2.0 regardless of this flag.
 
 
 | Since | Unset behaves like | Recommended value |
