@@ -6,19 +6,7 @@ import * as cdk from "aws-cdk-lib";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-
-/**
- * Indicates that this resource can be referenced as a Resource.
- *
- * @deprecated in favour of something else
- * @stability deprecated
- */
-export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentAware {
-  /**
-   * A reference to a Resource resource.
-   */
-  readonly resourceRef: ResourceReference;
-}
+import { IResourceRef, ResourceReference } from "../interfaces/aws-some-interfaces.generated";
 
 /**
  * @deprecated in favour of something else
@@ -120,20 +108,6 @@ export interface CfnResourceProps {
 }
 
 /**
- * A reference to a Resource resource.
- *
- * @struct
- * @deprecated in favour of something else
- * @stability deprecated
- */
-export interface ResourceReference {
-  /**
-   * The Id of the Resource resource.
-   */
-  readonly resourceId: string;
-}
-
-/**
  * Determine whether the given properties match those of a \`CfnResourceProps\`
  *
  * @param properties - the TypeScript properties of a \`CfnResourceProps\`
@@ -173,5 +147,5 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   ret.addPropertyResult("id", "Id", (properties.Id != null ? cfn_parse.FromCloudFormation.getString(properties.Id) : undefined));
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}"
+}export { IResourceRef, ResourceReference };"
 `;

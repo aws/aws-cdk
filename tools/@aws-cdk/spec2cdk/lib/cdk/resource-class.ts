@@ -139,7 +139,7 @@ export class ResourceClass extends ClassType {
       ));
 
       // And put an export in for backwards compatibility
-      this.module.addInitialization(directCodeStmt(`export { ${typeNames.join(', ')} };`));
+      this.module.addInitialization(directCodeStmt(`export { ${typeNames.join(', ')} }`));
     }
   }
 
