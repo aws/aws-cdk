@@ -104,8 +104,6 @@ export class AstBuilder {
   public readonly db: SpecDatabase;
   public readonly modules = new Map<string, Module>();
 
-  public readonly selectiveImports = new Array<SelectiveImport>();
-
   public readonly serviceSubmodules = new Map<string, ServiceSubmodule>();
   private readonly filePatterns: GenerateFilePatterns;
   private readonly interfacesEntry: LocatedModule<Module>;
@@ -207,17 +205,17 @@ export class AstBuilder {
 
     resourceClass.build();
 
-    this.addImports(resourceClass);
+    this.addImports(submodule, resourceClass);
     submodule.augmentations.module.augmentResource(resource, resourceClass);
   }
 
-  private addImports(resourceClass: ResourceClass) {
+  private addImports(submodule: ServiceSubmodule, resourceClass: ResourceClass) {
     for (const selectiveImport of resourceClass.imports) {
-      const existingModuleImport = this.selectiveImports.find(
+      const existingModuleImport = submodule.selectiveImports.find(
         (imp) => imp.moduleName === selectiveImport.moduleName,
       );
       if (!existingModuleImport) {
-        this.selectiveImports.push(selectiveImport);
+        submodule.selectiveImports.push(selectiveImport);
       } else {
         // We need to avoid importing the same reference multiple times
         for (const type of selectiveImport.types) {
@@ -238,7 +236,7 @@ export class AstBuilder {
    */
   private postprocessSubmodule(submodule: ServiceSubmodule) {
     // Selective imports from constructor
-    const sortedImports = this.selectiveImports.sort((a, b) => a.moduleName.localeCompare(b.moduleName));
+    const sortedImports = submodule.selectiveImports.sort((a, b) => a.moduleName.localeCompare(b.moduleName));
     for (const selectiveImport of sortedImports) {
       const sourceModule = new Module(selectiveImport.moduleName);
       sourceModule.importSelective(submodule.resourcesMod.module, selectiveImport.types.map((t) => `${t.originalType} as ${t.aliasedType}`), {
@@ -279,6 +277,7 @@ export class AstBuilder {
       cannedMetrics,
       interfaces,
       didCreateInterfaceModule,
+      selectiveImports: [],
       resources: {},
     };
 
@@ -401,6 +400,7 @@ export interface ServiceSubmodule {
   readonly interfaces: LocatedModule<Module>;
 
   readonly didCreateInterfaceModule: boolean;
+  readonly selectiveImports: Array<SelectiveImport>;
 
   /**
    * Map of CloudFormation resource name to generated class name
