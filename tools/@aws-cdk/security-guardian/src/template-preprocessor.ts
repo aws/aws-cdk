@@ -21,7 +21,14 @@ function processTemplate(obj: any, cfnResources: Record<string, any>): any {
     if (key === 'PolicyDocument' || key === 'AssumeRolePolicyDocument' || key === 'Policy') {
       // Normalize policies after resolving intrinsics
       const normalizer = new IAMPolicyNormalizer(cfnResources);
-      processed[key] = normalizer.normalizeIAMPolicy(value, ['Principal', 'Resource']);
+      const unnormalizedFields = normalizer.getUnnormalizedFields(value);
+      const defaultFields = ['Principal', 'Resource'];
+      const fieldsToNormalize = new Set([...defaultFields, ...unnormalizedFields]);
+      
+      if (fieldsToNormalize.size > 0) {
+        core.info(`Normalizing fields: ${Array.from(fieldsToNormalize).join(', ')} in ${key}`);
+      }
+      processed[key] = normalizer.normalizeIAMPolicy(value, Array.from(fieldsToNormalize));
     } else {
       // Recursively process all other values
       processed[key] = processTemplate(value, cfnResources);
