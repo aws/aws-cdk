@@ -1,7 +1,7 @@
 import * as path from 'node:path';
 import { createLibraryReadme } from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
-import cloudformationInclude from './cloudformation-include';
+import writeCloudFormationIncludeMapping from './cloudformation-include';
 import { ModuleMap, ModuleMapEntry } from '../codegen';
 
 /**
@@ -14,9 +14,6 @@ export default async function generateServiceSubmoduleFiles(modules: ModuleMap, 
     const submodulePath = path.join(outPath, submodule.name);
     await ensureSubmodule(submodule, submodulePath);
   }
-
-  // Do specific code gen for certain submodules
-  await cloudformationInclude(modules, outPath);
 }
 
 async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {

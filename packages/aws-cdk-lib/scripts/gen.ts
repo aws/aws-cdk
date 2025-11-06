@@ -2,6 +2,7 @@ import * as path from 'node:path';
 import * as fs from 'fs-extra';
 import { generateAll, ModuleMap } from './codegen';
 import generateServiceSubmoduleFiles from './submodules';
+import writeCloudFormationIncludeMapping from './submodules/cloudformation-include';
 
 const awsCdkLibDir = path.join(__dirname, '..');
 const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
@@ -26,6 +27,7 @@ async function main() {
 
   await updateExportsAndEntryPoints(generated);
   await writeScopeMap(generated);
+  await writeCloudFormationIncludeMapping(generated, awsCdkLibDir);
 
   for (const nss of NON_SERVICE_SUBMODULES) {
     delete generated[nss];
