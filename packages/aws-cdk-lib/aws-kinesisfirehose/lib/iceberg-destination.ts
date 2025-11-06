@@ -308,7 +308,7 @@ export class IcebergDestination implements IDestination {
     const { backupConfig, dependables: backupDependables } = createBackupConfig(scope, role, this.props.s3Backup) ?? {};
 
     // Create processing configuration
-    const processingConfig = createProcessingConfig(scope, role, this.props.processor);
+    const processingConfig = createProcessingConfig(scope, role, this.props.processors);
 
     // Create buffering hints
     const bufferingHints = createBufferingHints(
