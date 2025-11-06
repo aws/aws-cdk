@@ -4,7 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
@@ -59,7 +59,7 @@ const table = new glue.CfnTable(stack, 'IcebergTable', {
 table.addDependency(database);
 
 // Create delivery stream with Iceberg destination using catalogArn
-const deliveryStreamWithCatalog = new firehose.DeliveryStream(stack, 'IcebergDeliveryStreamWithCatalog', {
+new firehose.DeliveryStream(stack, 'IcebergDeliveryStreamWithCatalog', {
   destination: new firehose.IcebergDestination(bucket, {
     catalogConfiguration: {
       catalogArn: cdk.Stack.of(stack).formatArn({
@@ -76,7 +76,6 @@ const deliveryStreamWithCatalog = new firehose.DeliveryStream(stack, 'IcebergDel
     ],
   }),
 });
-deliveryStreamWithCatalog.node.addDependency(table);
 
 // Create delivery stream with warehouse location
 const deliveryStreamWithWarehouse = new firehose.DeliveryStream(stack, 'IcebergDeliveryStreamWithWarehouse', {
@@ -91,16 +90,18 @@ const deliveryStreamWithWarehouse = new firehose.DeliveryStream(stack, 'IcebergD
         uniqueKeys: ['id'],
       },
     ],
+    // Minimize buffering to speed up test execution
+    bufferingInterval: cdk.Duration.seconds(60),
+    bufferingSize: cdk.Size.mebibytes(1),
   }),
 });
-deliveryStreamWithWarehouse.node.addDependency(table);
 
 // Create delivery stream with custom role
 const customRole = new iam.Role(stack, 'CustomRole', {
   assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
 });
 
-const deliveryStreamWithCustomRole = new firehose.DeliveryStream(stack, 'IcebergDeliveryStreamWithCustomRole', {
+new firehose.DeliveryStream(stack, 'IcebergDeliveryStreamWithCustomRole', {
   destination: new firehose.IcebergDestination(bucket, {
     catalogConfiguration: {
       catalogArn: cdk.Stack.of(stack).formatArn({
@@ -118,10 +119,9 @@ const deliveryStreamWithCustomRole = new firehose.DeliveryStream(stack, 'Iceberg
     role: customRole,
   }),
 });
-deliveryStreamWithCustomRole.node.addDependency(table);
 
 // Create delivery stream with all properties
-const deliveryStreamAllProperties = new firehose.DeliveryStream(stack, 'IcebergDeliveryStreamAllProperties', {
+new firehose.DeliveryStream(stack, 'IcebergDeliveryStreamAllProperties', {
   destination: new firehose.IcebergDestination(bucket, {
     catalogConfiguration: {
       catalogArn: cdk.Stack.of(stack).formatArn({
@@ -144,8 +144,16 @@ const deliveryStreamAllProperties = new firehose.DeliveryStream(stack, 'IcebergD
     retryDuration: cdk.Duration.hours(2),
   }),
 });
-deliveryStreamAllProperties.node.addDependency(table);
 
-new IntegTest(app, 'integ-tests', {
+const testCase = new IntegTest(app, 'integ-tests', {
   testCases: [stack],
+  regions: ["us-east-1"],
+});
+
+// Test actual data ingestion - send record to Firehose
+testCase.assertions.awsApiCall('Firehose', 'putRecord', {
+  DeliveryStreamName: deliveryStreamWithWarehouse.deliveryStreamName,
+  Record: {
+    Data: JSON.stringify({ id: 'test-id-123', data: 'test-data-value' }),
+  },
 });

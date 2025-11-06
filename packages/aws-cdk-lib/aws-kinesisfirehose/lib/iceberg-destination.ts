@@ -216,6 +216,7 @@ export class IcebergDestination implements IDestination {
 
     // Grant Glue Catalog permissions
     // Permissions are needed for both catalogArn and warehouseLocation configurations
+    // See: https://docs.aws.amazon.com/firehose/latest/dev/controlling-access.html#using-s3-tables
     const catalogArn = this.props.catalogConfiguration.catalogArn;
     const actions = [
       'glue:GetDatabase',

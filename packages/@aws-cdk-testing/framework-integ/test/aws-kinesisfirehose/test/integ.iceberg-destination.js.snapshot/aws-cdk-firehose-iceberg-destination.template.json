@@ -220,10 +220,7 @@
      ],
      "Version": "2012-10-17"
     }
-   },
-   "DependsOn": [
-    "IcebergTable"
-   ]
+   }
   },
   "IcebergDeliveryStreamWithCatalogIcebergDestinationRoleDefaultPolicy64A29470": {
    "Type": "AWS::IAM::Policy",
@@ -369,19 +366,13 @@
       "Ref": "IcebergDeliveryStreamWithCatalogIcebergDestinationRoleA786FC31"
      }
     ]
-   },
-   "DependsOn": [
-    "IcebergTable"
-   ]
+   }
   },
   "IcebergDeliveryStreamWithCatalogLogGroup81275A13": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 731
    },
-   "DependsOn": [
-    "IcebergTable"
-   ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -392,9 +383,6 @@
      "Ref": "IcebergDeliveryStreamWithCatalogLogGroup81275A13"
     }
    },
-   "DependsOn": [
-    "IcebergTable"
-   ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -470,8 +458,7 @@
     }
    },
    "DependsOn": [
-    "IcebergDeliveryStreamWithCatalogIcebergDestinationRoleDefaultPolicy64A29470",
-    "IcebergTable"
+    "IcebergDeliveryStreamWithCatalogIcebergDestinationRoleDefaultPolicy64A29470"
    ]
   },
   "IcebergDeliveryStreamWithWarehouseIcebergDestinationRole3F6CA365": {
@@ -489,10 +476,7 @@
      ],
      "Version": "2012-10-17"
     }
-   },
-   "DependsOn": [
-    "IcebergTable"
-   ]
+   }
   },
   "IcebergDeliveryStreamWithWarehouseIcebergDestinationRoleDefaultPolicy6DA999A2": {
    "Type": "AWS::IAM::Policy",
@@ -638,19 +622,13 @@
       "Ref": "IcebergDeliveryStreamWithWarehouseIcebergDestinationRole3F6CA365"
      }
     ]
-   },
-   "DependsOn": [
-    "IcebergTable"
-   ]
+   }
   },
   "IcebergDeliveryStreamWithWarehouseLogGroup16F73D33": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 731
    },
-   "DependsOn": [
-    "IcebergTable"
-   ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -661,9 +639,6 @@
      "Ref": "IcebergDeliveryStreamWithWarehouseLogGroup16F73D33"
     }
    },
-   "DependsOn": [
-    "IcebergTable"
-   ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -672,6 +647,10 @@
    "Properties": {
     "DeliveryStreamType": "DirectPut",
     "IcebergDestinationConfiguration": {
+     "BufferingHints": {
+      "IntervalInSeconds": 60,
+      "SizeInMBs": 1
+     },
      "CatalogConfiguration": {
       "WarehouseLocation": {
        "Fn::Join": [
@@ -721,6 +700,10 @@
         "Arn"
        ]
       },
+      "BufferingHints": {
+       "IntervalInSeconds": 60,
+       "SizeInMBs": 1
+      },
       "RoleARN": {
        "Fn::GetAtt": [
         "IcebergDeliveryStreamWithWarehouseIcebergDestinationRole3F6CA365",
@@ -731,8 +714,7 @@
     }
    },
    "DependsOn": [
-    "IcebergDeliveryStreamWithWarehouseIcebergDestinationRoleDefaultPolicy6DA999A2",
-    "IcebergTable"
+    "IcebergDeliveryStreamWithWarehouseIcebergDestinationRoleDefaultPolicy6DA999A2"
    ]
   },
   "CustomRole6D8E6809": {
@@ -903,9 +885,6 @@
    "Properties": {
     "RetentionInDays": 731
    },
-   "DependsOn": [
-    "IcebergTable"
-   ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -916,9 +895,6 @@
      "Ref": "IcebergDeliveryStreamWithCustomRoleLogGroupD445E04A"
     }
    },
-   "DependsOn": [
-    "IcebergTable"
-   ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -994,8 +970,7 @@
     }
    },
    "DependsOn": [
-    "CustomRoleDefaultPolicyC5C189DF",
-    "IcebergTable"
+    "CustomRoleDefaultPolicyC5C189DF"
    ]
   },
   "IcebergDeliveryStreamAllPropertiesIcebergDestinationRole6D748BA7": {
@@ -1013,10 +988,7 @@
      ],
      "Version": "2012-10-17"
     }
-   },
-   "DependsOn": [
-    "IcebergTable"
-   ]
+   }
   },
   "IcebergDeliveryStreamAllPropertiesIcebergDestinationRoleDefaultPolicy3284DF7E": {
    "Type": "AWS::IAM::Policy",
@@ -1162,19 +1134,13 @@
       "Ref": "IcebergDeliveryStreamAllPropertiesIcebergDestinationRole6D748BA7"
      }
     ]
-   },
-   "DependsOn": [
-    "IcebergTable"
-   ]
+   }
   },
   "IcebergDeliveryStreamAllPropertiesLogGroup0ADD9328": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 731
    },
-   "DependsOn": [
-    "IcebergTable"
-   ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -1185,9 +1151,6 @@
      "Ref": "IcebergDeliveryStreamAllPropertiesLogGroup0ADD9328"
     }
    },
-   "DependsOn": [
-    "IcebergTable"
-   ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -1288,8 +1251,7 @@
     }
    },
    "DependsOn": [
-    "IcebergDeliveryStreamAllPropertiesIcebergDestinationRoleDefaultPolicy3284DF7E",
-    "IcebergTable"
+    "IcebergDeliveryStreamAllPropertiesIcebergDestinationRoleDefaultPolicy3284DF7E"
    ]
   }
  },
@@ -1402,6 +1364,16 @@
    },
    "us-west-2": {
     "FirehoseCidrBlock": "52.89.255.224/27"
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefIcebergDeliveryStreamWithWarehouse5D427EB88FB5103E": {
+   "Value": {
+    "Ref": "IcebergDeliveryStreamWithWarehouse5D427EB8"
+   },
+   "Export": {
+    "Name": "aws-cdk-firehose-iceberg-destination:ExportsOutputRefIcebergDeliveryStreamWithWarehouse5D427EB88FB5103E"
    }
   }
  },

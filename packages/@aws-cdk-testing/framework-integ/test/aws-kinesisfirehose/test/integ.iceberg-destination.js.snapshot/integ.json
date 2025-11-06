@@ -5,6 +5,9 @@
       "stacks": [
         "aws-cdk-firehose-iceberg-destination"
       ],
+      "regions": [
+        "us-east-1"
+      ],
       "assertionStack": "integ-tests/DefaultTest/DeployAssert",
       "assertionStackName": "integtestsDefaultTestDeployAssert44C8D370"
     }

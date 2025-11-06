@@ -1,16 +1,29 @@
 {
   "version": "48.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "5787ae2fba7ea7ac3728b6862bb6f9cff44765a58944f744ff243f4283fd9d19": {
+      "source": {
+        "path": "asset.5787ae2fba7ea7ac3728b6862bb6f9cff44765a58944f744ff243f4283fd9d19.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-1b54086f": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5787ae2fba7ea7ac3728b6862bb6f9cff44765a58944f744ff243f4283fd9d19.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "48c3e017d8497705638698dc67dfff503e0921c9f478b982e4adc0eb04974a90": {
       "displayName": "integtestsDefaultTestDeployAssert44C8D370 Template",
       "source": {
         "path": "integtestsDefaultTestDeployAssert44C8D370.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d8d86b35": {
+        "current_account-current_region-36efd3c5": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "48c3e017d8497705638698dc67dfff503e0921c9f478b982e4adc0eb04974a90.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
