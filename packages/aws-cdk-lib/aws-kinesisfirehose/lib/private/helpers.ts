@@ -4,7 +4,7 @@ import * as kms from '../../../aws-kms';
 import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
-import { DestinationS3BackupProps } from '../common';
+import { CommonDestinationProps, DestinationS3BackupProps, SecretsManagerProps } from '../common';
 import { CfnDeliveryStream } from '../kinesisfirehose.generated';
 import { ILoggingConfig } from '../logging-config';
 import { IDataProcessor } from '../processor';
@@ -107,11 +107,14 @@ export function createEncryptionConfig(
 export function createProcessingConfig(
   scope: Construct,
   role: iam.IRole,
-  dataProcessors?: IDataProcessor[],
+  props: CommonDestinationProps,
 ): CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
-  if (!dataProcessors?.length) return undefined;
+  if (props.processor && props.processors) {
+    throw new cdk.ValidationError("You can specify either 'processors' or 'processor', not both.", scope);
+  }
 
-  const processors = dataProcessors.map((dp) => renderDataProcessor(dp, scope, role));
+  const processors = (props.processor ? [props.processor] : props.processors)?.map((p) => renderDataProcessor(p, scope, role));
+  if (!processors?.length) return undefined;
   const processorTypes = new Set(processors.map((p) => p.type));
 
   if (processorTypes.has('CloudWatchLogProcessing') && !processorTypes.has('Decompression')) {
@@ -182,4 +185,31 @@ export function createBackupConfig(scope: Construct, role: iam.IRole, props?: De
     },
     dependables: [bucketGrant, ...(loggingDependables ?? [])],
   };
+}
+
+export function createSecretsManagerConfiguration(
+  scope: Construct,
+  role: iam.IRole, props?: SecretsManagerProps,
+): CfnDeliveryStream.SecretsManagerConfigurationProperty | undefined {
+  if (props?.enabled || props?.secret) {
+    if (!props.secret) {
+      throw new cdk.ValidationError('The secret is required when enabled', scope);
+    }
+    if (!props.role) {
+      props.secret.grantRead(role);
+    }
+    return {
+      enabled: true,
+      roleArn: props.role?.roleArn,
+      secretArn: props.secret.secretArn,
+    };
+  }
+
+  if (props?.enabled === false) {
+    return {
+      enabled: false,
+    };
+  }
+
+  return;
 }
