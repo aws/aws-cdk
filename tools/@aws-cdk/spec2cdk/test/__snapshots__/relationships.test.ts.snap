@@ -12,7 +12,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface IRoleRef extends constructs.IConstruct {
+export interface IRoleRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Role resource.
    */
@@ -165,7 +165,7 @@ function CfnRolePropsFromCloudFormation(properties: any): cfn_parse.FromCloudFor
  *
  * @stability experimental
  */
-export interface IResourceRef extends constructs.IConstruct {
+export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Resource resource.
    */
@@ -280,7 +280,7 @@ export interface CfnResourceProps {
 function flattenCfnResourcePermissionProperty(props: cdk.IResolvable | CfnResource.PermissionProperty): cdk.IResolvable | CfnResource.PermissionProperty {
   if (cdk.isResolvableObject(props)) return props;
   return {
-    "roleArn": (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? props.roleArn
+    "roleArn": (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string")
   };
 }
 
@@ -391,7 +391,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface IRoleRef extends constructs.IConstruct {
+export interface IRoleRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Role resource.
    */
@@ -544,7 +544,7 @@ function CfnRolePropsFromCloudFormation(properties: any): cfn_parse.FromCloudFor
  *
  * @stability experimental
  */
-export interface IUserRef extends constructs.IConstruct {
+export interface IUserRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a User resource.
    */
@@ -697,7 +697,7 @@ function CfnUserPropsFromCloudFormation(properties: any): cfn_parse.FromCloudFor
  *
  * @stability experimental
  */
-export interface IPolicyRef extends constructs.IConstruct {
+export interface IPolicyRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Policy resource.
    */
@@ -752,7 +752,7 @@ export class CfnPolicy extends cdk.CfnResource implements cdk.IInspectable, IPol
       "properties": props
     });
 
-    this.principalArn = (props.principalArn as IRoleRef)?.roleRef?.roleArn ?? (props.principalArn as IUserRef)?.userRef?.userArn ?? props.principalArn;
+    this.principalArn = (props.principalArn as IRoleRef)?.roleRef?.roleArn ?? (props.principalArn as IUserRef)?.userRef?.userArn ?? cdk.ensureStringOrUndefined(props.principalArn, "principalArn", "iam.IRoleRef | iam.IUserRef | string");
   }
 
   public get policyRef(): PolicyReference {
@@ -859,7 +859,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface IRoleRef extends constructs.IConstruct {
+export interface IRoleRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Role resource.
    */
@@ -1012,7 +1012,7 @@ function CfnRolePropsFromCloudFormation(properties: any): cfn_parse.FromCloudFor
  *
  * @stability experimental
  */
-export interface ITaskRef extends constructs.IConstruct {
+export interface ITaskRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Task resource.
    */
@@ -1127,7 +1127,7 @@ export interface CfnTaskProps {
 function flattenCfnTaskExecutionConfigProperty(props: CfnTask.ExecutionConfigProperty | cdk.IResolvable): CfnTask.ExecutionConfigProperty | cdk.IResolvable {
   if (cdk.isResolvableObject(props)) return props;
   return {
-    "roleArn": (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? props.roleArn
+    "roleArn": (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string")
   };
 }
 
@@ -1238,7 +1238,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface IRoleRef extends constructs.IConstruct {
+export interface IRoleRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Role resource.
    */
@@ -1391,7 +1391,7 @@ function CfnRolePropsFromCloudFormation(properties: any): cfn_parse.FromCloudFor
  *
  * @stability experimental
  */
-export interface IJobRef extends constructs.IConstruct {
+export interface IJobRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Job resource.
    */
@@ -1523,7 +1523,7 @@ export interface CfnJobProps {
 function flattenCfnJobConfigProperty(props: CfnJob.ConfigProperty | cdk.IResolvable): CfnJob.ConfigProperty | cdk.IResolvable {
   if (cdk.isResolvableObject(props)) return props;
   return {
-    "roleArn": (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? props.roleArn,
+    "roleArn": (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string"),
     "timeout": props.timeout
   };
 }
@@ -1577,7 +1577,7 @@ function CfnJobConfigPropertyFromCloudFormation(properties: any): cfn_parse.From
 function flattenCfnJobOldConfigProperty(props: cdk.IResolvable | CfnJob.OldConfigProperty): cdk.IResolvable | CfnJob.OldConfigProperty {
   if (cdk.isResolvableObject(props)) return props;
   return {
-    "roleArn": (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? props.roleArn
+    "roleArn": (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string")
   };
 }
 
@@ -1688,7 +1688,7 @@ import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
  *
  * @stability experimental
  */
-export interface IRoleRef extends constructs.IConstruct {
+export interface IRoleRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Role resource.
    */
@@ -1841,7 +1841,7 @@ function CfnRolePropsFromCloudFormation(properties: any): cfn_parse.FromCloudFor
  *
  * @stability experimental
  */
-export interface IFunctionRef extends constructs.IConstruct {
+export interface IFunctionRef extends constructs.IConstruct, cdk.IEnvironmentAware {
   /**
    * A reference to a Function resource.
    */
@@ -1896,7 +1896,7 @@ export class CfnFunction extends cdk.CfnResource implements cdk.IInspectable, IF
       "properties": props
     });
 
-    this.roleArn = (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? props.roleArn;
+    this.roleArn = (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string");
   }
 
   public get functionRef(): FunctionReference {

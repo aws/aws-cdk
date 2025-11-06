@@ -74,6 +74,11 @@ export class ResolverBuilder {
       ? Type.arrayOf(Type.distinctUnionOf(resolvableType.arrayOfType, ...newTypes))
       : Type.distinctUnionOf(resolvableType, ...newTypes);
 
+    const typeDisplayNames = [
+      ...relationships.map(r => r.typeDisplayName),
+      resolvableType.arrayOfType?.toString() ?? resolvableType.toString(),
+    ].join(' | ');
+
     // Generates code like:
     // For single value: (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? (props.roleArn as IUserRef)?.userRef?.userArn ?? props.roleArn
     // For array: props.roleArns?.map((item: any) => (item as IRoleRef)?.roleRef?.roleArn ?? (item as IUserRef)?.userRef?.userArn ?? item)
@@ -84,7 +89,7 @@ export class ResolverBuilder {
     const buildChain = (itemName: string) => [
       ...[...arnRels, ...otherRels]
         .map(r => `(${itemName} as ${r.referenceType})?.${r.referenceName}?.${r.propName}`),
-      itemName,
+      `cdk.ensureStringOrUndefined(${itemName}, "${name}", "${typeDisplayNames}")`,
     ].join(' ?? ');
     const resolver = (_: Expression) => {
       if (resolvableType.arrayOfType) {
