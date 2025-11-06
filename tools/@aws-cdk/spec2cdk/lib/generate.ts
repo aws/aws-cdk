@@ -2,11 +2,11 @@ import * as path from 'path';
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
 import { DatabaseBuilder } from '@aws-cdk/service-spec-importers';
 import { SpecDatabase } from '@aws-cdk/service-spec-types';
-import { TypeScriptRenderer } from '@cdklabs/typewriter';
+import { Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
-import { AstBuilder, ServiceModule } from './cdk/ast';
+import { AstBuilder, DEFAULT_FILE_PATTERNS, GenerateFilePatterns, submoduleFiles } from './cdk/ast';
 import { ModuleImportLocations } from './cdk/cdk';
-import { queryDb, log, PatternedString, TsFileWriter, PatternValues, PatternKeys } from './util';
+import { queryDb, log, TsFileWriter, PatternValues, PatternKeys } from './util';
 
 export interface GenerateServiceRequest {
   /**
@@ -47,33 +47,6 @@ export interface GenerateModuleOptions {
   readonly moduleImportLocations?: ModuleImportLocations;
 }
 
-export interface GenerateFilePatterns {
-  /**
-   * The pattern used to name resource files.
-   */
-  resources: PatternedString<PatternKeys>;
-
-  /**
-   * The pattern used to name augmentations.
-   */
-  augmentations: PatternedString<PatternKeys>;
-
-  /**
-   * The pattern used to name canned metrics.
-   */
-  cannedMetrics: PatternedString<PatternKeys>;
-
-  /**
-   * The file that holds the generated grants class
-   */
-  grantsClass: PatternedString<PatternKeys>;
-
-  /**
-   * The file that holds the source grants JSON file
-   */
-  grantsJson: PatternedString<PatternKeys>;
-}
-
 export interface GenerateOptions {
   /**
    * Default location for module imports
@@ -83,7 +56,7 @@ export interface GenerateOptions {
   /**
    * Configure where files are created exactly
    */
-  readonly filePatterns: GenerateFilePatterns;
+  readonly filePatterns: Partial<GenerateFilePatterns>;
 
   /**
    * Base path for generated files
@@ -123,9 +96,9 @@ export interface GenerateOutput {
   resources: Record<string, string>;
   modules: {
     [name: string]: Array<{
-      module: AstBuilder<ServiceModule>;
+      module: Module;
       options: GenerateModuleOptions;
-      resources: AstBuilder<ServiceModule>['resources'];
+      resources: Record<string, string>;
       outputFiles: string[];
     }>;
   };
@@ -168,7 +141,7 @@ export async function generateAll(options: GenerateOptions) {
     };
   }
 
-  return generator(db, modules, options);
+  await generator(db, modules, options);
 }
 
 function enableDebug(options: GenerateOptions) {
@@ -185,7 +158,7 @@ async function generator(
   const timeLabel = '🐢  Completed in';
   log.time(timeLabel);
   log.debug('Options', options);
-  const { augmentationsSupport, clearOutput, outputPath = process.cwd(), filePatterns } = options;
+  const { clearOutput, outputPath = process.cwd() } = options;
 
   const renderer = new TypeScriptRenderer();
 
@@ -197,65 +170,46 @@ async function generator(
     fs.removeSync(outputPath);
   }
 
+  const ast = new AstBuilder({
+    db,
+    modulesRoot: options.importLocations?.modulesRoot,
+    filePatterns: {
+      ...DEFAULT_FILE_PATTERNS,
+      ...noUndefined(options.filePatterns),
+    },
+  });
+
   // Go through the module map
   log.info('Generating %i modules...', Object.keys(modules).length);
   for (const [moduleName, moduleOptions] of Object.entries(modules)) {
-    const { moduleImportLocations: importLocations = options.importLocations, services } = moduleOptions;
+    const services = queryDb.getServicesByGenerateServiceRequest(db, moduleOptions.services);
 
-    moduleMap[moduleName] = [];
-    for (const [req, s] of queryDb.getServicesByGenerateServiceRequest(db, services)) {
+    moduleMap[moduleName] = services.map(([req, s]) => {
       log.debug(moduleName, s.name, 'ast');
-      const ast = AstBuilder.forService(s, {
-        db,
-        importLocations,
+
+      const submod = ast.addService(s, {
+        destinationSubmodule: moduleName,
         nameSuffix: req.suffix,
         deprecated: req.deprecated,
-        grantsConfig: await readGrantsConfig(filePatterns.grantsJson({ moduleName })),
+        importLocations: moduleOptions.moduleImportLocations ?? options.importLocations,
       });
 
-      log.debug(moduleName, s.name, 'render');
-      const filenamePlaceHolders: PatternValues<PatternKeys> = {
-        moduleName: moduleName,
-        serviceName: ast.module.service.toLowerCase(),
-        serviceShortName: ast.module.shortName.toLowerCase(),
-      };
-      const writer = new TsFileWriter(outputPath, renderer, filenamePlaceHolders);
-
-      // Resources
-      writer.write(ast.module, filePatterns.resources);
-
-      if (ast.augmentations?.hasAugmentations) {
-        const augFile = writer.write(ast.augmentations, filePatterns.augmentations);
-
-        if (augmentationsSupport) {
-          const augDir = path.dirname(augFile);
-          for (const supportMod of ast.augmentations.supportModules) {
-            writer.write(supportMod, path.resolve(augDir, `${supportMod.importName}.ts`));
-          }
-        }
-      }
-
-      if (ast.cannedMetrics?.hasCannedMetrics) {
-        writer.write(ast.cannedMetrics, filePatterns.cannedMetrics);
-      }
-
-      if (ast.grants) {
-        writer.write(ast.grants, filePatterns.grantsClass);
-      }
-
-      moduleMap[moduleName].push({
-        module: ast,
+      return {
+        module: submod.resourcesMod.module,
         options: moduleOptions,
-        resources: ast.resources,
-        outputFiles: writer.outputFiles,
-      });
-    }
+        resources: submod.resources,
+        outputFiles: submoduleFiles(submod).map((x) => path.resolve(x)),
+      } satisfies GenerateOutput['modules'][string][number];
+    });
   }
 
-  const result = {
+  const writer = new TsFileWriter(outputPath, renderer);
+  ast.writeAll(writer);
+
+  const result: GenerateOutput = {
     modules: moduleMap,
     resources: Object.values(moduleMap).flat().map(pick('resources')).reduce(mergeObjects, {}),
-    outputFiles: Object.values(moduleMap).flat().flatMap(pick('outputFiles')),
+    outputFiles: writer.outputFiles,
   };
 
   log.info('Summary:');
@@ -264,16 +218,6 @@ async function generator(
   log.timeEnd(timeLabel);
 
   return result;
-}
-
-export function defaultFilePatterns(): GenerateFilePatterns {
-  return {
-    resources: ({ moduleName: m, serviceShortName: s }) => `${m}/lib/${s}.generated.ts`,
-    augmentations: ({ moduleName: m, serviceShortName: s }) => `${m}/lib/${s}-augmentations.generated.ts`,
-    cannedMetrics: ({ moduleName: m, serviceShortName: s }) => `${m}/lib/${s}-canned-metrics.generated.ts`,
-    grantsClass: ({ moduleName, serviceShortName }) => `${moduleName}/lib/${serviceShortName}-grants.generated.ts`,
-    grantsJson: ({ moduleName }) => `${moduleName}/grants.json`,
-  };
 }
 
 function pick<T>(property: keyof T) {
@@ -290,17 +234,9 @@ function mergeObjects<T>(all: T, res: T) {
   };
 }
 
-async function readGrantsConfig(filename: string): Promise<undefined | string> {
-  try {
-    const location = path.join(__dirname, '../../../../packages/aws-cdk-lib', filename);
-    return await fs.readFile(location, 'utf-8');
-  } catch (e: any) {
-    if (e.code === 'ENOENT') {
-      return undefined;
-    }
-    throw e;
+function noUndefined<A extends object>(x: A | undefined): A | undefined {
+  if (!x) {
+    return undefined;
   }
+  return Object.fromEntries(Object.entries(x).filter(([, v]) => v !== undefined)) as any;
 }
-
-export { PatternKeys };
-

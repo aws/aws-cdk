@@ -1,8 +1,8 @@
 import * as path from 'node:path';
 import { parseArgs } from 'node:util';
 import { PositionalArg, showHelp } from './help';
-import { GenerateModuleMap, GenerateOptions, generateSome, generateAll, defaultFilePatterns, GenerateFilePatterns } from '../generate';
-import { log, parsePattern } from '../util';
+import { GenerateModuleMap, GenerateOptions, generateSome, generateAll } from '../generate';
+import { log } from '../util';
 
 const command = 'spec2cdk';
 const args: PositionalArg[] = [{
@@ -87,22 +87,12 @@ export async function main(argv: string[]) {
   }
 
   const outputPath = outputDir ?? path.join(__dirname, '..', 'services');
-  const customFilePatterns: Partial<GenerateFilePatterns> = {};
-  if (options.pattern) {
-    customFilePatterns.resources = parsePattern(options.pattern);
-  }
-  if (options.augmentations) {
-    customFilePatterns.augmentations = parsePattern(options.augmentations);
-  }
-  if (options.metrics) {
-    customFilePatterns.cannedMetrics = parsePattern(options.metrics);
-  }
-
   const generatorOptions: GenerateOptions = {
     outputPath,
     filePatterns: {
-      ...defaultFilePatterns(),
-      ...customFilePatterns,
+      resources: options.pattern,
+      augmentations: options.augmentations,
+      cannedMetrics: options.metrics,
     },
     clearOutput: options['clear-output'],
     augmentationsSupport: options['augmentations-support'],
