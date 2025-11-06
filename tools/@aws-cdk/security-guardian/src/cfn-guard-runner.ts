@@ -9,6 +9,14 @@ function reverseFilenames(xmlContent: string): string {
   });
 }
 
+function postProcessXml(outputFile: string): void {
+  if (fs.existsSync(outputFile)) {
+    const xmlContent = fs.readFileSync(outputFile, 'utf8');
+    const correctedXml = reverseFilenames(xmlContent);
+    fs.writeFileSync(outputFile, correctedXml);
+  }
+}
+
 export async function runCfnGuardValidation(
   dataDir: string,
   ruleSetPath: string,
@@ -21,24 +29,14 @@ export async function runCfnGuardValidation(
       `cfn-guard validate --data "${dataDir}" --rules "${ruleSetPath}" --output-format junit --structured --show-summary none > "${outputFile}"`
     ]);
     
-    // Post-process XML to reverse filename transformation
-    if (fs.existsSync(outputFile)) {
-      const xmlContent = fs.readFileSync(outputFile, 'utf8');
-      const correctedXml = reverseFilenames(xmlContent);
-      fs.writeFileSync(outputFile, correctedXml);
-    }
+    postProcessXml(outputFile);
     
     core.info(`✅ CFN-Guard (${type}) validation passed`);
     return true;
   } catch (err) {
     core.warning(`⚠️ CFN-Guard (${type}) validation found issues`);
     
-    // Post-process XML even on failure
-    if (fs.existsSync(outputFile)) {
-      const xmlContent = fs.readFileSync(outputFile, 'utf8');
-      const correctedXml = reverseFilenames(xmlContent);
-      fs.writeFileSync(outputFile, correctedXml);
-    }
+    postProcessXml(outputFile);
     
     return false;
   }
