@@ -535,16 +535,6 @@
          "Arn"
         ]
        }
-      },
-      {
-       "Action": "iam:PassRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "FlowLogsCWIAMRole017AD736",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
