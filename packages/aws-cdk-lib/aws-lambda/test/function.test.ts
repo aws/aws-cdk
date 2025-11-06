@@ -5046,6 +5046,10 @@ describe('Lambda Function log group behavior', () => {
 });
 
 describe('telemetry metadata', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('redaction happens when feature flag is enabled', () => {
     const app = new cdk.App();
     app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
