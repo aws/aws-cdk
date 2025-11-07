@@ -6,7 +6,7 @@ import { Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { AstBuilder, DEFAULT_FILE_PATTERNS, GenerateFilePatterns, submoduleFiles } from './cdk/ast';
 import { ModuleImportLocations } from './cdk/cdk';
-import { queryDb, log, TsFileWriter, PatternValues, PatternKeys } from './util';
+import { log, queryDb, TsFileWriter } from './util';
 
 export interface GenerateServiceRequest {
   /**
@@ -192,6 +192,7 @@ async function generator(
         nameSuffix: req.suffix,
         deprecated: req.deprecated,
         importLocations: moduleOptions.moduleImportLocations ?? options.importLocations,
+        grantsConfig: readGrantsConfig(moduleName),
       });
 
       return {
@@ -239,4 +240,17 @@ function noUndefined<A extends object>(x: A | undefined): A | undefined {
     return undefined;
   }
   return Object.fromEntries(Object.entries(x).filter(([, v]) => v !== undefined)) as any;
+}
+
+function readGrantsConfig(moduleName: string): string | undefined {
+  const filename = `${moduleName}/grants.json`;
+  try {
+    const location = path.join(__dirname, '../../../../packages/aws-cdk-lib', filename);
+    return fs.readFileSync(location, 'utf-8');
+  } catch (e: any) {
+    if (e.code === 'ENOENT') {
+      return undefined;
+    }
+    throw e;
+  }
 }

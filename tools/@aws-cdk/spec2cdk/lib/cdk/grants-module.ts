@@ -13,7 +13,7 @@ import {
 } from '@cdklabs/typewriter';
 import { PropertySpec } from '@cdklabs/typewriter/lib/property';
 import { classNameFromResource } from '../naming';
-import { ResourceClass } from './resource-class';
+import { Referenceable } from './resource-class';
 
 const $this = $E(expr.this_());
 
@@ -25,19 +25,11 @@ const $this = $E(expr.this_());
  * repository.
  */
 export class GrantsModule extends Module {
-  public static forServiceFromString(db: SpecDatabase, service: Service, config?: string): GrantsModule | undefined {
-    if (config == null) {
-      return undefined;
-    }
-    const schema = JSON.parse(config);
-    return new GrantsModule(service, db, schema);
-  }
-
-  private constructor(private readonly service: Service, private readonly db: SpecDatabase, private readonly schema: GrantsFileSchema) {
+  public constructor(private readonly service: Service, private readonly db: SpecDatabase, private readonly schema: GrantsFileSchema) {
     super(`${service.shortName}.grants`);
   }
 
-  public build(resourceClasses: Record<string, ResourceClass>, nameSuffix?: string) {
+  public build(resourceClasses: Record<string, Referenceable>, nameSuffix?: string) {
     let hasContent = false;
     const resources = this.db.follow('hasResource', this.service);
     const resourceIndex = Object.fromEntries(resources.map(r => [r.entity.name, r.entity]));

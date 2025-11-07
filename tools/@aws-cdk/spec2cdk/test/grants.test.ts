@@ -1,6 +1,7 @@
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
 import { SpecDatabase } from '@aws-cdk/service-spec-types';
-import { TypeScriptRenderer } from '@cdklabs/typewriter';
+import { InterfaceType, Module, Stability, TypeScriptRenderer } from '@cdklabs/typewriter';
+import { CDK_CORE, CONSTRUCTS } from '../lib/cdk/cdk';
 import { GrantsModule } from '../lib/cdk/grants-module';
 
 const renderer = new TypeScriptRenderer();
@@ -11,7 +12,7 @@ beforeAll(async () => {
 });
 
 test('generates grants for methods with and without key actions', async () => {
-  const config =JSON.stringify({
+  const config = {
     resources: {
       Topic: {
         hasResourcePolicy: true,
@@ -26,13 +27,27 @@ test('generates grants for methods with and without key actions', async () => {
         },
       },
     },
-  });
+  };
   const service = db.lookup('service', 'name', 'equals', 'aws-sns').only();
-  const module = await GrantsModule.forServiceFromString(db, service, config);
+  const module = new GrantsModule(service, db, config);
 
-  if (module == null) {
-    throw new Error('No grants module generated');
-  }
+  const scope = new Module('@aws-cdk/aws-sns');
+  const refInterface = new InterfaceType(scope, {
+    export: true,
+    name: 'ITopicRef',
+    extends: [CONSTRUCTS.IConstruct, CDK_CORE.IEnvironmentAware],
+    docs: {
+      summary: 'Indicates that this resource can be referenced',
+      stability: Stability.Experimental,
+    },
+  });
+
+  module.build({
+    'AWS::SNS::Topic': {
+      hasArnGetter: true,
+      refInterface: refInterface,
+    },
+  });
 
   const rendered = renderer.render(module);
   expect(rendered).toMatchSnapshot();

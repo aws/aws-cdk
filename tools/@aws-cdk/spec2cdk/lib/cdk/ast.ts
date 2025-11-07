@@ -4,6 +4,7 @@ import { Module } from '@cdklabs/typewriter';
 import { AugmentationsModule } from './augmentation-generator';
 import { CannedMetricsModule } from './canned-metrics';
 import { CDK_CORE, CONSTRUCTS, ModuleImportLocations } from './cdk';
+import { GrantsModule } from './grants-module';
 import { SelectiveImport } from './relationship-decider';
 import { ResourceClass } from './resource-class';
 import { FilePatternValues, IWriter, substituteFilePattern } from '../util';
@@ -33,6 +34,8 @@ export interface AddServiceProps {
    * Override the locations modules are imported from
    */
   readonly importLocations?: ModuleImportLocations;
+
+  readonly grantsConfig?: string;
 }
 
 export interface AstBuilderProps {
@@ -41,6 +44,8 @@ export interface AstBuilderProps {
   readonly modulesRoot?: string;
 
   readonly filePatterns?: Partial<GenerateFilePatterns>;
+
+  readonly grantsConfig?: string;
 }
 
 export interface GenerateFilePatterns {
@@ -61,6 +66,12 @@ export interface GenerateFilePatterns {
    * @default "%serviceName%/%serviceShortName%-canned-metrics.generated.ts"
    */
   readonly cannedMetrics: string;
+
+  /**
+   * The pattern used to name grants.
+   * @default "%serviceName%/%serviceShortName%-grants.generated.ts"
+   */
+  readonly grants: string;
 }
 
 export function makeNames(patterns: GenerateFilePatterns, values: FilePatternValues): { [k in keyof GenerateFilePatterns]: string } {
@@ -72,6 +83,7 @@ export const DEFAULT_FILE_PATTERNS: GenerateFilePatterns = {
   resources: '%moduleName%/%serviceShortName%.generated.ts',
   augmentations: '%moduleName%/%serviceShortName%-augmentations.generated.ts',
   cannedMetrics: '%moduleName%/%serviceShortName%-canned-metrics.generated.ts',
+  grants: '%moduleName%/%serviceShortName%-grants.generated.ts',
 };
 
 export class AstBuilder {
@@ -103,13 +115,15 @@ export class AstBuilder {
     // Sometimes we emit multiple services into the same submodule
     // (aws-kinesisanalyticsv2 gets emitted into aws-kinesisanalytics with a
     // suffix. This was a failed experiment we still need to maintain.)
-    const submod = this.createSubmodule(service, props?.destinationSubmodule, props?.importLocations);
+    const submod = this.createSubmodule(service, props?.destinationSubmodule, props?.importLocations, props?.grantsConfig);
 
+    const resourceClasses: Record<string, ResourceClass> = {};
     for (const { entity: resource } of resources) {
-      this.addResourceToSubmodule(submod, resource, props);
+      resourceClasses[resource.cloudFormationType] = this.addResourceToSubmodule(submod, resource, props);
     }
 
     this.renderImports(submod);
+    submod.grants?.module.build(resourceClasses, props?.nameSuffix);
     return submod;
   }
 
@@ -134,7 +148,7 @@ export class AstBuilder {
     }
   }
 
-  private addResourceToSubmodule(submodule: SubmoduleInfo, resource: Resource, props?: AddServiceProps) {
+  private addResourceToSubmodule(submodule: SubmoduleInfo, resource: Resource, props?: AddServiceProps): ResourceClass {
     const resourceModule = submodule.resourcesMod.module;
 
     const resourceClass = new ResourceClass(resourceModule, this.db, resource, {
@@ -147,6 +161,7 @@ export class AstBuilder {
 
     this.addImports(resourceClass);
     submodule.augmentations.module.augmentResource(resource, resourceClass);
+    return resourceClass;
   }
 
   private addImports(resourceClass: ResourceClass) {
@@ -179,7 +194,7 @@ export class AstBuilder {
     }
   }
 
-  private createSubmodule(service: Service, targetSubmodule?: string, importLocations?: ModuleImportLocations): SubmoduleInfo {
+  private createSubmodule(service: Service, targetSubmodule?: string, importLocations?: ModuleImportLocations, grantsConfig?: string): SubmoduleInfo {
     const submoduleName = targetSubmodule ?? service.name;
     const key = `${submoduleName}/${service.name}`;
 
@@ -196,6 +211,10 @@ export class AstBuilder {
       names.augmentations,
     );
 
+    const grants = grantsConfig != null
+      ? this.rememberModule(new GrantsModule(service, this.db, JSON.parse(grantsConfig)), names.grants)
+      : undefined;
+
     // CannedMetricsModule fill themselves upon construction
     const cannedMetrics = this.rememberModule(CannedMetricsModule.forService(this.db, service), names.cannedMetrics);
 
@@ -205,6 +224,7 @@ export class AstBuilder {
       resourcesMod,
       augmentations,
       cannedMetrics,
+      grants,
       resources: {},
     };
 
@@ -258,6 +278,7 @@ export interface SubmoduleInfo {
   readonly resourcesMod: LocatedModule<Module>;
   readonly augmentations: LocatedModule<AugmentationsModule>;
   readonly cannedMetrics: LocatedModule<CannedMetricsModule>;
+  readonly grants?: LocatedModule<GrantsModule>;
 
   /**
    * Map of CloudFormation resource name to generated class name

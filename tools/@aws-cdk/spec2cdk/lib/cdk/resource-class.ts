@@ -56,12 +56,17 @@ export interface ITypeHost {
 // This convenience typewriter builder is used all over the place
 const $this = $E(expr.this_());
 
+export interface Referenceable {
+  readonly hasArnGetter: boolean;
+  readonly refInterface: InterfaceType;
+}
+
 export interface ResourceClassProps {
   readonly suffix?: string;
   readonly deprecated?: string;
 }
 
-export class ResourceClass extends ClassType {
+export class ResourceClass extends ClassType implements Referenceable {
   private readonly propsType: StructType;
   public readonly refInterface: InterfaceType;
   private readonly decider: ResourceDecider;

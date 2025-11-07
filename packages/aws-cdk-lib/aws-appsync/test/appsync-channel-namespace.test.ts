@@ -4,6 +4,7 @@ import * as lambda from '../../aws-lambda';
 import { App } from '../../core';
 import * as cdk from '../../core';
 import * as appsync from '../lib';
+import { ChannelNamespaceGrants } from '../lib/appsync-grants.generated';
 
 // GIVEN
 let stack: cdk.Stack;
@@ -351,6 +352,36 @@ describe('Channel namespace security tests', () => {
                 ],
               ],
             },
+          },
+        ],
+      },
+    });
+  });
+
+  test('Appsync Event API channel namespace - grant publish from channel (CfnChannelNamespace)', () => {
+    // WHEN
+    const api = new appsync.EventApi(stack, 'api', {
+      apiName: 'api',
+      authorizationConfig: {
+        authProviders: [{ authorizationType: appsync.AppSyncAuthorizationType.IAM }],
+      },
+    });
+
+    const namespace = new appsync.CfnChannelNamespace(stack, 'default', {
+      name: 'NS',
+      apiId: api.apiId,
+    });
+
+    ChannelNamespaceGrants._fromChannelNamespace(namespace).publish(func);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appsync:EventPublish',
+            Effect: 'Allow',
+            Resource: { Ref: 'default' },
           },
         ],
       },

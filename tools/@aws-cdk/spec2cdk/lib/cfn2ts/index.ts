@@ -4,7 +4,7 @@ import * as fs from 'fs-extra';
 import * as pkglint from './pkglint';
 import { CodeGeneratorOptions, GenerateAllOptions, ModuleMap, ModuleMapScope } from './types';
 import type { ModuleImportLocations } from '../cdk/cdk';
-import { defaultFilePatterns, generateSome as generateModules } from '../generate';
+import { generateSome as generateModules } from '../generate';
 import { log } from '../util';
 
 export * from './types';
@@ -162,6 +162,7 @@ export async function legacyGenerateAll(
         resources: '%moduleName%/lib/%serviceShortName%.generated.ts',
         augmentations: '%moduleName%/lib/%serviceShortName%-augmentations.generated.ts',
         cannedMetrics: '%moduleName%/lib/%serviceShortName%-canned-metrics.generated.ts',
+        grants: '%moduleName%/lib/%serviceShortName%-grants.generated.ts',
       },
       importLocations: {
         core: options.coreImport,
