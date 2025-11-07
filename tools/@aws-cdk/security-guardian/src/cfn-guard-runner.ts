@@ -20,10 +20,16 @@ function reverseFilenames(xmlContent: string, fileMapping: Map<string, string>):
   });
 }
 
-function postProcessXml(outputFile: string, fileMapping: Map<string, string>): void {
+function postProcessXml(outputFile: string, fileMapping: Map<string, string>, type: string): void {
   if (fs.existsSync(outputFile)) {
     const xmlContent = fs.readFileSync(outputFile, 'utf8');
-    const correctedXml = reverseFilenames(xmlContent, fileMapping);
+    let correctedXml = reverseFilenames(xmlContent, fileMapping);
+    
+    // Add type suffix to failure messages
+    correctedXml = correctedXml.replace(/<failure message="([^&]*)"/g, (match, message) => {
+      return `<failure message="${message} for Type: ${type}"`;
+    });
+    
     fs.writeFileSync(outputFile, correctedXml);
   }
 }
@@ -41,14 +47,14 @@ export async function runCfnGuardValidation(
       `cfn-guard validate --data "${dataDir}" --rules "${ruleSetPath}" --output-format junit --structured --show-summary none > "${outputFile}"`
     ]);
     
-    postProcessXml(outputFile, fileMapping);
+    postProcessXml(outputFile, fileMapping, type);
     
     core.info(`✅ CFN-Guard (${type}) validation passed`);
     return true;
   } catch (err) {
     core.warning(`⚠️ CFN-Guard (${type}) validation found issues`);
     
-    postProcessXml(outputFile, fileMapping);
+    postProcessXml(outputFile, fileMapping, type);
     
     return false;
   }
