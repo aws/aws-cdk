@@ -1169,7 +1169,7 @@ export class CodePipeline extends PipelineBase {
         // grant S3 HeadObject permission to check if file assets exist.
         assetRole.addToPrincipalPolicy(new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
-          actions: ['s3:GetObject', 's3:HeadObject'],
+          actions: ['s3:HeadObject', 's3:GetObject'],
           resources: ['*'], // will be scoped to the actual asset buckets during publishing.
         }));
       } else if (assetType === AssetType.DOCKER_IMAGE) {
