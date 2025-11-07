@@ -903,6 +903,7 @@ export class CodePipeline extends PipelineBase {
 
     let commands: string[];
     if (this.checkAssetExistence) {
+      Annotations.of(this).addInfo('Generating asset commands with existence check');
       // generate commands with existence checking.
       commands = this.generateAssetCommandsWithExistenceCheck(assets, assetType);
     } else {
@@ -1163,6 +1164,7 @@ export class CodePipeline extends PipelineBase {
 
     // add permissions for asset existence checking if the feature is enabled.
     if (this.checkAssetExistence) {
+      Annotations.of(this).addInfo(`Adding permissions for asset existence checking for ${assetType}`);
       if (assetType === AssetType.FILE) {
         // grant S3 HeadObject permission to check if file assets exist.
         assetRole.addToPrincipalPolicy(new iam.PolicyStatement({
