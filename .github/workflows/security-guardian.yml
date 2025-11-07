@@ -54,3 +54,4 @@ jobs:
           group_suite: true
           include_skipped: true
           check_title_template: '{{TEST_NAME}}'
+          update_check: true
