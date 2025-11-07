@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "d582165f0ec25a89a0aa30f9b28ffc8aa95d7caaafedebc0821dc19c953806bf": {
+      "displayName": "aws-cdk-sqs-event-target-imported-key Template",
+      "source": {
+        "path": "aws-cdk-sqs-event-target-imported-key.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-c071204b": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d582165f0ec25a89a0aa30f9b28ffc8aa95d7caaafedebc0821dc19c953806bf.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

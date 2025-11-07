@@ -27,6 +27,7 @@ Currently supported are:
     - [Enable Amazon ECS Exec for ECS Task](#enable-amazon-ecs-exec-for-ecs-task)
   - [Run a Redshift query](#schedule-a-redshift-query-serverless-or-cluster)
   - [Publish to an SNS topic](#publish-to-an-sns-topic)
+  - [Send to an SQS Queue](#send-to-an-sqs-queue)
 
 See the README of the `aws-cdk-lib/aws-events` library for more information on
 EventBridge.
@@ -749,3 +750,42 @@ const rule = new events.Rule(this, 'Rule', {
 
 rule.addTarget(new targets.SnsTopic(topic, { authorizeUsingRole: true }));
 ```
+
+## Send to an SQS Queue
+
+Use the `SqsQueue` target to send messages to an SQS Queue.
+
+```ts
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+
+const queue = new sqs.Queue(this, 'Queue');
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(new targets.SqsQueue(queue));
+```
+
+### Using Encrypted Queues with Imported KMS Keys
+
+When using an SQS queue encrypted with an imported KMS key (via `Key.fromKeyArn()` or `Key.fromLookup()`), CDK cannot automatically configure the required KMS key policy permissions. CDK will emit a warning during synthesis reminding you to manually configure the key policy.
+
+You must add the following statement to the KMS key policy:
+
+```json
+{
+  "Sid": "Allow EventBridge to use the key",
+  "Effect": "Allow",
+  "Principal": {
+    "Service": "events.amazonaws.com"
+  },
+  "Action": [
+    "kms:Decrypt",
+    "kms:GenerateDataKey"
+  ],
+  "Resource": "*"
+}
+```
+
+For CDK-managed KMS keys (created with `new kms.Key()`), these permissions are configured automatically.
