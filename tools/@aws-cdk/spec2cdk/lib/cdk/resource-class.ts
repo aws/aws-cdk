@@ -212,10 +212,12 @@ export class ResourceClass extends ClassType {
    *
    * They might conceivably already be in the module, if we're emitting the same service
    * multiple times. In those cases, just reference the type but don't re-emit.
+   *
+   * We never use suffixes for reference interface types.
    */
   private buildReferenceInterface(scope: IScope): ReferenceInterfaceTypes {
-    const refName = referenceInterfaceName(this.resource.name, this.props.suffix);
-    const structName = `${this.resource.name}${this.props.suffix ?? ''}Reference`;
+    const refName = referenceInterfaceName(this.resource.name);
+    const structName = `${this.resource.name}Reference`;
 
     const refFqn = scope.qualifyName(refName);
     const structFqn = scope.qualifyName(structName);
@@ -236,6 +238,9 @@ export class ResourceClass extends ClassType {
       };
     }
 
+    // We don't check deprecation notices if this was generated with a suffix.
+    const considerDeprecation = this.props.suffix ? false : true;
+
     const interface_ = new InterfaceType(scope, {
       export: true,
       name: refName,
@@ -243,7 +248,7 @@ export class ResourceClass extends ClassType {
       docs: {
         summary: `Indicates that this resource can be referenced as a ${this.resource.name}.`,
         stability: Stability.Experimental,
-        ...maybeDeprecated(this.props.deprecated),
+        ...considerDeprecation ? maybeDeprecated(this.props.deprecated) : {},
       },
     });
     const interfaceType = interface_.type;
@@ -255,7 +260,7 @@ export class ResourceClass extends ClassType {
       docs: {
         summary: `A reference to a ${this.resource.name} resource.`,
         stability: Stability.External,
-        ...maybeDeprecated(this.props.deprecated),
+        ...considerDeprecation ? maybeDeprecated(this.props.deprecated) : {},
       },
     });
 
