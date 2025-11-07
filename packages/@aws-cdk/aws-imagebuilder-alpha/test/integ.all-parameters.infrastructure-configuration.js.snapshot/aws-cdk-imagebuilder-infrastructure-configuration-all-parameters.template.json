@@ -1,0 +1,163 @@
+{
+ "Resources": {
+  "NotificationTopicEB7A0DF1": {
+   "Type": "AWS::SNS::Topic"
+  },
+  "EC2InstanceProfileForImageBuilderRole27031449": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "EC2InstanceProfileForImageBuilderRoleDefaultPolicy22D6CD5C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "LogBucketCC3B17E8",
+            "Arn"
+           ]
+          },
+          "/imagebuilder-logs/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EC2InstanceProfileForImageBuilderRoleDefaultPolicy22D6CD5C",
+    "Roles": [
+     {
+      "Ref": "EC2InstanceProfileForImageBuilderRole27031449"
+     }
+    ]
+   }
+  },
+  "EC2InstanceProfileForImageBuilderA043DE9F": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "EC2InstanceProfileForImageBuilderRole27031449"
+     }
+    ]
+   }
+  },
+  "LogBucketCC3B17E8": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "InfrastructureConfiguration86C7777D": {
+   "Type": "AWS::ImageBuilder::InfrastructureConfiguration",
+   "Properties": {
+    "Description": "This is an infrastructure configuration.",
+    "InstanceMetadataOptions": {
+     "HttpPutResponseHopLimit": 1,
+     "HttpTokens": "required"
+    },
+    "InstanceProfileName": {
+     "Ref": "EC2InstanceProfileForImageBuilderA043DE9F"
+    },
+    "InstanceTypes": [
+     "m7i-flex.large",
+     "c7g.medium"
+    ],
+    "Logging": {
+     "S3Logs": {
+      "S3BucketName": {
+       "Ref": "LogBucketCC3B17E8"
+      },
+      "S3KeyPrefix": "imagebuilder-logs"
+     }
+    },
+    "Name": "aws-cdk-imagebuilder-infrastructure-configuration-all-parameters-infrastructureconfiguration-4171ee68",
+    "Placement": {
+     "AvailabilityZone": {
+      "Fn::Select": [
+       0,
+       {
+        "Fn::GetAZs": ""
+       }
+      ]
+     },
+     "Tenancy": "default"
+    },
+    "ResourceTags": {
+     "infraTag1": "infraValue1",
+     "infraTag2": "infraValue2"
+    },
+    "SnsTopicArn": {
+     "Ref": "NotificationTopicEB7A0DF1"
+    },
+    "Tags": {
+     "key1": "value1",
+     "key2": "value2"
+    },
+    "TerminateInstanceOnFailure": true
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
