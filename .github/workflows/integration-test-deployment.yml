@@ -59,7 +59,7 @@ jobs:
           echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN" >> $GITHUB_ENV
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: "lts/*"
           cache: "yarn"
@@ -100,8 +100,9 @@ jobs:
       - name: Build deployment-integ
         run: yarn --cwd tools/@aws-cdk/integration-test-deployment build
         
-      - name: Build Integration Tests
-        run: npx lerna run build --scope=@aws-cdk-testing/framework-integ 
+      # Build integration test packages: @aws-cdk-testing/framework-integ (stable tests) and @aws-cdk/* (alpha tests)
+      - name: Build Integration Test packages 
+        run: npx lerna run build --scope="{@aws-cdk/*,@aws-cdk-testing/framework-integ}"
 
       - name: Run integration tests using integration-test-deployment script
         run: yarn run atmosphere-integ-test
