@@ -69,7 +69,7 @@ export class GrantsModule extends Module {
       if (hasPolicy) {
         propsProperties.push({
           name: 'policyResource',
-          type: Type.fromName(this, 'iam.IResourceWithPolicy'),
+          type: Type.fromName(this, 'iam.IResourceWithPolicyV2'),
           optional: true,
           immutable: true,
           docs: {
@@ -93,7 +93,7 @@ export class GrantsModule extends Module {
 
       // Generate a <Resource>GrantsProps that contains at least one property, called resource, of type I<Resource>Ref.
       // Additionally, depending on what is available in the config for this class, two other properties will be added:
-      //  - policyResource?: iam.IResourceWithPolicy, which can be used to generate a resource policy.
+      //  - policyResource?: iam.IResourceWithPolicyV2, which can be used to generate a resource policy.
       //  - encryptedResource?: iam.IEncryptedResource, which can be used to add permission to the KMS key associated with this resource.
       const propsType = new InterfaceType(this, {
         name: `${className}Props`,
@@ -144,7 +144,7 @@ export class GrantsModule extends Module {
       }
 
       if (hasPolicy) {
-        const resourceWithPolicy = Type.fromName(this, 'iam.IResourceWithPolicy');
+        const resourceWithPolicy = Type.fromName(this, 'iam.IResourceWithPolicyV2');
         classType.addProperty({
           name: 'policyResource',
           immutable: true,
