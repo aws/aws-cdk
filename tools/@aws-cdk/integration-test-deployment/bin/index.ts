@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { deployInegTestsWithAtmosphere } from '../lib/integration-test-runner';
+import { deployIntegTests } from '../lib/integration-test-runner';
 
 const endpoint = process.env.CDK_ATMOSPHERE_ENDPOINT;
 const pool = process.env.CDK_ATMOSPHERE_POOL;
@@ -17,4 +17,4 @@ if (!atmosphereRoleArn) {
   throw new Error('CDK_ATMOSPHERE_OIDC_ROLE environment variable is required');
 }
 
-deployInegTestsWithAtmosphere({ atmosphereRoleArn, endpoint, pool });
+deployIntegTests({ atmosphereRoleArn, endpoint, pool });

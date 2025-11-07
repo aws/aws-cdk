@@ -23,15 +23,15 @@ describe('Run Inegration Tests with Atmosphere', () => {
   let mockAtmosphereAllocation: AtmosphereAllocationMock;
   let changedSnapshots: Set<string>;
 
-  const validateSnapshotRun = () => {
+  const validateSnapshotRun = ({ batchSize }: {batchSize: number}) => {
     expect(utils.gitDiff).toHaveBeenCalledTimes(1);
 
-    const numberOfCommands = Math.ceil(changedSnapshots.size/3);
+    const numberOfCommands = Math.ceil(changedSnapshots.size/batchSize);
     expect(AtmosphereAllocation.acquire).toHaveBeenCalledTimes(numberOfCommands);
     expect(mockAtmosphereAllocation.release).toHaveBeenCalledTimes(numberOfCommands);
     const assumeAtmosphereRoleCalls = (integRunner.assumeAtmosphereRole as jest.Mock).mock.calls;
     expect(assumeAtmosphereRoleCalls.length).toBe(numberOfCommands);
-    for(const assumeAtmosphereRoleCall of assumeAtmosphereRoleCalls) {
+    for (const assumeAtmosphereRoleCall of assumeAtmosphereRoleCalls) {
       expect(assumeAtmosphereRoleCall[0]).toEqual(atmosphereRoleArn);
     }
 
@@ -74,8 +74,13 @@ describe('Run Inegration Tests with Atmosphere', () => {
   });
 
   test('successful integration test', async () => {
-    await integRunner.deployInegTestsWithAtmosphere({ atmosphereRoleArn, endpoint, pool });
-    validateSnapshotRun();
+    await integRunner.deployIntegTests({ atmosphereRoleArn, endpoint, pool });
+    validateSnapshotRun({ batchSize: 3 });
+  });
+
+  test('successful integration test with a non-default batch size', async () => {
+    await integRunner.deployIntegTests({ atmosphereRoleArn, endpoint, pool, batchSize: 1 });
+    validateSnapshotRun({ batchSize: 1 });
   });
 
   test('failed integration test', async () => {
@@ -83,10 +88,10 @@ describe('Run Inegration Tests with Atmosphere', () => {
       return Promise.reject(new Error('Integration tests failed with exit code 1'));
     });
 
-    await expect(integRunner.deployInegTestsWithAtmosphere({ atmosphereRoleArn, endpoint, pool })).rejects.toThrow(
+    await expect(integRunner.deployIntegTests({ atmosphereRoleArn, endpoint, pool })).rejects.toThrow(
       'Deployment integration test did not pass',
     );
 
-    validateSnapshotRun();
+    validateSnapshotRun({ batchSize: 3 });
   });
 });
