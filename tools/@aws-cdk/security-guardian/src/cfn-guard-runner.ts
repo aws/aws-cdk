@@ -26,7 +26,7 @@ function postProcessXml(outputFile: string, fileMapping: Map<string, string>, ty
     let correctedXml = reverseFilenames(xmlContent, fileMapping);
     
     // Add type suffix to failure messages
-    correctedXml = correctedXml.replace(/<failure message="([^&]*)"/g, (match, message) => {
+    correctedXml = correctedXml.replace(/<failure message="([^"]*)"/g, (match, message) => {
       return `<failure message="${message} for Type: ${type}"`;
     });
     

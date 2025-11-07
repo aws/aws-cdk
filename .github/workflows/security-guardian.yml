@@ -53,3 +53,4 @@ jobs:
           annotate_only: true
           group_suite: true
           include_skipped: true
+          check_title_template: '{{TEST_NAME}}'
