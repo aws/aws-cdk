@@ -3,7 +3,7 @@ import * as exec from '@actions/exec';
 import * as fs from 'fs';
 import * as path from 'path';
 
-export async function detectChangedTemplates(baseSha: string, headSha: string, workingDir: string): Promise<boolean> {
+export async function detectChangedTemplates(baseSha: string, headSha: string, workingDir: string): Promise<Map<string, string>> {
   core.info(`Detecting changed .template.json files from ${baseSha} to ${headSha}`);
 
   let stdout = '';
@@ -20,7 +20,7 @@ export async function detectChangedTemplates(baseSha: string, headSha: string, w
     .filter(line => /^(A|M)\s+.*\.template\.json$/.test(line))
     .map(line => line.trim().split(/\s+/)[1]);
 
-  if (changed.length === 0) return false;
+  const fileMapping = new Map<string, string>();
 
   for (const file of changed) {
     const repoRoot = await exec.getExecOutput('git', ['rev-parse', '--show-toplevel']);
@@ -28,12 +28,14 @@ export async function detectChangedTemplates(baseSha: string, headSha: string, w
     console.log('fullpath:', fullPath);
     if (fs.existsSync(fullPath)) {
       const safeName = file.replace(/\//g, '_');
-      fs.copyFileSync(fullPath, path.join(workingDir, safeName));
+      const safeNameFullPath = path.join(workingDir, safeName);
+      fs.copyFileSync(fullPath, safeNameFullPath);
+      fileMapping.set(path.resolve(safeNameFullPath), file);
       core.info(`Copied: ${file}`);
     } else {
       core.warning(`Changed file not found: ${file}`);
     }
   }
 
-  return true;
+  return fileMapping;
 }

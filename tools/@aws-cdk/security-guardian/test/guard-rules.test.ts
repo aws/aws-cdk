@@ -38,7 +38,8 @@ describe('Guard Rules Validation', () => {
         outputDir,
         path.join(rulesDir, 'trust_scope_rules.guard'),
         path.join(outputDir, 'trust-scope-test.xml'),
-        'Trust Scope'
+        'Trust Scope',
+        new Map()
       );
       
       // Should detect broad principals (validation should fail)
@@ -60,7 +61,8 @@ describe('Guard Rules Validation', () => {
         outputDir,
         path.join(rulesDir, 'guard-hooks-no-root-principals.guard'),
         path.join(outputDir, 'guard-hooks-test.xml'),
-        'Guard Hooks'
+        'Guard Hooks',
+        new Map()
       );
       
       // Should detect violations in non-KMS resources (validation should fail)
@@ -82,7 +84,8 @@ describe('Guard Rules Validation', () => {
         outputDir,
         path.join(rulesDir, 'iam.guard'),
         path.join(outputDir, 'iam-test.xml'),
-        'IAM'
+        'IAM',
+        new Map()
       );
       
       // Should detect IAM violations (validation should fail)
@@ -104,7 +107,8 @@ describe('Guard Rules Validation', () => {
         outputDir,
         path.join(rulesDir, 's3.guard'),
         path.join(outputDir, 's3-test.xml'),
-        'S3'
+        'S3',
+        new Map()
       );
       
       // Should detect S3 violations (validation should fail)
@@ -178,7 +182,8 @@ describe('Guard Rules Validation', () => {
         outputDir,
         path.join(rulesDir, 'codepipeline.guard'),
         path.join(outputDir, 'codepipeline-test.xml'),
-        'CodePipeline'
+        'CodePipeline',
+        new Map()
       );
       
       // Should detect CodePipeline violations (validation should fail)
@@ -196,7 +201,8 @@ describe('Guard Rules Validation', () => {
         compliantTemplate,
         path.join(rulesDir, 'trust_scope_rules.guard'),
         path.join(outputDir, 'compliant-trust-test.xml'),
-        'Compliant Trust'
+        'Compliant Trust',
+        new Map()
       );
       
       // Should pass validation (no violations found)
@@ -210,7 +216,8 @@ describe('Guard Rules Validation', () => {
         compliantTemplate,
         path.join(rulesDir, 's3.guard'),
         path.join(outputDir, 'compliant-s3-test.xml'),
-        'Compliant S3'
+        'Compliant S3',
+        new Map()
       );
       
       // Should pass validation (encryption enabled)
@@ -224,7 +231,8 @@ describe('Guard Rules Validation', () => {
         compliantTemplate,
         path.join(rulesDir, 'ec2.guard'),
         path.join(outputDir, 'compliant-ebs-test.xml'),
-        'Compliant EBS'
+        'Compliant EBS',
+        new Map()
       );
       
       // Should pass validation (encryption enabled)

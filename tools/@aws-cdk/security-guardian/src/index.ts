@@ -67,8 +67,8 @@ async function run(): Promise<void> {
     setupWorkingDir(resolvedDir);
     setupWorkingDir(testResultsDir);
     
-    const filesChanged = await detectChangedTemplates(baseSha, headSha, workingDir);
-    if (!filesChanged) {
+    const fileMapping = await detectChangedTemplates(baseSha, headSha, workingDir);
+    if (fileMapping.size === 0) {
       core.info('No template files changed. Skipping validation.');
       return;
     }
@@ -86,10 +86,10 @@ async function run(): Promise<void> {
 
     // Run CFN-Guard validation and generate XML
     core.info(`Running cfn-guard (static) with rule set: ${ruleSetPath}`);
-    const staticPassed = await runCfnGuardValidation(workingDir, ruleSetPath, staticXmlFile, 'Static');
+    const staticPassed = await runCfnGuardValidation(workingDir, ruleSetPath, staticXmlFile, 'Static', fileMapping);
 
     core.info(`Running cfn-guard (resolved) with rule set: ${ruleSetPath}`);
-    const resolvedPassed = await runCfnGuardValidation(resolvedDir, ruleSetPath, resolvedXmlFile, 'Resolved');
+    const resolvedPassed = await runCfnGuardValidation(resolvedDir, ruleSetPath, resolvedXmlFile, 'Resolved', fileMapping);
 
     // Generate Summary Report
     core.info('\n' + '='.repeat(60));
