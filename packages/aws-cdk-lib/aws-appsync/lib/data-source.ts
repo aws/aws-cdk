@@ -466,7 +466,6 @@ export class RdsDataSource extends BackedDataSource {
         'rds-data:UpdateItems',
       ],
       resourceArns: [clusterArn, `${clusterArn}:*`],
-      scope: this,
     });
   }
 }

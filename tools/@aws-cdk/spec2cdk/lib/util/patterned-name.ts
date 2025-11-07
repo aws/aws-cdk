@@ -1,10 +1,14 @@
-export function parsePattern<A extends string>(pattern: string, fields: { [k in A]: unknown }): PatternedString<A> {
-  const placeholders = Object.keys(fields);
-  if (!placeholders.some((param) => pattern.includes(param))) {
-    throw new Error(`--pattern must contain one of [${placeholders.join(', ')}]`);
+export const PATTERN_FIELDS = ['moduleName', 'serviceName', 'serviceShortName'];
+
+export type FilePatternKeys = (typeof PATTERN_FIELDS)[number];
+
+export function parseFilePattern(pattern: string): FilePatternFormatter {
+  if (!PATTERN_FIELDS.some((param) => pattern.includes(param))) {
+    // eslint-disable-next-line @cdklabs/no-throw-default-error
+    throw new Error(`--pattern must contain one of [${PATTERN_FIELDS.join(', ')}]`);
   }
 
-  return (values: { [k in A]: string }) => {
+  return (values: { [k in FilePatternKeys]: string }) => {
     let ret = pattern;
     for (const [k, v] of Object.entries(values)) {
       ret = ret.replace(`%${k}%`, String(v));
@@ -13,6 +17,10 @@ export function parsePattern<A extends string>(pattern: string, fields: { [k in 
   };
 }
 
-export type PatternValues<A extends string> = { [k in A]: string };
+export type FilePatternValues = { [k in FilePatternKeys]: string };
 
-export type PatternedString<A extends string> = (values: PatternValues<A>) => string;
+export function substituteFilePattern(pattern: string, values: FilePatternValues): string {
+  return parseFilePattern(pattern)(values);
+}
+
+export type FilePatternFormatter = (values: FilePatternValues) => string;
