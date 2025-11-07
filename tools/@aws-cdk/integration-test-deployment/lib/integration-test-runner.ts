@@ -53,7 +53,7 @@ export const deployIntegrationTests = async (env: NodeJS.ProcessEnv) => {
     throw new Error('No snapshots changed, skipping deployment integ test.');
   }
 
-  const spawnProcess = spawn('yarn', ['integ-runner', '--disable-update-workflow', '--directory', 'packages', '--force', ...changedSnapshotPaths], {
+  const spawnProcess = spawn('yarn', ['integ-runner', '--strict', '--disable-update-workflow', '--directory', 'packages', '--force', ...changedSnapshotPaths], {
     stdio: ['ignore', 'inherit', 'inherit'],
     env,
   });
