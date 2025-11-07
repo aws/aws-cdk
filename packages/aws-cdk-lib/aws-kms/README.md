@@ -270,7 +270,7 @@ key.grantGenerateMac(user); // Adds 'kms:GenerateMac' to the principal's policy
 key.grantVerifyMac(user); // Adds 'kms:VerifyMac' to the principal's policy
 ```
 
-## Bypass policy lockout safety check
+### Bypass policy lockout safety check
 
 By default, AWS KMS prevents you from creating a key policy that doesn't give you permission to manage the key.
 You can bypass this safety check by setting `bypassPolicyLockoutSafetyCheck` to `true`.
