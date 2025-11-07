@@ -141,6 +141,7 @@ export class AstBuilder {
     }
 
     this.postprocessSubmodule(submod);
+
     return submod;
   }
 
@@ -154,6 +155,7 @@ export class AstBuilder {
     this.addResourceToSubmodule(submod, resource, props);
 
     this.postprocessSubmodule(submod);
+
     return submod;
   }
 
@@ -248,6 +250,7 @@ export class AstBuilder {
     if (shouldRender(submodule.interfaces.module) && submodule.didCreateInterfaceModule) {
       const exportName = submoduleSymbolFromName(submodule.service.name);
       const importLocation = relativeImportPath(this.interfacesEntry, submodule.interfaces);
+
       this.interfacesEntry.module.addInitialization(directCodeStmt(
         `export * as ${exportName} from '${importLocation}'`,
       ));

@@ -138,9 +138,23 @@ export class ResourceClass extends ClassType {
         typeNames,
       ));
 
-      // And put an export in for backwards compatibility
-      this.module.addInitialization(directCodeStmt(`export { ${typeNames.join(', ')} }`));
+      // And put an export in for backwards compatibility, but only if this is not an aliased service
+      if (!this.isAliasedService) {
+        this.module.addInitialization(directCodeStmt(`export { ${typeNames.join(', ')} }`));
+      }
     }
+  }
+
+  /**
+   * Aliased services are resources that are emitted outside their natural habitat,
+   * with a suffix.
+   *
+   * There is only one, and it's
+   * emitting KinesisAnalyticsV2 classes into the `aws_kinesisanalytics`
+   * submodule).
+   */
+  private get isAliasedService() {
+    return !!this.props.suffix;
   }
 
   /**
@@ -239,7 +253,7 @@ export class ResourceClass extends ClassType {
     }
 
     // We don't check deprecation notices if this was generated with a suffix.
-    const considerDeprecation = this.props.suffix ? false : true;
+    const considerDeprecation = !this.isAliasedService;
 
     const interface_ = new InterfaceType(scope, {
       export: true,
