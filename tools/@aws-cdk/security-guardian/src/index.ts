@@ -77,19 +77,23 @@ async function run(): Promise<void> {
 
     // Preprocess templates (resolve intrinsics and normalize policies)
     core.info('Preprocessing templates (resolving intrinsics and normalizing policies)');
-    const processedFiles = preprocessTemplates(workingDir, resolvedDir);
+    const { files: processedFiles, mapping: resolvedMapping } = preprocessTemplates(workingDir, resolvedDir);
     core.info(`Processed ${processedFiles.length} template(s)`);
 
     // Generate XML output files
     const staticXmlFile = path.join(testResultsDir, 'cfn-guard-static.xml');
     const resolvedXmlFile = path.join(testResultsDir, 'cfn-guard-resolved.xml');
 
+    //Combine file mappings
+    const combinedMapping = new Map([...fileMapping, ...resolvedMapping]);
+
+
     // Run CFN-Guard validation and generate XML
     core.info(`Running cfn-guard (static) with rule set: ${ruleSetPath}`);
-    const staticPassed = await runCfnGuardValidation(workingDir, ruleSetPath, staticXmlFile, 'Static', fileMapping);
+    const staticPassed = await runCfnGuardValidation(workingDir, ruleSetPath, staticXmlFile, 'Static', combinedMapping);
 
     core.info(`Running cfn-guard (resolved) with rule set: ${ruleSetPath}`);
-    const resolvedPassed = await runCfnGuardValidation(resolvedDir, ruleSetPath, resolvedXmlFile, 'Resolved', fileMapping);
+    const resolvedPassed = await runCfnGuardValidation(resolvedDir, ruleSetPath, resolvedXmlFile, 'Resolved', combinedMapping);
 
     // Generate Summary Report
     core.info('\n' + '='.repeat(60));

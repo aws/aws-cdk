@@ -4,8 +4,19 @@ import * as fs from 'fs';
 
 function reverseFilenames(xmlContent: string, fileMapping: Map<string, string>): string {
   return xmlContent.replace(/<testsuite name="([^"]*)"/g, (match, safeName) => {
-    const originalName = fileMapping.get(safeName) || safeName;
-    return `<testsuite name="${originalName}" file="${originalName}"`;
+
+    let currentName = safeName;
+    let resolved = fileMapping.get(currentName);
+    
+    // Recursively resolve until no more mappings exist
+    while (resolved && resolved !== currentName) {
+      currentName = resolved;
+      resolved = fileMapping.get(currentName);
+    }
+    
+    const finalName = currentName;
+    
+    return `<testsuite name="${finalName}" file="${finalName}"`;
   });
 }
 

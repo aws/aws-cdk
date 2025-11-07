@@ -348,12 +348,33 @@ describe('Intrinsic Function Resolution', () => {
   describe('Template Preprocessing', () => {
     test('processes existing templates with intrinsic functions', () => {
       // Process existing templates
-      const processedFiles = preprocessTemplates(testDir, outputDir);
+      const { files: processedFiles, mapping } = preprocessTemplates(testDir, outputDir);
       expect(processedFiles.length).toBeGreaterThan(0);
 
       // Check that files were processed
       const outputFiles = fs.readdirSync(outputDir);
       expect(outputFiles.length).toBe(processedFiles.length);
+      
+      // Verify file mapping is created
+      expect(mapping.size).toBeGreaterThan(0);
+      for (const [resolvedPath, originalPath] of mapping.entries()) {
+        expect(resolvedPath).toContain(outputDir);
+        expect(originalPath).toContain(testDir);
+        expect(fs.existsSync(resolvedPath)).toBe(true);
+      }
+    });
+    
+    test('creates correct file mappings for resolved templates', () => {
+      const { mapping } = preprocessTemplates(testDir, outputDir);
+      
+      // Find CMCMK template mapping
+      const cmcmkMapping = Array.from(mapping.entries()).find(([resolved, original]) => 
+        original.includes('CMCMK-Stack.template.json')
+      );
+      
+      expect(cmcmkMapping).toBeDefined();
+      expect(cmcmkMapping![0]).toContain('CMCMK-Stack.template.json');
+      expect(cmcmkMapping![1]).toContain('CMCMK-Stack.template.json');
     });
 
     test('resolves Fn::Join in existing CMCMK template', () => {

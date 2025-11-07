@@ -50,8 +50,10 @@ function walkDir(dir: string, callback: (filePath: string) => void) {
   }
 }
 
-export function preprocessTemplates(sourceDir: string, targetDir: string): string[] {
+export function preprocessTemplates(sourceDir: string, targetDir: string): { files: string[], mapping: Map<string, string> } {
+
   const processedFiles: string[] = [];
+  const resolvedMapping = new Map<string, string>();
   const allTemplates: Record<string, any> = {};
 
   // Phase 1: Load all templates
@@ -92,18 +94,20 @@ export function preprocessTemplates(sourceDir: string, targetDir: string): strin
       
       // Ensure target directory exists
       const targetDirPath = path.dirname(targetPath);
+      const sourceFilePath = path.join(sourceDir, path.basename(filePath));
       if (!fs.existsSync(targetDirPath)) {
         fs.mkdirSync(targetDirPath, { recursive: true });
       }
       
       fs.writeFileSync(targetPath, JSON.stringify(processedTemplate, null, 2));
       processedFiles.push(path.basename(filePath));
+      resolvedMapping.set(path.resolve(targetPath), path.resolve(sourceFilePath));
       
       core.info(`Processed: ${path.basename(filePath)} → resolved copy`);
     } catch (err) {
       core.warning(`Failed to process ${filePath}: ${(err as Error).message}`);
     }
   });
-
-  return processedFiles;
+  
+  return { files: processedFiles, mapping: resolvedMapping };
 }

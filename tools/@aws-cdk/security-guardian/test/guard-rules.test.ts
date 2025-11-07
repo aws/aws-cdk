@@ -120,7 +120,7 @@ describe('Guard Rules Validation', () => {
   describe('Template Processing', () => {
     test('should successfully process all existing templates', () => {
       // Process all existing templates in test/templates
-      const processedFiles = preprocessTemplates(templatesDir, outputDir);
+      const { files: processedFiles, mapping } = preprocessTemplates(templatesDir, outputDir);
       
       // Should process all template files
       expect(processedFiles.length).toBeGreaterThan(0);
@@ -129,6 +129,13 @@ describe('Guard Rules Validation', () => {
       processedFiles.forEach(file => {
         expect(fs.existsSync(path.join(outputDir, file))).toBe(true);
       });
+      
+      // Verify file mapping is created correctly
+      expect(mapping.size).toBeGreaterThan(0);
+      for (const [resolvedPath, originalPath] of mapping.entries()) {
+        expect(resolvedPath).toContain(outputDir);
+        expect(originalPath).toContain(templatesDir);
+      }
     });
   });
 
