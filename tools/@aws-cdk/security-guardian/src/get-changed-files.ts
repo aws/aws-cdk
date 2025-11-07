@@ -26,15 +26,15 @@ export async function detectChangedTemplates(baseSha: string, headSha: string, w
     const repoRoot = await exec.getExecOutput('git', ['rev-parse', '--show-toplevel']);
     const fullPath = path.join(repoRoot.stdout.trim(), file);
     console.log('fullpath:', fullPath);
-    if (fs.existsSync(fullPath)) {
-      const safeName = file.replace(/\//g, '_');
-      const safeNameFullPath = path.join(workingDir, safeName);
-      fs.copyFileSync(fullPath, safeNameFullPath);
-      fileMapping.set(path.resolve(safeNameFullPath), file);
-      core.info(`Copied: ${file}`);
-    } else {
-      core.warning(`Changed file not found: ${file}`);
-    }
+    //Create the safe file name for running security analysis
+    const safeName = file.replace(/\//g, '_');
+    const safeNameFullPath = path.join(workingDir, safeName);
+
+    //Read the changed file content
+    const fileContent = await exec.getExecOutput('git', ['show', `${headSha}:${file}`]);
+    fs.writeFileSync(safeNameFullPath, fileContent.stdout);
+    fileMapping.set(path.resolve(safeNameFullPath), file);
+    core.info(`Copied: ${file}`);
   }
 
   return fileMapping;
