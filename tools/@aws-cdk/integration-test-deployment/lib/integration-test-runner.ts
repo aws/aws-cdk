@@ -3,14 +3,12 @@ import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
 import { AtmosphereAllocation } from './atmosphere';
 import { getChangedSnapshots } from './utils';
 
-interface DeployIntegTestProps {
+export const deployIntegTests = async (props: {
   atmosphereRoleArn: string;
   endpoint: string;
   pool: string;
   batchSize?: number;
-}
-
-export const deployIntegTests = async ({ atmosphereRoleArn, endpoint, pool, ...props }: DeployIntegTestProps) => {
+}) => {
   const batchSize = props.batchSize ?? 3;
 
   const changedSnapshots = await getChangedSnapshots();
@@ -23,10 +21,10 @@ export const deployIntegTests = async ({ atmosphereRoleArn, endpoint, pool, ...p
 
   for (let i = 0; i < changedSnapshots.length; i += batchSize) {
     const batch = changedSnapshots.slice(i, i + batchSize);
-    const creds = await assumeAtmosphereRole(atmosphereRoleArn);
+    const creds = await assumeAtmosphereRole(props.atmosphereRoleArn);
     const allocation = await AtmosphereAllocation.acquire({
-      endpoint,
-      pool,
+      endpoint: props.endpoint,
+      pool: props.pool,
       creds: {
         accessKeyId: creds.AccessKeyId!,
         secretAccessKey: creds.SecretAccessKey!,
