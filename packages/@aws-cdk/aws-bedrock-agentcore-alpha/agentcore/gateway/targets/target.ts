@@ -8,7 +8,7 @@ import { ApiSchema } from './schema/api-schema';
 import { ToolSchema } from './schema/tool-schema';
 import { GatewayTargetBase, GatewayTargetProtocolType, IGatewayTarget, IMcpGatewayTarget, McpTargetType } from './target-base';
 import { ITargetConfiguration, LambdaTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from './target-configuration';
-import { GatewayCredentialProvider, ICredentialProvider, ILambdaCredentialProvider, IOpenApiCredentialProvider, ISmithyCredentialProvider } from '../outbound-auth/credential-provider';
+import { GatewayCredentialProvider, ICredentialProvider } from '../outbound-auth/credential-provider';
 import { validateStringField, validateFieldPattern, ValidationError } from '../validation-helpers';
 
 /******************************************************************************
@@ -84,7 +84,7 @@ export interface GatewayTargetLambdaProps extends McpGatewayTargetCommonProps {
    * Lambda targets only support IAM role authentication
    * @default - [GatewayCredentialProvider.fromIamRole()]
    */
-  readonly credentialProviderConfigurations?: ILambdaCredentialProvider[];
+  readonly credentialProviderConfigurations?: ICredentialProvider[];
 }
 
 /**
@@ -114,7 +114,7 @@ export interface GatewayTargetOpenApiProps extends McpGatewayTargetCommonProps {
    * OpenAPI targets support API key and OAuth authentication (not IAM)
    * @default: If not provided, defaults to IAM role which will fail at runtime
    */
-  readonly credentialProviderConfigurations?: IOpenApiCredentialProvider[];
+  readonly credentialProviderConfigurations?: ICredentialProvider[];
 }
 
 /**
@@ -136,7 +136,7 @@ export interface GatewayTargetSmithyProps extends McpGatewayTargetCommonProps {
    * Smithy targets only support IAM role authentication
    * @default - [GatewayCredentialProvider.fromIamRole()]
    */
-  readonly credentialProviderConfigurations?: ISmithyCredentialProvider[];
+  readonly credentialProviderConfigurations?: ICredentialProvider[];
 }
 
 /**
