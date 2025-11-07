@@ -276,6 +276,7 @@ By default, AWS KMS prevents you from creating a key policy that doesn't give yo
 You can bypass this safety check by setting `bypassPolicyLockoutSafetyCheck` to `true`.
 
 ```ts
+declare const myCustomPolicy: iam.PolicyDocument;
 const key = new kms.Key(this, 'MyKey', {
   bypassPolicyLockoutSafetyCheck: true,
   policy: myCustomPolicy,

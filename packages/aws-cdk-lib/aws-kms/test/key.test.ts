@@ -1415,36 +1415,18 @@ describe('SM2', () => {
   });
 });
 
-describe('bypassPolicyLockoutSafetyCheck', () => {
-  test('can be enabled', () => {
-    const stack = new cdk.Stack();
-    new kms.Key(stack, 'MyKey', {
-      bypassPolicyLockoutSafetyCheck: true,
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
-      BypassPolicyLockoutSafetyCheck: true,
-    });
+test.each([
+  [true, true],
+  [false, false],
+  [undefined, Match.absent()],
+])('bypassPolicyLockoutSafetyCheck is set to %s', (input, expected) => {
+  const stack = new cdk.Stack();
+  new kms.Key(stack, 'MyKey', {
+    bypassPolicyLockoutSafetyCheck: input,
   });
 
-  test('can be explicitly set to false', () => {
-    const stack = new cdk.Stack();
-    new kms.Key(stack, 'MyKey', {
-      bypassPolicyLockoutSafetyCheck: false,
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
-      BypassPolicyLockoutSafetyCheck: false,
-    });
-  });
-
-  test('is not included in template when not specified', () => {
-    const stack = new cdk.Stack();
-    new kms.Key(stack, 'MyKey');
-
-    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
-      BypassPolicyLockoutSafetyCheck: Match.absent(),
-    });
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    BypassPolicyLockoutSafetyCheck: expected,
   });
 });
 
