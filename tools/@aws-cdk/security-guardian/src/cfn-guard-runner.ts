@@ -5,7 +5,7 @@ import * as fs from 'fs';
 function reverseFilenames(xmlContent: string): string {
   return xmlContent.replace(/<testsuite name="([^"]*_[^"]*)"/g, (match, filename) => {
     const originalName = filename.replace(/_/g, '/');
-    return `<testsuite name="${originalName}"`;
+    return `<testsuite name="${originalName}" file="${originalName}"`;
   });
 }
 
