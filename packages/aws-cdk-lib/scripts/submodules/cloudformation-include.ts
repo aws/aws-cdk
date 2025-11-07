@@ -7,7 +7,7 @@ export default async function writeCloudFormationIncludeMapping(moduleMap: Modul
   const classMap: { [cfnType: string]: string } = {};
   Object.entries(moduleMap).forEach(([moduleName, { resources }]) => {
     const modulePath = `aws-cdk-lib/${moduleName}`;
-    Object.entries(resources).forEach(([resourceName, resourceClassName]) => {
+    Object.entries(resources ?? {}).forEach(([resourceName, resourceClassName]) => {
       classMap[resourceName] = `${modulePath}.${resourceClassName}`;
     });
   });
