@@ -89,6 +89,48 @@ export interface DeploymentCircuitBreaker {
 }
 
 /**
+ * Configuration for canary deployment strategy
+ */
+export interface CanaryConfiguration {
+  /**
+   * The percentage of production traffic to shift to the new service revision during the canary phase.
+   * Valid values are multiples of 0.1 from 0.1 to 100.0.
+   *
+   * @default 5.0
+   */
+  readonly canaryPercent?: number;
+
+  /**
+   * The duration to wait during the canary phase before shifting the remaining production traffic
+   * to the new service revision. Valid values are 0 to 1440 minutes (24 hours).
+   *
+   * @default Duration.minutes(10)
+   */
+  readonly canaryBakeTime?: Duration;
+}
+
+/**
+ * Configuration for linear deployment strategy
+ */
+export interface LinearConfiguration {
+  /**
+   * The percentage of production traffic to shift in each step during a linear deployment.
+   * Valid values are multiples of 0.1 from 3.0 to 100.0.
+   *
+   * @default 10.0
+   */
+  readonly stepPercent?: number;
+
+  /**
+   * The duration to wait between each traffic shifting step during a linear deployment.
+   * Valid values are 0 to 1440 minutes (24 hours).
+   *
+   * @default Duration.minutes(6)
+   */
+  readonly stepBakeTime?: Duration;
+}
+
+/**
  * Deployment behavior when an ECS Service Deployment Alarm is triggered
  */
 export enum AlarmBehavior {
@@ -455,6 +497,22 @@ export interface BaseServiceOptions {
    * @default - none;
    */
   readonly lifecycleHooks?: IDeploymentLifecycleHookTarget[];
+
+  /**
+   * Configuration for canary deployment strategy.
+   * Only valid when deploymentStrategy is set to CANARY.
+   *
+   * @default - no canary configuration
+   */
+  readonly canaryConfiguration?: CanaryConfiguration;
+
+  /**
+   * Configuration for linear deployment strategy.
+   * Only valid when deploymentStrategy is set to LINEAR.
+   *
+   * @default - no linear configuration
+   */
+  readonly linearConfiguration?: LinearConfiguration;
 }
 
 /**
@@ -738,6 +796,14 @@ export abstract class BaseService extends Resource
         alarms: Lazy.any({ produce: () => this.deploymentAlarms }, { omitEmptyArray: true }),
         strategy: props.deploymentStrategy,
         bakeTimeInMinutes: props.bakeTime?.toMinutes(),
+        canaryConfiguration: props.canaryConfiguration ? {
+          canaryPercent: props.canaryConfiguration.canaryPercent,
+          canaryBakeTimeInMinutes: props.canaryConfiguration.canaryBakeTime?.toMinutes(),
+        } : undefined,
+        linearConfiguration: props.linearConfiguration ? {
+          stepPercent: props.linearConfiguration.stepPercent,
+          stepBakeTimeInMinutes: props.linearConfiguration.stepBakeTime?.toMinutes(),
+        } : undefined,
         lifecycleHooks: Lazy.any({ produce: () => this.renderLifecycleHooks() }, { omitEmptyArray: true }),
       },
       propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
@@ -856,6 +922,20 @@ export abstract class BaseService extends Resource
       } else {
         throw new ValidationError('Deployment lifecycle hooks requires the ECS deployment controller.', this);
       }
+    }
+
+    if (props.canaryConfiguration) {
+      if (props.deploymentStrategy !== DeploymentStrategy.CANARY) {
+        throw new ValidationError('canaryConfiguration can only be used with CANARY deployment strategy.', this);
+      }
+      this.validateCanaryConfiguration(props.canaryConfiguration);
+    }
+
+    if (props.linearConfiguration) {
+      if (props.deploymentStrategy !== DeploymentStrategy.LINEAR) {
+        throw new ValidationError('linearConfiguration can only be used with LINEAR deployment strategy.', this);
+      }
+      this.validateLinearConfiguration(props.linearConfiguration);
     }
 
     this.node.defaultChild = this.resource;
@@ -1111,6 +1191,48 @@ export abstract class BaseService extends Resource
         throw new ValidationError(`awsPcaAuthorityArn must start with "arn:" and have at least 6 components; received ${awsPcaAuthorityArn}`, this);
       }
     });
+  }
+
+  /**
+   * Validate Canary Configuration
+   */
+  private validateCanaryConfiguration(config: CanaryConfiguration) {
+    if (config.canaryPercent !== undefined && !Token.isUnresolved(config.canaryPercent)) {
+      if (!Number.isFinite(config.canaryPercent) || config.canaryPercent < 0.1 || config.canaryPercent > 100.0) {
+        throw new ValidationError(`canaryPercent must be between 0.1 and 100.0, received ${config.canaryPercent}`, this);
+      }
+      if (!Number.isFinite((config.canaryPercent * 10) % 1)) {
+        throw new ValidationError(`canaryPercent must be a multiple of 0.1, received ${config.canaryPercent}`, this);
+      }
+    }
+
+    if (config.canaryBakeTime !== undefined && !Token.isUnresolved(config.canaryBakeTime)) {
+      const minutes = config.canaryBakeTime.toMinutes();
+      if (minutes < 0 || minutes > 1440) {
+        throw new ValidationError(`canaryBakeTime must be between 0 and 1440 minutes, received ${minutes}`, this);
+      }
+    }
+  }
+
+  /**
+   * Validate Linear Configuration
+   */
+  private validateLinearConfiguration(config: LinearConfiguration) {
+    if (config.stepPercent !== undefined && !Token.isUnresolved(config.stepPercent)) {
+      if (!Number.isFinite(config.stepPercent) || config.stepPercent < 3.0 || config.stepPercent > 100.0) {
+        throw new ValidationError(`stepPercent must be between 3.0 and 100.0, received ${config.stepPercent}`, this);
+      }
+      if (!Number.isFinite((config.stepPercent * 10) % 1)) {
+        throw new ValidationError(`stepPercent must be a multiple of 0.1, received ${config.stepPercent}`, this);
+      }
+    }
+
+    if (config.stepBakeTime !== undefined && !Token.isUnresolved(config.stepBakeTime)) {
+      const minutes = config.stepBakeTime.toMinutes();
+      if (minutes < 0 || minutes > 1440) {
+        throw new ValidationError(`stepBakeTime must be between 0 and 1440 minutes, received ${minutes}`, this);
+      }
+    }
   }
 
   /**
@@ -1820,6 +1942,14 @@ export enum DeploymentStrategy {
    * Blue/green deployment
    */
   BLUE_GREEN = 'BLUE_GREEN',
+  /**
+   * Linear deployment with progressive traffic shifting
+   */
+  LINEAR = 'LINEAR',
+  /**
+   * Canary deployment with fixed traffic percentage testing
+   */
+  CANARY = 'CANARY',
 }
 
 /**
