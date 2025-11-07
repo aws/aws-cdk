@@ -165,6 +165,7 @@ For more details, refer to the
 following link: <https://docs.aws.amazon.com/neptune/latest/userguide/neptune-public-endpoints.html>
 
 Note:
+
 - Public endpoint setting is available on the Neptune instance and not the Neptune cluster.
 - IAM authentication is required for clusters with public endpoints enabled.
 
