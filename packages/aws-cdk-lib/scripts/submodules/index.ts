@@ -1,7 +1,6 @@
 import * as path from 'node:path';
 import { createLibraryReadme } from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
-import writeCloudFormationIncludeMapping from './cloudformation-include';
 import { ModuleMap, ModuleMapEntry } from '../codegen';
 
 /**
