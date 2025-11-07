@@ -35,38 +35,51 @@ const CLOUDFORMATION_PSEUDOPARAMETERS = {
   'AWS::AccountId': '123456789012'
 };
 
-const RESOURCE_ATTRIBUTES = {
+// Security-critical resource attributes for accurate policy validation
+const SECURITY_RESOURCE_ATTRIBUTES: Record<string, Record<string, any>> = {
   'AWS::IAM::Role': {
     'Arn': (name: string) => `arn:aws:iam::123456789012:role/${name}`,
     'RoleId': () => 'AIDACKCEVSQ6C2EXAMPLE'
   },
-  'AWS::Lambda::Function': {
-    'Arn': (name: string) => `arn:aws:lambda:us-west-2:123456789012:function:${name}`,
-    'FunctionName': (name: string) => name
+  'AWS::IAM::User': {
+    'Arn': (name: string) => `arn:aws:iam::123456789012:user/${name}`,
+    'UserId': () => 'AIDACKCEVSQ6C2EXAMPLE'
   },
-  'AWS::EC2::Instance': {
-    'AvailabilityZone': () => 'us-west-2a',
-    'PrivateDnsName': () => 'ip-10-0-0-1.us-west-2.compute.internal',
-    'PrivateIp': () => '10.0.0.1',
-    'PublicDnsName': () => 'ec2-203-0-113-12.us-west-2.compute.amazonaws.com',
-    'PublicIp': () => '203.0.113.12'
+  'AWS::IAM::Policy': {
+    'Arn': (name: string) => `arn:aws:iam::123456789012:policy/${name}`,
+    'PolicyId': () => 'ANPAI23HZ27SI6FQMGNQ2'
+  },
+  'AWS::KMS::Key': {
+    'Arn': (name: string) => `arn:aws:kms:us-west-2:123456789012:key/${name}`,
+    'KeyId': (name: string) => name
   },
   'AWS::S3::Bucket': {
     'Arn': (name: string) => `arn:aws:s3:::${name}`,
+    'BucketName': (name: string) => name,
     'DomainName': (name: string) => `${name}.s3.amazonaws.com`,
     'WebsiteURL': (name: string) => `http://${name}.s3-website-us-west-2.amazonaws.com`
-  },
-  'AWS::SQS::Queue': {
-    'Arn': (name: string) => `arn:aws:sqs:us-west-2:123456789012:${name}`,
-    'QueueName': (name: string) => name
   },
   'AWS::SNS::Topic': {
     'Arn': (name: string) => `arn:aws:sns:us-west-2:123456789012:${name}`,
     'TopicName': (name: string) => name
   },
-  'AWS::KMS::Key': {
-    'Arn': (name: string) => `arn:aws:kms:us-west-2:123456789012:key/${name}`,
-    'KeyId': (name: string) => name
+  'AWS::SQS::Queue': {
+    'Arn': (name: string) => `arn:aws:sqs:us-west-2:123456789012:${name}`,
+    'QueueName': (name: string) => name,
+    'QueueUrl': (name: string) => `https://sqs.us-west-2.amazonaws.com/123456789012/${name}`
+  },
+  'AWS::Lambda::Function': {
+    'Arn': (name: string) => `arn:aws:lambda:us-west-2:123456789012:function:${name}`,
+    'FunctionName': (name: string) => name
+  },
+  'AWS::SecretsManager::Secret': {
+    'Arn': (name: string) => `arn:aws:secretsmanager:us-west-2:123456789012:secret:${name}`,
+    'Name': (name: string) => name
+  },
+  'AWS::ECR::Repository': {
+    'Arn': (name: string) => `arn:aws:ecr:us-west-2:123456789012:repository/${name}`,
+    'RepositoryName': (name: string) => name,
+    'RepositoryUri': (name: string) => `123456789012.dkr.ecr.us-west-2.amazonaws.com/${name}`
   }
 };
 
@@ -90,7 +103,9 @@ function resolveRef(obj: any): any {
 
 function resolveJoin(content: any, cfnResources?: Record<string, any>): string {
   const delimiter = resolveIntrinsics(content[0], cfnResources);
-  const parts = content[1].map((part: any) => resolveIntrinsics(part, cfnResources));
+  const listValue = resolveIntrinsics(content[1], cfnResources);
+  const list = Array.isArray(listValue) ? listValue : [listValue];
+  const parts = list.map((part: any) => String(resolveIntrinsics(part, cfnResources)));
   return parts.join(delimiter);
 }
 
@@ -158,27 +173,29 @@ function resolveGetAtt(content: any, cfnResources?: Record<string, any>): any {
     attributeName = content[1];
   }
   
-  // Try local resources first
-  if (cfnResources && cfnResources[logicalName]) {
-    const resourceType = cfnResources[logicalName].Type;
-    const attributes = RESOURCE_ATTRIBUTES[resourceType as keyof typeof RESOURCE_ATTRIBUTES];
-    if (attributes && attributes[attributeName as keyof typeof attributes]) {
-      const attrFunc = attributes[attributeName as keyof typeof attributes] as Function;
-      return attrFunc(logicalName);
+  // Get resource type from cfnResources for accurate attribute resolution
+  const resourceType = cfnResources?.[logicalName]?.Type;
+  
+  return getDefaultAttributeValue(logicalName, attributeName, resourceType);
+}
+
+function getDefaultAttributeValue(logicalName: string, attributeName: string, resourceType?: string): any {
+  // Check security-critical resources first
+  if (resourceType && SECURITY_RESOURCE_ATTRIBUTES[resourceType]) {
+    const attributes = SECURITY_RESOURCE_ATTRIBUTES[resourceType];
+    if (attributes[attributeName]) {
+      const attrValue = attributes[attributeName];
+      return typeof attrValue === 'function' ? attrValue(logicalName) : attrValue;
     }
   }
   
-  // Try global registry
-  if (globalRegistry.resources[logicalName]) {
-    const resourceType = globalRegistry.resources[logicalName].Type;
-    const attributes = RESOURCE_ATTRIBUTES[resourceType as keyof typeof RESOURCE_ATTRIBUTES];
-    if (attributes && attributes[attributeName as keyof typeof attributes]) {
-      const attrFunc = attributes[attributeName as keyof typeof attributes] as Function;
-      return attrFunc(logicalName);
-    }
-  }
-  
-  return `${logicalName}.${attributeName}`;
+  // Pattern-based fallback for other resources
+  if (attributeName.toLowerCase().includes('arn')) return `arn:aws:service:us-west-2:123456789012:resource/${logicalName}`;
+  if (attributeName.toLowerCase().includes('keys') || attributeName.toLowerCase().includes('list')) return ['item1', 'item2'];
+  if (attributeName.toLowerCase().includes('url') || attributeName.toLowerCase().includes('endpoint')) return `https://${logicalName}.amazonaws.com`;
+  if (attributeName.toLowerCase().includes('id')) return `${logicalName}-id-12345`;
+  if (attributeName.toLowerCase().includes('name')) return logicalName;
+  return `${logicalName}.${attributeName}`; // Generic fallback
 }
 
 function resolveImportValue(exportName: string): any {
