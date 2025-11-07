@@ -442,19 +442,8 @@ test('warns when using imported KMS key', () => {
   const stack = new Stack();
   const importedKey = kms.Key.fromKeyArn(stack, 'ImportedKey',
     'arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab');
+  addSqsQueueTarget(stack, { encryptionMasterKey: importedKey });
 
-  const queue = new sqs.Queue(stack, 'MyQueue', {
-    encryptionMasterKey: importedKey,
-  });
-
-  const rule = new events.Rule(stack, 'MyRule', {
-    schedule: events.Schedule.rate(Duration.hours(1)),
-  });
-
-  // WHEN
-  rule.addTarget(new targets.SqsQueue(queue));
-
-  // THEN
   Annotations.fromStack(stack).hasWarning('/Default/MyRule',
     Match.stringLikeRegexp('.*imported KMS key.*1234abcd-12ab-34cd-56ef-1234567890ab[\\s\\S]*manually add[\\s\\S]*kms:Decrypt[\\s\\S]*kms:GenerateDataKey.*'));
 });
@@ -462,33 +451,22 @@ test('warns when using imported KMS key', () => {
 test('does not warn when using CDK-managed KMS key', () => {
   const stack = new Stack();
   const key = new kms.Key(stack, 'Key');
+  addSqsQueueTarget(stack, { encryptionMasterKey: key });
 
-  const queue = new sqs.Queue(stack, 'MyQueue', {
-    encryptionMasterKey: key,
-  });
-
-  const rule = new events.Rule(stack, 'MyRule', {
-    schedule: events.Schedule.rate(Duration.hours(1)),
-  });
-
-  // WHEN
-  rule.addTarget(new targets.SqsQueue(queue));
-
-  // THEN
   Annotations.fromStack(stack).hasNoWarning('/Default/MyRule', Match.anyValue());
 });
 
 test('does not warn when queue has no encryption', () => {
   const stack = new Stack();
-  const queue = new sqs.Queue(stack, 'MyQueue');
+  addSqsQueueTarget(stack);
 
+  Annotations.fromStack(stack).hasNoWarning('/Default/MyRule', Match.anyValue());
+});
+
+function addSqsQueueTarget(stack: Stack, queueProps?: sqs.QueueProps): void {
+  const queue = new sqs.Queue(stack, 'MyQueue', queueProps);
   const rule = new events.Rule(stack, 'MyRule', {
     schedule: events.Schedule.rate(Duration.hours(1)),
   });
-
-  // WHEN
   rule.addTarget(new targets.SqsQueue(queue));
-
-  // THEN
-  Annotations.fromStack(stack).hasNoWarning('/Default/MyRule', Match.anyValue());
-});
+}
