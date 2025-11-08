@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
       "displayName": "CloudWatchLogsExportsStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "6e1cea0c320773ab26ffb4524414c57f4cd88a0712219d6fbb6bcee740c20546": {
+    "d07527338b271441f26522da3dcdfb74ee70c5d64783d3b6e79ba638850a1b20": {
       "displayName": "CloudWatchLogsExportsStack Template",
       "source": {
         "path": "CloudWatchLogsExportsStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-434676a4": {
+        "current_account-current_region-185d5699": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6e1cea0c320773ab26ffb4524414c57f4cd88a0712219d6fbb6bcee740c20546.json",
+          "objectKey": "d07527338b271441f26522da3dcdfb74ee70c5d64783d3b6e79ba638850a1b20.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

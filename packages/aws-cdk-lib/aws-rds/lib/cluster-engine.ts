@@ -174,6 +174,11 @@ interface MysqlClusterEngineBaseProps {
 
 abstract class MySqlClusterEngineBase extends ClusterEngineBase {
   public readonly engineFamily = 'MYSQL';
+
+  /**
+   * Log types supported by this engine. See EnableCloudwatchLogsExports of CreateDBCluster API
+   * for reference: https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_CreateDBCluster.html
+   */
   public readonly supportedLogTypes: string[] = ['error', 'general', 'slowquery', 'audit', 'instance', 'iam-db-auth-error'];
   public readonly combineImportAndExportRoles?: boolean;
 
@@ -1341,6 +1346,11 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
 
   public readonly engineFamily = 'POSTGRESQL';
   public readonly defaultUsername = 'postgres';
+
+  /**
+   * Log types supported by this engine. See EnableCloudwatchLogsExports of CreateDBCluster API
+   * for reference: https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_CreateDBCluster.html
+   */
   public readonly supportedLogTypes: string[] = ['postgresql', 'iam-db-auth-error', 'instance'];
 
   constructor(version?: AuroraPostgresEngineVersion) {
