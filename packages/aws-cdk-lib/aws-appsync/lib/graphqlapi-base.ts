@@ -560,7 +560,6 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       grantee,
       actions,
       resourceArns: resources.resourceArns(this),
-      scope: this,
     });
   }
 
