@@ -469,7 +469,7 @@ class JsonataCondition extends Condition {
   constructor(private readonly condition: string) {
     super();
     if (!isValidJsonataExpression(condition)) {
-      throw new UnscopedValidationError(`JSONata expression must be start with '{%' and end with '%}', got '${condition}'`);
+      throw new UnscopedValidationError(`JSONata expression must start with '{%' and end with '%}', got '${condition}'`);
     }
   }
 
