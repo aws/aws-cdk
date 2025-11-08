@@ -1099,6 +1099,11 @@
       "namespace": "AWS::Route53Resolver"
     }
   ],
+  "aws-rtbfabric": [
+    {
+      "namespace": "AWS::RTBFabric"
+    }
+  ],
   "aws-rum": [
     {
       "namespace": "AWS::RUM"
@@ -1127,6 +1132,11 @@
   "aws-s3tables": [
     {
       "namespace": "AWS::S3Tables"
+    }
+  ],
+  "aws-s3vectors": [
+    {
+      "namespace": "AWS::S3Vectors"
     }
   ],
   "aws-sagemaker": [
