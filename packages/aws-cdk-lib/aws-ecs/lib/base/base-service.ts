@@ -1201,7 +1201,7 @@ export abstract class BaseService extends Resource
       if (!Number.isFinite(config.canaryPercent) || config.canaryPercent < 0.1 || config.canaryPercent > 100.0) {
         throw new ValidationError(`canaryPercent must be between 0.1 and 100.0, received ${config.canaryPercent}`, this);
       }
-      if (!Number.isFinite((config.canaryPercent * 10) % 1)) {
+      if ((config.canaryPercent * 10) % 1 !== 0) {
         throw new ValidationError(`canaryPercent must be a multiple of 0.1, received ${config.canaryPercent}`, this);
       }
     }
@@ -1222,7 +1222,7 @@ export abstract class BaseService extends Resource
       if (!Number.isFinite(config.stepPercent) || config.stepPercent < 3.0 || config.stepPercent > 100.0) {
         throw new ValidationError(`stepPercent must be between 3.0 and 100.0, received ${config.stepPercent}`, this);
       }
-      if (!Number.isFinite((config.stepPercent * 10) % 1)) {
+      if ((config.stepPercent * 10) % 1 !== 0) {
         throw new ValidationError(`stepPercent must be a multiple of 0.1, received ${config.stepPercent}`, this);
       }
     }

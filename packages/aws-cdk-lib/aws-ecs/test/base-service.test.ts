@@ -587,6 +587,20 @@ describe('Linear Deployment', () => {
     }).toThrow(/stepPercent must be between 3.0 and 100.0/);
   });
 
+  test('should throw error when step percent is not a multiple of 0.1', () => {
+    // THEN
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        deploymentStrategy: ecs.DeploymentStrategy.LINEAR,
+        linearConfiguration: {
+          stepPercent: 10.15,
+        },
+      });
+    }).toThrow(/stepPercent must be a multiple of 0.1/);
+  });
+
   test('should throw error when step bake time is out of range', () => {
     // THEN
     expect(() => {
@@ -669,6 +683,20 @@ describe('Canary Deployment', () => {
         },
       });
     }).toThrow(/canaryPercent must be between 0.1 and 100.0/);
+  });
+
+  test('should throw error when canary percent is not a multiple of 0.1', () => {
+    // THEN
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        deploymentStrategy: ecs.DeploymentStrategy.CANARY,
+        canaryConfiguration: {
+          canaryPercent: 5.15,
+        },
+      });
+    }).toThrow(/canaryPercent must be a multiple of 0.1/);
   });
 
   test('should throw error when canary bake time is out of range', () => {
