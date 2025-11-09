@@ -2218,6 +2218,72 @@ const target = service.loadBalancerTarget({
 target.attachToApplicationTargetGroup(blueTargetGroup);
 ```
 
+## Buil-in Linear and Canary Deployments
+
+Amazon ECS supports progressive deployment strategies that allow you to validate new service revisions before shifting all production traffic. Both strategies require an Application Load Balancer (ALB) with target groups for traffic routing.
+
+### Linear Deployment
+
+Linear deployment strategy shifts production traffic in equal percentage increments with configurable wait times between each step:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const vpc: ec2.Vpc;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  deploymentStrategy: ecs.DeploymentStrategy.LINEAR,
+  linearConfiguration: {
+    stepPercent: 10.0,
+    stepBakeTime: Duration.minutes(5),
+  },
+});
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
+const listener = lb.addListener('Listener', { port: 80 });
+listener.addTargets('ECS', {
+  port: 80,
+  targets: [service],
+});
+```
+
+Valid values:
+- `stepPercent`: 3.0 to 100.0 (multiples of 0.1). Default: 10.0
+- `stepBakeTime`: 0 to 1440 minutes (24 hours). Default: 6 minutes
+
+### Canary Deployment
+
+Canary deployment strategy shifts a fixed percentage of traffic to the new service revision for testing, then shifts the remaining traffic after a bake period:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const vpc: ec2.Vpc;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  deploymentStrategy: ecs.DeploymentStrategy.CANARY,
+  canaryConfiguration: {
+    canaryPercent: 5.0,
+    canaryBakeTime: Duration.minutes(10),
+  },
+});
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
+const listener = lb.addListener('Listener', { port: 80 });
+listener.addTargets('ECS', {
+  port: 80,
+  targets: [service],
+});
+```
+
+Valid values:
+- `canaryPercent`: 0.1 to 100.0 (multiples of 0.1). Default: 5.0
+- `canaryBakeTime`: 0 to 1440 minutes (24 hours). Default: 10 minutes
+
 ## Daemon Scheduling Strategy
 You can specify whether service use Daemon scheduling strategy by specifying `daemon` option in Service constructs. See [differences between Daemon and Replica scheduling strategy](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html)
 
