@@ -2229,7 +2229,9 @@ Linear deployment strategy shifts production traffic in equal percentage increme
 ```ts
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
-declare const vpc: ec2.Vpc;
+declare const blueTargetGroup: elbv2.ApplicationTargetGroup;
+declare const greenTargetGroup: elbv2.ApplicationTargetGroup;
+declare const prodListenerRule: elbv2.ApplicationListenerRule;
 
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
@@ -2241,12 +2243,16 @@ const service = new ecs.FargateService(this, 'Service', {
   },
 });
 
-const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
-const listener = lb.addListener('Listener', { port: 80 });
-listener.addTargets('ECS', {
-  port: 80,
-  targets: [service],
+const target = service.loadBalancerTarget({
+  containerName: 'web',
+  containerPort: 80,
+  alternateTarget: new ecs.AlternateTarget('AlternateTarget', {
+    alternateTargetGroup: greenTargetGroup,
+    productionListener: ecs.ListenerRuleConfiguration.applicationListenerRule(prodListenerRule),
+  }),
 });
+
+target.attachToApplicationTargetGroup(blueTargetGroup);
 ```
 
 Valid values:
@@ -2260,7 +2266,9 @@ Canary deployment strategy shifts a fixed percentage of traffic to the new servi
 ```ts
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
-declare const vpc: ec2.Vpc;
+declare const blueTargetGroup: elbv2.ApplicationTargetGroup;
+declare const greenTargetGroup: elbv2.ApplicationTargetGroup;
+declare const prodListenerRule: elbv2.ApplicationListenerRule;
 
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
@@ -2272,12 +2280,16 @@ const service = new ecs.FargateService(this, 'Service', {
   },
 });
 
-const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
-const listener = lb.addListener('Listener', { port: 80 });
-listener.addTargets('ECS', {
-  port: 80,
-  targets: [service],
+const target = service.loadBalancerTarget({
+  containerName: 'web',
+  containerPort: 80,
+  alternateTarget: new ecs.AlternateTarget('AlternateTarget', {
+    alternateTargetGroup: greenTargetGroup,
+    productionListener: ecs.ListenerRuleConfiguration.applicationListenerRule(prodListenerRule),
+  }),
 });
+
+target.attachToApplicationTargetGroup(blueTargetGroup);
 ```
 
 Valid values:
