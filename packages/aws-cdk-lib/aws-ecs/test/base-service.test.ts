@@ -518,7 +518,7 @@ describe('Blue/Green Deployment', () => {
   });
 });
 
-describe('Linear and Canary Deployments', () => {
+describe('Linear Deployment', () => {
   let stack: cdk.Stack;
   let vpc: ec2.Vpc;
   let cluster: ecs.Cluster;
@@ -556,6 +556,66 @@ describe('Linear and Canary Deployments', () => {
           StepBakeTimeInMinutes: 5,
         },
       },
+    });
+  });
+
+  test('should throw error when linear configuration is specified without LINEAR strategy', () => {
+    // THEN
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        deploymentStrategy: ecs.DeploymentStrategy.ROLLING,
+        linearConfiguration: {
+          stepPercent: 10.0,
+        },
+      });
+    }).toThrow(/linearConfiguration can only be used with LINEAR deployment strategy/);
+  });
+
+  test('should throw error when step percent is out of range', () => {
+    // THEN
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        deploymentStrategy: ecs.DeploymentStrategy.LINEAR,
+        linearConfiguration: {
+          stepPercent: 2.0,
+        },
+      });
+    }).toThrow(/stepPercent must be between 3.0 and 100.0/);
+  });
+
+  test('should throw error when step bake time is out of range', () => {
+    // THEN
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        deploymentStrategy: ecs.DeploymentStrategy.LINEAR,
+        linearConfiguration: {
+          stepBakeTime: cdk.Duration.minutes(1500),
+        },
+      });
+    }).toThrow(/stepBakeTime must be between 0 and 1440 minutes/);
+  });
+});
+
+describe('Canary Deployment', () => {
+  let stack: cdk.Stack;
+  let vpc: ec2.Vpc;
+  let cluster: ecs.Cluster;
+  let taskDefinition: ecs.FargateTaskDefinition;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'Vpc');
+    cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      portMappings: [{ containerPort: 80 }],
     });
   });
 
@@ -597,20 +657,6 @@ describe('Linear and Canary Deployments', () => {
     }).toThrow(/canaryConfiguration can only be used with CANARY deployment strategy/);
   });
 
-  test('should throw error when linear configuration is specified without LINEAR strategy', () => {
-    // THEN
-    expect(() => {
-      new ecs.FargateService(stack, 'FargateService', {
-        cluster,
-        taskDefinition,
-        deploymentStrategy: ecs.DeploymentStrategy.ROLLING,
-        linearConfiguration: {
-          stepPercent: 10.0,
-        },
-      });
-    }).toThrow(/linearConfiguration can only be used with LINEAR deployment strategy/);
-  });
-
   test('should throw error when canary percent is out of range', () => {
     // THEN
     expect(() => {
@@ -625,20 +671,6 @@ describe('Linear and Canary Deployments', () => {
     }).toThrow(/canaryPercent must be between 0.1 and 100.0/);
   });
 
-  test('should throw error when step percent is out of range', () => {
-    // THEN
-    expect(() => {
-      new ecs.FargateService(stack, 'FargateService', {
-        cluster,
-        taskDefinition,
-        deploymentStrategy: ecs.DeploymentStrategy.LINEAR,
-        linearConfiguration: {
-          stepPercent: 2.0,
-        },
-      });
-    }).toThrow(/stepPercent must be between 3.0 and 100.0/);
-  });
-
   test('should throw error when canary bake time is out of range', () => {
     // THEN
     expect(() => {
@@ -651,19 +683,5 @@ describe('Linear and Canary Deployments', () => {
         },
       });
     }).toThrow(/canaryBakeTime must be between 0 and 1440 minutes/);
-  });
-
-  test('should throw error when step bake time is out of range', () => {
-    // THEN
-    expect(() => {
-      new ecs.FargateService(stack, 'FargateService', {
-        cluster,
-        taskDefinition,
-        deploymentStrategy: ecs.DeploymentStrategy.LINEAR,
-        linearConfiguration: {
-          stepBakeTime: cdk.Duration.minutes(1500),
-        },
-      });
-    }).toThrow(/stepBakeTime must be between 0 and 1440 minutes/);
   });
 });

@@ -89,27 +89,6 @@ export interface DeploymentCircuitBreaker {
 }
 
 /**
- * Configuration for canary deployment strategy
- */
-export interface CanaryConfiguration {
-  /**
-   * The percentage of production traffic to shift to the new service revision during the canary phase.
-   * Valid values are multiples of 0.1 from 0.1 to 100.0.
-   *
-   * @default 5.0
-   */
-  readonly canaryPercent?: number;
-
-  /**
-   * The duration to wait during the canary phase before shifting the remaining production traffic
-   * to the new service revision. Valid values are 0 to 1440 minutes (24 hours).
-   *
-   * @default Duration.minutes(10)
-   */
-  readonly canaryBakeTime?: Duration;
-}
-
-/**
  * Configuration for linear deployment strategy
  */
 export interface LinearConfiguration {
@@ -128,6 +107,27 @@ export interface LinearConfiguration {
    * @default Duration.minutes(6)
    */
   readonly stepBakeTime?: Duration;
+}
+
+/**
+ * Configuration for canary deployment strategy
+ */
+export interface CanaryConfiguration {
+  /**
+   * The percentage of production traffic to shift to the new service revision during the canary phase.
+   * Valid values are multiples of 0.1 from 0.1 to 100.0.
+   *
+   * @default 5.0
+   */
+  readonly canaryPercent?: number;
+
+  /**
+   * The duration to wait during the canary phase before shifting the remaining production traffic
+   * to the new service revision. Valid values are 0 to 1440 minutes (24 hours).
+   *
+   * @default Duration.minutes(10)
+   */
+  readonly canaryBakeTime?: Duration;
 }
 
 /**
@@ -499,20 +499,20 @@ export interface BaseServiceOptions {
   readonly lifecycleHooks?: IDeploymentLifecycleHookTarget[];
 
   /**
-   * Configuration for canary deployment strategy.
-   * Only valid when deploymentStrategy is set to CANARY.
-   *
-   * @default - no canary configuration
-   */
-  readonly canaryConfiguration?: CanaryConfiguration;
-
-  /**
    * Configuration for linear deployment strategy.
    * Only valid when deploymentStrategy is set to LINEAR.
    *
    * @default - no linear configuration
    */
   readonly linearConfiguration?: LinearConfiguration;
+
+  /**
+   * Configuration for canary deployment strategy.
+   * Only valid when deploymentStrategy is set to CANARY.
+   *
+   * @default - no canary configuration
+   */
+  readonly canaryConfiguration?: CanaryConfiguration;
 }
 
 /**
@@ -796,13 +796,13 @@ export abstract class BaseService extends Resource
         alarms: Lazy.any({ produce: () => this.deploymentAlarms }, { omitEmptyArray: true }),
         strategy: props.deploymentStrategy,
         bakeTimeInMinutes: props.bakeTime?.toMinutes(),
-        canaryConfiguration: props.canaryConfiguration ? {
-          canaryPercent: props.canaryConfiguration.canaryPercent,
-          canaryBakeTimeInMinutes: props.canaryConfiguration.canaryBakeTime?.toMinutes(),
-        } : undefined,
         linearConfiguration: props.linearConfiguration ? {
           stepPercent: props.linearConfiguration.stepPercent,
           stepBakeTimeInMinutes: props.linearConfiguration.stepBakeTime?.toMinutes(),
+        } : undefined,
+        canaryConfiguration: props.canaryConfiguration ? {
+          canaryPercent: props.canaryConfiguration.canaryPercent,
+          canaryBakeTimeInMinutes: props.canaryConfiguration.canaryBakeTime?.toMinutes(),
         } : undefined,
         lifecycleHooks: Lazy.any({ produce: () => this.renderLifecycleHooks() }, { omitEmptyArray: true }),
       },
