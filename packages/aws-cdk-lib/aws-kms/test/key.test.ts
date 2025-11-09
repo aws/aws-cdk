@@ -1420,7 +1420,7 @@ describe('ML-DSA', () => {
 
   beforeEach(() => {
     stack = new cdk.Stack();
-  }) 
+  });
 
   test.each([
     [KeySpec.ML_DSA_44, 'ML_DSA_44'],
@@ -1445,7 +1445,7 @@ describe('ML-DSA', () => {
       KeyUsage: 'SIGN_VERIFY',
     });
   });
-})
+});
 
 function generateInvalidKeySpecKeyUsageCombinations() {
   // Copied from Key class
