@@ -4,6 +4,7 @@ import {
   Duration,
   Names,
   Resource,
+  ResourceEnvironment,
   Stack,
   Token,
   UnscopedValidationError,
@@ -149,6 +150,10 @@ export class CachePolicy extends Resource implements ICachePolicy {
   private static fromManagedCachePolicy(managedCachePolicyId: string): ICachePolicy {
     return new class implements ICachePolicy {
       public get node(): Node {
+        throw new UnscopedValidationError('The result of fromManagedCachePolicy can not be used in this API');
+      }
+
+      public get env(): ResourceEnvironment {
         throw new UnscopedValidationError('The result of fromManagedCachePolicy can not be used in this API');
       }
 
