@@ -10182,13 +10182,13 @@ jsii@~5.9.1:
     typescript "~5.9"
     yargs "^17.7.2"
 
-jsii@~5.9.8:
-  version "5.9.8"
-  resolved "https://registry.npmjs.org/jsii/-/jsii-5.9.8.tgz#f451b876cacf49ffe7a6fcd261819123de9615bd"
-  integrity sha512-aV+ikLxz6BPtcm5Px6tedfLYGn9+Kg2ObVfpEz9MxMKzptlLT1WAP0juR8H2n3krqEb7aa0j3Sahs/QoQKtDaA==
+jsii@~5.9.13:
+  version "5.9.13"
+  resolved "https://registry.npmjs.org/jsii/-/jsii-5.9.13.tgz#c70823b1bae344edd1f68cbb65b5cb333190d1df"
+  integrity sha512-H5jzHwnXgrr3ogrKD9LcYih/jzD4P1mif1Kriu2PkvZgM3Tt7hHZLP9N0ZKxQ19PbEWnLFC+txO2xqre89ymuw==
   dependencies:
-    "@jsii/check-node" "1.115.0"
-    "@jsii/spec" "1.115.0"
+    "@jsii/check-node" "1.118.0"
+    "@jsii/spec" "1.118.0"
     case "^1.6.3"
     chalk "^4"
     fast-deep-equal "^3.1.3"

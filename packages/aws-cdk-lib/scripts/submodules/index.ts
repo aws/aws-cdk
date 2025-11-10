@@ -1,5 +1,5 @@
 import * as path from 'node:path';
-import { createLibraryReadme } from '@aws-cdk/pkglint';
+import { createLibraryReadme, ModuleDefinition } from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
 import { ModuleMap, ModuleMapEntry } from '../codegen';
 
@@ -12,6 +12,7 @@ export default async function generateServiceSubmoduleFiles(modules: ModuleMap, 
   for (const submodule of Object.values(modules)) {
     const submodulePath = path.join(outPath, submodule.name);
     await ensureSubmodule(submodule, submodulePath);
+    await ensureInterfaceSubmoduleJsiiJsonRc(submodule, path.join(outPath, 'interfaces'));
   }
 }
 
@@ -68,4 +69,44 @@ async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {
     };
     await fs.writeJson(path.join(modulePath, '.jsiirc.json'), jsiirc, { spaces: 2 });
   }
+}
+
+/**
+ * Make a jsiirc file for every service-specific interfaces submodule
+ *
+ * Do that by taking the namespaces of the parent `interfaces` submodule and concatenating the last part
+ * of the names corresponding services namespace.
+ */
+async function ensureInterfaceSubmoduleJsiiJsonRc(submodule: ModuleMapEntry, interfacesModulePath: string) {
+  if (!submodule.definition) {
+    throw new Error(`Cannot infer path or namespace for submodule named "${submodule.name}".`);
+  }
+
+  const interfacesModuleJsiiRcPath = path.join(interfacesModulePath, '.jsiirc.json');
+  const interfacesModuleJsiiRc = JSON.parse(await fs.readFile(interfacesModuleJsiiRcPath, 'utf-8'));
+
+  const jsiiRcPath = path.join(interfacesModulePath, `${submodule.name}-interfaces.generated.jsiirc.json`);
+
+  const jsiirc = {
+    targets: {
+      ...combineLanguageNamespace('java', 'package', 'javaPackage'),
+      ...combineLanguageNamespace('dotnet', 'namespace', 'dotnetPackage'),
+      ...combineLanguageNamespace('python', 'module', 'pythonModuleName'),
+      // No Go...
+    },
+  };
+  await fs.writeJson(jsiiRcPath, jsiirc, { spaces: 2 });
+
+  function combineLanguageNamespace(language: string, whatName: string, k: keyof ModuleDefinition) {
+    const ns = `${interfacesModuleJsiiRc.targets[language][whatName]}.${lastPart(submodule.definition?.[k] ?? 'undefined')}`;
+    if (ns.includes('undefined')) {
+      throw new Error(`Could not build child namespace for language ${language} from ${JSON.stringify(interfacesModuleJsiiRc.targets[language])} and ${k} from ${JSON.stringify(submodule.definition)}`);
+    }
+
+    return { [language]: ns };
+  }
+}
+
+function lastPart(x: string): string {
+  return x.split('.').slice(-1)[0];
 }
