@@ -88,29 +88,31 @@ rule IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY when %iam_roles !empty {
 rule IAM_NO_OVERLY_PERMISSIVE_PASSROLE when %iam_passrole_resources !empty {
     %iam_passrole_resources {
         # Check managed/standalone policies
-        Properties.PolicyDocument.Statement[*] {
-            when Effect == "Allow" {
-                when Action exists {
-                    when Action is_string {
-                        when Action in ["*", "iam:*", "iam:PassRole"] {
-                            when Resource exists {
-                                when Resource is_string {
-                                    Resource != "*"
-                                }
-                                when Resource is_list {
-                                    Resource[*] != "*"
+        when Properties.PolicyDocument exists {
+            Properties.PolicyDocument.Statement[*] {
+                when Effect == "Allow" {
+                    when Action exists {
+                        when Action is_string {
+                            when Action in ["*", "iam:*", "iam:PassRole"] {
+                                when Resource exists {
+                                    when Resource is_string {
+                                        Resource != "*"
+                                    }
+                                    when Resource is_list {
+                                        Resource[*] != "*"
+                                    }
                                 }
                             }
                         }
-                    }
-                    when Action is_list {
-                        when Action[*] in ["*", "iam:*", "iam:PassRole"] {
-                            when Resource exists {
-                                when Resource is_string {
-                                    Resource != "*"
-                                }
-                                when Resource is_list {
-                                    Resource[*] != "*"
+                        when Action is_list {
+                            when Action[*] in ["*", "iam:*", "iam:PassRole"] {
+                                when Resource exists {
+                                    when Resource is_string {
+                                        Resource != "*"
+                                    }
+                                    when Resource is_list {
+                                        Resource[*] != "*"
+                                    }
                                 }
                             }
                         }
@@ -120,29 +122,31 @@ rule IAM_NO_OVERLY_PERMISSIVE_PASSROLE when %iam_passrole_resources !empty {
         }
         
         # Check inline policies in roles
-        Properties.Policies[*].PolicyDocument.Statement[*] {
-            when Effect == "Allow" {
-                when Action exists {
-                    when Action is_string {
-                        when Action in ["*", "iam:*", "iam:PassRole"] {
-                            when Resource exists {
-                                when Resource is_string {
-                                    Resource != "*"
-                                }
-                                when Resource is_list {
-                                    Resource[*] != "*"
+        when Properties.Policies exists {
+            Properties.Policies[*].PolicyDocument.Statement[*] {
+                when Effect == "Allow" {
+                    when Action exists {
+                        when Action is_string {
+                            when Action in ["*", "iam:*", "iam:PassRole"] {
+                                when Resource exists {
+                                    when Resource is_string {
+                                        Resource != "*"
+                                    }
+                                    when Resource is_list {
+                                        Resource[*] != "*"
+                                    }
                                 }
                             }
                         }
-                    }
-                    when Action is_list {
-                        when Action[*] in ["*", "iam:*", "iam:PassRole"] {
-                            when Resource exists {
-                                when Resource is_string {
-                                    Resource != "*"
-                                }
-                                when Resource is_list {
-                                    Resource[*] != "*"
+                        when Action is_list {
+                            when Action[*] in ["*", "iam:*", "iam:PassRole"] {
+                                when Resource exists {
+                                    when Resource is_string {
+                                        Resource != "*"
+                                    }
+                                    when Resource is_list {
+                                        Resource[*] != "*"
+                                    }
                                 }
                             }
                         }
