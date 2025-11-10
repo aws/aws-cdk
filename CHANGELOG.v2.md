@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file. See [standa
 ## [2.223.0](https://github.com/aws/aws-cdk/compare/v2.222.0...v2.223.0) (2025-11-10)
 
 
+### ⚠ BREAKING CHANGES
+
+L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+* **aws-dynamodb**: AWS::DynamoDB::GlobalTable: GlobalTableSettingsReplicationMode property removed.  
+* **aws-dynamodb**: AWS::DynamoDB::GlobalTable: GlobalTableSourceArn property removed.  
+* **aws-dynamodb**: AWS::DynamoDB::Table: GlobalTableSettingsReplicationMode property removed.  
+* **aws-events**: AWS::Events::EventBusPolicy: Id attribute removed.
+
+
 ### Features
 
 * update L1 CloudFormation resource definitions ([#35926](https://github.com/aws/aws-cdk/issues/35926)) ([3f4d585](https://github.com/aws/aws-cdk/commit/3f4d58548be8022660f62a99e43061fa54bd8588))
