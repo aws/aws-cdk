@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.223.0](https://github.com/aws/aws-cdk/compare/v2.222.0...v2.223.0) (2025-11-10)
+
+
+### ⚠ BREAKING CHANGES
+
+L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+* **aws-dynamodb**: AWS::DynamoDB::GlobalTable: GlobalTableSettingsReplicationMode property removed.  
+* **aws-dynamodb**: AWS::DynamoDB::GlobalTable: GlobalTableSourceArn property removed.  
+* **aws-dynamodb**: AWS::DynamoDB::Table: GlobalTableSettingsReplicationMode property removed.  
+* **aws-events**: AWS::Events::EventBusPolicy: Id attribute removed.
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#35926](https://github.com/aws/aws-cdk/issues/35926)) ([3f4d585](https://github.com/aws/aws-cdk/commit/3f4d58548be8022660f62a99e43061fa54bd8588))
+* **ec2:** support for Cloud Wan Core Network routes ([#35008](https://github.com/aws/aws-cdk/issues/35008)) ([fba027b](https://github.com/aws/aws-cdk/commit/fba027bf2039c90265f4632bd76619f4bcde6f81))
+* **s3-deployment:** support securityGroups in BucketDeploymentProps ([#33233](https://github.com/aws/aws-cdk/issues/33233)) ([f2a3166](https://github.com/aws/aws-cdk/commit/f2a31666fa92d284f6e8602e475aa0b7fca05ef7)), closes [#33229](https://github.com/aws/aws-cdk/issues/33229)
+
+
+### Bug Fixes
+
+* **stepfunctions:** `DistributedMap` ResultWriter correct query language selection ([#35834](https://github.com/aws/aws-cdk/issues/35834)) ([75b8ead](https://github.com/aws/aws-cdk/commit/75b8eadb3761f02798061fe5578af82f785f687a)), closes [#35403](https://github.com/aws/aws-cdk/issues/35403)
+* onEvent function to pass all the options to rule resource ([#35829](https://github.com/aws/aws-cdk/issues/35829)) ([3d7023d](https://github.com/aws/aws-cdk/commit/3d7023d4c6ee29b945034e56fd94b228f6e313f2))
+
 ## [2.222.0](https://github.com/aws/aws-cdk/compare/v2.221.1...v2.222.0) (2025-11-04)
 
 
