@@ -33,6 +33,53 @@ const WRITE_OPERATIONS = [
 ];
 
 /**
+ * Enhanced shard-level metrics
+ *
+ * @see https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html#kinesis-metrics-shard
+ */
+export enum ShardLevelMetrics {
+  /**
+   * The number of bytes successfully put to the shard over the specified time period.
+   */
+  INCOMING_BYTES = 'IncomingBytes',
+
+  /**
+   * The number of records successfully put to the shard over the specified time period.
+   */
+  INCOMING_RECORDS = 'IncomingRecords',
+
+  /**
+   * The age of the last record in all GetRecords calls made against a shard, measured over the specified time period.
+   */
+  ITERATOR_AGE_MILLISECONDS = 'IteratorAgeMilliseconds',
+
+  /**
+   * The number of bytes retrieved from the shard, measured over the specified time period.
+   */
+  OUTGOING_BYTES = 'OutgoingBytes',
+
+  /**
+   * The number of records retrieved from the shard, measured over the specified time period.
+   */
+  OUTGOING_RECORDS = 'OutgoingRecords',
+
+  /**
+   * The number of GetRecords calls throttled for the shard over the specified time period.
+   */
+  READ_PROVISIONED_THROUGHPUT_EXCEEDED = 'ReadProvisionedThroughputExceeded',
+
+  /**
+   * The number of records rejected due to throttling for the shard over the specified time period.
+   */
+  WRITE_PROVISIONED_THROUGHPUT_EXCEEDED = 'WriteProvisionedThroughputExceeded',
+
+  /**
+   * All metrics
+   */
+  ALL = 'ALL',
+}
+
+/**
  * A Kinesis Stream
  */
 export interface IStream extends IResource {
@@ -446,10 +493,7 @@ abstract class StreamBase extends Resource implements IStream {
           }
           return { statementAdded: false };
         },
-        node: this.node,
-        stack: this.stack,
         env: this.env,
-        applyRemovalPolicy: x => this.applyRemovalPolicy(x),
       },
     });
   }
@@ -785,6 +829,15 @@ export interface StreamProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * A list of shard-level metrics in properties to enable enhanced monitoring mode.
+   *
+   * @see https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html#kinesis-metrics-shard
+   *
+   * @default undefined - AWS Kinesis default is disabled
+   */
+  readonly shardLevelMetrics?: ShardLevelMetrics[];
 }
 
 /**
@@ -863,11 +916,23 @@ export class Stream extends StreamBase {
 
     const { streamEncryption, encryptionKey } = this.parseEncryption(props);
 
+    if (props.shardLevelMetrics) {
+      if (props.shardLevelMetrics.includes(ShardLevelMetrics.ALL) && props.shardLevelMetrics.length > 1) {
+        throw new ValidationError('`shardLevelMetrics` cannot include `ShardLevelMetrics.ALL` together with individual metrics, use either `ShardLevelMetrics.ALL` alone or specify individual metrics.', this);
+      }
+      // Check for duplicate items in shardLevelMetrics
+      const uniqueMetrics = new Set(props.shardLevelMetrics);
+      if (uniqueMetrics.size !== props.shardLevelMetrics.length) {
+        throw new ValidationError('shardLevelMetrics cannot contain duplicate items.', this);
+      }
+    }
+
     this.stream = new CfnStream(this, 'Resource', {
       name: this.physicalName,
       retentionPeriodHours,
       shardCount,
       streamEncryption,
+      desiredShardLevelMetrics: props.shardLevelMetrics,
       ...(props.streamMode !== undefined
         ? {
           streamModeDetails: { streamMode: props.streamMode },

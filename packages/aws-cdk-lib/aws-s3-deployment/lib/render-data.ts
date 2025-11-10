@@ -34,6 +34,14 @@ class TokenToMarkerMapper implements ITokenMapper {
 export function renderData(data: string): Content {
   const tokenMapper = new TokenToMarkerMapper();
 
+  // Handle empty string case explicitly to avoid StringConcat.join(undefined, undefined)
+  if (data === '') {
+    return {
+      text: '',
+      markers: {},
+    };
+  }
+
   return {
     // Break down the string into its token fragments and replace each token with a marker.
     // Then rejoin the fragments with basic string concatenation.

@@ -400,3 +400,14 @@ function isCloudFormationDynamicReference(x: any) {
 class CfnSynthesisError extends Error {
   public readonly type = 'CfnSynthesisError';
 }
+
+/**
+ * Ensures that a property is either undefined or a string.
+ * Used in spec2cdk to have better error messages in other languages.
+ */
+export function ensureStringOrUndefined(value: any, propName: string, possibleType: string): string | undefined {
+  if (value !== undefined && typeof value !== 'string') {
+    throw new TypeError(`Property ${propName} should be one of ${possibleType}`);
+  }
+  return value;
+}

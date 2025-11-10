@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "48.0.0",
   "testCases": {
     "ApiGatewayV2WebSocketIamTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "ApiGatewayV2WebSocketIamTest/DefaultTest/DeployAssert",
       "assertionStackName": "ApiGatewayV2WebSocketIamTestDefaultTestDeployAssert2B412D7B"
     }
-  }
+  },
+  "minimumCliVersion": "2.1027.0"
 }

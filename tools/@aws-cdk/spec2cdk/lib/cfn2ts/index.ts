@@ -1,7 +1,6 @@
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
 import { Service } from '@aws-cdk/service-spec-types';
 import * as fs from 'fs-extra';
-import * as pLimit from 'p-limit';
 import * as pkglint from './pkglint';
 import { CodeGeneratorOptions, GenerateAllOptions, ModuleMap, ModuleMapScope } from './types';
 import type { ModuleImportLocations } from '../cdk/cdk';
@@ -9,11 +8,6 @@ import { generate as generateModules } from '../generate';
 import { log } from '../util';
 
 export * from './types';
-
-interface GenerateOutput {
-  outputFiles: string[];
-  resources: Record<string, string>;
-}
 
 let serviceCache: Service[];
 
@@ -30,7 +24,7 @@ export default async function generate(
   scopes: string | string[],
   outPath: string,
   options: CodeGeneratorOptions = {},
-): Promise<GenerateOutput> {
+): Promise<void> {
   const coreImport = options.coreImport ?? 'aws-cdk-lib';
   let moduleScopes: ModuleMapScope[] = [];
   if (scopes === '*') {
@@ -40,7 +34,7 @@ export default async function generate(
   }
 
   log.info(`cfn-resources: ${moduleScopes.map(s => s.namespace).join(', ')}`);
-  const generated = await generateModules(
+  await generateModules(
     {
       'aws-cdk-lib': {
         services: options.autoGenerateSuffixes ? computeServiceSuffixes(moduleScopes) : moduleScopes,
@@ -50,9 +44,9 @@ export default async function generate(
       outputPath: outPath ?? 'lib',
       clearOutput: false,
       filePatterns: {
-        resources: ({ serviceShortName }) => `${serviceShortName}.generated.ts`,
-        augmentations: ({ serviceShortName }) => `${serviceShortName}-augmentations.generated.ts`,
-        cannedMetrics: ({ serviceShortName }) => `${serviceShortName}-canned-metrics.generated.ts`,
+        resources: '%serviceShortName%.generated.ts',
+        augmentations: '%serviceShortName%-augmentations.generated.ts',
+        cannedMetrics: '%serviceShortName%-canned-metrics.generated.ts',
       },
       importLocations: {
         core: coreImport,
@@ -61,8 +55,6 @@ export default async function generate(
       },
     },
   );
-
-  return generated;
 }
 
 /**
@@ -163,9 +155,9 @@ export async function generateAll(
       outputPath: outPath,
       clearOutput: false,
       filePatterns: {
-        resources: ({ moduleName: m, serviceShortName: s }) => `${m}/lib/${s}.generated.ts`,
-        augmentations: ({ moduleName: m, serviceShortName: s }) => `${m}/lib/${s}-augmentations.generated.ts`,
-        cannedMetrics: ({ moduleName: m, serviceShortName: s }) => `${m}/lib/${s}-canned-metrics.generated.ts`,
+        resources: '%moduleName%/lib/%serviceShortName%.generated.ts',
+        augmentations: '%moduleName%/lib/%serviceShortName%-augmentations.generated.ts',
+        cannedMetrics: '%moduleName%/lib/%serviceShortName%-canned-metrics.generated.ts',
       },
       importLocations: {
         core: options.coreImport,
@@ -176,13 +168,11 @@ export async function generateAll(
     },
   );
 
-  const limit = pLimit(20);
-  // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
-  await Promise.all(Object.keys(moduleMap).map((moduleName) => limit(async () => {
+  Object.keys(moduleMap).forEach((moduleName) => {
     // Add generated resources and files to module in map
     moduleMap[moduleName].resources = generated.modules[moduleName].map((m) => m.resources).reduce(mergeObjects, {});
     moduleMap[moduleName].files = generated.modules[moduleName].flatMap((m) => m.outputFiles);
-  })));
+  });
 
   return moduleMap;
 }

@@ -181,6 +181,17 @@ export interface ClientVpnEndpointOptions {
   readonly sessionTimeout?: ClientVpnSessionTimeout;
 
   /**
+   * Indicates whether the client VPN session is disconnected after the maximum `sessionTimeout` is reached.
+   *
+   * If `true`, users are prompted to reconnect client VPN.
+   * If `false`, client VPN attempts to reconnect automatically.
+   *
+   * @default undefined - AWS Client VPN default is true
+   * @see https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-max-duration.html
+   */
+  readonly disconnectOnSessionTimeout?: boolean;
+
+  /**
    * Customizable text that will be displayed in a banner on AWS provided clients
    * when a VPN session is established.
    *
@@ -411,6 +422,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       vpcId: props.vpc.vpcId,
       vpnPort: props.port,
       sessionTimeoutHours: props.sessionTimeout,
+      disconnectOnSessionTimeout: props.disconnectOnSessionTimeout,
       clientLoginBannerOptions: props.clientLoginBanner
         ? {
           enabled: true,

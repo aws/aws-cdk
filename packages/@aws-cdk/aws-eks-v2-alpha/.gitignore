@@ -10,7 +10,6 @@ nyc.config.js
 .nyc_output
 coverage
 dist
-tsconfig.json
 !.eslintrc.js
 !jest.config.js
 

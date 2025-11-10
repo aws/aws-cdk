@@ -3,6 +3,8 @@ import { Construct } from 'constructs';
 import * as events from '../../../aws-events';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
+import { FeatureFlags } from '../../../core';
+import * as cxapi from '../../../cx-api';
 import { integrationResourceArn, isJsonataExpression } from '../private/task-utils';
 
 /**
@@ -197,11 +199,14 @@ export class HttpInvoke extends sfn.TaskStateBase {
 
   private buildTaskParameters() {
     const unJsonata = (v: string) => v.replace(/^{%/, '').replace(/%}$/, '').trim();
-    const useJsonata = isJsonataExpression(this.props.apiRoot) || isJsonataExpression(this.props.apiEndpoint.value);
+    const useJsonata = this.queryLanguage === sfn.QueryLanguage.JSONATA;
     const getStringValue = (v: string) => useJsonata && !isJsonataExpression(v) ? `'${v}'` : unJsonata(v);
     const apiEndpoint = useJsonata ?
       `{% ${getStringValue(this.props.apiRoot)} & '/' & ${getStringValue(this.props.apiEndpoint.value)} %}`
-      : `${this.props.apiRoot}/${this.props.apiEndpoint.value}`;
+      : FeatureFlags.of(this).isEnabled(cxapi.STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT) ?
+        sfn.JsonPath.format('{}/{}', this.props.apiRoot, this.props.apiEndpoint.value)
+        : `${this.props.apiRoot}/${this.props.apiEndpoint.value}`;
+
     const parameters: TaskParameters = {
       ApiEndpoint: apiEndpoint,
       Authentication: {

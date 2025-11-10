@@ -132,7 +132,6 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
       grantee,
       actions,
       resourceArns: [this.roleArn],
-      scope: this,
     });
   }
 

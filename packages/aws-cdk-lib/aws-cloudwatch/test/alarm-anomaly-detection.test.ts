@@ -80,6 +80,69 @@ describe('AnomalyDetectionAlarm', () => {
         ]),
       });
     });
+
+    test('uses metric period for anomaly detection band', () => {
+      // GIVEN
+      const metricWithCustomPeriod = new Metric({
+        namespace: 'AWS/EC2',
+        metricName: 'CPUUtilization',
+        period: Duration.minutes(10),
+      });
+
+      // WHEN
+      new AnomalyDetectionAlarm(stack, 'Alarm', {
+        metric: metricWithCustomPeriod,
+        evaluationPeriods: 3,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+        ComparisonOperator: 'LessThanLowerOrGreaterThanUpperThreshold',
+        EvaluationPeriods: 3,
+        ThresholdMetricId: 'expr_1',
+        Metrics: Match.arrayWith([
+          Match.objectLike({
+            Expression: 'ANOMALY_DETECTION_BAND(m0, 2)',
+            Id: 'expr_1',
+            ReturnData: true,
+          }),
+          Match.objectLike({
+            Id: 'm0',
+            MetricStat: Match.objectLike({
+              Period: 600,
+            }),
+          }),
+        ]),
+      });
+    });
+
+    test('uses default period when metric has no explicit period set', () => {
+      // WHEN
+      new AnomalyDetectionAlarm(stack, 'Alarm', {
+        metric: metric,
+        evaluationPeriods: 3,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+        ComparisonOperator: 'LessThanLowerOrGreaterThanUpperThreshold',
+        EvaluationPeriods: 3,
+        ThresholdMetricId: 'expr_1',
+        Metrics: Match.arrayWith([
+          Match.objectLike({
+            Expression: 'ANOMALY_DETECTION_BAND(m0, 2)',
+            Id: 'expr_1',
+            ReturnData: true,
+          }),
+          Match.objectLike({
+            Id: 'm0',
+            MetricStat: Match.objectLike({
+              Period: 300,
+            }),
+          }),
+        ]),
+      });
+    });
   });
 
   describe('Validation', () => {

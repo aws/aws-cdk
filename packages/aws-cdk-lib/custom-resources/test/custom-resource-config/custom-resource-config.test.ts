@@ -443,7 +443,7 @@ describe('when custom resource lambda runtime is set by addLambdaRuntime', () =>
 
   test('addLambdaRuntime sets custom resource lambda runtime to nodejs18.x', () => {
     // GIVEN
-    const customResourceRuntime = lambda.Runtime.NODEJS_18_X;
+    const customResourceRuntime = lambda.Runtime.NODEJS_20_X;
     const app = new cdk.App({
       postCliContext: {
         '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
@@ -478,7 +478,7 @@ describe('when custom resource lambda runtime is set by addLambdaRuntime', () =>
 
   test('addLambdaRuntime sets two custom resource lambda runtime in their specified runtime family', () => {
     // GIVEN
-    const dynamodbReplicaCustomResourceRuntime = lambda.Runtime.NODEJS_18_X;
+    const dynamodbReplicaCustomResourceRuntime = lambda.Runtime.NODEJS_20_X;
     const s3BucketDeploymentCustomResourceRuntime = lambda.Runtime.PYTHON_3_12;
     const app = new cdk.App({
       postCliContext: {

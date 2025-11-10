@@ -6,6 +6,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
+    "tsconfig": "tsconfig.json",
     "outdir": "dist",
     "targets": {
       "java": {
@@ -33,14 +34,14 @@
         "packageName": "awscdksagemakeralpha"
       }
     },
-    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
           "strict": true
         }
       }
-    }
+    },
+    "validateTsconfig": "minimal"
   },
   "repository": {
     "type": "git",

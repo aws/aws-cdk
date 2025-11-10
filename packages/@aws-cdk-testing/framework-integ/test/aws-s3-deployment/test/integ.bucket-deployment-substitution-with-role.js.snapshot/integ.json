@@ -1,13 +1,13 @@
 {
   "version": "48.0.0",
   "testCases": {
-    "test-s3-deploy-substitution-with-role/DefaultTest": {
+    "integ-test-bucket-deployment-substitution-with-role/DefaultTest": {
       "stacks": [
-        "cdk-s3-deploy-substitution-with-role"
+        "test-bucket-deployment-substitution-with-role"
       ],
-      "assertionStack": "test-s3-deploy-substitution-with-role/DefaultTest/DeployAssert",
-      "assertionStackName": "tests3deploysubstitutionwithroleDefaultTestDeployAssertC49A4480"
+      "assertionStack": "integ-test-bucket-deployment-substitution-with-role/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentsubstitutionwithroleDefaultTestDeployAssertCE8DBE46"
     }
   },
-  "minimumCliVersion": "2.1025.0"
+  "minimumCliVersion": "2.1027.0"
 }

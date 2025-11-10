@@ -10,15 +10,22 @@ import * as fs from 'fs';
 import * as crypto from 'crypto';
 import * as os from 'os';
 
+/**
+ * Integration test for bucket deployment with large files:
+ * - Tests deployment of large files (10MB JSON and text files)
+ * - Validates that large file uploads work correctly
+ * - Tests token substitution and escaping in large deployments
+ * - Validates both escaped and unescaped JSON handling
+ */
 const app = new App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
 });
-const stack = new Stack(app, 'TestBucketDeploymentLargeFile');
+const stack = new Stack(app, 'test-bucket-deployment-large-file');
 const bucket = new Bucket(stack, 'Bucket', {
-  removalPolicy: RemovalPolicy.DESTROY, // Allow bucket deletion
-  autoDeleteObjects: true, // Delete objects when bucket is deleted
+  removalPolicy: RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
 });
 
 // Create a temporary directory for our large files
@@ -153,7 +160,7 @@ const noEscapeFileWithMarker = Source.jsonData('my-json/secret-config-no-escape.
 });
 
 // Deploy the large files
-new BucketDeployment(stack, 'DeployLargeFiles', {
+new BucketDeployment(stack, 'DeployWithLargeFiles', {
   destinationBucket: bucket,
   sources: [largeJsonSource, largeTextSource, fileWithMarker, noEscapeFileWithMarker],
   retainOnDelete: false,
@@ -161,12 +168,12 @@ new BucketDeployment(stack, 'DeployLargeFiles', {
 
 new CfnOutput(stack, 'BucketName', { value: bucket.bucketName });
 
-const integ = new IntegTest(app, 'integ-test-bucket-deployment-large-file', {
+const integTest = new IntegTest(app, 'integ-test-bucket-deployment-large-file', {
   testCases: [stack],
 });
 
-// Add assertions to verify the JSON file
-const assertionProvider = integ.assertions.awsApiCall('S3', 'getObject', {
+// Assert that escaped JSON is properly escaped
+const assertionProvider = integTest.assertions.awsApiCall('S3', 'getObject', {
   Bucket: bucket.bucketName,
   Key: 'my-json/secret-config.json',
 });
@@ -177,7 +184,8 @@ assertionProvider.expect(ExpectedResult.objectLike({
   Body: '{"secret_value":"test\\"with\\"quotes"}',
 }));
 
-integ.assertions.awsApiCall('S3', 'getObject', {
+// Assert that unescaped JSON works without escape option
+integTest.assertions.awsApiCall('S3', 'getObject', {
   Bucket: bucket.bucketName,
   Key: 'my-json/secret-config-no-escape.json',
 }).expect(ExpectedResult.objectLike({
@@ -185,8 +193,8 @@ integ.assertions.awsApiCall('S3', 'getObject', {
   Body: '{"secret_value":"test"with"quotes"}',
 }));
 
-// Verify the large JSON file was deployed successfully
-const jsonAssertionProvider = integ.assertions.awsApiCall('S3', 'listObjectsV2', {
+// Assert that large JSON file was deployed successfully
+const jsonAssertionProvider = integTest.assertions.awsApiCall('S3', 'listObjectsV2', {
   Bucket: bucket.bucketName,
   Prefix: 'large-file.json',
   MaxKeys: 1,
@@ -211,8 +219,8 @@ if (jsonAssertionProvider instanceof AwsApiCall && jsonAssertionProvider.waiterP
   });
 }
 
-// Verify the large text file was deployed successfully
-const textAssertionProvider = integ.assertions.awsApiCall('S3', 'listObjectsV2', {
+// Assert that large text file was deployed successfully
+const textAssertionProvider = integTest.assertions.awsApiCall('S3', 'listObjectsV2', {
   Bucket: bucket.bucketName,
   Prefix: 'large-file.txt',
   MaxKeys: 1,

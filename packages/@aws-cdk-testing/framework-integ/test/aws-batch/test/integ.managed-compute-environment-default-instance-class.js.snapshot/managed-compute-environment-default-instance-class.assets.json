@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "ce3473019ae06b2b94dbc4c8c44b1c7058d9742285faf78d1106201898986979": {
+      "displayName": "managed-compute-environment-default-instance-class Template",
+      "source": {
+        "path": "managed-compute-environment-default-instance-class.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-7beb6adc": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ce3473019ae06b2b94dbc4c8c44b1c7058d9742285faf78d1106201898986979.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

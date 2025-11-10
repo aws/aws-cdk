@@ -26,6 +26,7 @@ export interface CallSite {
  * https://github.com/sindresorhus/callsites
  */
 export function callsites(): CallSite[] {
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const _prepareStackTrace = Error.prepareStackTrace;
   Error.prepareStackTrace = (_, stack) => stack;
   const stack = new Error().stack?.slice(1);

@@ -1,0 +1,15 @@
+*.js
+*.js.map
+*.d.ts
+dist
+
+.LAST_BUILD
+*.snk
+!jest.config.js
+
+.nyc_output
+coverage
+nyc.config.js
+!.eslintrc.js
+!test/test-fixture/jsii/node_modules/
+junit.xml

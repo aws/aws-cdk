@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "911347f10b2b4ab2dcd6ed76bf3f9bb09883e61be18a12aeca8db6561a4c05ae": {
+      "displayName": "aws-cdk-route53-integ Template",
+      "source": {
+        "path": "aws-cdk-route53-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-4f2edce9": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "911347f10b2b4ab2dcd6ed76bf3f9bb09883e61be18a12aeca8db6561a4c05ae.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

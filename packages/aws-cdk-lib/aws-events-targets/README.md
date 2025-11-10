@@ -19,6 +19,7 @@ Currently supported are:
   - [Invoke an API Destination](#invoke-an-api-destination)
   - [Invoke an AppSync GraphQL API](#invoke-an-appsync-graphql-api)
   - [Put an event on an EventBridge bus](#put-an-event-on-an-eventbridge-bus)
+  - [Put an event on a Firehose delivery stream](#put-an-event-on-a-firehose-delivery-stream)
   - [Run an ECS Task](#run-an-ecs-task)
     - [Tagging Tasks](#tagging-tasks)
     - [Launch type for ECS Task](#launch-type-for-ecs-task)
@@ -526,6 +527,27 @@ rule.addTarget(new targets.EventBus(
     `arn:aws:events:eu-west-1:999999999999:event-bus/test-bus`,
   ),
 ));
+```
+
+## Put an event on a Firehose delivery stream
+
+Use the `FirehoseDeliveryStream` target to put event to an Amazon Data Firehose delivery stream.
+
+The code snippet below creates the scheduled event rule that put events to an Amazon Data Firehose delivery stream.
+
+```ts
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+declare const bucket: s3.Bucket;
+const stream = new firehose.DeliveryStream(this, 'DeliveryStream', {
+  destination: new firehose.S3Bucket(bucket),
+});
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.expression('rate(1 minute)'),
+});
+rule.addTarget(new targets.FirehoseDeliveryStream(stream));
 ```
 
 ## Run an ECS Task

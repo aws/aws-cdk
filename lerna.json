@@ -20,6 +20,7 @@
     "tools/@aws-cdk/lambda-integration-test-updater",
     "tools/@aws-cdk/construct-metadata-updater",
     "tools/@aws-cdk/project-sync",
+    "tools/@aws-cdk/integration-test-deployment",
     "scripts/@aws-cdk/script-tests"
   ],
   "rejectCycles": true,

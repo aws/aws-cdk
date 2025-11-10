@@ -679,7 +679,6 @@ export class Role extends Resource implements IRole {
       grantee,
       actions,
       resourceArns: [this.roleArn],
-      scope: this,
     });
   }
 

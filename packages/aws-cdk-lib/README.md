@@ -480,6 +480,8 @@ CloudFormation to re-read the secret.
 `SecretValue.ssmSecure()` is only supported for a limited set of resources.
 [Click here for a list of supported resources and properties](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#template-parameters-dynamic-patterns-resources).
 
+`SecretValue.cfnDynamicReferenceKey` takes the same parameters as `SecretValue.secretsManager` and returns a key which can be used within a [dynamic reference](#dynamic-references) to dynamically load a secret from AWS Secrets Manager.
+
 ## ARN manipulation
 
 Sometimes you will need to put together or pick apart Amazon Resource Names

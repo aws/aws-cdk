@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/793e39758011cbbde4b39006cd3b117fee1f463fe9c50860e5f141e14ed5b05a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/41092b6106bb95199085c7515938b1490b62a9e13584aa423d4ce0a293a36125.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -164,12 +164,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DomainAccessPolicyCustomResourcePolicyE61F1845"
-          }
-        ],
-        "/cdk-integ-opensearch-unsignedbasicauth/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/cdk-integ-opensearch-unsignedbasicauth/AWS679f53fac002430cb0da5b7982bd2287": [

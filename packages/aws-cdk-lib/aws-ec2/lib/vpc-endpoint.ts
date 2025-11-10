@@ -405,6 +405,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly BEDROCK = new InterfaceVpcEndpointAwsService('bedrock');
   public static readonly BEDROCK_AGENT = new InterfaceVpcEndpointAwsService('bedrock-agent');
   public static readonly BEDROCK_AGENT_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-agent-runtime');
+  public static readonly BEDROCK_AGENTCORE = new InterfaceVpcEndpointAwsService('bedrock-agentcore');
+  public static readonly BEDROCK_AGENTCORE_GATEWAY = new InterfaceVpcEndpointAwsService('bedrock-agentcore.gateway');
   public static readonly BEDROCK_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-runtime');
   public static readonly BEDROCK_DATA_AUTOMATION = new InterfaceVpcEndpointAwsService('bedrock-data-automation');
   public static readonly BEDROCK_DATA_AUTOMATION_FIPS = new InterfaceVpcEndpointAwsService('bedrock-data-automation-fips');

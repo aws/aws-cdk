@@ -209,7 +209,7 @@ describe('getTsconfigCompilerOptions', () => {
       '--incremental false',
       '--inlineSourceMap',
       '--inlineSources',
-      '--lib es2020,dom',
+      '--lib es2022,dom',
       '--module CommonJS',
       '--newLine lf',
       '--noEmitOnError',
@@ -226,7 +226,7 @@ describe('getTsconfigCompilerOptions', () => {
       '--strictNullChecks',
       '--strictPropertyInitialization',
       '--stripInternal false',
-      '--target ES2020',
+      '--target ES2022',
     ].join(' '));
   });
 
@@ -241,7 +241,7 @@ describe('getTsconfigCompilerOptions', () => {
       '--incremental false',
       '--inlineSourceMap',
       '--inlineSources',
-      '--lib es2020,dom',
+      '--lib es2022,dom',
       '--module CommonJS',
       '--newLine lf',
       '--noEmitOnError',

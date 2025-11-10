@@ -32,14 +32,15 @@
         "packageName": "awscdkpipessourcesalpha"
       }
     },
-    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
           "strict": true
         }
       }
-    }
+    },
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal"
   },
   "repository": {
     "type": "git",
@@ -116,7 +117,7 @@
   },
   "jsiiRosetta": {
     "exampleDependencies": {
-      "@aws-cdk/aws-pipes-targets-alpha":  "^0.0.0"
+      "@aws-cdk/aws-pipes-targets-alpha": "^0.0.0"
     }
   }
 }

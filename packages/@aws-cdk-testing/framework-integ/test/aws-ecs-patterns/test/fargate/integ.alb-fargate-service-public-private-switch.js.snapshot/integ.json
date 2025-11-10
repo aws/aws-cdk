@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ALBFargatePublicPrivateSwitchTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-alb-fargate-public-private-switch"
+      ],
+      "assertionStack": "ALBFargatePublicPrivateSwitchTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ALBFargatePublicPrivateSwitchTestDefaultTestDeployAssertFC4585A1"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

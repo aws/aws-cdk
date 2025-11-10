@@ -37,6 +37,11 @@ let stack: Stack;
 beforeEach(() => {
   stack = new Stack();
   jest.clearAllMocks();
+  // pretend the calling file is in a fake file path
+  mockCallsites.mockImplementation(() => [
+    { getFunctionName: () => 'NodejsFunction' },
+    { getFileName: () => bockPath`function.test.ts` },
+  ]);
 });
 
 // We MUST use a fake file system here.
@@ -56,12 +61,6 @@ bockfs({
   '/home/project/aws-lambda-nodejs/lib/index.ts': '// nothing',
 });
 const bockPath = bockfs.workingDirectory('/home/project');
-
-// pretend the calling file is in a fake file path
-mockCallsites.mockImplementation(() => [
-  { getFunctionName: () => 'NodejsFunction' },
-  { getFileName: () => bockPath`function.test.ts` },
-]);
 
 afterAll(() => {
   bockfs.restore();
@@ -114,14 +113,14 @@ describe('lambda.Code.fromCustomCommand', () => {
     // WHEN
     new NodejsFunction(stack, 'handler1', {
       handler: 'Random.Name',
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
       code: Code.fromCustomCommand('function.test.handler7.zip', ['node'], undefined),
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Handler: 'Random.Name',
-      Runtime: 'nodejs18.x',
+      Runtime: 'nodejs20.x',
     });
   });
 });
@@ -229,6 +228,23 @@ test('throws when entry is not js/ts', () => {
   expect(() => new NodejsFunction(stack, 'Fn', {
     entry: 'handler.py',
   })).toThrow(/Only JavaScript or TypeScript entry files are supported/);
+});
+
+test('NodejsFunction with .js handler in an ESM package', () => {
+  // pretend the calling file is in a fake file path
+  // In ESM, callsites are prepended with 'file://'
+  mockCallsites.mockImplementation(() => [
+    { getFunctionName: () => 'NodejsFunction' },
+    { getFileName: () => `file://${bockPath`function.test.ts`}` },
+  ]);
+
+  // WHEN
+  new NodejsFunction(stack, 'handler2');
+
+  // THEN
+  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
+    entry: expect.stringContaining('function.test.handler2.js'), // Automatically finds .ts handler file
+  }));
 });
 
 test('accepts tsx', () => {
@@ -366,22 +382,14 @@ describe('Node 18+ runtimes', () => {
     new NodejsFunction(stackFF, 'handler1');
 
     Template.fromStack(stackFF).hasResourceProperties('AWS::Lambda::Function', {
-      Runtime: {
-        'Fn::FindInMap': [
-          'LatestNodeRuntimeMap',
-          {
-            Ref: 'AWS::Region',
-          },
-          'value',
-        ],
-      },
+      Runtime: 'nodejs22.x',
     });
   });
 
   test('connection reuse for aws sdk v2 not set by default', () => {
     // WHEN
     new NodejsFunction(stack, 'handler1', {
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
     });
 
     // THEN
@@ -393,7 +401,7 @@ describe('Node 18+ runtimes', () => {
   test('connection reuse for aws sdk v2 can be explicitly not set', () => {
     // WHEN
     new NodejsFunction(stack, 'handler1', {
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
       awsSdkConnectionReuse: false,
     });
 
@@ -406,7 +414,7 @@ describe('Node 18+ runtimes', () => {
   test('setting connection reuse for aws sdk v2 has warning', () => {
     // WHEN
     new NodejsFunction(stack, 'handler1', {
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
       awsSdkConnectionReuse: true,
     });
 

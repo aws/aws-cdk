@@ -186,7 +186,7 @@ const signinFunction = new lambda.Function(testCase, 'Signin', {
   functionName: 'cdk-integ-alb-oidc-signin-handler',
   code: lambda.Code.fromAsset('alb-oidc-signin-handler', { exclude: ['*.ts'] }),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
   environment: {
     TEST_USERNAME: testUser.username,
     TEST_PASSWORD: testUser.password,
