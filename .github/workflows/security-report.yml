@@ -25,9 +25,9 @@ jobs:
       - name: Get PR info
         id: pr_info
         run: |
-          echo "pr_number=$(cat pr/pr_number)" >> "$GITHUB_OUTPUT"
-          echo "pr_sha=$(cat pr/pr_sha)" >> "$GITHUB_OUTPUT"
-          echo "PR: $(cat pr/pr_number), SHA: $(cat pr/pr_sha)"
+          echo "pr_number=$(cat test-results/pr_number)" >> "$GITHUB_OUTPUT"
+          echo "pr_sha=$(cat test-results/pr_sha)" >> "$GITHUB_OUTPUT"
+          echo "PR: $(cat test-results/pr_number), SHA: $(cat test-results/pr_sha)"
       - name: Publish Security Test Results 
         uses: mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6  # v6.0.1
         if: always()
