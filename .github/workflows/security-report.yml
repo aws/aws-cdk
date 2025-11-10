@@ -18,6 +18,7 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           name: security-guardian-reports
+          path: test-results/
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
           repository: ${{ github.repository }}
@@ -32,7 +33,7 @@ jobs:
         uses: mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6  # v6.0.1
         if: always()
         with:
-          report_paths: '**/cfn-guard-static.xml'
+          report_paths: 'test-results/**/cfn-guard-static.xml'
           check_name: 'Security Guardian Results'
           exclude_sources: 'node_modules,dist'
           commit: ${{ steps.pr_info.outputs.pr_sha }}
@@ -50,7 +51,7 @@ jobs:
         uses: mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6  # v6.0.1
         if: always()
         with:
-          report_paths: '**/cfn-guard-resolved.xml'
+          report_paths: 'test-results/**/cfn-guard-resolved.xml'
           check_name: 'Security Guardian Results with resolved templates'
           exclude_sources: 'node_modules,dist'
           commit: ${{ steps.pr_info.outputs.pr_sha }}
