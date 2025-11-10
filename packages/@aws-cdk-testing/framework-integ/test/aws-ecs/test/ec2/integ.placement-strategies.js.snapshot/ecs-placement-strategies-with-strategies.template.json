@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/VPC"
+      "Value": "ecs-placement-strategies-with-strategies/VPC"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/VPC/PublicSubnet1"
+      "Value": "ecs-placement-strategies-with-strategies/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/VPC/PublicSubnet1"
+      "Value": "ecs-placement-strategies-with-strategies/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/VPC/PublicSubnet1"
+      "Value": "ecs-placement-strategies-with-strategies/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/VPC/PublicSubnet1"
+      "Value": "ecs-placement-strategies-with-strategies/VPC/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/VPC/PublicSubnet2"
+      "Value": "ecs-placement-strategies-with-strategies/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/VPC/PublicSubnet2"
+      "Value": "ecs-placement-strategies-with-strategies/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/VPC/PublicSubnet2"
+      "Value": "ecs-placement-strategies-with-strategies/VPC/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/VPC/PublicSubnet2"
+      "Value": "ecs-placement-strategies-with-strategies/VPC/PublicSubnet2"
      }
     ]
    },
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/VPC/PrivateSubnet1"
+      "Value": "ecs-placement-strategies-with-strategies/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/VPC/PrivateSubnet1"
+      "Value": "ecs-placement-strategies-with-strategies/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/VPC/PrivateSubnet2"
+      "Value": "ecs-placement-strategies-with-strategies/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/VPC/PrivateSubnet2"
+      "Value": "ecs-placement-strategies-with-strategies/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/VPC"
+      "Value": "ecs-placement-strategies-with-strategies/VPC"
      }
     ]
    }
@@ -397,7 +397,7 @@
   "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
+    "GroupDescription": "ecs-placement-strategies-with-strategies/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -408,7 +408,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup"
+      "Value": "ecs-placement-strategies-with-strategies/EcsCluster/DefaultAutoScalingGroup"
      }
     ],
     "VpcId": {
@@ -434,7 +434,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup"
+      "Value": "ecs-placement-strategies-with-strategies/EcsCluster/DefaultAutoScalingGroup"
      }
     ]
    }
@@ -540,7 +540,7 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate"
+         "Value": "ecs-placement-strategies-with-strategies/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate"
         }
        ]
       },
@@ -549,7 +549,7 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate"
+         "Value": "ecs-placement-strategies-with-strategies/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate"
         }
        ]
       }
@@ -575,7 +575,7 @@
       "Tags": [
        {
         "Key": "Name",
-        "Value": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate"
+        "Value": "ecs-placement-strategies-with-strategies/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate"
        }
       ]
      }
@@ -606,7 +606,7 @@
      {
       "Key": "Name",
       "PropagateAtLaunch": true,
-      "Value": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup"
+      "Value": "ecs-placement-strategies-with-strategies/EcsCluster/DefaultAutoScalingGroup"
      }
     ],
     "VPCZoneIdentifier": [
@@ -659,7 +659,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup"
+      "Value": "ecs-placement-strategies-with-strategies/EcsCluster/DefaultAutoScalingGroup"
      }
     ]
    }
@@ -775,7 +775,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup"
+      "Value": "ecs-placement-strategies-with-strategies/EcsCluster/DefaultAutoScalingGroup"
      }
     ],
     "Timeout": 310
@@ -785,7 +785,7 @@
     "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA"
    ]
   },
-  "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawscdkecsintegrationteststackEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicD01B2572F6CCD921": {
+  "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeecsplacementstrategieswithstrategiesEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic5B99916541E26280": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -822,7 +822,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup"
+      "Value": "ecs-placement-strategies-with-strategies/EcsCluster/DefaultAutoScalingGroup"
      }
     ]
    }
@@ -845,7 +845,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup"
+      "Value": "ecs-placement-strategies-with-strategies/EcsCluster/DefaultAutoScalingGroup"
      }
     ]
    }
@@ -925,7 +925,7 @@
       "Name": "web"
      }
     ],
-    "Family": "awscdkecsintegrationteststackTaskDefF811D259",
+    "Family": "ecsplacementstrategieswithstrategiesTaskDef117DACB4",
     "NetworkMode": "bridge",
     "RequiresCompatibilities": [
      "EC2"
@@ -938,7 +938,7 @@
     }
    }
   },
-  "TestStackService5548C840": {
+  "ServiceD69D759B": {
    "Type": "AWS::ECS::Service",
    "Properties": {
     "Cluster": {
