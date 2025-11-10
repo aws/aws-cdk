@@ -473,6 +473,16 @@ export enum InstanceClass {
   R7A = 'r7a',
 
   /**
+   * Memory optimized instances based on 5th generation AMD EPYC (formerly code named Turin), 8th generation
+   */
+  MEMORY8_AMD = 'memory8-amd',
+
+  /**
+   * Memory optimized instances based on 5th generation AMD EPYC (formerly code named Turin), 8th generation
+   */
+  R8A = 'r8a',
+
+  /**
    * Memory optimized instances with Graviton4 processors
    */
   MEMORY8_GRAVITON = 'memory8-graviton',
@@ -1897,6 +1907,8 @@ export class InstanceType {
       [InstanceClass.R7IZ]: 'r7iz',
       [InstanceClass.MEMORY7_AMD]: 'r7a',
       [InstanceClass.R7A]: 'r7a',
+      [InstanceClass.MEMORY8_AMD]: 'r8a',
+      [InstanceClass.R8A]: 'r8a',
       [InstanceClass.MEMORY8_GRAVITON]: 'r8g',
       [InstanceClass.R8G]: 'r8g',
       [InstanceClass.MEMORY8_GRAVITON4_NVME_DRIVE]: 'r8gd',

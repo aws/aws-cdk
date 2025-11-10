@@ -6,6 +6,7 @@ import {
   Resource,
   Token,
   Stack,
+  ValidationError,
 } from 'aws-cdk-lib';
 import {
   DimensionsMap,
@@ -197,7 +198,7 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new Error('Cannot manage network access without configuring a VPC');
+      throw new ValidationError('Cannot manage network access without configuring a VPC', this);
     }
     return this._connections;
   }

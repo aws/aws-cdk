@@ -16,4 +16,9 @@ export enum ProtocolType {
    * HTTP protocol
    */
   HTTP = 'HTTP',
+
+  /**
+   * A2A protocol
+   */
+  A2A = 'A2A',
 }
