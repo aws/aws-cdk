@@ -4,7 +4,7 @@ import * as exec from '@actions/exec';
 
 describe('Guard Rule Syntax Validation', () => {
   const rulesDir = path.join(__dirname, '..', 'rules');
-  const templatesDir = path.join(__dirname, 'templates/dummy-template.json');
+  const dummyTemplateFilePath = path.join(__dirname, 'templates/dummy-template.json');
 
   test('all guard files have valid syntax', async () => {
     const guardFiles = fs.readdirSync(rulesDir).filter(file => file.endsWith('.guard'));
@@ -18,7 +18,7 @@ describe('Guard Rule Syntax Validation', () => {
           'validate',
           '--rules', filePath,
           '--show-summary', 'none',
-          '--data', templatesDir
+          '--data', dummyTemplateFilePath
         ], {
           listeners: {
             stdout: () => {},

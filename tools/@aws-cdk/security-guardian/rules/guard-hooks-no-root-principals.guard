@@ -30,16 +30,18 @@ let resources_no_root_principals = Resources.*[
 rule NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS when %resources_no_root_principals !empty {
     %resources_no_root_principals {
         # Check AssumeRolePolicyDocument (IAM Roles)
-        Properties.AssumeRolePolicyDocument.Statement[*] {
-            when Effect == "Allow" {
-                when Principal.AWS exists {
-                    when Principal.AWS is_string {
-                        Principal.AWS != /(?i):root$/
-                    }
-                    # Check if AWS is an array - only check string items
-                    when Principal.AWS is_list {
-                        when Principal.AWS[*] is_string {
-                            Principal.AWS[*] != /(?i):root$/
+        when Properties.PolicyDocument exists {
+            Properties.AssumeRolePolicyDocument.Statement[*] {
+                when Effect == "Allow" {
+                    when Principal.AWS exists {
+                        when Principal.AWS is_string {
+                            Principal.AWS != /(?i):root$/
+                        }
+                        # Check if AWS is an array - only check string items
+                        when Principal.AWS is_list {
+                            when Principal.AWS[*] is_string {
+                                Principal.AWS[*] != /(?i):root$/
+                            }
                         }
                     }
                 }
@@ -47,15 +49,14 @@ rule NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS when %resources_no_root_principals !e
         }
         
         # Check PolicyDocument (IAM Policies, S3 Bucket Policies, etc.)
-        Properties.PolicyDocument.Statement[*] {
-            when Effect == "Allow" {
-                when Principal.AWS exists {
-                    when Principal.AWS is_string {
-                        Principal.AWS != /(?i):root$/
-                    }
-                    # Check if AWS is an array - only check string items
-                    when Principal.AWS is_list {
-                        when Principal.AWS[*] is_string {
+        when Properties.PolicyDocument exists {
+            Properties.PolicyDocument.Statement[*] {
+                when Effect == "Allow" {
+                    when Principal.AWS exists {
+                        when Principal.AWS is_string {
+                            Principal.AWS != /(?i):root$/
+                        }
+                        when Principal.AWS is_list {
                             Principal.AWS[*] != /(?i):root$/
                         }
                     }
@@ -64,15 +65,14 @@ rule NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS when %resources_no_root_principals !e
         }
         
         # Check Policy (various services)
-        Properties.Policy.Statement[*] {
-            when Effect == "Allow" {
-                when Principal.AWS exists {
-                    when Principal.AWS is_string {
-                        Principal.AWS != /(?i):root$/
-                    }
-                    # Check if AWS is an array - only check string items
-                    when Principal.AWS is_list {
-                        when Principal.AWS[*] is_string {
+        when Properties.Policy exists {
+            Properties.Policy.Statement[*] {
+                when Effect == "Allow" {
+                    when Principal.AWS exists {
+                        when Principal.AWS is_string {
+                            Principal.AWS != /(?i):root$/
+                        }
+                        when Principal.AWS is_list {
                             Principal.AWS[*] != /(?i):root$/
                         }
                     }
@@ -81,15 +81,14 @@ rule NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS when %resources_no_root_principals !e
         }
         
         # Check ResourcePolicy (Lambda, SNS, SQS, etc.)
-        Properties.ResourcePolicy.Statement[*] {
-            when Effect == "Allow" {
-                when Principal.AWS exists {
-                    when Principal.AWS is_string {
-                        Principal.AWS != /(?i):root$/
-                    }
-                    # Check if AWS is an array - only check string items
-                    when Principal.AWS is_list {
-                        when Principal.AWS[*] is_string {
+        when Properties.ResourcePolicy exists {
+            Properties.ResourcePolicy.Statement[*] {
+                when Effect == "Allow" {
+                    when Principal.AWS exists {
+                        when Principal.AWS is_string {
+                            Principal.AWS != /(?i):root$/
+                        }
+                        when Principal.AWS is_list {
                             Principal.AWS[*] != /(?i):root$/
                         }
                     }
