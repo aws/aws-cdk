@@ -14,8 +14,6 @@ jobs:
       id-token: write
       actions: read
     steps:
-      - name: Which commit
-        run: echo "${{ github.event.workflow_run.pull_requests[0].head.sha }}"
       - name: Download artifacts
         uses: actions/download-artifact@v5
         with:
@@ -23,6 +21,13 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
           repository: ${{ github.repository }}
+      
+      - name: Get PR info
+        id: pr_info
+        run: |
+          echo "pr_number=$(cat pr/pr_number)" >> "$GITHUB_OUTPUT"
+          echo "pr_sha=$(cat pr/pr_sha)" >> "$GITHUB_OUTPUT"
+          echo "PR: $(cat pr/pr_number), SHA: $(cat pr/pr_sha)"
       - name: Publish Security Test Results 
         uses: mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6  # v6.0.1
         if: always()
@@ -30,10 +35,10 @@ jobs:
           report_paths: '**/cfn-guard-static.xml'
           check_name: 'Security Guardian Results'
           exclude_sources: 'node_modules,dist'
-          commit: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
+          commit: ${{ steps.pr_info.outputs.pr_sha }}
           check_annotations: true
           comment: true
-          pr_id: ${{ github.event.workflow_run.pull_requests[0].number }}
+          pr_id: ${{ steps.pr_info.outputs.pr_number }}
           detailed_summary: true
           include_passed: true
           fail_on_failure: false
@@ -48,10 +53,10 @@ jobs:
           report_paths: '**/cfn-guard-resolved.xml'
           check_name: 'Security Guardian Results with resolved templates'
           exclude_sources: 'node_modules,dist'
-          commit: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
+          commit: ${{ steps.pr_info.outputs.pr_sha }}
           check_annotations: true
           comment: true
-          pr_id: ${{ github.event.workflow_run.pull_requests[0].number }}
+          pr_id: ${{ steps.pr_info.outputs.pr_number }}
           detailed_summary: true
           include_passed: true
           fail_on_failure: false

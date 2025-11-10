@@ -40,9 +40,17 @@ jobs:
           base_sha: ${{ github.event.pull_request.base.sha }}
           head_sha: ${{ github.event.pull_request.head.sha }}
           rule_set_path: './tools/@aws-cdk/security-guardian/rules'
+      - name: Save PR info for security-report
+        run: |
+          mkdir -p ./pr
+          echo "${{ github.event.pull_request.number }}" > ./pr/pr_number
+          echo "${{ github.event.pull_request.head.sha }}" > ./pr/pr_sha
+      
       - name: Upload Security Guardian XML Reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: security-guardian-reports
-          path: test-results/*.xml
+          path: |
+            test-results/*.xml
+            pr/
