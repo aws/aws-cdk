@@ -56,6 +56,7 @@ describe('BrowserCustom default tests', () => {
     // The resource should have basic properties
     expect(resource.Properties).toHaveProperty('Name');
     expect(resource.Properties).toHaveProperty('NetworkConfiguration');
+    expect(resource.Properties).toHaveProperty('BrowserSigning');
 
     // Tags property handling - the important thing is that the construct works
     // The addPropertyOverride may or may not be visible in the template depending on CDK version
