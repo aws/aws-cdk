@@ -196,9 +196,11 @@ export class GrantsModule extends Module {
 
       // Add one method per entry in the config
       for (const [methodName, grantSchema] of Object.entries(config.grants)) {
-        const resourceArns = expr.list([
-          makeArnCall(this.service.shortName, resource, nameSuffix, grantSchema),
-        ]);
+        const arnFormat = grantSchema.arnFormat;
+        const arnFormats = Array.isArray(arnFormat) ? arnFormat : [arnFormat];
+        const resourceArns = expr.list(
+          arnFormats.map(format => makeArnCall(this.service.shortName, resource, nameSuffix, format)),
+        );
 
         const method = classType.addMethod({
           name: methodName,
@@ -276,15 +278,14 @@ export interface GrantSchema {
    *
    * If absent, just use the resource's default ARN format.
    */
-  readonly arnFormat?: string;
+  readonly arnFormat?: string | string[];
   readonly actions: string[];
   readonly keyActions?: string[];
   readonly docSummary?: string;
   readonly conditions?: Record<string, Record<string, unknown>>;
 }
 
-function makeArnCall(serviceName: string, resource: Resource, nameSuffix?: string, grantSchema?: GrantSchema): Expression {
-  const arnFormat = grantSchema?.arnFormat;
+function makeArnCall(serviceName: string, resource: Resource, nameSuffix?: string, arnFormat?: string): Expression {
   const arnCall = $E(expr
     .ident(`${serviceName}`)
     .prop(classNameFromResource(resource, nameSuffix))
