@@ -222,7 +222,7 @@ export class Rule extends Resource implements IRule {
         // and trigger on it there (there will be issues with construct references, for example). Especially
         // in the case of scheduled events, we will just trigger both rules in parallel in both environments.
         //
-        // A better solution would be to have the source rule add a unique token to the the event,
+        // A better solution would be to have the source rule add a unique token to the event,
         // and have the mirror rule trigger on that token only (thereby properly separating triggering, which
         // happens in the source env; and activating, which happens in the target env).
         //
