@@ -41,8 +41,8 @@ jobs:
           head_sha: ${{ github.event.pull_request.head.sha }}
           rule_set_path: './tools/@aws-cdk/security-guardian/rules'
       - name: Save PR info for security-report
+        if: always()
         run: |
-          mkdir -p ./pr
           echo "${{ github.event.pull_request.number }}" > ./test-results/pr_number
           echo "${{ github.event.pull_request.head.sha }}" > ./test-results/pr_sha
       
