@@ -119,6 +119,41 @@ Use `mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6` (v6.
 
 ---
 
+## Suppressing Rules
+
+For integration tests or specific resources that generate false positives, you can suppress individual rules using CDK metadata:
+
+```typescript
+import { Bucket } from 'aws-cdk-lib/aws-s3';
+import { Stack, StackProps } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+
+export class MyTestStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    const testBucket = new Bucket(this, 'TestBucket', {
+      autoDeleteObjects: true,
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    // Suppress S3 encryption rule for integration test
+    testBucket.node.addMetadata('guard', {
+      SuppressedRules: ['S3_ENCRYPTION_ENABLED']
+    });
+  }
+}
+```
+
+**Available Rules to Suppress:**
+- `S3_ENCRYPTION_ENABLED`
+- `IAM_ROLE_NO_BROAD_PRINCIPALS` 
+- `IAM_NO_WILDCARD_ACTIONS`
+- `NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS`
+- And others (see individual `.guard` files in `/rules` directory)
+
+---
+
 ## Acknowledgments
 
 Built with care on top of [cfn-guard](https://github.com/aws-cloudformation/cloudformation-guard) and the [GitHub Actions Toolkit](https://github.com/actions/toolkit).
