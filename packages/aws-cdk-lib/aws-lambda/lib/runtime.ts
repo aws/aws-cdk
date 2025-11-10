@@ -124,7 +124,7 @@ export class Runtime {
   public static readonly NODEJS_22_X = new Runtime('nodejs22.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
-   * The NodeJS 22.x runtime (nodejs24.x)
+   * The NodeJS 24.x runtime (nodejs24.x)
    */
   public static readonly NODEJS_24_X = new Runtime('nodejs24.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
