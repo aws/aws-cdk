@@ -17,11 +17,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **stepfunctions:** `DistributedMap` ResultWriter correct query language selection ([#35834](https://github.com/aws/aws-cdk/issues/35834)) ([75b8ead](https://github.com/aws/aws-cdk/commit/75b8eadb3761f02798061fe5578af82f785f687a)), closes [#35403](https://github.com/aws/aws-cdk/issues/35403)
 * onEvent function to pass all the options to rule resource ([#35829](https://github.com/aws/aws-cdk/issues/35829)) ([3d7023d](https://github.com/aws/aws-cdk/commit/3d7023d4c6ee29b945034e56fd94b228f6e313f2))
 
-
-### Reverts
-
-* ci(mergify): update PRs via rebase by default instead of merge commit" ([#35956](https://github.com/aws/aws-cdk/issues/35956)) ([eac505c](https://github.com/aws/aws-cdk/commit/eac505c05fd7095cb6a49932461cefb8070e0b05)), closes [aws/aws-cdk#35894](https://github.com/aws/aws-cdk/issues/35894)
-
 ## [2.222.0](https://github.com/aws/aws-cdk/compare/v2.221.1...v2.222.0) (2025-11-04)
 
 
