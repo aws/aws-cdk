@@ -125,6 +125,102 @@ const s3Destination = new firehose.S3Bucket(bucket, {
 });
 ```
 
+## Data Format Conversion
+
+Data format conversion allows automatic conversion of inputs from JSON to either Parquet or ORC.
+Converting JSON records to columnar formats like Parquet or ORC can help speed up analytical querying while also increasing compression efficiency.
+When data format conversion is specified, it automatically enables Snappy compression on the output.
+
+Only S3 Destinations support data format conversion.
+
+An example of defining an S3 destination configured with data format conversion:
+
+```ts
+declare const bucket: s3.Bucket;
+declare const schemaGlueTable: glue.CfnTable;
+const s3Destination = new firehose.S3Bucket(bucket, {
+  dataFormatConversion: {
+    schemaConfiguration: firehose.SchemaConfiguration.fromCfnTable(schemaGlueTable),
+    inputFormat: firehose.InputFormat.OPENX_JSON,
+    outputFormat: firehose.OutputFormat.PARQUET,
+  }
+});
+```
+
+When data format conversion is enabled, the Delivery Stream's buffering size must be at least 64 MiB. 
+Additionally, the default buffering size is changed from 5 MiB to 128 MiB. This mirrors the Cloudformation behavior.
+
+You can only parse JSON and transform it into either Parquet or ORC:
+- to read JSON using OpenX parser, choose `InputFormat.OPENX_JSON`.
+- to read JSON using Hive parser, choose `InputFormat.HIVE_JSON`.
+- to transform into Parquet, choose `OutputFormat.PARQUET`.
+- to transform into ORC, choose `OutputFormat.ORC`.
+
+The following subsections explain how to specify advanced configuration options for each input and output format if the defaults are not desirable
+
+### Input Format: OpenX JSON
+
+Example creation of custom OpenX JSON InputFormat:
+
+```ts
+const inputFormat = new firehose.OpenXJsonInputFormat({
+  lowercaseColumnNames: false,
+  columnToJsonKeyMappings: {"ts": "timestamp"},
+  convertDotsInJsonKeysToUnderscores: true,
+})
+```
+
+### Input Format: Hive JSON
+
+Example creation of custom Hive JSON InputFormat:
+
+```ts
+const inputFormat = new firehose.HiveJsonInputFormat({
+  timestampParsers: [
+    firehose.TimestampParser.fromFormatString('yyyy-MM-dd'),
+    firehose.TimestampParser.EPOCH_MILLIS,
+  ]
+})
+```
+
+Hive JSON allows you to specify custom timestamp formats to parse. The syntax of the format string is Joda Time.
+
+To parse timestamps formatted as milliseconds since epoch, use the convenience constant `TimestampParser.EPOCH_MILLIS`.
+
+### Output Format: Parquet
+
+Example of a custom Parquet OutputFormat, with all values changed from the defaults.
+
+```ts
+const outputFormat = new firehose.ParquetOutputFormat({
+  blockSize: Size.mebibytes(512),
+  compression: firehose.ParquetCompression.UNCOMPRESSED,
+  enableDictionaryCompression: true,
+  maxPadding: Size.bytes(10),
+  pageSize: Size.mebibytes(2),
+  writerVersion: firehose.ParquetWriterVersion.V2,
+})
+```
+
+### Output Format: ORC
+
+Example creation of custom ORC OutputFormat, with all values changed from the defaults.
+
+```ts
+const outputFormat = new firehose.OrcOutputFormat({
+  formatVersion: firehose.OrcFormatVersion.V0_11,
+  blockSize: Size.mebibytes(256),
+  compression: firehose.OrcCompression.NONE,
+  bloomFilterColumns: ['columnA'],
+  bloomFilterFalsePositiveProbability: 0.1,
+  dictionaryKeyThreshold: 0.7,
+  enablePadding: true,
+  paddingTolerance: 0.2,
+  rowIndexStride: 9000,
+  stripeSize: Size.mebibytes(32),
+})
+```
+
 ## Server-side Encryption
 
 Enabling server-side encryption (SSE) requires Amazon Data Firehose to encrypt all data
@@ -387,8 +483,11 @@ Data can be transformed before being delivered to destinations. There are two ty
 data processing for delivery streams: record transformation with AWS Lambda, and record
 format conversion using a schema stored in an AWS Glue table. If both types of data
 processing are configured, then the Lambda transformation is performed first. By default,
-no data processing occurs. This construct library currently only supports data
-transformation with AWS Lambda. See [#15501](https://github.com/aws/aws-cdk/issues/15501)
+no data processing occurs.
+
+This construct library currently only supports data
+transformation with AWS Lambda and some built-in data processors.
+See [#15501](https://github.com/aws/aws-cdk/issues/15501)
 to track the status of adding support for record format conversion.
 
 ### Data transformation with AWS Lambda
@@ -424,7 +523,7 @@ const lambdaProcessor = new firehose.LambdaFunctionProcessor(lambdaFunction, {
 });
 declare const bucket: s3.Bucket;
 const s3Destination = new firehose.S3Bucket(bucket, {
-  processor: lambdaProcessor,
+  processors: [lambdaProcessor],
 });
 new firehose.DeliveryStream(this, 'Delivery Stream', {
   destination: s3Destination,
@@ -435,6 +534,60 @@ new firehose.DeliveryStream(this, 'Delivery Stream', {
 
 See: [Data Transformation](https://docs.aws.amazon.com/firehose/latest/dev/data-transformation.html)
 in the *Amazon Data Firehose Developer Guide*.
+
+### Add a new line delimiter when delivering data to Amazon S3
+
+You can specify the `AppendDelimiterToRecordProcessor` built-in processor to add a new line delimiter between records in objects that are delivered to Amazon S3. This can be helpful for parsing objects in Amazon S3.
+For details, see [Use Amazon S3 bucket prefix to deliver data](https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning-s3bucketprefix.html).
+
+```ts
+declare const bucket: s3.Bucket;
+const s3Destination = new firehose.S3Bucket(bucket, {
+  processors: [
+    new firehose.AppendDelimiterToRecordProcessor(),
+  ],
+});
+new firehose.DeliveryStream(this, 'Delivery Stream', {
+  destination: s3Destination,
+});
+```
+
+### Decompress and extract message of CloudWatch Logs
+
+CloudWatch Logs events are sent to Firehose in compressed gzip format. If you want to deliver decompressed log events to Firehose destinations, you can use the `DecompressionProcessor` to automatically decompress CloudWatch Logs.
+For details, see [Send CloudWatch Logs to Firehose](https://docs.aws.amazon.com/firehose/latest/dev/writing-with-cloudwatch-logs.html).
+
+You may also needed to specify `AppendDelimiterToRecordProcessor`
+because decompressed log events record has no trailing newline.
+
+```ts
+declare const bucket: s3.Bucket;
+const s3Destination = new firehose.S3Bucket(bucket, {
+  processors: [
+    new firehose.DecompressionProcessor(),
+    new firehose.AppendDelimiterToRecordProcessor(),
+  ],
+});
+new firehose.DeliveryStream(this, 'Delivery Stream', {
+  destination: s3Destination,
+});
+```
+
+When you enable decompression, you have the option to also enable message extraction. When using message extraction, Firehose filters out all metadata, such as owner, loggroup, logstream, and others from the decompressed CloudWatch Logs records and delivers only the content inside the message fields.
+
+```ts
+declare const bucket: s3.Bucket;
+const s3Destination = new firehose.S3Bucket(bucket, {
+  processors: [
+    new firehose.DecompressionProcessor(),
+    new firehose.CloudWatchLogProcessor({ dataMessageExtraction: true }),
+  ],
+});
+new firehose.DeliveryStream(this, 'Delivery Stream', {
+  destination: s3Destination,
+});
+```
+
 
 ## Specifying an IAM role
 
