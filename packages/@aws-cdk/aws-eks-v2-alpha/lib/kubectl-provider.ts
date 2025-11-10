@@ -169,7 +169,7 @@ export class KubectlProvider extends Construct implements IKubectlProvider {
       role: props.role,
       code: lambda.Code.fromAsset(path.join(__dirname, 'kubectl-handler')),
       handler: 'index.handler',
-      runtime: lambda.Runtime.PYTHON_3_11,
+      runtime: lambda.Runtime.determineLatestPythonRuntime(this),
       // defined only when using private access
       vpc,
       securityGroups,

@@ -14,10 +14,13 @@
   - [VPC Link](#vpc-link)
   - [Private Integration](#private-integration)
   - [Generating ARN for Execute API](#generating-arn-for-execute-api)
-  - [Access Logging](#access-logging)
 - [WebSocket API](#websocket-api)
   - [Manage Connections Permission](#manage-connections-permission)
   - [Managing access to WebSocket APIs](#managing-access-to-websocket-apis)
+  - [Usage Plan and API Keys](#usage-plan-and-api-keys)
+- [Common Config](#common-config)
+  - [Route Settings](#route-settings)
+  - [Access Logging](#access-logging)
 
 ## Introduction
 
@@ -374,65 +377,6 @@ const arn = api.arnForExecuteApi('GET', '/myApiPath', 'dev');
 - The 'ANY' method can be used for matching any HTTP methods not explicitly defined.
 - The function gracefully handles undefined parameters by using wildcards, making it flexible for various API configurations.
 
-## Access Logging
-
-You can turn on logging to write logs to CloudWatch Logs.
-Read more at [Configure logging for HTTP APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-logging.html)
-
-```ts
-import * as logs from 'aws-cdk-lib/aws-logs';
-
-declare const api: apigwv2.HttpApi;
-declare const logGroup: logs.LogGroup;
-
-const stage = new apigwv2.HttpStage(this, 'Stage', {
-  httpApi: api,
-  accessLogSettings: {
-    destination: new apigwv2.LogGroupLogDestination(logGroup),
-  },
-});
-```
-
-The following code will generate the access log in the [CLF format](https://en.wikipedia.org/wiki/Common_Log_Format).
-
-```ts
-import * as apigw from 'aws-cdk-lib/aws-apigateway';
-import * as logs from 'aws-cdk-lib/aws-logs';
-
-declare const api: apigwv2.HttpApi;
-declare const logGroup: logs.LogGroup;
-
-const stage = new apigwv2.HttpStage(this, 'Stage', {
-  httpApi: api,
-  accessLogSettings: {
-    destination: new apigwv2.LogGroupLogDestination(logGroup),
-    format: apigw.AccessLogFormat.clf(),
-  },
-});
-```
-
-You can also configure your own access log format by using the `AccessLogFormat.custom()` API.
-`AccessLogField` provides commonly used fields. The following code configures access log to contain.
-
-```ts
-import * as apigw from 'aws-cdk-lib/aws-apigateway';
-import * as logs from 'aws-cdk-lib/aws-logs';
-
-declare const api: apigwv2.HttpApi;
-declare const logGroup: logs.LogGroup;
-
-const stage = new apigwv2.HttpStage(this, 'Stage', {
-  httpApi: api,
-  accessLogSettings: {
-    destination: new apigwv2.LogGroupLogDestination(logGroup),
-    format: apigw.AccessLogFormat.custom(
-      `${apigw.AccessLogField.contextRequestId()} ${apigw.AccessLogField.contextErrorMessage()} ${apigw.AccessLogField.contextErrorMessageString()}
-      ${apigw.AccessLogField.contextAuthorizerError()} ${apigw.AccessLogField.contextAuthorizerIntegrationStatus()}`
-    ),
-  },
-});
-```
-
 ## WebSocket API
 
 A WebSocket API in API Gateway is a collection of WebSocket routes that are integrated with backend HTTP endpoints,
@@ -523,6 +467,14 @@ const arn = api.arnForExecuteApiV2('$connect', 'dev');
 
 For a detailed explanation of this function, including usage and examples, please refer to the [Generating ARN for Execute API](#generating-arn-for-execute-api) section under HTTP API.
 
+To disable schema validation, set `disableSchemaValidation` to true.
+
+```ts
+new apigwv2.WebSocketApi(this, 'api', {
+  disableSchemaValidation: true,
+});
+```
+
 You can configure IP address type for the API endpoint using `ipAddressType` property.
 Valid values are `IPV4` (default) and `DUAL_STACK`.
 
@@ -569,6 +521,150 @@ const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi',{
 });
 ```
 
+## Usage Plan and API Keys
+
+A usage plan specifies who can access one or more deployed WebSocket API stages, and the rate at which they can be accessed. The plan uses API keys to
+identify API clients and meters access to the associated API stages for each key. Usage plans also allow configuring throttling limits and quota limits that are
+enforced on individual client API keys.
+
+The following example shows how to create and associate a usage plan and an API key for WebSocket APIs:
+
+```ts
+const apiKey = new apigwv2.ApiKey(this, "ApiKey");
+
+const usagePlan = new apigwv2.UsagePlan(this, "UsagePlan", {
+  usagePlanName: "WebSocketUsagePlan",
+  throttle: {
+    rateLimit: 10,
+    burstLimit: 2
+  }
+});
+
+usagePlan.addApiKey(apiKey);
+```
+
+To associate a plan to a given WebSocketAPI stage:
+
+```ts
+const api = new apigwv2.WebSocketApi(this, 'my-api');
+const stage = new apigwv2.WebSocketStage(this, 'my-stage', {
+  webSocketApi: api,
+  stageName: 'dev',
+});
+
+const usagePlan = new apigwv2.UsagePlan(this, 'my-usage-plan', {
+  usagePlanName: 'Basic',
+});
+
+usagePlan.addApiStage({
+  api: api,
+  stage: stage,
+});
+```
+Existing usage plans can be imported into a CDK app using its id.
+
+```ts
+const usagePlan: apigwv2.IUsagePlan = apigwv2.UsagePlan.fromUsagePlanId(this, 'imported-usage-plan', '<usage-plan-id>');
+```
+
+The name and value of the API Key can be specified at creation; if not provided, a name and a value will be automatically generated by API Gateway.
+
+```ts
+// Auto-generated name and value
+const autoKey = new apigwv2.ApiKey(this, 'AutoKey');                                                                                                            
+                                                                                                                                                                     
+// Explicit name and value                                                                                                                                           
+const explicitKey = new apigwv2.ApiKey(this, 'ExplicitKey', {                                                                                                   
+  apiKeyName: 'MyWebSocketApiKey',                                                                                                                                   
+  value: 'MyApiKeyThatIsAtLeast20Characters',                                                                                                                        
+});         
+```
+
+Existing API keys can also be imported into a CDK app using its id.
+
+```ts
+const importedKey = apigwv2.ApiKey.fromApiKeyId(this, 'imported-key', '<api-key-id>');
+```
+
+The "grant" methods can be used to give prepackaged sets of permissions to other resources. The
+following code provides read permission to an API key.
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+const user = new iam.User(this, 'User');
+const apiKey = new apigwv2.ApiKey(this, 'ApiKey', {
+  customerId: 'test-customer',
+});
+apiKey.grantRead(user);
+```
+
+### Adding an API Key to an imported WebSocketApi
+
+API Keys for WebSocket APIs are associated through Usage Plans, not directly to stages. When you import a WebSocketApi, you need to create a Usage Plan that references the
+imported stage and then associate the API key with that Usage Plan.
+
+```ts
+declare const webSocketApi: apigwv2.IWebSocketApi;
+                                                                                                                                                                                   
+const importedStage = apigwv2.WebSocketStage.fromWebSocketStageAttributes(this, 'imported-stage', {                                                                           
+  stageName: 'myStage',                                                                                                                                                            
+  api: webSocketApi,                                                                                                                                                               
+});                                                                                                                                                                                
+                                                                                                                                                                                   
+const apiKey = new apigwv2.ApiKey(this, 'MyApiKey');                                                                                                                          
+                                                                                                                                                                                   
+const usagePlan = new apigwv2.UsagePlan(this, 'MyUsagePlan', {                                                                                                                
+  apiStages: [{ api: webSocketApi, stage: importedStage }],                                                                                                                        
+});                                                                                                                                                                                
+                                                                                                                                                                                   
+usagePlan.addApiKey(apiKey);
+```
+
+### Multiple API Keys
+
+It is possible to specify multiple API keys for a given Usage Plan, by calling `usagePlan.addApiKey()`.
+
+When using multiple API keys, you may need to ensure that the CloudFormation logical ids of the API keys remain consistent across deployments. You can set the logical id as part of the `addApiKey()` method
+
+```ts
+declare const usagePlan: apigwv2.UsagePlan;
+declare const apiKey: apigwv2.ApiKey;
+
+usagePlan.addApiKey(apiKey, {
+ overrideLogicalId: 'MyCustomLogicalId',
+});
+```
+
+### Rate Limited API Key
+
+In scenarios where you need to create a single api key and configure rate limiting for it, you can use `RateLimitedApiKey`.
+This construct lets you specify rate limiting properties which should be applied only to the api key being created.
+The API key created has the specified rate limits, such as quota and throttles, applied.
+
+The following example shows how to use a rate limited api key :
+
+```ts
+declare const api: apigwv2.WebSocketApi;
+declare const stage: apigwv2.WebSocketStage;
+
+const key = new apigwv2.RateLimitedApiKey(this, 'rate-limited-api-key', {
+  customerId: 'test-customer',
+  apiStages: [{
+    api: api,
+    stage: stage
+  }],
+  quota: {
+    limit: 10000,
+    period: apigwv2.Period.MONTH
+  },
+  throttle: {
+    rateLimit: 100,
+    burstLimit: 200
+  }
+});            
+```
+
 ## Common Config
 
 Common config for both HTTP API and WebSocket API
@@ -587,5 +683,73 @@ new apigwv2.HttpStage(this, 'Stage', {
     burstLimit: 1000,
   },
   detailedMetricsEnabled: true,
+});
+```
+
+### Access Logging
+
+You can turn on logging to write logs to CloudWatch Logs.
+Read more at Configure logging for [HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-logging.html) or [WebSocket APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-logging.html)
+
+```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+declare const httpApi: apigwv2.HttpApi;
+declare const webSocketApi : apigwv2.WebSocketApi;
+declare const logGroup: logs.LogGroup;
+
+new apigwv2.HttpStage(this, 'HttpStage', {
+  httpApi,
+  accessLogSettings: {
+    destination: new apigwv2.LogGroupLogDestination(logGroup),
+  },
+});
+
+new apigwv2.WebSocketStage(this, 'WebSocketStage', {
+  webSocketApi,
+  stageName: 'dev',
+  accessLogSettings: {
+    destination: new apigwv2.LogGroupLogDestination(logGroup),
+  },
+});
+```
+
+The following code will generate the access log in the [CLF format](https://en.wikipedia.org/wiki/Common_Log_Format).
+
+```ts
+import * as apigw from 'aws-cdk-lib/aws-apigateway';
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+declare const api: apigwv2.HttpApi;
+declare const logGroup: logs.LogGroup;
+
+const stage = new apigwv2.HttpStage(this, 'Stage', {
+  httpApi: api,
+  accessLogSettings: {
+    destination: new apigwv2.LogGroupLogDestination(logGroup),
+    format: apigw.AccessLogFormat.clf(),
+  },
+});
+```
+
+You can also configure your own access log format by using the `AccessLogFormat.custom()` API.
+`AccessLogField` provides commonly used fields. The following code configures access log to contain.
+
+```ts
+import * as apigw from 'aws-cdk-lib/aws-apigateway';
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+declare const api: apigwv2.HttpApi;
+declare const logGroup: logs.LogGroup;
+
+const stage = new apigwv2.HttpStage(this, 'Stage', {
+  httpApi: api,
+  accessLogSettings: {
+    destination: new apigwv2.LogGroupLogDestination(logGroup),
+    format: apigw.AccessLogFormat.custom(
+      `${apigw.AccessLogField.contextRequestId()} ${apigw.AccessLogField.contextErrorMessage()} ${apigw.AccessLogField.contextErrorMessageString()}
+      ${apigw.AccessLogField.contextAuthorizerError()} ${apigw.AccessLogField.contextAuthorizerIntegrationStatus()}`
+    ),
+  },
 });
 ```

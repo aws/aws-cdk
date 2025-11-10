@@ -1061,7 +1061,7 @@ The properties passed to the level 2 constructs `AutoScalingGroup` and `Instance
 `aws-ec2` module abstract what is passed into the `CfnOption` properties `resourceSignal` and
 `autoScalingCreationPolicy`, but when using level 1 constructs you can specify these yourself.
 
-The CfnWaitCondition resource from the `aws-cloudformation` module suppports the `resourceSignal`.
+The CfnWaitCondition resource from the `aws-cloudformation` module supports the `resourceSignal`.
 The format of the timeout is `PT#H#M#S`. In the example below AWS Cloudformation will wait for
 3 success signals to occur within 15 minutes before the status of the resource will be set to
 `CREATE_COMPLETE`.

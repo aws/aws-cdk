@@ -1125,6 +1125,43 @@ test('deployment allows vpc and subnets to be implicitly supplied to lambda', ()
   });
 });
 
+test('deployment allows security groups to be implicitly supplied to lambda', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const vpc: ec2.IVpc = new ec2.Vpc(stack, 'SomeVpc', {});
+  const securityGroups: ec2.SecurityGroup = new ec2.SecurityGroup(stack, 'SomeSecurityGroup', {
+    vpc: vpc,
+    securityGroupName: 'SomeSecurityGroup',
+  });
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc1', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    vpc,
+    securityGroups: [securityGroups],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            Match.stringLikeRegexp('SomeSecurityGroup'),
+            'GroupId',
+          ],
+        },
+      ],
+      SubnetIds: Match.arrayWith([
+        { Ref: Match.stringLikeRegexp('SomeVpc.*Subnet.*') },
+        { Ref: Match.stringLikeRegexp('SomeVpc.*Subnet.*') },
+      ]),
+    },
+  });
+});
+
 test('s3 deployment bucket is identical to destination bucket', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -1361,6 +1398,7 @@ test('"SourceMarkers" is not included if none of the sources have markers', () =
     'SourceBucketNames',
     'SourceObjectKeys',
     'DestinationBucketName',
+    'WaitForDistributionInvalidation',
     'Prune',
     'OutputObjectKeys',
   ]);

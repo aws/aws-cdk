@@ -93,10 +93,10 @@ export interface CommonDestinationS3Props {
    * The size of the buffer that Amazon Data Firehose uses for incoming data before
    * delivering it to the S3 bucket.
    *
-   * Minimum: Size.mebibytes(1)
+   * Minimum: Size.mebibytes(1) when record data format conversion is disabled, Size.mebibytes(64) when it is enabled
    * Maximum: Size.mebibytes(128)
    *
-   * @default Size.mebibytes(5)
+   * @default Size.mebibytes(5) when record data format conversion is disabled, Size.mebibytes(128) when it is enabled
    */
   readonly bufferingSize?: cdk.Size;
 
@@ -181,8 +181,16 @@ export interface CommonDestinationProps extends DestinationLoggingProps {
    * The data transformation that should be performed on the data before writing to the destination.
    *
    * @default - no data transformation will occur.
+   * @deprecated Use `processors` instead.
    */
   readonly processor?: IDataProcessor;
+
+  /**
+   * The data transformation that should be performed on the data before writing to the destination.
+   *
+   * @default - no data transformation will occur.
+   */
+  readonly processors?: IDataProcessor[];
 
   /**
    * The configuration for backing up source records to S3.

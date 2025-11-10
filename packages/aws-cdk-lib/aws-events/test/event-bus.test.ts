@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
 import { Aws, CfnResource, Stack, Arn, App, PhysicalName, CfnOutput } from '../../core';
-import { EventBus } from '../lib';
+import { EventBus, IncludeDetail, Level } from '../lib';
 
 describe('event bus', () => {
   test('default event bus', () => {
@@ -17,6 +17,28 @@ describe('event bus', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
       Name: 'Bus',
+    });
+  });
+
+  test('default event bus with logConfig', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new EventBus(stack, 'Bus', {
+      logConfig: {
+        includeDetail: IncludeDetail.FULL,
+        level: Level.TRACE,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
+      Name: 'Bus',
+      LogConfig: {
+        IncludeDetail: 'FULL',
+        Level: 'TRACE',
+      },
     });
   });
 

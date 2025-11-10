@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "0d94926290549a70008a6e1e24fe1f1b29c5b53364bc1c09c60ef9cb02f562ca": {
       "displayName": "test-condition-with-ref/AWSCDKCfnUtilsProviderCustomResourceProvider Code",

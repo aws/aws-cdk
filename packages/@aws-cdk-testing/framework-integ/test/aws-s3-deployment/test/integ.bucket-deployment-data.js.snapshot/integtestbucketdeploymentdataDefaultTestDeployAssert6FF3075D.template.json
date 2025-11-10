@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "TestBucketDeploymentContent:ExportsOutputRefBucket83908E7781C90AC0"
+         "Fn::ImportValue": "test-bucket-deployment-data:ExportsOutputRefBucket83908E7781C90AC0"
         },
         "\""
        ]
@@ -28,7 +28,7 @@
      "Key": "\"deploy/here/my-json/secret-config.json\""
     },
     "flattenResponse": "false",
-    "salt": "1754647680034"
+    "salt": "1762212912654"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -91,7 +91,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
+     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -122,7 +122,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "TestBucketDeploymentContent:ExportsOutputRefBucket83908E7781C90AC0"
+         "Fn::ImportValue": "test-bucket-deployment-data:ExportsOutputRefBucket83908E7781C90AC0"
         },
         "\""
        ]
@@ -131,7 +131,7 @@
      "Key": "\"deploy/here/my-yaml/secret-config.yaml\""
     },
     "flattenResponse": "false",
-    "salt": "1754647680035"
+    "salt": "1762212912654"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
