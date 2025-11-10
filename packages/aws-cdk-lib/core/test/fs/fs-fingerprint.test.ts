@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { FileSystem, SymlinkFollowMode } from '../../lib/fs';
+import { FileSystem, IgnoreMode, SymlinkFollowMode } from '../../lib/fs';
 import { contentFingerprint } from '../../lib/fs/fingerprint';
 
 describe('fs fingerprint', () => {
@@ -91,6 +91,25 @@ describe('fs fingerprint', () => {
       // THEN
       expect(hashSrc).not.toEqual(hashCopy);
     });
+
+    test('changes with negated gitignore patterns inside ignored directories', () => {
+      // GIVEN
+      const srcdir = path.join(__dirname, 'fixtures', 'symlinks');
+      const cpydir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
+      FileSystem.copyDirectory(srcdir, cpydir);
+
+      // Add a new file that is inside an ignored directory, but has a negated pattern that includes it.
+      const newFile = path.join(cpydir, 'ignored-dir', 'not-ignored-anymore.html');
+      fs.mkdirSync(path.dirname(newFile), { recursive: true });
+      fs.writeFileSync(newFile, '<h1>Do not ignore me!</h1>');
+
+      // WHEN
+      const hashSrc = FileSystem.fingerprint(srcdir, { exclude: ['*', '!*.html', '!*/'], ignoreMode: IgnoreMode.GIT });
+      const hashCopy = FileSystem.fingerprint(cpydir, { exclude: ['*', '!*.html', '!*/'], ignoreMode: IgnoreMode.GIT });
+
+      // THEN
+      expect(hashSrc).not.toEqual(hashCopy);
+    });
   });
 
   describe('symlinks', () => {
@@ -146,6 +165,44 @@ describe('fs fingerprint', () => {
       // THEN
       expect(original).toEqual(afterChange);
       expect(afterRevert).toEqual(original);
+    });
+
+    test('changes when following directory symlinks with negated gitignore patterns', () => {
+      // GIVEN
+      const srcdir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
+      fs.mkdirSync(path.join(srcdir, 'subdir'), { recursive: true });
+      fs.writeFileSync(path.join(srcdir, 'subdir', 'page.html'), '<h1>Hello, world!</h1>');
+
+      const cpydir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
+      FileSystem.copyDirectory(srcdir, cpydir);
+      fs.symlinkSync(path.join(cpydir, 'subdir'), path.join(cpydir, 'link-to-dir'));
+
+      // WHEN
+      const options = { exclude: ['*', '!*.html', '!*/'], ignoreMode: IgnoreMode.GIT, follow: SymlinkFollowMode.ALWAYS };
+      const hashSrc = FileSystem.fingerprint(srcdir, options);
+      const hashCpy = FileSystem.fingerprint(cpydir, options);
+
+      // THEN
+      expect(hashSrc).not.toEqual(hashCpy);
+    });
+
+    test('does not change when not following directory symlinks with negated gitignore patterns', () => {
+      // GIVEN
+      const srcdir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
+      fs.mkdirSync(path.join(srcdir, 'subdir'), { recursive: true });
+      fs.writeFileSync(path.join(srcdir, 'subdir', 'page.html'), '<h1>Hello, world!</h1>');
+
+      const cpydir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
+      FileSystem.copyDirectory(srcdir, cpydir);
+      fs.symlinkSync(path.join(cpydir, 'subdir'), path.join(cpydir, 'link-to-dir'));
+
+      // WHEN
+      const options = { exclude: ['*', '!*.html', '!*/'], ignoreMode: IgnoreMode.GIT, follow: SymlinkFollowMode.NEVER };
+      const hashSrc = FileSystem.fingerprint(srcdir, options);
+      const hashCpy = FileSystem.fingerprint(cpydir, options);
+
+      // THEN
+      expect(hashSrc).toEqual(hashCpy);
     });
   });
 

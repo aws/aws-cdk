@@ -4,7 +4,7 @@ import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import * as secretsmanager from './secretsmanager.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Fn, IResolveContext, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretValue, Stack, Token, TokenComparison, UnscopedValidationError, ValidationError } from '../../core';
+import { ArnFormat, FeatureFlags, Fn, IResolveContext, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretsManagerSecretOptions, SecretValue, Stack, Token, TokenComparison, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -96,6 +96,16 @@ export interface ISecret extends IResource {
    * @returns An attached secret
    */
   attach(target: ISecretAttachmentTarget): ISecret;
+
+  /**
+   * Returns a key which can be used within an AWS CloudFormation dynamic reference to dynamically load this
+   * secret from AWS Secrets Manager
+   *
+   * @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/cfn-example_reference-secret.html
+   *
+   * @param options Options
+   */
+  cfnDynamicReferenceKey(options?: SecretsManagerSecretOptions): string;
 }
 
 /**
@@ -359,6 +369,18 @@ abstract class SecretBase extends Resource implements ISecret {
     });
 
     this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
+  }
+
+  /**
+   * Returns a key which can be used within an AWS CloudFormation dynamic reference to dynamically load this
+   * secret from AWS Secrets Manager
+   *
+   * @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/cfn-example_reference-secret.html
+   *
+   * @param options Options
+   */
+  cfnDynamicReferenceKey(options: SecretsManagerSecretOptions = {}): string {
+    return SecretValue.cfnDynamicReferenceKey(this.secretArn, options);
   }
 
   public get secretFullArn(): string | undefined { return this.secretArn; }
@@ -724,7 +746,7 @@ export class Secret extends SecretBase {
    * @param encryptionKey The customer-managed encryption key to use for encrypting the secret value.
    */
   @MethodMetadata()
-  public addReplicaRegion(region: string, encryptionKey?: kms.IKey): void {
+  public addReplicaRegion(region: string, encryptionKey?: kms.IKeyRef): void {
     const stack = Stack.of(this);
     if (!Token.isUnresolved(stack.region) && !Token.isUnresolved(region) && region === stack.region) {
       throw new ValidationError('Cannot add the region where this stack is deployed as a replica region.', this);
@@ -732,7 +754,7 @@ export class Secret extends SecretBase {
 
     this.replicaRegions.push({
       region,
-      kmsKeyId: encryptionKey?.keyArn,
+      kmsKeyId: encryptionKey?.keyRef.keyArn,
     });
   }
 }

@@ -966,3 +966,6 @@ removed:aws-cdk-lib.lambda_layer_kubectl.KubectlLayer
 # Fixing the JsonSchema interface to be consistent with JSON Schema spec
 changed-type:aws-cdk-lib.aws_apigateway.JsonSchema.additionalItems
 strengthened:aws-cdk-lib.aws_apigateway.JsonSchema
+
+# Revert a failing change
+strengthened:aws-cdk-lib.aws_stepfunctions.StateMachineProps

@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "39.0.0",
   "artifacts": {
     "Stack1.assets": {
       "type": "cdk:asset-manifest",
@@ -16,10 +16,9 @@
         "templateFile": "Stack1.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a83c04aa3d13aae337040b2062567727e3c7b177081dda963df9493e460f7a58.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/94e5f0d29230836ba26ec58c273b89045314948f0ef34bab27dac1d9a9e81b25.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -83,6 +82,12 @@
             "data": "NoAuthFunctionUrlsinvokefunctionurl832C0266"
           }
         ],
+        "/Stack1/NoAuthFunctionUrls/invoke-function": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NoAuthFunctionUrlsinvokefunction95ED1A84"
+          }
+        ],
         "/Stack1/TheNoAuthFunctionUrls": [
           {
             "type": "aws:cdk:logicalId",
@@ -113,6 +118,12 @@
             "data": "CorsFunctionUrlsinvokefunctionurl5E7D2994"
           }
         ],
+        "/Stack1/CorsFunctionUrls/invoke-function": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CorsFunctionUrlsinvokefunctionC0E078FD"
+          }
+        ],
         "/Stack1/TheCorsFunctionUrls": [
           {
             "type": "aws:cdk:logicalId",
@@ -141,6 +152,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "StreamFunctionUrlsinvokefunctionurl4FD8689D"
+          }
+        ],
+        "/Stack1/StreamFunctionUrls/invoke-function": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StreamFunctionUrlsinvokefunction7DC2262A"
           }
         ],
         "/Stack1/TheStreamFunctionUrls": [
@@ -179,7 +196,6 @@
         "templateFile": "IntegTestDefaultTestDeployAssertE3E7D2A4.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",

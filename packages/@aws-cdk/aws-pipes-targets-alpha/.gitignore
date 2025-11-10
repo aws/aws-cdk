@@ -13,7 +13,6 @@ nyc.config.js
 .types-compat
 coverage
 dist
-tsconfig.json
 !.eslintrc.js
 !jest.config.js
 

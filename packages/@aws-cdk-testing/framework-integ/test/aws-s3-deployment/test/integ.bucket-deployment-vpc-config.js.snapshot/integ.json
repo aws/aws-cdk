@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ-test-bucket-deployment-vpc-config/DefaultTest": {
+      "stacks": [
+        "test-bucket-deployment-vpc-config"
+      ],
+      "diffAssets": false,
+      "assertionStack": "integ-test-bucket-deployment-vpc-config/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentvpcconfigDefaultTestDeployAssert70CE39BE"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

@@ -17,7 +17,9 @@ By default, `TableV2` will create a single table in the main deployment region r
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
-  contributorInsights: true,
+  contributorInsightsSpecification: {
+    enabled: true,
+  },
   tableClass: dynamodb.TableClass.STANDARD_INFREQUENT_ACCESS,
   pointInTimeRecoverySpecification: {
     pointInTimeRecoveryEnabled: true,
@@ -66,12 +68,12 @@ globalTable.addReplica({ region: 'us-east-2', deletionProtection: true });
 ```
 
 The following properties are configurable on a per-replica basis, but will be inherited from the `TableV2` properties if not specified:
-* contributorInsights
+* contributorInsightsSpecification
 * deletionProtection
 * pointInTimeRecoverySpecification
 * tableClass
 * readCapacity (only configurable if the `TableV2` billing mode is `PROVISIONED`)
-* globalSecondaryIndexes (only `contributorInsights` and `readCapacity`)
+* globalSecondaryIndexes (only `contributorInsightsSpecification` and `readCapacity`)
 
 The following example shows how to define properties on a per-replica basis:
 
@@ -83,7 +85,9 @@ const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
 
 const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
-  contributorInsights: true,
+  contributorInsightsSpecification: {
+    enabled: true,
+  },
   pointInTimeRecoverySpecification: {
       pointInTimeRecoveryEnabled: true,
   },
@@ -97,7 +101,9 @@ const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
     },
     {
       region: 'us-east-2',
-      contributorInsights: false,
+      contributorInsightsSpecification: {
+        enabled: false,
+      },
     },
   ],
 });
@@ -443,7 +449,7 @@ const table = new dynamodb.TableV2(this, 'Table', {
 });
 ```
 
-All `globalSecondaryIndexes` for replica tables are inherited from the primary table. You can configure `contributorInsights` and `readCapacity` for each `globalSecondaryIndex` on a per-replica basis:
+All `globalSecondaryIndexes` for replica tables are inherited from the primary table. You can configure `contributorInsightsSpecification` and `readCapacity` for each `globalSecondaryIndex` on a per-replica basis:
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
@@ -453,7 +459,9 @@ const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-west-2' } });
 
 const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
-  contributorInsights: true,
+  contributorInsightsSpecification: {
+    enabled: true,
+  },
   billing: dynamodb.Billing.provisioned({
     readCapacity: dynamodb.Capacity.fixed(10),
     writeCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 10 }),
@@ -484,7 +492,9 @@ const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
       region: 'us-east-2',
       globalSecondaryIndexOptions: {
         gsi2: {
-          contributorInsights: false,
+          contributorInsightsSpecification: {
+            enabled: false,
+          },
         },
       },
     },
@@ -605,25 +615,40 @@ const table = new dynamodb.TableV2(this, 'Table', {
 
 ## Contributor Insights
 
-Enabling `contributorInsights` for `TableV2` will provide information about the most accessed and throttled items in a table or `globalSecondaryIndex`. DynamoDB delivers this information to you via CloudWatch Contributor Insights rules, reports, and graphs of report data.
+Enabling `contributorInsightSpecification` for `TableV2` will provide information about the most accessed and throttled or throttled only items in a table or `globalSecondaryIndex`. DynamoDB delivers this information to you via CloudWatch Contributor Insights rules, reports, and graphs of report data.
+
+By default, Contributor Insights for DynamoDB monitors all requests, including both the most accessed and most throttled items.  
+To limit the scope to only the most accessed or only the most throttled items, use the optional `mode` parameter.
+
+- To monitor all traffic on a table or index, set `mode` to `ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS`.
+- To monitor only throttled traffic on a table or index, set `mode` to `ContributorInsightsMode.THROTTLED_KEYS`. 
+
 
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
-  contributorInsights: true,
+  contributorInsightsSpecification: {
+    enabled: true,
+    mode: dynamodb.ContributorInsightsMode.ACCESSED_AND_THROTTLED_KEYS,
+  },
 });
 ```
 
-When you use `Table`, you can enable contributor insights for a table or specific global secondary index by setting `contributorInsightsEnabled` to `true`.
+When you use `Table`, you can enable contributor insights for a table or specific global secondary index by setting `contributorInsightsSpecification` parameter `enabled` to `true`.
 
 ```ts
 const table = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
-  contributorInsightsEnabled: true, // for a table
+  contributorInsightsSpecification: { // for a table
+    enabled: true,
+    mode: dynamodb.ContributorInsightsMode.THROTTLED_KEYS, // only emit throttling events
+  },
 });
 
 table.addGlobalSecondaryIndex({
-  contributorInsightsEnabled: true, // for a specific global secondary index
+  contributorInsightsSpecification: { // for a specific global secondary index
+    enabled: true,
+  },
   indexName: 'gsi',
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
 });
@@ -790,6 +815,59 @@ Using `resourcePolicy` you can add a [resource policy](https://docs.aws.amazon.c
       resourcePolicy: policy,
     });
 ```
+
+### Adding Resource Policy Statements Dynamically
+
+You can also add resource policy statements to a table after it's created using the `addToResourcePolicy` method. Following the same pattern as KMS, resource policies use wildcard resources to avoid circular dependencies:
+
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+});
+
+// Standard resource policy (recommended approach)
+table.addToResourcePolicy(new iam.PolicyStatement({
+  actions: ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:Query'],
+  principals: [new iam.AccountRootPrincipal()],
+  resources: ['*'], // Wildcard avoids circular dependency - same pattern as KMS
+}));
+
+// Allow specific service access
+table.addToResourcePolicy(new iam.PolicyStatement({
+  actions: ['dynamodb:Query'],
+  principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
+  resources: ['*'],
+}));
+```
+
+#### Scoped Resource Policies (Advanced)
+
+For scoped resource policies that reference specific table ARNs, you must specify an explicit table name:
+
+```ts
+import { Fn } from 'aws-cdk-lib';
+
+// Table with explicit name enables scoped resource policies
+const table = new dynamodb.TableV2(this, 'Table', {
+  tableName: 'my-explicit-table-name', // Required for scoped resources
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+});
+
+// Now you can use scoped resources
+table.addToResourcePolicy(new iam.PolicyStatement({
+  actions: ['dynamodb:GetItem'],
+  principals: [new iam.AccountRootPrincipal()],
+  resources: [
+    Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/my-explicit-table-name'),
+    Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/my-explicit-table-name/index/*'),
+  ],
+}));
+```
+
+**Important Limitations:**
+- **Auto-generated table names**: Must use `resources: ['*']` to avoid circular dependencies
+- **Explicit table names**: Enable scoped resources but lose CDK's automatic naming benefits
+- **CloudFormation constraint**: Resource policies cannot reference the resource they're attached to during creation
 
 TableV2 doesn’t support creating a replica and adding a resource-based policy to that replica in the same stack update in Regions other than the Region where you deploy the stack update.
 To incorporate a resource-based policy into a replica, you'll need to initially deploy the replica without the policy, followed by a subsequent update to include the desired policy.
