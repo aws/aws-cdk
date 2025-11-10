@@ -72,3 +72,10 @@ jobs:
           include_skipped: true
           check_title_template: '{{TEST_NAME}}'
           update_check: true
+
+      - name: Upload Security Guardian XML Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-guardian-reports
+          path: test-results/*.xml
