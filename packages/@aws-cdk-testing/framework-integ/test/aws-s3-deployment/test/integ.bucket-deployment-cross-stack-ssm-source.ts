@@ -5,6 +5,12 @@ import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
+/**
+ * Integration test for bucket deployment with cross-stack SSM parameter references:
+ * - Tests that SSM StringListParameter tokens are resolved in Source.jsonData()
+ * - Validates cross-nested-stack parameter references work correctly
+ * - Tests that parameter values are properly serialized in JSON output
+ */
 class SsmStack extends cdk.NestedStack {
   public readonly ssmParam: ssm.StringListParameter;
 
@@ -38,7 +44,7 @@ class S3Stack extends cdk.NestedStack {
       autoDeleteObjects: true,
     });
 
-    new s3deploy.BucketDeployment(this, 'ReproDeployment', {
+    new s3deploy.BucketDeployment(this, 'DeployWithSsmParameter', {
       sources: [
         s3deploy.Source.jsonData('config.json', {
           subnets: readParam.stringListValue,

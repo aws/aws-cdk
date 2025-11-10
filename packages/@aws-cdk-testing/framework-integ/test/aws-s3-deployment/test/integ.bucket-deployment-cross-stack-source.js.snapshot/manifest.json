@@ -84,7 +84,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/efda8323ac3acb58e2f193e26b9a5b604d3d07950ceabf0cd6e87ea92744b936.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4eeea133aa9af5805a00eeb38cee0be71c0afd600fa7ff31e1c27e011b8dd7be.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -113,19 +113,19 @@
             "data": "bucket43879C71"
           }
         ],
-        "/stack1/XXXXXXXXXX/AwsCliLayer": [
+        "/stack1/DeployWithCrossStackSource/AwsCliLayer": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {}
           }
         ],
-        "/stack1/XXXXXXXXXX/AwsCliLayer/Resource": [
+        "/stack1/DeployWithCrossStackSource/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "XXXXXXXXXXAwsCliLayer22578355"
+            "data": "DeployWithCrossStackSourceAwsCliLayer523A8CC8"
           }
         ],
-        "/stack1/XXXXXXXXXX/CustomResourceHandler": [
+        "/stack1/DeployWithCrossStackSource/CustomResourceHandler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -141,6 +141,7 @@
               "ephemeralStorageSize": "*",
               "vpc": "*",
               "vpcSubnets": "*",
+              "securityGroups": "*",
               "filesystem": "*",
               "logGroup": "*",
               "code": "*",
@@ -167,16 +168,16 @@
             }
           }
         ],
-        "/stack1/XXXXXXXXXX/CustomResource": [
+        "/stack1/DeployWithCrossStackSource/CustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/stack1/XXXXXXXXXX/CustomResource/Default": [
+        "/stack1/DeployWithCrossStackSource/CustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "XXXXXXXXXXCustomResource26937693"
+            "data": "DeployWithCrossStackSourceCustomResourceAFCCFD72"
           }
         ],
         "/stack1/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
@@ -193,6 +194,7 @@
               "ephemeralStorageSize": "*",
               "vpc": "*",
               "vpcSubnets": "*",
+              "securityGroups": "*",
               "filesystem": "*",
               "logGroup": "*",
               "code": "*",
@@ -367,6 +369,24 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "XXXXXXXXXXAwsCliLayer22578355": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "XXXXXXXXXXAwsCliLayer22578355",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "XXXXXXXXXXCustomResource26937693": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "XXXXXXXXXXCustomResource26937693",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "stack1"
@@ -388,7 +408,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9c1b390c8980771fef96ae9b6579b5783d69a16df2eea452a9e46a911dba03a9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8d63dc00d41f126fc958d36716b4b8190903889eae28f8826993cd44cef6960d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -939,10 +959,25 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1025.0"
+  "minimumCliVersion": "2.1027.0"
 }

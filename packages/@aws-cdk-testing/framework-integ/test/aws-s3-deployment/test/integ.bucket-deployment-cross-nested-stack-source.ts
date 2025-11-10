@@ -6,6 +6,12 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 
+/**
+ * Integration test for bucket deployment with cross-nested-stack references:
+ * - Tests that Source.jsonData() can use values from resources in nested stacks
+ * - Validates that cross-nested-stack token resolution works correctly
+ * - Tests token substitution across nested stack boundaries
+ */
 class ResourceNestedStack extends NestedStack {
   userPool: UserPool;
   constructor (scope: Construct, id: string, props: NestedStackProps = {}) {
@@ -23,7 +29,7 @@ class DeploymentNestedStack extends NestedStack {
   constructor (scope: Construct, id: string, props: DeploymentNestedStackProps) {
     super(scope, id, props);
     this.bucket = new Bucket(this, 'Bucket');
-    new BucketDeployment(this, 'Deployment', {
+    new BucketDeployment(this, 'DeployWithCrossNestedStackSource', {
       destinationBucket: this.bucket,
       sources: [
         Source.jsonData('appconfig.json', { userPoolId: props.userPool.userPoolId }),

@@ -18,6 +18,8 @@ export interface Relationship {
   readonly referenceName: string;
   /** The property to extract from the reference object (e.g. "roleArn") */
   readonly propName: string;
+  /** Human friendly name of the reference type for error generation (e.g. "iam.IRoleRef") */
+  readonly typeDisplayName: string;
 }
 
 /**
@@ -118,6 +120,7 @@ export class RelationshipDecider {
         referenceType: aliasedTypeName ?? interfaceName,
         referenceName: refPropStructName,
         propName: referencePropertyName(relationship.propertyName, targetResource.name),
+        typeDisplayName: `${typeAliasPrefixFromResource(targetResource).toLowerCase()}.${interfaceName}`,
       });
     }
     return parsedRelationships;

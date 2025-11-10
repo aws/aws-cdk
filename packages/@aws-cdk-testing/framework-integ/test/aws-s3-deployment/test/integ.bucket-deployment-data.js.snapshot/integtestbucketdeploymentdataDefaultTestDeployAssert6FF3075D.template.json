@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "TestBucketDeploymentContent:ExportsOutputRefBucket83908E7781C90AC0"
+         "Fn::ImportValue": "test-bucket-deployment-data:ExportsOutputRefBucket83908E7781C90AC0"
         },
         "\""
        ]
@@ -28,7 +28,7 @@
      "Key": "\"deploy/here/my-json/secret-config.json\""
     },
     "flattenResponse": "false",
-    "salt": "1761211808293"
+    "salt": "1762212912654"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -122,7 +122,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "TestBucketDeploymentContent:ExportsOutputRefBucket83908E7781C90AC0"
+         "Fn::ImportValue": "test-bucket-deployment-data:ExportsOutputRefBucket83908E7781C90AC0"
         },
         "\""
        ]
@@ -131,7 +131,7 @@
      "Key": "\"deploy/here/my-yaml/secret-config.yaml\""
     },
     "flattenResponse": "false",
-    "salt": "1761211808293"
+    "salt": "1762212912654"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

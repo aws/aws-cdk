@@ -13,9 +13,9 @@ beforeAll(async () => {
 test('can codegen service with arbitrary suffix', () => {
   const service = db.lookup('service', 'name', 'equals', 'aws-kinesisanalyticsv2').only();
 
-  const ast = AstBuilder.forService(service, { db, nameSuffix: 'V2' });
+  const module = new AstBuilder({ db }).addService(service, { nameSuffix: 'V2' }).resourcesMod.module;
 
-  const rendered = renderer.render(ast.module);
+  const rendered = renderer.render(module);
 
   // Snapshot tests will fail every time the docs get updated
   // expect(rendered).toMatchSnapshot();
