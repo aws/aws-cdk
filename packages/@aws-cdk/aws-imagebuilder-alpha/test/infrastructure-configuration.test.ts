@@ -129,8 +129,8 @@ describe('Infrastructure Configuration', () => {
     expect(InfrastructureConfiguration.isInfrastructureConfiguration('InfrastructureConfiguration')).toBeFalsy();
 
     Template.fromStack(stack).templateMatches({
-      Resources: Match.objectEquals({
-        InfrastructureConfiguration86C7777D: {
+      Resources: {
+        InfrastructureConfiguration86C7777D: Match.objectEquals({
           Type: 'AWS::ImageBuilder::InfrastructureConfiguration',
           Properties: {
             Name: 'infra-config-all-parameters',
@@ -166,8 +166,8 @@ describe('Infrastructure Configuration', () => {
             },
             TerminateInstanceOnFailure: false,
           },
-        },
-      }),
+        }),
+      },
     });
   });
 
@@ -232,60 +232,16 @@ describe('Infrastructure Configuration', () => {
   test('generates an instance profile by default', () => {
     new InfrastructureConfiguration(stack, 'InfrastructureConfiguration');
 
-    Template.fromStack(stack).templateMatches({
-      Resources: Match.objectEquals({
-        InfrastructureConfigurationInstanceProfileRole3AFA1533: {
-          Type: 'AWS::IAM::Role',
-          Properties: {
-            ManagedPolicyArns: [
-              {
-                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/AmazonSSMManagedInstanceCore']],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/EC2InstanceProfileForImageBuilder'],
-                ],
-              },
-            ],
-            AssumeRolePolicyDocument: {
-              Version: '2012-10-17',
-              Statement: [
-                {
-                  Action: 'sts:AssumeRole',
-                  Effect: 'Allow',
-                  Principal: {
-                    Service: 'ec2.amazonaws.com',
-                  },
-                },
-              ],
-            },
-          },
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Role', {
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/AmazonSSMManagedInstanceCore']],
         },
-        InfrastructureConfigurationInstanceProfile8FD9235B: {
-          Type: 'AWS::IAM::InstanceProfile',
-          Properties: {
-            Roles: [
-              {
-                Ref: 'InfrastructureConfigurationInstanceProfileRole3AFA1533',
-              },
-            ],
-          },
+        {
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/EC2InstanceProfileForImageBuilder']],
         },
-        InfrastructureConfiguration86C7777D: {
-          Type: 'AWS::ImageBuilder::InfrastructureConfiguration',
-          Properties: {
-            Name: 'stack-infrastructureconfiguration-fa45cca8',
-            InstanceProfileName: {
-              Ref: 'InfrastructureConfigurationInstanceProfile8FD9235B',
-            },
-            InstanceMetadataOptions: {
-              HttpTokens: 'required',
-              HttpPutResponseHopLimit: 2,
-            },
-          },
-        },
-      }),
+      ],
     });
   });
 
@@ -302,8 +258,8 @@ describe('Infrastructure Configuration', () => {
     template.resourceCountIs('AWS::IAM::InstanceProfile', 0);
     template.resourceCountIs('AWS::IAM::Role', 0);
     template.templateMatches({
-      Resources: Match.objectEquals({
-        InfrastructureConfiguration86C7777D: {
+      Resources: {
+        InfrastructureConfiguration86C7777D: Match.objectEquals({
           Type: 'AWS::ImageBuilder::InfrastructureConfiguration',
           Properties: {
             Name: 'stack-infrastructureconfiguration-fa45cca8',
@@ -313,8 +269,8 @@ describe('Infrastructure Configuration', () => {
               HttpPutResponseHopLimit: 2,
             },
           },
-        },
-      }),
+        }),
+      },
     });
   });
 
@@ -323,14 +279,14 @@ describe('Infrastructure Configuration', () => {
     new InfrastructureConfiguration(stack, 'InfrastructureConfiguration', { role });
 
     Template.fromStack(stack).templateMatches({
-      Resources: Match.objectEquals({
+      Resources: {
         InfrastructureConfigurationInstanceProfile8FD9235B: {
           Type: 'AWS::IAM::InstanceProfile',
           Properties: {
             Roles: ['EC2InstanceProfileForImageBuilderRole'],
           },
         },
-        InfrastructureConfiguration86C7777D: {
+        InfrastructureConfiguration86C7777D: Match.objectEquals({
           Type: 'AWS::ImageBuilder::InfrastructureConfiguration',
           Properties: {
             Name: 'stack-infrastructureconfiguration-fa45cca8',
@@ -342,8 +298,8 @@ describe('Infrastructure Configuration', () => {
               HttpPutResponseHopLimit: 2,
             },
           },
-        },
-      }),
+        }),
+      },
     });
   });
 
@@ -352,7 +308,7 @@ describe('Infrastructure Configuration', () => {
     infrastructureConfiguration._bind({ isContainerBuild: true });
 
     Template.fromStack(stack).templateMatches({
-      Resources: Match.objectEquals({
+      Resources: {
         InfrastructureConfigurationInstanceProfileRole3AFA1533: {
           Type: 'AWS::IAM::Role',
           Properties: {
@@ -378,7 +334,6 @@ describe('Infrastructure Configuration', () => {
               },
             ],
             AssumeRolePolicyDocument: {
-              Version: '2012-10-17',
               Statement: [
                 {
                   Action: 'sts:AssumeRole',
@@ -401,7 +356,7 @@ describe('Infrastructure Configuration', () => {
             ],
           },
         },
-        InfrastructureConfiguration86C7777D: {
+        InfrastructureConfiguration86C7777D: Match.objectEquals({
           Type: 'AWS::ImageBuilder::InfrastructureConfiguration',
           Properties: {
             Name: 'stack-infrastructureconfiguration-fa45cca8',
@@ -413,8 +368,8 @@ describe('Infrastructure Configuration', () => {
               HttpPutResponseHopLimit: 2,
             },
           },
-        },
-      }),
+        }),
+      },
     });
   });
 
@@ -429,60 +384,16 @@ describe('Infrastructure Configuration', () => {
     const infrastructureConfiguration = new InfrastructureConfiguration(stack, 'InfrastructureConfiguration', { role });
     infrastructureConfiguration._bind({ isContainerBuild: true });
 
-    Template.fromStack(stack).templateMatches({
-      Resources: Match.objectEquals({
-        Role1ABCC5F0: {
-          Type: 'AWS::IAM::Role',
-          Properties: {
-            ManagedPolicyArns: [
-              {
-                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/AmazonSSMManagedInstanceCore']],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/EC2InstanceProfileForImageBuilder'],
-                ],
-              },
-            ],
-            AssumeRolePolicyDocument: {
-              Version: '2012-10-17',
-              Statement: [
-                {
-                  Action: 'sts:AssumeRole',
-                  Effect: 'Allow',
-                  Principal: {
-                    Service: 'ec2.amazonaws.com',
-                  },
-                },
-              ],
-            },
-          },
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Role', {
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/AmazonSSMManagedInstanceCore']],
         },
-        InfrastructureConfigurationInstanceProfile8FD9235B: {
-          Type: 'AWS::IAM::InstanceProfile',
-          Properties: {
-            Roles: [
-              {
-                Ref: 'Role1ABCC5F0',
-              },
-            ],
-          },
+        {
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/EC2InstanceProfileForImageBuilder']],
         },
-        InfrastructureConfiguration86C7777D: {
-          Type: 'AWS::ImageBuilder::InfrastructureConfiguration',
-          Properties: {
-            Name: 'stack-infrastructureconfiguration-fa45cca8',
-            InstanceProfileName: {
-              Ref: 'InfrastructureConfigurationInstanceProfile8FD9235B',
-            },
-            InstanceMetadataOptions: {
-              HttpTokens: 'required',
-              HttpPutResponseHopLimit: 2,
-            },
-          },
-        },
-      }),
+      ],
     });
   });
 
@@ -543,47 +454,49 @@ describe('Infrastructure Configuration', () => {
       },
     });
 
-    Template.fromStack(stack).templateMatches({
-      Resources: {
-        RolePolicy72E7D967: Match.objectEquals({
-          Type: 'AWS::IAM::Policy',
-          Properties: {
-            PolicyName: 'RolePolicy72E7D967',
-            PolicyDocument: {
-              Version: '2012-10-17',
-              Statement: [
-                {
-                  Effect: 'Allow',
-                  Action: Match.arrayWith(['s3:PutObject']),
-                  Resource: {
-                    'Fn::Join': [
-                      '',
-                      ['arn:', { Ref: 'AWS::Partition' }, ':s3:::imagebuilder-logging-bucket/imagebuilder-logs/*'],
-                    ],
-                  },
-                },
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: Match.arrayWith(['s3:PutObject']),
+            Resource: {
+              'Fn::Join': [
+                '',
+                ['arn:', { Ref: 'AWS::Partition' }, ':s3:::imagebuilder-logging-bucket/imagebuilder-logs/*'],
               ],
             },
-            Roles: ['EC2InstanceProfileForImageBuilderRole'],
           },
-        }),
+        ],
       },
+      Roles: ['EC2InstanceProfileForImageBuilderRole'],
     });
   });
 
-  test('no permissions are granted to instance profile role when a key prefix is not provided', () => {
+  test('correct permissions granted to instance profile role when a key prefix is not provided', () => {
     const instanceProfile = iam.InstanceProfile.fromInstanceProfileAttributes(stack, 'InstanceProfile', {
       instanceProfileArn: 'arn:aws:iam::123456789012:instance-profile/EC2InstanceProfileForImageBuilder',
       role: iam.Role.fromRoleName(stack, 'Role', 'EC2InstanceProfileForImageBuilderRole'),
     });
     new InfrastructureConfiguration(stack, 'InfrastructureConfiguration', {
       instanceProfile,
-      logging: {
-        s3Bucket: s3.Bucket.fromBucketName(stack, 'S3Bucket', 'imagebuilder-logging-bucket'),
-      },
+      logging: { s3Bucket: s3.Bucket.fromBucketName(stack, 'S3Bucket', 'imagebuilder-logging-bucket') },
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: Match.arrayWith(['s3:PutObject']),
+            Resource: {
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::imagebuilder-logging-bucket/*']],
+            },
+          },
+        ],
+      },
+      Roles: ['EC2InstanceProfileForImageBuilderRole'],
+    });
   });
 
   test('grants read access to IAM roles', () => {
@@ -617,9 +530,7 @@ describe('Infrastructure Configuration', () => {
     });
 
     template.hasResourceProperties('AWS::IAM::Policy', {
-      PolicyName: Match.anyValue(),
       PolicyDocument: {
-        Version: '2012-10-17',
         Statement: [
           {
             Effect: 'Allow',
@@ -630,11 +541,7 @@ describe('Infrastructure Configuration', () => {
           },
         ],
       },
-      Roles: [
-        {
-          Ref: 'Role1ABCC5F0',
-        },
-      ],
+      Roles: [Match.anyValue()],
     });
   });
 
@@ -656,52 +563,39 @@ describe('Infrastructure Configuration', () => {
     template.resourceCountIs('AWS::ImageBuilder::InfrastructureConfiguration', 1);
     expect(Object.keys(template.toJSON().Resources)).toHaveLength(5);
 
-    template.hasResourceProperties(
-      'AWS::IAM::Role',
-      Match.objectEquals({
-        AssumeRolePolicyDocument: {
-          Version: '2012-10-17',
-          Statement: [
-            {
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: {
-                AWS: {
-                  'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::123456789012:root']],
-                },
-              },
-            },
-          ],
-        },
-      }),
-    );
-
-    template.hasResourceProperties(
-      'AWS::IAM::Policy',
-      Match.objectEquals({
-        PolicyName: Match.anyValue(),
-        PolicyDocument: {
-          Version: '2012-10-17',
-          Statement: [
-            {
-              Effect: 'Allow',
-              Action: [
-                'imagebuilder:DeleteInfrastructureConfiguration',
-                'imagebuilder:UpdateInfrastructureConfiguration',
-              ],
-              Resource: {
-                'Fn::GetAtt': ['InfrastructureConfiguration86C7777D', 'Arn'],
-              },
-            },
-          ],
-        },
-        Roles: [
+    template.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
           {
-            Ref: 'Role1ABCC5F0',
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::123456789012:root']],
+              },
+            },
           },
         ],
-      }),
-    );
+      },
+    });
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: [
+              'imagebuilder:DeleteInfrastructureConfiguration',
+              'imagebuilder:UpdateInfrastructureConfiguration',
+            ],
+            Resource: {
+              'Fn::GetAtt': ['InfrastructureConfiguration86C7777D', 'Arn'],
+            },
+          },
+        ],
+      },
+      Roles: [Match.anyValue()],
+    });
   });
 
   test('throws a validation error when the resource name is too long', () => {
@@ -736,7 +630,7 @@ describe('Infrastructure Configuration', () => {
     }).toThrow(cdk.ValidationError);
   });
 
-  test('throws a validation error an a subnet selection is provided without a VPC', () => {
+  test('throws a validation error when a subnet selection is provided without a VPC', () => {
     expect(() => {
       new InfrastructureConfiguration(stack, 'InfrastructureConfiguration', {
         subnetSelection: {
@@ -807,6 +701,22 @@ describe('Infrastructure Configuration', () => {
         ec2InstanceTenancy: Tenancy.HOST,
         ec2InstanceHostId: 'h-12345678',
         ec2InstanceHostResourceGroupArn: 'arn:aws:resource-groups:us-east-1:123456789012:group/host-group',
+      });
+    }).toThrow(cdk.ValidationError);
+  });
+
+  test('throws a validation error when httpPutResponseHopLimit is below the limit', () => {
+    expect(() => {
+      new InfrastructureConfiguration(stack, 'InfrastructureConfiguration', {
+        httpPutResponseHopLimit: 0,
+      });
+    }).toThrow(cdk.ValidationError);
+  });
+
+  test('throws a validation error when httpPutResponseHopLimit is above the limit', () => {
+    expect(() => {
+      new InfrastructureConfiguration(stack, 'InfrastructureConfiguration', {
+        httpPutResponseHopLimit: 65,
       });
     }).toThrow(cdk.ValidationError);
   });

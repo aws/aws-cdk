@@ -94,7 +94,7 @@ export interface InfrastructureConfigurationLogging {
   /**
    * The S3 logging prefix to use for detailed build logging
    *
-   * @default - No prefix
+   * @default No prefix
    */
   readonly s3KeyPrefix?: string;
 }
@@ -107,21 +107,21 @@ export interface InfrastructureConfigurationProps {
    * The name of the infrastructure configuration. This name must be normalized by transforming all alphabetical
    * characters to lowercase, and replacing all spaces and underscores with hyphens.
    *
-   * @default - A name is generated
+   * @default A name is generated
    */
   readonly infrastructureConfigurationName?: string;
 
   /**
    * The description of the infrastructure configuration.
    *
-   * @default - None
+   * @default None
    */
   readonly description?: string;
 
   /**
    * The instance types to launch build and test EC2 instances with.
    *
-   * @default - Image Builder will choose from a default set of instance types compatible with the AMI
+   * @default Image Builder will choose from a default set of instance types compatible with the AMI
    */
   readonly instanceTypes?: ec2.InstanceType[];
 
@@ -134,7 +134,7 @@ export interface InfrastructureConfigurationProps {
    * If an S3 logging bucket and key prefix is provided, an IAM inline policy will be attached to the instance profile's
    * role, allowing s3:PutObject permissions on the bucket.
    *
-   * @default - An instance profile will be generated
+   * @default An instance profile will be generated
    */
   readonly instanceProfile?: iam.IInstanceProfile;
   /**
@@ -148,14 +148,14 @@ export interface InfrastructureConfigurationProps {
    *   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
    * });
    *
-   * @default - A role will automatically be created, it can be accessed via the `role` property
+   * @default A role will automatically be created, it can be accessed via the `role` property
    */
   readonly role?: iam.IRole;
 
   /**
    * The VPC to place the instance used to customize the AMI.
    *
-   * @default - The default VPC will be used
+   * @default The default VPC will be used
    */
   readonly vpc?: ec2.IVpc;
 
@@ -163,14 +163,14 @@ export interface InfrastructureConfigurationProps {
    * Select which subnet to place the instance used to customize the AMI. The first subnet that is selected will be used.
    * You must specify the VPC to customize the subnet selection.
    *
-   * @default - The first subnet selected from the provided VPC will be used
+   * @default The first subnet selected from the provided VPC will be used
    */
   readonly subnetSelection?: ec2.SubnetSelection;
 
   /**
    * The security groups to associate with the instance used to customize the AMI.
    *
-   * @default - The default security group for the VPC will be used
+   * @default The default security group for the VPC will be used
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
@@ -178,14 +178,14 @@ export interface InfrastructureConfigurationProps {
    * The key pair used to connect to the build and test EC2 instances. The key pair can be used to log into the build
    * or test instances for troubleshooting any failures.
    *
-   * @default - None
+   * @default None
    */
   readonly keyPair?: ec2.IKeyPair;
 
   /**
    * Whether to terminate the EC2 instance when the build or test workflow fails.
    *
-   * @default - true
+   * @default true
    */
   readonly terminateInstanceOnFailure?: boolean;
 
@@ -193,7 +193,7 @@ export interface InfrastructureConfigurationProps {
    * The maximum number of hops that an instance metadata request can traverse to reach its destination. By default,
    * this is set to 2.
    *
-   * @default - 2
+   * @default 2
    */
   readonly httpPutResponseHopLimit?: number;
 
@@ -201,28 +201,28 @@ export interface InfrastructureConfigurationProps {
    * Indicates whether a signed token header is required for instance metadata retrieval requests. By default, this is
    * set to `required` to require IMDSv2 on build and test EC2 instances.
    *
-   * @default - HttpTokens.REQUIRED
+   * @default HttpTokens.REQUIRED
    */
   readonly httpTokens?: HttpTokens;
 
   /**
    * The SNS topic on which notifications are sent when an image build completes.
    *
-   * @default - No notifications are sent
+   * @default No notifications are sent
    */
   readonly notificationTopic?: sns.ITopic;
 
   /**
    * The log settings for detailed build logging.
    *
-   * @default - None
+   * @default None
    */
   readonly logging?: InfrastructureConfigurationLogging;
 
   /**
    * The availability zone to place Image Builder build and test EC2 instances.
    *
-   * @default - EC2 will select a random zone
+   * @default EC2 will select a random zone
    */
   readonly ec2InstanceAvailabilityZone?: string;
 
@@ -230,7 +230,7 @@ export interface InfrastructureConfigurationProps {
    * The ID of the Dedicated Host on which build and test instances run. This only applies if the instance tenancy is
    * `host`. This cannot be used with the `ec2InstanceHostResourceGroupArn` parameter.
    *
-   * @default - None
+   * @default None
    */
   readonly ec2InstanceHostId?: string;
 
@@ -238,7 +238,7 @@ export interface InfrastructureConfigurationProps {
    * The ARN of the host resource group on which build and test instances run. This only applies if the instance tenancy
    * is `host`. This cannot be used with the `ec2InstanceHostId` parameter.
    *
-   * @default - None
+   * @default None
    */
   readonly ec2InstanceHostResourceGroupArn?: string;
 
@@ -246,21 +246,21 @@ export interface InfrastructureConfigurationProps {
    * The tenancy of the instance. Dedicated tenancy runs instances on single-tenant hardware, while host tenancy runs
    * instances on a dedicated host. Shared tenancy is used by default.
    *
-   * @default - Tenancy.DEFAULT
+   * @default Tenancy.DEFAULT
    */
   readonly ec2InstanceTenancy?: Tenancy;
 
   /**
    * The additional tags to assign to the Amazon EC2 instance that Image Builder launches during the build process.
    *
-   * @default - None
+   * @default None
    */
   readonly resourceTags?: { [key: string]: string };
 
   /**
    * The tags to apply to the infrastructure configuration
    *
-   * @default - None
+   * @default None
    */
   readonly tags?: { [key: string]: string };
 }
@@ -389,7 +389,7 @@ export class InfrastructureConfiguration extends InfrastructureConfigurationBase
   public readonly instanceProfile: iam.IInstanceProfile;
 
   /**
-   * The role associateded with the EC2 instance profile used for the build
+   * The role associated with the EC2 instance profile used for the build
    */
   public readonly role?: iam.IRole;
 
@@ -463,6 +463,14 @@ export class InfrastructureConfiguration extends InfrastructureConfigurationBase
       );
     }
 
+    if (props.httpPutResponseHopLimit !== undefined && props.httpPutResponseHopLimit < 1) {
+      throw new cdk.ValidationError('httpPutResponseHopLimit must be at least 1', this);
+    }
+
+    if (props.httpPutResponseHopLimit !== undefined && props.httpPutResponseHopLimit > 64) {
+      throw new cdk.ValidationError('httpPutResponseHopLimit must be at most 64', this);
+    }
+
     if (!props.instanceProfile && !props.role) {
       this.autoGeneratedInstanceProfileRole = new iam.Role(this, 'InstanceProfileRole', {
         assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
@@ -481,16 +489,27 @@ export class InfrastructureConfiguration extends InfrastructureConfigurationBase
     this.role = this.instanceProfile.role;
     this.logBucket = props.logging?.s3Bucket;
 
-    if (this.logBucket && this.role && props.logging?.s3KeyPrefix !== undefined) {
-      this.logBucket.grantPut(this.role, `${props.logging.s3KeyPrefix}/*`);
+    if (this.logBucket && this.role) {
+      this.logBucket.grantPut(this.role, props.logging?.s3KeyPrefix ? `${props.logging.s3KeyPrefix}/*` : '*');
     }
 
-    const placement: CfnInfrastructureConfiguration.PlacementProperty = {
-      ...(props.ec2InstanceAvailabilityZone && { availabilityZone: props.ec2InstanceAvailabilityZone }),
-      ...(props.ec2InstanceHostId && { hostId: props.ec2InstanceHostId }),
-      ...(props.ec2InstanceHostResourceGroupArn && { hostResourceGroupArn: props.ec2InstanceHostResourceGroupArn }),
-      ...(props.ec2InstanceTenancy && { tenancy: props.ec2InstanceTenancy }),
-    };
+    const hasPlacementOptions =
+      props.ec2InstanceAvailabilityZone !== undefined ||
+      props.ec2InstanceHostId !== undefined ||
+      props.ec2InstanceHostResourceGroupArn !== undefined ||
+      props.ec2InstanceTenancy !== undefined;
+    const placement: CfnInfrastructureConfiguration.PlacementProperty | undefined = hasPlacementOptions
+      ? {
+        ...(props.ec2InstanceAvailabilityZone !== undefined && {
+          availabilityZone: props.ec2InstanceAvailabilityZone,
+        }),
+        ...(props.ec2InstanceHostId !== undefined && { hostId: props.ec2InstanceHostId }),
+        ...(props.ec2InstanceHostResourceGroupArn !== undefined && {
+          hostResourceGroupArn: props.ec2InstanceHostResourceGroupArn,
+        }),
+        ...(props.ec2InstanceTenancy !== undefined && { tenancy: props.ec2InstanceTenancy }),
+      }
+      : undefined;
 
     const infrastructureConfiguration = new CfnInfrastructureConfiguration(this, 'Resource', {
       name: this.physicalName,
@@ -512,7 +531,7 @@ export class InfrastructureConfiguration extends InfrastructureConfigurationBase
           },
         },
       }),
-      placement: Object.keys(placement).length ? placement : undefined,
+      ...(placement && { placement }),
       resourceTags: props.resourceTags,
       securityGroupIds: props.securityGroups?.length
         ? props.securityGroups?.map((securityGroup) => securityGroup.securityGroupId)

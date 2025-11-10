@@ -18,12 +18,16 @@ const instanceProfile = new iam.InstanceProfile(stack, 'EC2InstanceProfileForIma
 const bucket = new s3.Bucket(stack, 'LogBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 1 });
 
 new imagebuilder.InfrastructureConfiguration(stack, 'InfrastructureConfiguration', {
   instanceProfile: instanceProfile,
   description: 'This is an infrastructure configuration.',
   ec2InstanceAvailabilityZone: stack.availabilityZones[0],
-  ec2InstanceTenancy: imagebuilder.Tenancy.DEFAULT,
+  ec2InstanceTenancy: imagebuilder.Tenancy.DEDICATED,
+  vpc,
+  subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+  securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'SecurityGroup', vpc.vpcDefaultSecurityGroup)],
   httpPutResponseHopLimit: 1,
   httpTokens: imagebuilder.HttpTokens.REQUIRED,
   instanceTypes: [
@@ -34,6 +38,7 @@ new imagebuilder.InfrastructureConfiguration(stack, 'InfrastructureConfiguration
     s3Bucket: bucket,
     s3KeyPrefix: 'imagebuilder-logs',
   },
+  keyPair: ec2.KeyPair.fromKeyPairName(stack, 'KeyPair', 'key-pair-name'),
   notificationTopic: topic,
   resourceTags: {
     infraTag1: 'infraValue1',
