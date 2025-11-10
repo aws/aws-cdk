@@ -9,10 +9,10 @@ jobs:
     if: github.repository == 'aws/aws-cdk'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Check and assign R2 Priority to PRs
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           script: |

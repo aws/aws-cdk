@@ -9,6 +9,8 @@ import {
   Operation, OperationsMetricOptions, SystemErrorsForOperationsMetricOptions,
   Attribute, BillingMode, ProjectionType, ITable, SecondaryIndexProps, TableClass,
   LocalSecondaryIndexProps, TableEncryption, StreamViewType, WarmThroughput, PointInTimeRecoverySpecification,
+  ContributorInsightsSpecification,
+  validateContributorInsights,
 } from './shared';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -232,6 +234,23 @@ export enum ApproximateCreationDateTimePrecision {
 }
 
 /**
+ * Common interface for types that can configure contributor insights
+ * @internal
+ */
+interface IContributorInsightsConfigurable {
+  /**
+   * Whether CloudWatch contributor insights is enabled.
+   * @deprecated use `contributorInsightsSpecification` instead
+   */
+  readonly contributorInsightsEnabled?: boolean;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled and what mode is selected
+   */
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
+}
+
+/**
  * Properties of a DynamoDB Table
  *
  * Use `TableProps` for all table properties
@@ -419,10 +438,16 @@ export interface TableOptions extends SchemaOptions {
 
   /**
    * Whether CloudWatch contributor insights is enabled.
-   *
+   * @deprecated use `contributorInsightsSpecification instead
    * @default false
    */
   readonly contributorInsightsEnabled?: boolean;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled and what mode is selected
+   * @default - contributor insights is not enabled
+   */
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
 
   /**
    * Enables deletion protection for the table.
@@ -520,10 +545,16 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOp
 
   /**
    * Whether CloudWatch contributor insights is enabled for the specified global secondary index.
-   *
+   * @deprecated use `contributorInsightsSpecification` instead
    * @default false
    */
   readonly contributorInsightsEnabled?: boolean;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled and what mode is selected
+   * @default - contributor insights is not enabled
+   */
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
 }
 
 /**
@@ -622,6 +653,11 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
   protected readonly regionalArns = new Array<string>();
 
   /**
+   * Adds a statement to the resource policy associated with this table.
+   */
+  public abstract addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
+
+  /**
    * Adds an IAM policy statement associated with this table to an IAM
    * principal's policy.
    *
@@ -665,7 +701,6 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
       grantee,
       actions,
       resourceArns: [this.tableStreamArn],
-      scope: this,
     });
   }
 
@@ -757,23 +792,6 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
   public grantFullAccess(grantee: iam.IGrantable) {
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
     return this.combinedGrant(grantee, { keyActions, tableActions: ['dynamodb:*'] });
-  }
-
-  /**
-   * Adds a statement to the resource policy associated with this file system.
-   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
-   *
-   * Note that this does not work with imported file systems.
-   *
-   * @param statement The policy statement to add
-   */
-  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
-    this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument({ statements: [] });
-    this.resourcePolicy.addStatements(statement);
-    return {
-      statementAdded: true,
-      policyDependable: this,
-    };
   }
 
   /**
@@ -1128,6 +1146,11 @@ export class Table extends TableBase {
         this.tableStreamArn = tableStreamArn;
         this.encryptionKey = attrs.encryptionKey;
       }
+
+      public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+        // Imported tables cannot have resource policies modified
+        return { statementAdded: false };
+      }
     }
 
     let name: string;
@@ -1183,7 +1206,7 @@ export class Table extends TableBase {
    */
   public readonly tableStreamArn: string | undefined;
 
-  private readonly table: CfnTable;
+  protected readonly table: CfnTable;
 
   private readonly keySchema = new Array<CfnTable.KeySchemaProperty>();
   private readonly attributeDefinitions = new Array<CfnTable.AttributeDefinitionProperty>();
@@ -1210,9 +1233,13 @@ export class Table extends TableBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    this.resourcePolicy = props.resourcePolicy;
+
     const { sseSpecification, encryptionKey } = this.parseEncryption(props);
 
     const pointInTimeRecoverySpecification = this.validatePitr(props);
+
+    const contributorInsightsSpecification = this.validateCCI(props);
 
     let streamSpecification: CfnTable.StreamSpecificationProperty | undefined;
     if (props.replicationRegions) {
@@ -1260,16 +1287,18 @@ export class Table extends TableBase {
       streamSpecification,
       tableClass: props.tableClass,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
-      contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
+      contributorInsightsSpecification: contributorInsightsSpecification,
       kinesisStreamSpecification: kinesisStreamSpecification,
       deletionProtectionEnabled: props.deletionProtection,
       importSourceSpecification: this.renderImportSourceSpecification(props.importSource),
-      resourcePolicy: props.resourcePolicy
-        ? { policyDocument: props.resourcePolicy }
-        : undefined,
-      warmThroughput: props.warmThroughput?? undefined,
+      warmThroughput: props.warmThroughput ?? undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
+
+    // Set up dynamic resourcePolicy that can be modified by addToResourcePolicy
+    if (this.resourcePolicy) {
+      this.table.resourcePolicy = { policyDocument: this.resourcePolicy };
+    }
 
     this.encryptionKey = encryptionKey;
 
@@ -1302,6 +1331,29 @@ export class Table extends TableBase {
   }
 
   /**
+   * Adds a statement to the resource policy associated with this table.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Note that this does not work with imported tables.
+   *
+   * @param statement The policy statement to add
+   */
+  @MethodMetadata()
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument({ statements: [] });
+
+    this.resourcePolicy.addStatements(statement);
+
+    // Update the CfnTable resourcePolicy property
+    this.table.resourcePolicy = { policyDocument: this.resourcePolicy };
+
+    return {
+      statementAdded: true,
+      policyDependable: this,
+    };
+  }
+
+  /**
    * Add a global secondary index of table.
    *
    * @param props the property of global secondary index
@@ -1315,8 +1367,10 @@ export class Table extends TableBase {
     const gsiKeySchema = this.buildIndexKeySchema(props.partitionKey, props.sortKey);
     const gsiProjection = this.buildIndexProjection(props);
 
+    const contributorInsightsSpecification = this.validateCCI(props);
+
     this.globalSecondaryIndexes.push({
-      contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
+      contributorInsightsSpecification: contributorInsightsSpecification,
       indexName: props.indexName,
       keySchema: gsiKeySchema,
       projection: gsiProjection,
@@ -1586,6 +1640,10 @@ export class Table extends TableBase {
         : undefined);
   }
 
+  private validateCCI(props: IContributorInsightsConfigurable): ContributorInsightsSpecification | undefined {
+    return validateContributorInsights(props.contributorInsightsEnabled, props.contributorInsightsSpecification, 'contributorInsightsEnabled', this);
+  }
+
   private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute): CfnTable.KeySchemaProperty[] {
     this.registerAttribute(partitionKey);
     const indexKeySchema: CfnTable.KeySchemaProperty[] = [
@@ -1691,9 +1749,44 @@ export class Table extends TableBase {
     const onEventHandlerPolicy = new SourceTableAttachedPolicy(this, provider.onEventHandler.role!);
     const isCompleteHandlerPolicy = new SourceTableAttachedPolicy(this, provider.isCompleteHandler.role!);
 
-    // Permissions in the source region
-    this.grant(onEventHandlerPolicy, 'dynamodb:*');
-    this.grant(isCompleteHandlerPolicy, 'dynamodb:DescribeTable');
+    // IMPORTANT: Add permissions directly to Lambda role policies instead of using this.grant()
+    //
+    // WHY NOT this.grant()?
+    // - this.grant() uses Grant.addToPrincipalOrResource() which has decision logic
+    // - For cross-stack scenarios (nested stack Lambda roles), it falls back to resource policy
+    // - Resource policy tries to reference this.tableArn, creating circular dependency:
+    //   Table → ResourcePolicy → Table ARN → Table (CIRCULAR!)
+    // - This causes CloudFormation deployment to fail
+    //
+    // WHY DIRECT POLICY STATEMENTS?
+    // - Bypasses Grant decision logic entirely
+    // - Adds permissions directly to Lambda role policies (no resource policy)
+    // - Avoids circular dependency while ensuring Lambda functions have required permissions
+    // - Separates internal permission management from user-facing addToResourcePolicy()
+
+    (onEventHandlerPolicy.policy as iam.ManagedPolicy).addStatements(new iam.PolicyStatement({
+      actions: ['dynamodb:*'],
+      resources: [
+        this.tableArn,
+        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        ...this.regionalArns,
+        ...this.regionalArns.map(arn => Lazy.string({
+          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
+        })),
+      ],
+    }));
+
+    (isCompleteHandlerPolicy.policy as iam.ManagedPolicy).addStatements(new iam.PolicyStatement({
+      actions: ['dynamodb:DescribeTable'],
+      resources: [
+        this.tableArn,
+        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        ...this.regionalArns,
+        ...this.regionalArns.map(arn => Lazy.string({
+          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
+        })),
+      ],
+    }));
 
     let previousRegion: CustomResource | undefined;
     let previousRegionCondition: CfnCondition | undefined;

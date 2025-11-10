@@ -16,6 +16,7 @@ import { AgentCollaborator } from './agent-collaborator';
 import { AgentCollaboration } from './agent-collaboration';
 import { PromptOverrideConfiguration } from './prompt-override';
 import { AssetApiSchema, S3ApiSchema } from './api-schema';
+import { IGuardrail } from '../guardrails/guardrails';
 import * as validation from './validation-helpers';
 import { IBedrockInvokable } from '.././models';
 import { Memory } from './memory';
@@ -132,21 +133,15 @@ export abstract class AgentBase extends Resource implements IAgent {
    * @returns An EventBridge Rule configured for agent events
    */
   public onEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
-    // Create rule with minimal props and event pattern
-    const rule = new events.Rule(this, id, {
-      description: options.description,
-      eventPattern: {
-        source: ['aws.bedrock'],
-        detail: {
-          'agent-id': [this.agentId],
-        },
+    const rule = new events.Rule(this, id, options);
+    rule.addEventPattern({
+      source: ['aws.bedrock'],
+      detail: {
+        'agent-id': [this.agentId],
       },
     });
 
-    // Add target if provided
-    if (options.target) {
-      rule.addTarget(options.target);
-    }
+    rule.addTarget(options.target);
     return rule;
   }
 
@@ -178,7 +173,6 @@ export abstract class AgentBase extends Resource implements IAgent {
 /**
  * Properties for creating a CDK managed Bedrock Agent.
  * TODO: Knowledge bases configuration will be added in a future update
- * TODO: Guardrails configuration will be added in a future update
  * TODO: Inference profile configuration will be added in a future update
  *
  */
@@ -241,7 +235,11 @@ export interface AgentProps {
    * @default - Only default action groups (UserInput and CodeInterpreter) are added
    */
   readonly actionGroups?: AgentActionGroup[];
-
+  /**
+   * The guardrail that will be associated with the agent.
+   * @default - No guardrail is provided.
+   */
+  readonly guardrail?: IGuardrail;
   /**
    * Overrides some prompt templates in different parts of an agent sequence configuration.
    *
@@ -408,6 +406,10 @@ export class Agent extends AgentBase implements IAgent {
    * action groups associated with the ageny
    */
   public readonly actionGroups: AgentActionGroup[] = [];
+  /**
+   * The guardrail that will be associated with the agent.
+   */
+  public guardrail?: IGuardrail;
   // ------------------------------------------------------
   // CDK-only attributes
   // ------------------------------------------------------
@@ -514,8 +516,12 @@ export class Agent extends AgentBase implements IAgent {
     this.agentCollaboration = props.agentCollaboration;
     if (props.agentCollaboration) {
       props.agentCollaboration.collaborators.forEach(ac => {
-        this.addAgentCollaborator(ac);
+        this.grantPermissionToAgent(ac);
       });
+    }
+
+    if (props.guardrail) {
+      this.addGuardrail(props.guardrail);
     }
 
     // Grant permissions for custom orchestration if provided
@@ -539,6 +545,7 @@ export class Agent extends AgentBase implements IAgent {
       customerEncryptionKeyArn: props.kmsKey?.keyArn,
       description: props.description,
       foundationModel: this.foundationModel.invokableArn,
+      guardrailConfiguration: Lazy.any({ produce: () => this.renderGuardrail() }),
       idleSessionTtlInSeconds: this.idleSessionTTL.toSeconds(),
       instruction: props.instruction,
       memoryConfiguration: props.memory?._render(),
@@ -562,11 +569,8 @@ export class Agent extends AgentBase implements IAgent {
 
     // Add explicit dependency between the agent resource and the agent's role default policy
     // See https://github.com/awslabs/generative-ai-cdk-constructs/issues/899
-    if (!props.existingRole) {
-      // add the appropriate permissions to use the FM
-      const grant = this.foundationModel.grantInvoke(this.role);
-      grant.applyBefore(this.__resource);
-    }
+    const grant = this.foundationModel.grantInvoke(this.role);
+    grant.applyBefore(this.__resource);
 
     this.testAlias = AgentAlias.fromAttributes(this, 'DefaultAlias', {
       aliasId: 'TSTALIASID',
@@ -579,6 +583,19 @@ export class Agent extends AgentBase implements IAgent {
   // ------------------------------------------------------
   // HELPER METHODS - addX()
   // ------------------------------------------------------
+
+  /**
+   * Add guardrail to the agent.
+   */
+  @MethodMetadata()
+  public addGuardrail(guardrail: IGuardrail) {
+    // Do some checks
+    validation.throwIfInvalid(this.validateGuardrail, guardrail);
+    // Add it to the construct
+    this.guardrail = guardrail;
+    // Handle permissions
+    guardrail.grantApply(this.role);
+  }
 
   /**
    * Adds an action group to the agent and configures necessary permissions.
@@ -636,11 +653,14 @@ export class Agent extends AgentBase implements IAgent {
   }
 
   /**
-   * Adds a collaborator to the agent and grants necessary permissions.
-   * @param agentCollaborator - The collaborator to add
-   * @internal This method is used internally by the constructor and should not be called directly.
+   * Grants permissions for an agent collaborator to this agent's role.
+   * This method only grants IAM permissions and does not add the collaborator
+   * to the agent's collaboration configuration. To add collaborators to the
+   * agent configuration, include them in the AgentCollaboration when creating the agent.
+   *
+   * @param agentCollaborator - The collaborator to grant permissions for
    */
-  private addAgentCollaborator(agentCollaborator: AgentCollaborator) {
+  private grantPermissionToAgent(agentCollaborator: AgentCollaborator) {
     agentCollaborator.grant(this.role);
   }
 
@@ -657,6 +677,20 @@ export class Agent extends AgentBase implements IAgent {
   // ------------------------------------------------------
   // Lazy Renderers
   // ------------------------------------------------------
+
+  /**
+   * Render the guardrail configuration.
+   *
+   * @internal This is an internal core function and should not be called directly.
+   */
+  private renderGuardrail(): bedrock.CfnAgent.GuardrailConfigurationProperty | undefined {
+    return this.guardrail
+      ? {
+        guardrailIdentifier: this.guardrail.guardrailId,
+        guardrailVersion: this.guardrail.guardrailVersion,
+      }
+      : undefined;
+  }
 
   /**
    * Render the action groups
@@ -682,7 +716,7 @@ export class Agent extends AgentBase implements IAgent {
    * @internal This is an internal core function and should not be called directly.
    */
   private renderAgentCollaborators(): bedrock.CfnAgent.AgentCollaboratorProperty[] | undefined {
-    if (!this.agentCollaboration) {
+    if (!this.agentCollaboration || !this.agentCollaboration.collaborators || this.agentCollaboration.collaborators.length === 0) {
       return undefined;
     }
 
@@ -711,6 +745,24 @@ export class Agent extends AgentBase implements IAgent {
   // ------------------------------------------------------
   // Validators
   // ------------------------------------------------------
+  /**
+   * Checks if the Guardrail is valid
+   *
+   * @param guardrail - The guardrail to validate
+   * @returns Array of validation error messages, empty if valid
+   */
+  private validateGuardrail = (guardrail: IGuardrail) => {
+    let errors: string[] = [];
+    if (this.guardrail) {
+      errors.push(
+        `Cannot add Guardrail ${guardrail.guardrailId}. ` +
+          `Guardrail ${this.guardrail.guardrailId} has already been specified for this agent.`,
+      );
+    }
+    errors.push(...validation.validateFieldPattern(guardrail.guardrailVersion, 'version', /^(([0-9]{1,8})|(DRAFT))$/));
+    return errors;
+  };
+
   /**
    * Check if the action group is valid
    *

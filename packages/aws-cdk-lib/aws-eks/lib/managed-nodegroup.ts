@@ -95,6 +95,10 @@ export enum NodegroupAmiType {
    */
   AL2023_X86_64_NVIDIA = 'AL2023_x86_64_NVIDIA',
   /**
+   * Amazon Linux 2023 with NVIDIA drivers (ARM-64)
+   */
+  AL2023_ARM_64_NVIDIA = 'AL2023_ARM_64_NVIDIA',
+  /**
    * Amazon Linux 2023 (ARM-64)
    */
   AL2023_ARM_64_STANDARD = 'AL2023_ARM_64_STANDARD',
@@ -156,6 +160,17 @@ export interface LaunchTemplateSpec {
 
 /**
  * Effect types of kubernetes node taint.
+ *
+ * Note: These values are specifically for AWS EKS NodeGroups and use the AWS API format.
+ * When using AWS CLI or API, taint effects must be NO_SCHEDULE, PREFER_NO_SCHEDULE, or NO_EXECUTE.
+ * When using Kubernetes directly or kubectl, taint effects must be NoSchedule, PreferNoSchedule, or NoExecute.
+ *
+ * For Kubernetes manifests (like Karpenter NodePools), use string literals with PascalCase format:
+ * - 'NoSchedule' instead of TaintEffect.NO_SCHEDULE
+ * - 'PreferNoSchedule' instead of TaintEffect.PREFER_NO_SCHEDULE
+ * - 'NoExecute' instead of TaintEffect.NO_EXECUTE
+ *
+ * @see https://docs.aws.amazon.com/eks/latest/userguide/node-taints-managed-node-groups.html
  */
 export enum TaintEffect {
   /**
@@ -636,6 +651,7 @@ const gpuAmiTypes: NodegroupAmiType[] = [
   NodegroupAmiType.AL2_X86_64_GPU,
   NodegroupAmiType.AL2023_X86_64_NEURON,
   NodegroupAmiType.AL2023_X86_64_NVIDIA,
+  NodegroupAmiType.AL2023_ARM_64_NVIDIA,
   NodegroupAmiType.BOTTLEROCKET_X86_64_NVIDIA,
   NodegroupAmiType.BOTTLEROCKET_ARM_64_NVIDIA,
 ];

@@ -1,6 +1,6 @@
 import { EventApiBase } from './eventapi';
 import { ICertificate } from '../../aws-certificatemanager';
-import { IRole } from '../../aws-iam';
+import { IRoleRef } from '../../aws-iam';
 import { RetentionDays } from '../../aws-logs';
 import { Stack, ArnFormat } from '../../core';
 
@@ -121,7 +121,7 @@ export interface AppSyncLogConfig {
    *
    * @default - None
    */
-  readonly role?: IRole;
+  readonly role?: IRoleRef;
 
   /**
    * The number of days log events are kept in CloudWatch Logs.

@@ -110,6 +110,25 @@ describe('stacks', () => {
     expect(fnStack.account).toEqual('111111111111');
   });
 
+  test('us-east-1 stack inherits tags of parent stack', () => {
+    stack = new cdk.Stack(app, 'StackWithDefaultAccount', {
+      env: { region: 'testregion' },
+      tags: {
+        abc: 'def',
+      },
+    });
+
+    new cloudfront.experimental.EdgeFunction(
+      stack,
+      'MyFn',
+      defaultEdgeFunctionProps(),
+    );
+
+    const fnStack = getFnStack();
+
+    expect(fnStack.tags.tagValues()).toEqual({ abc: 'def' });
+  });
+
   test('us-east-1 stack inherits account of parent stack, when parent stack account is undefined', () => {
     stack = new cdk.Stack(app, 'StackWithDefaultAccount', {
       env: { region: 'testregion' },

@@ -14,7 +14,7 @@ import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import * as sm from '../../aws-secretsmanager';
 import * as ssm from '../../aws-ssm';
-import { PhysicalName, Stack, ArnFormat, Names, RemovalPolicy } from '../../core';
+import { PhysicalName, Stack, ArnFormat, Names, RemovalPolicy, ValidationError } from '../../core';
 import * as mimeTypes from 'mime-types';
 import { DeletionProtectionCheck } from './util';
 
@@ -403,7 +403,7 @@ export interface HostedConfigurationProps extends ConfigurationProps {
    *
    * @default None
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 }
 
 /**
@@ -416,7 +416,15 @@ export class HostedConfiguration extends ConfigurationBase {
   public readonly content: string;
 
   /**
-   * The content type of the hosted configuration.
+   * The configuration content type, specified as a standard MIME type.
+   * Supported examples include:
+   * - `text/plain`
+   * - `application/json`
+   * - `application/octet-stream`
+   * - `application/x-yaml`
+   *
+   * For an up-to-date list of valid MIME types, see:
+   * https://www.iana.org/assignments/media-types/media-types.xhtml
    */
   public readonly contentType?: string;
 
@@ -464,7 +472,7 @@ export class HostedConfiguration extends ConfigurationBase {
       type: this.type,
       validators: this.validators,
       deletionProtectionCheck: this.deletionProtectionCheck,
-      kmsKeyIdentifier: props.kmsKey?.keyArn,
+      kmsKeyIdentifier: props.kmsKey?.keyRef.keyArn,
     });
     this.configurationProfileId = this._cfnConfigurationProfile.ref;
     this.configurationProfileArn = Stack.of(this).formatArn({
@@ -523,7 +531,7 @@ export interface SourcedConfigurationOptions extends ConfigurationOptions {
    *
    * @default - A role is generated.
    */
-  readonly retrievalRole?: iam.IRole;
+  readonly retrievalRole?: iam.IRoleRef;
 }
 
 /**
@@ -548,7 +556,7 @@ export interface SourcedConfigurationProps extends ConfigurationProps {
    *
    * @default - Auto generated if location type is not ConfigurationSourceType.CODE_PIPELINE otherwise no role specified.
    */
-  readonly retrievalRole?: iam.IRole;
+  readonly retrievalRole?: iam.IRoleRef;
 }
 
 /**
@@ -565,11 +573,6 @@ export class SourcedConfiguration extends ConfigurationBase {
    * The version number of the configuration to deploy.
    */
   public readonly versionNumber?: string;
-
-  /**
-   * The IAM role to retrieve the configuration.
-   */
-  public readonly retrievalRole?: iam.IRole;
 
   /**
    * The key to decrypt the configuration if applicable. This key
@@ -590,15 +593,16 @@ export class SourcedConfiguration extends ConfigurationBase {
 
   private readonly locationUri: string;
   private readonly _cfnConfigurationProfile: CfnConfigurationProfile;
+  private readonly _retrievalRole?: iam.IRoleRef;
 
-  constructor (scope: Construct, id: string, props: SourcedConfigurationProps) {
+  constructor(scope: Construct, id: string, props: SourcedConfigurationProps) {
     super(scope, id, props);
 
     this.location = props.location;
     this.locationUri = this.location.locationUri;
     this.versionNumber = props.versionNumber;
     this.sourceKey = this.location.key;
-    this.retrievalRole = props.retrievalRole ?? this.getRetrievalRole();
+    this._retrievalRole = props.retrievalRole ?? this.getRetrievalRole();
     this._cfnConfigurationProfile = new CfnConfigurationProfile(this, 'Resource', {
       applicationId: this.applicationId,
       locationUri: this.locationUri,
@@ -620,6 +624,19 @@ export class SourcedConfiguration extends ConfigurationBase {
 
     this.addExistingEnvironmentsToApplication();
     this.deployConfigToEnvironments();
+  }
+
+  /**
+   * The IAM role to retrieve the configuration.
+   */
+  public get retrievalRole(): iam.IRole | undefined {
+    if (!this._retrievalRole) {
+      return undefined;
+    }
+    if ('grant' in this._retrievalRole) {
+      return this._retrievalRole as iam.IRole;
+    }
+    throw new ValidationError(`Retrieval role does not implement IRole: ${this._retrievalRole.constructor.name}`, this);
   }
 
   private getRetrievalRole(): iam.Role | undefined {
@@ -839,7 +856,15 @@ export abstract class ConfigurationContent {
    * Defines the hosted configuration content from a file.
    *
    * @param inputPath The path to the file that defines configuration content
-   * @param contentType The content type of the configuration
+   * @param contentType The configuration content type, specified as a standard MIME type.
+   * Supported examples include:
+   * - `text/plain`
+   * - `application/json`
+   * - `application/octet-stream`
+   * - `application/x-yaml`
+   *
+   * For an up-to-date list of valid MIME types, see:
+   * https://www.iana.org/assignments/media-types/media-types.xhtml
    */
   public static fromFile(inputPath: string, contentType?: string): ConfigurationContent {
     return {
@@ -852,7 +877,15 @@ export abstract class ConfigurationContent {
    * Defines the hosted configuration content from inline code.
    *
    * @param content The inline code that defines the configuration content
-   * @param contentType The content type of the configuration
+   * @param contentType The configuration content type, specified as a standard MIME type.
+   * Supported examples include:
+   * - `text/plain`
+   * - `application/json`
+   * - `application/octet-stream`
+   * - `application/x-yaml`
+   *
+   * For an up-to-date list of valid MIME types, see:
+   * https://www.iana.org/assignments/media-types/media-types.xhtml
    */
   public static fromInline(content: string, contentType?: string): ConfigurationContent {
     return {
@@ -865,7 +898,15 @@ export abstract class ConfigurationContent {
    * Defines the hosted configuration content as JSON from inline code.
    *
    * @param content The inline code that defines the configuration content
-   * @param contentType The content type of the configuration
+   * @param contentType The configuration content type, specified as a standard MIME type.
+   * Supported examples include:
+   * - `text/plain`
+   * - `application/json`
+   * - `application/octet-stream`
+   * - `application/x-yaml`
+   *
+   * For an up-to-date list of valid MIME types, see:
+   * https://www.iana.org/assignments/media-types/media-types.xhtml
    */
   public static fromInlineJson(content: string, contentType?: string): ConfigurationContent {
     return {
@@ -904,7 +945,15 @@ export abstract class ConfigurationContent {
   public abstract readonly content: string;
 
   /**
-   * The configuration content type.
+   * The configuration content type, specified as a standard MIME type.
+   * Supported examples include:
+   * - `text/plain`
+   * - `application/json`
+   * - `application/octet-stream`
+   * - `application/x-yaml`
+   *
+   * For an up-to-date list of valid MIME types, see:
+   * https://www.iana.org/assignments/media-types/media-types.xhtml
    */
   public abstract readonly contentType: string;
 }

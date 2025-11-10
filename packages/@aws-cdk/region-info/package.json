@@ -48,14 +48,15 @@
         ]
       }
     },
-    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
           "strict": true
         }
       }
-    }
+    },
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal"
   },
   "scripts": {
     "build": "yarn gen && cdk-build --skip-lint",
@@ -98,7 +99,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 14.15.0"
+    "node": ">= 18.0.0"
   },
   "stability": "stable",
   "maturity": "stable",

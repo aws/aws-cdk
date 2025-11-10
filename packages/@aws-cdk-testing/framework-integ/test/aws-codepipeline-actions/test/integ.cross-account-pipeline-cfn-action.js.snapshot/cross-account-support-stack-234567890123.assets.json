@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "files": {
     "09fd1759e9c27953169a9b6d52f6774e4452e65265d145d7317ec94cb4efdbb2": {
       "displayName": "CdkPipelineCfnActionStack-support-234567890123 Template",
@@ -8,7 +8,7 @@
         "packaging": "file"
       },
       "destinations": {
-        "234567890123-test-region": {
+        "234567890123-test-region-3bf36f0c": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-test-region",
           "objectKey": "09fd1759e9c27953169a9b6d52f6774e4452e65265d145d7317ec94cb4efdbb2.json",
           "region": "test-region",

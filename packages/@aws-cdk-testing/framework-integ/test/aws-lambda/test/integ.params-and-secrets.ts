@@ -46,7 +46,7 @@ class StackUnderTest extends Stack {
     });
 
     const lambdaFunction = new Function(this, 'MyFunc', {
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: Code.fromAsset(path.join(__dirname, 'params-and-secrets-handler')),
       architecture: props.architecture,

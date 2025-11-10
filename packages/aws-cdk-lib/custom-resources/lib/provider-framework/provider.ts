@@ -123,7 +123,7 @@ export interface ProviderProps {
    * service principal.
    *
    * @default - A default role will be created.
-   * @deprecated - Use frameworkOnEventLambdaRole, frameworkIsCompleteLambdaRole, frameworkOnTimeoutLambdaRole
+   * @deprecated - Use frameworkOnEventRole, frameworkCompleteAndTimeoutRole
    */
   readonly role?: iam.IRole;
 
@@ -163,7 +163,7 @@ export interface ProviderProps {
    *
    * @default -  AWS Lambda creates and uses an AWS managed customer master key (CMK)
    */
-  readonly providerFunctionEnvEncryption?: kms.IKey;
+  readonly providerFunctionEnvEncryption?: kms.IKeyRef;
 
   /**
    * Defines what execution history events of the waiter state machine are logged and where they are logged.
@@ -222,7 +222,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
   private readonly vpcSubnets?: ec2.SubnetSelection;
   private readonly securityGroups?: ec2.ISecurityGroup[];
   private readonly role?: iam.IRole;
-  private readonly providerFunctionEnvEncryption?: kms.IKey;
+  private readonly providerFunctionEnvEncryption?: kms.IKeyRef;
   private readonly frameworkLambdaLoggingLevel?: lambda.ApplicationLogLevel;
 
   constructor(scope: Construct, id: string, props: ProviderProps) {
@@ -324,7 +324,8 @@ export class Provider extends Construct implements ICustomResourceProvider {
       handler: `framework.${entrypoint}`,
       timeout: FRAMEWORK_HANDLER_TIMEOUT,
 
-      logFormat: lambda.LogFormat.JSON,
+      // Using loggingFormat instead of deprecated logFormat which will be removed in the next major release
+      loggingFormat: lambda.LoggingFormat.JSON,
       applicationLogLevelV2: loggingLevel,
       // props.logRetention is deprecated, make sure we only set it if it is actually provided
       // otherwise jsii will print warnings even for users that don't use this directly
