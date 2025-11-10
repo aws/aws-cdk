@@ -1,5 +1,80 @@
 {
  "Resources": {
+  "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10ServiceRole037E5D29": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f1028726088": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "b8cec122f25692e8b194663d25a2ee5e0b65e55df966120791d6a3ddc08fc136.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10ServiceRole037E5D29",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x"
+   },
+   "DependsOn": [
+    "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10ServiceRole037E5D29"
+   ]
+  },
+  "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10LogGroup29F31548": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f1028726088"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -108,12 +183,32 @@
          ]
         },
         {
+         "Fn::GetAtt": [
+          "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f1028726088",
+          "Arn"
+         ]
+        },
+        {
          "Fn::Join": [
           "",
           [
            {
             "Fn::GetAtt": [
              "Eval41256dc5445742738ed917bc818694e54EB1134F",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f1028726088",
              "Arn"
             ]
            },
@@ -141,14 +236,21 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"EvaluateExpression\",\"States\":{\"EvaluateExpression\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       "{\"StartAt\":\"EvaluateExpressionArm64\",\"States\":{\"EvaluateExpressionArm64\":{\"Next\":\"EvaluateExpressionX86\",\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f1028726088",
+         "Arn"
+        ]
+       },
+       "\",\"Parameters\":{\"expression\":\"$.a + $.b\",\"expressionAttributeValues\":{\"$.a.$\":\"$.a\",\"$.b.$\":\"$.b\"}}},\"EvaluateExpressionX86\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
        {
         "Fn::GetAtt": [
          "Eval41256dc5445742738ed917bc818694e54EB1134F",
          "Arn"
         ]
        },
-       "\",\"Parameters\":{\"expression\":\"$.a + $.b\",\"expressionAttributeValues\":{\"$.a.$\":\"$.a\",\"$.b.$\":\"$.b\"}}}},\"TimeoutSeconds\":30}"
+       "\",\"Parameters\":{\"expression\":\"$.a * $.b\",\"expressionAttributeValues\":{\"$.a.$\":\"$.a\",\"$.b.$\":\"$.b\"}}}},\"TimeoutSeconds\":30}"
       ]
      ]
     },

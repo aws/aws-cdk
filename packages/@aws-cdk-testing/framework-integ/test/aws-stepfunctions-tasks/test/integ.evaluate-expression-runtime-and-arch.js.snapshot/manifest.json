@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "aws-cdk-sfn-evaluate-expression-default-integ.assets": {
+    "aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-sfn-evaluate-expression-default-integ.assets.json",
+        "file": "aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-sfn-evaluate-expression-default-integ": {
+    "aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-sfn-evaluate-expression-default-integ.template.json",
+        "templateFile": "aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f9d40feaa817d6d1ddea4c751661d2ec663dedfe0cb126688c07bcdf288ee742.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6de1632f82bfdf45fff7210929ca5e50b9d5ddafdd38697c01018a744fed0c69.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-sfn-evaluate-expression-default-integ.assets"
+          "aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,10 +31,10 @@
         }
       },
       "dependencies": [
-        "aws-cdk-sfn-evaluate-expression-default-integ.assets"
+        "aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ.assets"
       ],
       "metadata": {
-        "/aws-cdk-sfn-evaluate-expression-default-integ/EvaluateExpression/EvalFunction": [
+        "/aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ/EvaluateExpression/EvalFunction": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -65,7 +65,7 @@
             }
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-default-integ/Eval41256dc5445742738ed917bc818694e5": [
+        "/aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -84,7 +84,7 @@
             "data": 0
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-default-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole": [
+        "/aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -100,25 +100,25 @@
             }
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-default-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole/ImportServiceRole": [
+        "/aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-default-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole/Resource": [
+        "/aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027"
+            "data": "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10ServiceRole037E5D29"
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-default-integ/Eval41256dc5445742738ed917bc818694e5/Resource": [
+        "/aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Eval41256dc5445742738ed917bc818694e54EB1134F"
+            "data": "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f1028726088"
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-default-integ/Eval41256dc5445742738ed917bc818694e5/LogGroup": [
+        "/aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -126,13 +126,13 @@
             }
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-default-integ/Eval41256dc5445742738ed917bc818694e5/LogGroup/Resource": [
+        "/aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Eval41256dc5445742738ed917bc818694e5LogGroup308B9405"
+            "data": "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10LogGroup29F31548"
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-default-integ/StateMachine": [
+        "/aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ/StateMachine": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -149,7 +149,7 @@
             }
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-default-integ/StateMachine/Role": [
+        "/aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ/StateMachine/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -184,19 +184,19 @@
             }
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-default-integ/StateMachine/Role/ImportRole": [
+        "/aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ/StateMachine/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-default-integ/StateMachine/Role/Resource": [
+        "/aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ/StateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StateMachineRoleB840431D"
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-default-integ/StateMachine/Role/DefaultPolicy": [
+        "/aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ/StateMachine/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -226,52 +226,52 @@
             }
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-default-integ/StateMachine/Role/DefaultPolicy/Resource": [
+        "/aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ/StateMachine/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StateMachineRoleDefaultPolicyDF1E6607"
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-default-integ/StateMachine/Resource": [
+        "/aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ/StateMachine/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StateMachine2E01A3A5"
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-default-integ/stateMachineArn": [
+        "/aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ/stateMachineArn": [
           {
             "type": "aws:cdk:logicalId",
             "data": "stateMachineArn"
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-default-integ/BootstrapVersion": [
+        "/aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-sfn-evaluate-expression-default-integ/CheckBootstrapVersion": [
+        "/aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-sfn-evaluate-expression-default-integ"
+      "displayName": "aws-cdk-sfn-evaluate-expression-runtime-and-arch-integ"
     },
-    "EvaluateExpressionDefaultTestDeployAssert91679210.assets": {
+    "EvaluateExpressionRuntimeAndArchTestDefaultTestDeployAssert4E2870F2.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "EvaluateExpressionDefaultTestDeployAssert91679210.assets.json",
+        "file": "EvaluateExpressionRuntimeAndArchTestDefaultTestDeployAssert4E2870F2.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "EvaluateExpressionDefaultTestDeployAssert91679210": {
+    "EvaluateExpressionRuntimeAndArchTestDefaultTestDeployAssert4E2870F2": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "EvaluateExpressionDefaultTestDeployAssert91679210.template.json",
+        "templateFile": "EvaluateExpressionRuntimeAndArchTestDefaultTestDeployAssert4E2870F2.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -280,7 +280,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "EvaluateExpressionDefaultTestDeployAssert91679210.assets"
+          "EvaluateExpressionRuntimeAndArchTestDefaultTestDeployAssert4E2870F2.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -289,23 +289,23 @@
         }
       },
       "dependencies": [
-        "EvaluateExpressionDefaultTestDeployAssert91679210.assets"
+        "EvaluateExpressionRuntimeAndArchTestDefaultTestDeployAssert4E2870F2.assets"
       ],
       "metadata": {
-        "/EvaluateExpressionDefaultTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/EvaluateExpressionRuntimeAndArchTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/EvaluateExpressionDefaultTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/EvaluateExpressionRuntimeAndArchTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "EvaluateExpressionDefaultTest/DefaultTest/DeployAssert"
+      "displayName": "EvaluateExpressionRuntimeAndArchTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

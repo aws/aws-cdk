@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a5f7c7795b022bd6c6e8253750b84218e9bf8a895e356955999218f6fceff332.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6de1632f82bfdf45fff7210929ca5e50b9d5ddafdd38697c01018a744fed0c69.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -63,12 +63,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/aws-cdk-sfn-evaluate-expression-arm64-integ/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-cdk-sfn-evaluate-expression-arm64-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10": [
@@ -260,33 +254,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "Eval41256dc5445742738ed917bc818694e54EB1134F": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Eval41256dc5445742738ed917bc818694e54EB1134F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "Eval41256dc5445742738ed917bc818694e5LogGroup308B9405": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Eval41256dc5445742738ed917bc818694e5LogGroup308B9405",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
@@ -820,6 +787,17 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           }
         }
       }
