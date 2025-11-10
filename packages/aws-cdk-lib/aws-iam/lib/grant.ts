@@ -3,6 +3,7 @@ import { PolicyStatement } from './policy-statement';
 import { IGrantable, IPrincipal } from './principals';
 import * as cdk from '../../core';
 import * as iam from '../index';
+import { IEnvironmentAware } from "../../core";
 
 /**
  * Basic options for a grant operation
@@ -446,8 +447,8 @@ export class GrantableResources {
   /**
    * Whether this resource admits a resource policy.
    */
-  static isResourceWithPolicy(resource: IConstruct): resource is iam.IResourceWithPolicy {
-    return (resource as unknown as iam.IResourceWithPolicy).addToResourcePolicy !== undefined;
+  static isResourceWithPolicy(resource: IEnvironmentAware): resource is iam.IResourceWithPolicyV2 {
+    return (resource as unknown as iam.IResourceWithPolicyV2).addToResourcePolicy !== undefined;
   }
 
   /**

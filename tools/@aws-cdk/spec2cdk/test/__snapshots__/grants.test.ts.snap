@@ -19,7 +19,7 @@ export interface TopicGrantsProps {
    *
    * @default - No resource policy is created
    */
-  readonly policyResource?: iam.IResourceWithPolicy;
+  readonly policyResource?: iam.IResourceWithPolicyV2;
 
   /**
    * The encrypted resource on which actions will be allowed
@@ -50,7 +50,7 @@ export class TopicGrants {
 
   protected readonly encryptedResource?: iam.IEncryptedResource;
 
-  protected readonly policyResource?: iam.IResourceWithPolicy;
+  protected readonly policyResource?: iam.IResourceWithPolicyV2;
 
   private constructor(props: TopicGrantsProps) {
     this.resource = props.resource;
