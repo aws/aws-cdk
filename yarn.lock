@@ -2935,10 +2935,10 @@
   resolved "https://registry.npmjs.org/@cdklabs/tskb/-/tskb-0.0.3.tgz#4b79846d9381eb1252ba85d5d20b7cd7d99b6ecb"
   integrity sha512-JR+MuD4awAXvutu7HArephXfZm09GPTaSAQUqNcJB5+ZENRm4kV+L6vJL6Tn1xHjCcHksO+HAqj3gYtm5K94vA==
 
-"@cdklabs/typewriter@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.npmjs.org/@cdklabs/typewriter/-/typewriter-0.0.6.tgz#4f70afd8e70761785f09bfbee9b4678ffd6413a1"
-  integrity sha512-uOKGbxFG+J1ig2Cdn24d8wlELcS2MF6Z0Fsfawx+MiYLnRZJ3kgSZExui+QSm7PyXARW5rcpB+ZGh2maGNQbKw==
+"@cdklabs/typewriter@^0.0.10":
+  version "0.0.10"
+  resolved "https://registry.npmjs.org/@cdklabs/typewriter/-/typewriter-0.0.10.tgz#b1d09c036e4dc979777d9cbaa3e36625fd7cc3fe"
+  integrity sha512-s2rzcULriGFBansAdM6n2RQ27MfLVsleeWKPtX9k3dwJlfsrblgUzi3ch4vRPVVnguNIgxCkKg5sphqvGLciZQ==
 
 "@colors/colors@1.6.0", "@colors/colors@^1.6.0":
   version "1.6.0"
@@ -10202,13 +10202,13 @@ jsii@~5.9.1:
     typescript "~5.9"
     yargs "^17.7.2"
 
-jsii@~5.9.8:
-  version "5.9.8"
-  resolved "https://registry.npmjs.org/jsii/-/jsii-5.9.8.tgz#f451b876cacf49ffe7a6fcd261819123de9615bd"
-  integrity sha512-aV+ikLxz6BPtcm5Px6tedfLYGn9+Kg2ObVfpEz9MxMKzptlLT1WAP0juR8H2n3krqEb7aa0j3Sahs/QoQKtDaA==
+jsii@~5.9.13:
+  version "5.9.13"
+  resolved "https://registry.npmjs.org/jsii/-/jsii-5.9.13.tgz#c70823b1bae344edd1f68cbb65b5cb333190d1df"
+  integrity sha512-H5jzHwnXgrr3ogrKD9LcYih/jzD4P1mif1Kriu2PkvZgM3Tt7hHZLP9N0ZKxQ19PbEWnLFC+txO2xqre89ymuw==
   dependencies:
-    "@jsii/check-node" "1.115.0"
-    "@jsii/spec" "1.115.0"
+    "@jsii/check-node" "1.118.0"
+    "@jsii/spec" "1.118.0"
     case "^1.6.3"
     chalk "^4"
     fast-deep-equal "^3.1.3"
