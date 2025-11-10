@@ -1,0 +1,64 @@
+name: Security Report
+on:
+  workflow_run:
+    workflows: ["Security Guardian"]
+    types: [completed]
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: write
+      id-token: write
+      actions: read
+    steps:
+      - name: Which commit
+        run: echo "${{ github.event.workflow_run.pull_requests[0].head.sha }}"
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
+      - name: Download artifacts
+        uses: actions/download-artifact@v5
+        with:
+          name: security-guardian-reports
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+          repository: ${{ github.repository }}
+      - name: Publish Security Test Results 
+        uses: mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6  # v6.0.1
+        if: always()
+        with:
+          report_paths: '**/cfn-guard-static.xml'
+          check_name: 'Security Guardian Results'
+          exclude_sources: 'node_modules,dist'
+          commit: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
+          check_annotations: true
+          comment: true
+          pr_id: ${{ github.event.workflow_run.pull_requests[0].number }}
+          detailed_summary: true
+          include_passed: true
+          fail_on_failure: false
+          group_suite: true
+          include_skipped: true
+          check_title_template: '{{TEST_NAME}}'
+
+      - name: Publish Security Test Results for resolved templates
+        uses: mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6  # v6.0.1
+        if: always()
+        with:
+          report_paths: '**/cfn-guard-resolved.xml'
+          check_name: 'Security Guardian Results with resolved templates'
+          exclude_sources: 'node_modules,dist'
+          commit: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
+          check_annotations: true
+          comment: true
+          pr_id: ${{ github.event.workflow_run.pull_requests[0].number }}
+          detailed_summary: true
+          include_passed: true
+          fail_on_failure: false
+          group_suite: true
+          include_skipped: true
+          check_title_template: '{{TEST_NAME}}'

@@ -40,39 +40,6 @@ jobs:
           base_sha: ${{ github.event.pull_request.base.sha }}
           head_sha: ${{ github.event.pull_request.head.sha }}
           rule_set_path: './tools/@aws-cdk/security-guardian/rules'
-
-      - name: Publish Security Test Results 
-        uses: mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6  # v6.0.1
-        if: always()
-        with:
-          report_paths: 'test-results/cfn-guard-static.xml'
-          check_name: 'Security Guardian Results'
-          exclude_sources: 'node_modules,dist'
-          detailed_summary: true
-          include_passed: true
-          fail_on_failure: false
-          annotate_only: true
-          group_suite: true
-          include_skipped: true
-          check_title_template: '{{TEST_NAME}}'
-          update_check: true
-
-      - name: Publish Security Test Results for resolved templates
-        uses: mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6  # v6.0.1
-        if: always()
-        with:
-          report_paths: 'test-results/cfn-guard-resolved.xml'
-          check_name: 'Security Guardian Results with resolved templates'
-          exclude_sources: 'node_modules,dist'
-          detailed_summary: true
-          include_passed: true
-          fail_on_failure: false
-          annotate_only: true
-          group_suite: true
-          include_skipped: true
-          check_title_template: '{{TEST_NAME}}'
-          update_check: true
-
       - name: Upload Security Guardian XML Reports
         uses: actions/upload-artifact@v4
         if: always()
