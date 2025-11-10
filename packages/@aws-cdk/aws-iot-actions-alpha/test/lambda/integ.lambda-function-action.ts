@@ -14,7 +14,7 @@ class TestStack extends cdk.Stack {
     super(scope, id, props);
 
     const func = new lambda.Function(this, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`
         exports.handler = (event) => {

@@ -480,6 +480,8 @@ CloudFormation to re-read the secret.
 `SecretValue.ssmSecure()` is only supported for a limited set of resources.
 [Click here for a list of supported resources and properties](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#template-parameters-dynamic-patterns-resources).
 
+`SecretValue.cfnDynamicReferenceKey` takes the same parameters as `SecretValue.secretsManager` and returns a key which can be used within a [dynamic reference](#dynamic-references) to dynamically load a secret from AWS Secrets Manager.
+
 ## ARN manipulation
 
 Sometimes you will need to put together or pick apart Amazon Resource Names
@@ -1059,7 +1061,7 @@ The properties passed to the level 2 constructs `AutoScalingGroup` and `Instance
 `aws-ec2` module abstract what is passed into the `CfnOption` properties `resourceSignal` and
 `autoScalingCreationPolicy`, but when using level 1 constructs you can specify these yourself.
 
-The CfnWaitCondition resource from the `aws-cloudformation` module suppports the `resourceSignal`.
+The CfnWaitCondition resource from the `aws-cloudformation` module supports the `resourceSignal`.
 The format of the timeout is `PT#H#M#S`. In the example below AWS Cloudformation will wait for
 3 success signals to occur within 15 minutes before the status of the resource will be set to
 `CREATE_COMPLETE`.

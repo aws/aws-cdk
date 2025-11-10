@@ -1,6 +1,6 @@
-import { Service, SpecDatabase, emptyDatabase } from '@aws-cdk/service-spec-types';
+import { Resource, Service, SpecDatabase, emptyDatabase } from '@aws-cdk/service-spec-types';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
-import { AstBuilder } from '../lib/cdk/ast';
+import { AstBuilder, AstBuilderProps } from '../lib/cdk/ast';
 
 const renderer = new TypeScriptRenderer();
 let db: SpecDatabase;
@@ -36,9 +36,36 @@ test('resource interface when primaryIdentifier is a property', () => {
   // THEN
   const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
 
-  const ast = AstBuilder.forResource(foundResource, { db });
+  const module = moduleForResource(foundResource, { db });
 
-  const rendered = renderer.render(ast.module);
+  const rendered = renderer.render(module);
+
+  expect(rendered).toMatchSnapshot();
+});
+
+test('resource with arnTemplate', () => {
+  // GIVEN
+  const resource = db.allocate('resource', {
+    name: 'Resource',
+    primaryIdentifier: ['Id'],
+    attributes: {},
+    properties: {
+      Id: {
+        type: { type: 'string' },
+        documentation: 'The identifier of the resource',
+      },
+    },
+    cloudFormationType: 'AWS::Some::Resource',
+    arnTemplate: 'arn:${Partition}:some:${Region}:${Account}:resource/${ResourceId}',
+  });
+  db.link('hasResource', service, resource);
+
+  // THEN
+  const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
+
+  const module = moduleForResource(foundResource, { db });
+
+  const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
 });
@@ -62,9 +89,9 @@ test('resource with optional primary identifier gets property from ref', () => {
   // THEN
   const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
 
-  const ast = AstBuilder.forResource(foundResource, { db });
+  const module = moduleForResource(foundResource, { db });
 
-  const rendered = renderer.render(ast.module);
+  const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
 });
@@ -92,9 +119,9 @@ test('resource with multiple primaryIdentifiers as properties', () => {
   // THEN
   const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
 
-  const ast = AstBuilder.forResource(foundResource, { db });
+  const module = moduleForResource(foundResource, { db });
 
-  const rendered = renderer.render(ast.module);
+  const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
 });
@@ -118,9 +145,9 @@ test('resource interface when primaryIdentifier is an attribute', () => {
   // THEN
   const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
 
-  const ast = AstBuilder.forResource(foundResource, { db });
+  const module = moduleForResource(foundResource, { db });
 
-  const rendered = renderer.render(ast.module);
+  const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
 });
@@ -148,9 +175,9 @@ test('resource interface with multiple primaryIdentifiers', () => {
   // THEN
   const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
 
-  const ast = AstBuilder.forResource(foundResource, { db });
+  const module = moduleForResource(foundResource, { db });
 
-  const rendered = renderer.render(ast.module);
+  const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
 });
@@ -178,9 +205,9 @@ test('resource interface with "Arn"', () => {
   // THEN
   const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
 
-  const ast = AstBuilder.forResource(foundResource, { db });
+  const module = moduleForResource(foundResource, { db });
 
-  const rendered = renderer.render(ast.module);
+  const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
 });
@@ -208,9 +235,9 @@ test('resource interface with "<Resource>Arn"', () => {
   // THEN
   const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Something').only();
 
-  const ast = AstBuilder.forResource(foundResource, { db });
+  const module = moduleForResource(foundResource, { db });
 
-  const rendered = renderer.render(ast.module);
+  const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
 });
@@ -239,9 +266,9 @@ test('resource interface with Arn as a property and not a primaryIdentifier', ()
   // THEN
   const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
 
-  const ast = AstBuilder.forResource(foundResource, { db });
+  const module = moduleForResource(foundResource, { db });
 
-  const rendered = renderer.render(ast.module);
+  const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
 });
@@ -265,9 +292,15 @@ test('resource interface with Arn as primaryIdentifier', () => {
   // THEN
   const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
 
-  const ast = AstBuilder.forResource(foundResource, { db });
+  const module = moduleForResource(foundResource, { db });
 
-  const rendered = renderer.render(ast.module);
+  const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
 });
+
+function moduleForResource(resource: Resource, props: AstBuilderProps) {
+  const ast = new AstBuilder(props);
+  const info = ast.addResource(resource);
+  return info.resourcesMod.module;
+}
