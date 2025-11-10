@@ -8,7 +8,7 @@ queue_rules:
   - name: default-merge
     # batch_size: 1 enables in-place checks (no draft PRs created for testing merges)
     batch_size: 1
-    update_method: rebase
+    update_method: merge
     merge_method: merge
     queue_conditions:
       - -title~=(WIP|wip)
@@ -33,7 +33,7 @@ queue_rules:
   - name: priority-squash
     # batch_size: 1 enables in-place checks (no draft PRs created for testing merges)
     batch_size: 1
-    update_method: rebase
+    update_method: merge
     merge_method: squash
     queue_conditions:
       - base!=release
@@ -58,7 +58,7 @@ queue_rules:
   - name: default-squash
     # batch_size: 1 enables in-place checks (no draft PRs created for testing merges)
     batch_size: 1
-    update_method: rebase
+    update_method: merge
     merge_method: squash
     queue_conditions:
       - base!=release
