@@ -19,7 +19,8 @@
     "composite": true,
     "incremental": true,
     "skipLibCheck": true,
-    "esModuleInterop": false
+    "esModuleInterop": false,
+    "isolatedModules": true
   },
   "include": [
     "**/*.ts",
