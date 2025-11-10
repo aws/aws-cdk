@@ -1,4 +1,3 @@
-import { describe } from 'node:test';
 import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as kms from '../../aws-kms';
@@ -586,7 +585,7 @@ describe('default tests', () => {
     // GIVEN
     const secret = new secretsmanager.Secret(stack, 'Secret');
     const rotationLambda = new lambda.Function(stack, 'Lambda', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       code: lambda.Code.fromInline('export.handler = event => event;'),
       handler: 'index.handler',
     });

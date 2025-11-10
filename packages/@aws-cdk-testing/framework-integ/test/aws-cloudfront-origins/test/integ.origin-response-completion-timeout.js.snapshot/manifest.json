@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fce5ba9671d1ea9abce1ac791616e045bbd5e41cedf0132dabd628463a77f4f2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dd8f533223202a2c89aea4a842197be46644ac48e4756d900e718496781e80fd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,13 +37,27 @@
         "/integ-cloudfront-response-completion-timeout/Function": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
           }
         ],
         "/integ-cloudfront-response-completion-timeout/Function/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
           }
         ],
         "/integ-cloudfront-response-completion-timeout/Function/ServiceRole/ImportServiceRole": [
@@ -67,7 +81,9 @@
         "/integ-cloudfront-response-completion-timeout/Function/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "logGroupName": "*"
+            }
           }
         ],
         "/integ-cloudfront-response-completion-timeout/Function/LogGroup/Resource": [
@@ -79,7 +95,10 @@
         "/integ-cloudfront-response-completion-timeout/Function/FunctionUrl": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "function": "*",
+              "authType": "NONE"
+            }
           }
         ],
         "/integ-cloudfront-response-completion-timeout/Function/FunctionUrl/Resource": [
@@ -94,18 +113,41 @@
             "data": "FunctioninvokefunctionurlA70D8F37"
           }
         ],
+        "/integ-cloudfront-response-completion-timeout/Function/invoke-function": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FunctioninvokefunctionE13A6513"
+          }
+        ],
         "/integ-cloudfront-response-completion-timeout/Distribution": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "defaultBehavior": {
+                "origin": "*"
+              },
+              "additionalBehaviors": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addBehavior": [
+                "*",
+                {},
+                {}
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addBehavior": [
+                "*",
+                {},
+                {}
+              ]
+            }
           }
         ],
         "/integ-cloudfront-response-completion-timeout/Distribution/Resource": [
@@ -657,6 +699,17 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           }
         }
       }
