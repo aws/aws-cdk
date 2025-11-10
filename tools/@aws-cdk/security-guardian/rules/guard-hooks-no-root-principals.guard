@@ -30,7 +30,7 @@ let resources_no_root_principals = Resources.*[
 rule NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS when %resources_no_root_principals !empty {
     %resources_no_root_principals {
         # Check AssumeRolePolicyDocument (IAM Roles)
-        when Properties.PolicyDocument exists {
+        when Properties.AssumeRolePolicyDocument exists {
             Properties.AssumeRolePolicyDocument.Statement[*] {
                 when Effect == "Allow" {
                     when Principal.AWS exists {

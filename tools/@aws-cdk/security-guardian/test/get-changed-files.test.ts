@@ -21,12 +21,22 @@ describe('Changed Files Detection', () => {
     if (fs.existsSync(mockRepoRoot)) fs.rmSync(mockRepoRoot, { recursive: true });
   });
 
-  const mockGitDiffOutput = (output: string) => {
+  const mockGitCommands = (diffOutput: string, showOutput: string = '{}', repoRoot: string = mockRepoRoot) => {
     mockExec.exec.mockImplementation(async (command, args, options) => {
-      if (options?.listeners?.stdout) {
-        options.listeners.stdout(Buffer.from(output));
+      if (command === 'git' && args?.[0] === 'diff' && options?.listeners?.stdout) {
+        options.listeners.stdout(Buffer.from(diffOutput));
       }
       return 0;
+    });
+    
+    mockExec.getExecOutput.mockImplementation(async (command, args) => {
+      if (command === 'git' && args?.[0] === 'rev-parse') {
+        return { exitCode: 0, stdout: repoRoot, stderr: '' };
+      }
+      if (command === 'git' && args?.[0] === 'show') {
+        return { exitCode: 0, stdout: showOutput, stderr: '' };
+      }
+      return { exitCode: 0, stdout: '', stderr: '' };
     });
   };
 
@@ -44,18 +54,13 @@ describe('Changed Files Detection', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockExec.getExecOutput.mockResolvedValue({
-      exitCode: 0,
-      stdout: mockRepoRoot,
-      stderr: ''
-    });
   });
 
   describe('detectChangedTemplates', () => {
     test('should detect and copy changed template files', async () => {
       // Mock git diff output
       const gitDiffOutput = 'M\tpackages/test1.template.json\nA\tpackages/test2.template.json\nM\tother-file.txt';
-      mockGitDiffOutput(gitDiffOutput);
+      mockGitCommands(gitDiffOutput);
 
       // Create actual template files in repo
       const packagesDir = path.join(mockRepoRoot, 'packages');
@@ -89,17 +94,17 @@ describe('Changed Files Detection', () => {
 
     test('should handle missing files gracefully', async () => {
       const gitDiffOutput = 'M\tmissing-file.template.json';
-      mockGitDiffOutput(gitDiffOutput);
+      mockGitCommands(gitDiffOutput, 'file content');
 
       const fileMapping = await detectChangedTemplates('main', 'HEAD', testDir);
 
       verifyGitCommands();
-      expect(fileMapping.size).toBe(0);
+      expect(fileMapping.size).toBe(1);
     });
 
     test('should filter only template.json files', async () => {
       const gitDiffOutput = 'M\tfile1.template.json\nA\tfile2.txt\nM\tfile3.js\nA\tfile4.template.json';
-      mockGitDiffOutput(gitDiffOutput);
+      mockGitCommands(gitDiffOutput);
 
       // Create actual template files
       fs.writeFileSync(path.join(mockRepoRoot, 'file1.template.json'), '{}');
