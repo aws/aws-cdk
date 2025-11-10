@@ -133,21 +133,15 @@ export abstract class AgentBase extends Resource implements IAgent {
    * @returns An EventBridge Rule configured for agent events
    */
   public onEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
-    // Create rule with minimal props and event pattern
-    const rule = new events.Rule(this, id, {
-      description: options.description,
-      eventPattern: {
-        source: ['aws.bedrock'],
-        detail: {
-          'agent-id': [this.agentId],
-        },
+    const rule = new events.Rule(this, id, options);
+    rule.addEventPattern({
+      source: ['aws.bedrock'],
+      detail: {
+        'agent-id': [this.agentId],
       },
     });
 
-    // Add target if provided
-    if (options.target) {
-      rule.addTarget(options.target);
-    }
+    rule.addTarget(options.target);
     return rule;
   }
 
@@ -575,11 +569,8 @@ export class Agent extends AgentBase implements IAgent {
 
     // Add explicit dependency between the agent resource and the agent's role default policy
     // See https://github.com/awslabs/generative-ai-cdk-constructs/issues/899
-    if (!props.existingRole) {
-      // add the appropriate permissions to use the FM
-      const grant = this.foundationModel.grantInvoke(this.role);
-      grant.applyBefore(this.__resource);
-    }
+    const grant = this.foundationModel.grantInvoke(this.role);
+    grant.applyBefore(this.__resource);
 
     this.testAlias = AgentAlias.fromAttributes(this, 'DefaultAlias', {
       aliasId: 'TSTALIASID',
