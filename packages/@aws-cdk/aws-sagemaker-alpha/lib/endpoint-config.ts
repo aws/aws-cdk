@@ -476,7 +476,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     if (this._instanceProductionVariants.length === 0) {
       throw new Error('renderInstanceProductionVariants called but no instance variants are configured');
     }
- 
+
     return this._instanceProductionVariants.map( v => ({
       acceleratorType: v.acceleratorType?.toString(),
       initialInstanceCount: v.initialInstanceCount,
