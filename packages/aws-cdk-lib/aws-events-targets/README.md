@@ -756,9 +756,7 @@ rule.addTarget(new targets.SnsTopic(topic, { authorizeUsingRole: true }));
 Use the `SqsQueue` target to send messages to an SQS Queue.
 
 ```ts
-import * as sqs from 'aws-cdk-lib/aws-sqs';
-
-const queue = new sqs.Queue(this, 'Queue');
+declare const queue: sqs.Queue;
 
 const rule = new events.Rule(this, 'Rule', {
   schedule: events.Schedule.rate(cdk.Duration.hours(1)),
