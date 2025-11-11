@@ -24,7 +24,6 @@ import {
   TruthyOr,
   Type,
   TypeDeclarationStatement,
-  DocsSpec,
 } from '@cdklabs/typewriter';
 import { CDK_CORE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
@@ -39,7 +38,7 @@ import {
   staticRequiredTransform,
   staticResourceTypeName,
 } from '../naming';
-import { splitDocumentation } from '../util';
+import { isDefined, splitDocumentation, maybeDeprecated } from '../util';
 import { findArnProperty } from './reference-props';
 import { SelectiveImport, RelationshipDecider } from './relationship-decider';
 
@@ -638,37 +637,6 @@ export class ResourceClass extends ClassType {
       this.converter.convertTypeDefinitionType(typeDef);
     }
   }
-}
-
-/**
- * Type guard to filter out undefined values.
- */
-function isDefined<T>(x: T | undefined): x is T {
-  return x !== undefined;
-}
-
-/**
- * Compute stability taking into account deprecation status.
- */
-function stability(isDeprecated: boolean = false, defaultStability: Stability = Stability.External): Stability {
-  if (isDeprecated) {
-    return Stability.Deprecated;
-  }
-  return defaultStability;
-}
-
-/**
- * Returns deprecation props if deprecated.
- */
-function maybeDeprecated(deprecationNotice?: string, defaultStability: Stability = Stability.External): Pick<DocsSpec, 'deprecated' | 'stability'> {
-  if (deprecationNotice) {
-    return {
-      deprecated: deprecationNotice,
-      stability: stability(Boolean(deprecationNotice), defaultStability),
-    };
-  }
-
-  return {};
 }
 
 /**

@@ -212,7 +212,7 @@ export class AstBuilder {
     return ret;
   }
 
-  private createResourceModule(moduleName: string, serviceName: string, importLocations?: ModuleImportLocations) {
+  protected createResourceModule(moduleName: string, serviceName: string, importLocations?: ModuleImportLocations) {
     const resourceModule = new Module(`@aws-cdk/${moduleName}/${serviceName}`);
     CDK_CORE.import(resourceModule, 'cdk', { fromLocation: importLocations?.core });
     CONSTRUCTS.import(resourceModule, 'constructs');
