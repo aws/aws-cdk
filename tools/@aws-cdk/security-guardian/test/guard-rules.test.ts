@@ -34,7 +34,7 @@ describe('Guard Rules Validation', () => {
       const errors: string[] = [];
       
       // Run validation with trust_scope_rules.guard
-      const failures = await runCfnGuardValidation(
+      const success = await runCfnGuardValidation(
         outputDir,
         path.join(rulesDir, 'trust_scope_rules.guard'),
         path.join(outputDir, 'trust-scope-test.xml'),
@@ -43,8 +43,8 @@ describe('Guard Rules Validation', () => {
       );
       
       // Should detect broad principals (validation should fail)
-      expect(typeof failures).toBe('boolean');
-      expect(failures).toBe(false);
+      expect(typeof success).toBe('boolean');
+      expect(success).toBe(false);
     });
   });
 
@@ -57,7 +57,7 @@ describe('Guard Rules Validation', () => {
       const errors: string[] = [];
       
       // Run validation with guard-hooks rule
-      const failures = await runCfnGuardValidation(
+      const success = await runCfnGuardValidation(
         outputDir,
         path.join(rulesDir, 'guard-hooks-no-root-principals.guard'),
         path.join(outputDir, 'guard-hooks-test.xml'),
@@ -66,8 +66,8 @@ describe('Guard Rules Validation', () => {
       );
       
       // Should detect violations in non-KMS resources (validation should fail)
-      expect(typeof failures).toBe('boolean');
-      expect(failures).toBe(false);
+      expect(typeof success).toBe('boolean');
+      expect(success).toBe(false);
     });
   });
 
@@ -80,7 +80,7 @@ describe('Guard Rules Validation', () => {
       const errors: string[] = [];
       
       // Run validation with IAM rules
-      const failures = await runCfnGuardValidation(
+      const success = await runCfnGuardValidation(
         outputDir,
         path.join(rulesDir, 'iam.guard'),
         path.join(outputDir, 'iam-test.xml'),
@@ -89,8 +89,8 @@ describe('Guard Rules Validation', () => {
       );
       
       // Should detect IAM violations (validation should fail)
-      expect(typeof failures).toBe('boolean');
-      expect(failures).toBe(false);
+      expect(typeof success).toBe('boolean');
+      expect(success).toBe(false);
     });
   });
 
@@ -103,7 +103,7 @@ describe('Guard Rules Validation', () => {
       const errors: string[] = [];
       
       // Run validation with S3 rules
-      const failures = await runCfnGuardValidation(
+      const success = await runCfnGuardValidation(
         outputDir,
         path.join(rulesDir, 's3.guard'),
         path.join(outputDir, 's3-test.xml'),
@@ -112,8 +112,8 @@ describe('Guard Rules Validation', () => {
       );
       
       // Should detect S3 violations (validation should fail)
-      expect(typeof failures).toBe('boolean');
-      expect(failures).toBe(false);
+      expect(typeof success).toBe('boolean');
+      expect(success).toBe(false);
     });
   });
 
@@ -148,7 +148,7 @@ describe('Guard Rules Validation', () => {
       const errors: string[] = [];
       
       // Run validation with CodePipeline rules
-      const failures = await runCfnGuardValidation(
+      const success = await runCfnGuardValidation(
         outputDir,
         path.join(rulesDir, 'codepipeline.guard'),
         path.join(outputDir, 'codepipeline-test.xml'),
@@ -157,8 +157,8 @@ describe('Guard Rules Validation', () => {
       );
       
       // Should detect CodePipeline violations (validation should fail)
-      expect(typeof failures).toBe('boolean');
-      expect(failures).toBe(false);
+      expect(typeof success).toBe('boolean');
+      expect(success).toBe(false);
     });
   });
 
@@ -167,7 +167,7 @@ describe('Guard Rules Validation', () => {
 
     test('should pass validation with compliant IAM role', async () => {
       // Run validation with trust scope rules on compliant template
-      const failures = await runCfnGuardValidation(
+      const success = await runCfnGuardValidation(
         compliantTemplate,
         path.join(rulesDir, 'trust_scope_rules.guard'),
         path.join(outputDir, 'compliant-trust-test.xml'),
@@ -176,13 +176,13 @@ describe('Guard Rules Validation', () => {
       );
       
       // Should pass validation (no violations found)
-      expect(typeof failures).toBe('boolean');
-      expect(failures).toBe(true);
+      expect(typeof success).toBe('boolean');
+      expect(success).toBe(true);
     });
 
     test('should pass validation with compliant S3 bucket', async () => {
       // Run validation with S3 rules on compliant template
-      const failures = await runCfnGuardValidation(
+      const success = await runCfnGuardValidation(
         compliantTemplate,
         path.join(rulesDir, 's3.guard'),
         path.join(outputDir, 'compliant-s3-test.xml'),
@@ -191,13 +191,13 @@ describe('Guard Rules Validation', () => {
       );
       
       // Should pass validation (encryption enabled)
-      expect(typeof failures).toBe('boolean');
-      expect(failures).toBe(true);
+      expect(typeof success).toBe('boolean');
+      expect(success).toBe(true);
     });
 
     test('should pass validation with compliant EBS volume', async () => {
       // Run validation with EC2 rules on compliant template
-      const failures = await runCfnGuardValidation(
+      const success = await runCfnGuardValidation(
         compliantTemplate,
         path.join(rulesDir, 'ec2.guard'),
         path.join(outputDir, 'compliant-ebs-test.xml'),
@@ -206,8 +206,56 @@ describe('Guard Rules Validation', () => {
       );
       
       // Should pass validation (encryption enabled)
-      expect(typeof failures).toBe('boolean');
-      expect(failures).toBe(true);
+      expect(typeof success).toBe('boolean');
+      expect(success).toBe(true);
+    });
+  });
+
+  describe('XML Post-Processing', () => {
+    test('should correctly post-process XML with file mapping for successful tests', async () => {
+      const fileMapping = new Map([
+        [path.resolve(templatesDir, 'compliant-secure.template.json'), 'packages/compliant-secure.template.json']
+      ]);
+
+      const success = await runCfnGuardValidation(
+        path.join(templatesDir, 'compliant-secure.template.json'),
+        path.join(rulesDir, 'trust_scope_rules.guard'),
+        path.join(outputDir, 'xml-success-test.xml'),
+        'Success Type',
+        fileMapping
+      );
+
+      expect(success).toBe(true);
+      
+      // Verify XML file exists and testsuite name is replaced
+      const xmlContent = fs.readFileSync(path.join(outputDir, 'xml-success-test.xml'), 'utf8');
+      expect(xmlContent).toContain('name="packages/compliant-secure.template.json"');
+      expect(xmlContent).toContain('file="packages/compliant-secure.template.json"');
+    });
+
+    test('should correctly post-process XML with file mapping for failing tests', async () => {
+      // Process templates to create files that will fail validation
+      preprocessTemplates(templatesDir, outputDir);
+      
+      const fileMapping = new Map([
+        [path.resolve(outputDir, 'CMCMK-Stack.template.json'), 'src/CMCMK-Stack.template.json'],
+        [path.resolve(outputDir, 'StagingStack-default-resourcesmax-ACCOUNT-REGION.template.json'), 'src/StagingStack.template.json']
+      ]);
+
+      const success = await runCfnGuardValidation(
+        outputDir,
+        path.join(rulesDir, 'trust_scope_rules.guard'),
+        path.join(outputDir, 'xml-failure-test.xml'),
+        'Failure Type',
+        fileMapping
+      );
+
+      expect(success).toBe(false);
+      
+      // Verify XML file exists, testsuite names are replaced, and contains type suffix in failure messages
+      const xmlContent = fs.readFileSync(path.join(outputDir, 'xml-failure-test.xml'), 'utf8');
+      expect(xmlContent).toContain('name="src/CMCMK-Stack.template.json"');
+      expect(xmlContent).toContain('for Type: Failure Type');
     });
   });
 });
