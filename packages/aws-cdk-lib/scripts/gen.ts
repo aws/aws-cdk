@@ -32,11 +32,12 @@ async function main() {
 async function writeScopeMap(modules: ModuleMap) {
   const newScopeMap = Object.entries(modules)
     .sort(([modA], [modB]) => modA.localeCompare(modB))
-    .reduce((scopeMap, [moduleName, { scopes }]) => {
+    .reduce((scopeMap, [moduleName, { scopes, targets }]) => {
       return {
         ...scopeMap,
         [moduleName]: {
           scopes,
+          targets,
         },
       };
     }, {});

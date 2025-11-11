@@ -4,7 +4,15 @@
       {
         "namespace": "Alexa::ASK"
       }
-    ]
+    ],
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.Alexa.Ask"
+      },
+      "java": {
+        "package": "software.amazon.awscdk.alexa.ask"
+      }
+    }
   },
   "aws-accessanalyzer": {
     "scopes": [
@@ -53,14 +61,24 @@
       {
         "namespace": "AWS::ApiGateway"
       }
-    ]
+    ],
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.APIGateway"
+      }
+    }
   },
   "aws-apigatewayv2": {
     "scopes": [
       {
         "namespace": "AWS::ApiGatewayV2"
       }
-    ]
+    ],
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Apigatewayv2"
+      }
+    }
   },
   "aws-appconfig": {
     "scopes": [
@@ -396,7 +414,12 @@
       {
         "namespace": "AWS::CodeStar"
       }
-    ]
+    ],
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Codestar"
+      }
+    }
   },
   "aws-codestarconnections": {
     "scopes": [
@@ -956,7 +979,12 @@
       {
         "namespace": "AWS::IVS"
       }
-    ]
+    ],
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Ivs"
+      }
+    }
   },
   "aws-ivschat": {
     "scopes": [
@@ -1598,7 +1626,12 @@
       {
         "namespace": "AWS::SageMaker"
       }
-    ]
+    ],
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Sagemaker"
+      }
+    }
   },
   "aws-sam": {
     "scopes": [
@@ -1647,14 +1680,24 @@
       {
         "namespace": "AWS::ServiceCatalog"
       }
-    ]
+    ],
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Servicecatalog"
+      }
+    }
   },
   "aws-servicecatalogappregistry": {
     "scopes": [
       {
         "namespace": "AWS::ServiceCatalogAppRegistry"
       }
-    ]
+    ],
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Servicecatalogappregistry"
+      }
+    }
   },
   "aws-servicediscovery": {
     "scopes": [
@@ -1829,7 +1872,12 @@
       {
         "namespace": "AWS::WAFRegional"
       }
-    ]
+    ],
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.waf.regional"
+      }
+    }
   },
   "aws-wafv2": {
     "scopes": [

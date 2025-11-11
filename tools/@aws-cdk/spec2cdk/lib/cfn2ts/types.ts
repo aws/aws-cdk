@@ -58,6 +58,7 @@ export interface ModuleMapEntry {
   name: string;
   definition?: pkglint.ModuleDefinition;
   scopes: ModuleMapScope[];
+  targets?: object;
   resources: Record<string, string>;
   files: string[];
 }
