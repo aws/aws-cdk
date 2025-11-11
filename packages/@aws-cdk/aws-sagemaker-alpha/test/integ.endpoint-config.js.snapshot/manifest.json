@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e782c46ff9c6f2581c48d8a1310484e655f0359928aa279246e5185aef7da0a0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/845f10dfc92f43ee26cf434b62a60ce08042970ec17aa2dbd95fbdc3927491d2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -661,6 +661,30 @@
             "data": "BoundaryServerlessEndpointConfig0B181608"
           }
         ],
+        "/aws-cdk-sagemaker-endpointconfig/Exports/Output{\"Fn::GetAtt\":[\"EndpointConfigFD7B6F91\",\"EndpointConfigName\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttEndpointConfigFD7B6F91EndpointConfigName60C5B163"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpointconfig/Exports/Output{\"Fn::GetAtt\":[\"ServerlessEndpointConfig0EF1560E\",\"EndpointConfigName\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttServerlessEndpointConfig0EF1560EEndpointConfigNameA7681BAF"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpointconfig/Exports/Output{\"Fn::GetAtt\":[\"MinimalServerlessEndpointConfig68CC9C3F\",\"EndpointConfigName\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttMinimalServerlessEndpointConfig68CC9C3FEndpointConfigName452A76B6"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpointconfig/Exports/Output{\"Fn::GetAtt\":[\"BoundaryServerlessEndpointConfig0B181608\",\"EndpointConfigName\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttBoundaryServerlessEndpointConfig0B181608EndpointConfigName73B652E2"
+          }
+        ],
         "/aws-cdk-sagemaker-endpointconfig/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -693,7 +717,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7175e8811f304bdb466f11fcf184961b381009aa252c77c5e355d79f0cfeef26.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -706,9 +730,126 @@
         }
       },
       "dependencies": [
+        "aws-cdk-sagemaker-endpointconfig",
         "integtestendpointconfigDefaultTestDeployAssert8D52A281.assets"
       ],
       "metadata": {
+        "/integtest-endpointconfig/DefaultTest/DeployAssert/AwsApiCallSageMakerdescribeEndpointConfig85cfb66e16c886f31ee99165c99b74e3/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/integtest-endpointconfig/DefaultTest/DeployAssert/AwsApiCallSageMakerdescribeEndpointConfig85cfb66e16c886f31ee99165c99b74e3/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSageMakerdescribeEndpointConfig85cfb66e16c886f31ee99165c99b74e3"
+          }
+        ],
+        "/integtest-endpointconfig/DefaultTest/DeployAssert/AwsApiCallSageMakerdescribeEndpointConfig85cfb66e16c886f31ee99165c99b74e3/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSageMakerdescribeEndpointConfig85cfb66e16c886f31ee99165c99b74e3"
+          }
+        ],
+        "/integtest-endpointconfig/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/integtest-endpointconfig/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integtest-endpointconfig/DefaultTest/DeployAssert/AwsApiCallSageMakerdescribeEndpointConfiga4c99564679fb9855e8f6e53461dc4d9/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/integtest-endpointconfig/DefaultTest/DeployAssert/AwsApiCallSageMakerdescribeEndpointConfiga4c99564679fb9855e8f6e53461dc4d9/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSageMakerdescribeEndpointConfiga4c99564679fb9855e8f6e53461dc4d9"
+          }
+        ],
+        "/integtest-endpointconfig/DefaultTest/DeployAssert/AwsApiCallSageMakerdescribeEndpointConfiga4c99564679fb9855e8f6e53461dc4d9/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSageMakerdescribeEndpointConfiga4c99564679fb9855e8f6e53461dc4d9"
+          }
+        ],
+        "/integtest-endpointconfig/DefaultTest/DeployAssert/AwsApiCallSageMakerdescribeEndpointConfig01ece59ff886ccf2cc101f0647d7cc47/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/integtest-endpointconfig/DefaultTest/DeployAssert/AwsApiCallSageMakerdescribeEndpointConfig01ece59ff886ccf2cc101f0647d7cc47/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSageMakerdescribeEndpointConfig01ece59ff886ccf2cc101f0647d7cc47"
+          }
+        ],
+        "/integtest-endpointconfig/DefaultTest/DeployAssert/AwsApiCallSageMakerdescribeEndpointConfig01ece59ff886ccf2cc101f0647d7cc47/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSageMakerdescribeEndpointConfig01ece59ff886ccf2cc101f0647d7cc47"
+          }
+        ],
+        "/integtest-endpointconfig/DefaultTest/DeployAssert/AwsApiCallSageMakerdescribeEndpointConfig70378e839b9e4bfe43cb1ee1bfe5224f/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/integtest-endpointconfig/DefaultTest/DeployAssert/AwsApiCallSageMakerdescribeEndpointConfig70378e839b9e4bfe43cb1ee1bfe5224f/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSageMakerdescribeEndpointConfig70378e839b9e4bfe43cb1ee1bfe5224f"
+          }
+        ],
+        "/integtest-endpointconfig/DefaultTest/DeployAssert/AwsApiCallSageMakerdescribeEndpointConfig70378e839b9e4bfe43cb1ee1bfe5224f/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSageMakerdescribeEndpointConfig70378e839b9e4bfe43cb1ee1bfe5224f"
+          }
+        ],
         "/integtest-endpointconfig/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -865,7 +1006,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -1204,6 +1345,21 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           }
         }
       }
