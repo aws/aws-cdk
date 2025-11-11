@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "48.0.0",
   "testCases": {
     "SNSTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "SNSTest/DefaultTest/DeployAssert",
       "assertionStackName": "SNSTestDefaultTestDeployAssert607DA316"
     }
-  }
+  },
+  "minimumCliVersion": "2.1027.0"
 }
