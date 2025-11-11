@@ -6,7 +6,6 @@ import {
   Block,
   ClassType,
   code,
-  DocsSpec,
   DummyScope,
   expr,
   Expression,
