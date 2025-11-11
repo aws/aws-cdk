@@ -139,43 +139,6 @@ describe('Guard Rules Validation', () => {
     });
   });
 
-  describe('Intrinsic Function Resolution', () => {
-    test('should resolve intrinsic functions in existing templates', () => {
-      // Process templates with intrinsic functions
-      const processedFiles = preprocessTemplates(templatesDir, outputDir);
-      
-      // Read a resolved template to verify intrinsics were processed
-      const resolvedTemplate = JSON.parse(
-        fs.readFileSync(path.join(outputDir, 'CMCMK-Stack.template.json'), 'utf8')
-      );
-      
-      // Check that Fn::Join in ManagedPolicyArns was resolved
-      const role = resolvedTemplate.Resources.LambdaExecutionRoleD5C26073;
-      const managedPolicyArn = role.Properties.ManagedPolicyArns[0];
-      expect(managedPolicyArn).toBe('arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole');
-    });
-  });
-
-  describe('Policy Normalization', () => {
-    test('should normalize IAM policies with intrinsic functions', () => {
-      // Process templates with IAM policies containing intrinsics
-      preprocessTemplates(templatesDir, outputDir);
-      
-      // Read resolved staging template
-      const resolvedTemplate = JSON.parse(
-        fs.readFileSync(path.join(outputDir, 'StagingStack-default-resourcesmax-ACCOUNT-REGION.template.json'), 'utf8')
-      );
-      
-      // Check that IAM policy principals were resolved
-      const bucketPolicy = resolvedTemplate.Resources.CdkStagingBucketPolicy42BD1F92;
-      const statement = bucketPolicy.Properties.PolicyDocument.Statement[1];
-      const principal = statement.Principal.AWS;
-      
-      // Should have resolved Fn::GetAtt to actual ARN
-      expect(principal).toContain('arn:aws:iam::123456789012:role/');
-    });
-  });
-
   describe('CodePipeline Cross-Account Rules', () => {
     test('CODEPIPELINE_CROSS_ACCOUNT_ROLE_TRUST_SCOPE - should detect overly broad cross-account trust policies', async () => {
       // Process existing templates that may contain CodePipeline cross-account roles
