@@ -5,9 +5,10 @@ import { Module } from '@cdklabs/typewriter';
 import { AugmentationsModule } from './augmentation-generator';
 import { CannedMetricsModule } from './canned-metrics';
 import { CDK_CORE, CONSTRUCTS } from './cdk';
+import { EventBridgeEventsClass } from './eventbridge-events';
 import { SelectiveImport } from './relationship-decider';
 import { ResourceClass } from './resource-class';
-import { submoduleSymbolFromName } from '../naming/conventions';
+import { referenceInterfaceName, submoduleSymbolFromName } from '../naming/conventions';
 import { FilePatternValues, IWriter, substituteFilePattern } from '../util';
 import { directCodeStmt } from '../util/typewriter-helpers';
 
@@ -71,6 +72,11 @@ export interface GenerateFilePatterns {
    * The pattern used to name the interfaces file
    */
   readonly interfaces: string;
+
+  /**
+   * The pattern used to name the eventBridge events file
+   */
+  readonly eventBridgeEvents: string;
 }
 
 export function makePaths(patterns: GenerateFilePatterns, values: FilePatternValues): { [k in keyof GenerateFilePatterns]: string } {
@@ -84,6 +90,7 @@ export const DEFAULT_FILE_PATTERNS: GenerateFilePatterns = {
   cannedMetrics: '%moduleName%/%serviceShortName%-canned-metrics.generated.ts',
   interfacesEntry: 'interfaces/index.ts',
   interfaces: 'interfaces/%serviceName%-interfaces.generated.ts',
+  eventBridgeEvents: 'events/%serviceName%-events.generated.ts',
 };
 
 /**
@@ -209,6 +216,23 @@ export class AstBuilder {
 
     this.addImports(submodule, resourceClass);
     submodule.augmentations.module.augmentResource(resource, resourceClass);
+
+    const refInterfaceName = referenceInterfaceName(resource.name);
+    const refInterfaceType = submodule.interfaces.module.tryFindType(
+      submodule.interfaces.module.qualifyName(refInterfaceName),
+    )!.type;
+
+    const eventsClass = EventBridgeEventsClass.create(
+      submodule.eventBridgeEvents.module,
+      this.db,
+      resource,
+      refInterfaceType,
+      submodule.interfaces.module,
+      relativeImportPath(submodule.eventBridgeEvents, submodule.interfaces),
+    );
+    if (eventsClass) {
+      eventsClass.build();
+    }
   }
 
   private addImports(submodule: ServiceSubmodule, resourceClass: ResourceClass) {
@@ -271,6 +295,7 @@ export class AstBuilder {
     const augmentations = this.rememberModule(this.createAugmentationsModule(submoduleName, service));
     const cannedMetrics = this.rememberModule(this.createCannedMetricsModule(submoduleName, service));
     const [interfaces, didCreateInterfaceModule] = this.obtainInterfaceModule(service);
+    const [eventBridgeEvents, didCreateEventsModule] = this.obtainEventsModule(service);
 
     const ret: ServiceSubmodule = {
       service,
@@ -279,7 +304,9 @@ export class AstBuilder {
       augmentations,
       cannedMetrics,
       interfaces,
+      eventBridgeEvents,
       didCreateInterfaceModule,
+      didCreateEventsModule,
       selectiveImports: [],
       resources: {},
     };
@@ -299,6 +326,17 @@ export class AstBuilder {
     return this.modules.has(filePath)
       ? [{ module: this.modules.get(filePath)!, filePath }, false]
       : [this.rememberModule(this.createInterfaceModule(service)), true];
+  }
+
+  /**
+   * Create or find the module where we should add the events for these resources
+   */
+  private obtainEventsModule(service: Service): [LocatedModule<Module>, boolean] {
+    const filePath = this.pathsFor('$UNUSED$', service).eventBridgeEvents;
+
+    return this.modules.has(filePath)
+      ? [{ module: this.modules.get(filePath)!, filePath }, false]
+      : [this.rememberModule(this.createEventsModule('$UNUSED$', service)), true];
   }
 
   private createInterfaceModule(service: Service): LocatedModule<Module> {
@@ -340,6 +378,14 @@ export class AstBuilder {
       module: CannedMetricsModule.forService(this.db, service),
       filePath,
     };
+  }
+
+  private createEventsModule(_moduleName: string, service: Service): LocatedModule<Module> {
+    const filePath = this.pathsFor('$UNUSED$', service).eventBridgeEvents;
+    const imports = this.resolveImportPaths(filePath);
+    const module = new Module(`@aws-cdk/events/${service.name}`);
+    CDK_CORE.import(module, 'cdk', { fromLocation: imports.core });
+    return { module, filePath };
   }
 
   public module(key: string) {
@@ -401,8 +447,10 @@ export interface ServiceSubmodule {
   readonly augmentations: LocatedModule<AugmentationsModule>;
   readonly cannedMetrics: LocatedModule<CannedMetricsModule>;
   readonly interfaces: LocatedModule<Module>;
+  readonly eventBridgeEvents: LocatedModule<Module>;
 
   readonly didCreateInterfaceModule: boolean;
+  readonly didCreateEventsModule: boolean;
   readonly selectiveImports: Array<SelectiveImport>;
 
   /**
