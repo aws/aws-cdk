@@ -207,12 +207,12 @@ export class AstBuilder {
 
     resourceClass.build();
 
-    this.addImports(submodule, resourceClass);
+    this.addSelectiveImports(submodule, resourceClass.imports);
     submodule.augmentations.module.augmentResource(resource, resourceClass);
   }
 
-  private addImports(submodule: ServiceSubmodule, resourceClass: ResourceClass) {
-    for (const selectiveImport of resourceClass.imports) {
+  private addSelectiveImports(submodule: ServiceSubmodule, imports: SelectiveImport[]) {
+    for (const selectiveImport of imports) {
       const existingModuleImport = submodule.selectiveImports.find(
         (imp) => imp.moduleName === selectiveImport.moduleName,
       );
@@ -320,12 +320,16 @@ export class AstBuilder {
 
     const module = new Module(`@aws-cdk/${moduleName}/${service.name}`);
 
-    CDK_CORE.import(module, 'cdk', { fromLocation: imports.core });
-    CONSTRUCTS.import(module, 'constructs');
-    CDK_CORE.helpers.import(module, 'cfn_parse', { fromLocation: imports.coreHelpers });
-    CDK_CORE.errors.import(module, 'cdk_errors', { fromLocation: imports.coreErrors });
+    this.addImports(module, imports);
 
     return { module, filePath };
+  }
+
+  protected addImports(targetModule: Module, imports: ImportPaths) {
+    CDK_CORE.import(targetModule, 'cdk', { fromLocation: imports.core });
+    CONSTRUCTS.import(targetModule, 'constructs');
+    CDK_CORE.helpers.import(targetModule, 'cfn_parse', { fromLocation: imports.coreHelpers });
+    CDK_CORE.errors.import(targetModule, 'cdk_errors', { fromLocation: imports.coreErrors });
   }
 
   private createAugmentationsModule(moduleName: string, service: Service): LocatedModule<AugmentationsModule> {

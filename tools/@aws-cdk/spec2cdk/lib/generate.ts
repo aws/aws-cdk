@@ -98,6 +98,14 @@ export interface GeneratedServiceInfo {
  */
 export async function generate(modules: GenerateModuleMap, options: GenerateOptions) {
   enableDebug(options);
+  const db = await loadPatchedSpec();
+  return generator(db, modules, options);
+}
+
+/**
+ * Load the service spec with patched schema files.
+ */
+export async function loadPatchedSpec() {
   const db = await loadAwsServiceSpec();
 
   // Load additional schema files
@@ -105,7 +113,7 @@ export async function generate(modules: GenerateModuleMap, options: GenerateOpti
     .importCloudFormationRegistryResources(path.join(__dirname, '..', 'temporary-schemas'))
     .build();
 
-  return generator(db, modules, options);
+  return db;
 }
 
 /**
