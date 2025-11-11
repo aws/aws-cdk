@@ -109,8 +109,8 @@ Flags come in three types:
 | [@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener](#aws-cdkaws-ecs-patternssecgroupsdisablesimplicitopenlistener) | Disable implicit openListener when custom security groups are provided | 2.214.0 | new default |
 | [@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId](#aws-cdkaws-ecs-patternsuniquetargetgroupid) | When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement | 2.221.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | 2.221.0 | fix |
+| [@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault](#aws-cdkaws-elasticloadbalancingv2networkloadbalancerwithsecuritygroupbydefault) | When enabled, Network Load Balancer will be created with a security group by default. | 2.222.0 | new default |
 | [@aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault](#aws-cdkaws-cloudfront-originsfunctionurlorigindualstackdefault) | Default Lambda Function URL origins to dual-stack IPv4/IPv6 | V2NEXT | new default |
-| [@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault](#aws-cdkaws-elasticloadbalancingv2networkloadbalancerwithsecuritygroupbydefault) | When enabled, Network Load Balancer will be created with a security group by default. | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -2358,7 +2358,7 @@ When this feature flag is enabled, Network Load Balancer will be created with a 
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.222.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to create Network Load Balancer without a security group by default.
 
