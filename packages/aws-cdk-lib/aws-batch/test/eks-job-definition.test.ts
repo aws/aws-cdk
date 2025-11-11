@@ -81,3 +81,22 @@ test('can be imported from ARN', () => {
   expect(importedJob.jobDefinitionArn).toEqual('arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
 });
 
+test.each([true, false])('set skipDeregisterOnUpdate property %s', (skipDeregisterOnUpdate) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new EksJobDefinition(stack, 'EKSJobDefnWithSkip', {
+    skipDeregisterOnUpdate,
+    container: new EksContainerDefinition(stack, 'EksContainer', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+    ResourceRetentionPolicy: {
+      SkipDeregisterOnUpdate: skipDeregisterOnUpdate,
+    },
+  });
+});
