@@ -1430,6 +1430,38 @@ test.each([
   });
 });
 
+describe('ML-DSA', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+  });
+
+  test.each([
+    [KeySpec.ML_DSA_44, 'ML_DSA_44'],
+    [KeySpec.ML_DSA_65, 'ML_DSA_65'],
+    [KeySpec.ML_DSA_87, 'ML_DSA_87'],
+  ])('%s is not valid for default usage', (keySpec: KeySpec) => {
+    expect(() => new kms.Key(stack, 'Key1', { keySpec }))
+      .toThrow(`key spec '${keySpec}' is not valid with usage 'ENCRYPT_DECRYPT'`);
+  });
+
+  test.each([
+    [KeySpec.ML_DSA_44, 'ML_DSA_44'],
+    [KeySpec.ML_DSA_65, 'ML_DSA_65'],
+    [KeySpec.ML_DSA_87, 'ML_DSA_87'],
+  ])('%s can be used for KMS key creation', (keySpec: KeySpec, expected: string) => {
+    new kms.Key(stack, 'Key', {
+      keySpec,
+      keyUsage: KeyUsage.SIGN_VERIFY,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeySpec: expected,
+      KeyUsage: 'SIGN_VERIFY',
+    });
+  });
+});
+
 function generateInvalidKeySpecKeyUsageCombinations() {
   // Copied from Key class
   const denyLists = {
