@@ -62,7 +62,7 @@ async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {
           package: submodule.definition.javaPackage,
         },
         dotnet: {
-          package: submodule.definition.dotnetPackage,
+          namespace: submodule.definition.dotnetPackage,
         },
         python: {
           module: submodule.definition.pythonModuleName,
