@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
 import { DatabaseBuilder } from '@aws-cdk/service-spec-importers';
-import { SpecDatabase } from '@aws-cdk/service-spec-types';
+import { Service, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { AstBuilder, DEFAULT_FILE_PATTERNS, GenerateFilePatterns, submoduleFiles } from './cdk/ast';
@@ -91,16 +91,19 @@ export interface GenerateModuleMap {
   [name: string]: GenerateModuleOptions;
 }
 
+export interface GenerateOutputModule {
+  module: Module;
+  service: Service;
+  options: GenerateModuleOptions;
+  resources: Record<string, string>;
+  outputFiles: string[];
+}
+
 export interface GenerateOutput {
   outputFiles: string[];
   resources: Record<string, string>;
   modules: {
-    [name: string]: Array<{
-      module: Module;
-      options: GenerateModuleOptions;
-      resources: Record<string, string>;
-      outputFiles: string[];
-    }>;
+    [name: string]: [GenerateOutputModule, ...GenerateOutputModule[]];
   };
 }
 
@@ -112,6 +115,14 @@ export interface GenerateOutput {
  */
 export async function generate(modules: GenerateModuleMap, options: GenerateOptions) {
   enableDebug(options);
+  const db = await loadPatchedSpec();
+  return generator(db, modules, options);
+}
+
+/**
+ * Load the service spec with patched schema files.
+ */
+export async function loadPatchedSpec() {
   const db = await loadAwsServiceSpec();
 
   // Load additional schema files
@@ -119,7 +130,7 @@ export async function generate(modules: GenerateModuleMap, options: GenerateOpti
     .importCloudFormationRegistryResources(path.join(__dirname, '..', 'temporary-schemas'))
     .build();
 
-  return generator(db, modules, options);
+  return db;
 }
 
 /**
@@ -184,7 +195,7 @@ async function generator(
   for (const [moduleName, moduleOptions] of Object.entries(modules)) {
     const services = queryDb.getServicesByGenerateServiceRequest(db, moduleOptions.services);
 
-    moduleMap[moduleName] = services.map(([req, s]) => {
+    const serviceModules = services.map(([req, s]): GenerateOutputModule => {
       log.debug(moduleName, s.name, 'ast');
 
       const submod = ast.addService(s, {
@@ -196,11 +207,16 @@ async function generator(
 
       return {
         module: submod.resourcesMod.module,
+        service: s,
         options: moduleOptions,
         resources: submod.resources,
         outputFiles: submoduleFiles(submod).map((x) => path.resolve(x)),
-      } satisfies GenerateOutput['modules'][string][number];
+      } satisfies GenerateOutputModule;
     });
+
+    if (isNonEmptyList(serviceModules)) {
+      moduleMap[moduleName] = serviceModules;
+    }
   }
 
   const writer = new TsFileWriter(outputPath, renderer);
@@ -239,4 +255,8 @@ function noUndefined<A extends object>(x: A | undefined): A | undefined {
     return undefined;
   }
   return Object.fromEntries(Object.entries(x).filter(([, v]) => v !== undefined)) as any;
+}
+
+function isNonEmptyList<T>(arr: T[]): arr is [T, ...T[]] {
+  return arr.length > 0;
 }
