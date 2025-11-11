@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "evaluate-expression-nodejs22.assets": {
+    "aws-cdk-sfn-evaluate-expression-default-arch-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "evaluate-expression-nodejs22.assets.json",
+        "file": "aws-cdk-sfn-evaluate-expression-default-arch-integ.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "evaluate-expression-nodejs22": {
+    "aws-cdk-sfn-evaluate-expression-default-arch-integ": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "evaluate-expression-nodejs22.template.json",
+        "templateFile": "aws-cdk-sfn-evaluate-expression-default-arch-integ.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c5164ccfa069cfa49003acfb6fe3d40ba28c968ba56b2a0de4a8da687be8f41a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f9d40feaa817d6d1ddea4c751661d2ec663dedfe0cb126688c07bcdf288ee742.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "evaluate-expression-nodejs22.assets"
+          "aws-cdk-sfn-evaluate-expression-default-arch-integ.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,10 +31,10 @@
         }
       },
       "dependencies": [
-        "evaluate-expression-nodejs22.assets"
+        "aws-cdk-sfn-evaluate-expression-default-arch-integ.assets"
       ],
       "metadata": {
-        "/evaluate-expression-nodejs22/Task/EvalFunction": [
+        "/aws-cdk-sfn-evaluate-expression-default-arch-integ/EvaluateExpression/EvalFunction": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -65,7 +65,7 @@
             }
           }
         ],
-        "/evaluate-expression-nodejs22/Evalb64e1fb89c894f7d8a342e2a1c5f6d7e": [
+        "/aws-cdk-sfn-evaluate-expression-default-arch-integ/Eval41256dc5445742738ed917bc818694e5": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -84,7 +84,7 @@
             "data": 0
           }
         ],
-        "/evaluate-expression-nodejs22/Evalb64e1fb89c894f7d8a342e2a1c5f6d7e/ServiceRole": [
+        "/aws-cdk-sfn-evaluate-expression-default-arch-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -100,25 +100,25 @@
             }
           }
         ],
-        "/evaluate-expression-nodejs22/Evalb64e1fb89c894f7d8a342e2a1c5f6d7e/ServiceRole/ImportServiceRole": [
+        "/aws-cdk-sfn-evaluate-expression-default-arch-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/evaluate-expression-nodejs22/Evalb64e1fb89c894f7d8a342e2a1c5f6d7e/ServiceRole/Resource": [
+        "/aws-cdk-sfn-evaluate-expression-default-arch-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Evalb64e1fb89c894f7d8a342e2a1c5f6d7eServiceRole544E6136"
+            "data": "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027"
           }
         ],
-        "/evaluate-expression-nodejs22/Evalb64e1fb89c894f7d8a342e2a1c5f6d7e/Resource": [
+        "/aws-cdk-sfn-evaluate-expression-default-arch-integ/Eval41256dc5445742738ed917bc818694e5/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Evalb64e1fb89c894f7d8a342e2a1c5f6d7e3682A325"
+            "data": "Eval41256dc5445742738ed917bc818694e54EB1134F"
           }
         ],
-        "/evaluate-expression-nodejs22/Evalb64e1fb89c894f7d8a342e2a1c5f6d7e/LogGroup": [
+        "/aws-cdk-sfn-evaluate-expression-default-arch-integ/Eval41256dc5445742738ed917bc818694e5/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -126,17 +126,18 @@
             }
           }
         ],
-        "/evaluate-expression-nodejs22/Evalb64e1fb89c894f7d8a342e2a1c5f6d7e/LogGroup/Resource": [
+        "/aws-cdk-sfn-evaluate-expression-default-arch-integ/Eval41256dc5445742738ed917bc818694e5/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Evalb64e1fb89c894f7d8a342e2a1c5f6d7eLogGroup529D8984"
+            "data": "Eval41256dc5445742738ed917bc818694e5LogGroup308B9405"
           }
         ],
-        "/evaluate-expression-nodejs22/StateMachine": [
+        "/aws-cdk-sfn-evaluate-expression-default-arch-integ/StateMachine": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "definition": "*"
+              "definitionBody": "*",
+              "timeout": "*"
             }
           },
           {
@@ -148,7 +149,7 @@
             }
           }
         ],
-        "/evaluate-expression-nodejs22/StateMachine/Role": [
+        "/aws-cdk-sfn-evaluate-expression-default-arch-integ/StateMachine/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -183,19 +184,19 @@
             }
           }
         ],
-        "/evaluate-expression-nodejs22/StateMachine/Role/ImportRole": [
+        "/aws-cdk-sfn-evaluate-expression-default-arch-integ/StateMachine/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/evaluate-expression-nodejs22/StateMachine/Role/Resource": [
+        "/aws-cdk-sfn-evaluate-expression-default-arch-integ/StateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StateMachineRoleB840431D"
           }
         ],
-        "/evaluate-expression-nodejs22/StateMachine/Role/DefaultPolicy": [
+        "/aws-cdk-sfn-evaluate-expression-default-arch-integ/StateMachine/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -225,46 +226,52 @@
             }
           }
         ],
-        "/evaluate-expression-nodejs22/StateMachine/Role/DefaultPolicy/Resource": [
+        "/aws-cdk-sfn-evaluate-expression-default-arch-integ/StateMachine/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StateMachineRoleDefaultPolicyDF1E6607"
           }
         ],
-        "/evaluate-expression-nodejs22/StateMachine/Resource": [
+        "/aws-cdk-sfn-evaluate-expression-default-arch-integ/StateMachine/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "StateMachine2E01A3A5"
           }
         ],
-        "/evaluate-expression-nodejs22/BootstrapVersion": [
+        "/aws-cdk-sfn-evaluate-expression-default-arch-integ/stateMachineArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "stateMachineArn"
+          }
+        ],
+        "/aws-cdk-sfn-evaluate-expression-default-arch-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/evaluate-expression-nodejs22/CheckBootstrapVersion": [
+        "/aws-cdk-sfn-evaluate-expression-default-arch-integ/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "evaluate-expression-nodejs22"
+      "displayName": "aws-cdk-sfn-evaluate-expression-default-arch-integ"
     },
-    "EvaluateExpressionNodejs22DefaultTestDeployAssert27FE8CA6.assets": {
+    "EvaluateExpressionDefaultArchTestDefaultTestDeployAssert7D82EB80.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "EvaluateExpressionNodejs22DefaultTestDeployAssert27FE8CA6.assets.json",
+        "file": "EvaluateExpressionDefaultArchTestDefaultTestDeployAssert7D82EB80.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "EvaluateExpressionNodejs22DefaultTestDeployAssert27FE8CA6": {
+    "EvaluateExpressionDefaultArchTestDefaultTestDeployAssert7D82EB80": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "EvaluateExpressionNodejs22DefaultTestDeployAssert27FE8CA6.template.json",
+        "templateFile": "EvaluateExpressionDefaultArchTestDefaultTestDeployAssert7D82EB80.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -273,7 +280,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "EvaluateExpressionNodejs22DefaultTestDeployAssert27FE8CA6.assets"
+          "EvaluateExpressionDefaultArchTestDefaultTestDeployAssert7D82EB80.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -282,23 +289,23 @@
         }
       },
       "dependencies": [
-        "EvaluateExpressionNodejs22DefaultTestDeployAssert27FE8CA6.assets"
+        "EvaluateExpressionDefaultArchTestDefaultTestDeployAssert7D82EB80.assets"
       ],
       "metadata": {
-        "/EvaluateExpressionNodejs22/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/EvaluateExpressionDefaultArchTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/EvaluateExpressionNodejs22/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/EvaluateExpressionDefaultArchTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "EvaluateExpressionNodejs22/DefaultTest/DeployAssert"
+      "displayName": "EvaluateExpressionDefaultArchTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -780,6 +787,17 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           }
         }
       }
