@@ -124,6 +124,16 @@ export interface JobDefinitionProps {
    * @default - no timeout
    */
   readonly timeout?: Duration;
+
+  /**
+   * Specifies whether the previous revision of the job definition is retained in an active status after UPDATE events for the resource.
+   *
+   * When the property is set to false, the previous revision of the job definition is de-registered after a new revision is created.
+   * When the property is set to true, the previous revision of the job definition is not de-registered.
+   *
+   * @default undefined - AWS Batch default is false
+   */
+  readonly skipDeregisterOnUpdate?: boolean;
 }
 
 /**
@@ -243,6 +253,7 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
   public readonly retryStrategies: RetryStrategy[];
   public readonly schedulingPriority?: number;
   public readonly timeout?: Duration;
+  public readonly skipDeregisterOnUpdate?: boolean;
 
   constructor(scope: Construct, id: string, props?: JobDefinitionProps) {
     super(scope, id, {
@@ -254,6 +265,7 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
     this.retryStrategies = props?.retryStrategies ?? [];
     this.schedulingPriority = props?.schedulingPriority;
     this.timeout = props?.timeout;
+    this.skipDeregisterOnUpdate = props?.skipDeregisterOnUpdate;
   }
 
   addRetryStrategy(strategy: RetryStrategy): void {
@@ -288,5 +300,8 @@ export function baseJobDefinitionProperties(baseJobDefinition: JobDefinitionBase
       attemptDurationSeconds: baseJobDefinition.timeout?.toSeconds(),
     },
     type: 'dummy',
+    resourceRetentionPolicy: baseJobDefinition.skipDeregisterOnUpdate !== undefined ? {
+      skipDeregisterOnUpdate: baseJobDefinition.skipDeregisterOnUpdate,
+    } : undefined,
   };
 }

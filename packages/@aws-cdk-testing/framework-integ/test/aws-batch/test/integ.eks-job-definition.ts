@@ -51,10 +51,9 @@ new batch.EksJobDefinition(stack, 'EksJobDefn', {
       }),
     ],
   }),
+  skipDeregisterOnUpdate: true,
 });
 
 new integ.IntegTest(app, 'BatchEcsJobDefinitionTest', {
   testCases: [stack],
 });
-
-app.synth();
