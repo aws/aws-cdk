@@ -1,4 +1,4 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 
 /**
  * A mixin is a reusable piece of functionality that can be applied to constructs
