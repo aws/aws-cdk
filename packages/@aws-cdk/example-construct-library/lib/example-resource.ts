@@ -201,11 +201,7 @@ abstract class ExampleResourceBase extends Resource implements IExampleResource 
    * as it simplifies the implementation code (less branching).
    */
   public onEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
-    const rule = new events.Rule(this, id, {
-      description: options.description,
-      ruleName: options.ruleName,
-      crossStackScope: options.crossStackScope,
-    });
+    const rule = new events.Rule(this, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({
       // obviously, you would put your resource-specific values here
