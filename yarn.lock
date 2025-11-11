@@ -3530,14 +3530,6 @@
     chalk "^4.1.2"
     semver "^7.7.2"
 
-"@jsii/check-node@1.116.0":
-  version "1.116.0"
-  resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.116.0.tgz#f4db6461511f60232aa02bfaf46bd607da49bbae"
-  integrity sha512-Avk6AKggZJcWpDLGH8lb5duyfGIVHCmmeglM3LfmQvKU/zumbRfeg4LvUXGqJflnRB7GAbzbx8iDNo8FMjIWjg==
-  dependencies:
-    chalk "^4.1.2"
-    semver "^7.7.2"
-
 "@jsii/check-node@1.118.0":
   version "1.118.0"
   resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.118.0.tgz#0be4fef43c7058764e3b4d146c6fbc80306de6bd"
@@ -3565,13 +3557,6 @@
   version "1.115.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.115.0.tgz#be0818bd31509687cb6445873d1ec65e8d24bd24"
   integrity sha512-qnicuByM0G5L6ZF2yO/e5cHwT6pb5E0aUvgHBycFPHBkgf5yjtvm+Wtk6q61srNuRASYI25BiTOonyABNeRjlw==
-  dependencies:
-    ajv "^8.17.1"
-
-"@jsii/spec@1.116.0":
-  version "1.116.0"
-  resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.116.0.tgz#8da502da897f15b46ac969033cea5cbee4738f43"
-  integrity sha512-BqsOMsE7Md6EwaLammXeCOi20GlsA4lAawIrPN0jHeFjZnEqUsiWRXZw+9EG3lTImW9QLVN1cF9kbQ3t3vAXeQ==
   dependencies:
     ajv "^8.17.1"
 
@@ -10144,18 +10129,6 @@ jsii-pacmak@1.119.0:
     xmlbuilder "^15.1.1"
     yargs "^17.7.2"
 
-jsii-reflect@1.116.0:
-  version "1.116.0"
-  resolved "https://registry.npmjs.org/jsii-reflect/-/jsii-reflect-1.116.0.tgz#2dda056b311b9b7eed49ac27c45743f64f0057d7"
-  integrity sha512-ZIHznFUMHQinqNLu48JibrnB0O0EeINCUgtkgV+SqEN7wsM1kxT3SBLHEbCQqPzB5ZsQzrdl9JW1vMi14/YqGA==
-  dependencies:
-    "@jsii/check-node" "1.116.0"
-    "@jsii/spec" "1.116.0"
-    chalk "^4"
-    fs-extra "^10.1.0"
-    oo-ascii-tree "^1.116.0"
-    yargs "^17.7.2"
-
 jsii-reflect@1.119.0, jsii-reflect@^1.119.0:
   version "1.119.0"
   resolved "https://registry.npmjs.org/jsii-reflect/-/jsii-reflect-1.119.0.tgz#f445c2f70e636f1a20babd844254de2f07265c19"
@@ -11808,11 +11781,6 @@ oo-ascii-tree@^1.115.0:
   version "1.115.0"
   resolved "https://registry.npmjs.org/oo-ascii-tree/-/oo-ascii-tree-1.115.0.tgz#60a28f29cc449cd4274140f5d939c08a18c5ac8b"
   integrity sha512-KbZpipKiCQ5Ws2GryfOUWBxuVpVYosqAi85mtplgMyhQuueOZAO8qeTmNqYYHUxBHOz9O+kKCCjidEkLmCDhLQ==
-
-oo-ascii-tree@^1.116.0:
-  version "1.116.0"
-  resolved "https://registry.npmjs.org/oo-ascii-tree/-/oo-ascii-tree-1.116.0.tgz#2bd95d7de16b842289e01bd83e29f93ea463eaf5"
-  integrity sha512-GI0n8coDIoZPywmZp5l2qPO1tqZxN40/tFPYBxWD2vpPeciKiB/nxZ7blDjp97ejxtmdkNouvAmtg4nCYgZihg==
 
 oo-ascii-tree@^1.119.0:
   version "1.119.0"
