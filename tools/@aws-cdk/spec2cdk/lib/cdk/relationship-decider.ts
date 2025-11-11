@@ -1,8 +1,7 @@
 import { Property, RelationshipRef, Resource, RichProperty, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { namespaceFromResource, referenceInterfaceName, referenceInterfaceAttributeName, referencePropertyName, typeAliasPrefixFromResource } from '../naming';
 import { getReferenceProps } from './reference-props';
-import { createModuleDefinitionFromCfnNamespace } from '../cfn2ts/pkglint';
-import { log } from '../util';
+import { log, pkglint } from '../util';
 
 // For now we want relationships to be applied only for these services
 export const RELATIONSHIP_SERVICES: string[] = [];
@@ -55,7 +54,7 @@ export class RelationshipDecider {
     originalType: string;
     aliasedType: string;
   }) {
-    const moduleName = createModuleDefinitionFromCfnNamespace(namespace).moduleName;
+    const moduleName = pkglint.createModuleDefinitionFromCfnNamespace(namespace).moduleName;
     const moduleImport = this.imports.find(i => i.moduleName === moduleName);
     if (!moduleImport) {
       this.imports.push({

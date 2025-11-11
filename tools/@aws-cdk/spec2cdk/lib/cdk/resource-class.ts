@@ -46,7 +46,7 @@ import {
   staticRequiredTransform,
   staticResourceTypeName,
 } from '../naming';
-import { splitDocumentation } from '../util';
+import { isDefined, splitDocumentation, maybeDeprecated } from '../util';
 import { RelationshipDecider, SelectiveImport } from './relationship-decider';
 
 export interface ITypeHost {
@@ -755,37 +755,6 @@ export class ResourceClass extends ClassType implements Referenceable {
   public get hasArnGetter(): boolean {
     return this._hasArnGetter;
   }
-}
-
-/**
- * Type guard to filter out undefined values.
- */
-function isDefined<T>(x: T | undefined): x is T {
-  return x !== undefined;
-}
-
-/**
- * Compute stability taking into account deprecation status.
- */
-function stability(isDeprecated: boolean = false, defaultStability: Stability = Stability.External): Stability {
-  if (isDeprecated) {
-    return Stability.Deprecated;
-  }
-  return defaultStability;
-}
-
-/**
- * Returns deprecation props if deprecated.
- */
-function maybeDeprecated(deprecationNotice?: string, defaultStability: Stability = Stability.External): Pick<DocsSpec, 'deprecated' | 'stability'> {
-  if (deprecationNotice) {
-    return {
-      deprecated: deprecationNotice,
-      stability: stability(Boolean(deprecationNotice), defaultStability),
-    };
-  }
-
-  return {};
 }
 
 /**

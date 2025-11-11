@@ -2935,10 +2935,10 @@
   resolved "https://registry.npmjs.org/@cdklabs/tskb/-/tskb-0.0.3.tgz#4b79846d9381eb1252ba85d5d20b7cd7d99b6ecb"
   integrity sha512-JR+MuD4awAXvutu7HArephXfZm09GPTaSAQUqNcJB5+ZENRm4kV+L6vJL6Tn1xHjCcHksO+HAqj3gYtm5K94vA==
 
-"@cdklabs/typewriter@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.npmjs.org/@cdklabs/typewriter/-/typewriter-0.0.6.tgz#4f70afd8e70761785f09bfbee9b4678ffd6413a1"
-  integrity sha512-uOKGbxFG+J1ig2Cdn24d8wlELcS2MF6Z0Fsfawx+MiYLnRZJ3kgSZExui+QSm7PyXARW5rcpB+ZGh2maGNQbKw==
+"@cdklabs/typewriter@^0.0.10":
+  version "0.0.10"
+  resolved "https://registry.npmjs.org/@cdklabs/typewriter/-/typewriter-0.0.10.tgz#b1d09c036e4dc979777d9cbaa3e36625fd7cc3fe"
+  integrity sha512-s2rzcULriGFBansAdM6n2RQ27MfLVsleeWKPtX9k3dwJlfsrblgUzi3ch4vRPVVnguNIgxCkKg5sphqvGLciZQ==
 
 "@cdklabs/typewriter@^0.0.9":
   version "0.0.9"

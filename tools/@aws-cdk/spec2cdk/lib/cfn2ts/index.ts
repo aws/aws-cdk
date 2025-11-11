@@ -1,11 +1,10 @@
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
 import { Service } from '@aws-cdk/service-spec-types';
 import * as fs from 'fs-extra';
-import * as pkglint from './pkglint';
 import { CodeGeneratorOptions, GenerateAllOptions, ModuleMap, ModuleMapScope } from './types';
 import type { ModuleImportLocations } from '../cdk/cdk';
 import { generateSome as generateModules } from '../generate';
-import { log } from '../util';
+import { log, pkglint } from '../util';
 
 export * from './types';
 
