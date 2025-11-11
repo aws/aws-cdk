@@ -150,6 +150,9 @@ export interface IcebergDestinationProps extends CommonDestinationProps {
   /**
    * The retry duration after a delivery failure.
    *
+   * Minimum: Duration.seconds(0)
+   * Maximum: Duration.seconds(7200)
+   *
    * @default Duration.seconds(3600)
    */
   readonly retryDuration?: Duration;
@@ -185,6 +188,13 @@ export interface IcebergDestinationProps extends CommonDestinationProps {
  * An Apache Iceberg destination for data from a Kinesis Data Firehose delivery stream.
  */
 export class IcebergDestination implements IDestination {
+  private static readonly MIN_BUFFERING_INTERVAL_SECONDS = 0;
+  private static readonly MAX_BUFFERING_INTERVAL_SECONDS = 900;
+  private static readonly MIN_BUFFERING_SIZE_MIB = 1;
+  private static readonly MAX_BUFFERING_SIZE_MIB = 128;
+  private static readonly MIN_RETRY_DURATION_SECONDS = 0;
+  private static readonly MAX_RETRY_DURATION_SECONDS = 7200;
+
   constructor(
     private readonly bucket: s3.IBucket,
     private readonly props: IcebergDestinationProps,
@@ -202,6 +212,52 @@ export class IcebergDestination implements IDestination {
     // Validate that warehouseLocation is provided when schema evolution or table creation is enabled
     if ((props.schemaEvolutionEnabled || props.tableCreationEnabled) && !props.catalogConfiguration.warehouseLocation) {
       throw new UnscopedValidationError('catalogConfiguration.warehouseLocation is required when schemaEvolutionEnabled or tableCreationEnabled is true');
+    }
+
+    this.validateBufferingInterval();
+    this.validateBufferingSize();
+    this.validateRetryDuration();
+  }
+
+  private validateBufferingInterval(): void {
+    const bufferingInterval = this.props.bufferingInterval;
+    if (bufferingInterval === undefined || cdk.Token.isUnresolved(bufferingInterval)) {
+      return;
+    }
+
+    const seconds = bufferingInterval.toSeconds();
+    if (seconds < IcebergDestination.MIN_BUFFERING_INTERVAL_SECONDS || seconds > IcebergDestination.MAX_BUFFERING_INTERVAL_SECONDS) {
+      throw new UnscopedValidationError(
+        `\`bufferingInterval\` must be between ${IcebergDestination.MIN_BUFFERING_INTERVAL_SECONDS} and ${IcebergDestination.MAX_BUFFERING_INTERVAL_SECONDS} seconds, got ${seconds} seconds.`,
+      );
+    }
+  }
+
+  private validateBufferingSize(): void {
+    const bufferingSize = this.props.bufferingSize;
+    if (bufferingSize === undefined || cdk.Token.isUnresolved(bufferingSize)) {
+      return;
+    }
+
+    const sizeInMiB = bufferingSize.toMebibytes();
+    if (sizeInMiB < IcebergDestination.MIN_BUFFERING_SIZE_MIB || sizeInMiB > IcebergDestination.MAX_BUFFERING_SIZE_MIB) {
+      throw new UnscopedValidationError(
+        `\`bufferingSize\` must be between ${IcebergDestination.MIN_BUFFERING_SIZE_MIB} and ${IcebergDestination.MAX_BUFFERING_SIZE_MIB} MiB, got ${sizeInMiB} MiB.`,
+      );
+    }
+  }
+
+  private validateRetryDuration(): void {
+    const retryDuration = this.props.retryDuration;
+    if (retryDuration === undefined || cdk.Token.isUnresolved(retryDuration)) {
+      return;
+    }
+
+    const seconds = retryDuration.toSeconds();
+    if (seconds < IcebergDestination.MIN_RETRY_DURATION_SECONDS || seconds > IcebergDestination.MAX_RETRY_DURATION_SECONDS) {
+      throw new UnscopedValidationError(
+        `\`retryDuration\` must be between ${IcebergDestination.MIN_RETRY_DURATION_SECONDS} and ${IcebergDestination.MAX_RETRY_DURATION_SECONDS} seconds, got ${seconds} seconds.`,
+      );
     }
   }
 
@@ -347,6 +403,8 @@ export class IcebergDestination implements IDestination {
           roleArn: role.roleArn,
           bufferingHints,
         },
+        // Iceberg destinations only support FailedDataOnly mode.
+        // When a bucket is specified without an explicit mode, default to FailedDataOnly.
         s3BackupMode: this.props.s3Backup?.bucket || this.props.s3Backup?.mode === BackupMode.FAILED ? 'FailedDataOnly': undefined,
         appendOnly: this.props.appendOnly,
         bufferingHints,

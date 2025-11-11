@@ -277,45 +277,121 @@ describe('IcebergDestination', () => {
     }).toThrow(/Iceberg destinations only support BackupMode.FAILED/);
   });
 
-  describe('buffering', () => {
-    test('validates bufferingInterval', () => {
-      expect(() => {
-        new firehose.DeliveryStream(stack, 'DeliveryStream2', {
-          destination: new firehose.IcebergDestination(bucket, {
+  describe('validation', () => {
+    describe('bufferingInterval', () => {
+      test('throws error when bufferingInterval exceeds maximum', () => {
+        expect(() => {
+          new firehose.IcebergDestination(bucket, {
             catalogConfiguration: {
               catalogArn: 'arn:aws:glue:us-east-1:123456789012:catalog',
             },
-            bufferingInterval: cdk.Duration.minutes(16),
-            bufferingSize: cdk.Size.mebibytes(1),
-          }),
-        });
-      }).toThrow('Buffering interval must be less than 900 seconds. Buffering interval provided was 960 seconds.');
+            bufferingInterval: cdk.Duration.seconds(901),
+          });
+        }).toThrow(/`bufferingInterval` must be between 0 and 900 seconds, got 901 seconds/);
+      });
+
+      test('accepts valid bufferingInterval at minimum boundary', () => {
+        expect(() => {
+          new firehose.IcebergDestination(bucket, {
+            catalogConfiguration: {
+              catalogArn: 'arn:aws:glue:us-east-1:123456789012:catalog',
+            },
+            bufferingInterval: cdk.Duration.seconds(0),
+          });
+        }).not.toThrow();
+      });
+
+      test('accepts valid bufferingInterval at maximum boundary', () => {
+        expect(() => {
+          new firehose.IcebergDestination(bucket, {
+            catalogConfiguration: {
+              catalogArn: 'arn:aws:glue:us-east-1:123456789012:catalog',
+            },
+            bufferingInterval: cdk.Duration.seconds(900),
+          });
+        }).not.toThrow();
+      });
     });
 
-    test('validates bufferingSize', () => {
-      expect(() => {
-        new firehose.DeliveryStream(stack, 'DeliveryStream3', {
-          destination: new firehose.IcebergDestination(bucket, {
+    describe('bufferingSize', () => {
+      test('throws error when bufferingSize is below minimum', () => {
+        expect(() => {
+          new firehose.IcebergDestination(bucket, {
             catalogConfiguration: {
               catalogArn: 'arn:aws:glue:us-east-1:123456789012:catalog',
             },
-            bufferingInterval: cdk.Duration.minutes(1),
-            bufferingSize: cdk.Size.mebibytes(0),
-          }),
-        });
-      }).toThrow('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 0 MiBs');
+            bufferingSize: cdk.Size.mebibytes(0.5),
+          });
+        }).toThrow(/`bufferingSize` must be between 1 and 128 MiB, got 0.5 MiB/);
+      });
 
-      expect(() => {
-        new firehose.DeliveryStream(stack, 'DeliveryStream4', {
-          destination: new firehose.IcebergDestination(bucket, {
+      test('throws error when bufferingSize exceeds maximum', () => {
+        expect(() => {
+          new firehose.IcebergDestination(bucket, {
             catalogConfiguration: {
               catalogArn: 'arn:aws:glue:us-east-1:123456789012:catalog',
             },
-            bufferingInterval: cdk.Duration.minutes(1),
-            bufferingSize: cdk.Size.mebibytes(256),
-          }),
-        });
-      }).toThrow('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 256 MiBs');
+            bufferingSize: cdk.Size.mebibytes(129),
+          });
+        }).toThrow(/`bufferingSize` must be between 1 and 128 MiB, got 129 MiB/);
+      });
+
+      test('accepts valid bufferingSize at minimum boundary', () => {
+        expect(() => {
+          new firehose.IcebergDestination(bucket, {
+            catalogConfiguration: {
+              catalogArn: 'arn:aws:glue:us-east-1:123456789012:catalog',
+            },
+            bufferingSize: cdk.Size.mebibytes(1),
+          });
+        }).not.toThrow();
+      });
+
+      test('accepts valid bufferingSize at maximum boundary', () => {
+        expect(() => {
+          new firehose.IcebergDestination(bucket, {
+            catalogConfiguration: {
+              catalogArn: 'arn:aws:glue:us-east-1:123456789012:catalog',
+            },
+            bufferingSize: cdk.Size.mebibytes(128),
+          });
+        }).not.toThrow();
+      });
+    });
+
+    describe('retryDuration', () => {
+      test('throws error when retryDuration exceeds maximum', () => {
+        expect(() => {
+          new firehose.IcebergDestination(bucket, {
+            catalogConfiguration: {
+              catalogArn: 'arn:aws:glue:us-east-1:123456789012:catalog',
+            },
+            retryDuration: cdk.Duration.seconds(7201),
+          });
+        }).toThrow(/`retryDuration` must be between 0 and 7200 seconds, got 7201 seconds/);
+      });
+
+      test('accepts valid retryDuration at minimum boundary', () => {
+        expect(() => {
+          new firehose.IcebergDestination(bucket, {
+            catalogConfiguration: {
+              catalogArn: 'arn:aws:glue:us-east-1:123456789012:catalog',
+            },
+            retryDuration: cdk.Duration.seconds(0),
+          });
+        }).not.toThrow();
+      });
+
+      test('accepts valid retryDuration at maximum boundary', () => {
+        expect(() => {
+          new firehose.IcebergDestination(bucket, {
+            catalogConfiguration: {
+              catalogArn: 'arn:aws:glue:us-east-1:123456789012:catalog',
+            },
+            retryDuration: cdk.Duration.seconds(7200),
+          });
+        }).not.toThrow();
+      });
     });
   });
 

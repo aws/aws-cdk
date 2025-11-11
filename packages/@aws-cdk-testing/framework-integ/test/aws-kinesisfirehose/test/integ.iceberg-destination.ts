@@ -4,7 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { AwsApiCall, ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
@@ -157,3 +157,22 @@ testCase.assertions.awsApiCall('Firehose', 'putRecord', {
     Data: JSON.stringify({ id: 'test-id-123', data: 'test-data-value' }),
   },
 });
+
+// Verify that data was successfully stored in S3
+const s3ApiCall = testCase.assertions.awsApiCall('S3', 'listObjectsV2', {
+  Bucket: bucket.bucketName,
+  MaxKeys: 1,
+}).expect(ExpectedResult.objectLike({
+  KeyCount: 1,
+})).waitForAssertions({
+  interval: cdk.Duration.seconds(30),
+  totalTimeout: cdk.Duration.minutes(10),
+});
+
+if (s3ApiCall instanceof AwsApiCall && s3ApiCall.waiterProvider) {
+  s3ApiCall.waiterProvider.addToRolePolicy({
+    Effect: 'Allow',
+    Action: ['s3:GetObject', 's3:ListBucket'],
+    Resource: ['*'],
+  });
+}

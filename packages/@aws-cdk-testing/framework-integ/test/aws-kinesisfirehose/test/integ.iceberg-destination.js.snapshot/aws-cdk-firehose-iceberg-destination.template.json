@@ -1375,6 +1375,14 @@
    "Export": {
     "Name": "aws-cdk-firehose-iceberg-destination:ExportsOutputRefIcebergDeliveryStreamWithWarehouse5D427EB88FB5103E"
    }
+  },
+  "ExportsOutputRefIcebergBucket89DD3FA6316616CA": {
+   "Value": {
+    "Ref": "IcebergBucket89DD3FA6"
+   },
+   "Export": {
+    "Name": "aws-cdk-firehose-iceberg-destination:ExportsOutputRefIcebergBucket89DD3FA6316616CA"
+   }
   }
  },
  "Parameters": {
