@@ -210,7 +210,7 @@ export interface CodePipelineProps {
   readonly publishAssetsInParallel?: boolean;
 
   /**
-   * Check if assets already exist before building and publishing
+   * Conditionally build assets only when they don't already exist
    *
    * When enabled, the pipeline will check if an asset with the same hash
    * already exists in S3 (for file assets) or ECR (for Docker images) before
@@ -226,7 +226,7 @@ export interface CodePipelineProps {
    *
    * @default false
    */
-  readonly checkAssetExistence?: boolean;
+  readonly conditionallyBuildAssets?: boolean;
 
   /**
    * A list of credentials used to authenticate to Docker registries.
@@ -436,7 +436,7 @@ export class CodePipeline extends PipelineBase {
   private readonly singlePublisherPerAssetType: boolean;
   private readonly cliVersion?: string;
   private readonly cdkAssetsCliVersion: string;
-  private readonly checkAssetExistence: boolean;
+  private readonly conditionallyBuildAssets: boolean;
 
   constructor(scope: Construct, id: string, private readonly props: CodePipelineProps) {
     super(scope, id, props);
@@ -449,7 +449,7 @@ export class CodePipeline extends PipelineBase {
     this.useChangeSets = props.useChangeSets ?? true;
     this.stackOutputs = new StackOutputsMap(this);
     this.usePipelineRoleForActions = props.usePipelineRoleForActions ?? false;
-    this.checkAssetExistence = props.checkAssetExistence ?? false;
+    this.conditionallyBuildAssets = props.conditionallyBuildAssets ?? false;
   }
 
   /**
@@ -902,10 +902,10 @@ export class CodePipeline extends PipelineBase {
     }
 
     let commands: string[];
-    if (this.checkAssetExistence) {
-      Annotations.of(this).addInfo('Generating asset commands with existence check');
-      // generate commands with existence checking.
-      commands = this.generateAssetCommandsWithExistenceCheck(assets, assetType);
+    if (this.conditionallyBuildAssets) {
+      Annotations.of(this).addInfo('Generating asset commands for conditional builds');
+      // generate commands that skip building when assets already exist.
+      commands = this.generateAssetCommandsForConditionalBuilds(assets, assetType);
     } else {
       // original behavior: directly publish assets.
       commands = assets.map(asset => {
@@ -953,7 +953,7 @@ export class CodePipeline extends PipelineBase {
    * This method creates bash commands that check if an asset already exists
    * in S3 (for file assets) or ECR (for Docker images) before publishing.
    */
-  private generateAssetCommandsWithExistenceCheck(assets: StackAsset[], assetType: AssetType): string[] {
+  private generateAssetCommandsForConditionalBuilds(assets: StackAsset[], assetType: AssetType): string[] {
     const commands: string[] = [];
 
     for (const asset of assets) {
@@ -1162,9 +1162,9 @@ export class CodePipeline extends PipelineBase {
       this.dockerCredentials.forEach(reg => reg.grantRead(assetRole, DockerCredentialUsage.ASSET_PUBLISHING));
     }
 
-    // add permissions for asset existence checking if the feature is enabled.
-    if (this.checkAssetExistence) {
-      Annotations.of(this).addInfo(`Adding permissions for asset existence checking for ${assetType}`);
+    // add permissions for conditional asset builds if the feature is enabled.
+    if (this.conditionallyBuildAssets) {
+      Annotations.of(this).addInfo(`Adding permissions for conditional asset builds for ${assetType}`);
       if (assetType === AssetType.FILE) {
         // grant S3 HeadObject permission to check if file assets exist.
         assetRole.addToPrincipalPolicy(new iam.PolicyStatement({

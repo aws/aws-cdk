@@ -681,8 +681,8 @@ function unsingleton<A>(xs: A[]): A | A[] {
   return xs;
 }
 
-describe('Asset Existence Checking', () => {
-  test('checkAssetExistence is disabled by default', () => {
+describe('Conditional Asset Builds', () => {
+  test('conditionallyBuildAssets is disabled by default', () => {
     app = new TestApp();
     pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
@@ -712,11 +712,11 @@ describe('Asset Existence Checking', () => {
     app.cleanup();
   });
 
-  test('file asset existence checking adds S3 head-object commands', () => {
+  test('conditional file asset builds add S3 head-object commands', () => {
     app = new TestApp();
     pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
-      checkAssetExistence: true,
+      conditionallyBuildAssets: true,
     });
     pipeline.addStage(new FileAssetApp(app, 'App'));
 
@@ -745,11 +745,11 @@ describe('Asset Existence Checking', () => {
     app.cleanup();
   });
 
-  test('Docker asset existence checking adds ECR describe-images commands', () => {
+  test('conditional Docker asset builds add ECR describe-images commands', () => {
     app = new TestApp();
     pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
-      checkAssetExistence: true,
+      conditionallyBuildAssets: true,
     });
     pipeline.addStage(new DockerAssetApp(app, 'App'));
 
@@ -778,11 +778,11 @@ describe('Asset Existence Checking', () => {
     app.cleanup();
   });
 
-  test('asset role has S3 permissions when checkAssetExistence is enabled for file assets', () => {
+  test('asset role has S3 permissions when conditionallyBuildAssets is enabled for file assets', () => {
     app = new TestApp();
     pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
-      checkAssetExistence: true,
+      conditionallyBuildAssets: true,
     });
     pipeline.addStage(new FileAssetApp(app, 'App'));
 
@@ -802,11 +802,11 @@ describe('Asset Existence Checking', () => {
     app.cleanup();
   });
 
-  test('asset role has ECR permissions when checkAssetExistence is enabled for Docker assets', () => {
+  test('asset role has ECR permissions when conditionallyBuildAssets is enabled for Docker assets', () => {
     app = new TestApp();
     pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
     const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
-      checkAssetExistence: true,
+      conditionallyBuildAssets: true,
     });
     pipeline.addStage(new DockerAssetApp(app, 'App'));
 

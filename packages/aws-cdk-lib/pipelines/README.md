@@ -839,15 +839,15 @@ new pipelines.CodePipeline(this, 'Pipeline', {
 });
 ```
 
-### Asset Existence Checking
+### Conditional Asset Builds
 
 By default, CDK Pipelines will build and publish all assets every time the pipeline runs,
 even if the asset with the same hash already exists in S3 (for file assets) or ECR (for
 Docker image assets). This can be inefficient and costly, especially for large Docker images
 or when assets rarely change.
 
-You can enable asset existence checking to skip building and publishing assets that already
-exist by setting `checkAssetExistence: true` when creating your pipeline:
+You can enable conditional asset builds to skip building and publishing assets that already
+exist by setting `conditionallyBuildAssets: true` when creating your pipeline:
 
 ```ts
 const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
@@ -859,8 +859,8 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
     commands: ['npm ci', 'npm run build', 'npx cdk synth'],
   }),
 
-  // Enable asset existence checking to skip publishing assets that already exist
-  checkAssetExistence: true,
+  // Enable conditional asset builds to skip publishing assets that already exist
+  conditionallyBuildAssets: true,
 });
 ```
 
@@ -881,7 +881,7 @@ permissions:
 - `ecr:DescribeImages`, `ecr:BatchGetImage`, and `ecr:GetDownloadUrlForLayer` for checking
   Docker images in ECR
 
-These permissions are automatically added to the asset role when `checkAssetExistence` is enabled.
+These permissions are automatically added to the asset role when `conditionallyBuildAssets` is enabled.
 
 ### Arbitrary CodePipeline actions
 
