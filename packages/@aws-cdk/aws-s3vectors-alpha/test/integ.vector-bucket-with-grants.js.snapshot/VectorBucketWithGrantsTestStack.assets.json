@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "6549d68acadecaf0fc61d877bdff8052d9434c439b20730ce6a1c66e96f24df5": {
+      "displayName": "VectorBucketWithGrantsTestStack Template",
+      "source": {
+        "path": "VectorBucketWithGrantsTestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-16f7d907": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6549d68acadecaf0fc61d877bdff8052d9434c439b20730ce6a1c66e96f24df5.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

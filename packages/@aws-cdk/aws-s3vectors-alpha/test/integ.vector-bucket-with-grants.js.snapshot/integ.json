@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "VectorBucketWithGrantsIntegTest/DefaultTest": {
+      "stacks": [
+        "VectorBucketWithGrantsTestStack"
+      ],
+      "assertionStack": "VectorBucketWithGrantsIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "VectorBucketWithGrantsIntegTestDefaultTestDeployAssert84C30197"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

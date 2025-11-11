@@ -1,0 +1,16 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "VectorBucketEncryptionIntegTest/DefaultTest": {
+      "stacks": [
+        "OnlyEncryptionKeyTest",
+        "OnlyKMSEncryptionTypeTest",
+        "KeyWithKMSEncryptionTypeTest",
+        "OnlyS3ManagedEncryptionTest"
+      ],
+      "assertionStack": "VectorBucketEncryptionIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "VectorBucketEncryptionIntegTestDefaultTestDeployAssert7860388A"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
