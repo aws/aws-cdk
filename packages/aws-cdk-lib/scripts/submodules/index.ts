@@ -49,26 +49,25 @@ async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {
   }
 
   // .jsiirc.json
-  if (!fs.existsSync(path.join(modulePath, '.jsiirc.json'))) {
-    if (!submodule.definition) {
-      throw new Error(
-        `Cannot infer path or namespace for submodule named "${submodule.name}". Manually create ${modulePath}/.jsiirc.json file.`,
-      );
-    }
-
-    const jsiirc = {
-      targets: {
-        java: {
-          package: submodule.definition.javaPackage,
-        },
-        dotnet: {
-          namespace: submodule.definition.dotnetPackage,
-        },
-        python: {
-          module: submodule.definition.pythonModuleName,
-        },
-      },
-    };
-    await fs.writeJson(path.join(modulePath, '.jsiirc.json'), jsiirc, { spaces: 2 });
+  // We always re-create this file. Any historic deviations are stored in scopes-map.json
+  if (!submodule.definition) {
+    throw new Error(
+      `Cannot infer path or namespace for submodule named "${submodule.name}". Manually create ${modulePath}/.jsiirc.json file.`,
+    );
   }
+
+  const jsiirc = {
+    targets: {
+      java: {
+        package: submodule.definition.javaPackage,
+      },
+      dotnet: {
+        namespace: submodule.definition.dotnetPackage,
+      },
+      python: {
+        module: submodule.definition.pythonModuleName,
+      },
+    },
+  };
+  await fs.writeJson(path.join(modulePath, '.jsiirc.json'), jsiirc, { spaces: 2 });
 }
