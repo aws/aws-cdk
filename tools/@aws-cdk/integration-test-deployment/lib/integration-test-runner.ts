@@ -90,7 +90,7 @@ export const bootstrap = async (env: NodeJS.ProcessEnv) => {
 export const deployIntegrationTest = async (env: NodeJS.ProcessEnv, snapshotPaths: string[]) => {
   console.log(`Deploying snapshots:\n${snapshotPaths.join('\n')}`);
 
-  const spawnProcess = spawn('yarn', ['integ-runner', '--disable-update-workflow', '--directory', 'packages', '--force', ...snapshotPaths], {
+  const spawnProcess = spawn('yarn', ['integ-runner', '--disable-update-workflow', '--strict', '--directory', 'packages', '--force', ...snapshotPaths], {
     stdio: ['ignore', 'inherit', 'inherit'],
     env,
   });
