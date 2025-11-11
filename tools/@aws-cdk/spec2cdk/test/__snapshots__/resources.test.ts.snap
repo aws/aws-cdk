@@ -174,7 +174,7 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   ret.addPropertyResult("id", "Id", (properties.Id != null ? cfn_parse.FromCloudFormation.getString(properties.Id) : undefined));
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}export { IResourceRef, ResourceReference };",
+}export type { IResourceRef, ResourceReference };",
 }
 `;
 
@@ -323,7 +323,7 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   ret.addPropertyResult("id", "Id", (properties.Id != null ? cfn_parse.FromCloudFormation.getString(properties.Id) : undefined));
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}export { IResourceRef, ResourceReference };"
+}export type { IResourceRef, ResourceReference };"
 `;
 
 exports[`resource interface when primaryIdentifier is an attribute 1`] = `
@@ -462,7 +462,7 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   const ret = new cfn_parse.FromCloudFormationPropertyObject<CfnResourceProps>();
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}export { IResourceRef, ResourceReference };"
+}export type { IResourceRef, ResourceReference };"
 `;
 
 exports[`resource interface with "<Resource>Arn" 1`] = `
@@ -610,7 +610,7 @@ function CfnSomethingPropsFromCloudFormation(properties: any): cfn_parse.FromClo
   const ret = new cfn_parse.FromCloudFormationPropertyObject<CfnSomethingProps>();
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}export { ISomethingRef, SomethingReference };"
+}export type { ISomethingRef, SomethingReference };"
 `;
 
 exports[`resource interface with "Arn" 1`] = `
@@ -758,7 +758,7 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   const ret = new cfn_parse.FromCloudFormationPropertyObject<CfnResourceProps>();
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}export { IResourceRef, ResourceReference };"
+}export type { IResourceRef, ResourceReference };"
 `;
 
 exports[`resource interface with Arn as a property and not a primaryIdentifier 1`] = `
@@ -914,7 +914,7 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   ret.addPropertyResult("arn", "Arn", (properties.Arn != null ? cfn_parse.FromCloudFormation.getString(properties.Arn) : undefined));
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}export { IResourceRef, ResourceReference };"
+}export type { IResourceRef, ResourceReference };"
 `;
 
 exports[`resource interface with Arn as primaryIdentifier 1`] = `
@@ -1053,7 +1053,7 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   const ret = new cfn_parse.FromCloudFormationPropertyObject<CfnResourceProps>();
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}export { IResourceRef, ResourceReference };"
+}export type { IResourceRef, ResourceReference };"
 `;
 
 exports[`resource interface with multiple primaryIdentifiers 1`] = `
@@ -1201,7 +1201,7 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   const ret = new cfn_parse.FromCloudFormationPropertyObject<CfnResourceProps>();
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}export { IResourceRef, ResourceReference };"
+}export type { IResourceRef, ResourceReference };"
 `;
 
 exports[`resource with arnTemplate 1`] = `
@@ -1371,7 +1371,7 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   ret.addPropertyResult("id", "Id", (properties.Id != null ? cfn_parse.FromCloudFormation.getString(properties.Id) : undefined));
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}export { IResourceRef, ResourceReference };"
+}export type { IResourceRef, ResourceReference };"
 `;
 
 exports[`resource with multiple primaryIdentifiers as properties 1`] = `
@@ -1537,7 +1537,7 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   ret.addPropertyResult("id", "Id", (properties.Id != null ? cfn_parse.FromCloudFormation.getString(properties.Id) : undefined));
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}export { IResourceRef, ResourceReference };"
+}export type { IResourceRef, ResourceReference };"
 `;
 
 exports[`resource with optional primary identifier gets property from ref 1`] = `
@@ -1685,5 +1685,5 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   ret.addPropertyResult("id", "Id", (properties.Id != null ? cfn_parse.FromCloudFormation.getString(properties.Id) : undefined));
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}export { IResourceRef, ResourceReference };"
+}export type { IResourceRef, ResourceReference };"
 `;
