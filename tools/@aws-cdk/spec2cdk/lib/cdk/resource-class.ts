@@ -29,7 +29,7 @@ import {
   Property,
   SelectiveModuleImport,
 } from '@cdklabs/typewriter';
-import { CDK_CORE, CONSTRUCTS } from './cdk';
+import { CDK_CORE, CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
 import { ResourceDecider } from './resource-decider';
 import { TypeConverter } from './type-converter';
@@ -258,7 +258,7 @@ export class ResourceClass extends ClassType {
     const interface_ = new InterfaceType(scope, {
       export: true,
       name: refName,
-      extends: [CONSTRUCTS.IConstruct, CDK_CORE.IEnvironmentAware],
+      extends: [CONSTRUCTS.IConstruct, CDK_INTERFACES_ENVIRONMENT_AWARE.IEnvironmentAware],
       docs: {
         summary: `Indicates that this resource can be referenced as a ${this.resource.name}.`,
         stability: Stability.Experimental,

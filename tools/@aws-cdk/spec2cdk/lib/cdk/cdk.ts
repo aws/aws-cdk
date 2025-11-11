@@ -15,7 +15,6 @@ export class CdkCore extends ExternalModule {
   public readonly TagType = $T(Type.fromName(this, 'TagType'));
   public readonly Fn = $T(Type.fromName(this, 'Fn'));
   public readonly ITaggable = Type.fromName(this, 'ITaggable');
-  public readonly IEnvironmentAware = Type.fromName(this, 'IEnvironmentAware');
   public readonly ITaggableV2 = Type.fromName(this, 'ITaggableV2');
   public readonly IResolvable = Type.fromName(this, 'IResolvable');
   public readonly Stack = Type.fromName(this, 'Stack');
@@ -66,6 +65,10 @@ export class CdkCore extends ExternalModule {
   }
 }
 
+export class Interfaces extends ExternalModule {
+  public readonly IEnvironmentAware = Type.fromName(this, 'IEnvironmentAware');
+}
+
 export class CdkInternalHelpers extends ExternalModule {
   public readonly FromCloudFormationOptions = Type.fromName(this, 'FromCloudFormationOptions');
   public readonly FromCloudFormationResult = $T(Type.fromName(this, 'FromCloudFormationResult'));
@@ -100,6 +103,7 @@ export class CdkCloudWatch extends ExternalModule {
   public readonly MetricOptions = Type.fromName(this, 'MetricOptions');
 }
 
+export const CDK_INTERFACES_ENVIRONMENT_AWARE = new Interfaces('aws-cdk-lib/interfaces/environment-aware');
 export const CDK_CORE = new CdkCore('aws-cdk-lib');
 export const CDK_CLOUDWATCH = new CdkCloudWatch('aws-cdk-lib/aws-cloudwatch');
 export const CONSTRUCTS = new Constructs();

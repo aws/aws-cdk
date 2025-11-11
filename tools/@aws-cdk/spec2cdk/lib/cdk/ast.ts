@@ -4,7 +4,7 @@ import { SpecDatabase, Resource, Service } from '@aws-cdk/service-spec-types';
 import { Module } from '@cdklabs/typewriter';
 import { AugmentationsModule } from './augmentation-generator';
 import { CannedMetricsModule } from './canned-metrics';
-import { CDK_CORE, CONSTRUCTS } from './cdk';
+import { CDK_CORE, CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from './cdk';
 import { SelectiveImport } from './relationship-decider';
 import { ResourceClass } from './resource-class';
 import { submoduleSymbolFromName } from '../naming/conventions';
@@ -82,8 +82,8 @@ export const DEFAULT_FILE_PATTERNS: GenerateFilePatterns = {
   resources: '%moduleName%/%serviceShortName%.generated.ts',
   augmentations: '%moduleName%/%serviceShortName%-augmentations.generated.ts',
   cannedMetrics: '%moduleName%/%serviceShortName%-canned-metrics.generated.ts',
-  interfacesEntry: 'interfaces/index.ts',
-  interfaces: 'interfaces/%serviceName%-interfaces.generated.ts',
+  interfacesEntry: 'interfaces/index.generated.ts',
+  interfaces: 'interfaces/generated/%serviceName%-interfaces.generated.ts',
 };
 
 /**
@@ -306,7 +306,9 @@ export class AstBuilder {
     const imports = this.resolveImportPaths(filePath);
 
     const module = new Module(`@aws-cdk/interfaces/${service.name}`);
-    CDK_CORE.import(module, 'cdk', { fromLocation: imports.core });
+    CDK_INTERFACES_ENVIRONMENT_AWARE.importSelective(module, ['IEnvironmentAware'], {
+      fromLocation: imports.interfacesEnvironmentAware,
+    });
     CONSTRUCTS.import(module, 'constructs');
 
     return { module, filePath };
@@ -365,6 +367,7 @@ export class AstBuilder {
     if (!this.inCdkLib) {
       return {
         core: 'aws-cdk-lib',
+        interfacesEnvironmentAware: 'aws-cdk-lib/interfaces',
         coreHelpers: 'aws-cdk-lib/core/lib/helpers-internal',
         coreErrors: 'aws-cdk-lib/core/lib/errors',
         cloudwatch: 'aws-cdk-lib/aws-cloudwatch',
@@ -373,6 +376,7 @@ export class AstBuilder {
 
     return {
       core: relativeImportPath(sourceModule, 'core/lib'),
+      interfacesEnvironmentAware: relativeImportPath(sourceModule, 'interfaces/environment-aware'),
       coreHelpers: relativeImportPath(sourceModule, 'core/lib/helpers-internal'),
       coreErrors: relativeImportPath(sourceModule, 'core/lib/errors'),
       cloudwatch: relativeImportPath(sourceModule, 'aws-cloudwatch'),
@@ -456,6 +460,14 @@ interface ImportPaths {
    * The import name used import the core module
    */
   readonly core: string;
+
+  /**
+   * The import name used import a specific interface from the `interfaces` module
+   *
+   * Not the entire module but a specific file, so that if we're codegenning inside `aws-cdk-lib`
+   * we can pinpoint the exact file we need to load.
+   */
+  readonly interfacesEnvironmentAware: string;
 
   /**
    * The import name used to import core helpers module

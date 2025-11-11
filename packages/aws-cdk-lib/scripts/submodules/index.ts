@@ -85,7 +85,7 @@ async function ensureInterfaceSubmoduleJsiiJsonRc(submodule: ModuleMapEntry, int
   const interfacesModuleJsiiRcPath = path.join(interfacesModulePath, '.jsiirc.json');
   const interfacesModuleJsiiRc = JSON.parse(await fs.readFile(interfacesModuleJsiiRcPath, 'utf-8'));
 
-  const jsiiRcPath = path.join(interfacesModulePath, `${submodule.name}-interfaces.generated.jsiirc.json`);
+  const jsiiRcPath = path.join(interfacesModulePath, 'generated', `${submodule.name}-interfaces.generated.jsiirc.json`);
 
   const jsiirc = {
     targets: {
