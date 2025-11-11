@@ -140,7 +140,7 @@ export class ResourceClass extends ClassType {
 
       // And put an export in for backwards compatibility, but only if this is not an aliased service
       if (!this.isAliasedService) {
-        this.module.addInitialization(directCodeStmt(`export { ${typeNames.join(', ')} }`));
+        this.module.addInitialization(directCodeStmt(`export type { ${typeNames.join(', ')} }`));
       }
     }
   }
