@@ -1,3 +1,5 @@
+import { naming } from '..';
+
 export interface PackageBaseNames {
   javascript: string;
   dotnet: string;
@@ -12,9 +14,15 @@ export const AWS_CDK_LIB_BASE_NAMES: PackageBaseNames = {
   python: 'aws-cdk',
 };
 
-export function createModuleDefinitionFromCfnNamespace(namespace: string, bases: PackageBaseNames = AWS_CDK_LIB_BASE_NAMES) {
-  const [moduleFamily, moduleBaseName] = (namespace === 'AWS::Serverless' ? 'AWS::SAM' : namespace).split('::');
-  const moduleName = `${moduleFamily}-${moduleBaseName}`.toLocaleLowerCase();
+/**
+ * Creates a module definition for the given namespace
+ *
+ * @param namespace - the namespace to create a module definition for
+ * @param bases - provide different package base names and overwrite jsii targets
+ * @returns the module definition
+ */
+export function namespaceToModuleDefinition(namespace: string, bases: PackageBaseNames = AWS_CDK_LIB_BASE_NAMES) {
+  const { moduleName, moduleFamily, moduleBaseName } = naming.modulePartsFromNamespace(namespace);
   const submoduleName = moduleName.replace('-', '_');
 
   const lowcaseModuleName = moduleBaseName.toLocaleLowerCase();
