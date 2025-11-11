@@ -103,7 +103,7 @@ async function ensureInterfaceSubmoduleJsiiJsonRc(submodule: ModuleMapEntry, int
       throw new Error(`Could not build child namespace for language ${language} from ${JSON.stringify(interfacesModuleJsiiRc.targets[language])} and ${k} from ${JSON.stringify(submodule.definition)}`);
     }
 
-    return { [language]: ns };
+    return { [language]: { [whatName]: ns } };
   }
 }
 
