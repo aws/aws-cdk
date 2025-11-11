@@ -1,4 +1,4 @@
-import { naming } from '..';
+import * as naming from '../naming';
 
 export interface PackageBaseNames {
   javascript: string;

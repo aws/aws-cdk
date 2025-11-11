@@ -1,5 +1,5 @@
 import { Property, RelationshipRef, Resource, RichProperty, SpecDatabase } from '@aws-cdk/service-spec-types';
-import { naming } from '..';
+import * as naming from '../naming';
 import { namespaceFromResource, referenceInterfaceName, referenceInterfaceAttributeName, referencePropertyName, typeAliasPrefixFromResource } from '../naming';
 import { getReferenceProps } from './reference-props';
 import { log } from '../util';
