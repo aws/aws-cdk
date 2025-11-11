@@ -1,3 +1,4 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 import {
   SpecDatabase,
   PropertyType,
