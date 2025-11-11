@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.aiops"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.AIOps"
+      "namespace": "Amazon.CDK.AWS.AIOps"
     },
     "python": {
       "module": "aws_cdk.aws_aiops"

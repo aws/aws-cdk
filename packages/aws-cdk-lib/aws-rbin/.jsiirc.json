@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.rbin"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.Rbin"
+      "namespace": "Amazon.CDK.AWS.Rbin"
     },
     "python": {
       "module": "aws_cdk.aws_rbin"
