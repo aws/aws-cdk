@@ -35,7 +35,9 @@ async function writeScopeMap(modules: ModuleMap) {
     .reduce((scopeMap, [moduleName, { scopes }]) => {
       return {
         ...scopeMap,
-        [moduleName]: scopes,
+        [moduleName]: {
+          scopes,
+        },
       };
     }, {});
   await fs.writeJson(scopeMapPath, newScopeMap, { spaces: 2 });

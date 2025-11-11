@@ -180,13 +180,13 @@ export async function generateAll(
  * Reads the scope map from a file and transforms it into the type we need.
  */
 async function readScopeMap(filepath: string): Promise<ModuleMap> {
-  const scopeMap: Record<string, string[] | Array<ModuleMapScope>> = await fs.readJson(filepath);
-  return Object.entries(scopeMap).reduce((moduleMap, [name, moduleScopes]) => {
+  const scopeMap: Record<string, { scopes: Array<ModuleMapScope>; targets?: any }> = await fs.readJson(filepath);
+  return Object.entries(scopeMap).reduce((moduleMap, [name, info]) => {
     return {
       ...moduleMap,
       [name]: {
         name,
-        scopes: moduleScopes.map(s => {
+        scopes: info.scopes.map(s => {
           if (typeof s === 'string') {
             return {
               namespace: s,
@@ -195,6 +195,7 @@ async function readScopeMap(filepath: string): Promise<ModuleMap> {
 
           return s;
         }),
+        targets: info.targets,
         resources: {},
         files: [],
       },
