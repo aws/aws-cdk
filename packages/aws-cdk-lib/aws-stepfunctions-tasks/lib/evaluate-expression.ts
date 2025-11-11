@@ -23,6 +23,15 @@ export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
    * @default - the latest Lambda node runtime available in your region.
    */
   readonly runtime?: lambda.Runtime;
+
+  /**
+   * The system architecture compatible with this lambda function.
+   *
+   * ARM64 architecture support varies by AWS region. Please verify that your deployment region supports Lambda functions with ARM64 architecture before specifying Architecture.ARM_64.
+   *
+   * @default Architecture.X86_64
+   */
+  readonly architecture?: lambda.Architecture;
 }
 
 /**
@@ -59,7 +68,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
   constructor(scope: Construct, id: string, private readonly props: EvaluateExpressionProps) {
     super(scope, id, props);
 
-    this.evalFn = createEvalFn(this.props.runtime, this);
+    this.evalFn = createEvalFn(this.props.runtime, this.props.architecture, this);
 
     this.taskPolicies = [
       new iam.PolicyStatement({
@@ -97,7 +106,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
   }
 }
 
-function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
+function createEvalFn(runtime: lambda.Runtime | undefined, architecture: lambda.Architecture | undefined, scope: Construct) {
   const NO_RUNTIME = Symbol.for('no-runtime');
   const lambdaPurpose = 'Eval';
 
@@ -114,7 +123,23 @@ function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
     [NO_RUNTIME]: '41256dc5-4457-4273-8ed9-17bc818694e5',
   };
 
-  const uuid = nodeJsGuids[runtime?.name ?? NO_RUNTIME];
+  const nodeJsArmGuids = {
+    [lambda.Runtime.NODEJS_22_X.name]: '672bfe19-76c9-448b-9584-ee75ca09edbf',
+    [lambda.Runtime.NODEJS_20_X.name]: '105f0693-c082-4e9b-83f3-9007507676f0',
+    [lambda.Runtime.NODEJS_18_X.name]: 'b1565b13-7d88-4f24-ac63-f9b23c325a55',
+    [lambda.Runtime.NODEJS_16_X.name]: '8fa21b46-1d7c-445d-be08-6bbea646eb37',
+    [lambda.Runtime.NODEJS_14_X.name]: 'cadc099b-465f-4267-afe0-e0037d263401',
+    [lambda.Runtime.NODEJS_12_X.name]: 'abcd5ad4-b1eb-48f1-bec5-41d6f5c82caa',
+    [lambda.Runtime.NODEJS_10_X.name]: '886204b9-1f2d-40bd-8a7e-628543da4f93',
+
+    // UUID used when falling back to the default node runtime, which is a token and might be different per region
+    [NO_RUNTIME]: 'be6d8ca1-9d2c-4db3-aeeb-f6f27f3f2f10',
+  };
+
+  const runtimeKey = runtime?.name ?? NO_RUNTIME;
+  const guidsMap = architecture === lambda.Architecture.ARM_64 ? nodeJsArmGuids : nodeJsGuids;
+  const uuid = guidsMap[runtimeKey];
+
   if (!uuid) {
     throw new UnscopedValidationError(`The runtime ${runtime?.name} is currently not supported.`);
   }
@@ -123,5 +148,6 @@ function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
     uuid,
     lambdaPurpose,
     runtime,
+    architecture,
   });
 }
