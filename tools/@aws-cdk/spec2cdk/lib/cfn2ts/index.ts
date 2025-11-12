@@ -1,6 +1,6 @@
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
 import { generate as generateModules } from '../generate';
-import { ModuleMap, ModuleMapEntry, readModuleMap } from '../module-topology';
+import { ModuleMap, readModuleMap } from '../module-topology';
 import * as naming from '../naming';
 import { jsii } from '../util';
 import { getAllScopes } from '../util/db';
