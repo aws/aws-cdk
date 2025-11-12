@@ -518,6 +518,7 @@
     "./custom-resources": "./custom-resources/index.js",
     "./custom-resources/lib/helpers-internal": "./custom-resources/lib/helpers-internal/index.js",
     "./cx-api": "./cx-api/index.js",
+    "./interfaces": "./interfaces/index.js",
     "./lambda-layer-awscli": "./lambda-layer-awscli/index.js",
     "./lambda-layer-kubectl": "./lambda-layer-kubectl/index.js",
     "./lambda-layer-node-proxy-agent": "./lambda-layer-node-proxy-agent/index.js",
@@ -536,7 +537,7 @@
   },
   "jsiiRosetta": {
     "exampleDependencies": {
-      "@aws-cdk/lambda-layer-kubectl-v33": "^2.0.0",
+      "@aws-cdk/lambda-layer-kubectl-v34": "^2.0.0",
       "cdk8s-plus-25": "^2.7.0",
       "@aws-cdk/aws-glue-alpha": "^0.0.0"
     }
