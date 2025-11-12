@@ -82,7 +82,7 @@ const app = new App({
 
 const stack = new PipelineStack(app, 'PipelineStackWithConditionalAssetBuilds');
 
-new IntegTest(app, 'PipelineConditionalAssetBuildTest', {
+new IntegTest(app, 'BuildTest', {
   testCases: [stack],
 });
 
