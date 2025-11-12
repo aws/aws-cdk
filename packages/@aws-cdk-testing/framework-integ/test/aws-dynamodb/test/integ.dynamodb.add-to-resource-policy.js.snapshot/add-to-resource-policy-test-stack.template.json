@@ -115,6 +115,65 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "GrantTable13160A8B": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "ProvisionedThroughput": {
+     "ReadCapacityUnits": 5,
+     "WriteCapacityUnits": 5
+    },
+    "ResourcePolicy": {
+     "PolicyDocument": {
+      "Statement": [
+       {
+        "Action": [
+         "dynamodb:BatchWriteItem",
+         "dynamodb:DeleteItem",
+         "dynamodb:DescribeTable",
+         "dynamodb:PutItem",
+         "dynamodb:UpdateItem"
+        ],
+        "Effect": "Allow",
+        "Principal": {
+         "AWS": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":iam::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":root"
+           ]
+          ]
+         }
+        },
+        "Resource": "*"
+       }
+      ],
+      "Version": "2012-10-17"
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {
