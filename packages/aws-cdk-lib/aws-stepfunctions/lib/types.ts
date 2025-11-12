@@ -46,9 +46,9 @@ export interface ICatchable {
    *
    * @param handler Next state to transition to after error is caught
    * @param props Catch configuration
-   * @returns The resulting chain
+   * @returns The state itself
    */
-  addCatch(handler: IChainable, props?: CatchProps): INextable;
+  addCatch(handler: IChainable, props?: CatchProps): this;
 }
 
 /**
