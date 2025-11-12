@@ -9,6 +9,7 @@
     "directory": "tools/@aws-cdk/spec2cdk"
   },
   "bin": {
+    "cfn2ts": "bin/cfn2ts",
     "spec2cdk": "bin/spec2cdk"
   },
   "main": "./lib/index.js",

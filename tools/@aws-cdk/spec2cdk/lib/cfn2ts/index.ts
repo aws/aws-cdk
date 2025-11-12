@@ -1,4 +1,5 @@
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
+import type { ModuleImportLocations } from '../cdk/cdk';
 import { generate as generateModules } from '../generate';
 import { ModuleMap, readModuleMap } from '../module-topology';
 import * as naming from '../naming';
@@ -20,29 +21,39 @@ export interface GenerateAllOptions {
   readonly skippedServices?: string[];
 
   /**
+   * How to import the core library.
+   *
+   * @default '@aws-cdk/core'
+   */
+  readonly coreImport?: string;
+
+  /**
    * Automatically generate service suffixes
    *
    * @default false
    */
   readonly autoGenerateSuffixes?: boolean;
+
+  /**
+   * Path of cloudwatch import to use when generating augmentation source
+   * files.
+   *
+   * @default '@aws-cdk/aws-cloudwatch'
+   */
+  cloudwatchImport?: string;
 }
 
 /**
  * Generates L1s for all submodules of a monomodule. Modules to generate are
- * chosen based on the contents of the `scopeMapPath` file.
- *
- * This is intended for use in generated L1s in aws-cdk-lib, and gets called whenever
- * `yarn gen` is run.
- *
- * Code-generates all L1s, and writes the necessary index files.
- *
+ * chosen based on the contents of the `scopeMapPath` file. This is intended for
+ * use in generated L1s in aws-cdk-lib.
  * @param outPath The root directory to generate L1s in
  * @param param1  Options
  * @returns       A ModuleMap containing the ModuleDefinition and CFN scopes for each generated module.
  */
 export async function generateAll(
   outPath: string,
-  { scopeMapPath, skippedServices }: GenerateAllOptions,
+  { scopeMapPath, skippedServices, ...options }: GenerateAllOptions,
 ): Promise<ModuleMap> {
   const db = await loadAwsServiceSpec();
   const allScopes = getAllScopes(db, 'cloudFormationNamespace');
@@ -70,37 +81,55 @@ export async function generateAll(
     };
   }
 
-  const moduleGenerationRequests = Object.fromEntries(
-    Object.entries(moduleMap).map(([moduleName, { scopes: services }]) => [
-      moduleName,
-      { services },
-    ]),
-  );
+  const coreModule = 'core';
+  const coreImportLocations: ModuleImportLocations = {
+    core: '.',
+    coreHelpers: './helpers-internal',
+    coreErrors: './errors',
+  };
 
   const generated = await generateModules(
-    moduleGenerationRequests,
+    Object.fromEntries(
+      Object.entries(moduleMap).map(([moduleName, { scopes: services }]) => [
+        moduleName,
+        {
+          services,
+          moduleImportLocations: moduleName === coreModule ? coreImportLocations : undefined,
+        },
+      ]),
+    ),
     {
       outputPath: outPath,
       clearOutput: false,
-      inCdkLib: true,
       filePatterns: {
         resources: '%moduleName%/lib/%serviceShortName%.generated.ts',
         augmentations: '%moduleName%/lib/%serviceShortName%-augmentations.generated.ts',
         cannedMetrics: '%moduleName%/lib/%serviceShortName%-canned-metrics.generated.ts',
       },
+      importLocations: {
+        core: options.coreImport,
+        coreHelpers: `${options.coreImport}/lib/helpers-internal`,
+        coreErrors: `${options.coreImport}/lib/errors`,
+        cloudwatch: options.cloudwatchImport,
+      },
     },
   );
 
-  return Object.fromEntries(Object.entries(generated.modules).map(([moduleName, moduleInfo]) => [
-    moduleName,
-    {
-      files: moduleInfo.outputFiles,
-      name: moduleName,
-      resources: moduleInfo.resources,
-      scopes: moduleMap[moduleName]?.scopes ?? [],
-      definition: moduleMap[moduleName]?.definition,
-      targets: moduleMap[moduleName]?.targets,
-    },
-  ]));
+  Object.keys(moduleMap).forEach((moduleName) => {
+    // Add generated resources and files to module in map
+    moduleMap[moduleName].resources = generated.modules[moduleName].map((m) => m.resources).reduce(mergeObjects, {});
+    moduleMap[moduleName].files = generated.modules[moduleName].flatMap((m) => m.outputFiles);
+  });
+
+  return moduleMap;
 }
 
+/**
+ * Reduce compatible merge objects
+ */
+function mergeObjects<T>(all: T, res: T) {
+  return {
+    ...all,
+    ...res,
+  };
+}
