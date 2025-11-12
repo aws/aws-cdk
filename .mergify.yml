@@ -1,9 +1,16 @@
 # See https://doc.mergify.io
+merge_queue:
+  # Required to force mergify to merge in place, see https://docs.mergify.com/merge-queue/parallel-checks/#inplace-checks-no-drafts
+  max_parallel_checks: 1
+  dequeued_label: null
+  queued_label: null
 queue_rules:
   - name: default-merge
+    # batch_size: 1 enables in-place checks (no draft PRs created for testing merges)
+    batch_size: 1
     update_method: merge
     merge_method: merge
-    conditions:
+    queue_conditions:
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)
       # Only if no-squash is set
@@ -14,16 +21,21 @@ queue_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
-      - status-success=validate-pr
+      - check-success=validate-pr
+      - check-success=build
+      - or:
+        - "-label~=pr/needs-integration-tests-deployment"
+        - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
 
   - name: priority-squash
+    # batch_size: 1 enables in-place checks (no draft PRs created for testing merges)
+    batch_size: 1
     update_method: merge
     merge_method: squash
-    conditions:
+    queue_conditions:
       - base!=release
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge|no-squash)
@@ -34,16 +46,21 @@ queue_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
-      - status-success=validate-pr
+      - check-success=validate-pr
+      - check-success=build
+      - or:
+        - "-label~=pr/needs-integration-tests-deployment"
+        - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
 
   - name: default-squash
+    # batch_size: 1 enables in-place checks (no draft PRs created for testing merges)
+    batch_size: 1
     update_method: merge
     merge_method: squash
-    conditions:
+    queue_conditions:
       - base!=release
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge|no-squash|priority-pr)
@@ -53,8 +70,11 @@ queue_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
-      - status-success=validate-pr
+      - check-success=validate-pr
+      - check-success=build
+      - or:
+        - "-label~=pr/needs-integration-tests-deployment"
+        - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
     commit_message_template: |-
       {{ title }} (#{{ number }})
       {{ body }}
@@ -65,7 +85,7 @@ pull_request_rules:
       label:
         add: [contribution/core]
     conditions:
-      - author~=^(rix0rrr|iliapolo|otaviomacedo|kaizencc|TheRealAmazonKendra|mrgrain|pahud|ashishdhingra|kellertk|moelasmar|paulhcsun|GavinZZ|xazhao|gracelu0|shikha372|QuantumNeuralCoder|godwingrs22|bergjaak|samson-keung|IanKonlog|Leo10Gama|scorbiere|jiayiwang7|saiyush|5d|iankhou|SimonCMoore|maharajhaider|Y-JayKim|astiwana|ykethan|aemada-aws|ozelalisen|abogical|alinko-aws|vishaalmehrishi|alvazjor|kumsmrit|kumvprat|leonmk-aws|matboros|gasolima)$
+      - author=@aws/aws-cdk-team
       - -label~="contribution/core"
   - name: automatic merge
     actions:
@@ -85,8 +105,11 @@ pull_request_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
-      - status-success=validate-pr
+      - check-success=validate-pr
+      - check-success=build
+      - or:
+        - "-label~=pr/needs-integration-tests-deployment"
+        - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
   - name: automatic priority merge
     actions:
       comment:
@@ -106,8 +129,11 @@ pull_request_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
-      - status-success=validate-pr
+      - check-success=validate-pr
+      - check-success=build
+      - or:
+        - "-label~=pr/needs-integration-tests-deployment"
+        - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
   - name: automatic merge (2+ approvers)
     actions:
       comment:
@@ -127,8 +153,11 @@ pull_request_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
-      - status-success=validate-pr
+      - check-success=validate-pr
+      - check-success=build
+      - or:
+        - "-label~=pr/needs-integration-tests-deployment"
+        - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
   - name: automatic merge (no-squash)
     actions:
       comment:
@@ -148,8 +177,11 @@ pull_request_rules:
       - -approved-reviews-by~=author
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
-      - status-success=validate-pr
+      - check-success=validate-pr
+      - check-success=build
+      - or:
+        - "-label~=pr/needs-integration-tests-deployment"
+        - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
   - name: remove stale reviews
     actions:
       dismiss_reviews:
@@ -188,8 +220,11 @@ pull_request_rules:
       - "#approved-reviews-by>=1"
       # This is important! It makes the PR Linter work.
       - "#changes-requested-reviews-by=0"
-      - status-success~=AWS CodeBuild us-east-1
-      - status-success=validate-pr
+      - check-success=validate-pr
+      - check-success=build
+      - or:
+        - "-label~=pr/needs-integration-tests-deployment"
+        - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
 priority_rules:
   - name: priority for queue `default-merge`
     conditions:

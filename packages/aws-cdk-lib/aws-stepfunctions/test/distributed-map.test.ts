@@ -72,6 +72,46 @@ describe('Distributed Map State', () => {
     });
   }),
 
+  test('State Machine With Distributed Map State and jsonata item selector', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+      maxConcurrency: 1,
+      itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      jsonataItemSelector: '{% {\"foo\": \"foo\", \"bar\": $states.input.bar} %}',
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          End: true,
+          ItemSelector: '{% {\"foo\": \"foo\", \"bar\": $states.input.bar} %}',
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: stepfunctions.ProcessorMode.DISTRIBUTED,
+              ExecutionType: stepfunctions.StateMachineType.STANDARD,
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          ItemsPath: '$.inputForMap',
+          MaxConcurrency: 1,
+        },
+      },
+    });
+  }),
+
   test('State Machine With Distributed Map State with ResultPath', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1571,6 +1611,139 @@ describe('Distributed Map State', () => {
           },
           MaxConcurrency: 1,
         },
+      },
+    });
+  }),
+
+  test('throw if using JSONPath with JSONata state machine', () => {
+    expect(() => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const writerBucket = new s3.Bucket(stack, 'TestBucket');
+
+      // WHEN
+      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+        resultWriterV2: new stepfunctions.ResultWriterV2({
+          bucket: writerBucket,
+          prefix: 'test',
+        }),
+        queryLanguage: stepfunctions.QueryLanguage.JSON_PATH,
+      });
+      map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+      new stepfunctions.StateMachine(stack, 'StateMachine', {
+        definition: map,
+        queryLanguage: stepfunctions.QueryLanguage.JSONATA,
+      });
+    }).toThrow(/'queryLanguage' can not be 'JSONPath' if set to 'JSONata' for whole state machine/);
+  }),
+
+  test('State Machine JSONPath With Distributed Map State and ItemReader, ResultWriter in JSONATA', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, false);
+    const writerBucket = new s3.Bucket(stack, 'TestBucket');
+
+    // WHEN
+    const map = stepfunctions.DistributedMap.jsonata(stack, 'DistributedMap', {
+      queryLanguage: stepfunctions.QueryLanguage.JSONATA,
+      maxConcurrency: 1,
+      itemReader: new stepfunctions.S3CsvItemReader({
+        bucket: writerBucket,
+        key: 'CSV_KEY',
+        csvHeaders: stepfunctions.CsvHeaders.useFirstRow(),
+      }),
+      resultWriter: new stepfunctions.ResultWriter({
+        bucket: writerBucket,
+        prefix: 'test',
+      }),
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass'));
+
+    new stepfunctions.StateMachine(stack, 'StateMachine', {
+      definition: map,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: {
+        'Fn::Join': [
+          '',
+          [
+            '{\"StartAt\":\"DistributedMap\",\"States\":{\"DistributedMap\":{\"Type\":\"Map\",\"QueryLanguage\":\"JSONata\",\"End\":true,\"ItemProcessor\":{\"ProcessorConfig\":{\"Mode\":\"DISTRIBUTED\",\"ExecutionType\":\"STANDARD\"},\"StartAt\":\"Pass\",\"States\":{\"Pass\":{\"Type\":\"Pass\",\"End\":true}}},\"MaxConcurrency\":1,\"ItemReader\":{\"Resource\":\"arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::s3:getObject\",\"ReaderConfig\":{\"InputType\":\"CSV\",\"CSVHeaderLocation\":\"FIRST_ROW\"},\"Arguments\":{\"Bucket\":\"',
+            {
+              Ref: 'TestBucket560B80BC',
+            },
+            '\",\"Key\":\"CSV_KEY\"}},\"ResultWriter\":{\"Resource\":\"arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::s3:putObject\",\"Arguments\":{\"Bucket\":\"',
+            {
+              Ref: 'TestBucket560B80BC',
+            },
+            '\",\"Prefix\":\"test\"}}}}}',
+          ],
+        ],
+      },
+    });
+  }),
+
+  test('State Machine JSONPath With Distributed Map State and ItemReader, ResultWriterV2 in JSONATA', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, true);
+    const writerBucket = new s3.Bucket(stack, 'TestBucket');
+
+    // WHEN
+    const map = stepfunctions.DistributedMap.jsonata(stack, 'DistributedMap', {
+      queryLanguage: stepfunctions.QueryLanguage.JSONATA,
+      maxConcurrency: 1,
+      itemReader: new stepfunctions.S3CsvItemReader({
+        bucket: writerBucket,
+        key: 'CSV_KEY',
+        csvHeaders: stepfunctions.CsvHeaders.useFirstRow(),
+      }),
+      resultWriterV2: new stepfunctions.ResultWriterV2({
+        bucket: writerBucket,
+        prefix: 'test',
+      }),
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass'));
+
+    new stepfunctions.StateMachine(stack, 'StateMachine', {
+      definition: map,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: {
+        'Fn::Join': [
+          '',
+          [
+            '{\"StartAt\":\"DistributedMap\",\"States\":{\"DistributedMap\":{\"Type\":\"Map\",\"QueryLanguage\":\"JSONata\",\"End\":true,\"ItemProcessor\":{\"ProcessorConfig\":{\"Mode\":\"DISTRIBUTED\",\"ExecutionType\":\"STANDARD\"},\"StartAt\":\"Pass\",\"States\":{\"Pass\":{\"Type\":\"Pass\",\"End\":true}}},\"MaxConcurrency\":1,\"ItemReader\":{\"Resource\":\"arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::s3:getObject\",\"ReaderConfig\":{\"InputType\":\"CSV\",\"CSVHeaderLocation\":\"FIRST_ROW\"},\"Arguments\":{\"Bucket\":\"',
+            {
+              Ref: 'TestBucket560B80BC',
+            },
+            '\",\"Key\":\"CSV_KEY\"}},\"ResultWriter\":{\"Resource\":\"arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::s3:putObject\",\"Arguments\":{\"Bucket\":\"',
+            {
+              Ref: 'TestBucket560B80BC',
+            },
+            '\",\"Prefix\":\"test\"}}}}}',
+          ],
+        ],
       },
     });
   }),

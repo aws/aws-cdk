@@ -12,7 +12,11 @@ import * as glue from '../lib';
  * returns an index with name 'year-month...'
  */
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-glue');
 const bucket = new s3.Bucket(stack, 'DataBucket');
 const database = new glue.Database(stack, 'MyDatabase', {

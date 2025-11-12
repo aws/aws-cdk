@@ -3,7 +3,11 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { InlineCode, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'stack');
 

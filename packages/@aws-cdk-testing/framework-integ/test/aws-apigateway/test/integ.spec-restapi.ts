@@ -14,6 +14,7 @@ class Test extends cdk.Stack {
       apiDefinition: apigateway.ApiDefinition.fromAsset(path.join(__dirname, 'sample-definition.yaml')),
       disableExecuteApiEndpoint: true,
       minCompressionSize: Size.bytes(1024),
+      binaryMediaTypes: ['image/png', 'application/pdf'],
       retainDeployments: true,
       cloudWatchRole: true,
       deployOptions: {
@@ -88,7 +89,11 @@ class Test extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const testCase = new Test(app, 'test-apigateway-spec-restapi');
 new IntegTest(app, 'apigateway-spec-restapi', {

@@ -1,6 +1,7 @@
 import { ArnComponents, ArnFormat } from './arn';
 import { CfnResource } from './cfn-resource';
 import { RESOURCE_SYMBOL } from './constants';
+import { ValidationError } from './errors';
 import { IStringProducer, Lazy } from './lazy';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
 import { Reference } from './reference';
@@ -8,54 +9,20 @@ import { RemovalPolicy } from './removal-policy';
 import { IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { Token, Tokenization } from './token';
+import { IEnvironmentAware, ResourceEnvironment } from '../../interfaces/environment-aware';
 
 // v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
 // eslint-disable-next-line import/order
 import { Construct, IConstruct } from 'constructs';
 
 /**
- * Represents the environment a given resource lives in.
- * Used as the return value for the `IResource.env` property.
+ * Interface for L2 Resource constructs.
  */
-export interface ResourceEnvironment {
-  /**
-   * The AWS account ID that this resource belongs to.
-   * Since this can be a Token
-   * (for example, when the account is CloudFormation's AWS::AccountId intrinsic),
-   * make sure to use Token.compareStrings()
-   * instead of just comparing the values for equality.
-   */
-  readonly account: string;
-
-  /**
-   * The AWS region that this resource belongs to.
-   * Since this can be a Token
-   * (for example, when the region is CloudFormation's AWS::Region intrinsic),
-   * make sure to use Token.compareStrings()
-   * instead of just comparing the values for equality.
-   */
-  readonly region: string;
-}
-
-/**
- * Interface for the Resource construct.
- */
-export interface IResource extends IConstruct {
+export interface IResource extends IConstruct, IEnvironmentAware {
   /**
    * The stack in which this resource is defined.
    */
   readonly stack: Stack;
-
-  /**
-   * The environment this resource belongs to.
-   * For resources that are created and managed by the CDK
-   * (generally, those created by creating new class instances like Role, Bucket, etc.),
-   * this is always the same as the environment of the stack they belong to;
-   * however, for imported resources
-   * (those obtained from static methods like fromRoleArn, fromBucketName, etc.),
-   * that might be different than the stack they were imported into.
-   */
-  readonly env: ResourceEnvironment;
 
   /**
    * Apply the given removal policy to this resource
@@ -116,7 +83,7 @@ export interface ResourceProps {
 }
 
 /**
- * A construct which represents an AWS resource.
+ * An L2 construct which represents an AWS resource.
  */
 export abstract class Resource extends Construct implements IResource {
   /**
@@ -156,7 +123,7 @@ export abstract class Resource extends Construct implements IResource {
     super(scope, id);
 
     if ((props.account !== undefined || props.region !== undefined) && props.environmentFromArn !== undefined) {
-      throw new Error(`Supply at most one of 'account'/'region' (${props.account}/${props.region}) and 'environmentFromArn' (${props.environmentFromArn})`);
+      throw new ValidationError(`Supply at most one of 'account'/'region' (${props.account}/${props.region}) and 'environmentFromArn' (${props.environmentFromArn})`, this);
     }
 
     Object.defineProperty(this, RESOURCE_SYMBOL, { value: true });
@@ -207,8 +174,8 @@ export abstract class Resource extends Construct implements IResource {
   public _enableCrossEnvironment(): void {
     if (!this._allowCrossEnvironment) {
       // error out - a deploy-time name cannot be used across environments
-      throw new Error(`Cannot use resource '${this.node.path}' in a cross-environment fashion, ` +
-        "the resource's physical name must be explicit set or use `PhysicalName.GENERATE_IF_NEEDED`");
+      throw new ValidationError(`Cannot use resource '${this.node.path}' in a cross-environment fashion, ` +
+        "the resource's physical name must be explicit set or use `PhysicalName.GENERATE_IF_NEEDED`", this);
     }
 
     if (!this._physicalName) {
@@ -230,7 +197,7 @@ export abstract class Resource extends Construct implements IResource {
   public applyRemovalPolicy(policy: RemovalPolicy) {
     const child = this.node.defaultChild;
     if (!child || !CfnResource.isCfnResource(child)) {
-      throw new Error('Cannot apply RemovalPolicy: no child or not a CfnResource. Apply the removal policy on the CfnResource directly.');
+      throw new ValidationError('Cannot apply RemovalPolicy: no child or not a CfnResource. Apply the removal policy on the CfnResource directly.', this);
     }
     child.applyRemovalPolicy(policy);
   }

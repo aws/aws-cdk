@@ -1,12 +1,19 @@
-import { Construct, IConstruct, DependencyGroup, Node } from 'constructs';
+import { Construct, DependencyGroup, IConstruct, Node } from 'constructs';
 import { Grant } from './grant';
-import { CfnRole } from './iam.generated';
+import { CfnRole, IRoleRef, RoleReference } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy, ManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { AccountPrincipal, AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment, ServicePrincipal } from './principals';
+import {
+  AccountPrincipal,
+  AddToPrincipalPolicyResult,
+  ArnPrincipal,
+  IPrincipal,
+  PrincipalPolicyFragment,
+  ServicePrincipal,
+} from './principals';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { ImmutableRole } from './private/immutable-role';
 import { ImportedRole } from './private/imported-role';
@@ -14,8 +21,25 @@ import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './private/util';
 import * as cxschema from '../../cloud-assembly-schema';
-import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations, RemovalPolicy, ContextProvider } from '../../core';
-import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '../../core/lib/helpers-internal';
+import {
+  Annotations,
+  ArnFormat,
+  Aspects,
+  ContextProvider,
+  Duration,
+  RemovalPolicy,
+  Resource,
+  Stack,
+  Token,
+  TokenComparison,
+  ValidationError,
+} from '../../core';
+import {
+  CUSTOMIZE_ROLES_CONTEXT_KEY,
+  CustomizeRoleConfig,
+  getCustomizeRolesConfig,
+  getPrecreatedRoleConfig,
+} from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -265,7 +289,7 @@ export class Role extends Resource implements IRole {
    */
   public static fromLookup(scope: Construct, id: string, options: RoleLookupOptions): IRole {
     if (Token.isUnresolved(options.roleName)) {
-      throw new Error('All arguments to look up a role must be concrete (no Tokens)');
+      throw new ValidationError('All arguments to look up a role must be concrete (no Tokens)', scope);
     }
 
     const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
@@ -335,7 +359,7 @@ export class Role extends Resource implements IRole {
     }
 
     if (options.addGrantsToResources !== undefined && options.mutable !== false) {
-      throw new Error('\'addGrantsToResources\' can only be passed if \'mutable: false\'');
+      throw new ValidationError('\'addGrantsToResources\' can only be passed if \'mutable: false\'', scope);
     }
 
     const roleArnAndScopeStackAccountComparison = Token.compareStrings(roleAccount ?? '', scopeStack.account);
@@ -476,7 +500,7 @@ export class Role extends Resource implements IRole {
     addConstructMetadata(this, props);
 
     if (props.roleName && !Token.isUnresolved(props.roleName) && !/^[\w+=,.@-]{1,64}$/.test(props.roleName)) {
-      throw new Error('Invalid roleName. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 64 characters.');
+      throw new ValidationError('Invalid roleName. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 64 characters.', this);
     }
 
     const externalIds = props.externalIds || [];
@@ -489,14 +513,14 @@ export class Role extends Resource implements IRole {
     this.inlinePolicies = props.inlinePolicies || {};
     this.permissionsBoundary = props.permissionsBoundary;
     const maxSessionDuration = props.maxSessionDuration && props.maxSessionDuration.toSeconds();
-    validateMaxSessionDuration(maxSessionDuration);
+    validateMaxSessionDuration(this, maxSessionDuration);
     const description = (props.description && props.description?.length > 0) ? props.description : undefined;
 
     if (description && description.length > 1000) {
-      throw new Error('Role description must be no longer than 1000 characters.');
+      throw new ValidationError('Role description must be no longer than 1000 characters.', this);
     }
 
-    validateRolePath(props.path);
+    validateRolePath(this, props.path);
 
     const config = this.getPrecreatedRoleConfig();
     const roleArn = Stack.of(scope).formatArn({
@@ -577,6 +601,13 @@ export class Role extends Resource implements IRole {
     this.node.addValidation({ validate: () => this.validateRole() });
   }
 
+  public get roleRef(): RoleReference {
+    return {
+      roleName: this.roleName,
+      roleArn: this.roleArn,
+    };
+  }
+
   /**
    * Adds a permission to the role's default policy document.
    * If there is no default policy attached to this role, it will be created.
@@ -648,7 +679,6 @@ export class Role extends Resource implements IRole {
       grantee,
       actions,
       resourceArns: [this.roleArn],
-      scope: this,
     });
   }
 
@@ -667,7 +697,7 @@ export class Role extends Resource implements IRole {
   public grantAssumeRole(identity: IPrincipal) {
     // Service and account principals must use assumeRolePolicy
     if (identity instanceof ServicePrincipal || identity instanceof AccountPrincipal) {
-      throw new Error('Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.');
+      throw new ValidationError('Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.', this);
     }
     return this.grant(identity, 'sts:AssumeRole');
   }
@@ -680,7 +710,7 @@ export class Role extends Resource implements IRole {
    */
   public get roleId(): string {
     if (!this._roleId) {
-      throw new Error('"roleId" is not available on precreated roles');
+      throw new ValidationError('"roleId" is not available on precreated roles', this);
     }
     return this._roleId;
   }
@@ -787,7 +817,7 @@ export class Role extends Resource implements IRole {
 /**
  * A Role object
  */
-export interface IRole extends IIdentity {
+export interface IRole extends IIdentity, IRoleRef {
   /**
    * Returns the ARN of this role.
    *
@@ -836,7 +866,7 @@ function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {
   return actualDoc;
 }
 
-function validateRolePath(path?: string) {
+function validateRolePath(scope: Construct, path?: string) {
   if (path === undefined || Token.isUnresolved(path)) {
     return;
   }
@@ -844,21 +874,21 @@ function validateRolePath(path?: string) {
   const validRolePath = /^(\/|\/[\u0021-\u007F]+\/)$/;
 
   if (path.length == 0 || path.length > 512) {
-    throw new Error(`Role path must be between 1 and 512 characters. The provided role path is ${path.length} characters.`);
+    throw new ValidationError(`Role path must be between 1 and 512 characters. The provided role path is ${path.length} characters.`, scope);
   } else if (!validRolePath.test(path)) {
-    throw new Error(
+    throw new ValidationError(
       'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
-      + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${path} is provided.`);
+      + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${path} is provided.`, scope);
   }
 }
 
-function validateMaxSessionDuration(duration?: number) {
+function validateMaxSessionDuration(scope: Construct, duration?: number) {
   if (duration === undefined) {
     return;
   }
 
   if (duration < 3600 || duration > 43200) {
-    throw new Error(`maxSessionDuration is set to ${duration}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`);
+    throw new ValidationError(`maxSessionDuration is set to ${duration}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`, scope);
   }
 }
 

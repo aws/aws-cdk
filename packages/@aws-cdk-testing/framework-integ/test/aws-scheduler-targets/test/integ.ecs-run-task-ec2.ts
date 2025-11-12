@@ -18,7 +18,11 @@ import { EcsRunEc2Task } from 'aws-cdk-lib/aws-scheduler-targets';
  * The assertion checks that the cluster has tasks being run
  *
  */
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-ecs-run-task-ec2-schedule');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', {

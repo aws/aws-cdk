@@ -169,6 +169,22 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+To customize the cache key, use the `additionalCacheKey` parameter.
+This allows you to have multiple lookups with the same parameters
+cache their values separately. This can be useful if you want to
+scope the context variable to a construct (ie, using `additionalCacheKey: this.node.path`),
+so that if the value in the cache needs to be updated, it does not need to be updated
+for all constructs at the same time.
+
+```ts
+declare const vpc: ec2.Vpc;
+const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
+  machineImage: ecs.EcsOptimizedImage.amazonLinux({ cachedInContext: true, additionalCacheKey: this.node.path }),
+  vpc,
+  instanceType: new ec2.InstanceType('t2.micro'),
+});
+```
+
 To use `LaunchTemplate` with `AsgCapacityProvider`, make sure to specify the `userData` in the `LaunchTemplate`:
 
 ```ts
@@ -1575,6 +1591,8 @@ it in the constructor. Then add the Capacity Provider to the cluster. Finally,
 you can refer to the Provider by its name in your service's or task's Capacity
 Provider strategy.
 
+> **Note**: Cross-stack capacity provider registration is not supported. The ECS cluster and its capacity providers must be created in the same stack to avoid circular dependency issues.
+
 By default, Auto Scaling Group Capacity Providers will manage the scale-in and
 scale-out behavior of the auto scaling group based on the load your tasks put on
 the cluster, this is called [Managed Scaling](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/asg-capacity-providers.html#asg-capacity-providers-managed-scaling). If you'd
@@ -1638,6 +1656,110 @@ new ecs.Ec2Service(this, 'EC2Service', {
       weight: 1,
     },
   ],
+});
+```
+
+### Managed Instances Capacity Providers
+
+Managed Instances Capacity Providers allow you to use AWS-managed EC2 instances for your ECS tasks while providing more control over instance selection than standard Fargate. AWS handles the instance lifecycle, patching, and maintenance while you can specify detailed instance requirements.
+
+To create a Managed Instances Capacity Provider, you need to specify the required EC2 instance profile, and networking configuration. You can also define detailed instance requirements to control which types of instances are used for your workloads.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const infrastructureRole: iam.Role;
+declare const instanceProfile: iam.InstanceProfile;
+
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
+
+// Create a Managed Instances Capacity Provider
+const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
+  infrastructureRole,
+  ec2InstanceProfile: instanceProfile,
+  subnets: vpc.privateSubnets,
+  securityGroups: [new ec2.SecurityGroup(this, 'MISecurityGroup', { vpc })],
+  instanceRequirements: {
+    vCpuCountMin: 1,
+    memoryMin: Size.gibibytes(2),
+    cpuManufacturers: [ec2.CpuManufacturer.INTEL],
+    acceleratorManufacturers: [ec2.AcceleratorManufacturer.NVIDIA],
+  },
+  propagateTags: ecs.PropagateManagedInstancesTags.CAPACITY_PROVIDER,
+});
+
+// Optionally configure security group rules using IConnectable interface
+miCapacityProvider.connections.allowFrom(ec2.Peer.ipv4(vpc.vpcCidrBlock), ec2.Port.tcp(80));
+
+// Add the capacity provider to the cluster
+cluster.addManagedInstancesCapacityProvider(miCapacityProvider);
+
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+
+taskDefinition.addContainer('web', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  memoryReservationMiB: 256,
+});
+
+new ecs.Ec2Service(this, 'EC2Service', {
+  cluster,
+  taskDefinition,
+  minHealthyPercent: 100,
+  capacityProviderStrategies: [
+    {
+      capacityProvider: miCapacityProvider.capacityProviderName,
+      weight: 1,
+    },
+  ],
+});
+```
+
+You can specify detailed instance requirements to control which types of instances are used:
+
+```ts
+declare const infrastructureRole: iam.Role;
+declare const instanceProfile: iam.InstanceProfile;
+declare const vpc: ec2.Vpc;
+
+const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
+  infrastructureRole,
+  ec2InstanceProfile: instanceProfile,
+  subnets: vpc.privateSubnets,
+  instanceRequirements: {
+    // Required: CPU and memory constraints
+    vCpuCountMin: 2,
+    vCpuCountMax: 8,
+    memoryMin: Size.gibibytes(4),
+    memoryMax: Size.gibibytes(32),
+    
+    // CPU preferences
+    cpuManufacturers: [ec2.CpuManufacturer.INTEL, ec2.CpuManufacturer.AMD],
+    instanceGenerations: [ec2.InstanceGeneration.CURRENT],
+    
+    // Instance type filtering
+    allowedInstanceTypes: ['m5.*', 'c5.*'],
+    
+    // Performance characteristics
+    burstablePerformance: ec2.BurstablePerformance.EXCLUDED,
+    bareMetal: ec2.BareMetal.EXCLUDED,
+    
+    // Accelerator requirements (for ML/AI workloads)
+    acceleratorTypes: [ec2.AcceleratorType.GPU],
+    acceleratorManufacturers: [ec2.AcceleratorManufacturer.NVIDIA],
+    acceleratorNames: [ec2.AcceleratorName.T4, ec2.AcceleratorName.V100],
+    acceleratorCountMin: 1,
+    
+    // Storage requirements
+    localStorage: ec2.LocalStorage.REQUIRED,
+    localStorageTypes: [ec2.LocalStorageType.SSD],
+    totalLocalStorageGBMin: 100,
+    
+    // Network requirements
+    networkInterfaceCountMin: 2,
+    networkBandwidthGbpsMin: 10,
+    
+    // Cost optimization
+    onDemandMaxPricePercentageOverLowestPrice: 10,
+  },
 });
 ```
 
@@ -1954,6 +2076,9 @@ const volumeFromSnapshot = new ecs.ServiceManagedVolume(this, 'EBSVolume', {
     snapShotId: 'snap-066877671789bd71b',
     volumeType: ec2.EbsDeviceVolumeType.GP3,
     fileSystemType: ecs.FileSystemType.XFS,
+    // Specifies the Amazon EBS Provisioned Rate for Volume Initialization.
+    // Valid range is between 100 and 300 MiB/s.
+    volumeInitializationRate: Size.mebibytes(200),
   },
 });
 
@@ -2054,7 +2179,46 @@ const service = new ecs.FargateService(this, 'FargateService', {
 });
 ```
 
-## Daemon scheduling strategy
+## ECS Native Blue/Green Deployment
+
+Amazon ECS supports native blue/green deployments that allow you to deploy new versions of your services with zero downtime. This deployment strategy creates a new set of tasks (green) alongside the existing tasks (blue), then shifts traffic from the old version to the new version.
+
+[Amazon ECS blue/green deployments](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-blue-green.html)
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const lambdaHook: lambda.Function;
+declare const blueTargetGroup: elbv2.ApplicationTargetGroup;
+declare const greenTargetGroup: elbv2.ApplicationTargetGroup;
+declare const prodListenerRule: elbv2.ApplicationListenerRule;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  deploymentStrategy: ecs.DeploymentStrategy.BLUE_GREEN,
+});
+
+service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaHook, 'PreScaleHook', {
+  lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+}));
+
+const target = service.loadBalancerTarget({
+  containerName: 'nginx',
+  containerPort: 80,
+  protocol: ecs.Protocol.TCP,
+  alternateTarget: new ecs.AlternateTarget('AlternateTarget', {
+    alternateTargetGroup: greenTargetGroup,
+    productionListener: ecs.ListenerRuleConfiguration.applicationListenerRule(prodListenerRule),
+  }),
+});
+
+target.attachToApplicationTargetGroup(blueTargetGroup);
+```
+
+## Daemon Scheduling Strategy
 You can specify whether service use Daemon scheduling strategy by specifying `daemon` option in Service constructs. See [differences between Daemon and Replica scheduling strategy](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html)
 
 ```ts

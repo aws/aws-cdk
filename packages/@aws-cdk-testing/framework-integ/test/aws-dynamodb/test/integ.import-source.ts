@@ -84,7 +84,11 @@ class DynamoStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const s3Stack = new S3Stack(app, 'S3Stack');
 

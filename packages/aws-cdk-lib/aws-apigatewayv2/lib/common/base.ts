@@ -30,6 +30,7 @@ export abstract class ApiBase extends Resource implements IApi {
  * @internal
  */
 export abstract class StageBase extends Resource implements IStage {
+  private stageVariables: { [key: string]: string } = {};
   public abstract readonly stageName: string;
   protected abstract readonly baseApi: IApi;
 
@@ -43,6 +44,11 @@ export abstract class StageBase extends Resource implements IStage {
    * The URL to this stage.
    */
   abstract get url(): string;
+
+  /**
+   * The default Access Logging format of this stage.
+   */
+  abstract defaultAccessLogFormat(): AccessLogFormat;
 
   /**
    * @internal
@@ -78,7 +84,7 @@ export abstract class StageBase extends Resource implements IStage {
 
     return {
       destinationArn: props.destination.bind(this).destinationArn,
-      format: format ? format.toString() : AccessLogFormat.clf().toString(),
+      format: format ? format.toString() : this.defaultAccessLogFormat().toString(),
     };
   }
 
@@ -86,5 +92,17 @@ export abstract class StageBase extends Resource implements IStage {
     return this.baseApi.metric(metricName, props).with({
       dimensionsMap: { ApiId: this.baseApi.apiId, Stage: this.stageName },
     }).attachTo(this);
+  }
+
+  public addStageVariable(name: string, value: string) {
+    this.stageVariables[name] = value;
+  }
+
+  /**
+   * Returns the stage variables for this stage.
+   * @internal
+   */
+  protected get _stageVariables(): { [key: string]: string } | undefined {
+    return Object.keys(this.stageVariables).length > 0 ? { ...this.stageVariables } : undefined;
   }
 }

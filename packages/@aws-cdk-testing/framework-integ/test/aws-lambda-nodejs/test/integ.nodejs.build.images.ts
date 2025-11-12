@@ -12,7 +12,7 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     const runtimes: Runtime[]= [
-      Runtime.NODEJS_18_X, Runtime.NODEJS_20_X, Runtime.NODEJS_LATEST, Runtime.NODEJS_22_X,
+      Runtime.NODEJS_20_X, Runtime.NODEJS_LATEST, Runtime.NODEJS_22_X,
     ];
 
     const uniqueRuntimes: Runtime[] = runtimes.filter((value, index, array) => array.findIndex(value1 => value1.runtimeEquals(value)) === index);
@@ -31,7 +31,11 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new TestStack(app, 'cdk-integ-lambda-nodejs-latest');
 const integ = new IntegTest(app, 'LambdaNodeJsLatestInteg', {
   testCases: [stack],

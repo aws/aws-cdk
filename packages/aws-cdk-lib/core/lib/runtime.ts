@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { ValidationError } from './errors';
 
 // ----------------------------------------------------------------------
 // PROPERTY MAPPERS
@@ -336,7 +337,7 @@ export function requiredValidator(x: any) {
 export function requireProperty(props: { [name: string]: any }, name: string, context: Construct): any {
   const value = props[name];
   if (value == null) {
-    throw new Error(`${context.toString()} is missing required property: ${name}`);
+    throw new ValidationError(`${context.toString()} is missing required property: ${name}`, context);
   }
   // Possibly add type-checking here...
   return value;
@@ -398,4 +399,15 @@ function isCloudFormationDynamicReference(x: any) {
 // Cannot be public because JSII gets confused about es5.d.ts
 class CfnSynthesisError extends Error {
   public readonly type = 'CfnSynthesisError';
+}
+
+/**
+ * Ensures that a property is either undefined or a string.
+ * Used in spec2cdk to have better error messages in other languages.
+ */
+export function ensureStringOrUndefined(value: any, propName: string, possibleType: string): string | undefined {
+  if (value !== undefined && typeof value !== 'string') {
+    throw new TypeError(`Property ${propName} should be one of ${possibleType}`);
+  }
+  return value;
 }

@@ -1,10 +1,11 @@
+import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
 import { Construct } from 'constructs';
 import { Alias, AliasOptions } from './alias';
 import { Architecture } from './architecture';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
 import { IFunction, QualifiedFunctionBase } from './function-base';
-import { CfnVersion } from './lambda.generated';
+import { CfnVersion, IVersionRef, VersionReference } from './lambda.generated';
 import { addAlias } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { Fn, Lazy, RemovalPolicy, Token } from '../../core';
@@ -12,7 +13,7 @@ import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface IVersion extends IFunction {
+export interface IVersion extends IFunction, IVersionRef {
   /**
    * The most recently deployed version of this function.
    * @attribute
@@ -153,6 +154,12 @@ export class Version extends QualifiedFunctionBase implements IVersion {
         }
         return this.functionArn;
       }
+
+      public get versionRef(): VersionReference {
+        return {
+          functionArn: this.functionArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -179,6 +186,12 @@ export class Version extends QualifiedFunctionBase implements IVersion {
           throw new ValidationError('$LATEST function version cannot be used for Lambda@Edge', this);
         }
         return this.functionArn;
+      }
+
+      public get versionRef(): VersionReference {
+        return {
+          functionArn: this.functionArn,
+        };
       }
     }
     return new Import(scope, id);
@@ -207,6 +220,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       functionName: props.lambda.functionName,
       provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props),
     });
+    version.addMetadata(ArtifactMetadataEntryType.DO_NOT_REFACTOR, true);
 
     if (props.removalPolicy) {
       version.applyRemovalPolicy(props.removalPolicy, {
@@ -227,6 +241,12 @@ export class Version extends QualifiedFunctionBase implements IVersion {
         retryAttempts: props.retryAttempts,
       });
     }
+  }
+
+  public get versionRef(): VersionReference {
+    return {
+      functionArn: this.functionArn,
+    };
   }
 
   public get grantPrincipal() {

@@ -1,7 +1,7 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { App, Stack, StackProps } from 'aws-cdk-lib';
-import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import * as eks from '../lib';
 import { Construct } from 'constructs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
@@ -21,9 +21,9 @@ class EksMinimalCluster extends Construct {
     const clusterProps: any = {
       vpc: props.vpc,
       mastersRole: props.mastersRole,
-      version: eks.KubernetesVersion.V1_32,
+      version: eks.KubernetesVersion.V1_33,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV32Layer(this, 'kubectl'),
+        kubectlLayer: new KubectlV33Layer(this, 'kubectl'),
       },
       defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
     };
@@ -78,7 +78,12 @@ export class EksAutoModeNodePoolsStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack1 = new EksAutoModeBaseStack(app, 'eks-auto-mode-stack', { env: { region: 'us-east-1' } });
 const stack2 = new EksAutoModeNodePoolsStack(app, 'eks-auto-mode-empty-nodepools-stack', { env: { region: 'us-east-1' } });

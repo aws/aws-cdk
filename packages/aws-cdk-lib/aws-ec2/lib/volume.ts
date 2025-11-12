@@ -1,9 +1,21 @@
 import { Construct } from 'constructs';
-import { CfnVolume } from './ec2.generated';
-import { IInstance } from './instance';
+import { CfnVolume, IInstanceRef, IVolumeRef, VolumeReference } from './ec2.generated';
 import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IKey, ViaServicePrincipal } from '../../aws-kms';
-import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy, FeatureFlags, UnscopedValidationError, ValidationError } from '../../core';
+import {
+  FeatureFlags,
+  IResource,
+  Names,
+  RemovalPolicy,
+  Resource,
+  Size,
+  SizeRoundingBehavior,
+  Stack,
+  Tags,
+  Token,
+  UnscopedValidationError,
+  ValidationError,
+} from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -265,7 +277,7 @@ export enum EbsDeviceVolumeType {
 /**
  * An EBS Volume in AWS EC2.
  */
-export interface IVolume extends IResource {
+export interface IVolume extends IResource, IVolumeRef {
   /**
    * The EBS Volume's ID
    *
@@ -297,7 +309,7 @@ export interface IVolume extends IResource {
    *                 volume to. If not specified, then permission is granted to attach
    *                 to all instances in this account.
    */
-  grantAttachVolume(grantee: IGrantable, instances?: IInstance[]): Grant;
+  grantAttachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant;
 
   /**
    * Grants permission to attach the Volume by a ResourceTag condition. If you are looking to
@@ -328,7 +340,7 @@ export interface IVolume extends IResource {
    *                 volume from. If not specified, then permission is granted to detach
    *                 from all instances in this account.
    */
-  grantDetachVolume(grantee: IGrantable, instances?: IInstance[]): Grant;
+  grantDetachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant;
 
   /**
    * Grants permission to detach the Volume by a ResourceTag condition.
@@ -351,7 +363,7 @@ export interface VolumeProps {
   /**
    * The value of the physicalName property of this resource.
    *
-   * @default The physical name will be allocated by CloudFormation at deployment time
+   * @default - The physical name will be allocated by CloudFormation at deployment time
    */
   readonly volumeName?: string;
 
@@ -365,14 +377,14 @@ export interface VolumeProps {
    * See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html
    * for details on the allowable size for each type of volume.
    *
-   * @default If you're creating the volume from a snapshot and don't specify a volume size, the default is the snapshot size.
+   * @default - If you're creating the volume from a snapshot and don't specify a volume size, the default is the snapshot size.
    */
   readonly size?: Size;
 
   /**
    * The snapshot from which to create the volume. You must specify either a snapshot ID or a volume size.
    *
-   * @default The EBS volume is not created from a snapshot.
+   * @default - The EBS volume is not created from a snapshot.
    */
   readonly snapshotId?: string;
 
@@ -422,7 +434,7 @@ export interface VolumeProps {
    *       }
    *     }
    *
-   * @default The default KMS key for the account, region, and EC2 service is used.
+   * @default - The default KMS key for the account, region, and EC2 service is used.
    */
   readonly encryptionKey?: IKey;
 
@@ -468,6 +480,20 @@ export interface VolumeProps {
    * @default - 125 MiB/s. Only valid on gp3 volumes.
    */
   readonly throughput?: number;
+
+  /**
+   * Specifies the Amazon EBS Provisioned Rate for Volume Initialization (volume initialization rate),
+   * at which to download the snapshot blocks from Amazon S3 to the volume.
+   *
+   * Valid range is between 100 and 300 MiB/s.
+   *
+   * This parameter is supported only for volumes created from snapshots.
+   *
+   * @see https://docs.aws.amazon.com/ebs/latest/userguide/initalize-volume.html#volume-initialization-rate
+   *
+   * @default undefined - The volume initialization rate is not set.
+   */
+  readonly volumeInitializationRate?: Size;
 }
 
 /**
@@ -500,7 +526,13 @@ abstract class VolumeBase extends Resource implements IVolume {
   public abstract readonly availabilityZone: string;
   public abstract readonly encryptionKey?: IKey;
 
-  public grantAttachVolume(grantee: IGrantable, instances?: IInstance[]): Grant {
+  public get volumeRef(): VolumeReference {
+    return {
+      volumeId: this.volumeId,
+    };
+  }
+
+  public grantAttachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
       actions: ['ec2:AttachVolume'],
@@ -546,7 +578,7 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
-  public grantDetachVolume(grantee: IGrantable, instances?: IInstance[]): Grant {
+  public grantDetachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
       actions: ['ec2:DetachVolume'],
@@ -575,14 +607,14 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
-  private collectGrantResourceArns(instances?: IInstance[]): string[] {
+  private collectGrantResourceArns(instances?: IInstanceRef[]): string[] {
     const stack = Stack.of(this);
     const resourceArns: string[] = [
       `arn:${stack.partition}:ec2:${stack.region}:${stack.account}:volume/${this.volumeId}`,
     ];
     const instanceArnPrefix = `arn:${stack.partition}:ec2:${stack.region}:${stack.account}:instance`;
     if (instances) {
-      instances.forEach(instance => resourceArns.push(`${instanceArnPrefix}/${instance?.instanceId}`));
+      instances.forEach(instance => resourceArns.push(`${instanceArnPrefix}/${instance?.instanceRef.instanceId}`));
     } else {
       resourceArns.push(`${instanceArnPrefix}/*`);
     }
@@ -650,6 +682,7 @@ export class Volume extends VolumeBase {
       volumeType: props.volumeType ??
         (FeatureFlags.of(this).isEnabled(cxapi.EBS_DEFAULT_GP3) ?
           EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3 : EbsDeviceVolumeType.GENERAL_PURPOSE_SSD),
+      volumeInitializationRate: props.volumeInitializationRate?.toMebibytes(),
     });
     resource.applyRemovalPolicy(props.removalPolicy);
 
@@ -798,6 +831,19 @@ export class Volume extends VolumeBase {
           `throughput property takes a minimum of ${Min} and a maximum of ${Max}`,
           this,
         );
+      }
+    }
+
+    if (props.volumeInitializationRate) {
+      if (!props.snapshotId) {
+        throw new ValidationError('volumeInitializationRate can only be specified when creating a volume from a snapshot.', this);
+      }
+
+      if (!props.volumeInitializationRate.isUnresolved()) {
+        const rateMiBs = props.volumeInitializationRate.toMebibytes({ rounding: SizeRoundingBehavior.NONE });
+        if (rateMiBs < 100 || rateMiBs > 300) {
+          throw new ValidationError(`volumeInitializationRate must be between 100 and 300 MiB/s, got: ${rateMiBs} MiB/s`, this);
+        }
       }
     }
   }

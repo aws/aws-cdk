@@ -324,3 +324,27 @@ function InstanceResizePolicyPropertyToJson(property: EmrModifyInstanceGroupByNa
     InstanceTerminationTimeout: cdk.numberToCloudFormation(property.instanceTerminationTimeout?.toSeconds()),
   };
 }
+
+/**
+ * Render the ManagedScalingPolicyProperty to JSON
+ */
+export function ManagedScalingPolicyPropertyToJson(property: EmrCreateCluster.ManagedScalingPolicyProperty) {
+  return {
+    ComputeLimits: property.computeLimits
+      ? ManagedScalingComputeLimitsPropertyToJson(property.computeLimits)
+      : undefined,
+  };
+}
+
+/**
+ * Render the ManagedScalingComputeLimitsProperty to JSON
+ */
+export function ManagedScalingComputeLimitsPropertyToJson(property: EmrCreateCluster.ManagedScalingComputeLimitsProperty) {
+  return {
+    UnitType: property.unitType,
+    MinimumCapacityUnits: cdk.numberToCloudFormation(property.minimumCapacityUnits),
+    MaximumCapacityUnits: cdk.numberToCloudFormation(property.maximumCapacityUnits),
+    MaximumOnDemandCapacityUnits: cdk.numberToCloudFormation(property.maximumOnDemandCapacityUnits),
+    MaximumCoreCapacityUnits: cdk.numberToCloudFormation(property.maximumCoreCapacityUnits),
+  };
+}

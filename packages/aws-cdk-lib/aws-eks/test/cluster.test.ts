@@ -1508,6 +1508,21 @@ describe('cluster', () => {
       expect(template.Outputs).toBeUndefined(); // no outputs
     });
 
+    test('throws warning when `outputConfigCommand=true` and `mastersRole` is not specified', () => {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        outputConfigCommand: true,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Stack/Cluster', '\'outputConfigCommand\' will be ignored as \'mastersRole\' has not been specified. [ack: @aws-cdk/aws-eks:clusterMastersroleNotSpecified]');
+    });
+
     test('`outputClusterName` can be used to synthesize an output with the cluster name', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
@@ -2258,7 +2273,7 @@ describe('cluster', () => {
             'Fn::Join': ['', [
               'arn:',
               { Ref: 'AWS::Partition' },
-              ':iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
+              ':iam::aws:policy/AmazonEC2ContainerRegistryPullOnly',
             ]],
           },
           {
@@ -2567,7 +2582,7 @@ describe('cluster', () => {
             'Fn::Join': ['', [
               'arn:',
               { Ref: 'AWS::Partition' },
-              ':iam::aws:policy/AmazonEC2ContainerRegistryReadOnly',
+              ':iam::aws:policy/AmazonEC2ContainerRegistryPullOnly',
             ]],
           },
           {
@@ -3711,6 +3726,51 @@ describe('cluster', () => {
           },
         ],
 
+      });
+    });
+  });
+
+  describe('removal policy', () => {
+    test('user provided role and vpc do not get removal policy applied', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const userVpc = new ec2.Vpc(stack, 'UserVpc');
+      const userRole = new iam.Role(stack, 'UserRole', {
+        assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
+      });
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        vpc: userVpc,
+        role: userRole,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+
+      // User-provided VPC should not have removal policy
+      template.hasResource('AWS::EC2::VPC', {
+        DeletionPolicy: Match.absent(),
+      });
+
+      // User-provided role should not have removal policy
+      template.hasResource('AWS::IAM::Role', {
+        Properties: {
+          AssumeRolePolicyDocument: {
+            Statement: [{
+              Principal: { Service: 'eks.amazonaws.com' },
+            }],
+          },
+        },
+        DeletionPolicy: Match.absent(),
+      });
+
+      // But cluster should have removal policy
+      template.hasResource('Custom::AWSCDK-EKS-Cluster', {
+        DeletionPolicy: 'Delete',
       });
     });
   });

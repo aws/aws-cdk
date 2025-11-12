@@ -181,7 +181,11 @@ if (!hostedZoneName) throw new Error('For this test you must provide your own Ho
 const domainName = process.env.CDK_INTEG_DOMAIN_NAME ?? process.env.DOMAIN_NAME;
 if (!domainName) throw new Error('For this test you must provide your own DomainName as an env var "DOMAIN_NAME". See framework-integ/README.md for details.');
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testCase = new CognitoStack(app, 'integ-cognito', {
   hostedZoneId,
   hostedZoneName,
@@ -202,7 +206,7 @@ const signinFunction = new lambda.Function(testCase, 'Signin', {
   functionName: 'cdk-integ-alb-cognito-signin-handler',
   code: lambda.Code.fromAsset('alb-cognito-signin-handler', { exclude: ['*.ts'] }),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
   environment: {
     TEST_USERNAME: testUser.username,
     TEST_PASSWORD: testUser.password,

@@ -2,6 +2,7 @@ import { Dependable, IConstruct, IDependable } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import { IGrantable, IPrincipal } from './principals';
 import * as cdk from '../../core';
+import { IEnvironmentAware } from '../../interfaces/environment-aware';
 
 /**
  * Basic options for a grant operation
@@ -44,7 +45,7 @@ export interface GrantWithResourceOptions extends CommonGrantOptions {
    * The statement will be added to the resource policy if it couldn't be
    * added to the principal policy.
    */
-  readonly resource: IResourceWithPolicy;
+  readonly resource: IResourceWithPolicyV2;
 
   /**
    * When referring to the resource in a resource policy, use this as ARN.
@@ -68,7 +69,7 @@ export interface GrantPolicyWithResourceOptions extends GrantWithResourceOptions
    * The policy statement to add to the resource's policy
    *
    * This statement will be passed to the resource's addToResourcePolicy method.
-   * The actual handling of the statement depends on the specific IResourceWithPolicy
+   * The actual handling of the statement depends on the specific IResourceWithPolicyV2
    * implementation.
    */
   readonly statement: PolicyStatement;
@@ -83,6 +84,7 @@ export interface GrantOnPrincipalOptions extends CommonGrantOptions {
    * Construct to report warnings on in case grant could not be registered
    *
    * @default - the construct in which this construct is defined
+   * @deprecated The scope argument is currently unused.
    */
   readonly scope?: IConstruct;
 }
@@ -97,7 +99,7 @@ export interface GrantOnPrincipalAndResourceOptions extends CommonGrantOptions {
    *
    * The statement will always be added to the resource policy.
    */
-  readonly resource: IResourceWithPolicy;
+  readonly resource: IResourceWithPolicyV2;
 
   /**
    * When referring to the resource in a resource policy, use this as ARN.
@@ -138,10 +140,7 @@ export class Grant implements IDependable {
    *   resource construct.
    */
   public static addToPrincipalOrResource(options: GrantWithResourceOptions): Grant {
-    const result = Grant.addToPrincipal({
-      ...options,
-      scope: options.resource,
-    });
+    const result = Grant.addToPrincipal(options);
 
     const resourceAndPrincipalAccountComparison = options.grantee.grantPrincipal.principalAccount
       ? cdk.Token.compareStrings(options.resource.env.account, options.grantee.grantPrincipal.principalAccount)
@@ -251,7 +250,7 @@ export class Grant implements IDependable {
     }
 
     if (!addedToPrincipal.policyDependable) {
-      throw new Error('Contract violation: when Principal returns statementAdded=true, it should return a dependable');
+      throw new cdk.UnscopedValidationError('Contract violation: when Principal returns statementAdded=true, it should return a dependable');
     }
 
     return new Grant({ principalStatement: statement, options, policyDependable: addedToPrincipal.policyDependable });
@@ -267,10 +266,7 @@ export class Grant implements IDependable {
    * Statement will be the resource statement.
    */
   public static addToPrincipalAndResource(options: GrantOnPrincipalAndResourceOptions): Grant {
-    const result = Grant.addToPrincipal({
-      ...options,
-      scope: options.resource,
-    });
+    const result = Grant.addToPrincipal(options);
 
     const statement = new PolicyStatement({
       actions: options.actions,
@@ -372,8 +368,7 @@ export class Grant implements IDependable {
    */
   public assertSuccess(): void {
     if (!this.success) {
-      // eslint-disable-next-line max-len
-      throw new Error(`${describeGrant(this.options)} could not be added on either identity or resource policy.`);
+      throw new cdk.UnscopedValidationError(`${describeGrant(this.options)} could not be added on either identity or resource policy.`);
     }
   }
 
@@ -427,11 +422,22 @@ interface GrantProps {
 /**
  * A resource with a resource policy that can be added to
  */
-export interface IResourceWithPolicy extends cdk.IResource {
+export interface IResourceWithPolicyV2 extends IEnvironmentAware {
   /**
    * Add a statement to the resource's resource policy
    */
   addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult;
+}
+
+/**
+ * A resource with a resource policy that can be added to
+ *
+ * This interface is maintained for backwards compatibility, but should
+ * not be used in new code. Prefer `IResourceWithPolicyV2` instead.
+ *
+ * @deprecated Implement `IResourceWithPolicyV2` instead.
+ */
+export interface IResourceWithPolicy extends IResourceWithPolicyV2, cdk.IResource {
 }
 
 /**

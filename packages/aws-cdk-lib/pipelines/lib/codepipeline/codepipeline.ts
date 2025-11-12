@@ -21,7 +21,6 @@ import { GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../help
 import { PipelineBase } from '../main';
 import { AssetSingletonRole } from '../private/asset-singleton-role';
 import { CachedFnSub } from '../private/cached-fnsub';
-import { preferredCliVersion } from '../private/cli-version';
 import { appOf, assemblyBuilderOf, embeddedAsmPath, obtainScope } from '../private/construct-internals';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../private/default-codebuild-image';
 import { toPosixPath } from '../private/fs';
@@ -75,7 +74,7 @@ export interface CodePipelineProps {
   readonly crossAccountKeys?: boolean;
 
   /**
-   * CDK CLI version to use in self-mutation and asset publishing steps
+   * CDK CLI version to use in self-mutation step
    *
    * If you want to lock the CDK CLI version used in the pipeline, by steps
    * that are automatically generated for you, specify the version here.
@@ -96,6 +95,20 @@ export interface CodePipelineProps {
    * @default - Latest version
    */
   readonly cliVersion?: string;
+
+  /**
+   * CDK CLI version to use in asset publishing steps
+   *
+   * If you want to lock the `cdk-assets` version used in the pipeline, by steps
+   * that are automatically generated for you, specify the version here.
+   *
+   * We recommend you do not specify this value, as not specifying it always
+   * uses the latest CLI version which is backwards compatible with old versions.
+   *
+   * @see https://www.npmjs.com/package/cdk-assets
+   * @default - Latest version
+   */
+  readonly cdkAssetsCliVersion?: string;
 
   /**
    * Whether the pipeline will update itself
@@ -403,6 +416,7 @@ export class CodePipeline extends PipelineBase {
 
   private readonly singlePublisherPerAssetType: boolean;
   private readonly cliVersion?: string;
+  private readonly cdkAssetsCliVersion: string;
 
   constructor(scope: Construct, id: string, private readonly props: CodePipelineProps) {
     super(scope, id, props);
@@ -410,7 +424,8 @@ export class CodePipeline extends PipelineBase {
     this.selfMutationEnabled = props.selfMutation ?? true;
     this.dockerCredentials = props.dockerCredentials ?? [];
     this.singlePublisherPerAssetType = !(props.publishAssetsInParallel ?? true);
-    this.cliVersion = props.cliVersion ?? preferredCliVersion();
+    this.cliVersion = props.cliVersion ?? '2';
+    this.cdkAssetsCliVersion = props.cdkAssetsCliVersion ?? 'latest';
     this.useChangeSets = props.useChangeSets ?? true;
     this.stackOutputs = new StackOutputsMap(this);
     this.usePipelineRoleForActions = props.usePipelineRoleForActions ?? false;
@@ -714,6 +729,8 @@ export class CodePipeline extends PipelineBase {
             actionName: options.actionName,
             runOrder: options.runOrder,
             additionalInformation: step.comment,
+            externalEntityLink: step.reviewUrl,
+            notificationTopic: step.notificationTopic,
           }));
           return { runOrdersConsumed: 1 };
         },
@@ -879,7 +896,7 @@ export class CodePipeline extends PipelineBase {
     const script = new CodeBuildStep(node.id, {
       commands,
       installCommands: [
-        'npm install -g cdk-assets@latest',
+        `npm install -g cdk-assets@${this.cdkAssetsCliVersion}`,
       ],
       input: this._cloudAssemblyFileSet,
       buildEnvironment: {

@@ -21,13 +21,14 @@ export interface ClusterResourceProps {
   readonly vpc: ec2.IVpc;
   readonly environment?: { [key: string]: string };
   readonly subnets?: ec2.ISubnet[];
-  readonly secretsEncryptionKey?: kms.IKey;
+  readonly secretsEncryptionKey?: kms.IKeyRef;
   readonly onEventLayer?: lambda.ILayerVersion;
   readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
   readonly tags?: { [key: string]: string };
   readonly logging?: { [key: string]: [ { [key: string]: any } ] };
   readonly accessconfig?: CfnCluster.AccessConfigProperty;
   readonly remoteNetworkConfig?: CfnCluster.RemoteNetworkConfigProperty;
+  readonly bootstrapSelfManagedAddons?: boolean;
 }
 
 /**
@@ -92,6 +93,7 @@ export class ClusterResource extends Construct {
           logging: props.logging,
           accessConfig: props.accessconfig,
           remoteNetworkConfig: props.remoteNetworkConfig,
+          bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
         },
         AssumeRoleArn: this.adminRole.roleArn,
 
@@ -100,7 +102,7 @@ export class ClusterResource extends Construct {
         // doesn't contain XXX key in object" (see #8276) by incrementing this
         // number, you will effectively cause a "no-op update" to the cluster
         // which will return the new set of attribute.
-        AttributesRevision: 4,
+        AttributesRevision: 5,
       },
     });
 
@@ -210,7 +212,7 @@ export class ClusterResource extends Construct {
           'kms:DescribeKey',
           'kms:CreateGrant',
         ],
-        resources: [props.secretsEncryptionKey.keyArn],
+        resources: [props.secretsEncryptionKey.keyRef.keyArn],
       }));
     }
 

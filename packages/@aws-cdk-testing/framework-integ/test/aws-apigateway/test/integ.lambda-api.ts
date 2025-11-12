@@ -19,7 +19,7 @@ class LambdaApiIntegrationOptionsStack extends Stack {
           headers: { 'Content-Type': '*/*' }
         };
       }`),
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
     });
 
@@ -33,7 +33,11 @@ class LambdaApiIntegrationOptionsStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testCase = new LambdaApiIntegrationOptionsStack(app);
 const integ = new IntegTest(app, 'lambda-integration', {
   testCases: [testCase],

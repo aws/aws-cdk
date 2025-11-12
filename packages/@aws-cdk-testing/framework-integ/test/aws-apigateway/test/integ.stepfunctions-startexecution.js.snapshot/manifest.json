@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "44.0.0",
   "artifacts": {
     "aws-cdk-aws-apigateway-stepfunctions-startexecution.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-aws-apigateway-stepfunctions-startexecution.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/11071ca702d34295486ea4a64c45b64857f4bd23c672fe0895a0b7e753065d77.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d586e4f388d33aecce5195e8ba55d274f1f160c8404effc02a1e52dd080a5f2f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,16 +34,56 @@
         "aws-cdk-aws-apigateway-stepfunctions-startexecution.assets"
       ],
       "metadata": {
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myrestapiBAC2BF45"
           }
         ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Deployment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "api": "*",
+              "retainDeployments": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToLogicalId": [
+                {}
+              ]
+            }
+          }
+        ],
         "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myrestapiDeployment010A9D4F8d8391dd5e41be487121f43257df00d7"
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/DeploymentStage.prod": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "deployment": "*"
+            }
           }
         ],
         "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/DeploymentStage.prod/Resource": [
@@ -57,16 +98,153 @@
             "data": "myrestapiEndpoint0DE8A5DE"
           }
         ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
         "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/GET": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "methodResponses": [
+                  {
+                    "statusCode": "*",
+                    "responseParameters": "*"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*",
+                  "responseParameters": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*",
+                  "responseModels": "*"
+                }
+              ]
+            }
+          },
+          {
             "type": "aws:cdk:warning",
-            "data": "addMethodResponse called multiple times with statusCode=200, deployment will be nondeterministic. Use a single addMethodResponse call to configure the entire response."
+            "data": "addMethodResponse called multiple times with statusCode=200, deployment will be nondeterministic. Use a single addMethodResponse call to configure the entire response. [ack: @aws-cdk/aws-apigateway:duplicateStatusCodes]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*",
+                  "responseModels": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*",
+                  "responseModels": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/GET/StartSyncExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/GET/StartSyncExecutionRole/ImportStartSyncExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/GET/StartSyncExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myrestapiGETStartSyncExecutionRoleC284C05B"
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/GET/StartSyncExecutionRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/GET/StartSyncExecutionRole/DefaultPolicy/Resource": [
@@ -83,14 +261,145 @@
         ],
         "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/POST": [
           {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "resource": "*",
+              "httpMethod": "*",
+              "integration": "*",
+              "options": {
+                "methodResponses": [
+                  {
+                    "statusCode": "*",
+                    "responseParameters": "*"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*",
+                  "responseParameters": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*",
+                  "responseModels": "*"
+                }
+              ]
+            }
+          },
+          {
             "type": "aws:cdk:warning",
-            "data": "addMethodResponse called multiple times with statusCode=200, deployment will be nondeterministic. Use a single addMethodResponse call to configure the entire response."
+            "data": "addMethodResponse called multiple times with statusCode=200, deployment will be nondeterministic. Use a single addMethodResponse call to configure the entire response. [ack: @aws-cdk/aws-apigateway:duplicateStatusCodes]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*",
+                  "responseModels": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMethodResponse": [
+                {
+                  "statusCode": "*",
+                  "responseModels": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/POST/StartSyncExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/POST/StartSyncExecutionRole/ImportStartSyncExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/POST/StartSyncExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myrestapiPOSTStartSyncExecutionRole7AFBE835"
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/POST/StartSyncExecutionRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/POST/StartSyncExecutionRole/DefaultPolicy/Resource": [
@@ -103,6 +412,32 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myrestapiPOST155A9625"
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution/StateMachine": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "definitionBody": "*",
+              "stateMachineType": "EXPRESS"
+            }
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution/StateMachine/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution/StateMachine/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/aws-cdk-aws-apigateway-stepfunctions-startexecution/StateMachine/Role/Resource": [
@@ -128,15 +463,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "myrestapiDeployment010A9D4F59b46296e944eb988c600755d169a00d": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myrestapiDeployment010A9D4F59b46296e944eb988c600755d169a00d",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-cdk-aws-apigateway-stepfunctions-startexecution"
@@ -154,6 +480,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "awsapigatewaystepfunctionsstartexecutionDefaultTestDeployAssert3A9ACD49.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -194,5 +521,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1018.0"
 }

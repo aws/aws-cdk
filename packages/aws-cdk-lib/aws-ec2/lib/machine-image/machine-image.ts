@@ -252,7 +252,7 @@ export class ResolveSsmParameterAtLaunchImage implements IMachineImage {
   /**
    * Return the image to use in the given context
    */
-  public getImage(_: Construct): MachineImageConfig {
+  public getImage(_scope: Construct): MachineImageConfig {
     const versionString = this.props.parameterVersion ? `:${this.props.parameterVersion}` : '';
     const osType = this.props.os ?? OperatingSystemType.LINUX;
     return {
@@ -303,6 +303,13 @@ export interface SsmParameterImageOptions {
   readonly cachedInContext?: boolean;
 
   /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
+
+  /**
    * The version of the SSM parameter.
    *
    * @default no version specified.
@@ -328,7 +335,7 @@ class GenericSsmParameterImage implements IMachineImage {
    * Return the image to use in the given context
    */
   public getImage(scope: Construct): MachineImageConfig {
-    const imageId = lookupImage(scope, this.props.cachedInContext, this.parameterName);
+    const imageId = lookupImage(scope, this.props.cachedInContext ?? false, this.parameterName, this.props.additionalCacheKey);
 
     const osType = this.props.os ?? OperatingSystemType.LINUX;
     return {
@@ -459,6 +466,13 @@ export interface AmazonLinuxImageProps {
    * @default false
    */
   readonly cachedInContext?: boolean;
+
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
 }
 
 /**
@@ -529,7 +543,7 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
    * Return the image to use in the given context
    */
   public getImage(scope: Construct): MachineImageConfig {
-    const imageId = lookupImage(scope, this.cachedInContext, this.parameterName);
+    const imageId = lookupImage(scope, this.cachedInContext, this.parameterName, this.props.additionalCacheKey);
 
     const osType = OperatingSystemType.LINUX;
     return {
@@ -666,11 +680,16 @@ export class GenericWindowsImage implements IMachineImage {
  * will be used on future runs. To refresh the AMI lookup, you will have to
  * evict the value from the cache using the `cdk context` command. See
  * https://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.
+ * If `props.additionalCacheKey` is set, the context key uses that value as a discriminator
+ * rather than the cached value being global across all lookups.
  */
 export class LookupMachineImage implements IMachineImage {
   constructor(private readonly props: LookupMachineImageProps) {
   }
 
+  /**
+   * Return the correct image
+   */
   public getImage(scope: Construct): MachineImageConfig {
     // Need to know 'windows' or not before doing the query to return the right
     // osType for the dummy value, so might as well add it to the filter.
@@ -689,6 +708,7 @@ export class LookupMachineImage implements IMachineImage {
         filters,
       } as cxschema.AmiContextQuery,
       dummyValue: 'ami-1234',
+      additionalCacheKey: this.props.additionalCacheKey,
     }).value as cxapi.AmiContextResponse;
 
     if (typeof value !== 'string') {
@@ -742,5 +762,12 @@ export interface LookupMachineImageProps {
    * @default - Empty user data appropriate for the platform type
    */
   readonly userData?: UserData;
+
+  /**
+   * Adds an additional discriminator to the `cdk.context.json` cache key.
+   *
+   * @default - no additional cache key
+   */
+  readonly additionalCacheKey?: string;
 }
 

@@ -8,7 +8,7 @@ import { ListenerCondition } from './conditions';
 import { ITrustStore } from './trust-store';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Duration, FeatureFlags, Lazy, Resource, Token } from '../../../core';
+import { Annotations, Duration, FeatureFlags, Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
@@ -292,6 +292,10 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    if (protocol === ApplicationProtocol.HTTP && props.certificates?.length) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-elasticloadbalancingv2:httpListenerWithCertificates', 'Certificates cannot be specified for HTTP listeners. Use HTTPS instead.');
+    }
 
     this.loadBalancer = props.loadBalancer;
     this.protocol = protocol;

@@ -47,12 +47,31 @@ export function structNameFromTypeDefinition(def: TypeDefinition) {
   return `${def.name}Property`;
 }
 
+export function camelcasedResourceName(res: Resource, suffix?: string) {
+  return `${camelcase(res.name)}${suffix ?? ''}`;
+}
+
 export function classNameFromResource(res: Resource, suffix?: string) {
   return `Cfn${res.name}${suffix ?? ''}`;
 }
 
 export function propStructNameFromResource(res: Resource, suffix?: string) {
   return `${classNameFromResource(res, suffix)}Props`;
+}
+
+export function interfaceNameFromResource(res: Resource, suffix?: string) {
+  return `I${classNameFromResource(res, suffix)}`;
+}
+
+export function namespaceFromResource(res: Resource) {
+  return res.cloudFormationType.split('::').slice(0, 2).join('::');
+}
+
+/**
+ * Get the AWS namespace prefix from a resource in PascalCase for use as a type alias prefix.
+ */
+export function typeAliasPrefixFromResource(res: Resource) {
+  return camelcase(res.cloudFormationType.split('::')[1], { pascalCase: true });
 }
 
 export function cfnProducerNameFromType(struct: TypeDeclaration) {
@@ -65,6 +84,10 @@ export function cfnParserNameFromType(struct: TypeDeclaration) {
 
 export function cfnPropsValidatorNameFromType(struct: TypeDeclaration) {
   return `${qualifiedName(struct)}Validator`;
+}
+
+export function flattenFunctionNameFromType(struct: TypeDeclaration) {
+  return `flatten${qualifiedName(struct)}`;
 }
 
 export function metricsClassNameFromService(namespace: string) {
@@ -85,6 +108,49 @@ export function staticRequiredTransform() {
 
 export function attributePropertyName(attrName: string) {
   return propertyNameFromCloudFormation(`attr${attrName.replace(/[^a-zA-Z0-9]/g, '')}`);
+}
+
+/**
+ * Make sure the resource name is included in the property
+ */
+export function referencePropertyName(propName: string, resourceName: string) {
+  // Some primaryIdentifier components are structurally deep, like AWS::QuickSight::RefreshSchedule's
+  // 'schedule/scheduleId', or AWS::S3::StorageLens's `configuration/id`. Only return the last part.
+  propName = propName.split('/').pop() ?? propName;
+
+  if (['arn', 'id', 'name', 'url'].includes(propName.toLowerCase())) {
+    return `${camelcase(resourceName)}${propName.charAt(0).toUpperCase()}${propName.slice(1)}`;
+  }
+
+  return camelcase(propName);
+}
+
+export function referenceInterfaceName(resourceName: string, suffix?: string) {
+  return `I${resourceName}${suffix ?? ''}Ref`;
+}
+
+export function referenceInterfaceAttributeName(resourceName: string) {
+  return `${camelcase(resourceName)}Ref`;
+}
+
+/**
+ * namespace to module name parts (`AWS::S3` -> ['aws-s3', 'AWS', 'S3'])
+ */
+export function modulePartsFromNamespace(namespace: string) {
+  const [moduleFamily, moduleBaseName] = (namespace === 'AWS::Serverless' ? 'AWS::SAM' : namespace).split('::');
+  const moduleName = `${moduleFamily}-${moduleBaseName}`.toLocaleLowerCase();
+  return {
+    moduleName,
+    moduleFamily,
+    moduleBaseName,
+  };
+}
+
+/**
+ * Submodule identifier from name (`aws-s3` -> `aws_s3`)
+ */
+export function submoduleSymbolFromName(name: string) {
+  return name.replace(/-/g, '_');
 }
 
 /**

@@ -1,0 +1,162 @@
+{
+  "version": "44.0.0",
+  "artifacts": {
+    "SyntheticsCanaryDryRunAndUpdateStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SyntheticsCanaryDryRunAndUpdateStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SyntheticsCanaryDryRunAndUpdateStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SyntheticsCanaryDryRunAndUpdateStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ae7c6a4e014d2b1e3ee1ad38e7664f6c4606a0327578b49d5170f3754e3ed020.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SyntheticsCanaryDryRunAndUpdateStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SyntheticsCanaryDryRunAndUpdateStack.assets"
+      ],
+      "metadata": {
+        "/SyntheticsCanaryDryRunAndUpdateStack/DryRunCanary": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/SyntheticsCanaryDryRunAndUpdateStack/DryRunCanary/ArtifactsBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/SyntheticsCanaryDryRunAndUpdateStack/DryRunCanary/ArtifactsBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DryRunCanaryArtifactsBucketC5395CB9"
+          }
+        ],
+        "/SyntheticsCanaryDryRunAndUpdateStack/DryRunCanary/ArtifactsBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/SyntheticsCanaryDryRunAndUpdateStack/DryRunCanary/ArtifactsBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DryRunCanaryArtifactsBucketPolicyCEE0B66A"
+          }
+        ],
+        "/SyntheticsCanaryDryRunAndUpdateStack/DryRunCanary/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/SyntheticsCanaryDryRunAndUpdateStack/DryRunCanary/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/SyntheticsCanaryDryRunAndUpdateStack/DryRunCanary/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DryRunCanaryServiceRoleC0E4F3DB"
+          }
+        ],
+        "/SyntheticsCanaryDryRunAndUpdateStack/DryRunCanary/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DryRunCanary4A247609"
+          }
+        ],
+        "/SyntheticsCanaryDryRunAndUpdateStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SyntheticsCanaryDryRunAndUpdateStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SyntheticsCanaryDryRunAndUpdateStack"
+    },
+    "SyntheticsCanaryDryRunAndUpdateDefaultTestDeployAssertAF68FFC6.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SyntheticsCanaryDryRunAndUpdateDefaultTestDeployAssertAF68FFC6.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SyntheticsCanaryDryRunAndUpdateDefaultTestDeployAssertAF68FFC6": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SyntheticsCanaryDryRunAndUpdateDefaultTestDeployAssertAF68FFC6.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SyntheticsCanaryDryRunAndUpdateDefaultTestDeployAssertAF68FFC6.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SyntheticsCanaryDryRunAndUpdateDefaultTestDeployAssertAF68FFC6.assets"
+      ],
+      "metadata": {
+        "/SyntheticsCanaryDryRunAndUpdate/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SyntheticsCanaryDryRunAndUpdate/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SyntheticsCanaryDryRunAndUpdate/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  },
+  "minimumCliVersion": "2.1017.1"
+}

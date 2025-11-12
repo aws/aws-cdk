@@ -84,8 +84,8 @@ export abstract class CfnElement extends Construct {
    */
   public overrideLogicalId(newLogicalId: string) {
     if (this._logicalIdLocked) {
-      throw new Error(`The logicalId for resource at path ${Node.of(this).path} has been locked and cannot be overridden\n` +
-        'Make sure you are calling "overrideLogicalId" before Stack.exportValue');
+      throw new ValidationError(`The logicalId for resource at path ${Node.of(this).path} has been locked and cannot be overridden\n` +
+        'Make sure you are calling "overrideLogicalId" before Stack.exportValue', this);
     } else {
       this._logicalIdOverride = newLogicalId;
     }
@@ -206,4 +206,5 @@ function notTooLong(x: string) {
 // These imports have to be at the end to prevent circular imports
 import { CfnReference } from './private/cfn-reference';
 import { Stack } from './stack';
-import { Token } from './token';
+import { Token } from './token';import { ValidationError } from './errors';
+

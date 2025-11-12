@@ -101,7 +101,11 @@ class SNSInteg extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 const stack = new SNSInteg(app, 'SNSInteg');
 

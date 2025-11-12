@@ -4,6 +4,7 @@ import * as path from 'path';
 import { IgnoreStrategy } from './ignore';
 import { FingerprintOptions, IgnoreMode, SymlinkFollowMode } from './options';
 import { shouldFollow } from './utils';
+import { UnscopedValidationError } from '../errors';
 import { Cache } from '../private/cache';
 
 const BUFFER_SIZE = 8 * 1024;
@@ -65,11 +66,11 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   return hash.digest('hex');
 
   function _processFileOrDirectory(symbolicPath: string, isRootDir: boolean = false, realPath = symbolicPath) {
-    if (!isRootDir && ignoreStrategy.ignores(symbolicPath)) {
+    const stat = fs.lstatSync(realPath);
+
+    if (_shouldIgnore(isRootDir, symbolicPath, realPath, stat)) {
       return;
     }
-
-    const stat = fs.lstatSync(realPath);
 
     // Use relative path as hash component. Normalize it with forward slashes to ensure
     // same hash on Windows and Linux.
@@ -90,8 +91,34 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
         _processFileOrDirectory(path.join(symbolicPath, item), false, path.join(realPath, item));
       }
     } else {
-      throw new Error(`Unable to hash ${symbolicPath}: it is neither a file nor a directory`);
+      throw new UnscopedValidationError(`Unable to hash ${symbolicPath}: it is neither a file nor a directory`);
     }
+  }
+
+  function _shouldIgnore(isRootDir: boolean, symbolicPath: string, realPath: string, stat: fs.Stats) {
+    if (isRootDir) {
+      return false;
+    }
+
+    if (stat.isDirectory()) {
+      return ignoreStrategy.completelyIgnores(symbolicPath);
+    }
+
+    if (stat.isSymbolicLink()) {
+      const linkTarget = fs.readlinkSync(symbolicPath);
+      const resolvedLinkTarget = path.resolve(path.dirname(realPath), linkTarget);
+
+      if (shouldFollow(follow, rootDirectory, resolvedLinkTarget)) {
+        const targetStat = fs.statSync(resolvedLinkTarget);
+
+        // If we are following a directory symlink, we should use `completelyIgnores`.
+        if (targetStat.isDirectory()) {
+          return ignoreStrategy.completelyIgnores(symbolicPath);
+        }
+      }
+    }
+
+    return ignoreStrategy.ignores(symbolicPath);
   }
 }
 

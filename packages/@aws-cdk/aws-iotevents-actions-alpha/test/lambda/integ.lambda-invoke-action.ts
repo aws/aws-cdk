@@ -18,7 +18,7 @@ class TestStack extends cdk.Stack {
       attributeJsonPaths: ['payload.deviceId'],
     });
     const func = new lambda.Function(this, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`
         exports.handler = (event) => {
@@ -43,6 +43,10 @@ class TestStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 new TestStack(app, 'lambda-invoke-action-test-stack');
 app.synth();

@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.odb"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.ODB"
+    },
+    "python": {
+      "module": "aws_cdk.aws_odb"
+    }
+  }
+}

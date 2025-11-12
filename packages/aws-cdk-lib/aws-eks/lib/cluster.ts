@@ -26,7 +26,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as ssm from '../../aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, ValidationError, UnscopedValidationError } from '../../core';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, ValidationError, UnscopedValidationError, RemovalPolicy, RemovalPolicies } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -507,7 +507,10 @@ export interface CommonClusterOptions {
   /**
    * Determines whether a CloudFormation output with the `aws eks
    * update-kubeconfig` command will be synthesized. This command will include
-   * the cluster name and, if applicable, the ARN of the masters IAM role.
+   * the cluster name and the ARN of the masters IAM role.
+   *
+   * Note: If mastersRole is not specified, this property will be ignored and no config command will be emitted.
+   * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_eks-readme.html#masters-role
    *
    * @default true
    */
@@ -661,7 +664,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    *            all etcd volumes used by Amazon EKS are encrypted at the disk-level
    *            using AWS-Managed encryption keys.
    */
-  readonly secretsEncryptionKey?: kms.IKey;
+  readonly secretsEncryptionKey?: kms.IKeyRef;
 
   /**
    * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
@@ -713,6 +716,22 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - none
    */
   readonly remotePodNetworks?: RemotePodNetwork[];
+
+  /**
+   * The removal policy applied to all CloudFormation resources created by this construct
+   * when they are no longer managed by CloudFormation.
+   *
+   * This can happen in one of three situations:
+     - The resource is removed from the template, so CloudFormation stops managing it;
+     - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it;
+     - The stack is deleted, so CloudFormation stops managing all resources in it.
+   *
+   * This affects the EKS cluster itself, associated IAM roles, node groups, security groups, VPC
+   * and any other CloudFormation resources managed by this construct.
+   *
+   * @default - Resources will be deleted.
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -855,6 +874,17 @@ export interface ClusterProps extends ClusterOptions {
    * @default true
    */
   readonly bootstrapClusterCreatorAdminPermissions?: boolean;
+
+  /**
+   * If you set this value to False when creating a cluster, the default networking add-ons will not be installed.
+   * The default networking addons include vpc-cni, coredns, and kube-proxy.
+   * Use this option when you plan to install third-party alternative add-ons or self-manage the default networking add-ons.
+   *
+   * Changing this value after the cluster has been created will result in the cluster being replaced.
+   *
+   * @default true
+   */
+  readonly bootstrapSelfManagedAddons?: boolean;
 
   /**
    * The tags assigned to the EKS cluster
@@ -1017,6 +1047,24 @@ export class KubernetesVersion {
    * `@aws-cdk/lambda-layer-kubectl-v32`.
    */
   public static readonly V1_32 = KubernetesVersion.of('1.32');
+
+  /**
+   * Kubernetes version 1.33
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV33Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v33`.
+   */
+  public static readonly V1_33 = KubernetesVersion.of('1.33');
+
+  /**
+   * Kubernetes version 1.34
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV34Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v34`.
+   */
+  public static readonly V1_34 = KubernetesVersion.of('1.34');
 
   /**
    * Custom cluster version
@@ -1730,7 +1778,7 @@ export class Cluster extends ClusterBase {
       ...(props.secretsEncryptionKey ? {
         encryptionConfig: [{
           provider: {
-            keyArn: props.secretsEncryptionKey.keyArn,
+            keyArn: props.secretsEncryptionKey.keyRef.keyArn,
           },
           resources: ['secrets'],
         }],
@@ -1749,6 +1797,7 @@ export class Cluster extends ClusterBase {
       onEventLayer: this.onEventLayer,
       tags: props.tags,
       logging: this.logging,
+      bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
@@ -1862,6 +1911,10 @@ export class Cluster extends ClusterBase {
         this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity }) : undefined;
     }
 
+    if (props.outputConfigCommand && !props.mastersRole) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:clusterMastersroleNotSpecified', '\'outputConfigCommand\' will be ignored as \'mastersRole\' has not been specified.');
+    }
+
     const outputConfigCommand = (props.outputConfigCommand ?? true) && props.mastersRole;
     if (outputConfigCommand) {
       const postfix = commonCommandOptions.join(' ');
@@ -1870,6 +1923,11 @@ export class Cluster extends ClusterBase {
     }
 
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
+
+    // Apply removal policy to all CFN resources created under this construct.
+    if (props.removalPolicy) {
+      RemovalPolicies.of(this).apply(props.removalPolicy);
+    }
   }
 
   /**

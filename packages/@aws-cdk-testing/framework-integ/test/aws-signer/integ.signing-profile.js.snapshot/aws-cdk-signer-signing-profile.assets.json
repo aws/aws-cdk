@@ -1,15 +1,16 @@
 {
-  "version": "34.0.0",
+  "version": "48.0.0",
   "files": {
-    "bb5554b18d5450c7ca1e64100800a89c7f35242a1286267155fa2f0bae8ae2de": {
+    "8847e350798f40eef67ada24fc62b6c77bf7e91d10f224ec89284202c6bbf5d0": {
+      "displayName": "aws-cdk-signer-signing-profile Template",
       "source": {
         "path": "aws-cdk-signer-signing-profile.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-9d5b9b00": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "bb5554b18d5450c7ca1e64100800a89c7f35242a1286267155fa2f0bae8ae2de.json",
+          "objectKey": "8847e350798f40eef67ada24fc62b6c77bf7e91d10f224ec89284202c6bbf5d0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

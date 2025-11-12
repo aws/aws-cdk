@@ -5,11 +5,6 @@ import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
 
-/*
- * Stack verification steps:
- * * aws lambda invoke --function-name <deployed fn name> --invocation-type Event --payload '"OK"' response.json
- */
-
 class TestStack extends Stack {
   public readonly functionName: string;
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -18,14 +13,22 @@ class TestStack extends Stack {
     const entry = path.join(__dirname, 'lambda-handler-custom-build');
     const fn = new lambda.PythonFunction(this, 'my_handler', {
       entry: entry,
-      bundling: { image: DockerImage.fromBuild(path.join(entry)) },
-      runtime: Runtime.PYTHON_3_8,
+      bundling: {
+        image: DockerImage.fromBuild(path.join(entry), {
+          network: 'default',
+        }),
+      },
+      runtime: Runtime.PYTHON_3_13,
     });
     this.functionName = fn.functionName;
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const testCase = new TestStack(app, 'cdk-integ-lambda-custom-build');
 const integ = new IntegTest(app, 'lambda-python-custom-build', {
   testCases: [testCase],
@@ -39,4 +42,3 @@ const invoke = integ.assertions.invokeFunction({
 invoke.expect(ExpectedResult.objectLike({
   Payload: '200',
 }));
-app.synth();

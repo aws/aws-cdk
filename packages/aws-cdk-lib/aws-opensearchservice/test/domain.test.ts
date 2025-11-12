@@ -10,7 +10,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Domain, DomainProps, EngineVersion, IpAddressType, NodeOptions } from '../lib';
+import { Domain, DomainProps, EngineVersion, IpAddressType, NodeOptions, TLSSecurityPolicy } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -46,6 +46,7 @@ const testedOpenSearchVersions = [
   EngineVersion.OPENSEARCH_2_15,
   EngineVersion.OPENSEARCH_2_17,
   EngineVersion.OPENSEARCH_2_19,
+  EngineVersion.OPENSEARCH_3_1,
 ];
 
 each(testedOpenSearchVersions).test('connections throws if domain is not placed inside a vpc', (engineVersion) => {
@@ -204,6 +205,7 @@ each([
   [EngineVersion.OPENSEARCH_2_15, 'OpenSearch_2.15'],
   [EngineVersion.OPENSEARCH_2_17, 'OpenSearch_2.17'],
   [EngineVersion.OPENSEARCH_2_19, 'OpenSearch_2.19'],
+  [EngineVersion.OPENSEARCH_3_1, 'OpenSearch_3.1'],
 ]).test('minimal example renders correctly', (engineVersion, expectedCfVersion) => {
   new Domain(stack, 'Domain', { version: engineVersion });
 
@@ -1789,6 +1791,59 @@ each(testedOpenSearchVersions).describe('custom endpoints', (engineVersion) => {
   });
 });
 
+each(testedOpenSearchVersions).describe('TLS security policy', (engineVersion) => {
+  test('defaults to TLS 1.2 when tlsSecurityPolicy is not specified', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      DomainEndpointOptions: {
+        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
+      },
+    });
+  });
+
+  test('uses TLS 1.0 when explicitly specified', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      tlsSecurityPolicy: TLSSecurityPolicy.TLS_1_0,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      DomainEndpointOptions: {
+        TLSSecurityPolicy: 'Policy-Min-TLS-1-0-2019-07',
+      },
+    });
+  });
+
+  test('uses TLS 1.2 when explicitly specified', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      tlsSecurityPolicy: TLSSecurityPolicy.TLS_1_2,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      DomainEndpointOptions: {
+        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
+      },
+    });
+  });
+
+  test('uses TLS 1.2 PFS when explicitly specified', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      tlsSecurityPolicy: TLSSecurityPolicy.TLS_1_2_PFS,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      DomainEndpointOptions: {
+        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-PFS-2023-10',
+      },
+    });
+  });
+});
+
 each(testedOpenSearchVersions).describe('custom error responses', (engineVersion) => {
   test('error when availabilityZoneCount does not match vpcOptions.subnets length', () => {
     const vpc = new Vpc(stack, 'Vpc', {
@@ -1951,6 +2006,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
     'im4gn.2xlarge.search',
     'i4g.large.search',
     'i4i.xlarge.search',
+    'i8g.4xlarge.search',
     'r7gd.xlarge.search',
   ])('error when %s instance type is specified with EBS enabled', (dataNodeInstanceType) => {
     expect(() => new Domain(stack, 'Domain2', {
@@ -1962,7 +2018,25 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
         volumeSize: 100,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       },
-    })).toThrow(/I3, R6GD, I4G, I4I, IM4GN and R7GD instance types do not support EBS storage volumes./);
+    })).toThrow(/I3, R6GD, I4G, I4I, I8G, IM4GN and R7GD instance types do not support EBS storage volumes./);
+  });
+
+  test.each([
+    'i3.2xlarge.search',
+    'r6gd.large.search',
+    'im4gn.2xlarge.search',
+    'i4g.large.search',
+    'i4i.xlarge.search',
+    'i8g.4xlarge.search',
+    'r7gd.xlarge.search',
+  ])('should not throw when %s instance type is specified without EBS enabled', (dataNodeInstanceType) => {
+    expect(() => new Domain(stack, 'Domain2', {
+      version: engineVersion,
+      capacity: {
+        dataNodeInstanceType,
+      },
+      ebs: { enabled: false },
+    })).not.toThrow();
   });
 
   test.each([
@@ -2003,7 +2077,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
       capacity: {
         masterNodeInstanceType,
       },
-    })).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, I4I, IM4GN or R7GD./);
+    })).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, I4I, I8G, IM4GN or R7GD./);
   });
 
   test('can use compatible master instance types that does not have local storage when data node type is i3 or r6gd', () => {

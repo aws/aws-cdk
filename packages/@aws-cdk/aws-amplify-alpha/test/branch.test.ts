@@ -3,6 +3,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { SecretValue, Stack } from 'aws-cdk-lib';
 import * as amplify from '../lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 let stack: Stack;
 let app: amplify.App;
@@ -141,4 +142,50 @@ test('with performance mode', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Branch', {
     EnablePerformanceMode: true,
   });
+});
+
+test('with skew protection', () => {
+  // WHEN
+  app.addBranch('dev', {
+    skewProtection: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Branch', {
+    EnableSkewProtection: true,
+  });
+});
+
+test('with compute role', () => {
+  // WHEN
+  const computeRole = new iam.Role(stack, 'ComputeRole', {
+    assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
+  });
+
+  const ssrApp = new amplify.App(stack, 'SsrApp', {
+    platform: amplify.Platform.WEB_COMPUTE,
+  });
+
+  ssrApp.addBranch('main', { computeRole });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Branch', {
+    ComputeRoleArn: stack.resolve(computeRole.roleArn),
+  });
+});
+
+test('throws error when compute role provided for WEB platform', () => {
+  // WHEN
+  const computeRole = new iam.Role(stack, 'ComputeRoleWeb', {
+    assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
+  });
+
+  const webApp = new amplify.App(stack, 'WebApp', {
+    platform: amplify.Platform.WEB,
+  });
+
+  // THEN
+  expect(() => {
+    webApp.addBranch('main', { computeRole });
+  }).toThrow(/`computeRole` can only be specified for branches of apps with `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`./);
 });

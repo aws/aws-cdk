@@ -1,0 +1,33 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564": {
+      "source": {
+        "path": "asset.c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-ddc2bfd5": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "cf9b011df10f4678e4692ba4ac200ad3adfc2b6b698faa0f19de21183b102022": {
+      "displayName": "RecordFormatConversionSchemaTestDefaultTestDeployAssert82AC0CDA Template",
+      "source": {
+        "path": "RecordFormatConversionSchemaTestDefaultTestDeployAssert82AC0CDA.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-b8192f98": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cf9b011df10f4678e4692ba4ac200ad3adfc2b6b698faa0f19de21183b102022.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

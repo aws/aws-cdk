@@ -147,19 +147,6 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
 });
 ```
 
-To configure [the life cycle type of the cluster](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/extended-support.html), use the `engineLifecycleSupport` property:
-
-```ts
-declare const vpc: ec2.IVpc;
-
-new rds.DatabaseCluster(this, 'DatabaseCluster', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_0 }),
-  writer: rds.ClusterInstance.serverlessV2('writerInstance'),
-  vpc,
-  engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
-});
-```
-
 ### Updating the database instances in a cluster
 
 Database cluster instances may be updated in bulk or on a rolling basis.
@@ -280,8 +267,19 @@ things.
 > *Info* More complete details can be found [in the docs](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.setting-capacity.html#aurora-serverless-v2-examples-setting-capacity-range-for-cluster)
 
 You can also set minimum capacity to zero ACUs and automatically pause,
-if they don't have any connections initiated by user activity within a specified time period.
+if they don't have any connections initiated by user activity within a time period specified by `serverlessV2AutoPauseDuration` (300 seconds by default).
 For more information, see [Scaling to Zero ACUs with automatic pause and resume for Aurora Serverless v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html).
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_08_0 }),
+  writer: rds.ClusterInstance.serverlessV2('writer'),
+  serverlessV2MinCapacity: 0,
+  serverlessV2AutoPauseDuration: Duration.hours(1),
+  vpc,
+});
+```
 
 Another way that you control the capacity/scaling of your serverless v2 reader
 instances is based on the [promotion tier](https://aws.amazon.com/blogs/aws/additional-failover-control-for-amazon-aurora/)
@@ -419,6 +417,24 @@ Currently, CloudFormation does not support to schedule modifications of the clus
 To apply changes of the cluster, such as engine version, in the next scheduled maintenance window, you should use `modify-db-cluster` CLI command or management console.
 
 For details, see [Modifying an Amazon Aurora DB cluster](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Modifying.html).
+
+### Retaining Automated Backups
+
+By default, when a database cluster is deleted, automated backups are removed immediately unless an AWS Backup policy specifies a point-in-time restore rule. You can control this behavior using the `deleteAutomatedBackups` property:
+
+```ts
+declare const vpc: ec2.IVpc;
+// Retain automated backups after cluster deletion
+new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  writer: rds.ClusterInstance.provisioned('writer'),
+  vpc,
+  deleteAutomatedBackups: false,
+});
+```
+
+When set to `false`, automated backups are retained according to the configured retention period after the cluster is deleted. When set to `true` or not specified (default), automated backups are deleted immediately when the cluster is deleted.
+Detail about this feature can be found in the [AWS documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Managing.Backups.Retaining.html).
 
 ### Migrating from instanceProps
 
@@ -584,6 +600,18 @@ declare const sourceInstance: rds.DatabaseInstance;
 new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
   sourceDatabaseInstance: sourceInstance,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+  vpc,
+});
+```
+
+Or you can [restore a DB instance from a Multi-AZ DB cluster snapshot](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromMultiAZDBClusterSnapshot.html)
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new rds.DatabaseInstanceFromSnapshot(this, 'Instance', {
+  clusterSnapshotIdentifier: 'my-cluster-snapshot',
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
   vpc,
 });
 ```
@@ -961,7 +989,7 @@ proxy.grantConnect(role, 'admin'); // Grant the role connection access to the DB
 See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html> for setup instructions.
 
 To specify the details of authentication used by a proxy to log in as a specific database
-user use the `clientPasswordAuthType` property:
+user use the `clientPasswordAuthType` property:
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -1135,6 +1163,26 @@ const proxy = dbInstance.addProxy('proxy', {
     maxConnectionsPercent: 50,
     secrets,
     vpc,
+});
+```
+
+### Proxy Endpoint
+The following example add additional endpoint to RDS Proxy.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const secrets: secretsmanager.Secret[];
+declare const dbInstance: rds.DatabaseInstance;
+
+const proxy = dbInstance.addProxy('Proxy', {
+  secrets,
+  vpc,
+});
+
+// Add a reader endpoint
+proxy.addEndpoint('ProxyEndpoint', {
+  vpc,
+  targetRole: rds.ProxyEndpointTargetRole.READ_ONLY,
 });
 ```
 
@@ -1504,7 +1552,20 @@ new rds.DatabaseCluster(this, 'Database', {
 });
 ```
 
-Note: Database Insights are only supported for Amazon Aurora MySQL and Amazon Aurora PostgreSQL clusters.
+Database Insights is also supported for RDS instances:
+
+```ts
+declare const vpc: ec2.Vpc;
+new rds.DatabaseInstance(this, 'PostgresInstance', {
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_17_5 }),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+  vpc,
+  // If you enable the advanced mode of Database Insights,
+  // Performance Insights is enabled and you must set the `performanceInsightRetention` to 465(15 months).
+  databaseInsightsMode: rds.DatabaseInsightsMode.ADVANCED,
+  performanceInsightRetention: rds.PerformanceInsightRetention.MONTHS_15,
+});
+```
 
 > Visit [CloudWatch Database Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Database-Insights.html) for more details.
 
@@ -1553,6 +1614,29 @@ new rds.DatabaseCluster(this, 'Cluster', {
 });
 ```
 
+## Extended Support
+
+With Amazon RDS Extended Support, you can continue running your database on a major engine version past the RDS end of
+standard support date for an additional cost. To configure the life cycle type, use the `engineLifecycleSupport` property:
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new rds.DatabaseCluster(this, 'DatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_0 }),
+  writer: rds.ClusterInstance.serverlessV2('writerInstance'),
+  vpc,
+  engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
+});
+
+new rds.DatabaseInstance(this, 'DatabaseInstance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_39 }),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R7G, ec2.InstanceSize.LARGE),
+  vpc,
+  engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT_DISABLED,
+});
+```
+
 ## Importing existing DatabaseInstance
 
 ### Lookup DatabaseInstance by instanceIdentifier
@@ -1570,6 +1654,25 @@ const dbFromLookup = rds.DatabaseInstance.fromLookup(this, 'dbFromLookup', {
 
 // Grant a connection
 dbFromLookup.grantConnect(myUserRole, 'my-user-id');
+```
+
+## Importing existing DatabaseCluster
+
+### Lookup DatabaseCluster by clusterIdentifier
+
+You can lookup an existing DatabaseCluster by its clusterIdentifier using `DatabaseCluster.fromLookup()`. This method returns an `IDatabaseCluster`.
+
+Here's how `DatabaseCluster.fromLookup()` can be used:
+
+```ts
+declare const myUserRole: iam.Role;
+
+const clusterFromLookup = rds.DatabaseCluster.fromLookup(this, 'ClusterFromLookup', {
+  clusterIdentifier: 'my-cluster-id',
+});
+
+// Grant a connection
+clusterFromLookup.grantConnect(myUserRole, 'my-user-id');
 ```
 
 ## Limitless Database Cluster

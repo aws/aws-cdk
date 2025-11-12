@@ -3,7 +3,8 @@ import { SubscriptionProps } from './subscription';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
-import { ArnFormat, Names, Stack, Token, ValidationError } from '../../core';
+import { Names, ValidationError } from '../../core';
+import { regionFromArn } from './private/util';
 
 /**
  * Properties for a Lambda subscription
@@ -46,24 +47,8 @@ export class LambdaSubscription implements sns.ITopicSubscription {
       protocol: sns.SubscriptionProtocol.LAMBDA,
       filterPolicy: this.props.filterPolicy,
       filterPolicyWithMessageBody: this.props.filterPolicyWithMessageBody,
-      region: this.regionFromArn(topic),
+      region: regionFromArn(topic, this.fn),
       deadLetterQueue: this.props.deadLetterQueue,
     };
-  }
-
-  private regionFromArn(topic: sns.ITopic): string | undefined {
-    // no need to specify `region` for topics defined within the same stack.
-    if (topic instanceof sns.Topic) {
-      if (topic.stack !== this.fn.stack) {
-        // only if we know the region, will not work for
-        // env agnostic stacks
-        if (!Token.isUnresolved(topic.env.region) &&
-          (topic.env.region !== this.fn.env.region)) {
-          return topic.env.region;
-        }
-      }
-      return undefined;
-    }
-    return Stack.of(topic).splitArn(topic.topicArn, ArnFormat.SLASH_RESOURCE_NAME).region;
   }
 }

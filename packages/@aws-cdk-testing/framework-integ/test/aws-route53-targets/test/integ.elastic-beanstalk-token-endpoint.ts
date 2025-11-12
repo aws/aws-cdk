@@ -7,7 +7,11 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as elasticbeanstalk from 'aws-cdk-lib/aws-elasticbeanstalk';
 import * as custom from 'aws-cdk-lib/custom-resources';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'cdk-route53-ebs-token-endpoint-integ', {
   env: {
     region: 'us-east-1',

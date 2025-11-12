@@ -12,11 +12,15 @@ import { HttpLambdaAuthorizer, HttpLambdaResponseType } from 'aws-cdk-lib/aws-ap
  * * `curl -H 'X-API-Key: 1234' <url>` should return 403
  */
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new Stack(app, 'AuthorizerInteg');
 
 const authHandler = new lambda.Function(stack, 'auth-function', {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, '..', 'auth-handler'), { exclude: ['*.ts'] }),
 });
@@ -39,7 +43,7 @@ const httpApiWithDefaultAuthorizer = new HttpApi(stack, 'MyHttpApiWithDefaultAut
 });
 
 const handler = new lambda.Function(stack, 'lambda', {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
   handler: 'index.handler',
   code: lambda.AssetCode.fromAsset(path.join(__dirname, '..', 'integ.lambda.handler'), { exclude: ['*.ts'] }),
 });
