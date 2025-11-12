@@ -3997,3 +3997,7 @@ move:aws-cdk-lib.aws_xray.ITransactionSearchConfigRef                           
 move:aws-cdk-lib.aws_xray.ResourcePolicyReference                                           aws-cdk-lib.interfaces.aws_xray.ResourcePolicyReference
 move:aws-cdk-lib.aws_xray.SamplingRuleReference                                             aws-cdk-lib.interfaces.aws_xray.SamplingRuleReference
 move:aws-cdk-lib.aws_xray.TransactionSearchConfigReference                                  aws-cdk-lib.interfaces.aws_xray.TransactionSearchConfigReference
+
+move:aws-cdk-lib.IEnvironmentAware                                                          aws-cdk-lib.interfaces.IEnvironmentAware
+move:aws-cdk-lib.ResourceEnvironment                                                        aws-cdk-lib.interfaces.ResourceEnvironment
+
