@@ -33,7 +33,7 @@ export interface ResourceReference {
 
 exports[`can generate interface types into a separate module 2`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
@@ -184,7 +184,7 @@ export type { IResourceRef, ResourceReference };"
 
 exports[`resource interface when primaryIdentifier is a property 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
@@ -335,7 +335,7 @@ export type { IResourceRef, ResourceReference };"
 
 exports[`resource interface when primaryIdentifier is an attribute 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
@@ -477,7 +477,7 @@ export type { IResourceRef, ResourceReference };"
 
 exports[`resource interface with "<Resource>Arn" 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
@@ -628,7 +628,7 @@ export type { ISomethingRef, SomethingReference };"
 
 exports[`resource interface with "Arn" 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
@@ -779,7 +779,7 @@ export type { IResourceRef, ResourceReference };"
 
 exports[`resource interface with Arn as a property and not a primaryIdentifier 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
@@ -938,7 +938,7 @@ export type { IResourceRef, ResourceReference };"
 
 exports[`resource interface with Arn as primaryIdentifier 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
@@ -1080,7 +1080,7 @@ export type { IResourceRef, ResourceReference };"
 
 exports[`resource interface with multiple primaryIdentifiers 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
@@ -1231,7 +1231,7 @@ export type { IResourceRef, ResourceReference };"
 
 exports[`resource with arnTemplate 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
@@ -1406,7 +1406,7 @@ export type { IResourceRef, ResourceReference };"
 
 exports[`resource with multiple primaryIdentifiers as properties 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
@@ -1575,7 +1575,7 @@ export type { IResourceRef, ResourceReference };"
 
 exports[`resource with optional primary identifier gets property from ref 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";

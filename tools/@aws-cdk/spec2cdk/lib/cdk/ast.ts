@@ -369,7 +369,7 @@ export class AstBuilder {
   private resolveImportPaths(sourceModule: string): ImportPaths {
     if (!this.inCdkLib) {
       return {
-        core: 'aws-cdk-lib',
+        core: 'aws-cdk-lib/core',
         interfacesEnvironmentAware: 'aws-cdk-lib/interfaces',
         coreHelpers: 'aws-cdk-lib/core/lib/helpers-internal',
         coreErrors: 'aws-cdk-lib/core/lib/errors',
