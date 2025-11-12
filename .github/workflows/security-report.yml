@@ -30,7 +30,7 @@ jobs:
           echo "pr_sha=$(cat test-results/pr_sha)" >> "$GITHUB_OUTPUT"
           echo "PR: $(cat test-results/pr_number), SHA: $(cat test-results/pr_sha)"
       - name: Publish Security Test Results 
-        uses: mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6  # v6.0.1
+        uses: mikepenz/action-junit-report@v6
         if: always()
         with:
           report_paths: 'test-results/**/cfn-guard-static.xml'
@@ -48,7 +48,7 @@ jobs:
           check_title_template: '{{TEST_NAME}}'
 
       - name: Publish Security Test Results for resolved templates
-        uses: mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6  # v6.0.1
+        uses: mikepenz/action-junit-report@v6
         if: always()
         with:
           report_paths: 'test-results/**/cfn-guard-resolved.xml'
