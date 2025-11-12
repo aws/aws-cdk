@@ -293,7 +293,8 @@ test('can generate interface types into a separate module', () => {
     resources: renderer.render(info.resourcesMod.module),
   };
 
-  expect(rendered).toMatchSnapshot();
+  expect(rendered.interfaces).toMatchSnapshot();
+  expect(rendered.resources).toMatchSnapshot();
 });
 
 function moduleForResource(resource: Resource, props: AstBuilderProps) {

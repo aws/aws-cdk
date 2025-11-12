@@ -1,8 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`can generate interface types into a separate module 1`] = `
-{
-  "interfaces": "/* eslint-disable prettier/prettier, @stylistic/max-len */
+"/* eslint-disable prettier/prettier, @stylistic/max-len */
 import { IEnvironmentAware } from "aws-cdk-lib/interfaces";
 import * as constructs from "constructs";
 
@@ -29,8 +28,11 @@ export interface ResourceReference {
    * The Id of the Resource resource.
    */
   readonly resourceId: string;
-}",
-  "resources": "/* eslint-disable prettier/prettier, @stylistic/max-len */
+}"
+`;
+
+exports[`can generate interface types into a separate module 2`] = `
+"/* eslint-disable prettier/prettier, @stylistic/max-len */
 import * as cdk from "aws-cdk-lib";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
@@ -177,8 +179,7 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
 }
-export type { IResourceRef, ResourceReference };",
-}
+export type { IResourceRef, ResourceReference };"
 `;
 
 exports[`resource interface when primaryIdentifier is a property 1`] = `
