@@ -2,6 +2,7 @@ import { Dependable, IConstruct, IDependable } from 'constructs';
 import { PolicyStatement } from './policy-statement';
 import { IGrantable, IPrincipal } from './principals';
 import * as cdk from '../../core';
+import { IEnvironmentAware } from '../../interfaces/environment-aware';
 
 /**
  * Basic options for a grant operation
@@ -421,7 +422,7 @@ interface GrantProps {
 /**
  * A resource with a resource policy that can be added to
  */
-export interface IResourceWithPolicyV2 extends cdk.IEnvironmentAware {
+export interface IResourceWithPolicyV2 extends IEnvironmentAware {
   /**
    * Add a statement to the resource's resource policy
    */

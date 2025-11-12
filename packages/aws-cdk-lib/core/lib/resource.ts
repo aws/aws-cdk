@@ -1,7 +1,6 @@
 import { ArnComponents, ArnFormat } from './arn';
 import { CfnResource } from './cfn-resource';
 import { RESOURCE_SYMBOL } from './constants';
-import { IEnvironmentAware, ResourceEnvironment } from './environment';
 import { ValidationError } from './errors';
 import { IStringProducer, Lazy } from './lazy';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
@@ -10,6 +9,7 @@ import { RemovalPolicy } from './removal-policy';
 import { IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { Token, Tokenization } from './token';
+import { IEnvironmentAware, ResourceEnvironment } from '../../interfaces/environment-aware';
 
 // v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
 // eslint-disable-next-line import/order

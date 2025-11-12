@@ -37,7 +37,7 @@ export interface ModuleMap {
 }
 
 /**
- * Reads the scope map from a file and transforms it into the type we need.
+ * Reads a module map from a file and transforms it into the type we need.
  */
 export function readModuleMap(filepath: string): ModuleMap {
   const theMap: Record<string, { scopes: Array<ModuleMapScope>; targets?: ModuleMapEntry['targets'] }> = JSON.parse(fs.readFileSync(filepath).toString());
@@ -75,14 +75,15 @@ export function readModuleMap(filepath: string): ModuleMap {
 const moduleMapPath = path.join(__dirname, '..', '..', '..', '..', 'packages', 'aws-cdk-lib', 'scripts', 'scope-map.json');
 
 /**
- * Load the global module map from the aws-cdk-lib package
+ * Loads the global module map from the `aws-cdk-lib` package.
+ * It maps every `aws-cdk-lib` submodule to the AWS service prefix in that submodule.
  */
 export function loadModuleMap(): ModuleMap {
   return readModuleMap(moduleMapPath);
 }
 
 /**
- * Update the global module map in the aws-cdk-lib package
+ * Updates the global module map in the `aws-cdk-lib` package.
  */
 export function writeModuleMap(modules: ModuleMap) {
   const newScopeMap = Object.entries(modules)

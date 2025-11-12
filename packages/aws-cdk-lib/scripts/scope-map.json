@@ -1934,5 +1934,8 @@
         "namespace": "AWS::CloudFormation"
       }
     ]
+  },
+  "interfaces": {
+    "scopes": []
   }
 }
