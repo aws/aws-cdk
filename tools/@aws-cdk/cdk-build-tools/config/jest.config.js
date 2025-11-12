@@ -11,11 +11,7 @@ module.exports = {
   // package to depend on `ts-jest` directly.
   transform: {
     '^.+\\.tsx?$': [
-      'ts-jest',
-      {
-        // Skips type checking
-        isolatedModules: true,
-      },
+      'ts-jest'
     ],
   },
   // Jest is resource greedy so this shouldn't be more than 50%
