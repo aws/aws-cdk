@@ -1023,56 +1023,6 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
 
   protected abstract get hasIndex(): boolean;
 
-  /**
-   * Adds an IAM policy statement associated with this table to an IAM
-   * principal's policy.
-   * @param grantee The principal (no-op if undefined)
-   * @param opts Options for keyActions, tableActions and streamActions
-   */
-  private combinedGrant(
-    grantee: iam.IGrantable,
-    opts: { keyActions?: string[]; tableActions?: string[]; streamActions?: string[] },
-  ): iam.Grant {
-    if (this.encryptionKey && opts.keyActions) {
-      this.encryptionKey.grant(grantee, ...opts.keyActions);
-    }
-    if (opts.tableActions) {
-      const resources = [
-        this.tableArn,
-        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
-        ...this.regionalArns,
-        ...this.regionalArns.map(arn => Lazy.string({
-          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
-        })),
-      ];
-      const ret = iam.Grant.addToPrincipalOrResource({
-        grantee,
-        actions: opts.tableActions,
-        resourceArns: resources,
-        // Use wildcard for resource policy to avoid circular dependency when grantee is a resource principal
-        // (e.g., AccountRootPrincipal). This follows the same pattern as KMS (aws-kms/lib/key.ts).
-        // resourceArns is used for principal policies, resourceSelfArns is used for resource policies.
-        resourceSelfArns: ['*'],
-        resource: this,
-      });
-      return ret;
-    }
-    if (opts.streamActions) {
-      if (!this.tableStreamArn) {
-        throw new ValidationError(`DynamoDB Streams must be enabled on the table ${this.node.path}`, this);
-      }
-      const resources = [this.tableStreamArn];
-      const ret = iam.Grant.addToPrincipalOrResource({
-        grantee,
-        actions: opts.streamActions,
-        resourceArns: resources,
-        resource: this,
-      });
-      return ret;
-    }
-    throw new ValidationError(`Unexpected 'action', ${opts.tableActions || opts.streamActions}`, this);
-  }
-
   private cannedMetric(
     fn: (dims: { TableName: string }) => cloudwatch.MetricProps,
     props?: cloudwatch.MetricOptions): cloudwatch.Metric {

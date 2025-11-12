@@ -1,10 +1,10 @@
 import * as path from 'node:path';
 import { createLibraryReadme } from '@aws-cdk/pkglint';
-import { ModuleMap, ModuleMapEntry } from '@aws-cdk/spec2cdk';
+import { topo } from '@aws-cdk/spec2cdk';
 import * as fs from 'fs-extra';
 import cloudformationInclude from './cloudformation-include';
 
-export default async function submodulesGen(modules: ModuleMap, outPath: string) {
+export default async function submodulesGen(modules: topo.ModuleMap, outPath: string) {
   for (const submodule of Object.values(modules)) {
     if (submodule.name === 'core') {
       continue;
@@ -18,7 +18,7 @@ export default async function submodulesGen(modules: ModuleMap, outPath: string)
   await cloudformationInclude(modules, outPath);
 }
 
-async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {
+async function ensureSubmodule(submodule: topo.ModuleMapEntry, modulePath: string) {
   // README.md
   const readmePath = path.join(modulePath, 'README.md');
   if (!fs.existsSync(readmePath)) {

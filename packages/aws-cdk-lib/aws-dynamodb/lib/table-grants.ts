@@ -104,6 +104,9 @@ export class TableGrants {
       actions: [...perms.READ_DATA_ACTIONS, perms.DESCRIBE_TABLE],
       resourceArns: this.arns,
       resource: this.table,
+      // Use wildcard for resource policy to avoid circular dependency when grantee is a resource principal
+      // (e.g., AccountRootPrincipal). This follows the same pattern as KMS (aws-kms/lib/key.ts).      // resourceArns is used for principal policies, resourceSelfArns is used for resource policies.
+      resourceSelfArns: ['*'],
     });
   }
 
@@ -123,6 +126,9 @@ export class TableGrants {
       actions: [...perms.WRITE_DATA_ACTIONS, perms.DESCRIBE_TABLE],
       resourceArns: this.arns,
       resource: this.table,
+      // Use wildcard for resource policy to avoid circular dependency when grantee is a resource principal
+      // (e.g., AccountRootPrincipal). This follows the same pattern as KMS (aws-kms/lib/key.ts).      // resourceArns is used for principal policies, resourceSelfArns is used for resource policies.
+      resourceSelfArns: ['*'],
     });
   }
 
@@ -143,6 +149,9 @@ export class TableGrants {
       actions: [...perms.READ_DATA_ACTIONS, ...perms.WRITE_DATA_ACTIONS, perms.DESCRIBE_TABLE],
       resourceArns: this.arns,
       resource: this.table,
+      // Use wildcard for resource policy to avoid circular dependency when grantee is a resource principal
+      // (e.g., AccountRootPrincipal). This follows the same pattern as KMS (aws-kms/lib/key.ts).      // resourceArns is used for principal policies, resourceSelfArns is used for resource policies.
+      resourceSelfArns: ['*'],
     });
   }
 
@@ -161,6 +170,9 @@ export class TableGrants {
       actions: ['dynamodb:*'],
       resourceArns: this.arns,
       resource: this.table,
+      // Use wildcard for resource policy to avoid circular dependency when grantee is a resource principal
+      // (e.g., AccountRootPrincipal). This follows the same pattern as KMS (aws-kms/lib/key.ts).      // resourceArns is used for principal policies, resourceSelfArns is used for resource policies.
+      resourceSelfArns: ['*'],
     });
   }
 }

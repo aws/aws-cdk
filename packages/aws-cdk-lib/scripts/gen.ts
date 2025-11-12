@@ -1,5 +1,5 @@
 import * as path from 'node:path';
-import { legacyGenerateAll, ModuleMap } from '@aws-cdk/spec2cdk';
+import { naming, legacyGenerateAll, topo } from '@aws-cdk/spec2cdk';
 import * as fs from 'fs-extra';
 import submodulesGen from './submodules';
 
@@ -25,11 +25,11 @@ async function main() {
   }));
 
   await updateExportsAndEntryPoints(generated);
-  await writeModuleMap(generated);
+  topo.writeModuleMap(generated);
   await submodulesGen(generated, awsCdkLibDir);
 }
 
-async function updateExportsAndEntryPoints(modules: ModuleMap) {
+async function updateExportsAndEntryPoints(modules: topo.ModuleMap) {
   const pkgJson = await fs.readJson(pkgJsonPath);
 
   const indexStatements = new Array<string>();
