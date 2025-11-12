@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e6dd551aeb56516af360e10bf1239342003fc1e0c142fd090425e84c805b50cd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/df85733ede94a8a3727522cccad68379c02894e182ef9e1e22dc6fe5b8f8c8bf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -58,18 +58,8 @@
         ],
         "/integ-apigwv2-lambda-connect-integration/Connect Function/ServiceRole": [
           {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -174,18 +164,8 @@
         ],
         "/integ-apigwv2-lambda-connect-integration/Disconnect Function/ServiceRole": [
           {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -464,6 +444,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -482,6 +463,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -952,5 +934,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1031.2"
 }

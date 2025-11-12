@@ -60,7 +60,7 @@ const $this = $E(expr.this_());
 
 export interface Referenceable {
   readonly hasArnGetter: boolean;
-  readonly refInterface: InterfaceType;
+  readonly ref: ReferenceInterfaceTypes;
 }
 
 export interface ResourceClassProps {
@@ -74,14 +74,13 @@ export interface ResourceClassProps {
 
 export class ResourceClass extends ClassType implements Referenceable {
   private readonly propsType: StructType;
-  public readonly refInterface: InterfaceType;
   private readonly decider: ResourceDecider;
   private readonly relationshipDecider: RelationshipDecider;
   private readonly converter: TypeConverter;
   private readonly module: Module;
   private _hasArnGetter: boolean = false;
   public readonly imports = new Array<SelectiveImport>();
-  private ref: ReferenceInterfaceTypes;
+  public ref: ReferenceInterfaceTypes;
 
   constructor(
     scope: IScope,
@@ -457,7 +456,7 @@ export class ResourceClass extends ClassType implements Referenceable {
 
       method.addParameter({
         name: 'resource',
-        type: this.refInterface.type,
+        type: this.ref.interfaceType,
       });
 
       return method;

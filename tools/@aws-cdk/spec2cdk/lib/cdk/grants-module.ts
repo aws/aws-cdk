@@ -46,8 +46,10 @@ export class GrantsModule extends Module {
 
       const resourceClass = resourceClasses[resource.cloudFormationType];
 
-      const refSymbol = resourceClass.refInterface.symbol;
-      this.linkSymbol(refSymbol, expr.ident(this.service.shortName).prop(refSymbol.name));
+      const refSymbol = resourceClass.ref.interfaceType.symbol;
+      if (refSymbol != null) {
+        this.linkSymbol(refSymbol, expr.ident(this.service.shortName).prop(refSymbol.name));
+      }
 
       if (!resourceClass.hasArnGetter) {
         // Without an ARN we can't create policies
@@ -55,7 +57,7 @@ export class GrantsModule extends Module {
       }
 
       const className = `${name}Grants`;
-      const refInterfaceType = resourceClass.refInterface.type;
+      const refInterfaceType = resourceClass.ref.interfaceType;
 
       const propsProperties: PropertySpec[] = [{
         name: 'resource',

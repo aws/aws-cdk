@@ -31,7 +31,7 @@ const disconnectFunction = new lambda.Function(
   'Disconnect Function',
   {
     functionName: 'process_disconnect_requests',
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_22_X,
     handler: 'index.handler',
     code: lambda.Code.fromAsset(
       path.join(__dirname, 'lambdas', 'disconnect'),

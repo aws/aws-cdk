@@ -92,7 +92,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs22.x",
     "Timeout": 5
    },
    "DependsOn": [
@@ -192,7 +192,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs22.x",
     "Timeout": 5
    },
    "DependsOn": [

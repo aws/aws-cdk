@@ -1,7 +1,7 @@
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
 import { SpecDatabase } from '@aws-cdk/service-spec-types';
-import { InterfaceType, Module, Stability, TypeScriptRenderer } from '@cdklabs/typewriter';
-import { CDK_CORE, CONSTRUCTS } from '../lib/cdk/cdk';
+import { InterfaceType, Module, Stability, StructType, TypeScriptRenderer } from '@cdklabs/typewriter';
+import { CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from '../lib/cdk/cdk';
 import { GrantsModule } from '../lib/cdk/grants-module';
 
 const renderer = new TypeScriptRenderer();
@@ -35,7 +35,7 @@ test('generates grants for methods with and without key actions', async () => {
   const refInterface = new InterfaceType(scope, {
     export: true,
     name: 'ITopicRef',
-    extends: [CONSTRUCTS.IConstruct, CDK_CORE.IEnvironmentAware],
+    extends: [CONSTRUCTS.IConstruct, CDK_INTERFACES_ENVIRONMENT_AWARE.IEnvironmentAware],
     docs: {
       summary: 'Indicates that this resource can be referenced',
       stability: Stability.Experimental,
@@ -45,7 +45,11 @@ test('generates grants for methods with and without key actions', async () => {
   module.build({
     'AWS::SNS::Topic': {
       hasArnGetter: true,
-      refInterface: refInterface,
+      ref: {
+        interfaceType: refInterface.type,
+        property: refInterface.properties[0],
+        struct: {} as unknown as StructType, // FIXME What should go here?
+      },
     },
   });
 

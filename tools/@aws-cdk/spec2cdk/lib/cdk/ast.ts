@@ -32,11 +32,6 @@ export interface AddServiceProps {
    */
   readonly destinationSubmodule?: string;
 
-  /**
-   * Override the locations modules are imported from
-   */
-  readonly importLocations?: ModuleImportLocations;
-
   readonly grantsConfig?: string;
 }
 
@@ -153,7 +148,7 @@ export class AstBuilder {
     // Sometimes we emit multiple services into the same submodule
     // (aws-kinesisanalyticsv2 gets emitted into aws-kinesisanalytics with a
     // suffix. This was a failed experiment we still need to maintain.)
-    const submod = this.createSubmodule(service, props?.destinationSubmodule, props?.importLocations, props?.grantsConfig);
+    const submod = this.createServiceSubmodule(service, props?.destinationSubmodule, props?.grantsConfig);
 
     const resourceClasses: Record<string, ResourceClass> = {};
     for (const { entity: resource } of resources) {
@@ -278,7 +273,7 @@ export class AstBuilder {
     }
   }
 
-  private createServiceSubmodule(service: Service, targetSubmodule?: string): ServiceSubmodule {
+  private createServiceSubmodule(service: Service, targetSubmodule?: string, grantsConfig?: string): ServiceSubmodule {
     const submoduleName = targetSubmodule ?? service.name;
     const key = `${submoduleName}/${service.name}`;
 
@@ -293,15 +288,11 @@ export class AstBuilder {
     const cannedMetrics = this.rememberModule(this.createCannedMetricsModule(submoduleName, service));
     const [interfaces, didCreateInterfaceModule] = this.obtainInterfaceModule(service);
 
-    const ret: ServiceSubmodule = {
     const grants = grantsConfig != null
-      ? this.rememberModule(new GrantsModule(service, this.db, JSON.parse(grantsConfig)), names.grants)
+      ? this.rememberModule(this.createGrantsModule(submoduleName, service, grantsConfig))
       : undefined;
 
-    // CannedMetricsModule fill themselves upon construction
-    const cannedMetrics = this.rememberModule(CannedMetricsModule.forService(this.db, service), names.cannedMetrics);
-
-    const ret: SubmoduleInfo = {
+    const ret: ServiceSubmodule = {
       service,
       submoduleName: submoduleName,
       resourcesMod,
@@ -366,6 +357,14 @@ export class AstBuilder {
     const filePath = this.pathsFor(moduleName, service).augmentations;
     return {
       module: new AugmentationsModule(this.db, service.shortName),
+      filePath,
+    };
+  }
+
+  private createGrantsModule(moduleName: string, service: Service, grantsConfig: string): LocatedModule<GrantsModule> {
+    const filePath = this.pathsFor(moduleName, service).grants;
+    return {
+      module: new GrantsModule(service, this.db, JSON.parse(grantsConfig)),
       filePath,
     };
   }
