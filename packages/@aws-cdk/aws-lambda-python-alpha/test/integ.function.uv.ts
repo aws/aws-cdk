@@ -2,7 +2,7 @@
 
 import * as path from 'path';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
-import { App, Duration, Stack } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import * as lambda from '../lib';
 
@@ -63,8 +63,6 @@ const integTest = new IntegTest(app, 'integ-lambda-python-uv-test', {
 functionNames.forEach(functionName => {
   const invoke = integTest.assertions.invokeFunction({
     functionName: functionName,
-  }).waitForAssertions({
-    totalTimeout: Duration.minutes(5),
   });
 
   invoke.expect(ExpectedResult.objectLike({

@@ -4,7 +4,7 @@
 import * as path from 'path';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
-import { App, Duration, Stack, StackProps } from 'aws-cdk-lib';
+import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
@@ -44,8 +44,6 @@ const integ = new IntegTest(app, 'lambda-python-vpc', {
 
 const invoke = integ.assertions.invokeFunction({
   functionName: testCase.functionName,
-}).waitForAssertions({
-  totalTimeout: Duration.minutes(5),
 });
 
 invoke.expect(ExpectedResult.objectLike({
