@@ -62,6 +62,7 @@ async function run(): Promise<void> {
     const ruleSetPath = getInput('rule_set_path', { default: './rules' });
     const baseSha = getInput('base_sha', { default: 'origin/main' });
     const headSha = getInput('head_sha', { default: 'HEAD' });
+    const enhanceXml = getInput('enhance_xml', { default: 'true' }) === 'true';
     
     setupWorkingDir(workingDir);
     setupWorkingDir(resolvedDir);
@@ -90,10 +91,10 @@ async function run(): Promise<void> {
 
     // Run CFN-Guard validation and generate XML
     core.info(`Running cfn-guard (static) with rule set: ${ruleSetPath}`);
-    const staticPassed = await runCfnGuardValidation(workingDir, ruleSetPath, staticXmlFile, 'Static', combinedMapping);
+    const staticPassed = await runCfnGuardValidation(workingDir, ruleSetPath, staticXmlFile, 'Static', combinedMapping, enhanceXml);
 
     core.info(`Running cfn-guard (resolved) with rule set: ${ruleSetPath}`);
-    const resolvedPassed = await runCfnGuardValidation(resolvedDir, ruleSetPath, resolvedXmlFile, 'Resolved', combinedMapping);
+    const resolvedPassed = await runCfnGuardValidation(resolvedDir, ruleSetPath, resolvedXmlFile, 'Resolved', combinedMapping, enhanceXml);
 
     // Generate Summary Report
     core.info('\n' + '='.repeat(60));

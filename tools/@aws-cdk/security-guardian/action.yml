@@ -11,6 +11,10 @@ inputs:
   rule_set_path:
     description: "Path to a single .guard file locally"
     required: true
+  enhance_xml:
+    description: "Enable XML enhancement for individual failure annotations"
+    required: false
+    default: 'true'
 
 outputs:
   junit_files:

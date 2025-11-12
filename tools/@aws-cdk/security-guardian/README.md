@@ -70,6 +70,7 @@ rules/
 | `rule_set_path` | Local path to the cfn-guard rules file   | Yes      | N/A           |
 | `base_sha`      | Commit SHA to compare against             | No       | `origin/main` |
 | `head_sha`      | The commit SHA for the head branch or PR | No       | `HEAD`        |
+| `enhance_xml`   | Enable XML enhancement for individual failure annotations | No | `true` |
 
 ## Outputs (GitHub Action)
 
@@ -88,6 +89,7 @@ rules/
   uses: ./tools/@aws-cdk/security-guardian
   with:
     rule_set_path: './tools/@aws-cdk/security-guardian/rules'
+    enhance_xml: 'true'  # Optional: Enable individual failure annotations (default: true)
 
 - name: Publish Security Test Results
   uses: mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6  # v6.0.1
@@ -130,9 +132,39 @@ The tool generates JUnit XML reports that can be consumed by GitHub Actions:
 - `test-results/cfn-guard-resolved.xml` - Results from templates with resolved intrinsics
 
 Use `mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6` (v6.0.1) to display rich test results in GitHub PRs with:
-- Detailed failure messages
-- File and line number references
-- Rule descriptions and remediation guidance
+- **Enhanced failure messages** - Automatically parses and formats concatenated CFN Guard failures
+- **Precise line numbers** - Exact file locations for each violation
+- **Resource identification** - Clear resource names and property paths
+- **Rule descriptions** - Detailed explanations and remediation guidance
+
+### Enhanced Failure Formatting
+
+The tool automatically enhances CFN Guard failure messages by:
+- Splitting concatenated failure messages into individual violations
+- Extracting exact line numbers and column positions
+- Identifying specific CloudFormation resources and properties
+- Formatting output for better readability in CI/CD reports
+
+**Before (Raw CFN Guard Output):**
+```
+IAM_NO_WILDCARD_ACTIONS_INLINE for Type: ResolvedCheck was not compliant as property [Policies[*].PolicyDocument.Statement[*]] is missing. Value traversed to [Path=/Resources/Role1/Properties[L:324,C:20]]Check was not compliant as property [Policies[*].PolicyDocument.Statement[*]] is missing. Value traversed to [Path=/Resources/Role2/Properties[L:485,C:20]]
+```
+
+**After (Enhanced Format):**
+```
+Rule: IAM_NO_WILDCARD_ACTIONS_INLINE (Type: ResolvedCheck)
+==================================================
+
+1. Resource: Role1
+   Location: Line 324, Column 20
+   Property: Policies[*].PolicyDocument.Statement[*]
+   Issue: is missing.
+
+2. Resource: Role2
+   Location: Line 485, Column 20
+   Property: Policies[*].PolicyDocument.Statement[*]
+   Issue: is missing.
+```
 
 ---
 

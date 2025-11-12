@@ -1,6 +1,7 @@
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import * as fs from 'fs';
+import { enhanceXmlWithFormattedFailures } from './xml-processor';
 
 function reverseFilenames(xmlContent: string, fileMapping: Map<string, string>): string {
   return xmlContent.replace(/<testsuite name="([^"]*)"/g, (match, safeName) => {
@@ -39,7 +40,8 @@ export async function runCfnGuardValidation(
   ruleSetPath: string,
   outputFile: string,
   type: string,
-  fileMapping: Map<string, string>
+  fileMapping: Map<string, string>,
+  enhanceXml: boolean = true
 ): Promise<boolean> {
   try {
     await exec.exec('sh', [
@@ -48,6 +50,9 @@ export async function runCfnGuardValidation(
     ]);
     
     postProcessXml(outputFile, fileMapping, type);
+    if (enhanceXml) {
+      enhanceXmlWithFormattedFailures(outputFile);
+    }
     
     core.info(`✅ CFN-Guard (${type}) validation passed`);
     return true;
@@ -55,6 +60,9 @@ export async function runCfnGuardValidation(
     core.warning(`⚠️ CFN-Guard (${type}) validation found issues`);
     
     postProcessXml(outputFile, fileMapping, type);
+    if (enhanceXml) {
+      enhanceXmlWithFormattedFailures(outputFile);
+    }
     
     return false;
   }

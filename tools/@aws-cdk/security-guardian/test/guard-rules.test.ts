@@ -39,7 +39,8 @@ describe('Guard Rules Validation', () => {
         path.join(rulesDir, 'iam/role-no-broad-principals.guard'),
         path.join(outputDir, 'trust-scope-test.xml'),
         'Trust Scope',
-        new Map()
+        new Map(),
+        true
       );
       
       // Should detect broad principals (validation should fail)
@@ -62,7 +63,8 @@ describe('Guard Rules Validation', () => {
         path.join(rulesDir, 'guard-hooks/no-root-principals-except-kms-secrets.guard'),
         path.join(outputDir, 'guard-hooks-test.xml'),
         'Guard Hooks',
-        new Map()
+        new Map(),
+        true
       );
       
       // Should detect violations in non-KMS resources (validation should fail)
@@ -85,7 +87,8 @@ describe('Guard Rules Validation', () => {
         path.join(rulesDir, 'iam/'),
         path.join(outputDir, 'iam-test.xml'),
         'IAM',
-        new Map()
+        new Map(),
+        true
       );
       
       // Should detect IAM violations (validation should fail)
@@ -108,7 +111,8 @@ describe('Guard Rules Validation', () => {
         path.join(rulesDir, 's3'),
         path.join(outputDir, 's3-test.xml'),
         'S3',
-        new Map()
+        new Map(),
+        true
       );
       
       // Should detect S3 violations (validation should fail)
@@ -153,7 +157,8 @@ describe('Guard Rules Validation', () => {
         path.join(rulesDir, 'codepipeline/cross-account-role-trust-scope.guard'),
         path.join(outputDir, 'codepipeline-test.xml'),
         'CodePipeline',
-        new Map()
+        new Map(),
+        true
       );
       
       // Should detect CodePipeline violations (validation should fail)
@@ -172,7 +177,8 @@ describe('Guard Rules Validation', () => {
         path.join(rulesDir, 'iam/role-no-broad-principals.guard'),
         path.join(outputDir, 'compliant-trust-test.xml'),
         'Compliant Trust',
-        new Map()
+        new Map(),
+        true
       );
       
       // Should pass validation (no violations found)
@@ -187,7 +193,8 @@ describe('Guard Rules Validation', () => {
         path.join(rulesDir, 's3/encryption-enabled.guard'),
         path.join(outputDir, 'compliant-s3-test.xml'),
         'Compliant S3',
-        new Map()
+        new Map(),
+        true
       );
       
       // Should pass validation (encryption enabled)
@@ -202,7 +209,8 @@ describe('Guard Rules Validation', () => {
         path.join(rulesDir, 'ec2/ebs-encryption-enabled.guard'),
         path.join(outputDir, 'compliant-ebs-test.xml'),
         'Compliant EBS',
-        new Map()
+        new Map(),
+        true
       );
       
       // Should pass validation (encryption enabled)
@@ -222,7 +230,8 @@ describe('Guard Rules Validation', () => {
         path.join(rulesDir, 'iam/role-no-broad-principals.guard'),
         path.join(outputDir, 'xml-success-test.xml'),
         'Success Type',
-        fileMapping
+        fileMapping,
+        true
       );
 
       expect(success).toBe(true);
@@ -247,15 +256,18 @@ describe('Guard Rules Validation', () => {
         path.join(rulesDir, 'iam/role-no-broad-principals.guard'),
         path.join(outputDir, 'xml-failure-test.xml'),
         'Failure Type',
-        fileMapping
+        fileMapping,
+        true
       );
 
       expect(success).toBe(false);
       
-      // Verify XML file exists, testsuite names are replaced, and contains type suffix in failure messages
+      // Verify XML file exists, testsuite names are replaced, and contains individual failure tags
       const xmlContent = fs.readFileSync(path.join(outputDir, 'xml-failure-test.xml'), 'utf8');
       expect(xmlContent).toContain('name="src/CMCMK-Stack.template.json"');
-      expect(xmlContent).toContain('for Type: Failure Type');
+      expect(xmlContent).toContain('type="Failure"');
+      expect(xmlContent).toContain('line="');
+      expect(xmlContent).toContain('column="');
     });
   });
 });
