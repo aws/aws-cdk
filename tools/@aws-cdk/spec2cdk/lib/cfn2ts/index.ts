@@ -99,7 +99,8 @@ export async function generateAll(
       resources: moduleInfo.resources,
       scopes: moduleMap[moduleName]?.scopes ?? [],
       definition: moduleMap[moduleName]?.definition,
-    } satisfies ModuleMapEntry,
+      targets: moduleMap[moduleName]?.targets,
+    },
   ]));
 }
 
