@@ -65,6 +65,16 @@ export interface IJobDefinition extends IResource {
   readonly timeout?: Duration;
 
   /**
+   * Specifies whether the previous revision of the job definition is retained in an active status after UPDATE events for the resource.
+   *
+   * When the property is set to false, the previous revision of the job definition is de-registered after a new revision is created.
+   * When the property is set to true, the previous revision of the job definition is not de-registered.
+   *
+   * @default undefined - AWS Batch default is false
+   */
+  readonly skipDeregisterOnUpdate?: boolean;
+
+  /**
    * Add a RetryStrategy to this JobDefinition
    */
   addRetryStrategy(strategy: RetryStrategy): void;
