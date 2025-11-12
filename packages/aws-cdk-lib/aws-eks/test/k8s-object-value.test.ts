@@ -1,5 +1,5 @@
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
-import { App, Stack, Duration } from '../../core';
+import { App, Duration, RemovalPolicy, Stack } from '../../core';
 import * as eks from '../lib';
 import { KubernetesObjectValue } from '../lib/k8s-object-value';
 
@@ -95,5 +95,31 @@ describe('k8s object value', () => {
     });
 
     expect(stack.resolve(attribute.value)).toEqual({ 'Fn::GetAtt': [expectedCustomResourceId, 'Value'] });
+  });
+
+  test('supports custom removal policy', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    // WHEN
+    new KubernetesObjectValue(stack, 'MyAttribute', {
+      cluster,
+      jsonPath: '.status',
+      objectName: 'mydeployment',
+      objectType: 'deployment',
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+
+    // THEN
+    const app = stack.node.root as App;
+    const stackTemplate = app.synth().getStackArtifact(stack.stackName).template;
+    const resource = Object.values(stackTemplate.Resources).find((r: any) =>
+      r.Type === 'Custom::AWSCDK-EKS-KubernetesObjectValue',
+    ) as any;
+    expect(resource.DeletionPolicy).toEqual('Retain');
   });
 });
