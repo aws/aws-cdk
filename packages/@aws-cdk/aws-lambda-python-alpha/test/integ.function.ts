@@ -3,7 +3,7 @@
 /// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
-import { App, CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
+import { App, CfnOutput, Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
@@ -72,6 +72,8 @@ const integ = new IntegTest(app, 'lambda-python-function', {
 testCase.functionNames.forEach(functionName => {
   const invoke = integ.assertions.invokeFunction({
     functionName: functionName,
+  }).waitForAssertions({
+    totalTimeout: Duration.minutes(5),
   });
 
   invoke.expect(ExpectedResult.objectLike({

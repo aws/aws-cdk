@@ -259,6 +259,8 @@ const integ = new IntegTest(app, 'poetry', {
 testCase.functionNames.forEach(functionName => {
   const invoke = integ.assertions.invokeFunction({
     functionName: functionName,
+  }).waitForAssertions({
+    totalTimeout: Duration.minutes(5),
   });
 
   invoke.expect(ExpectedResult.objectLike({
