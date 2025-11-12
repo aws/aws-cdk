@@ -41,10 +41,10 @@ jobs:
           comment: true
           pr_id: ${{ steps.pr_info.outputs.pr_number }}
           detailed_summary: true
-          include_passed: true
+          include_passed: false
           fail_on_failure: false
           group_suite: true
-          include_skipped: true
+          include_skipped: false
           check_title_template: '{{TEST_NAME}}'
 
       - name: Publish Security Test Results for resolved templates
@@ -59,8 +59,8 @@ jobs:
           comment: true
           pr_id: ${{ steps.pr_info.outputs.pr_number }}
           detailed_summary: true
-          include_passed: true
+          include_passed: false
           fail_on_failure: false
           group_suite: true
-          include_skipped: true
+          include_skipped: false
           check_title_template: '{{TEST_NAME}}'

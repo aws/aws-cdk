@@ -69,7 +69,9 @@ rule IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY when %iam_roles !empty {
         Properties.AssumeRolePolicyDocument.Statement[*] {
             when Effect == "Allow" {
                 when Principal exists {
-                    Principal != "*"
+                    when Principal is_string {
+                        Principal != "*"
+                    }
                     when Principal.AWS exists {
                         when Principal.AWS is_string {
                             Principal.AWS != "*"
