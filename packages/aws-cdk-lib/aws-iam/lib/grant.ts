@@ -418,6 +418,10 @@ interface GrantProps {
   readonly policyDependable?: IDependable;
 }
 
+export interface IResourceWithKey {
+  grantKey(grantee: IGrantable, actions: string[], conditions?: Record<string, Record<string, unknown>>): void;
+}
+
 /**
  * A resource with a resource policy that can be added to
  */
