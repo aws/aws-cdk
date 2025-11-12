@@ -1,7 +1,8 @@
-import { Construct, Node } from 'constructs';
+import { Construct } from 'constructs';
 import { CfnOriginRequestPolicy, IOriginRequestPolicyRef, OriginRequestPolicyReference } from './cloudfront.generated';
-import { Names, Resource, ResourceEnvironment, Token, UnscopedValidationError, ValidationError } from '../../core';
+import { Names, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { DetachedConstruct } from '../../core/lib/private/detached-construct';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -87,19 +88,14 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
 
   /** Use an existing managed origin request policy. */
   private static fromManagedOriginRequestPolicy(managedOriginRequestPolicyId: string): IOriginRequestPolicy {
-    return new class implements IOriginRequestPolicy {
-      public get node(): Node {
-        throw new UnscopedValidationError('The result of fromManagedOriginRequestPolicy can not be used in this API');
-      }
-
-      public get env(): ResourceEnvironment {
-        throw new UnscopedValidationError('The result of fromManagedOriginRequestPolicy can not be used in this API');
-      }
-
+    return new class extends DetachedConstruct implements IOriginRequestPolicy {
       public readonly originRequestPolicyId = managedOriginRequestPolicyId;
       public readonly originRequestPolicyRef = {
         originRequestPolicyId: managedOriginRequestPolicyId,
       };
+      constructor() {
+        super('The result of fromManagedOriginRequestPolicy can not be used in this API');
+      }
     }();
   }
 
