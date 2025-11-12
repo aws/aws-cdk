@@ -433,7 +433,7 @@ export interface IEncryptedResource extends cdk.IResource {
 /**
  * A resource with a resource policy that can be added to
  */
-export interface IResourceWithPolicyV2 extends cdk.IEnvironmentAware {
+export interface IResourceWithPolicyV2 extends IEnvironmentAware {
   /**
    * Add a statement to the resource's resource policy
    */

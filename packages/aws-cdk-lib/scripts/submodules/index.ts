@@ -1,21 +1,19 @@
 import * as path from 'node:path';
-import { createLibraryReadme } from '@aws-cdk/pkglint';
+import { createLibraryReadme, ModuleDefinition } from '@aws-cdk/pkglint';
 import { topo } from '@aws-cdk/spec2cdk';
 import * as fs from 'fs-extra';
-import cloudformationInclude from './cloudformation-include';
 
-export default async function submodulesGen(modules: topo.ModuleMap, outPath: string) {
+/**
+ * Make sure that a number of expected files exist for every service submodule
+ *
+ * Non-service submodules should not be passed to this function.
+ */
+export default async function generateServiceSubmoduleFiles(modules: topo.ModuleMap, outPath: string) {
   for (const submodule of Object.values(modules)) {
-    if (submodule.name === 'core') {
-      continue;
-    }
-
     const submodulePath = path.join(outPath, submodule.name);
     await ensureSubmodule(submodule, submodulePath);
+    await ensureInterfaceSubmoduleJsiiJsonRc(submodule, path.join(outPath, 'interfaces'));
   }
-
-  // Do specific code gen for certain submodules
-  await cloudformationInclude(modules, outPath);
 }
 
 async function ensureSubmodule(submodule: topo.ModuleMapEntry, modulePath: string) {
@@ -70,4 +68,44 @@ async function ensureSubmodule(submodule: topo.ModuleMapEntry, modulePath: strin
     },
   };
   await fs.writeJson(path.join(modulePath, '.jsiirc.json'), jsiirc, { spaces: 2 });
+}
+
+/**
+ * Make a jsiirc file for every service-specific interfaces submodule
+ *
+ * Do that by taking the namespaces of the parent `interfaces` submodule and concatenating the last part
+ * of the names corresponding services namespace.
+ */
+async function ensureInterfaceSubmoduleJsiiJsonRc(submodule: topo.ModuleMapEntry, interfacesModulePath: string) {
+  if (!submodule.definition) {
+    throw new Error(`Cannot infer path or namespace for submodule named "${submodule.name}".`);
+  }
+
+  const interfacesModuleJsiiRcPath = path.join(interfacesModulePath, '.jsiirc.json');
+  const interfacesModuleJsiiRc = JSON.parse(await fs.readFile(interfacesModuleJsiiRcPath, 'utf-8'));
+
+  const jsiiRcPath = path.join(interfacesModulePath, 'generated', `${submodule.name}-interfaces.generated.jsiirc.json`);
+
+  const jsiirc = {
+    targets: {
+      ...combineLanguageNamespace('java', 'package', 'javaPackage'),
+      ...combineLanguageNamespace('dotnet', 'namespace', 'dotnetPackage'),
+      ...combineLanguageNamespace('python', 'module', 'pythonModuleName'),
+      // No Go...
+    },
+  };
+  await fs.writeJson(jsiiRcPath, jsiirc, { spaces: 2 });
+
+  function combineLanguageNamespace(language: string, whatName: string, k: keyof ModuleDefinition) {
+    const ns = `${interfacesModuleJsiiRc.targets[language][whatName]}.${lastPart(submodule.definition?.[k] ?? 'undefined')}`;
+    if (ns.includes('undefined')) {
+      throw new Error(`Could not build child namespace for language ${language} from ${JSON.stringify(interfacesModuleJsiiRc.targets[language])} and ${k} from ${JSON.stringify(submodule.definition)}`);
+    }
+
+    return { [language]: { [whatName]: ns } };
+  }
+}
+
+function lastPart(x: string): string {
+  return x.split('.').slice(-1)[0];
 }
