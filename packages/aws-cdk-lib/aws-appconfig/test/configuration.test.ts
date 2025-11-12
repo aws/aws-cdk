@@ -705,6 +705,58 @@ describe('configuration', () => {
     Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 0);
   });
 
+  test('configuration profile with typeAsString feature flags', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+    new HostedConfiguration(stack, 'MyConfigurationProfile', {
+      name: 'TestConfigProfile',
+      application: app,
+      typeAsString: 'AWS.AppConfig.FeatureFlags',
+      content: ConfigurationContent.fromInlineText('This is my content'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
+      Name: 'TestConfigProfile',
+      Type: 'AWS.AppConfig.FeatureFlags',
+      LocationUri: 'hosted',
+    });
+  });
+
+  test('configuration profile with typeAsString freeform', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+    new HostedConfiguration(stack, 'MyConfigurationProfile', {
+      name: 'TestConfigProfile',
+      application: app,
+      typeAsString: 'AWS.Freeform',
+      content: ConfigurationContent.fromInlineText('This is my content'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
+      Name: 'TestConfigProfile',
+      Type: 'AWS.Freeform',
+      LocationUri: 'hosted',
+    });
+  });
+
+  test('configuration profile typeAsString takes precedence over type', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+    new HostedConfiguration(stack, 'MyConfigurationProfile', {
+      name: 'TestConfigProfile',
+      application: app,
+      type: ConfigurationType.FEATURE_FLAGS,
+      typeAsString: 'AWS.Freeform',
+      content: ConfigurationContent.fromInlineText('This is my content'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
+      Name: 'TestConfigProfile',
+      Type: 'AWS.Freeform',
+      LocationUri: 'hosted',
+    });
+  });
+
   test('configuration profile with description', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig');
