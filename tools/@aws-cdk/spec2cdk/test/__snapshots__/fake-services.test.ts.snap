@@ -2,7 +2,7 @@
 
 exports[`can codegen deprecated service 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";

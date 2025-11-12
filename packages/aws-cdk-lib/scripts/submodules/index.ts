@@ -1,14 +1,14 @@
 import * as path from 'node:path';
 import { createLibraryReadme, ModuleDefinition } from '@aws-cdk/pkglint';
+import { topo } from '@aws-cdk/spec2cdk';
 import * as fs from 'fs-extra';
-import { ModuleMap, ModuleMapEntry } from '../codegen';
 
 /**
  * Make sure that a number of expected files exist for every service submodule
  *
  * Non-service submodules should not be passed to this function.
  */
-export default async function generateServiceSubmoduleFiles(modules: ModuleMap, outPath: string) {
+export default async function generateServiceSubmoduleFiles(modules: topo.ModuleMap, outPath: string) {
   for (const submodule of Object.values(modules)) {
     const submodulePath = path.join(outPath, submodule.name);
     await ensureSubmodule(submodule, submodulePath);
@@ -16,7 +16,7 @@ export default async function generateServiceSubmoduleFiles(modules: ModuleMap, 
   }
 }
 
-async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {
+async function ensureSubmodule(submodule: topo.ModuleMapEntry, modulePath: string) {
   // README.md
   const readmePath = path.join(modulePath, 'README.md');
   if (!fs.existsSync(readmePath)) {
@@ -47,28 +47,27 @@ async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {
   }
 
   // .jsiirc.json
-  if (!fs.existsSync(path.join(modulePath, '.jsiirc.json'))) {
-    if (!submodule.definition) {
-      throw new Error(
-        `Cannot infer path or namespace for submodule named "${submodule.name}". Manually create ${modulePath}/.jsiirc.json file.`,
-      );
-    }
-
-    const jsiirc = {
-      targets: {
-        java: {
-          package: submodule.definition.javaPackage,
-        },
-        dotnet: {
-          namespace: submodule.definition.dotnetPackage,
-        },
-        python: {
-          module: submodule.definition.pythonModuleName,
-        },
-      },
-    };
-    await fs.writeJson(path.join(modulePath, '.jsiirc.json'), jsiirc, { spaces: 2 });
+  // We always re-create this file. Any historic deviations are stored in scopes-map.json
+  if (!submodule.definition) {
+    throw new Error(
+      `Cannot infer path or namespace for submodule named "${submodule.name}". Manually create ${modulePath}/.jsiirc.json file.`,
+    );
   }
+
+  const jsiirc = {
+    targets: {
+      java: {
+        package: submodule.definition.javaPackage,
+      },
+      dotnet: {
+        namespace: submodule.definition.dotnetPackage,
+      },
+      python: {
+        module: submodule.definition.pythonModuleName,
+      },
+    },
+  };
+  await fs.writeJson(path.join(modulePath, '.jsiirc.json'), jsiirc, { spaces: 2 });
 }
 
 /**
@@ -77,7 +76,7 @@ async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {
  * Do that by taking the namespaces of the parent `interfaces` submodule and concatenating the last part
  * of the names corresponding services namespace.
  */
-async function ensureInterfaceSubmoduleJsiiJsonRc(submodule: ModuleMapEntry, interfacesModulePath: string) {
+async function ensureInterfaceSubmoduleJsiiJsonRc(submodule: topo.ModuleMapEntry, interfacesModulePath: string) {
   if (!submodule.definition) {
     throw new Error(`Cannot infer path or namespace for submodule named "${submodule.name}".`);
   }

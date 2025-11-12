@@ -1,7 +1,7 @@
 /* eslint-disable @cdklabs/no-throw-default-error */
 import * as path from 'path';
 import { SpecDatabase, Resource, Service } from '@aws-cdk/service-spec-types';
-import { Module } from '@cdklabs/typewriter';
+import { Module, stmt } from '@cdklabs/typewriter';
 import { AugmentationsModule } from './augmentation-generator';
 import { CannedMetricsModule } from './canned-metrics';
 import { CDK_CORE, CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from './cdk';
@@ -9,7 +9,6 @@ import { SelectiveImport } from './relationship-decider';
 import { ResourceClass } from './resource-class';
 import { submoduleSymbolFromName } from '../naming/conventions';
 import { FilePatternValues, IWriter, substituteFilePattern } from '../util';
-import { directCodeStmt } from '../util/typewriter-helpers';
 
 export interface AddServiceProps {
   /**
@@ -251,7 +250,7 @@ export class AstBuilder {
       const exportName = submoduleSymbolFromName(submodule.service.name);
       const importLocation = relativeImportPath(this.interfacesEntry, submodule.interfaces);
 
-      this.interfacesEntry.module.addInitialization(directCodeStmt(
+      this.interfacesEntry.module.addInitialization(stmt.directCode(
         `export * as ${exportName} from '${importLocation}'`,
       ));
     }
@@ -370,7 +369,7 @@ export class AstBuilder {
   private resolveImportPaths(sourceModule: string): ImportPaths {
     if (!this.inCdkLib) {
       return {
-        core: 'aws-cdk-lib',
+        core: 'aws-cdk-lib/core',
         interfacesEnvironmentAware: 'aws-cdk-lib/interfaces',
         coreHelpers: 'aws-cdk-lib/core/lib/helpers-internal',
         coreErrors: 'aws-cdk-lib/core/lib/errors',
