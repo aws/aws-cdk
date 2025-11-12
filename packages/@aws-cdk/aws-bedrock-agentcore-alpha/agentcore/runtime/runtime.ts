@@ -255,8 +255,13 @@ export class Runtime extends RuntimeBase {
         this.validateRoleArn(props.executionRole.roleArn);
       }
     } else {
-      this.role = this.createExecutionRole();
+      this.role = new iam.Role(this, 'ExecutionRole', {
+        assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+        description: 'Execution role for Bedrock Agent Core Runtime',
+        maxSessionDuration: Duration.hours(8),
+      });
     }
+    this.addExecutionRolePermissions();
 
     this.grantPrincipal = this.role;
     this.agentRuntimeArtifact = props.agentRuntimeArtifact;
@@ -320,21 +325,15 @@ export class Runtime extends RuntimeBase {
   }
 
   /**
-   * Creates an execution role for the agent runtime with proper permissions
+   * Adds proper permissions to the execution role for the agent runtime
    * Based on: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-permissions.html
    */
-  private createExecutionRole(): iam.Role {
-    const role = new iam.Role(this, 'ExecutionRole', {
-      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
-      description: 'Execution role for Bedrock Agent Core Runtime',
-      maxSessionDuration: Duration.hours(8),
-    });
-
+  private addExecutionRolePermissions() {
     const region = Stack.of(this).region;
     const account = Stack.of(this).account;
 
     // CloudWatch Logs - Log Group operations
-    role.addToPolicy(new iam.PolicyStatement({
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       sid: 'LogGroupAccess',
       effect: iam.Effect.ALLOW,
       actions: RUNTIME_LOGS_GROUP_ACTIONS,
@@ -342,7 +341,7 @@ export class Runtime extends RuntimeBase {
     }));
 
     // CloudWatch Logs - Describe all log groups
-    role.addToPolicy(new iam.PolicyStatement({
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       sid: 'DescribeLogGroups',
       effect: iam.Effect.ALLOW,
       actions: RUNTIME_LOGS_DESCRIBE_ACTIONS,
@@ -350,7 +349,7 @@ export class Runtime extends RuntimeBase {
     }));
 
     // CloudWatch Logs - Log Stream operations
-    role.addToPolicy(new iam.PolicyStatement({
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       sid: 'LogStreamAccess',
       effect: iam.Effect.ALLOW,
       actions: RUNTIME_LOGS_STREAM_ACTIONS,
@@ -358,7 +357,7 @@ export class Runtime extends RuntimeBase {
     }));
 
     // X-Ray Tracing - must be * for tracing
-    role.addToPolicy(new iam.PolicyStatement({
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       sid: 'XRayAccess',
       effect: iam.Effect.ALLOW,
       actions: RUNTIME_XRAY_ACTIONS,
@@ -366,7 +365,7 @@ export class Runtime extends RuntimeBase {
     }));
 
     // CloudWatch Metrics - scoped to bedrock-agentcore namespace
-    role.addToPolicy(new iam.PolicyStatement({
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       sid: 'CloudWatchMetrics',
       effect: iam.Effect.ALLOW,
       actions: RUNTIME_CLOUDWATCH_METRICS_ACTIONS,
@@ -380,7 +379,7 @@ export class Runtime extends RuntimeBase {
 
     // Bedrock AgentCore Workload Identity Access
     // Note: The agent name will be determined at runtime, so we use a wildcard pattern
-    role.addToPolicy(new iam.PolicyStatement({
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       sid: 'GetAgentAccessToken',
       effect: iam.Effect.ALLOW,
       actions: RUNTIME_WORKLOAD_IDENTITY_ACTIONS,
@@ -389,7 +388,6 @@ export class Runtime extends RuntimeBase {
         `arn:${Stack.of(this).partition}:bedrock-agentcore:${region}:${account}:workload-identity-directory/default/workload-identity/*`,
       ],
     }));
-    return role;
   }
 
   /**
