@@ -6,7 +6,7 @@ import * as cdk from "aws-cdk-lib";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-import { IResourceRef, ResourceReference } from "../interfaces/aws-some-interfaces.generated";
+import { IResourceRef, ResourceReference } from "../interfaces/generated/aws-some-interfaces.generated";
 
 /**
  * @deprecated in favour of something else
@@ -149,5 +149,6 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   ret.addPropertyResult("id", "Id", (properties.Id != null ? cfn_parse.FromCloudFormation.getString(properties.Id) : undefined));
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}export type { IResourceRef, ResourceReference };"
+}
+export type { IResourceRef, ResourceReference };"
 `;
