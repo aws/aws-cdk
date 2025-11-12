@@ -1,0 +1,46 @@
+#
+#####################################
+##        IAM POLICY RULES        ##
+#####################################
+# Rule: IAM_POLICY_NO_BROAD_PRINCIPALS
+# Service: AWS Identity and Access Management (IAM)
+# Coverage: IAM Policy Principals
+
+let iam_policies_no_broad_principals = Resources.*[ 
+  Type in ['AWS::IAM::Policy', 'AWS::IAM::ManagedPolicy']
+  # Only check policies with PolicyDocument (customer-defined content)
+  Properties.PolicyDocument exists
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "IAM_POLICY_NO_BROAD_PRINCIPALS"
+]
+
+rule IAM_POLICY_NO_BROAD_PRINCIPALS when %iam_policies_no_broad_principals !empty {
+    %iam_policies_no_broad_principals.Properties.PolicyDocument.Statement[*] {
+        # Only check Allow statements - Deny statements with broad principals are secure
+        when Effect == "Allow" {
+            when Principal exists {
+                # Check for wildcard as entire principal
+                when Principal is_string {
+                  Principal != "*"
+                }
+                # Check if AWS principal exists
+                when Principal.AWS exists {
+                    # Check if AWS is a string
+                    when Principal.AWS is_string {
+                        Principal.AWS != "*"
+                        Principal.AWS != /(?i):root/
+                        Principal.AWS != /arn:aws:iam::\*:/
+                    }
+                    # Check if AWS is an array - only check string items
+                    when Principal.AWS is_list {
+                      when Principal.AWS[*] is_string {
+                          Principal.AWS[*] != "*"
+                          Principal.AWS[*] != /(?i):root/
+                          Principal.AWS[*] != /arn:aws:iam::\*:/
+                      } 
+                    }
+                }
+            }
+        }
+    }
+}

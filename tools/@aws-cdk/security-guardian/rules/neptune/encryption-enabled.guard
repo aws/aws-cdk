@@ -2,6 +2,7 @@
 #####################################
 ##        NEPTUNE GUARD RULES       ##
 #####################################
+# Rule: NEPTUNE_ENCRYPTION_ENABLED
 # Service: Amazon Neptune
 # Coverage: Cluster Encryption
 

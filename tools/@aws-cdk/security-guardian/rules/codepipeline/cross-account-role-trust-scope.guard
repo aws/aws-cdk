@@ -2,8 +2,8 @@
 #####################################
 ##     CODEPIPELINE GUARD RULES     ##
 #####################################
+# Rule: CODEPIPELINE_CROSS_ACCOUNT_ROLE_TRUST_SCOPE
 # Service: AWS CodePipeline
-# Rules: CODEPIPELINE_CROSS_ACCOUNT_ROLE_TRUST_SCOPE
 # Coverage: Cross-account action role trust policies
 
 let codepipeline_cross_account_roles = Resources.*[

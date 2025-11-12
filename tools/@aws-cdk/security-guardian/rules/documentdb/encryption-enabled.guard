@@ -2,8 +2,8 @@
 #####################################
 ##      DOCUMENTDB GUARD RULES      ##
 #####################################
+# Rule: DOCUMENTDB_ENCRYPTION_ENABLED
 # Service: Amazon DocumentDB
-# Rules: DOCUMENTDB_ENCRYPTION_ENABLED
 # Coverage: Cluster Encryption
 
 let documentdb_clusters = Resources.*[

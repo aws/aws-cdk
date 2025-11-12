@@ -2,89 +2,15 @@
 #####################################
 ##          IAM GUARD RULES        ##
 #####################################
+# Rule: IAM_NO_OVERLY_PERMISSIVE_PASSROLE
 # Service: AWS Identity and Access Management (IAM)
-# Coverage: Policies, Roles, Trust Policies, Action Wildcards, PassRole
-
-let iam_policies = Resources.*[
-  Type in ['AWS::IAM::Policy', 'AWS::IAM::ManagedPolicy']
-  Metadata.guard.SuppressedRules not exists or
-  Metadata.guard.SuppressedRules.* != "IAM_NO_WILDCARD_ACTIONS"
-]
-
-let iam_roles = Resources.*[
-  Type == 'AWS::IAM::Role'
-  Metadata.guard.SuppressedRules not exists or
-  Metadata.guard.SuppressedRules.* != "IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY"
-]
+# Coverage: PassRole Policies
 
 let iam_passrole_resources = Resources.*[
   Type in ['AWS::IAM::Policy', 'AWS::IAM::ManagedPolicy', 'AWS::IAM::Role']
   Metadata.guard.SuppressedRules not exists or
   Metadata.guard.SuppressedRules.* != "IAM_NO_OVERLY_PERMISSIVE_PASSROLE"
 ]
-
-# Check for service:* action wildcards
-rule IAM_NO_WILDCARD_ACTIONS when %iam_policies !empty {
-    %iam_policies {
-        Properties.PolicyDocument.Statement[*] {
-            when Effect == "Allow" {
-                when Action exists {
-                    when Action is_string {
-                        Action != "*"
-                        Action != /\w+:\*$/
-                    }
-                    when Action is_list {
-                        Action[*] != "*"
-                        Action[*] != /\w+:\*$/
-                    }
-                }
-            }
-        }
-    }
-}
-
-#Check inline policies in roles for wildcards
-rule IAM_NO_WILDCARD_ACTIONS_INLINE when %iam_roles !empty {
-    %iam_roles {
-        Properties.Policies[*].PolicyDocument.Statement[*] {
-            when Effect == "Allow" {
-                when Action exists {
-                    when Action is_string {
-                        Action != "*"
-                        Action != /\w+:\*$/
-                    }
-                    when Action is_list {
-                        Action[*] != "*"
-                        Action[*] != /\w+:\*$/
-                    }
-                }
-            }
-        }
-    }
-}
-
-# Trust policies allowing world accessibility
-rule IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY when %iam_roles !empty {
-    %iam_roles {
-        Properties.AssumeRolePolicyDocument.Statement[*] {
-            when Effect == "Allow" {
-                when Principal exists {
-                    when Principal is_string {
-                        Principal != "*"
-                    }
-                    when Principal.AWS exists {
-                        when Principal.AWS is_string {
-                            Principal.AWS != "*"
-                        }
-                        when Principal.AWS is_list {
-                            Principal.AWS[*] != "*"
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
 
 # Overly permissive PassRole policies
 rule IAM_NO_OVERLY_PERMISSIVE_PASSROLE when %iam_passrole_resources !empty {

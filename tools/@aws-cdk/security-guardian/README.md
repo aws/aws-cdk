@@ -24,6 +24,33 @@ A GitHub Action and CLI tool that helps detect broadly scoped IAM principals in 
 
 ## Security Checks
 
+### Rule Organization
+Guard rules are organized in service-specific directories for granular control:
+
+```
+rules/
+├── codepipeline/
+│   └── cross-account-role-trust-scope.guard
+├── documentdb/
+│   └── encryption-enabled.guard
+├── ec2/
+│   ├── ebs-encryption-enabled.guard
+│   └── no-open-security-groups.guard
+├── guard-hooks/
+│   └── no-root-principals-except-kms-secrets.guard
+├── iam/
+│   ├── no-overly-permissive-passrole.guard
+│   ├── no-wildcard-actions.guard
+│   ├── no-world-accessible-trust-policy.guard
+│   ├── policy-no-broad-principals.guard
+│   └── role-no-broad-principals.guard
+├── s3/
+│   ├── encryption-enabled.guard
+│   ├── no-world-readable.guard
+│   └── secure-transport.guard
+└── [other services...]
+```
+
 ### Always Flagged (High Risk)
 - **Cross-account wildcards**: `"*"` or `"arn:aws:iam::*:root"`
 - **Custom policies with root access**: Non-default policies granting root
@@ -31,18 +58,8 @@ A GitHub Action and CLI tool that helps detect broadly scoped IAM principals in 
 
 ### Smart Exemptions (Configurable)
 - **AWS KMS default policies**: Standard root access for IAM integration
-- **Extensible for other services**: Easy to add S3, SNS, etc.
-
-### Adding New Exemptions
-```typescript
-const EXEMPTION_RULES = {
-  'AWS::KMS::Key': { /* existing */ },
-  'AWS::S3::Bucket': {
-    docs: 'https://docs.aws.amazon.com/s3/latest/userguide/bucket-policies.html',
-    isDefaultPolicy: (statement) => /* your logic */
-  }
-};
-```
+- **Individual rule control**: Enable/disable specific rules per service
+- **Metadata-based suppression**: Use CDK metadata to suppress specific rules
 
 ---
 
@@ -150,7 +167,10 @@ export class MyTestStack extends Stack {
 - `IAM_ROLE_NO_BROAD_PRINCIPALS` 
 - `IAM_NO_WILDCARD_ACTIONS`
 - `NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS`
-- And others (see individual `.guard` files in `/rules` directory)
+- `EBS_ENCRYPTION_ENABLED`
+- `SNS_ENCRYPTION_ENABLED`
+- `SQS_ENCRYPTION_ENABLED`
+- And others (see individual `.guard` files in service subdirectories)
 
 ---
 

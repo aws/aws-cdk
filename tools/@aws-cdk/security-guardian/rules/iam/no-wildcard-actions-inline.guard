@@ -1,0 +1,33 @@
+#
+#####################################
+##          IAM GUARD RULES        ##
+#####################################
+# Rule: IAM_NO_WILDCARD_ACTIONS_INLINE
+# Service: AWS Identity and Access Management (IAM)
+# Coverage: Inline Policies Action Wildcards
+
+let iam_roles = Resources.*[
+  Type == 'AWS::IAM::Role'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "IAM_NO_WILDCARD_ACTIONS_INLINE"
+]
+
+#Check inline policies in roles for wildcards
+rule IAM_NO_WILDCARD_ACTIONS_INLINE when %iam_roles !empty {
+    %iam_roles {
+        Properties.Policies[*].PolicyDocument.Statement[*] {
+            when Effect == "Allow" {
+                when Action exists {
+                    when Action is_string {
+                        Action != "*"
+                        Action != /\w+:\*$/
+                    }
+                    when Action is_list {
+                        Action[*] != "*"
+                        Action[*] != /\w+:\*$/
+                    }
+                }
+            }
+        }
+    }
+}
