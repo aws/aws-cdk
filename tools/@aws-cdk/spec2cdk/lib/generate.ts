@@ -6,7 +6,7 @@ import { Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { AstBuilder, DEFAULT_FILE_PATTERNS, GenerateFilePatterns, submoduleFiles } from './cdk/ast';
 import { ModuleImportLocations } from './cdk/cdk';
-import { log, queryDb, TsFileWriter } from './util';
+import { queryDb, log, TsFileWriter } from './util';
 
 export interface GenerateServiceRequest {
   /**
@@ -56,7 +56,7 @@ export interface GenerateOptions {
   /**
    * Configure where files are created exactly
    */
-  readonly filePatterns: Partial<GenerateFilePatterns>;
+  readonly filePatterns?: Partial<GenerateFilePatterns>;
 
   /**
    * Base path for generated files
@@ -113,7 +113,7 @@ export interface GenerateOutput {
  * @param modules A map of arbitrary module names to GenerateModuleOptions. This allows for flexible generation of different configurations at a time.
  * @param options Configure the code generation
  */
-export async function generateSome(modules: GenerateModuleMap, options: GenerateOptions) {
+export async function generate(modules: GenerateModuleMap, options: GenerateOptions) {
   enableDebug(options);
   const db = await loadPatchedSpec();
   return generator(db, modules, options);

@@ -1,6 +1,6 @@
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
 import type { ModuleImportLocations } from '../cdk/cdk';
-import { generateSome as generateModules } from '../generate';
+import { generate as generateModules } from '../generate';
 import { ModuleMap, readModuleMap } from '../module-topology';
 import * as naming from '../naming';
 import { jsii } from '../util';
@@ -47,15 +47,11 @@ export interface GenerateAllOptions {
  * Generates L1s for all submodules of a monomodule. Modules to generate are
  * chosen based on the contents of the `scopeMapPath` file. This is intended for
  * use in generated L1s in aws-cdk-lib.
- *
- * This entrypoint is called from `aws-cdk-lib`s pre-build script. It is distinct
- * from the `generateAll()` function in a sibling module to this one.
- *
  * @param outPath The root directory to generate L1s in
  * @param param1  Options
  * @returns       A ModuleMap containing the ModuleDefinition and CFN scopes for each generated module.
  */
-export async function legacyGenerateAll(
+export async function generateAll(
   outPath: string,
   { scopeMapPath, skippedServices, ...options }: GenerateAllOptions,
 ): Promise<ModuleMap> {

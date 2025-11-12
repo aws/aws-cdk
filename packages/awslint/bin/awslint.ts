@@ -249,7 +249,7 @@ async function loadModule(dir: string) {
   const ts = new reflect.TypeSystem();
   await ts.load(dir, {
     validate: false, // Don't validate to save 66% of execution time (20s vs 1min).
-    supportedFeatures: ['intersection-types'],
+    supportedFeatures: ['intersection-types', 'class-covariant-overrides'],
   });
   // We run 'awslint' during build time, assemblies are guaranteed to be ok.
 

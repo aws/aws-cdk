@@ -1,7 +1,7 @@
 import * as path from 'node:path';
 import { parseArgs } from 'node:util';
 import { PositionalArg, showHelp } from './help';
-import { GenerateModuleMap, GenerateOptions, generateSome, generateAll } from '../generate';
+import { GenerateModuleMap, GenerateOptions, generate, generateAll } from '../generate';
 import { log } from '../util';
 
 const command = 'spec2cdk';
@@ -107,7 +107,7 @@ export async function main(argv: string[]) {
       }
       moduleMap[service.toLocaleLowerCase().split('::').join('-')] = { services: [{ namespace: service }] };
     }
-    await generateSome(moduleMap, generatorOptions);
+    await generate(moduleMap, generatorOptions);
     return;
   }
 
