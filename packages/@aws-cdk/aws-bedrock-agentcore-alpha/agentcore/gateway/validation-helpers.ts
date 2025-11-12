@@ -126,32 +126,23 @@ export interface OpenApiSchemaValidationParams {
 }
 
 /**
- * Validates an OpenAPI schema against Gateway requirements
- * Based on AWS documentation: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-schema-openapi.html
- *
- * @param params - The validation parameters
- * @returns Array of validation error messages (empty if valid)
+ * Parses OpenAPI schema JSON and validates format
  * @internal
  */
-export function validateOpenApiSchema(params: OpenApiSchemaValidationParams): string[] {
-  const errors: string[] = [];
-  const { schema, schemaName = 'OpenAPI schema' } = params;
-
-  // If the schema is a token, skip validation
-  if (Token.isUnresolved(schema)) {
-    return errors;
-  }
-
-  let schemaObj: any;
-
+function parseOpenApiJson(schema: string, schemaName: string, errors: string[]): any | null {
   try {
-    schemaObj = JSON.parse(schema);
+    return JSON.parse(schema);
   } catch (e) {
     errors.push(`${schemaName} must be in JSON format. YAML is not supported. Error: ${e instanceof Error ? e.message : String(e)}`);
-    return errors;
+    return null;
   }
+}
 
-  // Validate OpenAPI version
+/**
+ * Validates OpenAPI version (3.0.x or 3.1.x)
+ * @internal
+ */
+function validateOpenApiVersion(schemaObj: any, schemaName: string, errors: string[]): void {
   if (!schemaObj.openapi) {
     errors.push(`${schemaName} must include an 'openapi' field specifying the version`);
   } else {
@@ -162,8 +153,13 @@ export function validateOpenApiSchema(params: OpenApiSchemaValidationParams): st
       errors.push(`${schemaName} version ${version} is not supported. Only OpenAPI 3.0.x and 3.1.x are supported`);
     }
   }
+}
 
-  // Validate servers exist and have valid URLs
+/**
+ * Validates server URLs
+ * @internal
+ */
+function validateServerUrls(schemaObj: any, schemaName: string, errors: string[]): void {
   if (!schemaObj.servers || !Array.isArray(schemaObj.servers) || schemaObj.servers.length === 0) {
     errors.push(`${schemaName} must include at least one server with a valid URL`);
   } else {
@@ -171,7 +167,6 @@ export function validateOpenApiSchema(params: OpenApiSchemaValidationParams): st
       if (!server.url || typeof server.url !== 'string') {
         errors.push(`${schemaName} server[${index}] must have a valid URL`);
       } else {
-        // Simple validation without regex to avoid ReDoS vulnerability
         // Check if URL contains a protocol separator
         if (!server.url.includes('://')) {
           errors.push(`${schemaName} server[${index}] URL must contain a protocol (e.g., http:// or https://)`);
@@ -192,8 +187,13 @@ export function validateOpenApiSchema(params: OpenApiSchemaValidationParams): st
       }
     });
   }
+}
 
-  // Validate paths and operations
+/**
+ * Validates paths and operations
+ * @internal
+ */
+function validatePathsAndOperations(schemaObj: any, schemaName: string, errors: string[]): void {
   if (!schemaObj.paths || typeof schemaObj.paths !== 'object') {
     errors.push(`${schemaName} must include a 'paths' object`);
   } else {
@@ -271,56 +271,76 @@ export function validateOpenApiSchema(params: OpenApiSchemaValidationParams): st
       errors.push(`${schemaName} uses unsupported media types: ${mediaTypesList}. Only application/json, application/xml, multipart/form-data, and application/x-www-form-urlencoded are supported`);
     }
   }
+}
 
-  // Check for unsupported schema composition (oneOf, anyOf, allOf)
-  const checkSchemaComposition = (obj: any, path: string = ''): void => {
-    if (!obj || typeof obj !== 'object') return;
+/**
+ * Recursive helper to check for unsupported schema composition (oneOf, anyOf, allOf)
+ * @internal
+ */
+function checkSchemaComposition(obj: any, schemaName: string, errors: string[], path: string = ''): void {
+  if (!obj || typeof obj !== 'object') return;
 
-    // Check current level for unsupported keywords
-    if ('oneOf' in obj) {
-      errors.push(`${schemaName} contains unsupported 'oneOf' schema composition at ${path || 'root'}`);
-    }
-    if ('anyOf' in obj) {
-      errors.push(`${schemaName} contains unsupported 'anyOf' schema composition at ${path || 'root'}`);
-    }
-    if ('allOf' in obj) {
-      errors.push(`${schemaName} contains unsupported 'allOf' schema composition at ${path || 'root'}`);
-    }
+  // Check current level for unsupported keywords
+  if ('oneOf' in obj) {
+    errors.push(`${schemaName} contains unsupported 'oneOf' schema composition at ${path || 'root'}`);
+  }
+  if ('anyOf' in obj) {
+    errors.push(`${schemaName} contains unsupported 'anyOf' schema composition at ${path || 'root'}`);
+  }
+  if ('allOf' in obj) {
+    errors.push(`${schemaName} contains unsupported 'allOf' schema composition at ${path || 'root'}`);
+  }
 
-    // Recursively check nested objects
-    Object.entries(obj).forEach(([key, value]) => {
-      if (key !== 'oneOf' && key !== 'anyOf' && key !== 'allOf' && value && typeof value === 'object') {
-        const newPath = path ? `${path}.${key}` : key;
-        if (Array.isArray(value)) {
-          value.forEach((item, index) => {
-            checkSchemaComposition(item, `${newPath}[${index}]`);
-          });
-        } else {
-          checkSchemaComposition(value, newPath);
-        }
+  // Recursively check nested objects
+  Object.entries(obj).forEach(([key, value]) => {
+    if (key !== 'oneOf' && key !== 'anyOf' && key !== 'allOf' && value && typeof value === 'object') {
+      const newPath = path ? `${path}.${key}` : key;
+      if (Array.isArray(value)) {
+        value.forEach((item, index) => {
+          checkSchemaComposition(item, schemaName, errors, `${newPath}[${index}]`);
+        });
+      } else {
+        checkSchemaComposition(value, schemaName, errors, newPath);
       }
-    });
-  };
+    }
+  });
+}
 
+/**
+ * Validates schema composition (checks for unsupported oneOf, anyOf, allOf)
+ * @internal
+ */
+function validateSchemaComposition(schemaObj: any, schemaName: string, errors: string[]): void {
   // Check components/definitions for unsupported schema composition
   if (schemaObj.components?.schemas) {
-    checkSchemaComposition(schemaObj.components.schemas, 'components.schemas');
+    checkSchemaComposition(schemaObj.components.schemas, schemaName, errors, 'components.schemas');
   }
   if (schemaObj.definitions) {
-    checkSchemaComposition(schemaObj.definitions, 'definitions');
+    checkSchemaComposition(schemaObj.definitions, schemaName, errors, 'definitions');
   }
 
   // Check paths for unsupported schema composition
   if (schemaObj.paths) {
-    checkSchemaComposition(schemaObj.paths, 'paths');
+    checkSchemaComposition(schemaObj.paths, schemaName, errors, 'paths');
   }
+}
 
-  // Check for security schemes (not supported at OpenAPI level)
+/**
+ * Validates security schemes
+ * @internal
+ */
+function validateSecuritySchemes(schemaObj: any, schemaName: string, errors: string[]): void {
   if (schemaObj.security && Array.isArray(schemaObj.security) && schemaObj.security.length > 0) {
     errors.push(`${schemaName} contains security schemes at the OpenAPI specification level. Authentication must be configured using the Gateway's outbound authorization configuration instead`);
   }
+}
 
-  // Check for callbacks and webhooks (not supported)
+/**
+ * Validates callbacks and webhooks
+ * @internal
+ */
+function validateCallbacksAndWebhooks(schemaObj: any, schemaName: string, errors: string[]): void {
+  // Check for callbacks in operations
   if (schemaObj.paths) {
     Object.entries(schemaObj.paths).forEach(([path, pathItem]: [string, any]) => {
       if (pathItem && typeof pathItem === 'object') {
@@ -335,9 +355,36 @@ export function validateOpenApiSchema(params: OpenApiSchemaValidationParams): st
     });
   }
 
+  // Check for webhooks
   if (schemaObj.webhooks) {
     errors.push(`${schemaName} contains unsupported 'webhooks'`);
   }
+}
+
+/**
+ * Validates an OpenAPI schema against Gateway requirements
+ * Based on AWS documentation: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-schema-openapi.html
+ *
+ * @param params - The validation parameters
+ * @returns Array of validation error messages (empty if valid)
+ * @internal
+ */
+export function validateOpenApiSchema(params: OpenApiSchemaValidationParams): string[] {
+  const errors: string[] = [];
+  const { schema, schemaName = 'OpenAPI schema' } = params;
+
+  if (Token.isUnresolved(schema)) {
+    return errors;
+  }
+  const schemaObj = parseOpenApiJson(schema, schemaName, errors);
+  if (!schemaObj) return errors;
+
+  validateOpenApiVersion(schemaObj, schemaName, errors);
+  validateServerUrls(schemaObj, schemaName, errors);
+  validatePathsAndOperations(schemaObj, schemaName, errors);
+  validateSchemaComposition(schemaObj, schemaName, errors);
+  validateSecuritySchemes(schemaObj, schemaName, errors);
+  validateCallbacksAndWebhooks(schemaObj, schemaName, errors);
 
   return errors;
 }

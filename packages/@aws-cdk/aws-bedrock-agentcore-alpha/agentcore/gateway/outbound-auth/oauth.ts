@@ -1,5 +1,5 @@
 import { Grant, IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { CredentialProviderType, ICredentialProvider } from './credential-provider';
+import { CredentialProviderType, ICredentialProviderConfig } from './credential-provider';
 import { GatewayPerms } from '../perms';
 
 /******************************************************************************
@@ -56,7 +56,7 @@ export interface OAuthConfiguration {
  * OAuth credential provider configuration implementation
  * Can be used with OpenAPI targets
  */
-export class OAuthCredentialProviderConfiguration implements ICredentialProvider {
+export class OAuthCredentialProviderConfiguration implements ICredentialProviderConfig {
   public readonly credentialProviderType = CredentialProviderType.OAUTH;
   /**
    * The ARN of the OAuth provider

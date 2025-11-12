@@ -1,7 +1,7 @@
 import { IResolvable } from 'aws-cdk-lib';
 import { CfnGatewayTarget } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { ApiKeyCredentialProviderConfiguration, ApiKeyCredentialProviderProps } from './api-key';
-import { GatewayIamRoleCredentialProvider } from './iam-role';
+import { GatewayIamRoleCredentialProviderConfig } from './iam-role';
 import { OAuthConfiguration, OAuthCredentialProviderConfiguration } from './oauth';
 import { Grant, IRole } from 'aws-cdk-lib/aws-iam';
 
@@ -35,7 +35,7 @@ export enum CredentialProviderType {
 /**
  * Abstract interface for gateway credential provider configuration
  */
-export interface ICredentialProvider {
+export interface ICredentialProviderConfig {
   /**
    * The credential provider type
    */
@@ -61,9 +61,9 @@ export abstract class GatewayCredentialProvider {
    * Create an API key credential provider from Identity ARN
    * Use this method when you have the Identity ARN as a string
    * @param props - The configuration properties for the API key credential provider
-   * @returns ICredentialProvider configured for API key authentication
+   * @returns ICredentialProviderConfig configured for API key authentication
    */
-  public static fromApiKeyIdentityArn(props: ApiKeyCredentialProviderProps): ICredentialProvider {
+  public static fromApiKeyIdentityArn(props: ApiKeyCredentialProviderProps): ICredentialProviderConfig {
     return new ApiKeyCredentialProviderConfiguration(props);
   }
 
@@ -71,9 +71,9 @@ export abstract class GatewayCredentialProvider {
    * Create an OAuth credential provider from Identity ARN
    * Use this method when you have the Identity ARN as a string
    * @param props - The configuration properties for the OAuth credential provider
-   * @returns ICredentialProvider configured for OAuth authentication
+   * @returns ICredentialProviderConfig configured for OAuth authentication
    */
-  public static fromOauthIdentityArn(props: OAuthConfiguration): ICredentialProvider {
+  public static fromOauthIdentityArn(props: OAuthConfiguration): ICredentialProviderConfig {
     return new OAuthCredentialProviderConfiguration(props);
   }
 
@@ -81,7 +81,7 @@ export abstract class GatewayCredentialProvider {
    * Create an IAM role credential provider
    * @returns IIamRoleCredentialProvider configured for IAM role authentication
    */
-  public static fromIamRole(): ICredentialProvider {
-    return new GatewayIamRoleCredentialProvider();
+  public static fromIamRole(): ICredentialProviderConfig {
+    return new GatewayIamRoleCredentialProviderConfig();
   }
 }

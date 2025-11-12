@@ -64,22 +64,6 @@ export interface CustomJwtConfiguration {
  * Custom JWT authorizer configuration implementation
  */
 export class CustomJwtAuthorizer implements IGatewayAuthorizerConfig {
-  /**
-   * Create a JWT authorizer from Cognito User Pool
-   * @param props - The Cognito configuration
-   * @returns CustomJwtAuthorizer configured for Cognito
-   */
-  public static fromCognito(props: CognitoAuthorizerProps) {
-    // Construct the discovery URL from the User Pool properties
-    const discoveryUrl = `https://cognito-idp.${props.userPool.env.region}.amazonaws.com/${props.userPool.userPoolId}/.well-known/openid-configuration`;
-
-    return new CustomJwtAuthorizer({
-      discoveryUrl: discoveryUrl,
-      allowedClients: props.allowedClients?.flatMap((client) => client.userPoolClientId),
-      allowedAudience: props.allowedAudiences,
-    });
-  }
-
   public readonly authorizerType = GatewayAuthorizerType.CUSTOM_JWT;
   private readonly discoveryUrl: string;
   private readonly allowedAudience?: string[];
@@ -169,9 +153,17 @@ export abstract class GatewayAuthorizer {
   }
 
   /**
-   * Static method for creating a Cognito authorizer
+   * Create a JWT authorizer from Cognito User Pool
+   * @param props - The Cognito configuration
+   * @returns CustomJwtAuthorizer configured for Cognito
    */
   public static usingCognito(props: CognitoAuthorizerProps): IGatewayAuthorizerConfig {
-    return CustomJwtAuthorizer.fromCognito(props);
+    const discoveryUrl = `https://cognito-idp.${props.userPool.env.region}.amazonaws.com/${props.userPool.userPoolId}/.well-known/openid-configuration`;
+
+    return new CustomJwtAuthorizer({
+      discoveryUrl: discoveryUrl,
+      allowedClients: props.allowedClients?.flatMap((client) => client.userPoolClientId),
+      allowedAudience: props.allowedAudiences,
+    });
   }
 }

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/56c50b12cb8fb845a95ba1d5d55f28af4f112f9edbe387798699fa3984733a40.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/4368ab7b1576aff1009cdfef7445bc16c88fe63a815749b7627da1abf39355c5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -68,6 +68,22 @@
                 "*"
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           }
         ],
         "/BedrockAgentCoreTargetIntegTest/TestGateway/ServiceRole/ImportServiceRole": [
@@ -100,6 +116,22 @@
             "data": {
               "attachToRole": [
                 "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
               ]
             }
           },
@@ -154,24 +186,18 @@
             "data": "TestGateway7394A071"
           }
         ],
-        "/BedrockAgentCoreTargetIntegTest/TestGateway/LambdaTarget/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestGatewayLambdaTargetBE2E7E0C"
-          }
-        ],
-        "/BedrockAgentCoreTargetIntegTest/TestLambda": [
+        "/BedrockAgentCoreTargetIntegTest/Lambda1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
+              "functionName": "*",
               "runtime": "*",
               "handler": "*",
-              "code": "*",
-              "description": "*"
+              "code": "*"
             }
           }
         ],
-        "/BedrockAgentCoreTargetIntegTest/TestLambda/ServiceRole": [
+        "/BedrockAgentCoreTargetIntegTest/Lambda1/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -187,25 +213,25 @@
             }
           }
         ],
-        "/BedrockAgentCoreTargetIntegTest/TestLambda/ServiceRole/ImportServiceRole": [
+        "/BedrockAgentCoreTargetIntegTest/Lambda1/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/BedrockAgentCoreTargetIntegTest/TestLambda/ServiceRole/Resource": [
+        "/BedrockAgentCoreTargetIntegTest/Lambda1/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestLambdaServiceRoleC28C2D9C"
+            "data": "Lambda1ServiceRoleF188C4B8"
           }
         ],
-        "/BedrockAgentCoreTargetIntegTest/TestLambda/Resource": [
+        "/BedrockAgentCoreTargetIntegTest/Lambda1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestLambda2F70C45E"
+            "data": "Lambda1DB8E9965"
           }
         ],
-        "/BedrockAgentCoreTargetIntegTest/TestLambda/LogGroup": [
+        "/BedrockAgentCoreTargetIntegTest/Lambda1/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -213,10 +239,87 @@
             }
           }
         ],
-        "/BedrockAgentCoreTargetIntegTest/TestLambda/LogGroup/Resource": [
+        "/BedrockAgentCoreTargetIntegTest/Lambda1/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestLambdaLogGroupB66D2B71"
+            "data": "Lambda1LogGroup0E97D0DB"
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/LambdaTarget/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaTargetC84C308A"
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/SmithyTarget/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SmithyTargetF5FB3E32"
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/Lambda2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "functionName": "*",
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/Lambda2/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/Lambda2/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/Lambda2/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambda2ServiceRole31A072E1"
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/Lambda2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambda217CFB423"
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/Lambda2/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/Lambda2/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambda2LogGroup4F31598F"
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/ConstructorTarget/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConstructorTarget16ECF8B6"
           }
         ],
         "/BedrockAgentCoreTargetIntegTest/GatewayId": [
@@ -225,16 +328,22 @@
             "data": "GatewayId"
           }
         ],
-        "/BedrockAgentCoreTargetIntegTest/TargetId": [
+        "/BedrockAgentCoreTargetIntegTest/LambdaTargetId": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TargetId"
+            "data": "LambdaTargetId"
           }
         ],
-        "/BedrockAgentCoreTargetIntegTest/LambdaArn": [
+        "/BedrockAgentCoreTargetIntegTest/SmithyTargetId": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaArn"
+            "data": "SmithyTargetId"
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/ConstructorTargetId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConstructorTargetId"
           }
         ],
         "/BedrockAgentCoreTargetIntegTest/BootstrapVersion": [

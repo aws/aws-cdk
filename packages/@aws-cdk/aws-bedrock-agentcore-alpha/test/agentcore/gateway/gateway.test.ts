@@ -1419,15 +1419,6 @@ describe('Gateway Import Tests', () => {
     });
   });
 
-  test('Should import Gateway from ARN', () => {
-    const arn = 'arn:aws:bedrock-agentcore:us-east-1:123456789012:gateway/test-gateway-id';
-    const imported = Gateway.fromGatewayArn(stack, 'ImportedGateway', arn);
-
-    expect(imported.gatewayArn).toBe(arn);
-    expect(imported.gatewayId).toBe('test-gateway-id');
-    expect(imported.name).toBe('test-gateway-id');
-  });
-
   test('Should import Gateway from attributes', () => {
     const role = new iam.Role(stack, 'TestRole', {
       assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
@@ -1444,33 +1435,6 @@ describe('Gateway Import Tests', () => {
     expect(imported.gatewayId).toBe('test-gateway-id');
     expect(imported.name).toBe('test-gateway');
     expect(imported.role).toBe(role);
-  });
-
-  test('Should grant permissions to imported Gateway', () => {
-    const imported = Gateway.fromGatewayArn(
-      stack,
-      'ImportedGateway',
-      'arn:aws:bedrock-agentcore:us-east-1:123456789012:gateway/test-gateway-id',
-    );
-
-    const role = new iam.Role(stack, 'TestRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-
-    imported.grantRead(role);
-    imported.grantManage(role);
-
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: Match.arrayWith([
-          Match.objectLike({
-            Action: Match.arrayWith(['bedrock-agentcore:GetGateway']),
-            Effect: 'Allow',
-          }),
-        ]),
-      },
-    });
   });
 });
 

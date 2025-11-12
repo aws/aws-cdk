@@ -1,4 +1,4 @@
-import { Aws, Stack, Token } from 'aws-cdk-lib';
+import { Stack, Token } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -9,7 +9,7 @@ import { Construct } from 'constructs';
 // Internal imports
 import { GatewayBase, GatewayExceptionLevel, IGateway } from './gateway-base';
 import { GatewayAuthorizer, IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
-import { ICredentialProvider } from './outbound-auth/credential-provider';
+import { ICredentialProviderConfig } from './outbound-auth/credential-provider';
 import { GatewayPerms } from './perms';
 import { IGatewayProtocolConfig, McpGatewaySearchType, McpProtocolConfiguration, MCPProtocolVersion } from './protocol';
 import { ApiSchema } from './targets/schema/api-schema';
@@ -51,7 +51,7 @@ export interface AddLambdaTargetOptions {
    * Credential providers for authentication
    * @default - [GatewayCredentialProvider.iamRole()]
    */
-  readonly credentialProviderConfigurations?: ICredentialProvider[];
+  readonly credentialProviderConfigurations?: ICredentialProviderConfig[];
 }
 
 /**
@@ -87,7 +87,7 @@ export interface AddOpenApiTargetOptions {
    * Credential providers for authentication
    * @default - [GatewayCredentialProvider.iamRole()]
    */
-  readonly credentialProviderConfigurations?: ICredentialProvider[];
+  readonly credentialProviderConfigurations?: ICredentialProviderConfig[];
 }
 
 /**
@@ -115,7 +115,7 @@ export interface AddSmithyTargetOptions {
    * Credential providers for authentication
    * @default - [GatewayCredentialProvider.iamRole()]
    */
-  readonly credentialProviderConfigurations?: ICredentialProvider[];
+  readonly credentialProviderConfigurations?: ICredentialProviderConfig[];
 }
 
 /**
@@ -262,37 +262,6 @@ export class Gateway extends GatewayBase {
   }
 
   /**
-   * Import an existing Gateway using its ARN
-   *
-   * @param scope The construct scope
-   * @param id The construct id
-   * @param gatewayArn The ARN of the existing Gateway
-   * @returns An IGateway instance representing the imported gateway
-   */
-  public static fromGatewayArn(
-    scope: Construct,
-    id: string,
-    gatewayArn: string,
-  ): IGateway {
-    // Parse the ARN to extract gateway ID and name
-    // ARN format: arn:aws:bedrock-agentcore:region:account:gateway/gateway-id
-    const arnParts = gatewayArn.split(':');
-    const resourceParts = arnParts[arnParts.length - 1].split('/');
-    const gatewayId = resourceParts[1] || 'unknown';
-
-    // Create a minimal role for the imported gateway
-    const role = iam.Role.fromRoleArn(scope, `${id}Role`,
-      `arn:${Aws.PARTITION}:iam::${arnParts[4]}:role/service-role/AmazonBedrockAgentCoreGatewayServiceRole`);
-
-    return this.fromGatewayAttributes(scope, id, {
-      gatewayArn,
-      gatewayId,
-      gatewayName: gatewayId, // Use ID as name for imported resources
-      role,
-    });
-  }
-
-  /**
    * The ARN of the gateway
    * @attribute
    */
@@ -406,7 +375,7 @@ export class Gateway extends GatewayBase {
     }
 
     this.protocolConfiguration = props.protocolConfiguration ?? this.createDefaultMcpProtocolConfiguration();
-    this.authorizerConfiguration = props.authorizerConfiguration ?? this.createDefaultCognitoAuthorizer();
+    this.authorizerConfiguration = props.authorizerConfiguration ?? this.createDefaultCognitoAuthorizerConfig();
     this.exceptionLevel = props.exceptionLevel;
 
     this.tags = props.tags ?? {};
@@ -617,7 +586,7 @@ export class Gateway extends GatewayBase {
    * Provisions a Cognito User Pool and configures JWT authentication
    * @internal
    */
-  private createDefaultCognitoAuthorizer(): IGatewayAuthorizerConfig {
+  private createDefaultCognitoAuthorizerConfig(): IGatewayAuthorizerConfig {
     const userPool = new cognito.UserPool(this, 'UserPool', {
       userPoolName: `${this.name}-gw-userpool`,
       signInCaseSensitive: false,

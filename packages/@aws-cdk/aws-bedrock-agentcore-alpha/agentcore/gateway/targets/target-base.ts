@@ -1,7 +1,7 @@
 import { Resource, IResource } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IGateway } from '../gateway-base';
-import { ICredentialProvider } from '../outbound-auth/credential-provider';
+import { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
 
 /******************************************************************************
  *                                 ENUM
@@ -72,7 +72,7 @@ export interface IGatewayTarget extends IResource {
   /**
    * The credential provider configuration for the target
    */
-  readonly credentialProviderConfigurations: ICredentialProvider[];
+  readonly credentialProviderConfigurations: ICredentialProviderConfig[];
 
   /**
    * The status of the gateway target
@@ -142,7 +142,7 @@ export abstract class GatewayTargetBase extends Resource implements IGatewayTarg
   public abstract readonly name: string;
   public abstract readonly description?: string;
   public abstract readonly gateway: IGateway;
-  public abstract readonly credentialProviderConfigurations: ICredentialProvider[];
+  public abstract readonly credentialProviderConfigurations: ICredentialProviderConfig[];
   public abstract readonly status?: string;
   public abstract readonly statusReasons?: string[];
   public abstract readonly createdAt?: string;

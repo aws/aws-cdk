@@ -76,6 +76,39 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+           }
+          ]
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -175,7 +208,7 @@
      }
     },
     "AuthorizerType": "CUSTOM_JWT",
-    "Description": "Simple integration test gateway",
+    "Description": "Comprehensive integration test gateway with all target types",
     "Name": "integ-test-gateway",
     "ProtocolConfiguration": {
      "Mcp": {
@@ -195,7 +228,7 @@
     }
    }
   },
-  "TestGatewayTestLambdaTargetC2DD33CA": {
+  "TestGatewayLambdaTargetBE2E7E0C": {
    "Type": "AWS::BedrockAgentCore::GatewayTarget",
    "Properties": {
     "CredentialProviderConfigurations": [
@@ -203,14 +236,14 @@
       "CredentialProviderType": "GATEWAY_IAM_ROLE"
      }
     ],
-    "Description": "Simple Lambda target for testing",
+    "Description": "Lambda target using convenience method",
     "GatewayIdentifier": {
      "Fn::GetAtt": [
       "TestGateway7394A071",
       "GatewayIdentifier"
      ]
     },
-    "Name": "test-lambda-target",
+    "Name": "lambda-greeting-target",
     "TargetConfiguration": {
      "Mcp": {
       "Lambda": {
@@ -223,22 +256,60 @@
        "ToolSchema": {
         "InlinePayload": [
          {
-          "Description": "A simple test tool",
+          "Description": "A greeting tool that returns a message",
           "InputSchema": {
            "Properties": {
-            "message": {
-             "Description": "Test message",
+            "name": {
+             "Description": "Name to greet",
              "Type": "string"
             }
            },
            "Required": [
-            "message"
+            "name"
            ],
            "Type": "object"
           },
-          "Name": "test_tool"
+          "Name": "greeting_tool"
          }
         ]
+       }
+      }
+     }
+    }
+   }
+  },
+  "TestGatewaySmithyTarget2C1ACC84": {
+   "Type": "AWS::BedrockAgentCore::GatewayTarget",
+   "Properties": {
+    "CredentialProviderConfigurations": [
+     {
+      "CredentialProviderType": "GATEWAY_IAM_ROLE"
+     }
+    ],
+    "Description": "Smithy target using convenience method",
+    "GatewayIdentifier": {
+     "Fn::GetAtt": [
+      "TestGateway7394A071",
+      "GatewayIdentifier"
+     ]
+    },
+    "Name": "smithy-test-target",
+    "TargetConfiguration": {
+     "Mcp": {
+      "SmithyModel": {
+       "S3": {
+        "Uri": {
+         "Fn::Join": [
+          "",
+          [
+           "s3://",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+           },
+           "/986ba659d2bd7adfcf9b77065f593411e332e26d4e2ee706f1d83b9f41d7da7c.json"
+          ]
+         ]
+        }
        }
       }
      }
@@ -280,9 +351,10 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "\n    exports.handler = async (event) => {\n      console.log('Received event:', JSON.stringify(event));\n      return {\n        statusCode: 200,\n        body: JSON.stringify({\n          message: 'Hello from integration test!',\n        }),\n      };\n    };\n  "
+     "ZipFile": "\n    exports.handler = async (event) => {\n      console.log('Received event:', JSON.stringify(event));\n      return {\n        statusCode: 200,\n        body: JSON.stringify({\n          message: 'Hello from Lambda!',\n          input: event,\n        }),\n      };\n    };\n  "
     },
-    "Description": "Simple Lambda for Gateway integration test",
+    "Description": "Lambda function for Gateway integration test",
+    "FunctionName": "integ-test-gateway-lambda",
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
@@ -323,6 +395,24 @@
     "Fn::GetAtt": [
      "TestGateway7394A071",
      "GatewayIdentifier"
+    ]
+   }
+  },
+  "LambdaTargetId": {
+   "Description": "The ID of the Lambda target",
+   "Value": {
+    "Fn::GetAtt": [
+     "TestGatewayLambdaTargetBE2E7E0C",
+     "TargetId"
+    ]
+   }
+  },
+  "SmithyTargetId": {
+   "Description": "The ID of the Smithy target",
+   "Value": {
+    "Fn::GetAtt": [
+     "TestGatewaySmithyTarget2C1ACC84",
+     "TargetId"
     ]
    }
   }

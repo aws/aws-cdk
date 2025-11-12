@@ -4,13 +4,13 @@
  *****************************************************************************/
 
 import { Grant, IRole } from 'aws-cdk-lib/aws-iam';
-import { CredentialProviderType, ICredentialProvider } from './credential-provider';
+import { CredentialProviderType, ICredentialProviderConfig } from './credential-provider';
 
 /**
  * Gateway IAM Role credential provider configuration implementation
  * Can be used with Lambda and Smithy targets
  */
-export class GatewayIamRoleCredentialProvider implements ICredentialProvider {
+export class GatewayIamRoleCredentialProviderConfig implements ICredentialProviderConfig {
   public readonly credentialProviderType = CredentialProviderType.GATEWAY_IAM_ROLE;
 
   constructor() {}
