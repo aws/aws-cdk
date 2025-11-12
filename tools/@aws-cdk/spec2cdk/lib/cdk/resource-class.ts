@@ -44,7 +44,6 @@ import {
 import { isDefined, splitDocumentation, maybeDeprecated } from '../util';
 import { findArnProperty } from './reference-props';
 import { SelectiveImport, RelationshipDecider } from './relationship-decider';
-import { directCodeStmt } from '../util/typewriter-helpers';
 
 export interface ITypeHost {
   typeFromSpecType(type: PropertyType): Type;
@@ -139,7 +138,7 @@ export class ResourceClass extends ClassType {
 
       // And put an export in for backwards compatibility, but only if this is not an aliased service
       if (!this.isAliasedService) {
-        this.module.addInitialization(directCodeStmt(`export type { ${typeNames.join(', ')} }`));
+        this.module.addInitialization(stmt.directCode(`export type { ${typeNames.join(', ')} }`));
       }
     }
   }
