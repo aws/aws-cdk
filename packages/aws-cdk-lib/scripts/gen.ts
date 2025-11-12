@@ -25,20 +25,8 @@ async function main() {
   }));
 
   await updateExportsAndEntryPoints(generated);
-  await writeScopeMap(generated);
+  await writeModuleMap(generated);
   await submodulesGen(generated, awsCdkLibDir);
-}
-
-async function writeScopeMap(modules: ModuleMap) {
-  const newScopeMap = Object.entries(modules)
-    .sort(([modA], [modB]) => modA.localeCompare(modB))
-    .reduce((scopeMap, [moduleName, { scopes }]) => {
-      return {
-        ...scopeMap,
-        [moduleName]: scopes,
-      };
-    }, {});
-  await fs.writeJson(scopeMapPath, newScopeMap, { spaces: 2 });
 }
 
 async function updateExportsAndEntryPoints(modules: ModuleMap) {
@@ -53,7 +41,7 @@ async function updateExportsAndEntryPoints(modules: ModuleMap) {
   for (const [moduleName, { definition }] of Object.entries(modules)) {
     const moduleConfig = {
       name: definition?.moduleName ?? moduleName,
-      submodule: definition?.submoduleName ?? moduleName.replace(/-/g, '_'),
+      submodule: definition?.submoduleName ?? naming.submoduleSymbolFromName(moduleName),
     };
 
     const exportName = `./${moduleConfig.name}`;

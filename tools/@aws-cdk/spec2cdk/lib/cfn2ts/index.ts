@@ -1,100 +1,46 @@
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
-import { Service } from '@aws-cdk/service-spec-types';
-import * as fs from 'fs-extra';
-import { CodeGeneratorOptions, GenerateAllOptions, ModuleMap, ModuleMapScope } from './types';
 import type { ModuleImportLocations } from '../cdk/cdk';
 import { generateSome as generateModules } from '../generate';
-import { log, pkglint } from '../util';
-
-export * from './types';
-
-let serviceCache: Service[];
-
-async function getAllScopes(field: keyof Service = 'name'): Promise<ModuleMapScope[]> {
-  if (!serviceCache) {
-    const db = await loadAwsServiceSpec();
-    serviceCache = db.all('service');
-  }
-
-  return serviceCache.map((s) => ({ namespace: s[field] }));
-}
-
-export default async function generate(
-  scopes: string | string[],
-  outPath: string,
-  options: CodeGeneratorOptions = {},
-): Promise<void> {
-  const coreImport = options.coreImport ?? 'aws-cdk-lib';
-  let moduleScopes: ModuleMapScope[] = [];
-  if (scopes === '*') {
-    moduleScopes = await getAllScopes('cloudFormationNamespace');
-  } else if (typeof scopes === 'string') {
-    moduleScopes = [{ namespace: scopes }];
-  }
-
-  log.info(`cfn-resources: ${moduleScopes.map(s => s.namespace).join(', ')}`);
-  await generateModules(
-    {
-      'aws-cdk-lib': {
-        services: options.autoGenerateSuffixes ? computeServiceSuffixes(moduleScopes) : moduleScopes,
-      },
-    },
-    {
-      outputPath: outPath ?? 'lib',
-      clearOutput: false,
-      filePatterns: {
-        resources: '%serviceShortName%.generated.ts',
-        augmentations: '%serviceShortName%-augmentations.generated.ts',
-        cannedMetrics: '%serviceShortName%-canned-metrics.generated.ts',
-      },
-      importLocations: {
-        core: coreImport,
-        coreHelpers: `${coreImport}/${coreImport === '.' ? '' : 'lib/'}helpers-internal`,
-        coreErrors: `${coreImport}/${coreImport === '.' ? '' : 'lib/'}errors`,
-      },
-    },
-  );
-}
+import { ModuleMap, readModuleMap } from '../module-topology';
+import * as naming from '../naming';
+import { jsii } from '../util';
+import { getAllScopes } from '../util/db';
 
 /**
- * Maps suffixes to services used to generated class names, given all the scopes that share the same package.
+ * Configuration options for the generateAll function
  */
-function computeServiceSuffixes(scopes: ModuleMapScope[] = []): ModuleMapScope[] {
-  const allScopes = scopes.map((scope) => scope.namespace);
-  return scopes.map(
-    (scope) => {
-      // don't change if provided
-      if (scope.suffix) {
-        return scope;
-      }
+export interface GenerateAllOptions {
+  /**
+   * Path of the file containing the map of module names to their CFN Scopes
+   */
+  readonly scopeMapPath: string;
 
-      return {
-        ...scope,
-        suffix: computeSuffix(scope.namespace, allScopes),
-      };
-    },
-  );
-}
+  /**
+   * List of service names to be skipped it will be in format AWS::Service like AWS::S3
+   */
+  readonly skippedServices?: string[];
 
-/**
- * Finds a suffix for class names generated for a scope, given all the scopes that share the same package.
- * @param scope     the scope for which an affix is needed (e.g: AWS::ApiGatewayV2)
- * @param allScopes all the scopes hosted in the package (e.g: ["AWS::ApiGateway", "AWS::ApiGatewayV2"])
- * @returns the affix (e.g: "V2"), if any, or undefined.
- */
-function computeSuffix(scope: string, allScopes: string[]): string | undefined {
-  if (allScopes.length === 1) {
-    return undefined;
-  }
-  const parts = scope.match(/^(.+)(V\d+)$/);
-  if (!parts) {
-    return undefined;
-  }
-  const [, root, version] = parts;
-  if (allScopes.indexOf(root) !== -1) {
-    return version;
-  }
-  return undefined;
+  /**
+   * How to import the core library.
+   *
+   * @default '@aws-cdk/core'
+   */
+  readonly coreImport?: string;
+
+  /**
+   * Automatically generate service suffixes
+   *
+   * @default false
+   */
+  readonly autoGenerateSuffixes?: boolean;
+
+  /**
+   * Path of cloudwatch import to use when generating augmentation source
+   * files.
+   *
+   * @default '@aws-cdk/aws-cloudwatch'
+   */
+  cloudwatchImport?: string;
 }
 
 /**
@@ -113,25 +59,27 @@ export async function legacyGenerateAll(
   outPath: string,
   { scopeMapPath, skippedServices, ...options }: GenerateAllOptions,
 ): Promise<ModuleMap> {
-  const allScopes = await getAllScopes('cloudFormationNamespace');
+  const db = await loadAwsServiceSpec();
+  const allScopes = getAllScopes(db, 'cloudFormationNamespace');
   const scopes = skippedServices ? allScopes.filter((scope) => !skippedServices.includes(scope.namespace)) : allScopes;
-  const moduleMap = await readScopeMap(scopeMapPath);
+  const moduleMap = readModuleMap(scopeMapPath);
 
   // Make sure all scopes have their own dedicated package/namespace.
   // Adds new submodules for new namespaces.
   for (const scope of scopes) {
-    const moduleDefinition = pkglint.createModuleDefinitionFromCfnNamespace(scope.namespace);
-    const currentScopes = moduleMap[moduleDefinition.moduleName]?.scopes ?? [];
+    const moduleName = naming.modulePartsFromNamespace(scope.namespace).moduleName;
+    const currentScopes = moduleMap[moduleName]?.scopes ?? [];
     // remove dupes, give precedence to data from module map
     const newScopes = Array.from(
       new Map([scope, ...currentScopes].map(s => [s.namespace, s])).values(),
     );
 
     // Add new modules to module map and return to caller
-    moduleMap[moduleDefinition.moduleName] = {
-      name: moduleDefinition.moduleName,
-      definition: moduleDefinition,
+    moduleMap[moduleName] = {
+      name: moduleName,
       scopes: newScopes,
+      definition: moduleMap[moduleName]?.definition ?? jsii.namespaceToModuleDefinition(scope.namespace),
+      targets: moduleMap[moduleName]?.targets ?? undefined,
       resources: {},
       files: [],
     };
@@ -179,32 +127,6 @@ export async function legacyGenerateAll(
   });
 
   return moduleMap;
-}
-
-/**
- * Reads the scope map from a file and transforms it into the type we need.
- */
-async function readScopeMap(filepath: string): Promise<ModuleMap> {
-  const scopeMap: Record<string, string[] | Array<ModuleMapScope>> = await fs.readJson(filepath);
-  return Object.entries(scopeMap).reduce((moduleMap, [name, moduleScopes]) => {
-    return {
-      ...moduleMap,
-      [name]: {
-        name,
-        scopes: moduleScopes.map(s => {
-          if (typeof s === 'string') {
-            return {
-              namespace: s,
-            };
-          }
-
-          return s;
-        }),
-        resources: {},
-        files: [],
-      },
-    };
-  }, {});
 }
 
 /**
