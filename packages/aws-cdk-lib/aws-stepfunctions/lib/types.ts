@@ -48,7 +48,7 @@ export interface ICatchable {
    * @param props Catch configuration
    * @returns The resulting chain
    */
-  addCatch(handler: IChainable, props?: CatchProps): INextable;
+  addCatch(handler: IChainable, props?: CatchProps): this;
 }
 
 /**
