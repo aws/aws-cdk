@@ -156,7 +156,7 @@ export class Map extends MapBase implements INextable, ICatchable {
    * When a particular error occurs, execution will continue at the error
    * handler instead of failing the state machine execution.
    */
-  public addCatch(handler: IChainable, props: CatchProps = {}): Map {
+  public addCatch(handler: IChainable, props: CatchProps = {}): this {
     super._addCatch(handler.startState, props);
     return this;
   }
