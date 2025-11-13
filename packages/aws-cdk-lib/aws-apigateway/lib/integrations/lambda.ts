@@ -1,7 +1,7 @@
 import { AwsIntegration } from './aws';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
-import { Lazy, Names, Token } from '../../../core';
+import { Annotations, Lazy, Names, Token } from '../../../core';
 import { IntegrationConfig, IntegrationOptions } from '../integration';
 import { Method } from '../method';
 
@@ -22,9 +22,25 @@ export interface LambdaIntegrationOptions extends IntegrationOptions {
    * is set to `false`, the function will only be usable from the deployment
    * endpoint.
    *
+   * Note that this property is ignored when `scopePermissionToMethod` is `false`.
+   *
    * @default true
    */
   readonly allowTestInvoke?: boolean;
+
+  /**
+   * Scope the permission for invoking the AWS Lambda down to the specific method
+   * associated with this integration.
+   *
+   * If this is set to `false`, the permission will allow invoking the AWS Lambda
+   * from any method. This is useful for reducing the AWS Lambda policy size
+   * for cases where the same AWS Lambda function is reused for many integrations.
+   *
+   * Note that this will always allow test invocations.
+   *
+   * @default true
+   */
+  readonly scopePermissionToMethod?: boolean;
 }
 
 /**
@@ -40,6 +56,7 @@ export interface LambdaIntegrationOptions extends IntegrationOptions {
 export class LambdaIntegration extends AwsIntegration {
   private readonly handler: lambda.IFunction;
   private readonly enableTest: boolean;
+  private readonly scopePermissionToMethod: boolean;
 
   constructor(handler: lambda.IFunction, options: LambdaIntegrationOptions = { }) {
     const proxy = options.proxy ?? true;
@@ -53,27 +70,50 @@ export class LambdaIntegration extends AwsIntegration {
 
     this.handler = handler;
     this.enableTest = options.allowTestInvoke ?? true;
+    this.scopePermissionToMethod = options.scopePermissionToMethod ?? true;
   }
 
   public bind(method: Method): IntegrationConfig {
     const bindResult = super.bind(method);
     const principal = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
-    const desc = `${Names.nodeUniqueId(method.api.node)}.${method.httpMethod}.${method.resource.path.replace(/\//g, '.')}`;
+    if (this.scopePermissionToMethod) {
+      const desc = `${Names.nodeUniqueId(method.api.node)}.${method.httpMethod}.${method.resource.path.replace(/\//g, '.')}`;
 
-    this.handler.addPermission(`ApiPermission.${desc}`, {
-      principal,
-      scope: method,
-      sourceArn: Lazy.string({ produce: () => method.methodArn }),
-    });
-
-    // add permission to invoke from the console
-    if (this.enableTest) {
-      this.handler.addPermission(`ApiPermission.Test.${desc}`, {
+      this.handler.addPermission(`ApiPermission.${desc}`, {
         principal,
         scope: method,
-        sourceArn: method.testMethodArn,
+        sourceArn: Lazy.string({ produce: () => method.methodArn }),
       });
+
+      // add permission to invoke from the console
+      if (this.enableTest) {
+        this.handler.addPermission(`ApiPermission.Test.${desc}`, {
+          principal,
+          scope: method,
+          sourceArn: method.testMethodArn,
+        });
+      }
+    } else {
+      // Scope the permission to the API, reusing the existing permission if available.
+      const apiScopedPermissionId = `ApiPermission.ApiScoped.${Names.nodeUniqueId(this.handler.node)}.${Names.nodeUniqueId(method.api.node)}`;
+      const existingPermission = method.api.node.findAll()
+        .find(c => c instanceof lambda.CfnPermission && c.node.id === apiScopedPermissionId);
+
+      if (!existingPermission) {
+        this.handler.addPermission(apiScopedPermissionId, {
+          principal,
+          scope: method.api,
+          sourceArn: Lazy.string({ produce: () => method.api.arnForExecuteApi() }),
+        });
+      }
+
+      if (!this.enableTest) {
+        Annotations.of(method).addWarningV2(
+          '@aws-cdk/aws-apigateway:allowTestInvoke',
+          'Value \'false\' for \'allowTestInvoke\' in LambdaIntegration is ignored since \'scopePermissionToMethod\' is \'false\'',
+        );
+      }
     }
 
     let functionName;
