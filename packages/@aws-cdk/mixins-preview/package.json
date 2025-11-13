@@ -3,12 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "description": "Preview of CDK Mixins - composable, reusable abstractions that can be applied to any construct (L1, L2 or custom).",
-  "main": "lib/mixins/index.js",
-  "types": "lib/mixins/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "exports": {
     "./.jsii": "./.jsii",
     "./.warnings.jsii.js": "./.warnings.jsii.js",
-    "./mixins": "./index.js"
+    "./core": "./lib/core/index.js",
+    "./extensions": "./lib/extensions/index.js",
+    "./mixins": "./lib/mixins/index.js"
   },
   "jsii": {
     "outdir": "dist",
@@ -103,6 +105,8 @@
   "awscdkio": {
     "announce": false
   },
-  "cdk-build": {
+  "cdk-build": {},
+  "publishConfig": {
+    "tag": "latest"
   }
 }

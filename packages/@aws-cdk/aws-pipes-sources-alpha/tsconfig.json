@@ -20,6 +20,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "esModuleInterop": false,
+    "isolatedModules": true,
     "strict": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
