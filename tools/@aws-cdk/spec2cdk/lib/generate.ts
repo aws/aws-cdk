@@ -2,10 +2,9 @@ import * as path from 'path';
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
 import { DatabaseBuilder } from '@aws-cdk/service-spec-importers';
 import { SpecDatabase } from '@aws-cdk/service-spec-types';
-import { Module, TypeScriptRenderer } from '@cdklabs/typewriter';
+import { TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
-import { AstBuilder, DEFAULT_FILE_PATTERNS, GenerateFilePatterns, submoduleFiles } from './cdk/ast';
-import { ModuleImportLocations } from './cdk/cdk';
+import { AstBuilder, AstBuilderProps, DEFAULT_FILE_PATTERNS } from './cdk/ast';
 import { queryDb, log, TsFileWriter } from './util';
 
 export interface GenerateServiceRequest {
@@ -40,24 +39,9 @@ export interface GenerateModuleOptions {
    * List of services to generate files for.
    */
   readonly services: GenerateServiceRequest[];
-
-  /**
-   * Override the default locations where modules are imported from on the module level
-   */
-  readonly moduleImportLocations?: ModuleImportLocations;
 }
 
-export interface GenerateOptions {
-  /**
-   * Default location for module imports
-   */
-  readonly importLocations?: ModuleImportLocations;
-
-  /**
-   * Configure where files are created exactly
-   */
-  readonly filePatterns?: Partial<GenerateFilePatterns>;
-
+export interface GenerateOptions extends Pick<AstBuilderProps, 'filePatterns' | 'inCdkLib'> {
   /**
    * Base path for generated files
    *
@@ -91,27 +75,37 @@ export interface GenerateModuleMap {
   [name: string]: GenerateModuleOptions;
 }
 
+/**
+ * Output of the spec2cdk code generation
+ */
 export interface GenerateOutput {
-  outputFiles: string[];
-  resources: Record<string, string>;
-  modules: {
-    [name: string]: Array<{
-      module: Module;
-      options: GenerateModuleOptions;
-      resources: Record<string, string>;
-      outputFiles: string[];
-    }>;
-  };
+  modules: Record<string, GeneratedServiceInfo>;
+}
+
+export interface GeneratedServiceInfo {
+  readonly resources: Record<string, string>;
+  readonly outputFiles: string[];
 }
 
 /**
  * Generates Constructs for modules from the Service Specs
+ *
+ * This is the entry point used by the build when running `yarn gen`, and is
+ * called via `cfn2ts`.
  *
  * @param modules A map of arbitrary module names to GenerateModuleOptions. This allows for flexible generation of different configurations at a time.
  * @param options Configure the code generation
  */
 export async function generate(modules: GenerateModuleMap, options: GenerateOptions) {
   enableDebug(options);
+  const db = await loadPatchedSpec();
+  return generator(db, modules, options);
+}
+
+/**
+ * Load the service spec with patched schema files.
+ */
+export async function loadPatchedSpec(): Promise<SpecDatabase> {
   const db = await loadAwsServiceSpec();
 
   // Load additional schema files
@@ -119,11 +113,13 @@ export async function generate(modules: GenerateModuleMap, options: GenerateOpti
     .importCloudFormationRegistryResources(path.join(__dirname, '..', 'temporary-schemas'))
     .build();
 
-  return generator(db, modules, options);
+  return db;
 }
 
 /**
  * Generates Constructs for all services, with modules name like the service
+ *
+ * This is the entry point used by the `spec2cdk` CLI, which looks to be unused.
  *
  * @param outputPath Base path for generated files. Use `options.filePatterns` to configure more complex scenarios.
  * @param options Additional configuration
@@ -131,7 +127,7 @@ export async function generate(modules: GenerateModuleMap, options: GenerateOpti
 export async function generateAll(options: GenerateOptions) {
   enableDebug(options);
   const db = await loadAwsServiceSpec();
-  const services = await queryDb.getAllServices(db);
+  const services = queryDb.getAllServices(db);
 
   const modules: GenerateModuleMap = {};
 
@@ -160,10 +156,9 @@ async function generator(
   log.debug('Options', options);
   const { clearOutput, outputPath = process.cwd() } = options;
 
-  const renderer = new TypeScriptRenderer();
-
-  // store results in a map of modules
-  const moduleMap: GenerateOutput['modules'] = {};
+  const renderer = new TypeScriptRenderer({
+    disabledEsLintRules: ['@stylistic/max-len', 'eol-last'],
+  });
 
   // Clear output if requested
   if (clearOutput) {
@@ -172,58 +167,55 @@ async function generator(
 
   const ast = new AstBuilder({
     db,
-    modulesRoot: options.importLocations?.modulesRoot,
     filePatterns: {
       ...DEFAULT_FILE_PATTERNS,
       ...noUndefined(options.filePatterns),
     },
+    inCdkLib: options.inCdkLib,
   });
+
+  const moduleResources: Record<string, Record<string, string>> = {};
 
   // Go through the module map
   log.info('Generating %i modules...', Object.keys(modules).length);
   for (const [moduleName, moduleOptions] of Object.entries(modules)) {
     const services = queryDb.getServicesByGenerateServiceRequest(db, moduleOptions.services);
 
-    moduleMap[moduleName] = services.map(([req, s]) => {
+    for (const [req, s] of services) {
       log.debug(moduleName, s.name, 'ast');
 
       const submod = ast.addService(s, {
         destinationSubmodule: moduleName,
         nameSuffix: req.suffix,
         deprecated: req.deprecated,
-        importLocations: moduleOptions.moduleImportLocations ?? options.importLocations,
       });
 
-      return {
-        module: submod.resourcesMod.module,
-        options: moduleOptions,
-        resources: submod.resources,
-        outputFiles: submoduleFiles(submod).map((x) => path.resolve(x)),
-      } satisfies GenerateOutput['modules'][string][number];
-    });
+      moduleResources[moduleName] = moduleResources[moduleName] ?? {};
+      Object.assign(moduleResources[moduleName], submod.resources);
+    }
   }
+
+  const moduleOutputFiles = ast.filesBySubmodule();
 
   const writer = new TsFileWriter(outputPath, renderer);
   ast.writeAll(writer);
 
-  const result: GenerateOutput = {
-    modules: moduleMap,
-    resources: Object.values(moduleMap).flat().map(pick('resources')).reduce(mergeObjects, {}),
-    outputFiles: writer.outputFiles,
-  };
-
+  const allResources = Object.values(moduleResources).flat().reduce(mergeObjects, {});
   log.info('Summary:');
-  log.info('  Service files:  %i', Object.values(moduleMap).flat().flatMap(pick('module')).length);
-  log.info('  Resources:      %i', Object.keys(result.resources).length);
+  log.info('  Service files:  %i', Object.values(moduleOutputFiles).flat().length);
+  log.info('  Resources:      %i', Object.keys(allResources).length);
   log.timeEnd(timeLabel);
 
-  return result;
-}
-
-function pick<T>(property: keyof T) {
-  type x = typeof property;
-  return (obj: Record<x, any>): any => {
-    return obj[property];
+  return {
+    modules: Object.fromEntries(
+      Object.keys(moduleOutputFiles).map((moduleName) => ([
+        moduleName,
+        {
+          outputFiles: Array.from(moduleOutputFiles[moduleName]).sort(),
+          resources: moduleResources[moduleName],
+        },
+      ]),
+      )),
   };
 }
 

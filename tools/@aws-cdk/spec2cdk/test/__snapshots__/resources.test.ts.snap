@@ -1,23 +1,43 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`resource interface when primaryIdentifier is a property 1`] = `
+exports[`can generate interface types into a separate module 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import { IEnvironmentAware } from "aws-cdk-lib/interfaces";
 import * as constructs from "constructs";
-import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
-import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
 
 /**
  * Indicates that this resource can be referenced as a Resource.
  *
  * @stability experimental
  */
-export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentAware {
+export interface IResourceRef extends constructs.IConstruct, IEnvironmentAware {
   /**
    * A reference to a Resource resource.
    */
   readonly resourceRef: ResourceReference;
 }
+
+/**
+ * A reference to a Resource resource.
+ *
+ * @struct
+ * @stability external
+ */
+export interface ResourceReference {
+  /**
+   * The Id of the Resource resource.
+   */
+  readonly resourceId: string;
+}"
+`;
+
+exports[`can generate interface types into a separate module 2`] = `
+"/* eslint-disable prettier/prettier, @stylistic/max-len */
+import * as cdk from "aws-cdk-lib/core";
+import * as constructs from "constructs";
+import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
+import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
+import { IResourceRef, ResourceReference } from "../interfaces/generated/aws-some-interfaces.generated";
 
 /**
  * @cloudformationResource AWS::Some::Resource
@@ -60,14 +80,16 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   public id?: string;
 
   /**
+   * Create a new \`AWS::Some::Resource\`.
+   *
    * @param scope Scope in which this resource is defined
    * @param id Construct identifier for this resource (unique in its scope)
    * @param props Resource properties
    */
   public constructor(scope: constructs.Construct, id: string, props: CfnResourceProps = {}) {
     super(scope, id, {
-      "type": CfnResource.CFN_RESOURCE_TYPE_NAME,
-      "properties": props
+      type: CfnResource.CFN_RESOURCE_TYPE_NAME,
+      properties: props
     });
 
     this.id = props.id;
@@ -75,13 +97,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   public get resourceRef(): ResourceReference {
     return {
-      "resourceId": this.ref
+      resourceId: this.ref
     };
   }
 
   protected get cfnProperties(): Record<string, any> {
     return {
-      "id": this.id
+      id: this.id
     };
   }
 
@@ -117,16 +139,154 @@ export interface CfnResourceProps {
 }
 
 /**
- * A reference to a Resource resource.
+ * Determine whether the given properties match those of a \`CfnResourceProps\`
+ *
+ * @param properties - the TypeScript properties of a \`CfnResourceProps\`
+ *
+ * @returns the result of the validation.
+ */
+// @ts-ignore TS6133
+function CfnResourcePropsValidator(properties: any): cdk.ValidationResult {
+  if (!cdk.canInspect(properties)) return cdk.VALIDATION_SUCCESS;
+  const errors = new cdk.ValidationResults();
+  if (!(properties && typeof properties == 'object' && !Array.isArray(properties))) {
+    errors.collect(new cdk.ValidationResult("Expected an object, but received: " + JSON.stringify(properties)));
+  }
+  errors.collect(cdk.propertyValidator("id", cdk.validateString)(properties.id));
+  return errors.wrap("supplied properties not correct for \\"CfnResourceProps\\"");
+}
+
+// @ts-ignore TS6133
+function convertCfnResourcePropsToCloudFormation(properties: any): any {
+  if (!cdk.canInspect(properties)) return properties;
+  CfnResourcePropsValidator(properties).assertSuccess();
+  return {
+    Id: cdk.stringToCloudFormation(properties.id)
+  };
+}
+
+// @ts-ignore TS6133
+function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromCloudFormationResult<CfnResourceProps | cdk.IResolvable> {
+  if (cdk.isResolvableObject(properties)) {
+    return new cfn_parse.FromCloudFormationResult(properties);
+  }
+  properties = ((properties == null) ? {} : properties);
+  if (!(properties && typeof properties == 'object' && !Array.isArray(properties))) {
+    return new cfn_parse.FromCloudFormationResult(properties);
+  }
+  const ret = new cfn_parse.FromCloudFormationPropertyObject<CfnResourceProps>();
+  ret.addPropertyResult("id", "Id", (properties.Id != null ? cfn_parse.FromCloudFormation.getString(properties.Id) : undefined));
+  ret.addUnrecognizedPropertiesAsExtra(properties);
+  return ret;
+}
+export type { IResourceRef, ResourceReference };"
+`;
+
+exports[`resource interface when primaryIdentifier is a property 1`] = `
+"/* eslint-disable prettier/prettier, @stylistic/max-len */
+import * as cdk from "aws-cdk-lib/core";
+import * as constructs from "constructs";
+import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
+import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
+import { IResourceRef, ResourceReference } from "../interfaces/generated/aws-some-interfaces.generated";
+
+/**
+ * @cloudformationResource AWS::Some::Resource
+ * @stability external
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
+ */
+export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IResourceRef {
+  /**
+   * The CloudFormation resource type name for this resource class.
+   */
+  public static readonly CFN_RESOURCE_TYPE_NAME: string = "AWS::Some::Resource";
+
+  /**
+   * Build a CfnResource from CloudFormation properties
+   *
+   * A factory method that creates a new instance of this class from an object
+   * containing the CloudFormation properties of this resource.
+   * Used in the @aws-cdk/cloudformation-include module.
+   *
+   * @internal
+   */
+  public static _fromCloudFormation(scope: constructs.Construct, id: string, resourceAttributes: any, options: cfn_parse.FromCloudFormationOptions): CfnResource {
+    resourceAttributes = resourceAttributes || {};
+    const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
+    const propsResult = CfnResourcePropsFromCloudFormation(resourceProperties);
+    if (cdk.isResolvableObject(propsResult.value)) {
+      throw new cdk_errors.ValidationError("Unexpected IResolvable", scope);
+    }
+    const ret = new CfnResource(scope, id, propsResult.value);
+    for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
+      ret.addPropertyOverride(propKey, propVal);
+    }
+    options.parser.handleAttributes(ret, resourceAttributes, id);
+    return ret;
+  }
+
+  /**
+   * The identifier of the resource.
+   */
+  public id?: string;
+
+  /**
+   * Create a new \`AWS::Some::Resource\`.
+   *
+   * @param scope Scope in which this resource is defined
+   * @param id Construct identifier for this resource (unique in its scope)
+   * @param props Resource properties
+   */
+  public constructor(scope: constructs.Construct, id: string, props: CfnResourceProps = {}) {
+    super(scope, id, {
+      type: CfnResource.CFN_RESOURCE_TYPE_NAME,
+      properties: props
+    });
+
+    this.id = props.id;
+  }
+
+  public get resourceRef(): ResourceReference {
+    return {
+      resourceId: this.ref
+    };
+  }
+
+  protected get cfnProperties(): Record<string, any> {
+    return {
+      id: this.id
+    };
+  }
+
+  /**
+   * Examines the CloudFormation resource and discloses attributes
+   *
+   * @param inspector tree inspector to collect and process attributes
+   */
+  public inspect(inspector: cdk.TreeInspector): void {
+    inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
+  }
+
+  protected renderProperties(props: Record<string, any>): Record<string, any> {
+    return convertCfnResourcePropsToCloudFormation(props);
+  }
+}
+
+/**
+ * Properties for defining a \`CfnResource\`
  *
  * @struct
  * @stability external
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
  */
-export interface ResourceReference {
+export interface CfnResourceProps {
   /**
-   * The Id of the Resource resource.
+   * The identifier of the resource.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html#cfn-some-resource-id
    */
-  readonly resourceId: string;
+  readonly id?: string;
 }
 
 /**
@@ -152,7 +312,7 @@ function convertCfnResourcePropsToCloudFormation(properties: any): any {
   if (!cdk.canInspect(properties)) return properties;
   CfnResourcePropsValidator(properties).assertSuccess();
   return {
-    "Id": cdk.stringToCloudFormation(properties.id)
+    Id: cdk.stringToCloudFormation(properties.id)
   };
 }
 
@@ -169,27 +329,17 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   ret.addPropertyResult("id", "Id", (properties.Id != null ? cfn_parse.FromCloudFormation.getString(properties.Id) : undefined));
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}"
+}
+export type { IResourceRef, ResourceReference };"
 `;
 
 exports[`resource interface when primaryIdentifier is an attribute 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-
-/**
- * Indicates that this resource can be referenced as a Resource.
- *
- * @stability experimental
- */
-export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentAware {
-  /**
-   * A reference to a Resource resource.
-   */
-  readonly resourceRef: ResourceReference;
-}
+import { IResourceRef, ResourceReference } from "../interfaces/generated/aws-some-interfaces.generated";
 
 /**
  * @cloudformationResource AWS::Some::Resource
@@ -234,14 +384,16 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   public readonly attrId: string;
 
   /**
+   * Create a new \`AWS::Some::Resource\`.
+   *
    * @param scope Scope in which this resource is defined
    * @param id Construct identifier for this resource (unique in its scope)
    * @param props Resource properties
    */
   public constructor(scope: constructs.Construct, id: string, props: CfnResourceProps = {}) {
     super(scope, id, {
-      "type": CfnResource.CFN_RESOURCE_TYPE_NAME,
-      "properties": props
+      type: CfnResource.CFN_RESOURCE_TYPE_NAME,
+      properties: props
     });
 
     this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
@@ -249,7 +401,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   public get resourceRef(): ResourceReference {
     return {
-      "resourceId": this.ref
+      resourceId: this.ref
     };
   }
 
@@ -281,19 +433,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
  */
 export interface CfnResourceProps {
 
-}
-
-/**
- * A reference to a Resource resource.
- *
- * @struct
- * @stability external
- */
-export interface ResourceReference {
-  /**
-   * The Id of the Resource resource.
-   */
-  readonly resourceId: string;
 }
 
 /**
@@ -332,27 +471,17 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   const ret = new cfn_parse.FromCloudFormationPropertyObject<CfnResourceProps>();
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}"
+}
+export type { IResourceRef, ResourceReference };"
 `;
 
 exports[`resource interface with "<Resource>Arn" 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-
-/**
- * Indicates that this resource can be referenced as a Something.
- *
- * @stability experimental
- */
-export interface ISomethingRef extends constructs.IConstruct, cdk.IEnvironmentAware {
-  /**
-   * A reference to a Something resource.
-   */
-  readonly somethingRef: SomethingReference;
-}
+import { ISomethingRef, SomethingReference } from "../interfaces/generated/aws-some-interfaces.generated";
 
 /**
  * @cloudformationResource AWS::Some::Something
@@ -404,14 +533,16 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
   public readonly attrSomethingArn: string;
 
   /**
+   * Create a new \`AWS::Some::Something\`.
+   *
    * @param scope Scope in which this resource is defined
    * @param id Construct identifier for this resource (unique in its scope)
    * @param props Resource properties
    */
   public constructor(scope: constructs.Construct, id: string, props: CfnSomethingProps = {}) {
     super(scope, id, {
-      "type": CfnSomething.CFN_RESOURCE_TYPE_NAME,
-      "properties": props
+      type: CfnSomething.CFN_RESOURCE_TYPE_NAME,
+      properties: props
     });
 
     this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
@@ -420,8 +551,8 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
 
   public get somethingRef(): SomethingReference {
     return {
-      "somethingId": this.ref,
-      "somethingArn": this.attrSomethingArn
+      somethingId: this.ref,
+      somethingArn: this.attrSomethingArn
     };
   }
 
@@ -453,24 +584,6 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
  */
 export interface CfnSomethingProps {
 
-}
-
-/**
- * A reference to a Something resource.
- *
- * @struct
- * @stability external
- */
-export interface SomethingReference {
-  /**
-   * The Id of the Something resource.
-   */
-  readonly somethingId: string;
-
-  /**
-   * The ARN of the Something resource.
-   */
-  readonly somethingArn: string;
 }
 
 /**
@@ -509,27 +622,17 @@ function CfnSomethingPropsFromCloudFormation(properties: any): cfn_parse.FromClo
   const ret = new cfn_parse.FromCloudFormationPropertyObject<CfnSomethingProps>();
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}"
+}
+export type { ISomethingRef, SomethingReference };"
 `;
 
 exports[`resource interface with "Arn" 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-
-/**
- * Indicates that this resource can be referenced as a Resource.
- *
- * @stability experimental
- */
-export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentAware {
-  /**
-   * A reference to a Resource resource.
-   */
-  readonly resourceRef: ResourceReference;
-}
+import { IResourceRef, ResourceReference } from "../interfaces/generated/aws-some-interfaces.generated";
 
 /**
  * @cloudformationResource AWS::Some::Resource
@@ -581,14 +684,16 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   public readonly attrId: string;
 
   /**
+   * Create a new \`AWS::Some::Resource\`.
+   *
    * @param scope Scope in which this resource is defined
    * @param id Construct identifier for this resource (unique in its scope)
    * @param props Resource properties
    */
   public constructor(scope: constructs.Construct, id: string, props: CfnResourceProps = {}) {
     super(scope, id, {
-      "type": CfnResource.CFN_RESOURCE_TYPE_NAME,
-      "properties": props
+      type: CfnResource.CFN_RESOURCE_TYPE_NAME,
+      properties: props
     });
 
     this.attrArn = cdk.Token.asString(this.getAtt("Arn", cdk.ResolutionTypeHint.STRING));
@@ -597,8 +702,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   public get resourceRef(): ResourceReference {
     return {
-      "resourceId": this.ref,
-      "resourceArn": this.attrArn
+      resourceId: this.ref,
+      resourceArn: this.attrArn
     };
   }
 
@@ -630,24 +735,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
  */
 export interface CfnResourceProps {
 
-}
-
-/**
- * A reference to a Resource resource.
- *
- * @struct
- * @stability external
- */
-export interface ResourceReference {
-  /**
-   * The Id of the Resource resource.
-   */
-  readonly resourceId: string;
-
-  /**
-   * The ARN of the Resource resource.
-   */
-  readonly resourceArn: string;
 }
 
 /**
@@ -686,27 +773,17 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   const ret = new cfn_parse.FromCloudFormationPropertyObject<CfnResourceProps>();
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}"
+}
+export type { IResourceRef, ResourceReference };"
 `;
 
 exports[`resource interface with Arn as a property and not a primaryIdentifier 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-
-/**
- * Indicates that this resource can be referenced as a Resource.
- *
- * @stability experimental
- */
-export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentAware {
-  /**
-   * A reference to a Resource resource.
-   */
-  readonly resourceRef: ResourceReference;
-}
+import { IResourceRef, ResourceReference } from "../interfaces/generated/aws-some-interfaces.generated";
 
 /**
  * @cloudformationResource AWS::Some::Resource
@@ -756,14 +833,16 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   public arn?: string;
 
   /**
+   * Create a new \`AWS::Some::Resource\`.
+   *
    * @param scope Scope in which this resource is defined
    * @param id Construct identifier for this resource (unique in its scope)
    * @param props Resource properties
    */
   public constructor(scope: constructs.Construct, id: string, props: CfnResourceProps = {}) {
     super(scope, id, {
-      "type": CfnResource.CFN_RESOURCE_TYPE_NAME,
-      "properties": props
+      type: CfnResource.CFN_RESOURCE_TYPE_NAME,
+      properties: props
     });
 
     this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
@@ -772,13 +851,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   public get resourceRef(): ResourceReference {
     return {
-      "resourceId": this.ref
+      resourceId: this.ref
     };
   }
 
   protected get cfnProperties(): Record<string, any> {
     return {
-      "arn": this.arn
+      arn: this.arn
     };
   }
 
@@ -814,19 +893,6 @@ export interface CfnResourceProps {
 }
 
 /**
- * A reference to a Resource resource.
- *
- * @struct
- * @stability external
- */
-export interface ResourceReference {
-  /**
-   * The Id of the Resource resource.
-   */
-  readonly resourceId: string;
-}
-
-/**
  * Determine whether the given properties match those of a \`CfnResourceProps\`
  *
  * @param properties - the TypeScript properties of a \`CfnResourceProps\`
@@ -849,7 +915,7 @@ function convertCfnResourcePropsToCloudFormation(properties: any): any {
   if (!cdk.canInspect(properties)) return properties;
   CfnResourcePropsValidator(properties).assertSuccess();
   return {
-    "Arn": cdk.stringToCloudFormation(properties.arn)
+    Arn: cdk.stringToCloudFormation(properties.arn)
   };
 }
 
@@ -866,27 +932,17 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   ret.addPropertyResult("arn", "Arn", (properties.Arn != null ? cfn_parse.FromCloudFormation.getString(properties.Arn) : undefined));
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}"
+}
+export type { IResourceRef, ResourceReference };"
 `;
 
 exports[`resource interface with Arn as primaryIdentifier 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-
-/**
- * Indicates that this resource can be referenced as a Resource.
- *
- * @stability experimental
- */
-export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentAware {
-  /**
-   * A reference to a Resource resource.
-   */
-  readonly resourceRef: ResourceReference;
-}
+import { IResourceRef, ResourceReference } from "../interfaces/generated/aws-some-interfaces.generated";
 
 /**
  * @cloudformationResource AWS::Some::Resource
@@ -931,14 +987,16 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   public readonly attrArn: string;
 
   /**
+   * Create a new \`AWS::Some::Resource\`.
+   *
    * @param scope Scope in which this resource is defined
    * @param id Construct identifier for this resource (unique in its scope)
    * @param props Resource properties
    */
   public constructor(scope: constructs.Construct, id: string, props: CfnResourceProps = {}) {
     super(scope, id, {
-      "type": CfnResource.CFN_RESOURCE_TYPE_NAME,
-      "properties": props
+      type: CfnResource.CFN_RESOURCE_TYPE_NAME,
+      properties: props
     });
 
     this.attrArn = cdk.Token.asString(this.getAtt("Arn", cdk.ResolutionTypeHint.STRING));
@@ -946,7 +1004,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   public get resourceRef(): ResourceReference {
     return {
-      "resourceArn": this.ref
+      resourceArn: this.ref
     };
   }
 
@@ -978,19 +1036,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
  */
 export interface CfnResourceProps {
 
-}
-
-/**
- * A reference to a Resource resource.
- *
- * @struct
- * @stability external
- */
-export interface ResourceReference {
-  /**
-   * The Arn of the Resource resource.
-   */
-  readonly resourceArn: string;
 }
 
 /**
@@ -1029,27 +1074,17 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   const ret = new cfn_parse.FromCloudFormationPropertyObject<CfnResourceProps>();
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}"
+}
+export type { IResourceRef, ResourceReference };"
 `;
 
 exports[`resource interface with multiple primaryIdentifiers 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-
-/**
- * Indicates that this resource can be referenced as a Resource.
- *
- * @stability experimental
- */
-export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentAware {
-  /**
-   * A reference to a Resource resource.
-   */
-  readonly resourceRef: ResourceReference;
-}
+import { IResourceRef, ResourceReference } from "../interfaces/generated/aws-some-interfaces.generated";
 
 /**
  * @cloudformationResource AWS::Some::Resource
@@ -1101,14 +1136,16 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   public readonly attrId: string;
 
   /**
+   * Create a new \`AWS::Some::Resource\`.
+   *
    * @param scope Scope in which this resource is defined
    * @param id Construct identifier for this resource (unique in its scope)
    * @param props Resource properties
    */
   public constructor(scope: constructs.Construct, id: string, props: CfnResourceProps = {}) {
     super(scope, id, {
-      "type": CfnResource.CFN_RESOURCE_TYPE_NAME,
-      "properties": props
+      type: CfnResource.CFN_RESOURCE_TYPE_NAME,
+      properties: props
     });
 
     this.attrAnother = cdk.Token.asString(this.getAtt("Another", cdk.ResolutionTypeHint.STRING));
@@ -1117,8 +1154,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   public get resourceRef(): ResourceReference {
     return {
-      "resourceId": cdk.Fn.select(0, cdk.Fn.split("|", this.ref)),
-      "another": cdk.Fn.select(1, cdk.Fn.split("|", this.ref))
+      resourceId: cdk.Fn.select(0, cdk.Fn.split("|", this.ref)),
+      another: cdk.Fn.select(1, cdk.Fn.split("|", this.ref))
     };
   }
 
@@ -1150,24 +1187,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
  */
 export interface CfnResourceProps {
 
-}
-
-/**
- * A reference to a Resource resource.
- *
- * @struct
- * @stability external
- */
-export interface ResourceReference {
-  /**
-   * The Id of the Resource resource.
-   */
-  readonly resourceId: string;
-
-  /**
-   * The Another of the Resource resource.
-   */
-  readonly another: string;
 }
 
 /**
@@ -1206,27 +1225,17 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   const ret = new cfn_parse.FromCloudFormationPropertyObject<CfnResourceProps>();
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}"
+}
+export type { IResourceRef, ResourceReference };"
 `;
 
 exports[`resource with arnTemplate 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-
-/**
- * Indicates that this resource can be referenced as a Resource.
- *
- * @stability experimental
- */
-export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentAware {
-  /**
-   * A reference to a Resource resource.
-   */
-  readonly resourceRef: ResourceReference;
-}
+import { IResourceRef, ResourceReference } from "../interfaces/generated/aws-some-interfaces.generated";
 
 /**
  * @cloudformationResource AWS::Some::Resource
@@ -1271,6 +1280,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       public resourceRef: ResourceReference;
 
       /**
+       * Create a new \`AWS::Some::Resource\`.
+       *
        * @param scope Scope in which this resource is defined
        * @param id Construct identifier for this resource (unique in its scope)
        */
@@ -1278,7 +1289,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
         super(scope, id);
 
         this.resourceRef = {
-          "resourceId": resourceId
+          resourceId: resourceId
         };
       }
     }
@@ -1291,14 +1302,16 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   public id?: string;
 
   /**
+   * Create a new \`AWS::Some::Resource\`.
+   *
    * @param scope Scope in which this resource is defined
    * @param id Construct identifier for this resource (unique in its scope)
    * @param props Resource properties
    */
   public constructor(scope: constructs.Construct, id: string, props: CfnResourceProps = {}) {
     super(scope, id, {
-      "type": CfnResource.CFN_RESOURCE_TYPE_NAME,
-      "properties": props
+      type: CfnResource.CFN_RESOURCE_TYPE_NAME,
+      properties: props
     });
 
     this.id = props.id;
@@ -1306,13 +1319,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   public get resourceRef(): ResourceReference {
     return {
-      "resourceId": this.ref
+      resourceId: this.ref
     };
   }
 
   protected get cfnProperties(): Record<string, any> {
     return {
-      "id": this.id
+      id: this.id
     };
   }
 
@@ -1348,19 +1361,6 @@ export interface CfnResourceProps {
 }
 
 /**
- * A reference to a Resource resource.
- *
- * @struct
- * @stability external
- */
-export interface ResourceReference {
-  /**
-   * The Id of the Resource resource.
-   */
-  readonly resourceId: string;
-}
-
-/**
  * Determine whether the given properties match those of a \`CfnResourceProps\`
  *
  * @param properties - the TypeScript properties of a \`CfnResourceProps\`
@@ -1383,7 +1383,7 @@ function convertCfnResourcePropsToCloudFormation(properties: any): any {
   if (!cdk.canInspect(properties)) return properties;
   CfnResourcePropsValidator(properties).assertSuccess();
   return {
-    "Id": cdk.stringToCloudFormation(properties.id)
+    Id: cdk.stringToCloudFormation(properties.id)
   };
 }
 
@@ -1400,27 +1400,17 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   ret.addPropertyResult("id", "Id", (properties.Id != null ? cfn_parse.FromCloudFormation.getString(properties.Id) : undefined));
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}"
+}
+export type { IResourceRef, ResourceReference };"
 `;
 
 exports[`resource with multiple primaryIdentifiers as properties 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-
-/**
- * Indicates that this resource can be referenced as a Resource.
- *
- * @stability experimental
- */
-export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentAware {
-  /**
-   * A reference to a Resource resource.
-   */
-  readonly resourceRef: ResourceReference;
-}
+import { IResourceRef, ResourceReference } from "../interfaces/generated/aws-some-interfaces.generated";
 
 /**
  * @cloudformationResource AWS::Some::Resource
@@ -1468,14 +1458,16 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   public id?: string;
 
   /**
+   * Create a new \`AWS::Some::Resource\`.
+   *
    * @param scope Scope in which this resource is defined
    * @param id Construct identifier for this resource (unique in its scope)
    * @param props Resource properties
    */
   public constructor(scope: constructs.Construct, id: string, props: CfnResourceProps = {}) {
     super(scope, id, {
-      "type": CfnResource.CFN_RESOURCE_TYPE_NAME,
-      "properties": props
+      type: CfnResource.CFN_RESOURCE_TYPE_NAME,
+      properties: props
     });
 
     this.anotherId = props.anotherId;
@@ -1484,15 +1476,15 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   public get resourceRef(): ResourceReference {
     return {
-      "resourceId": cdk.Fn.select(0, cdk.Fn.split("|", this.ref)),
-      "anotherId": cdk.Fn.select(1, cdk.Fn.split("|", this.ref))
+      resourceId: cdk.Fn.select(0, cdk.Fn.split("|", this.ref)),
+      anotherId: cdk.Fn.select(1, cdk.Fn.split("|", this.ref))
     };
   }
 
   protected get cfnProperties(): Record<string, any> {
     return {
-      "anotherId": this.anotherId,
-      "id": this.id
+      anotherId: this.anotherId,
+      id: this.id
     };
   }
 
@@ -1535,24 +1527,6 @@ export interface CfnResourceProps {
 }
 
 /**
- * A reference to a Resource resource.
- *
- * @struct
- * @stability external
- */
-export interface ResourceReference {
-  /**
-   * The Id of the Resource resource.
-   */
-  readonly resourceId: string;
-
-  /**
-   * The AnotherId of the Resource resource.
-   */
-  readonly anotherId: string;
-}
-
-/**
  * Determine whether the given properties match those of a \`CfnResourceProps\`
  *
  * @param properties - the TypeScript properties of a \`CfnResourceProps\`
@@ -1576,8 +1550,8 @@ function convertCfnResourcePropsToCloudFormation(properties: any): any {
   if (!cdk.canInspect(properties)) return properties;
   CfnResourcePropsValidator(properties).assertSuccess();
   return {
-    "AnotherId": cdk.stringToCloudFormation(properties.anotherId),
-    "Id": cdk.stringToCloudFormation(properties.id)
+    AnotherId: cdk.stringToCloudFormation(properties.anotherId),
+    Id: cdk.stringToCloudFormation(properties.id)
   };
 }
 
@@ -1595,27 +1569,17 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   ret.addPropertyResult("id", "Id", (properties.Id != null ? cfn_parse.FromCloudFormation.getString(properties.Id) : undefined));
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}"
+}
+export type { IResourceRef, ResourceReference };"
 `;
 
 exports[`resource with optional primary identifier gets property from ref 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-
-/**
- * Indicates that this resource can be referenced as a Resource.
- *
- * @stability experimental
- */
-export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentAware {
-  /**
-   * A reference to a Resource resource.
-   */
-  readonly resourceRef: ResourceReference;
-}
+import { IResourceRef, ResourceReference } from "../interfaces/generated/aws-some-interfaces.generated";
 
 /**
  * @cloudformationResource AWS::Some::Resource
@@ -1658,14 +1622,16 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   public id?: string;
 
   /**
+   * Create a new \`AWS::Some::Resource\`.
+   *
    * @param scope Scope in which this resource is defined
    * @param id Construct identifier for this resource (unique in its scope)
    * @param props Resource properties
    */
   public constructor(scope: constructs.Construct, id: string, props: CfnResourceProps = {}) {
     super(scope, id, {
-      "type": CfnResource.CFN_RESOURCE_TYPE_NAME,
-      "properties": props
+      type: CfnResource.CFN_RESOURCE_TYPE_NAME,
+      properties: props
     });
 
     this.id = props.id;
@@ -1673,13 +1639,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   public get resourceRef(): ResourceReference {
     return {
-      "resourceId": this.ref
+      resourceId: this.ref
     };
   }
 
   protected get cfnProperties(): Record<string, any> {
     return {
-      "id": this.id
+      id: this.id
     };
   }
 
@@ -1715,19 +1681,6 @@ export interface CfnResourceProps {
 }
 
 /**
- * A reference to a Resource resource.
- *
- * @struct
- * @stability external
- */
-export interface ResourceReference {
-  /**
-   * The Id of the Resource resource.
-   */
-  readonly resourceId: string;
-}
-
-/**
  * Determine whether the given properties match those of a \`CfnResourceProps\`
  *
  * @param properties - the TypeScript properties of a \`CfnResourceProps\`
@@ -1750,7 +1703,7 @@ function convertCfnResourcePropsToCloudFormation(properties: any): any {
   if (!cdk.canInspect(properties)) return properties;
   CfnResourcePropsValidator(properties).assertSuccess();
   return {
-    "Id": cdk.stringToCloudFormation(properties.id)
+    Id: cdk.stringToCloudFormation(properties.id)
   };
 }
 
@@ -1767,5 +1720,6 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   ret.addPropertyResult("id", "Id", (properties.Id != null ? cfn_parse.FromCloudFormation.getString(properties.Id) : undefined));
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}"
+}
+export type { IResourceRef, ResourceReference };"
 `;

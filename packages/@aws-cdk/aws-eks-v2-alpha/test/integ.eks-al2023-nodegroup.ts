@@ -5,7 +5,7 @@ import { App, Stack, StackProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as eks from '../lib';
 import { NodegroupAmiType } from 'aws-cdk-lib/aws-eks';
-import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 
 class EksClusterStack extends Stack {
   private cluster: eks.Cluster;
@@ -28,9 +28,9 @@ class EksClusterStack extends Stack {
       mastersRole,
       defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 0,
-      version: eks.KubernetesVersion.V1_33,
+      version: eks.KubernetesVersion.V1_34,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV33Layer(this, 'kubectlLayer'),
+        kubectlLayer: new KubectlV34Layer(this, 'kubectlLayer'),
       },
     });
 

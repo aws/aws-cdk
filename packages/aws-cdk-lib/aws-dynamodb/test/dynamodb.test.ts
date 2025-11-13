@@ -3248,6 +3248,45 @@ describe('global', () => {
     });
   });
 
+  test('grantReadData with AccountRootPrincipal uses wildcard resources', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+    });
+
+    // WHEN
+    table.grantReadData(new iam.AccountRootPrincipal());
+
+    // THEN - Should create resource policy with wildcard to avoid circular dependency
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      ResourcePolicy: {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: [
+                'dynamodb:BatchGetItem',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
+                'dynamodb:Query',
+                'dynamodb:GetItem',
+                'dynamodb:Scan',
+                'dynamodb:ConditionCheckItem',
+                'dynamodb:DescribeTable',
+              ],
+              Effect: 'Allow',
+              Resource: '*', // Wildcard to avoid circular dependency
+              Principal: Match.anyValue(), // AccountRootPrincipal
+            }),
+          ]),
+        },
+      },
+    });
+  });
+
   test('grantReadData across regions', () => {
     // GIVEN
     const app = new App();

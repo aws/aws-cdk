@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.route53profiles"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.Route53Profiles"
+      "namespace": "Amazon.CDK.AWS.Route53Profiles"
     },
     "python": {
       "module": "aws_cdk.aws_route53profiles"

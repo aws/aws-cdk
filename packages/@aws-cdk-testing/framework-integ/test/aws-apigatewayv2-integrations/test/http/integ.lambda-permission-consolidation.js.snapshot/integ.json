@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "Integ/DefaultTest": {
+      "stacks": [
+        "integ-lambda-permission-consolidation"
+      ],
+      "assertionStack": "Integ/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegDefaultTestDeployAssert4E6713E1"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

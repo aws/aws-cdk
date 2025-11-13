@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.bcmdataexports"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.BCMDataExports"
+      "namespace": "Amazon.CDK.AWS.BCMDataExports"
     },
     "python": {
       "module": "aws_cdk.aws_bcmdataexports"

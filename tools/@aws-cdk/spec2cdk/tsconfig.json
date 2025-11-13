@@ -14,7 +14,8 @@
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
     "composite": true,
-    "incremental": true
+    "incremental": true,
+    "isolatedModules": true,
   },
   "include": ["**/*.ts"],
   "exclude": ["**/*.d.ts"]

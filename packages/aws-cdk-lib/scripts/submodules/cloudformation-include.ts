@@ -1,13 +1,13 @@
 
 import * as path from 'node:path';
+import { topo } from '@aws-cdk/spec2cdk';
 import * as fs from 'fs-extra';
-import { ModuleMap } from '../codegen';
 
-export default async function cloudformationInclude(moduleMap: ModuleMap, outPath: string) {
+export default async function writeCloudFormationIncludeMapping(moduleMap: topo.ModuleMap, outPath: string) {
   const classMap: { [cfnType: string]: string } = {};
   Object.entries(moduleMap).forEach(([moduleName, { resources }]) => {
     const modulePath = `aws-cdk-lib/${moduleName}`;
-    Object.entries(resources).forEach(([resourceName, resourceClassName]) => {
+    Object.entries(resources ?? {}).forEach(([resourceName, resourceClassName]) => {
       classMap[resourceName] = `${modulePath}.${resourceClassName}`;
     });
   });

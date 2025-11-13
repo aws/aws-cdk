@@ -248,7 +248,8 @@
       "V1_30",
       "V1_31",
       "V1_32",
-      "V1_33"
+      "V1_33",
+      "V1_34"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/connection.ts": {
@@ -2139,7 +2140,8 @@
       "V1_30",
       "V1_31",
       "V1_32",
-      "V1_33"
+      "V1_33",
+      "V1_34"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-elasticsearch/lib/domain.ts": {
@@ -2314,6 +2316,7 @@
       "NODEJS_20_X",
       "NODEJS_LATEST",
       "NODEJS_22_X",
+      "NODEJS_24_X",
       "PYTHON_2_7",
       "PYTHON_3_6",
       "PYTHON_3_7",

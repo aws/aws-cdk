@@ -1,12 +1,16 @@
 import * as path from 'node:path';
+import { naming, topo } from '@aws-cdk/spec2cdk';
+import { generateAll } from '@aws-cdk/spec2cdk/lib/cfn2ts';
 import * as fs from 'fs-extra';
-import { generateAll, ModuleMap } from './codegen';
-import submodulesGen from './submodules';
+import generateServiceSubmoduleFiles from './submodules';
+import writeCloudFormationIncludeMapping from './submodules/cloudformation-include';
 
 const awsCdkLibDir = path.join(__dirname, '..');
 const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
 const topLevelIndexFilePath = path.join(awsCdkLibDir, 'index.ts');
 const scopeMapPath = path.join(__dirname, 'scope-map.json');
+
+const NON_SERVICE_SUBMODULES = ['core', 'interfaces'];
 
 main().catch(e => {
   // eslint-disable-next-line no-console
@@ -18,30 +22,27 @@ async function main() {
   // Generate all L1s based on config in scope-map.json
 
   const generated = (await generateAll(awsCdkLibDir, {
-    coreImport: '../../core',
-    cloudwatchImport: '../../aws-cloudwatch',
     skippedServices: [],
     scopeMapPath,
   }));
 
   await updateExportsAndEntryPoints(generated);
-  await writeScopeMap(generated);
-  await submodulesGen(generated, awsCdkLibDir);
+  await topo.writeModuleMap(generated);
+  await writeCloudFormationIncludeMapping(generated, awsCdkLibDir);
+
+  for (const nss of NON_SERVICE_SUBMODULES) {
+    delete generated[nss];
+  }
+  await generateServiceSubmoduleFiles(generated, awsCdkLibDir);
 }
 
-async function writeScopeMap(modules: ModuleMap) {
-  const newScopeMap = Object.entries(modules)
-    .sort(([modA], [modB]) => modA.localeCompare(modB))
-    .reduce((scopeMap, [moduleName, { scopes }]) => {
-      return {
-        ...scopeMap,
-        [moduleName]: scopes,
-      };
-    }, {});
-  await fs.writeJson(scopeMapPath, newScopeMap, { spaces: 2 });
-}
-
-async function updateExportsAndEntryPoints(modules: ModuleMap) {
+/**
+ * Make every module in the module map visible
+ *
+ * Read `index.ts` and `package.json#exports`, and add exports for every
+ * submodule that's not in there yet.
+ */
+async function updateExportsAndEntryPoints(modules: topo.ModuleMap) {
   const pkgJson = await fs.readJson(pkgJsonPath);
 
   const indexStatements = new Array<string>();
@@ -53,7 +54,7 @@ async function updateExportsAndEntryPoints(modules: ModuleMap) {
   for (const [moduleName, { definition }] of Object.entries(modules)) {
     const moduleConfig = {
       name: definition?.moduleName ?? moduleName,
-      submodule: definition?.submoduleName ?? moduleName.replace(/-/g, '_'),
+      submodule: definition?.submoduleName ?? naming.submoduleSymbolFromName(moduleName),
     };
 
     const exportName = `./${moduleConfig.name}`;

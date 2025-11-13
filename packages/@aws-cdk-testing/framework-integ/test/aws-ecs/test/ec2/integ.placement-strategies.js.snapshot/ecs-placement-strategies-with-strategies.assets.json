@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "fe68a5da6d4417281457c469ec3fe07a27559bb206e71e4d742d0779d08a2475": {
+      "displayName": "ecs-placement-strategies-with-strategies Template",
+      "source": {
+        "path": "ecs-placement-strategies-with-strategies.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-c8c7e863": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "fe68a5da6d4417281457c469ec3fe07a27559bb206e71e4d742d0779d08a2475.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

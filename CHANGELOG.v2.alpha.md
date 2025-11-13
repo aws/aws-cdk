@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.224.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.223.0-alpha.0...v2.224.0-alpha.0) (2025-11-13)
+
+### Features
+
+* **imagebuilder-alpha:** add support for EC2 Image Builder L2 Constructs - Infrastructure Configuration ([#35882](https://github.com/aws/aws-cdk/issues/35882)) ([db1d964](https://github.com/aws/aws-cdk/commit/db1d964b7775e0609c137b12051bac535094f8cd)), closes [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789) [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789)
+
 ## [2.223.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.222.0-alpha.0...v2.223.0-alpha.0) (2025-11-10)
 
 ## [2.222.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.221.1-alpha.0...v2.222.0-alpha.0) (2025-11-04)

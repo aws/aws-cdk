@@ -2,23 +2,11 @@
 
 exports[`can codegen deprecated service 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-
-/**
- * Indicates that this resource can be referenced as a Resource.
- *
- * @deprecated in favour of something else
- * @stability deprecated
- */
-export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentAware {
-  /**
-   * A reference to a Resource resource.
-   */
-  readonly resourceRef: ResourceReference;
-}
+import { IResourceRef, ResourceReference } from "../interfaces/generated/aws-some-interfaces.generated";
 
 /**
  * @deprecated in favour of something else
@@ -62,14 +50,16 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   public id?: string;
 
   /**
+   * Create a new \`AWS::Some::Resource\`.
+   *
    * @param scope Scope in which this resource is defined
    * @param id Construct identifier for this resource (unique in its scope)
    * @param props Resource properties
    */
   public constructor(scope: constructs.Construct, id: string, props: CfnResourceProps = {}) {
     super(scope, id, {
-      "type": CfnResource.CFN_RESOURCE_TYPE_NAME,
-      "properties": props
+      type: CfnResource.CFN_RESOURCE_TYPE_NAME,
+      properties: props
     });
 
     this.id = props.id;
@@ -77,13 +67,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   public get resourceRef(): ResourceReference {
     return {
-      "resourceId": this.ref
+      resourceId: this.ref
     };
   }
 
   protected get cfnProperties(): Record<string, any> {
     return {
-      "id": this.id
+      id: this.id
     };
   }
 
@@ -120,20 +110,6 @@ export interface CfnResourceProps {
 }
 
 /**
- * A reference to a Resource resource.
- *
- * @struct
- * @deprecated in favour of something else
- * @stability deprecated
- */
-export interface ResourceReference {
-  /**
-   * The Id of the Resource resource.
-   */
-  readonly resourceId: string;
-}
-
-/**
  * Determine whether the given properties match those of a \`CfnResourceProps\`
  *
  * @param properties - the TypeScript properties of a \`CfnResourceProps\`
@@ -156,7 +132,7 @@ function convertCfnResourcePropsToCloudFormation(properties: any): any {
   if (!cdk.canInspect(properties)) return properties;
   CfnResourcePropsValidator(properties).assertSuccess();
   return {
-    "Id": cdk.stringToCloudFormation(properties.id)
+    Id: cdk.stringToCloudFormation(properties.id)
   };
 }
 
@@ -173,5 +149,6 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   ret.addPropertyResult("id", "Id", (properties.Id != null ? cfn_parse.FromCloudFormation.getString(properties.Id) : undefined));
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}"
+}
+export type { IResourceRef, ResourceReference };"
 `;

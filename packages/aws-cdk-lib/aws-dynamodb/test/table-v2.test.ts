@@ -1257,6 +1257,51 @@ describe('table', () => {
   });
 });
 
+describe('grants', () => {
+  test('grantReadData with AccountRootPrincipal uses wildcard resources', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+    });
+
+    // WHEN
+    table.grantReadData(new iam.AccountRootPrincipal());
+
+    // THEN - Should create resource policy with wildcard to avoid circular dependency
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: Match.arrayWith([
+        Match.objectLike({
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: Match.arrayWith([
+                Match.objectLike({
+                  Action: [
+                    'dynamodb:BatchGetItem',
+                    'dynamodb:GetRecords',
+                    'dynamodb:GetShardIterator',
+                    'dynamodb:Query',
+                    'dynamodb:GetItem',
+                    'dynamodb:Scan',
+                    'dynamodb:ConditionCheckItem',
+                    'dynamodb:DescribeTable',
+                  ],
+                  Effect: 'Allow',
+                  Resource: '*', // Wildcard to avoid circular dependency
+                  Principal: Match.anyValue(), // AccountRootPrincipal
+                }),
+              ]),
+            },
+          },
+        }),
+      ]),
+    });
+  });
+});
+
 describe('replica tables', () => {
   test('with fixed read capacity', () => {
     // GIVEN
