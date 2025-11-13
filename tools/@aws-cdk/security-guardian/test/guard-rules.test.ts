@@ -30,9 +30,6 @@ describe('Guard Rules Validation', () => {
       // Process existing templates that contain IAM roles with root principals
       preprocessTemplates(templatesDir, outputDir);
       
-      const flaggedFiles: string[] = [];
-      const errors: string[] = [];
-      
       // Run validation with IAM role rules
       const success = await runCfnGuardValidation(
         outputDir,
@@ -53,9 +50,6 @@ describe('Guard Rules Validation', () => {
     test('should allow root principals in KMS keys but block in other resources', async () => {
       // Process existing templates that contain KMS keys with root principals
       preprocessTemplates(templatesDir, outputDir);
-      
-      const flaggedFiles: string[] = [];
-      const errors: string[] = [];
       
       // Run validation with guard-hooks rule
       const success = await runCfnGuardValidation(
@@ -78,9 +72,6 @@ describe('Guard Rules Validation', () => {
       // Process existing templates that may contain IAM policies
       preprocessTemplates(templatesDir, outputDir);
       
-      const flaggedFiles: string[] = [];
-      const errors: string[] = [];
-      
       // Run validation with IAM rules
       const success = await runCfnGuardValidation(
         outputDir,
@@ -101,9 +92,6 @@ describe('Guard Rules Validation', () => {
     test('S3_ENCRYPTION_ENABLED - should validate S3 buckets in existing templates', async () => {
       // Process existing templates that contain S3 buckets
       preprocessTemplates(templatesDir, outputDir);
-      
-      const flaggedFiles: string[] = [];
-      const errors: string[] = [];
       
       // Run validation with S3 rules
       const success = await runCfnGuardValidation(
@@ -147,9 +135,6 @@ describe('Guard Rules Validation', () => {
     test('CODEPIPELINE_CROSS_ACCOUNT_ROLE_TRUST_SCOPE - should detect overly broad cross-account trust policies', async () => {
       // Process existing templates that may contain CodePipeline cross-account roles
       preprocessTemplates(templatesDir, outputDir);
-      
-      const flaggedFiles: string[] = [];
-      const errors: string[] = [];
       
       // Run validation with CodePipeline rules
       const success = await runCfnGuardValidation(
@@ -262,12 +247,10 @@ describe('Guard Rules Validation', () => {
 
       expect(success).toBe(false);
       
-      // Verify XML file exists, testsuite names are replaced, and contains individual failure tags
+      // Verify XML file exists and testsuite names are replaced
       const xmlContent = fs.readFileSync(path.join(outputDir, 'xml-failure-test.xml'), 'utf8');
       expect(xmlContent).toContain('name="src/CMCMK-Stack.template.json"');
-      expect(xmlContent).toContain('type="Failure"');
-      expect(xmlContent).toContain('line="');
-      expect(xmlContent).toContain('column="');
+      expect(xmlContent).toContain('for Type: Failure Type');
     });
   });
 });

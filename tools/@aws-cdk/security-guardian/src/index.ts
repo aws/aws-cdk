@@ -62,7 +62,7 @@ async function run(): Promise<void> {
     const ruleSetPath = getInput('rule_set_path', { default: './rules' });
     const baseSha = getInput('base_sha', { default: 'origin/main' });
     const headSha = getInput('head_sha', { default: 'HEAD' });
-    const enhanceXml = getInput('enhance_xml', { default: 'true' }) === 'true';
+    const enhanceXml = getInput('enhance_xml', { default: 'false' }) === 'true';
     
     setupWorkingDir(workingDir);
     setupWorkingDir(resolvedDir);

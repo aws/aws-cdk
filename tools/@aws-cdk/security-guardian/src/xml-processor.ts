@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import * as core from '@actions/core';
-import { parseFailureMessage, formatFailures, createIndividualFailureXml } from './failure-parser';
 
 export function enhanceXmlWithFormattedFailures(xmlFilePath: string): void {
   if (!fs.existsSync(xmlFilePath)) {
@@ -11,35 +10,17 @@ export function enhanceXmlWithFormattedFailures(xmlFilePath: string): void {
   try {
     let xmlContent = fs.readFileSync(xmlFilePath, 'utf8');
     
-    // Extract file name from testsuite for annotations
-    const testsuiteMatch = xmlContent.match(/<testsuite[^>]*name="([^"]*)"/);  
-    const fileName = testsuiteMatch ? testsuiteMatch[1] : 'unknown';
-    
-    // Find all failure elements and enhance them - handle both message attribute and content
+    // Split failure content into new lines based on "Check was not compliant as property"
     xmlContent = xmlContent.replace(
       /<failure message="([^"]*)">([\s\S]*?)<\/failure>/g,
       (match, messageAttr, content) => {
-        // Try content first (where the actual failure message is), then message attribute
-        const rawMessage = content.trim() || messageAttr;
-        
-        const decodedMessage = rawMessage
-          .replace(/&quot;/g, '"')
-          .replace(/&amp;/g, '&')
-          .replace(/&lt;/g, '<')
-          .replace(/&gt;/g, '>');
-        
-        const failures = parseFailureMessage(decodedMessage, messageAttr);
-        
-        if (failures.length > 0) {
-          return createIndividualFailureXml(failures, fileName);
-        }
-        
-        return match;
+        const splitContent = content.replace(/Check was not compliant as property/g, '\nCheck was not compliant as property');
+        return `<failure message="${messageAttr}">${splitContent}</failure>`;
       }
     );
     
     fs.writeFileSync(xmlFilePath, xmlContent);
-    core.info(`Enhanced XML file with individual failure annotations: ${xmlFilePath}`);
+    core.info(`Enhanced XML file with split failure content: ${xmlFilePath}`);
   } catch (err) {
     core.warning(`Failed to enhance XML file ${xmlFilePath}: ${(err as Error).message}`);
   }
