@@ -1,4 +1,4 @@
-import { Construct, Node } from 'constructs';
+import { Construct } from 'constructs';
 import {
   CfnManagedPolicy,
   IGroupRef,
@@ -13,9 +13,10 @@ import { AddToPrincipalPolicyResult, ArnPrincipal, IGrantable, IPrincipal, Princ
 import { undefinedIfEmpty } from './private/util';
 import { IRole } from './role';
 import { IUser } from './user';
-import { Arn, ArnFormat, Aws, Resource, ResourceEnvironment, Stack, UnscopedValidationError, ValidationError, Lazy } from '../../core';
+import { Arn, ArnFormat, Aws, Resource, Stack, ValidationError, Lazy } from '../../core';
 import { getCustomizeRolesConfig, PolicySynthesizer } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { DetachedConstruct } from '../../core/lib/private/detached-construct';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -179,7 +180,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    * prefix when constructing this object.
    */
   public static fromAwsManagedPolicyName(managedPolicyName: string): IManagedPolicy {
-    class AwsManagedPolicy implements IManagedPolicy {
+    class AwsManagedPolicy extends DetachedConstruct implements IManagedPolicy {
       public readonly managedPolicyArn = Arn.format({
         partition: Aws.PARTITION,
         service: 'iam',
@@ -188,16 +189,13 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         resource: 'policy',
         resourceName: managedPolicyName,
       });
+      constructor() {
+        super('The result of fromAwsManagedPolicyName can not be used in this API');
+      }
       public get managedPolicyRef(): ManagedPolicyReference {
         return {
           policyArn: this.managedPolicyArn,
         };
-      }
-      public get node(): Node {
-        throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
-      }
-      public get env(): ResourceEnvironment {
-        throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
       }
     }
     return new AwsManagedPolicy();
