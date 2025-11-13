@@ -1671,7 +1671,7 @@ var init_tslib_es6 = __esm({
       };
       return __assign.apply(this, arguments);
     };
-    __createBinding = Object.create ? (function(o, m, k, k2) {
+    __createBinding = Object.create ? function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -1680,13 +1680,13 @@ var init_tslib_es6 = __esm({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    }) : (function(o, m, k, k2) {
+    } : function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    __setModuleDefault = Object.create ? (function(o, v) {
+    };
+    __setModuleDefault = Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    }) : function(o, v) {
+    } : function(o, v) {
       o["default"] = v;
     };
     ownKeys = function(o) {
@@ -5732,9 +5732,9 @@ var require_dist_cjs25 = __commonJS({
   }
 });
 
-// node_modules/@smithy/node-config-provider/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js
+// node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js
 var require_getHomeDir = __commonJS({
-  "node_modules/@smithy/node-config-provider/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js"(exports2) {
+  "node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getHomeDir = void 0;
@@ -5764,9 +5764,9 @@ var require_getHomeDir = __commonJS({
   }
 });
 
-// node_modules/@smithy/node-config-provider/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js
+// node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js
 var require_getSSOTokenFilepath = __commonJS({
-  "node_modules/@smithy/node-config-provider/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js"(exports2) {
+  "node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getSSOTokenFilepath = void 0;
@@ -5782,9 +5782,9 @@ var require_getSSOTokenFilepath = __commonJS({
   }
 });
 
-// node_modules/@smithy/node-config-provider/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js
+// node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js
 var require_getSSOTokenFromFile = __commonJS({
-  "node_modules/@smithy/node-config-provider/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js"(exports2) {
+  "node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getSSOTokenFromFile = void 0;
@@ -5800,9 +5800,9 @@ var require_getSSOTokenFromFile = __commonJS({
   }
 });
 
-// node_modules/@smithy/node-config-provider/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js
+// node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js
 var require_slurpFile = __commonJS({
-  "node_modules/@smithy/node-config-provider/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js"(exports2) {
+  "node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.slurpFile = void 0;
@@ -5819,9 +5819,9 @@ var require_slurpFile = __commonJS({
   }
 });
 
-// node_modules/@smithy/node-config-provider/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
+// node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
 var require_dist_cjs26 = __commonJS({
-  "node_modules/@smithy/node-config-provider/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
+  "node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
     var __getOwnPropNames2 = Object.getOwnPropertyNames;
@@ -6070,265 +6070,13 @@ var require_dist_cjs27 = __commonJS({
   }
 });
 
-// node_modules/@smithy/middleware-endpoint/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js
-var require_getHomeDir2 = __commonJS({
-  "node_modules/@smithy/middleware-endpoint/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getHomeDir = void 0;
-    var os_1 = require("os");
-    var path_1 = require("path");
-    var homeDirCache = {};
-    var getHomeDirCacheKey = () => {
-      if (process && process.geteuid) {
-        return `${process.geteuid()}`;
-      }
-      return "DEFAULT";
-    };
-    var getHomeDir2 = () => {
-      const { HOME, USERPROFILE, HOMEPATH, HOMEDRIVE = `C:${path_1.sep}` } = process.env;
-      if (HOME)
-        return HOME;
-      if (USERPROFILE)
-        return USERPROFILE;
-      if (HOMEPATH)
-        return `${HOMEDRIVE}${HOMEPATH}`;
-      const homeDirCacheKey = getHomeDirCacheKey();
-      if (!homeDirCache[homeDirCacheKey])
-        homeDirCache[homeDirCacheKey] = (0, os_1.homedir)();
-      return homeDirCache[homeDirCacheKey];
-    };
-    exports2.getHomeDir = getHomeDir2;
-  }
-});
-
-// node_modules/@smithy/middleware-endpoint/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js
-var require_getSSOTokenFilepath2 = __commonJS({
-  "node_modules/@smithy/middleware-endpoint/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getSSOTokenFilepath = void 0;
-    var crypto_1 = require("crypto");
-    var path_1 = require("path");
-    var getHomeDir_1 = require_getHomeDir2();
-    var getSSOTokenFilepath2 = (id) => {
-      const hasher = (0, crypto_1.createHash)("sha1");
-      const cacheName = hasher.update(id).digest("hex");
-      return (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "sso", "cache", `${cacheName}.json`);
-    };
-    exports2.getSSOTokenFilepath = getSSOTokenFilepath2;
-  }
-});
-
-// node_modules/@smithy/middleware-endpoint/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js
-var require_getSSOTokenFromFile2 = __commonJS({
-  "node_modules/@smithy/middleware-endpoint/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getSSOTokenFromFile = void 0;
-    var fs_1 = require("fs");
-    var getSSOTokenFilepath_1 = require_getSSOTokenFilepath2();
-    var { readFile } = fs_1.promises;
-    var getSSOTokenFromFile2 = async (id) => {
-      const ssoTokenFilepath = (0, getSSOTokenFilepath_1.getSSOTokenFilepath)(id);
-      const ssoTokenText = await readFile(ssoTokenFilepath, "utf8");
-      return JSON.parse(ssoTokenText);
-    };
-    exports2.getSSOTokenFromFile = getSSOTokenFromFile2;
-  }
-});
-
-// node_modules/@smithy/middleware-endpoint/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js
-var require_slurpFile2 = __commonJS({
-  "node_modules/@smithy/middleware-endpoint/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.slurpFile = void 0;
-    var fs_1 = require("fs");
-    var { readFile } = fs_1.promises;
-    var filePromisesHash = {};
-    var slurpFile = (path, options) => {
-      if (!filePromisesHash[path] || (options === null || options === void 0 ? void 0 : options.ignoreCache)) {
-        filePromisesHash[path] = readFile(path, "utf8");
-      }
-      return filePromisesHash[path];
-    };
-    exports2.slurpFile = slurpFile;
-  }
-});
-
-// node_modules/@smithy/middleware-endpoint/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-var require_dist_cjs28 = __commonJS({
-  "node_modules/@smithy/middleware-endpoint/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __reExport = (target, mod, secondTarget) => (__copyProps2(target, mod, "default"), secondTarget && __copyProps2(secondTarget, mod, "default"));
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      CONFIG_PREFIX_SEPARATOR: () => CONFIG_PREFIX_SEPARATOR,
-      DEFAULT_PROFILE: () => DEFAULT_PROFILE,
-      ENV_PROFILE: () => ENV_PROFILE,
-      getProfileName: () => getProfileName,
-      loadSharedConfigFiles: () => loadSharedConfigFiles,
-      loadSsoSessionData: () => loadSsoSessionData,
-      parseKnownFiles: () => parseKnownFiles
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    __reExport(src_exports, require_getHomeDir2(), module2.exports);
-    var ENV_PROFILE = "AWS_PROFILE";
-    var DEFAULT_PROFILE = "default";
-    var getProfileName = /* @__PURE__ */ __name((init) => init.profile || process.env[ENV_PROFILE] || DEFAULT_PROFILE, "getProfileName");
-    __reExport(src_exports, require_getSSOTokenFilepath2(), module2.exports);
-    __reExport(src_exports, require_getSSOTokenFromFile2(), module2.exports);
-    var import_types5 = require_dist_cjs();
-    var getConfigData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => {
-      const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-      if (indexOfSeparator === -1) {
-        return false;
-      }
-      return Object.values(import_types5.IniSectionType).includes(key.substring(0, indexOfSeparator));
-    }).reduce(
-      (acc, [key, value]) => {
-        const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-        const updatedKey = key.substring(0, indexOfSeparator) === import_types5.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
-        acc[updatedKey] = value;
-        return acc;
-      },
-      {
-        // Populate default profile, if present.
-        ...data.default && { default: data.default }
-      }
-    ), "getConfigData");
-    var import_path = require("path");
-    var import_getHomeDir = require_getHomeDir2();
-    var ENV_CONFIG_PATH = "AWS_CONFIG_FILE";
-    var getConfigFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CONFIG_PATH] || (0, import_path.join)((0, import_getHomeDir.getHomeDir)(), ".aws", "config"), "getConfigFilepath");
-    var import_getHomeDir2 = require_getHomeDir2();
-    var ENV_CREDENTIALS_PATH = "AWS_SHARED_CREDENTIALS_FILE";
-    var getCredentialsFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CREDENTIALS_PATH] || (0, import_path.join)((0, import_getHomeDir2.getHomeDir)(), ".aws", "credentials"), "getCredentialsFilepath");
-    var import_getHomeDir3 = require_getHomeDir2();
-    var prefixKeyRegex = /^([\w-]+)\s(["'])?([\w-@\+\.%:/]+)\2$/;
-    var profileNameBlockList = ["__proto__", "profile __proto__"];
-    var parseIni = /* @__PURE__ */ __name((iniData) => {
-      const map = {};
-      let currentSection;
-      let currentSubSection;
-      for (const iniLine of iniData.split(/\r?\n/)) {
-        const trimmedLine = iniLine.split(/(^|\s)[;#]/)[0].trim();
-        const isSection = trimmedLine[0] === "[" && trimmedLine[trimmedLine.length - 1] === "]";
-        if (isSection) {
-          currentSection = void 0;
-          currentSubSection = void 0;
-          const sectionName = trimmedLine.substring(1, trimmedLine.length - 1);
-          const matches = prefixKeyRegex.exec(sectionName);
-          if (matches) {
-            const [, prefix, , name] = matches;
-            if (Object.values(import_types5.IniSectionType).includes(prefix)) {
-              currentSection = [prefix, name].join(CONFIG_PREFIX_SEPARATOR);
-            }
-          } else {
-            currentSection = sectionName;
-          }
-          if (profileNameBlockList.includes(sectionName)) {
-            throw new Error(`Found invalid profile name "${sectionName}"`);
-          }
-        } else if (currentSection) {
-          const indexOfEqualsSign = trimmedLine.indexOf("=");
-          if (![0, -1].includes(indexOfEqualsSign)) {
-            const [name, value] = [
-              trimmedLine.substring(0, indexOfEqualsSign).trim(),
-              trimmedLine.substring(indexOfEqualsSign + 1).trim()
-            ];
-            if (value === "") {
-              currentSubSection = name;
-            } else {
-              if (currentSubSection && iniLine.trimStart() === iniLine) {
-                currentSubSection = void 0;
-              }
-              map[currentSection] = map[currentSection] || {};
-              const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
-              map[currentSection][key] = value;
-            }
-          }
-        }
-      }
-      return map;
-    }, "parseIni");
-    var import_slurpFile = require_slurpFile2();
-    var swallowError = /* @__PURE__ */ __name(() => ({}), "swallowError");
-    var CONFIG_PREFIX_SEPARATOR = ".";
-    var loadSharedConfigFiles = /* @__PURE__ */ __name(async (init = {}) => {
-      const { filepath = getCredentialsFilepath(), configFilepath = getConfigFilepath() } = init;
-      const homeDir = (0, import_getHomeDir3.getHomeDir)();
-      const relativeHomeDirPrefix = "~/";
-      let resolvedFilepath = filepath;
-      if (filepath.startsWith(relativeHomeDirPrefix)) {
-        resolvedFilepath = (0, import_path.join)(homeDir, filepath.slice(2));
-      }
-      let resolvedConfigFilepath = configFilepath;
-      if (configFilepath.startsWith(relativeHomeDirPrefix)) {
-        resolvedConfigFilepath = (0, import_path.join)(homeDir, configFilepath.slice(2));
-      }
-      const parsedFiles = await Promise.all([
-        (0, import_slurpFile.slurpFile)(resolvedConfigFilepath, {
-          ignoreCache: init.ignoreCache
-        }).then(parseIni).then(getConfigData).catch(swallowError),
-        (0, import_slurpFile.slurpFile)(resolvedFilepath, {
-          ignoreCache: init.ignoreCache
-        }).then(parseIni).catch(swallowError)
-      ]);
-      return {
-        configFile: parsedFiles[0],
-        credentialsFile: parsedFiles[1]
-      };
-    }, "loadSharedConfigFiles");
-    var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types5.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
-    var import_slurpFile2 = require_slurpFile2();
-    var swallowError2 = /* @__PURE__ */ __name(() => ({}), "swallowError");
-    var loadSsoSessionData = /* @__PURE__ */ __name(async (init = {}) => (0, import_slurpFile2.slurpFile)(init.configFilepath ?? getConfigFilepath()).then(parseIni).then(getSsoSessionData).catch(swallowError2), "loadSsoSessionData");
-    var mergeConfigFiles = /* @__PURE__ */ __name((...files) => {
-      const merged = {};
-      for (const file of files) {
-        for (const [key, values] of Object.entries(file)) {
-          if (merged[key] !== void 0) {
-            Object.assign(merged[key], values);
-          } else {
-            merged[key] = values;
-          }
-        }
-      }
-      return merged;
-    }, "mergeConfigFiles");
-    var parseKnownFiles = /* @__PURE__ */ __name(async (init) => {
-      const parsedFiles = await loadSharedConfigFiles(init);
-      return mergeConfigFiles(parsedFiles.configFile, parsedFiles.credentialsFile);
-    }, "parseKnownFiles");
-  }
-});
-
 // node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/getEndpointUrlConfig.js
 var require_getEndpointUrlConfig = __commonJS({
   "node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/getEndpointUrlConfig.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getEndpointUrlConfig = void 0;
-    var shared_ini_file_loader_1 = require_dist_cjs28();
+    var shared_ini_file_loader_1 = require_dist_cjs26();
     var ENV_ENDPOINT_URL = "AWS_ENDPOINT_URL";
     var CONFIG_ENDPOINT_URL = "endpoint_url";
     var getEndpointUrlConfig = (serviceId) => ({
@@ -6377,7 +6125,7 @@ var require_getEndpointFromConfig = __commonJS({
 });
 
 // node_modules/@smithy/querystring-parser/dist-cjs/index.js
-var require_dist_cjs29 = __commonJS({
+var require_dist_cjs28 = __commonJS({
   "node_modules/@smithy/querystring-parser/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -6428,7 +6176,7 @@ var require_dist_cjs29 = __commonJS({
 });
 
 // node_modules/@smithy/url-parser/dist-cjs/index.js
-var require_dist_cjs30 = __commonJS({
+var require_dist_cjs29 = __commonJS({
   "node_modules/@smithy/url-parser/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -6453,7 +6201,7 @@ var require_dist_cjs30 = __commonJS({
       parseUrl: () => parseUrl
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_querystring_parser = require_dist_cjs29();
+    var import_querystring_parser = require_dist_cjs28();
     var parseUrl = /* @__PURE__ */ __name((url) => {
       if (typeof url === "string") {
         return parseUrl(new URL(url));
@@ -6475,7 +6223,7 @@ var require_dist_cjs30 = __commonJS({
 });
 
 // node_modules/@smithy/middleware-endpoint/dist-cjs/index.js
-var require_dist_cjs31 = __commonJS({
+var require_dist_cjs30 = __commonJS({
   "node_modules/@smithy/middleware-endpoint/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -6577,7 +6325,7 @@ var require_dist_cjs31 = __commonJS({
       return configProvider;
     }, "createConfigValueProvider");
     var import_getEndpointFromConfig = require_getEndpointFromConfig();
-    var import_url_parser = require_dist_cjs30();
+    var import_url_parser = require_dist_cjs29();
     var toEndpointV1 = /* @__PURE__ */ __name((endpoint) => {
       if (typeof endpoint === "object") {
         if ("url" in endpoint) {
@@ -7084,7 +6832,7 @@ var init_esm_node = __esm({
 });
 
 // node_modules/@smithy/service-error-classification/dist-cjs/index.js
-var require_dist_cjs32 = __commonJS({
+var require_dist_cjs31 = __commonJS({
   "node_modules/@smithy/service-error-classification/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -7171,7 +6919,7 @@ var require_dist_cjs32 = __commonJS({
 });
 
 // node_modules/@smithy/util-retry/dist-cjs/index.js
-var require_dist_cjs33 = __commonJS({
+var require_dist_cjs32 = __commonJS({
   "node_modules/@smithy/util-retry/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -7218,7 +6966,7 @@ var require_dist_cjs33 = __commonJS({
     })(RETRY_MODES || {});
     var DEFAULT_MAX_ATTEMPTS = 3;
     var DEFAULT_RETRY_MODE = "standard";
-    var import_service_error_classification = require_dist_cjs32();
+    var import_service_error_classification = require_dist_cjs31();
     var _DefaultRateLimiter = class _DefaultRateLimiter2 {
       constructor(options) {
         this.currentCapacity = 0;
@@ -7486,7 +7234,7 @@ var require_dist_cjs33 = __commonJS({
 });
 
 // node_modules/@smithy/middleware-stack/dist-cjs/index.js
-var require_dist_cjs34 = __commonJS({
+var require_dist_cjs33 = __commonJS({
   "node_modules/@smithy/middleware-stack/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -7803,7 +7551,7 @@ var require_dist_cjs34 = __commonJS({
 });
 
 // node_modules/@smithy/smithy-client/dist-cjs/index.js
-var require_dist_cjs35 = __commonJS({
+var require_dist_cjs34 = __commonJS({
   "node_modules/@smithy/smithy-client/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -7888,7 +7636,7 @@ var require_dist_cjs35 = __commonJS({
       withBaseException: () => withBaseException
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_middleware_stack = require_dist_cjs34();
+    var import_middleware_stack = require_dist_cjs33();
     var _Client = class _Client {
       constructor(config) {
         this.config = config;
@@ -8992,7 +8740,7 @@ var require_isStreamingPayload = __commonJS({
 });
 
 // node_modules/@smithy/middleware-retry/dist-cjs/index.js
-var require_dist_cjs36 = __commonJS({
+var require_dist_cjs35 = __commonJS({
   "node_modules/@smithy/middleware-retry/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -9036,7 +8784,7 @@ var require_dist_cjs36 = __commonJS({
     module2.exports = __toCommonJS2(src_exports);
     var import_protocol_http9 = require_dist_cjs2();
     var import_uuid = (init_esm_node(), __toCommonJS(esm_node_exports));
-    var import_util_retry = require_dist_cjs33();
+    var import_util_retry = require_dist_cjs32();
     var getDefaultRetryQuota = /* @__PURE__ */ __name((initialRetryTokens, options) => {
       const MAX_CAPACITY = initialRetryTokens;
       const noRetryIncrement = (options == null ? void 0 : options.noRetryIncrement) ?? import_util_retry.NO_RETRY_INCREMENT;
@@ -9064,7 +8812,7 @@ var require_dist_cjs36 = __commonJS({
       });
     }, "getDefaultRetryQuota");
     var defaultDelayDecider = /* @__PURE__ */ __name((delayBase, attempts) => Math.floor(Math.min(import_util_retry.MAXIMUM_RETRY_DELAY, Math.random() * 2 ** attempts * delayBase)), "defaultDelayDecider");
-    var import_service_error_classification = require_dist_cjs32();
+    var import_service_error_classification = require_dist_cjs31();
     var defaultRetryDecider = /* @__PURE__ */ __name((error) => {
       if (!error) {
         return false;
@@ -9256,7 +9004,7 @@ var require_dist_cjs36 = __commonJS({
         clientStack.addRelativeTo(omitRetryHeadersMiddleware(), omitRetryHeadersMiddlewareOptions);
       }
     }), "getOmitRetryHeadersPlugin");
-    var import_smithy_client4 = require_dist_cjs35();
+    var import_smithy_client4 = require_dist_cjs34();
     var import_isStreamingPayload = require_isStreamingPayload();
     var retryMiddleware = /* @__PURE__ */ __name((options) => (next, context) => async (args) => {
       var _a;
@@ -9743,7 +9491,7 @@ var init_coercing_serializers = __esm({
 var import_smithy_client, awsExpectUnion;
 var init_awsExpectUnion = __esm({
   "node_modules/@aws-sdk/core/dist-es/submodules/protocols/json/awsExpectUnion.js"() {
-    import_smithy_client = __toESM(require_dist_cjs35());
+    import_smithy_client = __toESM(require_dist_cjs34());
     awsExpectUnion = (value) => {
       if (value == null) {
         return void 0;
@@ -9760,7 +9508,7 @@ var init_awsExpectUnion = __esm({
 var import_smithy_client2, collectBodyString;
 var init_common = __esm({
   "node_modules/@aws-sdk/core/dist-es/submodules/protocols/common.js"() {
-    import_smithy_client2 = __toESM(require_dist_cjs35());
+    import_smithy_client2 = __toESM(require_dist_cjs34());
     collectBodyString = (streamBody, context) => (0, import_smithy_client2.collectBody)(streamBody, context).then((body) => context.utf8Encoder(body));
   }
 });
@@ -11481,7 +11229,7 @@ var require_fxp = __commonJS({
 var import_smithy_client3, import_fast_xml_parser, parseXmlBody, parseXmlErrorBody, loadRestXmlErrorCode;
 var init_parseXmlBody = __esm({
   "node_modules/@aws-sdk/core/dist-es/submodules/protocols/xml/parseXmlBody.js"() {
-    import_smithy_client3 = __toESM(require_dist_cjs35());
+    import_smithy_client3 = __toESM(require_dist_cjs34());
     import_fast_xml_parser = __toESM(require_fxp());
     init_common();
     parseXmlBody = (streamBody, context) => collectBodyString(streamBody, context).then((encoded) => {
@@ -11766,7 +11514,7 @@ var require_package = __commonJS({
 });
 
 // node_modules/@aws-sdk/credential-provider-env/dist-cjs/index.js
-var require_dist_cjs37 = __commonJS({
+var require_dist_cjs36 = __commonJS({
   "node_modules/@aws-sdk/credential-provider-env/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -11829,260 +11577,8 @@ var require_dist_cjs37 = __commonJS({
   }
 });
 
-// node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js
-var require_getHomeDir3 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getHomeDir = void 0;
-    var os_1 = require("os");
-    var path_1 = require("path");
-    var homeDirCache = {};
-    var getHomeDirCacheKey = () => {
-      if (process && process.geteuid) {
-        return `${process.geteuid()}`;
-      }
-      return "DEFAULT";
-    };
-    var getHomeDir2 = () => {
-      const { HOME, USERPROFILE, HOMEPATH, HOMEDRIVE = `C:${path_1.sep}` } = process.env;
-      if (HOME)
-        return HOME;
-      if (USERPROFILE)
-        return USERPROFILE;
-      if (HOMEPATH)
-        return `${HOMEDRIVE}${HOMEPATH}`;
-      const homeDirCacheKey = getHomeDirCacheKey();
-      if (!homeDirCache[homeDirCacheKey])
-        homeDirCache[homeDirCacheKey] = (0, os_1.homedir)();
-      return homeDirCache[homeDirCacheKey];
-    };
-    exports2.getHomeDir = getHomeDir2;
-  }
-});
-
-// node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js
-var require_getSSOTokenFilepath3 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getSSOTokenFilepath = void 0;
-    var crypto_1 = require("crypto");
-    var path_1 = require("path");
-    var getHomeDir_1 = require_getHomeDir3();
-    var getSSOTokenFilepath2 = (id) => {
-      const hasher = (0, crypto_1.createHash)("sha1");
-      const cacheName = hasher.update(id).digest("hex");
-      return (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "sso", "cache", `${cacheName}.json`);
-    };
-    exports2.getSSOTokenFilepath = getSSOTokenFilepath2;
-  }
-});
-
-// node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js
-var require_getSSOTokenFromFile3 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getSSOTokenFromFile = void 0;
-    var fs_1 = require("fs");
-    var getSSOTokenFilepath_1 = require_getSSOTokenFilepath3();
-    var { readFile } = fs_1.promises;
-    var getSSOTokenFromFile2 = async (id) => {
-      const ssoTokenFilepath = (0, getSSOTokenFilepath_1.getSSOTokenFilepath)(id);
-      const ssoTokenText = await readFile(ssoTokenFilepath, "utf8");
-      return JSON.parse(ssoTokenText);
-    };
-    exports2.getSSOTokenFromFile = getSSOTokenFromFile2;
-  }
-});
-
-// node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js
-var require_slurpFile3 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.slurpFile = void 0;
-    var fs_1 = require("fs");
-    var { readFile } = fs_1.promises;
-    var filePromisesHash = {};
-    var slurpFile = (path, options) => {
-      if (!filePromisesHash[path] || (options === null || options === void 0 ? void 0 : options.ignoreCache)) {
-        filePromisesHash[path] = readFile(path, "utf8");
-      }
-      return filePromisesHash[path];
-    };
-    exports2.slurpFile = slurpFile;
-  }
-});
-
-// node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-var require_dist_cjs38 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __reExport = (target, mod, secondTarget) => (__copyProps2(target, mod, "default"), secondTarget && __copyProps2(secondTarget, mod, "default"));
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      CONFIG_PREFIX_SEPARATOR: () => CONFIG_PREFIX_SEPARATOR,
-      DEFAULT_PROFILE: () => DEFAULT_PROFILE,
-      ENV_PROFILE: () => ENV_PROFILE,
-      getProfileName: () => getProfileName,
-      loadSharedConfigFiles: () => loadSharedConfigFiles,
-      loadSsoSessionData: () => loadSsoSessionData,
-      parseKnownFiles: () => parseKnownFiles
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    __reExport(src_exports, require_getHomeDir3(), module2.exports);
-    var ENV_PROFILE = "AWS_PROFILE";
-    var DEFAULT_PROFILE = "default";
-    var getProfileName = /* @__PURE__ */ __name((init) => init.profile || process.env[ENV_PROFILE] || DEFAULT_PROFILE, "getProfileName");
-    __reExport(src_exports, require_getSSOTokenFilepath3(), module2.exports);
-    __reExport(src_exports, require_getSSOTokenFromFile3(), module2.exports);
-    var import_types5 = require_dist_cjs();
-    var getConfigData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => {
-      const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-      if (indexOfSeparator === -1) {
-        return false;
-      }
-      return Object.values(import_types5.IniSectionType).includes(key.substring(0, indexOfSeparator));
-    }).reduce(
-      (acc, [key, value]) => {
-        const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-        const updatedKey = key.substring(0, indexOfSeparator) === import_types5.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
-        acc[updatedKey] = value;
-        return acc;
-      },
-      {
-        // Populate default profile, if present.
-        ...data.default && { default: data.default }
-      }
-    ), "getConfigData");
-    var import_path = require("path");
-    var import_getHomeDir = require_getHomeDir3();
-    var ENV_CONFIG_PATH = "AWS_CONFIG_FILE";
-    var getConfigFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CONFIG_PATH] || (0, import_path.join)((0, import_getHomeDir.getHomeDir)(), ".aws", "config"), "getConfigFilepath");
-    var import_getHomeDir2 = require_getHomeDir3();
-    var ENV_CREDENTIALS_PATH = "AWS_SHARED_CREDENTIALS_FILE";
-    var getCredentialsFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CREDENTIALS_PATH] || (0, import_path.join)((0, import_getHomeDir2.getHomeDir)(), ".aws", "credentials"), "getCredentialsFilepath");
-    var import_getHomeDir3 = require_getHomeDir3();
-    var prefixKeyRegex = /^([\w-]+)\s(["'])?([\w-@\+\.%:/]+)\2$/;
-    var profileNameBlockList = ["__proto__", "profile __proto__"];
-    var parseIni = /* @__PURE__ */ __name((iniData) => {
-      const map = {};
-      let currentSection;
-      let currentSubSection;
-      for (const iniLine of iniData.split(/\r?\n/)) {
-        const trimmedLine = iniLine.split(/(^|\s)[;#]/)[0].trim();
-        const isSection = trimmedLine[0] === "[" && trimmedLine[trimmedLine.length - 1] === "]";
-        if (isSection) {
-          currentSection = void 0;
-          currentSubSection = void 0;
-          const sectionName = trimmedLine.substring(1, trimmedLine.length - 1);
-          const matches = prefixKeyRegex.exec(sectionName);
-          if (matches) {
-            const [, prefix, , name] = matches;
-            if (Object.values(import_types5.IniSectionType).includes(prefix)) {
-              currentSection = [prefix, name].join(CONFIG_PREFIX_SEPARATOR);
-            }
-          } else {
-            currentSection = sectionName;
-          }
-          if (profileNameBlockList.includes(sectionName)) {
-            throw new Error(`Found invalid profile name "${sectionName}"`);
-          }
-        } else if (currentSection) {
-          const indexOfEqualsSign = trimmedLine.indexOf("=");
-          if (![0, -1].includes(indexOfEqualsSign)) {
-            const [name, value] = [
-              trimmedLine.substring(0, indexOfEqualsSign).trim(),
-              trimmedLine.substring(indexOfEqualsSign + 1).trim()
-            ];
-            if (value === "") {
-              currentSubSection = name;
-            } else {
-              if (currentSubSection && iniLine.trimStart() === iniLine) {
-                currentSubSection = void 0;
-              }
-              map[currentSection] = map[currentSection] || {};
-              const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
-              map[currentSection][key] = value;
-            }
-          }
-        }
-      }
-      return map;
-    }, "parseIni");
-    var import_slurpFile = require_slurpFile3();
-    var swallowError = /* @__PURE__ */ __name(() => ({}), "swallowError");
-    var CONFIG_PREFIX_SEPARATOR = ".";
-    var loadSharedConfigFiles = /* @__PURE__ */ __name(async (init = {}) => {
-      const { filepath = getCredentialsFilepath(), configFilepath = getConfigFilepath() } = init;
-      const homeDir = (0, import_getHomeDir3.getHomeDir)();
-      const relativeHomeDirPrefix = "~/";
-      let resolvedFilepath = filepath;
-      if (filepath.startsWith(relativeHomeDirPrefix)) {
-        resolvedFilepath = (0, import_path.join)(homeDir, filepath.slice(2));
-      }
-      let resolvedConfigFilepath = configFilepath;
-      if (configFilepath.startsWith(relativeHomeDirPrefix)) {
-        resolvedConfigFilepath = (0, import_path.join)(homeDir, configFilepath.slice(2));
-      }
-      const parsedFiles = await Promise.all([
-        (0, import_slurpFile.slurpFile)(resolvedConfigFilepath, {
-          ignoreCache: init.ignoreCache
-        }).then(parseIni).then(getConfigData).catch(swallowError),
-        (0, import_slurpFile.slurpFile)(resolvedFilepath, {
-          ignoreCache: init.ignoreCache
-        }).then(parseIni).catch(swallowError)
-      ]);
-      return {
-        configFile: parsedFiles[0],
-        credentialsFile: parsedFiles[1]
-      };
-    }, "loadSharedConfigFiles");
-    var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types5.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
-    var import_slurpFile2 = require_slurpFile3();
-    var swallowError2 = /* @__PURE__ */ __name(() => ({}), "swallowError");
-    var loadSsoSessionData = /* @__PURE__ */ __name(async (init = {}) => (0, import_slurpFile2.slurpFile)(init.configFilepath ?? getConfigFilepath()).then(parseIni).then(getSsoSessionData).catch(swallowError2), "loadSsoSessionData");
-    var mergeConfigFiles = /* @__PURE__ */ __name((...files) => {
-      const merged = {};
-      for (const file of files) {
-        for (const [key, values] of Object.entries(file)) {
-          if (merged[key] !== void 0) {
-            Object.assign(merged[key], values);
-          } else {
-            merged[key] = values;
-          }
-        }
-      }
-      return merged;
-    }, "mergeConfigFiles");
-    var parseKnownFiles = /* @__PURE__ */ __name(async (init) => {
-      const parsedFiles = await loadSharedConfigFiles(init);
-      return mergeConfigFiles(parsedFiles.configFile, parsedFiles.credentialsFile);
-    }, "parseKnownFiles");
-  }
-});
-
 // node_modules/@smithy/credential-provider-imds/dist-cjs/index.js
-var require_dist_cjs39 = __commonJS({
+var require_dist_cjs37 = __commonJS({
   "node_modules/@smithy/credential-provider-imds/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -12264,7 +11760,7 @@ var require_dist_cjs39 = __commonJS({
     __name(_InstanceMetadataV1FallbackError, "InstanceMetadataV1FallbackError");
     var InstanceMetadataV1FallbackError = _InstanceMetadataV1FallbackError;
     var import_node_config_provider = require_dist_cjs27();
-    var import_url_parser = require_dist_cjs30();
+    var import_url_parser = require_dist_cjs29();
     var Endpoint = /* @__PURE__ */ ((Endpoint2) => {
       Endpoint2["IPv4"] = "http://169.254.169.254";
       Endpoint2["IPv6"] = "http://[fd00:ec2::254]";
@@ -12529,7 +12025,7 @@ var require_requestHelpers = __commonJS({
     exports2.getCredentials = exports2.createGetRequest = void 0;
     var property_provider_1 = require_dist_cjs10();
     var protocol_http_1 = require_dist_cjs2();
-    var smithy_client_1 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs34();
     var util_stream_1 = require_dist_cjs24();
     function createGetRequest(url) {
       return new protocol_http_1.HttpRequest({
@@ -12667,7 +12163,7 @@ Set AWS_CONTAINER_CREDENTIALS_FULL_URI or AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
 });
 
 // node_modules/@aws-sdk/credential-provider-http/dist-cjs/index.js
-var require_dist_cjs40 = __commonJS({
+var require_dist_cjs38 = __commonJS({
   "node_modules/@aws-sdk/credential-provider-http/dist-cjs/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -12857,7 +12353,7 @@ var require_package2 = __commonJS({
 });
 
 // node_modules/@aws-sdk/util-user-agent-node/dist-cjs/index.js
-var require_dist_cjs41 = __commonJS({
+var require_dist_cjs39 = __commonJS({
   "node_modules/@aws-sdk/util-user-agent-node/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -12941,7 +12437,7 @@ var require_dist_cjs41 = __commonJS({
 });
 
 // node_modules/@smithy/hash-node/dist-cjs/index.js
-var require_dist_cjs42 = __commonJS({
+var require_dist_cjs40 = __commonJS({
   "node_modules/@smithy/hash-node/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -13005,7 +12501,7 @@ var require_dist_cjs42 = __commonJS({
 });
 
 // node_modules/@smithy/util-body-length-node/dist-cjs/index.js
-var require_dist_cjs43 = __commonJS({
+var require_dist_cjs41 = __commonJS({
   "node_modules/@smithy/util-body-length-node/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -13116,8 +12612,8 @@ var require_runtimeConfig_shared = __commonJS({
     exports2.getRuntimeConfig = void 0;
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
     var core_2 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var smithy_client_1 = require_dist_cjs35();
-    var url_parser_1 = require_dist_cjs30();
+    var smithy_client_1 = require_dist_cjs34();
+    var url_parser_1 = require_dist_cjs29();
     var util_base64_1 = require_dist_cjs20();
     var util_utf8_1 = require_dist_cjs6();
     var httpAuthSchemeProvider_1 = require_httpAuthSchemeProvider2();
@@ -13155,7 +12651,7 @@ var require_runtimeConfig_shared = __commonJS({
 });
 
 // node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js
-var require_dist_cjs44 = __commonJS({
+var require_dist_cjs42 = __commonJS({
   "node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js"(exports2, module2) {
     var __create2 = Object.create;
     var __defProp2 = Object.defineProperty;
@@ -13253,7 +12749,7 @@ var require_dist_cjs44 = __commonJS({
       }
       if (!process.env[ENV_IMDS_DISABLED]) {
         try {
-          const { getInstanceMetadataEndpoint, httpRequest } = await Promise.resolve().then(() => __toESM2(require_dist_cjs39()));
+          const { getInstanceMetadataEndpoint, httpRequest } = await Promise.resolve().then(() => __toESM2(require_dist_cjs37()));
           const endpoint = await getInstanceMetadataEndpoint();
           return (await httpRequest({ ...endpoint, path: IMDS_REGION_PATH })).toString();
         } catch (e) {
@@ -13272,18 +12768,18 @@ var require_runtimeConfig = __commonJS({
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package2());
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var util_user_agent_node_1 = require_dist_cjs41();
+    var util_user_agent_node_1 = require_dist_cjs39();
     var config_resolver_1 = require_dist_cjs18();
-    var hash_node_1 = require_dist_cjs42();
-    var middleware_retry_1 = require_dist_cjs36();
+    var hash_node_1 = require_dist_cjs40();
+    var middleware_retry_1 = require_dist_cjs35();
     var node_config_provider_1 = require_dist_cjs27();
     var node_http_handler_1 = require_dist_cjs22();
-    var util_body_length_node_1 = require_dist_cjs43();
-    var util_retry_1 = require_dist_cjs33();
+    var util_body_length_node_1 = require_dist_cjs41();
+    var util_retry_1 = require_dist_cjs32();
     var runtimeConfig_shared_1 = require_runtimeConfig_shared();
-    var smithy_client_1 = require_dist_cjs35();
-    var util_defaults_mode_node_1 = require_dist_cjs44();
-    var smithy_client_2 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs34();
+    var util_defaults_mode_node_1 = require_dist_cjs42();
+    var smithy_client_2 = require_dist_cjs34();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
       const defaultsMode = (0, util_defaults_mode_node_1.resolveDefaultsModeConfig)(config);
@@ -13315,7 +12811,7 @@ var require_runtimeConfig = __commonJS({
 });
 
 // node_modules/@aws-sdk/region-config-resolver/dist-cjs/index.js
-var require_dist_cjs45 = __commonJS({
+var require_dist_cjs43 = __commonJS({
   "node_modules/@aws-sdk/region-config-resolver/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -13413,7 +12909,7 @@ var require_dist_cjs45 = __commonJS({
 });
 
 // node_modules/@aws-sdk/client-sso/dist-cjs/index.js
-var require_dist_cjs46 = __commonJS({
+var require_dist_cjs44 = __commonJS({
   "node_modules/@aws-sdk/client-sso/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -13465,8 +12961,8 @@ var require_dist_cjs46 = __commonJS({
     var import_config_resolver = require_dist_cjs18();
     var import_core3 = (init_dist_es(), __toCommonJS(dist_es_exports));
     var import_middleware_content_length = require_dist_cjs25();
-    var import_middleware_endpoint = require_dist_cjs31();
-    var import_middleware_retry = require_dist_cjs36();
+    var import_middleware_endpoint = require_dist_cjs30();
+    var import_middleware_retry = require_dist_cjs35();
     var import_httpAuthSchemeProvider = require_httpAuthSchemeProvider2();
     var resolveClientEndpointParameters = /* @__PURE__ */ __name((options) => {
       return {
@@ -13483,9 +12979,9 @@ var require_dist_cjs46 = __commonJS({
       UseDualStack: { type: "builtInParams", name: "useDualstackEndpoint" }
     };
     var import_runtimeConfig = require_runtimeConfig();
-    var import_region_config_resolver = require_dist_cjs45();
+    var import_region_config_resolver = require_dist_cjs43();
     var import_protocol_http9 = require_dist_cjs2();
-    var import_smithy_client4 = require_dist_cjs35();
+    var import_smithy_client4 = require_dist_cjs34();
     var getHttpAuthExtensionConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
       const _httpAuthSchemes = runtimeConfig.httpAuthSchemes;
       let _httpAuthSchemeProvider = runtimeConfig.httpAuthSchemeProvider;
@@ -14191,8 +13687,8 @@ var require_runtimeConfig_shared2 = __commonJS({
     exports2.getRuntimeConfig = void 0;
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
     var core_2 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var smithy_client_1 = require_dist_cjs35();
-    var url_parser_1 = require_dist_cjs30();
+    var smithy_client_1 = require_dist_cjs34();
+    var url_parser_1 = require_dist_cjs29();
     var util_base64_1 = require_dist_cjs20();
     var util_utf8_1 = require_dist_cjs6();
     var httpAuthSchemeProvider_1 = require_httpAuthSchemeProvider3();
@@ -14238,19 +13734,19 @@ var require_runtimeConfig2 = __commonJS({
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package3());
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var credential_provider_node_1 = require_dist_cjs58();
-    var util_user_agent_node_1 = require_dist_cjs41();
+    var credential_provider_node_1 = require_dist_cjs52();
+    var util_user_agent_node_1 = require_dist_cjs39();
     var config_resolver_1 = require_dist_cjs18();
-    var hash_node_1 = require_dist_cjs42();
-    var middleware_retry_1 = require_dist_cjs36();
+    var hash_node_1 = require_dist_cjs40();
+    var middleware_retry_1 = require_dist_cjs35();
     var node_config_provider_1 = require_dist_cjs27();
     var node_http_handler_1 = require_dist_cjs22();
-    var util_body_length_node_1 = require_dist_cjs43();
-    var util_retry_1 = require_dist_cjs33();
+    var util_body_length_node_1 = require_dist_cjs41();
+    var util_retry_1 = require_dist_cjs32();
     var runtimeConfig_shared_1 = require_runtimeConfig_shared2();
-    var smithy_client_1 = require_dist_cjs35();
-    var util_defaults_mode_node_1 = require_dist_cjs44();
-    var smithy_client_2 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs34();
+    var util_defaults_mode_node_1 = require_dist_cjs42();
+    var smithy_client_2 = require_dist_cjs34();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
       const defaultsMode = (0, util_defaults_mode_node_1.resolveDefaultsModeConfig)(config);
@@ -14283,7 +13779,7 @@ var require_runtimeConfig2 = __commonJS({
 });
 
 // node_modules/@aws-sdk/client-sso-oidc/dist-cjs/index.js
-var require_dist_cjs47 = __commonJS({
+var require_dist_cjs45 = __commonJS({
   "node_modules/@aws-sdk/client-sso-oidc/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -14343,8 +13839,8 @@ var require_dist_cjs47 = __commonJS({
     var import_config_resolver = require_dist_cjs18();
     var import_core3 = (init_dist_es(), __toCommonJS(dist_es_exports));
     var import_middleware_content_length = require_dist_cjs25();
-    var import_middleware_endpoint = require_dist_cjs31();
-    var import_middleware_retry = require_dist_cjs36();
+    var import_middleware_endpoint = require_dist_cjs30();
+    var import_middleware_retry = require_dist_cjs35();
     var import_httpAuthSchemeProvider = require_httpAuthSchemeProvider3();
     var resolveClientEndpointParameters = /* @__PURE__ */ __name((options) => {
       return {
@@ -14361,9 +13857,9 @@ var require_dist_cjs47 = __commonJS({
       UseDualStack: { type: "builtInParams", name: "useDualstackEndpoint" }
     };
     var import_runtimeConfig = require_runtimeConfig2();
-    var import_region_config_resolver = require_dist_cjs45();
+    var import_region_config_resolver = require_dist_cjs43();
     var import_protocol_http9 = require_dist_cjs2();
-    var import_smithy_client4 = require_dist_cjs35();
+    var import_smithy_client4 = require_dist_cjs34();
     var getHttpAuthExtensionConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
       const _httpAuthSchemes = runtimeConfig.httpAuthSchemes;
       let _httpAuthSchemeProvider = runtimeConfig.httpAuthSchemeProvider;
@@ -15259,260 +14755,8 @@ var require_dist_cjs47 = __commonJS({
   }
 });
 
-// node_modules/@aws-sdk/token-providers/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js
-var require_getHomeDir4 = __commonJS({
-  "node_modules/@aws-sdk/token-providers/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getHomeDir = void 0;
-    var os_1 = require("os");
-    var path_1 = require("path");
-    var homeDirCache = {};
-    var getHomeDirCacheKey = () => {
-      if (process && process.geteuid) {
-        return `${process.geteuid()}`;
-      }
-      return "DEFAULT";
-    };
-    var getHomeDir2 = () => {
-      const { HOME, USERPROFILE, HOMEPATH, HOMEDRIVE = `C:${path_1.sep}` } = process.env;
-      if (HOME)
-        return HOME;
-      if (USERPROFILE)
-        return USERPROFILE;
-      if (HOMEPATH)
-        return `${HOMEDRIVE}${HOMEPATH}`;
-      const homeDirCacheKey = getHomeDirCacheKey();
-      if (!homeDirCache[homeDirCacheKey])
-        homeDirCache[homeDirCacheKey] = (0, os_1.homedir)();
-      return homeDirCache[homeDirCacheKey];
-    };
-    exports2.getHomeDir = getHomeDir2;
-  }
-});
-
-// node_modules/@aws-sdk/token-providers/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js
-var require_getSSOTokenFilepath4 = __commonJS({
-  "node_modules/@aws-sdk/token-providers/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getSSOTokenFilepath = void 0;
-    var crypto_1 = require("crypto");
-    var path_1 = require("path");
-    var getHomeDir_1 = require_getHomeDir4();
-    var getSSOTokenFilepath2 = (id) => {
-      const hasher = (0, crypto_1.createHash)("sha1");
-      const cacheName = hasher.update(id).digest("hex");
-      return (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "sso", "cache", `${cacheName}.json`);
-    };
-    exports2.getSSOTokenFilepath = getSSOTokenFilepath2;
-  }
-});
-
-// node_modules/@aws-sdk/token-providers/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js
-var require_getSSOTokenFromFile4 = __commonJS({
-  "node_modules/@aws-sdk/token-providers/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getSSOTokenFromFile = void 0;
-    var fs_1 = require("fs");
-    var getSSOTokenFilepath_1 = require_getSSOTokenFilepath4();
-    var { readFile } = fs_1.promises;
-    var getSSOTokenFromFile2 = async (id) => {
-      const ssoTokenFilepath = (0, getSSOTokenFilepath_1.getSSOTokenFilepath)(id);
-      const ssoTokenText = await readFile(ssoTokenFilepath, "utf8");
-      return JSON.parse(ssoTokenText);
-    };
-    exports2.getSSOTokenFromFile = getSSOTokenFromFile2;
-  }
-});
-
-// node_modules/@aws-sdk/token-providers/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js
-var require_slurpFile4 = __commonJS({
-  "node_modules/@aws-sdk/token-providers/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.slurpFile = void 0;
-    var fs_1 = require("fs");
-    var { readFile } = fs_1.promises;
-    var filePromisesHash = {};
-    var slurpFile = (path, options) => {
-      if (!filePromisesHash[path] || (options === null || options === void 0 ? void 0 : options.ignoreCache)) {
-        filePromisesHash[path] = readFile(path, "utf8");
-      }
-      return filePromisesHash[path];
-    };
-    exports2.slurpFile = slurpFile;
-  }
-});
-
-// node_modules/@aws-sdk/token-providers/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-var require_dist_cjs48 = __commonJS({
-  "node_modules/@aws-sdk/token-providers/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __reExport = (target, mod, secondTarget) => (__copyProps2(target, mod, "default"), secondTarget && __copyProps2(secondTarget, mod, "default"));
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      CONFIG_PREFIX_SEPARATOR: () => CONFIG_PREFIX_SEPARATOR,
-      DEFAULT_PROFILE: () => DEFAULT_PROFILE,
-      ENV_PROFILE: () => ENV_PROFILE,
-      getProfileName: () => getProfileName,
-      loadSharedConfigFiles: () => loadSharedConfigFiles,
-      loadSsoSessionData: () => loadSsoSessionData,
-      parseKnownFiles: () => parseKnownFiles
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    __reExport(src_exports, require_getHomeDir4(), module2.exports);
-    var ENV_PROFILE = "AWS_PROFILE";
-    var DEFAULT_PROFILE = "default";
-    var getProfileName = /* @__PURE__ */ __name((init) => init.profile || process.env[ENV_PROFILE] || DEFAULT_PROFILE, "getProfileName");
-    __reExport(src_exports, require_getSSOTokenFilepath4(), module2.exports);
-    __reExport(src_exports, require_getSSOTokenFromFile4(), module2.exports);
-    var import_types5 = require_dist_cjs();
-    var getConfigData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => {
-      const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-      if (indexOfSeparator === -1) {
-        return false;
-      }
-      return Object.values(import_types5.IniSectionType).includes(key.substring(0, indexOfSeparator));
-    }).reduce(
-      (acc, [key, value]) => {
-        const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-        const updatedKey = key.substring(0, indexOfSeparator) === import_types5.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
-        acc[updatedKey] = value;
-        return acc;
-      },
-      {
-        // Populate default profile, if present.
-        ...data.default && { default: data.default }
-      }
-    ), "getConfigData");
-    var import_path = require("path");
-    var import_getHomeDir = require_getHomeDir4();
-    var ENV_CONFIG_PATH = "AWS_CONFIG_FILE";
-    var getConfigFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CONFIG_PATH] || (0, import_path.join)((0, import_getHomeDir.getHomeDir)(), ".aws", "config"), "getConfigFilepath");
-    var import_getHomeDir2 = require_getHomeDir4();
-    var ENV_CREDENTIALS_PATH = "AWS_SHARED_CREDENTIALS_FILE";
-    var getCredentialsFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CREDENTIALS_PATH] || (0, import_path.join)((0, import_getHomeDir2.getHomeDir)(), ".aws", "credentials"), "getCredentialsFilepath");
-    var import_getHomeDir3 = require_getHomeDir4();
-    var prefixKeyRegex = /^([\w-]+)\s(["'])?([\w-@\+\.%:/]+)\2$/;
-    var profileNameBlockList = ["__proto__", "profile __proto__"];
-    var parseIni = /* @__PURE__ */ __name((iniData) => {
-      const map = {};
-      let currentSection;
-      let currentSubSection;
-      for (const iniLine of iniData.split(/\r?\n/)) {
-        const trimmedLine = iniLine.split(/(^|\s)[;#]/)[0].trim();
-        const isSection = trimmedLine[0] === "[" && trimmedLine[trimmedLine.length - 1] === "]";
-        if (isSection) {
-          currentSection = void 0;
-          currentSubSection = void 0;
-          const sectionName = trimmedLine.substring(1, trimmedLine.length - 1);
-          const matches = prefixKeyRegex.exec(sectionName);
-          if (matches) {
-            const [, prefix, , name] = matches;
-            if (Object.values(import_types5.IniSectionType).includes(prefix)) {
-              currentSection = [prefix, name].join(CONFIG_PREFIX_SEPARATOR);
-            }
-          } else {
-            currentSection = sectionName;
-          }
-          if (profileNameBlockList.includes(sectionName)) {
-            throw new Error(`Found invalid profile name "${sectionName}"`);
-          }
-        } else if (currentSection) {
-          const indexOfEqualsSign = trimmedLine.indexOf("=");
-          if (![0, -1].includes(indexOfEqualsSign)) {
-            const [name, value] = [
-              trimmedLine.substring(0, indexOfEqualsSign).trim(),
-              trimmedLine.substring(indexOfEqualsSign + 1).trim()
-            ];
-            if (value === "") {
-              currentSubSection = name;
-            } else {
-              if (currentSubSection && iniLine.trimStart() === iniLine) {
-                currentSubSection = void 0;
-              }
-              map[currentSection] = map[currentSection] || {};
-              const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
-              map[currentSection][key] = value;
-            }
-          }
-        }
-      }
-      return map;
-    }, "parseIni");
-    var import_slurpFile = require_slurpFile4();
-    var swallowError = /* @__PURE__ */ __name(() => ({}), "swallowError");
-    var CONFIG_PREFIX_SEPARATOR = ".";
-    var loadSharedConfigFiles = /* @__PURE__ */ __name(async (init = {}) => {
-      const { filepath = getCredentialsFilepath(), configFilepath = getConfigFilepath() } = init;
-      const homeDir = (0, import_getHomeDir3.getHomeDir)();
-      const relativeHomeDirPrefix = "~/";
-      let resolvedFilepath = filepath;
-      if (filepath.startsWith(relativeHomeDirPrefix)) {
-        resolvedFilepath = (0, import_path.join)(homeDir, filepath.slice(2));
-      }
-      let resolvedConfigFilepath = configFilepath;
-      if (configFilepath.startsWith(relativeHomeDirPrefix)) {
-        resolvedConfigFilepath = (0, import_path.join)(homeDir, configFilepath.slice(2));
-      }
-      const parsedFiles = await Promise.all([
-        (0, import_slurpFile.slurpFile)(resolvedConfigFilepath, {
-          ignoreCache: init.ignoreCache
-        }).then(parseIni).then(getConfigData).catch(swallowError),
-        (0, import_slurpFile.slurpFile)(resolvedFilepath, {
-          ignoreCache: init.ignoreCache
-        }).then(parseIni).catch(swallowError)
-      ]);
-      return {
-        configFile: parsedFiles[0],
-        credentialsFile: parsedFiles[1]
-      };
-    }, "loadSharedConfigFiles");
-    var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types5.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
-    var import_slurpFile2 = require_slurpFile4();
-    var swallowError2 = /* @__PURE__ */ __name(() => ({}), "swallowError");
-    var loadSsoSessionData = /* @__PURE__ */ __name(async (init = {}) => (0, import_slurpFile2.slurpFile)(init.configFilepath ?? getConfigFilepath()).then(parseIni).then(getSsoSessionData).catch(swallowError2), "loadSsoSessionData");
-    var mergeConfigFiles = /* @__PURE__ */ __name((...files) => {
-      const merged = {};
-      for (const file of files) {
-        for (const [key, values] of Object.entries(file)) {
-          if (merged[key] !== void 0) {
-            Object.assign(merged[key], values);
-          } else {
-            merged[key] = values;
-          }
-        }
-      }
-      return merged;
-    }, "mergeConfigFiles");
-    var parseKnownFiles = /* @__PURE__ */ __name(async (init) => {
-      const parsedFiles = await loadSharedConfigFiles(init);
-      return mergeConfigFiles(parsedFiles.configFile, parsedFiles.credentialsFile);
-    }, "parseKnownFiles");
-  }
-});
-
 // node_modules/@aws-sdk/token-providers/dist-cjs/index.js
-var require_dist_cjs49 = __commonJS({
+var require_dist_cjs46 = __commonJS({
   "node_modules/@aws-sdk/token-providers/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __create2 = Object.create;
@@ -15554,7 +14798,7 @@ var require_dist_cjs49 = __commonJS({
     var REFRESH_MESSAGE = `To refresh this SSO session run 'aws sso login' with the corresponding profile.`;
     var ssoOidcClientsHash = {};
     var getSsoOidcClient = /* @__PURE__ */ __name(async (ssoRegion) => {
-      const { SSOOIDCClient } = await Promise.resolve().then(() => __toESM2(require_dist_cjs47()));
+      const { SSOOIDCClient } = await Promise.resolve().then(() => __toESM2(require_dist_cjs45()));
       if (ssoOidcClientsHash[ssoRegion]) {
         return ssoOidcClientsHash[ssoRegion];
       }
@@ -15563,7 +14807,7 @@ var require_dist_cjs49 = __commonJS({
       return ssoOidcClient;
     }, "getSsoOidcClient");
     var getNewSsoOidcToken = /* @__PURE__ */ __name(async (ssoToken, ssoRegion) => {
-      const { CreateTokenCommand } = await Promise.resolve().then(() => __toESM2(require_dist_cjs47()));
+      const { CreateTokenCommand } = await Promise.resolve().then(() => __toESM2(require_dist_cjs45()));
       const ssoOidcClient = await getSsoOidcClient(ssoRegion);
       return ssoOidcClient.send(
         new CreateTokenCommand({
@@ -15588,7 +14832,7 @@ var require_dist_cjs49 = __commonJS({
         );
       }
     }, "validateTokenKey");
-    var import_shared_ini_file_loader = require_dist_cjs48();
+    var import_shared_ini_file_loader = require_dist_cjs26();
     var import_fs = require("fs");
     var { writeFile } = import_fs.promises;
     var writeSSOTokenToFile = /* @__PURE__ */ __name((id, ssoToken) => {
@@ -15691,260 +14935,8 @@ var require_dist_cjs49 = __commonJS({
   }
 });
 
-// node_modules/@aws-sdk/credential-provider-sso/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js
-var require_getHomeDir5 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-sso/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getHomeDir = void 0;
-    var os_1 = require("os");
-    var path_1 = require("path");
-    var homeDirCache = {};
-    var getHomeDirCacheKey = () => {
-      if (process && process.geteuid) {
-        return `${process.geteuid()}`;
-      }
-      return "DEFAULT";
-    };
-    var getHomeDir2 = () => {
-      const { HOME, USERPROFILE, HOMEPATH, HOMEDRIVE = `C:${path_1.sep}` } = process.env;
-      if (HOME)
-        return HOME;
-      if (USERPROFILE)
-        return USERPROFILE;
-      if (HOMEPATH)
-        return `${HOMEDRIVE}${HOMEPATH}`;
-      const homeDirCacheKey = getHomeDirCacheKey();
-      if (!homeDirCache[homeDirCacheKey])
-        homeDirCache[homeDirCacheKey] = (0, os_1.homedir)();
-      return homeDirCache[homeDirCacheKey];
-    };
-    exports2.getHomeDir = getHomeDir2;
-  }
-});
-
-// node_modules/@aws-sdk/credential-provider-sso/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js
-var require_getSSOTokenFilepath5 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-sso/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getSSOTokenFilepath = void 0;
-    var crypto_1 = require("crypto");
-    var path_1 = require("path");
-    var getHomeDir_1 = require_getHomeDir5();
-    var getSSOTokenFilepath2 = (id) => {
-      const hasher = (0, crypto_1.createHash)("sha1");
-      const cacheName = hasher.update(id).digest("hex");
-      return (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "sso", "cache", `${cacheName}.json`);
-    };
-    exports2.getSSOTokenFilepath = getSSOTokenFilepath2;
-  }
-});
-
-// node_modules/@aws-sdk/credential-provider-sso/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js
-var require_getSSOTokenFromFile5 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-sso/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getSSOTokenFromFile = void 0;
-    var fs_1 = require("fs");
-    var getSSOTokenFilepath_1 = require_getSSOTokenFilepath5();
-    var { readFile } = fs_1.promises;
-    var getSSOTokenFromFile2 = async (id) => {
-      const ssoTokenFilepath = (0, getSSOTokenFilepath_1.getSSOTokenFilepath)(id);
-      const ssoTokenText = await readFile(ssoTokenFilepath, "utf8");
-      return JSON.parse(ssoTokenText);
-    };
-    exports2.getSSOTokenFromFile = getSSOTokenFromFile2;
-  }
-});
-
-// node_modules/@aws-sdk/credential-provider-sso/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js
-var require_slurpFile5 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-sso/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.slurpFile = void 0;
-    var fs_1 = require("fs");
-    var { readFile } = fs_1.promises;
-    var filePromisesHash = {};
-    var slurpFile = (path, options) => {
-      if (!filePromisesHash[path] || (options === null || options === void 0 ? void 0 : options.ignoreCache)) {
-        filePromisesHash[path] = readFile(path, "utf8");
-      }
-      return filePromisesHash[path];
-    };
-    exports2.slurpFile = slurpFile;
-  }
-});
-
-// node_modules/@aws-sdk/credential-provider-sso/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-var require_dist_cjs50 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-sso/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __reExport = (target, mod, secondTarget) => (__copyProps2(target, mod, "default"), secondTarget && __copyProps2(secondTarget, mod, "default"));
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      CONFIG_PREFIX_SEPARATOR: () => CONFIG_PREFIX_SEPARATOR,
-      DEFAULT_PROFILE: () => DEFAULT_PROFILE,
-      ENV_PROFILE: () => ENV_PROFILE,
-      getProfileName: () => getProfileName,
-      loadSharedConfigFiles: () => loadSharedConfigFiles,
-      loadSsoSessionData: () => loadSsoSessionData,
-      parseKnownFiles: () => parseKnownFiles
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    __reExport(src_exports, require_getHomeDir5(), module2.exports);
-    var ENV_PROFILE = "AWS_PROFILE";
-    var DEFAULT_PROFILE = "default";
-    var getProfileName = /* @__PURE__ */ __name((init) => init.profile || process.env[ENV_PROFILE] || DEFAULT_PROFILE, "getProfileName");
-    __reExport(src_exports, require_getSSOTokenFilepath5(), module2.exports);
-    __reExport(src_exports, require_getSSOTokenFromFile5(), module2.exports);
-    var import_types5 = require_dist_cjs();
-    var getConfigData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => {
-      const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-      if (indexOfSeparator === -1) {
-        return false;
-      }
-      return Object.values(import_types5.IniSectionType).includes(key.substring(0, indexOfSeparator));
-    }).reduce(
-      (acc, [key, value]) => {
-        const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-        const updatedKey = key.substring(0, indexOfSeparator) === import_types5.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
-        acc[updatedKey] = value;
-        return acc;
-      },
-      {
-        // Populate default profile, if present.
-        ...data.default && { default: data.default }
-      }
-    ), "getConfigData");
-    var import_path = require("path");
-    var import_getHomeDir = require_getHomeDir5();
-    var ENV_CONFIG_PATH = "AWS_CONFIG_FILE";
-    var getConfigFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CONFIG_PATH] || (0, import_path.join)((0, import_getHomeDir.getHomeDir)(), ".aws", "config"), "getConfigFilepath");
-    var import_getHomeDir2 = require_getHomeDir5();
-    var ENV_CREDENTIALS_PATH = "AWS_SHARED_CREDENTIALS_FILE";
-    var getCredentialsFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CREDENTIALS_PATH] || (0, import_path.join)((0, import_getHomeDir2.getHomeDir)(), ".aws", "credentials"), "getCredentialsFilepath");
-    var import_getHomeDir3 = require_getHomeDir5();
-    var prefixKeyRegex = /^([\w-]+)\s(["'])?([\w-@\+\.%:/]+)\2$/;
-    var profileNameBlockList = ["__proto__", "profile __proto__"];
-    var parseIni = /* @__PURE__ */ __name((iniData) => {
-      const map = {};
-      let currentSection;
-      let currentSubSection;
-      for (const iniLine of iniData.split(/\r?\n/)) {
-        const trimmedLine = iniLine.split(/(^|\s)[;#]/)[0].trim();
-        const isSection = trimmedLine[0] === "[" && trimmedLine[trimmedLine.length - 1] === "]";
-        if (isSection) {
-          currentSection = void 0;
-          currentSubSection = void 0;
-          const sectionName = trimmedLine.substring(1, trimmedLine.length - 1);
-          const matches = prefixKeyRegex.exec(sectionName);
-          if (matches) {
-            const [, prefix, , name] = matches;
-            if (Object.values(import_types5.IniSectionType).includes(prefix)) {
-              currentSection = [prefix, name].join(CONFIG_PREFIX_SEPARATOR);
-            }
-          } else {
-            currentSection = sectionName;
-          }
-          if (profileNameBlockList.includes(sectionName)) {
-            throw new Error(`Found invalid profile name "${sectionName}"`);
-          }
-        } else if (currentSection) {
-          const indexOfEqualsSign = trimmedLine.indexOf("=");
-          if (![0, -1].includes(indexOfEqualsSign)) {
-            const [name, value] = [
-              trimmedLine.substring(0, indexOfEqualsSign).trim(),
-              trimmedLine.substring(indexOfEqualsSign + 1).trim()
-            ];
-            if (value === "") {
-              currentSubSection = name;
-            } else {
-              if (currentSubSection && iniLine.trimStart() === iniLine) {
-                currentSubSection = void 0;
-              }
-              map[currentSection] = map[currentSection] || {};
-              const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
-              map[currentSection][key] = value;
-            }
-          }
-        }
-      }
-      return map;
-    }, "parseIni");
-    var import_slurpFile = require_slurpFile5();
-    var swallowError = /* @__PURE__ */ __name(() => ({}), "swallowError");
-    var CONFIG_PREFIX_SEPARATOR = ".";
-    var loadSharedConfigFiles = /* @__PURE__ */ __name(async (init = {}) => {
-      const { filepath = getCredentialsFilepath(), configFilepath = getConfigFilepath() } = init;
-      const homeDir = (0, import_getHomeDir3.getHomeDir)();
-      const relativeHomeDirPrefix = "~/";
-      let resolvedFilepath = filepath;
-      if (filepath.startsWith(relativeHomeDirPrefix)) {
-        resolvedFilepath = (0, import_path.join)(homeDir, filepath.slice(2));
-      }
-      let resolvedConfigFilepath = configFilepath;
-      if (configFilepath.startsWith(relativeHomeDirPrefix)) {
-        resolvedConfigFilepath = (0, import_path.join)(homeDir, configFilepath.slice(2));
-      }
-      const parsedFiles = await Promise.all([
-        (0, import_slurpFile.slurpFile)(resolvedConfigFilepath, {
-          ignoreCache: init.ignoreCache
-        }).then(parseIni).then(getConfigData).catch(swallowError),
-        (0, import_slurpFile.slurpFile)(resolvedFilepath, {
-          ignoreCache: init.ignoreCache
-        }).then(parseIni).catch(swallowError)
-      ]);
-      return {
-        configFile: parsedFiles[0],
-        credentialsFile: parsedFiles[1]
-      };
-    }, "loadSharedConfigFiles");
-    var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types5.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
-    var import_slurpFile2 = require_slurpFile5();
-    var swallowError2 = /* @__PURE__ */ __name(() => ({}), "swallowError");
-    var loadSsoSessionData = /* @__PURE__ */ __name(async (init = {}) => (0, import_slurpFile2.slurpFile)(init.configFilepath ?? getConfigFilepath()).then(parseIni).then(getSsoSessionData).catch(swallowError2), "loadSsoSessionData");
-    var mergeConfigFiles = /* @__PURE__ */ __name((...files) => {
-      const merged = {};
-      for (const file of files) {
-        for (const [key, values] of Object.entries(file)) {
-          if (merged[key] !== void 0) {
-            Object.assign(merged[key], values);
-          } else {
-            merged[key] = values;
-          }
-        }
-      }
-      return merged;
-    }, "mergeConfigFiles");
-    var parseKnownFiles = /* @__PURE__ */ __name(async (init) => {
-      const parsedFiles = await loadSharedConfigFiles(init);
-      return mergeConfigFiles(parsedFiles.configFile, parsedFiles.credentialsFile);
-    }, "parseKnownFiles");
-  }
-});
-
 // node_modules/@aws-sdk/credential-provider-sso/dist-cjs/index.js
-var require_dist_cjs51 = __commonJS({
+var require_dist_cjs47 = __commonJS({
   "node_modules/@aws-sdk/credential-provider-sso/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -15977,7 +14969,7 @@ var require_dist_cjs51 = __commonJS({
     var init_loadSso = __esm2({
       "src/loadSso.ts"() {
         "use strict";
-        import_client_sso = require_dist_cjs46();
+        import_client_sso = require_dist_cjs44();
       }
     });
     var src_exports = {};
@@ -15988,9 +14980,9 @@ var require_dist_cjs51 = __commonJS({
     });
     module2.exports = __toCommonJS2(src_exports);
     var isSsoProfile = /* @__PURE__ */ __name((arg) => arg && (typeof arg.sso_start_url === "string" || typeof arg.sso_account_id === "string" || typeof arg.sso_session === "string" || typeof arg.sso_region === "string" || typeof arg.sso_role_name === "string"), "isSsoProfile");
-    var import_token_providers = require_dist_cjs49();
+    var import_token_providers = require_dist_cjs46();
     var import_property_provider2 = require_dist_cjs10();
-    var import_shared_ini_file_loader = require_dist_cjs50();
+    var import_shared_ini_file_loader = require_dist_cjs26();
     var SHOULD_FAIL_CREDENTIAL_CHAIN = false;
     var resolveSSOCredentials = /* @__PURE__ */ __name(async ({
       ssoStartUrl,
@@ -16155,258 +15147,6 @@ Reference: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.ht
         });
       }
     }, "fromSSO");
-  }
-});
-
-// node_modules/@aws-sdk/credential-provider-ini/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js
-var require_getHomeDir6 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-ini/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getHomeDir = void 0;
-    var os_1 = require("os");
-    var path_1 = require("path");
-    var homeDirCache = {};
-    var getHomeDirCacheKey = () => {
-      if (process && process.geteuid) {
-        return `${process.geteuid()}`;
-      }
-      return "DEFAULT";
-    };
-    var getHomeDir2 = () => {
-      const { HOME, USERPROFILE, HOMEPATH, HOMEDRIVE = `C:${path_1.sep}` } = process.env;
-      if (HOME)
-        return HOME;
-      if (USERPROFILE)
-        return USERPROFILE;
-      if (HOMEPATH)
-        return `${HOMEDRIVE}${HOMEPATH}`;
-      const homeDirCacheKey = getHomeDirCacheKey();
-      if (!homeDirCache[homeDirCacheKey])
-        homeDirCache[homeDirCacheKey] = (0, os_1.homedir)();
-      return homeDirCache[homeDirCacheKey];
-    };
-    exports2.getHomeDir = getHomeDir2;
-  }
-});
-
-// node_modules/@aws-sdk/credential-provider-ini/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js
-var require_getSSOTokenFilepath6 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-ini/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getSSOTokenFilepath = void 0;
-    var crypto_1 = require("crypto");
-    var path_1 = require("path");
-    var getHomeDir_1 = require_getHomeDir6();
-    var getSSOTokenFilepath2 = (id) => {
-      const hasher = (0, crypto_1.createHash)("sha1");
-      const cacheName = hasher.update(id).digest("hex");
-      return (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "sso", "cache", `${cacheName}.json`);
-    };
-    exports2.getSSOTokenFilepath = getSSOTokenFilepath2;
-  }
-});
-
-// node_modules/@aws-sdk/credential-provider-ini/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js
-var require_getSSOTokenFromFile6 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-ini/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getSSOTokenFromFile = void 0;
-    var fs_1 = require("fs");
-    var getSSOTokenFilepath_1 = require_getSSOTokenFilepath6();
-    var { readFile } = fs_1.promises;
-    var getSSOTokenFromFile2 = async (id) => {
-      const ssoTokenFilepath = (0, getSSOTokenFilepath_1.getSSOTokenFilepath)(id);
-      const ssoTokenText = await readFile(ssoTokenFilepath, "utf8");
-      return JSON.parse(ssoTokenText);
-    };
-    exports2.getSSOTokenFromFile = getSSOTokenFromFile2;
-  }
-});
-
-// node_modules/@aws-sdk/credential-provider-ini/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js
-var require_slurpFile6 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-ini/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.slurpFile = void 0;
-    var fs_1 = require("fs");
-    var { readFile } = fs_1.promises;
-    var filePromisesHash = {};
-    var slurpFile = (path, options) => {
-      if (!filePromisesHash[path] || (options === null || options === void 0 ? void 0 : options.ignoreCache)) {
-        filePromisesHash[path] = readFile(path, "utf8");
-      }
-      return filePromisesHash[path];
-    };
-    exports2.slurpFile = slurpFile;
-  }
-});
-
-// node_modules/@aws-sdk/credential-provider-ini/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-var require_dist_cjs52 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-ini/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __reExport = (target, mod, secondTarget) => (__copyProps2(target, mod, "default"), secondTarget && __copyProps2(secondTarget, mod, "default"));
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      CONFIG_PREFIX_SEPARATOR: () => CONFIG_PREFIX_SEPARATOR,
-      DEFAULT_PROFILE: () => DEFAULT_PROFILE,
-      ENV_PROFILE: () => ENV_PROFILE,
-      getProfileName: () => getProfileName,
-      loadSharedConfigFiles: () => loadSharedConfigFiles,
-      loadSsoSessionData: () => loadSsoSessionData,
-      parseKnownFiles: () => parseKnownFiles
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    __reExport(src_exports, require_getHomeDir6(), module2.exports);
-    var ENV_PROFILE = "AWS_PROFILE";
-    var DEFAULT_PROFILE = "default";
-    var getProfileName = /* @__PURE__ */ __name((init) => init.profile || process.env[ENV_PROFILE] || DEFAULT_PROFILE, "getProfileName");
-    __reExport(src_exports, require_getSSOTokenFilepath6(), module2.exports);
-    __reExport(src_exports, require_getSSOTokenFromFile6(), module2.exports);
-    var import_types5 = require_dist_cjs();
-    var getConfigData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => {
-      const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-      if (indexOfSeparator === -1) {
-        return false;
-      }
-      return Object.values(import_types5.IniSectionType).includes(key.substring(0, indexOfSeparator));
-    }).reduce(
-      (acc, [key, value]) => {
-        const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-        const updatedKey = key.substring(0, indexOfSeparator) === import_types5.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
-        acc[updatedKey] = value;
-        return acc;
-      },
-      {
-        // Populate default profile, if present.
-        ...data.default && { default: data.default }
-      }
-    ), "getConfigData");
-    var import_path = require("path");
-    var import_getHomeDir = require_getHomeDir6();
-    var ENV_CONFIG_PATH = "AWS_CONFIG_FILE";
-    var getConfigFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CONFIG_PATH] || (0, import_path.join)((0, import_getHomeDir.getHomeDir)(), ".aws", "config"), "getConfigFilepath");
-    var import_getHomeDir2 = require_getHomeDir6();
-    var ENV_CREDENTIALS_PATH = "AWS_SHARED_CREDENTIALS_FILE";
-    var getCredentialsFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CREDENTIALS_PATH] || (0, import_path.join)((0, import_getHomeDir2.getHomeDir)(), ".aws", "credentials"), "getCredentialsFilepath");
-    var import_getHomeDir3 = require_getHomeDir6();
-    var prefixKeyRegex = /^([\w-]+)\s(["'])?([\w-@\+\.%:/]+)\2$/;
-    var profileNameBlockList = ["__proto__", "profile __proto__"];
-    var parseIni = /* @__PURE__ */ __name((iniData) => {
-      const map = {};
-      let currentSection;
-      let currentSubSection;
-      for (const iniLine of iniData.split(/\r?\n/)) {
-        const trimmedLine = iniLine.split(/(^|\s)[;#]/)[0].trim();
-        const isSection = trimmedLine[0] === "[" && trimmedLine[trimmedLine.length - 1] === "]";
-        if (isSection) {
-          currentSection = void 0;
-          currentSubSection = void 0;
-          const sectionName = trimmedLine.substring(1, trimmedLine.length - 1);
-          const matches = prefixKeyRegex.exec(sectionName);
-          if (matches) {
-            const [, prefix, , name] = matches;
-            if (Object.values(import_types5.IniSectionType).includes(prefix)) {
-              currentSection = [prefix, name].join(CONFIG_PREFIX_SEPARATOR);
-            }
-          } else {
-            currentSection = sectionName;
-          }
-          if (profileNameBlockList.includes(sectionName)) {
-            throw new Error(`Found invalid profile name "${sectionName}"`);
-          }
-        } else if (currentSection) {
-          const indexOfEqualsSign = trimmedLine.indexOf("=");
-          if (![0, -1].includes(indexOfEqualsSign)) {
-            const [name, value] = [
-              trimmedLine.substring(0, indexOfEqualsSign).trim(),
-              trimmedLine.substring(indexOfEqualsSign + 1).trim()
-            ];
-            if (value === "") {
-              currentSubSection = name;
-            } else {
-              if (currentSubSection && iniLine.trimStart() === iniLine) {
-                currentSubSection = void 0;
-              }
-              map[currentSection] = map[currentSection] || {};
-              const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
-              map[currentSection][key] = value;
-            }
-          }
-        }
-      }
-      return map;
-    }, "parseIni");
-    var import_slurpFile = require_slurpFile6();
-    var swallowError = /* @__PURE__ */ __name(() => ({}), "swallowError");
-    var CONFIG_PREFIX_SEPARATOR = ".";
-    var loadSharedConfigFiles = /* @__PURE__ */ __name(async (init = {}) => {
-      const { filepath = getCredentialsFilepath(), configFilepath = getConfigFilepath() } = init;
-      const homeDir = (0, import_getHomeDir3.getHomeDir)();
-      const relativeHomeDirPrefix = "~/";
-      let resolvedFilepath = filepath;
-      if (filepath.startsWith(relativeHomeDirPrefix)) {
-        resolvedFilepath = (0, import_path.join)(homeDir, filepath.slice(2));
-      }
-      let resolvedConfigFilepath = configFilepath;
-      if (configFilepath.startsWith(relativeHomeDirPrefix)) {
-        resolvedConfigFilepath = (0, import_path.join)(homeDir, configFilepath.slice(2));
-      }
-      const parsedFiles = await Promise.all([
-        (0, import_slurpFile.slurpFile)(resolvedConfigFilepath, {
-          ignoreCache: init.ignoreCache
-        }).then(parseIni).then(getConfigData).catch(swallowError),
-        (0, import_slurpFile.slurpFile)(resolvedFilepath, {
-          ignoreCache: init.ignoreCache
-        }).then(parseIni).catch(swallowError)
-      ]);
-      return {
-        configFile: parsedFiles[0],
-        credentialsFile: parsedFiles[1]
-      };
-    }, "loadSharedConfigFiles");
-    var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types5.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
-    var import_slurpFile2 = require_slurpFile6();
-    var swallowError2 = /* @__PURE__ */ __name(() => ({}), "swallowError");
-    var loadSsoSessionData = /* @__PURE__ */ __name(async (init = {}) => (0, import_slurpFile2.slurpFile)(init.configFilepath ?? getConfigFilepath()).then(parseIni).then(getSsoSessionData).catch(swallowError2), "loadSsoSessionData");
-    var mergeConfigFiles = /* @__PURE__ */ __name((...files) => {
-      const merged = {};
-      for (const file of files) {
-        for (const [key, values] of Object.entries(file)) {
-          if (merged[key] !== void 0) {
-            Object.assign(merged[key], values);
-          } else {
-            merged[key] = values;
-          }
-        }
-      }
-      return merged;
-    }, "mergeConfigFiles");
-    var parseKnownFiles = /* @__PURE__ */ __name(async (init) => {
-      const parsedFiles = await loadSharedConfigFiles(init);
-      return mergeConfigFiles(parsedFiles.configFile, parsedFiles.credentialsFile);
-    }, "parseKnownFiles");
   }
 });
 
@@ -16691,8 +15431,8 @@ var require_runtimeConfig_shared3 = __commonJS({
     exports2.getRuntimeConfig = void 0;
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
     var core_2 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var smithy_client_1 = require_dist_cjs35();
-    var url_parser_1 = require_dist_cjs30();
+    var smithy_client_1 = require_dist_cjs34();
+    var url_parser_1 = require_dist_cjs29();
     var util_base64_1 = require_dist_cjs20();
     var util_utf8_1 = require_dist_cjs6();
     var httpAuthSchemeProvider_1 = require_httpAuthSchemeProvider4();
@@ -16738,20 +15478,20 @@ var require_runtimeConfig3 = __commonJS({
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package4());
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var credential_provider_node_1 = require_dist_cjs58();
-    var util_user_agent_node_1 = require_dist_cjs41();
+    var credential_provider_node_1 = require_dist_cjs52();
+    var util_user_agent_node_1 = require_dist_cjs39();
     var config_resolver_1 = require_dist_cjs18();
     var core_2 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var hash_node_1 = require_dist_cjs42();
-    var middleware_retry_1 = require_dist_cjs36();
+    var hash_node_1 = require_dist_cjs40();
+    var middleware_retry_1 = require_dist_cjs35();
     var node_config_provider_1 = require_dist_cjs27();
     var node_http_handler_1 = require_dist_cjs22();
-    var util_body_length_node_1 = require_dist_cjs43();
-    var util_retry_1 = require_dist_cjs33();
+    var util_body_length_node_1 = require_dist_cjs41();
+    var util_retry_1 = require_dist_cjs32();
     var runtimeConfig_shared_1 = require_runtimeConfig_shared3();
-    var smithy_client_1 = require_dist_cjs35();
-    var util_defaults_mode_node_1 = require_dist_cjs44();
-    var smithy_client_2 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs34();
+    var util_defaults_mode_node_1 = require_dist_cjs42();
+    var smithy_client_2 = require_dist_cjs34();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
       const defaultsMode = (0, util_defaults_mode_node_1.resolveDefaultsModeConfig)(config);
@@ -16849,9 +15589,9 @@ var require_runtimeExtensions = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.resolveRuntimeExtensions = void 0;
-    var region_config_resolver_1 = require_dist_cjs45();
+    var region_config_resolver_1 = require_dist_cjs43();
     var protocol_http_1 = require_dist_cjs2();
-    var smithy_client_1 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs34();
     var httpAuthExtensionConfiguration_1 = require_httpAuthExtensionConfiguration();
     var asPartial = (t) => t;
     var resolveRuntimeExtensions = (runtimeConfig, extensions) => {
@@ -16887,9 +15627,9 @@ var require_STSClient = __commonJS({
     var config_resolver_1 = require_dist_cjs18();
     var core_1 = (init_dist_es(), __toCommonJS(dist_es_exports));
     var middleware_content_length_1 = require_dist_cjs25();
-    var middleware_endpoint_1 = require_dist_cjs31();
-    var middleware_retry_1 = require_dist_cjs36();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs30();
+    var middleware_retry_1 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs34();
     Object.defineProperty(exports2, "__Client", { enumerable: true, get: function() {
       return smithy_client_1.Client;
     } });
@@ -16933,7 +15673,7 @@ var require_STSClient = __commonJS({
 });
 
 // node_modules/@aws-sdk/client-sts/dist-cjs/index.js
-var require_dist_cjs53 = __commonJS({
+var require_dist_cjs48 = __commonJS({
   "node_modules/@aws-sdk/client-sts/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -16990,10 +15730,10 @@ var require_dist_cjs53 = __commonJS({
     });
     module2.exports = __toCommonJS2(src_exports);
     __reExport(src_exports, require_STSClient(), module2.exports);
-    var import_middleware_endpoint = require_dist_cjs31();
+    var import_middleware_endpoint = require_dist_cjs30();
     var import_middleware_serde2 = require_dist_cjs19();
     var import_EndpointParameters = require_EndpointParameters();
-    var import_smithy_client4 = require_dist_cjs35();
+    var import_smithy_client4 = require_dist_cjs34();
     var _STSServiceException = class _STSServiceException2 extends import_smithy_client4.ServiceException {
       /**
        * @internal
@@ -18304,260 +17044,8 @@ var require_dist_cjs53 = __commonJS({
   }
 });
 
-// node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js
-var require_getHomeDir7 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getHomeDir = void 0;
-    var os_1 = require("os");
-    var path_1 = require("path");
-    var homeDirCache = {};
-    var getHomeDirCacheKey = () => {
-      if (process && process.geteuid) {
-        return `${process.geteuid()}`;
-      }
-      return "DEFAULT";
-    };
-    var getHomeDir2 = () => {
-      const { HOME, USERPROFILE, HOMEPATH, HOMEDRIVE = `C:${path_1.sep}` } = process.env;
-      if (HOME)
-        return HOME;
-      if (USERPROFILE)
-        return USERPROFILE;
-      if (HOMEPATH)
-        return `${HOMEDRIVE}${HOMEPATH}`;
-      const homeDirCacheKey = getHomeDirCacheKey();
-      if (!homeDirCache[homeDirCacheKey])
-        homeDirCache[homeDirCacheKey] = (0, os_1.homedir)();
-      return homeDirCache[homeDirCacheKey];
-    };
-    exports2.getHomeDir = getHomeDir2;
-  }
-});
-
-// node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js
-var require_getSSOTokenFilepath7 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getSSOTokenFilepath = void 0;
-    var crypto_1 = require("crypto");
-    var path_1 = require("path");
-    var getHomeDir_1 = require_getHomeDir7();
-    var getSSOTokenFilepath2 = (id) => {
-      const hasher = (0, crypto_1.createHash)("sha1");
-      const cacheName = hasher.update(id).digest("hex");
-      return (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "sso", "cache", `${cacheName}.json`);
-    };
-    exports2.getSSOTokenFilepath = getSSOTokenFilepath2;
-  }
-});
-
-// node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js
-var require_getSSOTokenFromFile7 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getSSOTokenFromFile = void 0;
-    var fs_1 = require("fs");
-    var getSSOTokenFilepath_1 = require_getSSOTokenFilepath7();
-    var { readFile } = fs_1.promises;
-    var getSSOTokenFromFile2 = async (id) => {
-      const ssoTokenFilepath = (0, getSSOTokenFilepath_1.getSSOTokenFilepath)(id);
-      const ssoTokenText = await readFile(ssoTokenFilepath, "utf8");
-      return JSON.parse(ssoTokenText);
-    };
-    exports2.getSSOTokenFromFile = getSSOTokenFromFile2;
-  }
-});
-
-// node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js
-var require_slurpFile7 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.slurpFile = void 0;
-    var fs_1 = require("fs");
-    var { readFile } = fs_1.promises;
-    var filePromisesHash = {};
-    var slurpFile = (path, options) => {
-      if (!filePromisesHash[path] || (options === null || options === void 0 ? void 0 : options.ignoreCache)) {
-        filePromisesHash[path] = readFile(path, "utf8");
-      }
-      return filePromisesHash[path];
-    };
-    exports2.slurpFile = slurpFile;
-  }
-});
-
-// node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-var require_dist_cjs54 = __commonJS({
-  "node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __reExport = (target, mod, secondTarget) => (__copyProps2(target, mod, "default"), secondTarget && __copyProps2(secondTarget, mod, "default"));
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      CONFIG_PREFIX_SEPARATOR: () => CONFIG_PREFIX_SEPARATOR,
-      DEFAULT_PROFILE: () => DEFAULT_PROFILE,
-      ENV_PROFILE: () => ENV_PROFILE,
-      getProfileName: () => getProfileName,
-      loadSharedConfigFiles: () => loadSharedConfigFiles,
-      loadSsoSessionData: () => loadSsoSessionData,
-      parseKnownFiles: () => parseKnownFiles
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    __reExport(src_exports, require_getHomeDir7(), module2.exports);
-    var ENV_PROFILE = "AWS_PROFILE";
-    var DEFAULT_PROFILE = "default";
-    var getProfileName = /* @__PURE__ */ __name((init) => init.profile || process.env[ENV_PROFILE] || DEFAULT_PROFILE, "getProfileName");
-    __reExport(src_exports, require_getSSOTokenFilepath7(), module2.exports);
-    __reExport(src_exports, require_getSSOTokenFromFile7(), module2.exports);
-    var import_types5 = require_dist_cjs();
-    var getConfigData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => {
-      const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-      if (indexOfSeparator === -1) {
-        return false;
-      }
-      return Object.values(import_types5.IniSectionType).includes(key.substring(0, indexOfSeparator));
-    }).reduce(
-      (acc, [key, value]) => {
-        const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-        const updatedKey = key.substring(0, indexOfSeparator) === import_types5.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
-        acc[updatedKey] = value;
-        return acc;
-      },
-      {
-        // Populate default profile, if present.
-        ...data.default && { default: data.default }
-      }
-    ), "getConfigData");
-    var import_path = require("path");
-    var import_getHomeDir = require_getHomeDir7();
-    var ENV_CONFIG_PATH = "AWS_CONFIG_FILE";
-    var getConfigFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CONFIG_PATH] || (0, import_path.join)((0, import_getHomeDir.getHomeDir)(), ".aws", "config"), "getConfigFilepath");
-    var import_getHomeDir2 = require_getHomeDir7();
-    var ENV_CREDENTIALS_PATH = "AWS_SHARED_CREDENTIALS_FILE";
-    var getCredentialsFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CREDENTIALS_PATH] || (0, import_path.join)((0, import_getHomeDir2.getHomeDir)(), ".aws", "credentials"), "getCredentialsFilepath");
-    var import_getHomeDir3 = require_getHomeDir7();
-    var prefixKeyRegex = /^([\w-]+)\s(["'])?([\w-@\+\.%:/]+)\2$/;
-    var profileNameBlockList = ["__proto__", "profile __proto__"];
-    var parseIni = /* @__PURE__ */ __name((iniData) => {
-      const map = {};
-      let currentSection;
-      let currentSubSection;
-      for (const iniLine of iniData.split(/\r?\n/)) {
-        const trimmedLine = iniLine.split(/(^|\s)[;#]/)[0].trim();
-        const isSection = trimmedLine[0] === "[" && trimmedLine[trimmedLine.length - 1] === "]";
-        if (isSection) {
-          currentSection = void 0;
-          currentSubSection = void 0;
-          const sectionName = trimmedLine.substring(1, trimmedLine.length - 1);
-          const matches = prefixKeyRegex.exec(sectionName);
-          if (matches) {
-            const [, prefix, , name] = matches;
-            if (Object.values(import_types5.IniSectionType).includes(prefix)) {
-              currentSection = [prefix, name].join(CONFIG_PREFIX_SEPARATOR);
-            }
-          } else {
-            currentSection = sectionName;
-          }
-          if (profileNameBlockList.includes(sectionName)) {
-            throw new Error(`Found invalid profile name "${sectionName}"`);
-          }
-        } else if (currentSection) {
-          const indexOfEqualsSign = trimmedLine.indexOf("=");
-          if (![0, -1].includes(indexOfEqualsSign)) {
-            const [name, value] = [
-              trimmedLine.substring(0, indexOfEqualsSign).trim(),
-              trimmedLine.substring(indexOfEqualsSign + 1).trim()
-            ];
-            if (value === "") {
-              currentSubSection = name;
-            } else {
-              if (currentSubSection && iniLine.trimStart() === iniLine) {
-                currentSubSection = void 0;
-              }
-              map[currentSection] = map[currentSection] || {};
-              const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
-              map[currentSection][key] = value;
-            }
-          }
-        }
-      }
-      return map;
-    }, "parseIni");
-    var import_slurpFile = require_slurpFile7();
-    var swallowError = /* @__PURE__ */ __name(() => ({}), "swallowError");
-    var CONFIG_PREFIX_SEPARATOR = ".";
-    var loadSharedConfigFiles = /* @__PURE__ */ __name(async (init = {}) => {
-      const { filepath = getCredentialsFilepath(), configFilepath = getConfigFilepath() } = init;
-      const homeDir = (0, import_getHomeDir3.getHomeDir)();
-      const relativeHomeDirPrefix = "~/";
-      let resolvedFilepath = filepath;
-      if (filepath.startsWith(relativeHomeDirPrefix)) {
-        resolvedFilepath = (0, import_path.join)(homeDir, filepath.slice(2));
-      }
-      let resolvedConfigFilepath = configFilepath;
-      if (configFilepath.startsWith(relativeHomeDirPrefix)) {
-        resolvedConfigFilepath = (0, import_path.join)(homeDir, configFilepath.slice(2));
-      }
-      const parsedFiles = await Promise.all([
-        (0, import_slurpFile.slurpFile)(resolvedConfigFilepath, {
-          ignoreCache: init.ignoreCache
-        }).then(parseIni).then(getConfigData).catch(swallowError),
-        (0, import_slurpFile.slurpFile)(resolvedFilepath, {
-          ignoreCache: init.ignoreCache
-        }).then(parseIni).catch(swallowError)
-      ]);
-      return {
-        configFile: parsedFiles[0],
-        credentialsFile: parsedFiles[1]
-      };
-    }, "loadSharedConfigFiles");
-    var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types5.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
-    var import_slurpFile2 = require_slurpFile7();
-    var swallowError2 = /* @__PURE__ */ __name(() => ({}), "swallowError");
-    var loadSsoSessionData = /* @__PURE__ */ __name(async (init = {}) => (0, import_slurpFile2.slurpFile)(init.configFilepath ?? getConfigFilepath()).then(parseIni).then(getSsoSessionData).catch(swallowError2), "loadSsoSessionData");
-    var mergeConfigFiles = /* @__PURE__ */ __name((...files) => {
-      const merged = {};
-      for (const file of files) {
-        for (const [key, values] of Object.entries(file)) {
-          if (merged[key] !== void 0) {
-            Object.assign(merged[key], values);
-          } else {
-            merged[key] = values;
-          }
-        }
-      }
-      return merged;
-    }, "mergeConfigFiles");
-    var parseKnownFiles = /* @__PURE__ */ __name(async (init) => {
-      const parsedFiles = await loadSharedConfigFiles(init);
-      return mergeConfigFiles(parsedFiles.configFile, parsedFiles.credentialsFile);
-    }, "parseKnownFiles");
-  }
-});
-
 // node_modules/@aws-sdk/credential-provider-process/dist-cjs/index.js
-var require_dist_cjs55 = __commonJS({
+var require_dist_cjs49 = __commonJS({
   "node_modules/@aws-sdk/credential-provider-process/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -18583,7 +17071,7 @@ var require_dist_cjs55 = __commonJS({
       fromProcess: () => fromProcess
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_shared_ini_file_loader = require_dist_cjs54();
+    var import_shared_ini_file_loader = require_dist_cjs26();
     var import_property_provider2 = require_dist_cjs10();
     var import_child_process = require("child_process");
     var import_util = require("util");
@@ -18655,7 +17143,7 @@ var require_dist_cjs55 = __commonJS({
 var require_fromWebToken = __commonJS({
   "node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/fromWebToken.js"(exports2) {
     "use strict";
-    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -18664,13 +17152,13 @@ var require_fromWebToken = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    }) : (function(o, m, k, k2) {
+    } : function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    }));
-    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
+    });
+    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    }) : function(o, v) {
+    } : function(o, v) {
       o["default"] = v;
     });
     var __importStar2 = exports2 && exports2.__importStar || function(mod) {
@@ -18689,7 +17177,7 @@ var require_fromWebToken = __commonJS({
       const { roleArn, roleSessionName, webIdentityToken, providerId, policyArns, policy, durationSeconds } = init;
       let { roleAssumerWithWebIdentity } = init;
       if (!roleAssumerWithWebIdentity) {
-        const { getDefaultRoleAssumerWithWebIdentity } = await Promise.resolve().then(() => __importStar2(require_dist_cjs53()));
+        const { getDefaultRoleAssumerWithWebIdentity } = await Promise.resolve().then(() => __importStar2(require_dist_cjs48()));
         roleAssumerWithWebIdentity = getDefaultRoleAssumerWithWebIdentity({
           ...init.clientConfig,
           credentialProviderLogger: init.logger,
@@ -18744,7 +17232,7 @@ var require_fromTokenFile = __commonJS({
 });
 
 // node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/index.js
-var require_dist_cjs56 = __commonJS({
+var require_dist_cjs50 = __commonJS({
   "node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -18769,7 +17257,7 @@ var require_dist_cjs56 = __commonJS({
 });
 
 // node_modules/@aws-sdk/credential-provider-ini/dist-cjs/index.js
-var require_dist_cjs57 = __commonJS({
+var require_dist_cjs51 = __commonJS({
   "node_modules/@aws-sdk/credential-provider-ini/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __create2 = Object.create;
@@ -18805,24 +17293,24 @@ var require_dist_cjs57 = __commonJS({
       fromIni: () => fromIni
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_shared_ini_file_loader = require_dist_cjs52();
+    var import_shared_ini_file_loader = require_dist_cjs26();
     var import_property_provider2 = require_dist_cjs10();
     var resolveCredentialSource = /* @__PURE__ */ __name((credentialSource, profileName, logger) => {
       const sourceProvidersMap = {
         EcsContainer: async (options) => {
-          const { fromHttp } = await Promise.resolve().then(() => __toESM2(require_dist_cjs40()));
-          const { fromContainerMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs39()));
+          const { fromHttp } = await Promise.resolve().then(() => __toESM2(require_dist_cjs38()));
+          const { fromContainerMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs37()));
           logger == null ? void 0 : logger.debug("@aws-sdk/credential-provider-ini - credential_source is EcsContainer");
           return (0, import_property_provider2.chain)(fromHttp(options ?? {}), fromContainerMetadata(options));
         },
         Ec2InstanceMetadata: async (options) => {
           logger == null ? void 0 : logger.debug("@aws-sdk/credential-provider-ini - credential_source is Ec2InstanceMetadata");
-          const { fromInstanceMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs39()));
+          const { fromInstanceMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs37()));
           return fromInstanceMetadata(options);
         },
         Environment: async (options) => {
           logger == null ? void 0 : logger.debug("@aws-sdk/credential-provider-ini - credential_source is Environment");
-          const { fromEnv } = await Promise.resolve().then(() => __toESM2(require_dist_cjs37()));
+          const { fromEnv } = await Promise.resolve().then(() => __toESM2(require_dist_cjs36()));
           return fromEnv(options);
         }
       };
@@ -18859,7 +17347,7 @@ var require_dist_cjs57 = __commonJS({
       (_a = options.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-ini - resolveAssumeRoleCredentials (STS)");
       const data = profiles[profileName];
       if (!options.roleAssumer) {
-        const { getDefaultRoleAssumer } = await Promise.resolve().then(() => __toESM2(require_dist_cjs53()));
+        const { getDefaultRoleAssumer } = await Promise.resolve().then(() => __toESM2(require_dist_cjs48()));
         options.roleAssumer = getDefaultRoleAssumer(
           {
             ...options.clientConfig,
@@ -18918,14 +17406,14 @@ var require_dist_cjs57 = __commonJS({
       return options.roleAssumer(sourceCreds, params);
     }, "resolveAssumeRoleCredentials");
     var isProcessProfile = /* @__PURE__ */ __name((arg) => Boolean(arg) && typeof arg === "object" && typeof arg.credential_process === "string", "isProcessProfile");
-    var resolveProcessCredentials = /* @__PURE__ */ __name(async (options, profile) => Promise.resolve().then(() => __toESM2(require_dist_cjs55())).then(
+    var resolveProcessCredentials = /* @__PURE__ */ __name(async (options, profile) => Promise.resolve().then(() => __toESM2(require_dist_cjs49())).then(
       ({ fromProcess }) => fromProcess({
         ...options,
         profile
       })()
     ), "resolveProcessCredentials");
     var resolveSsoCredentials = /* @__PURE__ */ __name(async (profile, options = {}) => {
-      const { fromSSO } = await Promise.resolve().then(() => __toESM2(require_dist_cjs51()));
+      const { fromSSO } = await Promise.resolve().then(() => __toESM2(require_dist_cjs47()));
       return fromSSO({
         profile,
         logger: options.logger
@@ -18945,7 +17433,7 @@ var require_dist_cjs57 = __commonJS({
       });
     }, "resolveStaticCredentials");
     var isWebIdentityProfile = /* @__PURE__ */ __name((arg) => Boolean(arg) && typeof arg === "object" && typeof arg.web_identity_token_file === "string" && typeof arg.role_arn === "string" && ["undefined", "string"].indexOf(typeof arg.role_session_name) > -1, "isWebIdentityProfile");
-    var resolveWebIdentityCredentials = /* @__PURE__ */ __name(async (profile, options) => Promise.resolve().then(() => __toESM2(require_dist_cjs56())).then(
+    var resolveWebIdentityCredentials = /* @__PURE__ */ __name(async (profile, options) => Promise.resolve().then(() => __toESM2(require_dist_cjs50())).then(
       ({ fromTokenFile: fromTokenFile2 }) => fromTokenFile2({
         webIdentityTokenFile: profile.web_identity_token_file,
         roleArn: profile.role_arn,
@@ -18990,7 +17478,7 @@ var require_dist_cjs57 = __commonJS({
 });
 
 // node_modules/@aws-sdk/credential-provider-node/dist-cjs/index.js
-var require_dist_cjs58 = __commonJS({
+var require_dist_cjs52 = __commonJS({
   "node_modules/@aws-sdk/credential-provider-node/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __create2 = Object.create;
@@ -19028,16 +17516,16 @@ var require_dist_cjs58 = __commonJS({
       defaultProvider: () => defaultProvider
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_credential_provider_env = require_dist_cjs37();
-    var import_shared_ini_file_loader = require_dist_cjs38();
+    var import_credential_provider_env = require_dist_cjs36();
+    var import_shared_ini_file_loader = require_dist_cjs26();
     var import_property_provider2 = require_dist_cjs10();
     var ENV_IMDS_DISABLED = "AWS_EC2_METADATA_DISABLED";
     var remoteProvider = /* @__PURE__ */ __name(async (init) => {
       var _a, _b;
-      const { ENV_CMDS_FULL_URI, ENV_CMDS_RELATIVE_URI, fromContainerMetadata, fromInstanceMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs39()));
+      const { ENV_CMDS_FULL_URI, ENV_CMDS_RELATIVE_URI, fromContainerMetadata, fromInstanceMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs37()));
       if (process.env[ENV_CMDS_RELATIVE_URI] || process.env[ENV_CMDS_FULL_URI]) {
         (_a = init.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-node - remoteProvider::fromHttp/fromContainerMetadata");
-        const { fromHttp } = await Promise.resolve().then(() => __toESM2(require_dist_cjs40()));
+        const { fromHttp } = await Promise.resolve().then(() => __toESM2(require_dist_cjs38()));
         return (0, import_property_provider2.chain)(fromHttp(init), fromContainerMetadata(init));
       }
       if (process.env[ENV_IMDS_DISABLED]) {
@@ -19091,25 +17579,25 @@ var require_dist_cjs58 = __commonJS({
               { logger: init.logger }
             );
           }
-          const { fromSSO } = await Promise.resolve().then(() => __toESM2(require_dist_cjs51()));
+          const { fromSSO } = await Promise.resolve().then(() => __toESM2(require_dist_cjs47()));
           return fromSSO(init)();
         },
         async () => {
           var _a;
           (_a = init.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-node - defaultProvider::fromIni");
-          const { fromIni } = await Promise.resolve().then(() => __toESM2(require_dist_cjs57()));
+          const { fromIni } = await Promise.resolve().then(() => __toESM2(require_dist_cjs51()));
           return fromIni(init)();
         },
         async () => {
           var _a;
           (_a = init.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-node - defaultProvider::fromProcess");
-          const { fromProcess } = await Promise.resolve().then(() => __toESM2(require_dist_cjs55()));
+          const { fromProcess } = await Promise.resolve().then(() => __toESM2(require_dist_cjs49()));
           return fromProcess(init)();
         },
         async () => {
           var _a;
           (_a = init.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-node - defaultProvider::fromTokenFile");
-          const { fromTokenFile: fromTokenFile2 } = await Promise.resolve().then(() => __toESM2(require_dist_cjs56()));
+          const { fromTokenFile: fromTokenFile2 } = await Promise.resolve().then(() => __toESM2(require_dist_cjs50()));
           return fromTokenFile2(init)();
         },
         async () => {
@@ -19193,8 +17681,8 @@ var require_runtimeConfig_shared4 = __commonJS({
     exports2.getRuntimeConfig = void 0;
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
     var core_2 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var smithy_client_1 = require_dist_cjs35();
-    var url_parser_1 = require_dist_cjs30();
+    var smithy_client_1 = require_dist_cjs34();
+    var url_parser_1 = require_dist_cjs29();
     var util_base64_1 = require_dist_cjs20();
     var util_utf8_1 = require_dist_cjs6();
     var httpAuthSchemeProvider_1 = require_httpAuthSchemeProvider();
@@ -19240,19 +17728,19 @@ var require_runtimeConfig4 = __commonJS({
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package());
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var credential_provider_node_1 = require_dist_cjs58();
-    var util_user_agent_node_1 = require_dist_cjs41();
+    var credential_provider_node_1 = require_dist_cjs52();
+    var util_user_agent_node_1 = require_dist_cjs39();
     var config_resolver_1 = require_dist_cjs18();
-    var hash_node_1 = require_dist_cjs42();
-    var middleware_retry_1 = require_dist_cjs36();
+    var hash_node_1 = require_dist_cjs40();
+    var middleware_retry_1 = require_dist_cjs35();
     var node_config_provider_1 = require_dist_cjs27();
     var node_http_handler_1 = require_dist_cjs22();
-    var util_body_length_node_1 = require_dist_cjs43();
-    var util_retry_1 = require_dist_cjs33();
+    var util_body_length_node_1 = require_dist_cjs41();
+    var util_retry_1 = require_dist_cjs32();
     var runtimeConfig_shared_1 = require_runtimeConfig_shared4();
-    var smithy_client_1 = require_dist_cjs35();
-    var util_defaults_mode_node_1 = require_dist_cjs44();
-    var smithy_client_2 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs34();
+    var util_defaults_mode_node_1 = require_dist_cjs42();
+    var smithy_client_2 = require_dist_cjs34();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
       const defaultsMode = (0, util_defaults_mode_node_1.resolveDefaultsModeConfig)(config);
@@ -19285,7 +17773,7 @@ var require_runtimeConfig4 = __commonJS({
 });
 
 // node_modules/@aws-sdk/client-cognito-identity/dist-cjs/index.js
-var require_dist_cjs59 = __commonJS({
+var require_dist_cjs53 = __commonJS({
   "node_modules/@aws-sdk/client-cognito-identity/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -19360,8 +17848,8 @@ var require_dist_cjs59 = __commonJS({
     var import_config_resolver = require_dist_cjs18();
     var import_core3 = (init_dist_es(), __toCommonJS(dist_es_exports));
     var import_middleware_content_length = require_dist_cjs25();
-    var import_middleware_endpoint = require_dist_cjs31();
-    var import_middleware_retry = require_dist_cjs36();
+    var import_middleware_endpoint = require_dist_cjs30();
+    var import_middleware_retry = require_dist_cjs35();
     var import_httpAuthSchemeProvider = require_httpAuthSchemeProvider();
     var resolveClientEndpointParameters = /* @__PURE__ */ __name((options) => {
       return {
@@ -19378,9 +17866,9 @@ var require_dist_cjs59 = __commonJS({
       UseDualStack: { type: "builtInParams", name: "useDualstackEndpoint" }
     };
     var import_runtimeConfig = require_runtimeConfig4();
-    var import_region_config_resolver = require_dist_cjs45();
+    var import_region_config_resolver = require_dist_cjs43();
     var import_protocol_http9 = require_dist_cjs2();
-    var import_smithy_client4 = require_dist_cjs35();
+    var import_smithy_client4 = require_dist_cjs34();
     var getHttpAuthExtensionConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
       const _httpAuthSchemes = runtimeConfig.httpAuthSchemes;
       let _httpAuthSchemeProvider = runtimeConfig.httpAuthSchemeProvider;
@@ -20621,7 +19109,7 @@ var require_dist_cjs59 = __commonJS({
 });
 
 // node_modules/@aws-sdk/credential-provider-cognito-identity/dist-cjs/index.js
-var require_dist_cjs60 = __commonJS({
+var require_dist_cjs54 = __commonJS({
   "node_modules/@aws-sdk/credential-provider-cognito-identity/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -20655,7 +19143,7 @@ var require_dist_cjs60 = __commonJS({
     var init_loadCognitoIdentity = __esm2({
       "src/loadCognitoIdentity.ts"() {
         "use strict";
-        import_client_cognito_identity = require_dist_cjs59();
+        import_client_cognito_identity = require_dist_cjs53();
       }
     });
     var src_exports = {};
@@ -20892,7 +19380,7 @@ var require_fromCognitoIdentity = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.fromCognitoIdentity = void 0;
-    var credential_provider_cognito_identity_1 = require_dist_cjs60();
+    var credential_provider_cognito_identity_1 = require_dist_cjs54();
     var fromCognitoIdentity = (options) => (0, credential_provider_cognito_identity_1.fromCognitoIdentity)({
       ...options
     });
@@ -20906,7 +19394,7 @@ var require_fromCognitoIdentityPool = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.fromCognitoIdentityPool = void 0;
-    var credential_provider_cognito_identity_1 = require_dist_cjs60();
+    var credential_provider_cognito_identity_1 = require_dist_cjs54();
     var fromCognitoIdentityPool = (options) => (0, credential_provider_cognito_identity_1.fromCognitoIdentityPool)({
       ...options
     });
@@ -20920,7 +19408,7 @@ var require_fromContainerMetadata = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.fromContainerMetadata = void 0;
-    var credential_provider_imds_1 = require_dist_cjs39();
+    var credential_provider_imds_1 = require_dist_cjs37();
     var fromContainerMetadata = (init) => {
       init?.logger?.debug("@smithy/credential-provider-imds", "fromContainerMetadata");
       return (0, credential_provider_imds_1.fromContainerMetadata)(init);
@@ -20935,7 +19423,7 @@ var require_fromEnv = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.fromEnv = void 0;
-    var credential_provider_env_1 = require_dist_cjs37();
+    var credential_provider_env_1 = require_dist_cjs36();
     var fromEnv = (init) => (0, credential_provider_env_1.fromEnv)(init);
     exports2.fromEnv = fromEnv;
   }
@@ -20947,7 +19435,7 @@ var require_fromIni = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.fromIni = void 0;
-    var credential_provider_ini_1 = require_dist_cjs57();
+    var credential_provider_ini_1 = require_dist_cjs51();
     var fromIni = (init = {}) => (0, credential_provider_ini_1.fromIni)({
       ...init
     });
@@ -20961,7 +19449,7 @@ var require_fromInstanceMetadata = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.fromInstanceMetadata = void 0;
-    var credential_provider_imds_1 = require_dist_cjs39();
+    var credential_provider_imds_1 = require_dist_cjs37();
     var fromInstanceMetadata = (init) => {
       init?.logger?.debug("@smithy/credential-provider-imds", "fromInstanceMetadata");
       return (0, credential_provider_imds_1.fromInstanceMetadata)(init);
@@ -20976,7 +19464,7 @@ var require_fromNodeProviderChain = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.fromNodeProviderChain = void 0;
-    var credential_provider_node_1 = require_dist_cjs58();
+    var credential_provider_node_1 = require_dist_cjs52();
     var fromNodeProviderChain2 = (init = {}) => (0, credential_provider_node_1.defaultProvider)({
       ...init
     });
@@ -20990,7 +19478,7 @@ var require_fromProcess = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.fromProcess = void 0;
-    var credential_provider_process_1 = require_dist_cjs55();
+    var credential_provider_process_1 = require_dist_cjs49();
     var fromProcess = (init) => (0, credential_provider_process_1.fromProcess)(init);
     exports2.fromProcess = fromProcess;
   }
@@ -21002,7 +19490,7 @@ var require_fromSSO = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.fromSSO = void 0;
-    var credential_provider_sso_1 = require_dist_cjs51();
+    var credential_provider_sso_1 = require_dist_cjs47();
     var fromSSO = (init = {}) => {
       return (0, credential_provider_sso_1.fromSSO)({ ...init });
     };
@@ -21016,7 +19504,7 @@ var require_loadSts = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.STSClient = exports2.AssumeRoleCommand = void 0;
-    var client_sts_1 = require_dist_cjs53();
+    var client_sts_1 = require_dist_cjs48();
     Object.defineProperty(exports2, "AssumeRoleCommand", { enumerable: true, get: function() {
       return client_sts_1.AssumeRoleCommand;
     } });
@@ -21030,7 +19518,7 @@ var require_loadSts = __commonJS({
 var require_fromTemporaryCredentials = __commonJS({
   "node_modules/@aws-sdk/credential-providers/dist-cjs/fromTemporaryCredentials.js"(exports2) {
     "use strict";
-    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -21039,13 +19527,13 @@ var require_fromTemporaryCredentials = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    }) : (function(o, m, k, k2) {
+    } : function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    }));
-    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
+    });
+    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    }) : function(o, v) {
+    } : function(o, v) {
       o["default"] = v;
     });
     var __importStar2 = exports2 && exports2.__importStar || function(mod) {
@@ -21107,7 +19595,7 @@ var require_fromTokenFile2 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.fromTokenFile = void 0;
-    var credential_provider_web_identity_1 = require_dist_cjs56();
+    var credential_provider_web_identity_1 = require_dist_cjs50();
     var fromTokenFile2 = (init = {}) => (0, credential_provider_web_identity_1.fromTokenFile)({
       ...init
     });
@@ -21121,7 +19609,7 @@ var require_fromWebToken2 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.fromWebToken = void 0;
-    var credential_provider_web_identity_1 = require_dist_cjs56();
+    var credential_provider_web_identity_1 = require_dist_cjs50();
     var fromWebToken2 = (init) => (0, credential_provider_web_identity_1.fromWebToken)({
       ...init
     });
@@ -21130,7 +19618,7 @@ var require_fromWebToken2 = __commonJS({
 });
 
 // node_modules/@aws-sdk/credential-providers/dist-cjs/index.js
-var require_dist_cjs61 = __commonJS({
+var require_dist_cjs55 = __commonJS({
   "node_modules/@aws-sdk/credential-providers/dist-cjs/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -21140,7 +19628,7 @@ var require_dist_cjs61 = __commonJS({
     tslib_1.__exportStar(require_fromCognitoIdentity(), exports2);
     tslib_1.__exportStar(require_fromCognitoIdentityPool(), exports2);
     tslib_1.__exportStar(require_fromContainerMetadata(), exports2);
-    var credential_provider_http_1 = require_dist_cjs40();
+    var credential_provider_http_1 = require_dist_cjs38();
     Object.defineProperty(exports2, "fromHttp", { enumerable: true, get: function() {
       return credential_provider_http_1.fromHttp;
     } });
@@ -21253,7 +19741,7 @@ var require_RawSha256 = __commonJS({
     var constants_1 = require_constants();
     var RawSha256 = (
       /** @class */
-      (function() {
+      function() {
         function RawSha2562() {
           this.state = Int32Array.from(constants_1.INIT);
           this.temp = new Int32Array(64);
@@ -21345,14 +19833,14 @@ var require_RawSha256 = __commonJS({
           state[7] += state7;
         };
         return RawSha2562;
-      })()
+      }()
     );
     exports2.RawSha256 = RawSha256;
   }
 });
 
 // node_modules/@aws-crypto/util/node_modules/@smithy/is-array-buffer/dist-cjs/index.js
-var require_dist_cjs62 = __commonJS({
+var require_dist_cjs56 = __commonJS({
   "node_modules/@aws-crypto/util/node_modules/@smithy/is-array-buffer/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -21382,7 +19870,7 @@ var require_dist_cjs62 = __commonJS({
 });
 
 // node_modules/@aws-crypto/util/node_modules/@smithy/util-buffer-from/dist-cjs/index.js
-var require_dist_cjs63 = __commonJS({
+var require_dist_cjs57 = __commonJS({
   "node_modules/@aws-crypto/util/node_modules/@smithy/util-buffer-from/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -21408,7 +19896,7 @@ var require_dist_cjs63 = __commonJS({
       fromString: () => fromString
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_is_array_buffer = require_dist_cjs62();
+    var import_is_array_buffer = require_dist_cjs56();
     var import_buffer = require("buffer");
     var fromArrayBuffer = /* @__PURE__ */ __name((input, offset = 0, length = input.byteLength - offset) => {
       if (!(0, import_is_array_buffer.isArrayBuffer)(input)) {
@@ -21426,7 +19914,7 @@ var require_dist_cjs63 = __commonJS({
 });
 
 // node_modules/@aws-crypto/util/node_modules/@smithy/util-utf8/dist-cjs/index.js
-var require_dist_cjs64 = __commonJS({
+var require_dist_cjs58 = __commonJS({
   "node_modules/@aws-crypto/util/node_modules/@smithy/util-utf8/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -21453,7 +19941,7 @@ var require_dist_cjs64 = __commonJS({
       toUtf8: () => toUtf8
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_util_buffer_from = require_dist_cjs63();
+    var import_util_buffer_from = require_dist_cjs57();
     var fromUtf8 = /* @__PURE__ */ __name((input) => {
       const buf = (0, import_util_buffer_from.fromString)(input, "utf8");
       return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength / Uint8Array.BYTES_PER_ELEMENT);
@@ -21485,7 +19973,7 @@ var require_convertToBuffer = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.convertToBuffer = void 0;
-    var util_utf8_1 = require_dist_cjs64();
+    var util_utf8_1 = require_dist_cjs58();
     var fromUtf8 = typeof Buffer !== "undefined" && Buffer.from ? function(input) {
       return Buffer.from(input, "utf8");
     } : util_utf8_1.fromUtf8;
@@ -21597,7 +20085,7 @@ var require_jsSha256 = __commonJS({
     var util_1 = require_main();
     var Sha2562 = (
       /** @class */
-      (function() {
+      function() {
         function Sha2563(secret) {
           this.secret = secret;
           this.hash = new RawSha256_1.RawSha256();
@@ -21651,7 +20139,7 @@ var require_jsSha256 = __commonJS({
           }
         };
         return Sha2563;
-      })()
+      }()
     );
     exports2.Sha256 = Sha2562;
     function bufferFromSecret(secret) {
@@ -22007,8 +20495,8 @@ var require_runtimeConfig_shared5 = __commonJS({
     exports2.getRuntimeConfig = void 0;
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
     var core_2 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var smithy_client_1 = require_dist_cjs35();
-    var url_parser_1 = require_dist_cjs30();
+    var smithy_client_1 = require_dist_cjs34();
+    var url_parser_1 = require_dist_cjs29();
     var util_base64_1 = require_dist_cjs20();
     var util_utf8_1 = require_dist_cjs6();
     var httpAuthSchemeProvider_1 = require_httpAuthSchemeProvider5();
@@ -22054,19 +20542,19 @@ var require_runtimeConfig5 = __commonJS({
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package5());
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var credential_provider_node_1 = require_dist_cjs58();
-    var util_user_agent_node_1 = require_dist_cjs41();
+    var credential_provider_node_1 = require_dist_cjs52();
+    var util_user_agent_node_1 = require_dist_cjs39();
     var config_resolver_1 = require_dist_cjs18();
-    var hash_node_1 = require_dist_cjs42();
-    var middleware_retry_1 = require_dist_cjs36();
+    var hash_node_1 = require_dist_cjs40();
+    var middleware_retry_1 = require_dist_cjs35();
     var node_config_provider_1 = require_dist_cjs27();
     var node_http_handler_1 = require_dist_cjs22();
-    var util_body_length_node_1 = require_dist_cjs43();
-    var util_retry_1 = require_dist_cjs33();
+    var util_body_length_node_1 = require_dist_cjs41();
+    var util_retry_1 = require_dist_cjs32();
     var runtimeConfig_shared_1 = require_runtimeConfig_shared5();
-    var smithy_client_1 = require_dist_cjs35();
-    var util_defaults_mode_node_1 = require_dist_cjs44();
-    var smithy_client_2 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs34();
+    var util_defaults_mode_node_1 = require_dist_cjs42();
+    var smithy_client_2 = require_dist_cjs34();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
       const defaultsMode = (0, util_defaults_mode_node_1.resolveDefaultsModeConfig)(config);
@@ -22099,7 +20587,7 @@ var require_runtimeConfig5 = __commonJS({
 });
 
 // node_modules/@aws-sdk/client-cognito-identity-provider/dist-cjs/index.js
-var require_dist_cjs65 = __commonJS({
+var require_dist_cjs59 = __commonJS({
   "node_modules/@aws-sdk/client-cognito-identity-provider/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -22419,8 +20907,8 @@ var require_dist_cjs65 = __commonJS({
     var import_config_resolver = require_dist_cjs18();
     var import_core3 = (init_dist_es(), __toCommonJS(dist_es_exports));
     var import_middleware_content_length = require_dist_cjs25();
-    var import_middleware_endpoint = require_dist_cjs31();
-    var import_middleware_retry = require_dist_cjs36();
+    var import_middleware_endpoint = require_dist_cjs30();
+    var import_middleware_retry = require_dist_cjs35();
     var import_httpAuthSchemeProvider = require_httpAuthSchemeProvider5();
     var resolveClientEndpointParameters = /* @__PURE__ */ __name((options) => {
       return {
@@ -22437,9 +20925,9 @@ var require_dist_cjs65 = __commonJS({
       UseDualStack: { type: "builtInParams", name: "useDualstackEndpoint" }
     };
     var import_runtimeConfig = require_runtimeConfig5();
-    var import_region_config_resolver = require_dist_cjs45();
+    var import_region_config_resolver = require_dist_cjs43();
     var import_protocol_http9 = require_dist_cjs2();
-    var import_smithy_client4 = require_dist_cjs35();
+    var import_smithy_client4 = require_dist_cjs34();
     var getHttpAuthExtensionConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
       const _httpAuthSchemes = runtimeConfig.httpAuthSchemes;
       let _httpAuthSchemeProvider = runtimeConfig.httpAuthSchemeProvider;
@@ -28068,9 +26556,9 @@ var require_dist_cjs65 = __commonJS({
 // packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ-assets/eventapi-grant-assertion/index.js
 var import_protocol_http8 = __toESM(require_dist_cjs2());
 var import_signature_v42 = __toESM(require_dist_cjs9());
-var import_credential_providers = __toESM(require_dist_cjs61());
+var import_credential_providers = __toESM(require_dist_cjs55());
 var import_sha256_js = __toESM(require_main2());
-var import_client_cognito_identity_provider = __toESM(require_dist_cjs65());
+var import_client_cognito_identity_provider = __toESM(require_dist_cjs59());
 var DEFAULT_HEADERS = {
   accept: "application/json, text/javascript",
   "content-encoding": "amz-1.0",

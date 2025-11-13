@@ -239,6 +239,13 @@ export class GrantsModule extends Module {
 
         method.addBody(stmt.constVar(actions, expr.lit(grantSchema.actions)));
 
+        const result = expr.ident('result');
+        if (hasPolicy) {
+          method.addBody(stmt.constVar(result, expr.cond($this.policyResource, addToBothExpr, addToPrincipalExpr)));
+        } else {
+          method.addBody(stmt.constVar(result, addToPrincipalExpr));
+        }
+
         if (grantSchema && grantSchema.keyActions && grantSchema.keyActions.length > 0) {
           const grantOnKey = $this.prop(`${encryptedResourcePropName}?`)
             .callMethod('grantOnKey', grantee, ...grantSchema.keyActions.map((a) => expr.lit(a)));
@@ -246,11 +253,7 @@ export class GrantsModule extends Module {
           method.addBody(grantOnKey);
         }
 
-        if (hasPolicy) {
-          method.addBody(stmt.ret(expr.cond($this.policyResource, addToBothExpr, addToPrincipalExpr)));
-        } else {
-          method.addBody(stmt.ret(addToPrincipalExpr));
-        }
+        method.addBody(stmt.ret(result));
 
         hasContent = true;
       }

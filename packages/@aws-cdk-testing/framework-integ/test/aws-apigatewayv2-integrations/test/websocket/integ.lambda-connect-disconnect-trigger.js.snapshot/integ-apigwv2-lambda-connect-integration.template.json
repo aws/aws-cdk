@@ -52,12 +52,17 @@
         "dynamodb:UpdateItem"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "WebSocketLogTable7F74AAC5",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "WebSocketLogTable7F74AAC5",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -92,7 +97,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 5
    },
    "DependsOn": [
@@ -152,12 +157,17 @@
         "dynamodb:UpdateItem"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "WebSocketLogTable7F74AAC5",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "WebSocketLogTable7F74AAC5",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -192,7 +202,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs14.x",
     "Timeout": 5
    },
    "DependsOn": [

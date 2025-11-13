@@ -137,12 +137,17 @@
         "dynamodb:UpdateItem"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "DynamoTableB2B22E15",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DynamoTableB2B22E15",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"

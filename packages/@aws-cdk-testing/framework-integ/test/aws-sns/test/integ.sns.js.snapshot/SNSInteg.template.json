@@ -243,6 +243,13 @@
     "PolicyDocument": {
      "Statement": [
       {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "MyTopic3134CFDFB"
+       }
+      },
+      {
        "Action": [
         "kms:Decrypt",
         "kms:GenerateDataKey*"
@@ -253,13 +260,6 @@
          "CustomKey1E6D0D07",
          "Arn"
         ]
-       }
-      },
-      {
-       "Action": "sns:Publish",
-       "Effect": "Allow",
-       "Resource": {
-        "Ref": "MyTopic3134CFDFB"
        }
       }
      ],

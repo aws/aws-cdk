@@ -3,16 +3,16 @@
   "TableCD117FA1": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
-    "AttributeDefinitions": [
-     {
-      "AttributeName": "hashKey",
-      "AttributeType": "S"
-     }
-    ],
     "KeySchema": [
      {
       "AttributeName": "hashKey",
       "KeyType": "HASH"
+     }
+    ],
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "hashKey",
+      "AttributeType": "S"
      }
     ],
     "ProvisionedThroughput": {
@@ -26,6 +26,16 @@
   "TableWithGlobalAndLocalSecondaryIndexBC540710": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
+    "KeySchema": [
+     {
+      "AttributeName": "hashKey",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "sortKey",
+      "KeyType": "RANGE"
+     }
+    ],
     "AttributeDefinitions": [
      {
       "AttributeName": "hashKey",
@@ -158,16 +168,6 @@
       }
      }
     ],
-    "KeySchema": [
-     {
-      "AttributeName": "hashKey",
-      "KeyType": "HASH"
-     },
-     {
-      "AttributeName": "sortKey",
-      "KeyType": "RANGE"
-     }
-    ],
     "LocalSecondaryIndexes": [
      {
       "IndexName": "LSI-PartitionAndTableSortKey",
@@ -276,6 +276,12 @@
   "TableWithGlobalSecondaryIndexCC8E841E": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
+    "KeySchema": [
+     {
+      "AttributeName": "hashKey",
+      "KeyType": "HASH"
+     }
+    ],
     "AttributeDefinitions": [
      {
       "AttributeName": "hashKey",
@@ -304,12 +310,6 @@
       }
      }
     ],
-    "KeySchema": [
-     {
-      "AttributeName": "hashKey",
-      "KeyType": "HASH"
-     }
-    ],
     "ProvisionedThroughput": {
      "ReadCapacityUnits": 5,
      "WriteCapacityUnits": 5
@@ -321,6 +321,16 @@
   "TableWithLocalSecondaryIndex4DA3D08F": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
+    "KeySchema": [
+     {
+      "AttributeName": "hashKey",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "sortKey",
+      "KeyType": "RANGE"
+     }
+    ],
     "AttributeDefinitions": [
      {
       "AttributeName": "hashKey",
@@ -333,16 +343,6 @@
      {
       "AttributeName": "lsiSortKey",
       "AttributeType": "N"
-     }
-    ],
-    "KeySchema": [
-     {
-      "AttributeName": "hashKey",
-      "KeyType": "HASH"
-     },
-     {
-      "AttributeName": "sortKey",
-      "KeyType": "RANGE"
      }
     ],
     "LocalSecondaryIndexes": [
@@ -374,7 +374,6 @@
   "Key961B73FD": {
    "Type": "AWS::KMS::Key",
    "Properties": {
-    "EnableKeyRotation": true,
     "KeyPolicy": {
      "Statement": [
       {
@@ -402,7 +401,8 @@
       }
      ],
      "Version": "2012-10-17"
-    }
+    },
+    "EnableKeyRotation": true
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
@@ -410,16 +410,16 @@
   "TableWithCustomerManagedKeyD5C58807": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
-    "AttributeDefinitions": [
-     {
-      "AttributeName": "hashKey",
-      "AttributeType": "S"
-     }
-    ],
     "KeySchema": [
      {
       "AttributeName": "hashKey",
       "KeyType": "HASH"
+     }
+    ],
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "hashKey",
+      "AttributeType": "S"
      }
     ],
     "ProvisionedThroughput": {
@@ -554,6 +554,9 @@
            "/index/*"
           ]
          ]
+        },
+        {
+         "Ref": "AWS::NoValue"
         }
        ]
       }
