@@ -551,6 +551,17 @@
       "write.kms.key.id"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/infrastructure-configuration.ts": {
+    "HttpTokens": [
+      "optional",
+      "required"
+    ],
+    "Tenancy": [
+      "default",
+      "dedicated",
+      "host"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/firehose-put-record-action.ts": {
     "FirehoseRecordSeparator": [
       "\n",
@@ -2120,7 +2131,14 @@
       "BUILD_GENERAL1_MEDIUM",
       "BUILD_GENERAL1_LARGE",
       "BUILD_GENERAL1_XLARGE",
-      "BUILD_GENERAL1_2XLARGE"
+      "BUILD_GENERAL1_2XLARGE",
+      "ATTRIBUTE_BASED_COMPUTE",
+      "BUILD_LAMBDA_10GB",
+      "BUILD_LAMBDA_1GB",
+      "BUILD_LAMBDA_2GB",
+      "BUILD_LAMBDA_4GB",
+      "BUILD_LAMBDA_8GB",
+      "CUSTOM_INSTANCE_TYPE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/environment-type.ts": {
@@ -2750,6 +2768,8 @@
       "r8i-flex",
       "memory7-amd",
       "r7a",
+      "memory8-amd",
+      "r8a",
       "memory8-graviton",
       "r8g",
       "memory8-graviton4-nvme-drive",
@@ -3374,7 +3394,8 @@
       "NetworkInterface",
       "TransitGateway",
       "VpcPeeringConnection",
-      "VpcEndpoint"
+      "VpcEndpoint",
+      "CoreNetwork"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpn.ts": {
