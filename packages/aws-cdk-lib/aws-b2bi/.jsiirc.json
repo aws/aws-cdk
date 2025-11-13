@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.b2bi"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.B2BI"
+      "namespace": "Amazon.CDK.AWS.B2BI"
     },
     "python": {
       "module": "aws_cdk.aws_b2bi"

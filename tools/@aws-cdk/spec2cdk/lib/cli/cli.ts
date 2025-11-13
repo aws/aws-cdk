@@ -1,3 +1,9 @@
+/**
+ * spec2cdk CLI entry point
+ *
+ * !!! Note that this CLI is never used in the course of normal repository operations !!!
+ * !!! It only exists for experimentation purposes when developing new code gen. !!!
+ */
 import * as path from 'node:path';
 import { parseArgs } from 'node:util';
 import { PositionalArg, showHelp } from './help';
