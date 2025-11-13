@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.224.0](https://github.com/aws/aws-cdk/compare/v2.223.0...v2.224.0) (2025-11-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-opensearchserverless: AWS::OpenSearchServerless::Collection: StandbyReplicas property is now immutable.
+aws-servicecatalog: AWS::ServiceCatalog::PortfolioPrincipalAssociation: Id attribute removed.
+
+### Features
+
+* **apigateway:** add option for consolidating lambda permissions for rest and http lambda integrations ([#36021](https://github.com/aws/aws-cdk/issues/36021)) ([35f8e46](https://github.com/aws/aws-cdk/commit/35f8e46b8bf78b91c8bf626bd6b9de30d88dbe87)), closes [#9327](https://github.com/aws/aws-cdk/issues/9327) [#19535](https://github.com/aws/aws-cdk/issues/19535) [#35705](https://github.com/aws/aws-cdk/issues/35705)
+* update L1 CloudFormation resource definitions ([#35994](https://github.com/aws/aws-cdk/issues/35994)) ([47a9a20](https://github.com/aws/aws-cdk/commit/47a9a201609805481040d8a085ffdf9b000c4c78))
+* **core:** add methods to SecretValue and aws-secretsmanager Secret to obtain a literal (unresolved by CloudFormation) dynamic reference key ([#34397](https://github.com/aws/aws-cdk/issues/34397))  ([#35105](https://github.com/aws/aws-cdk/issues/35105)) ([457aa99](https://github.com/aws/aws-cdk/commit/457aa99259cd72f66fcc3f4db19aaa0e20d1e607)), closes [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/lib/secret-value.ts#L98C17-L98C31](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/lib/secret-value.ts/issues/L98C17-L98C31) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.ts#L499](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.ts/issues/L499)
+* **eks:** add support for Kubernetes version 1.34 ([#36016](https://github.com/aws/aws-cdk/issues/36016)) ([60096ac](https://github.com/aws/aws-cdk/commit/60096ac4afbb0964a3ef4e5f702b9102c01de927)), closes [#35717](https://github.com/aws/aws-cdk/issues/35717)
+* **lambda:** add nodejs24.x runtime for Lambda ([#36001](https://github.com/aws/aws-cdk/issues/36001)) ([404bf1a](https://github.com/aws/aws-cdk/commit/404bf1a90a01ad9e4afc8dbb7fbcd269701117b9))
+* **sagemaker:** add support for serverless inference endpoints ([#35557](https://github.com/aws/aws-cdk/issues/35557)) ([3f5c5ac](https://github.com/aws/aws-cdk/commit/3f5c5acc0f5f03cbbfb8fa0c4c1f18383ae602cd)), closes [#23148](https://github.com/aws/aws-cdk/issues/23148) [#23148](https://github.com/aws/aws-cdk/issues/23148)
+* **stepfunctions-tasks:** add architecture support to EvaluateExpression ([#35468](https://github.com/aws/aws-cdk/issues/35468)) ([771ea13](https://github.com/aws/aws-cdk/commit/771ea13c3067ee87b15575049d3ad6a10a393518)), closes [#34974](https://github.com/aws/aws-cdk/issues/34974)
+
+
+### Bug Fixes
+
+* move reference interfaces to their own submodules ([#35971](https://github.com/aws/aws-cdk/issues/35971)) ([1e4dfe6](https://github.com/aws/aws-cdk/commit/1e4dfe67d92dbedda198ee459ca019c15a736ac1))
+* **cdk-lib:** multiple submodules use an incorrect namespace for .NET ([#36002](https://github.com/aws/aws-cdk/issues/36002)) ([e48e584](https://github.com/aws/aws-cdk/commit/e48e5848d1703d08f9afdd257482c07ba41928a1))
+* **dynamodb:** resolve circular dependency with AccountRootPrincipal grants ([#35983](https://github.com/aws/aws-cdk/issues/35983)) ([24d2adf](https://github.com/aws/aws-cdk/commit/24d2adf6acb4a9225be5483725e6fda644121203)), closes [#35967](https://github.com/aws/aws-cdk/issues/35967)
+* **ecs:** allow empty placementStrategies on EC2Service ([#35580](https://github.com/aws/aws-cdk/issues/35580)) ([0d773b1](https://github.com/aws/aws-cdk/commit/0d773b115f67d55239112f919381efad6a531efc)), closes [#30382](https://github.com/aws/aws-cdk/issues/30382) [/github.com/aws/aws-cdk/pull/27572#issuecomment-1766287866](https://github.com/aws//github.com/aws/aws-cdk/pull/27572/issues/issuecomment-1766287866)
+
 ## [2.223.0](https://github.com/aws/aws-cdk/compare/v2.222.0...v2.223.0) (2025-11-10)
 
 

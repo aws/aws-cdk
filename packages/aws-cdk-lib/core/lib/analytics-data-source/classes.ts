@@ -1974,6 +1974,174 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'Table': {}
   },
+  '@aws-cdk.aws-imagebuilder-alpha': {
+    'InfrastructureConfiguration': {
+      'infrastructureConfigurationName': '*',
+      'description': '*',
+      'instanceTypes': '*',
+      'instanceProfile': {
+        'instanceProfileName': '*',
+        'instanceProfileArn': '*',
+        'role': {
+          'roleArn': '*',
+          'roleName': '*',
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*',
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'principalAccount': '*'
+          },
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        }
+      },
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'vpc': {
+        'vpcId': '*',
+        'vpcArn': '*',
+        'vpcCidrBlock': '*',
+        'publicSubnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          },
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'availabilityZones': '*',
+        'vpnGatewayId': '*'
+      },
+      'subnetSelection': {
+        'subnetType': 'SubnetType',
+        'availabilityZones': '*',
+        'subnetGroupName': '*',
+        'subnetName': '*',
+        'onePerAz': 'boolean',
+        'subnetFilters': '*',
+        'subnets': {
+          'availabilityZone': '*',
+          'subnetId': '*',
+          'internetConnectivityEstablished': '*',
+          'ipv4CidrBlock': '*',
+          'routeTable': {
+            'routeTableId': '*'
+          },
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        }
+      },
+      'securityGroups': {
+        'securityGroupId': '*',
+        'allowAllOutbound': 'boolean',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'canInlineRule': 'boolean',
+        'uniqueId': '*',
+        'connections': '*'
+      },
+      'keyPair': {
+        'keyPairName': '*',
+        'type': 'KeyPairType',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'terminateInstanceOnFailure': 'boolean',
+      'httpPutResponseHopLimit': '*',
+      'httpTokens': 'HttpTokens',
+      'notificationTopic': {
+        'topicArn': '*',
+        'topicName': '*',
+        'masterKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'contentBasedDeduplication': 'boolean',
+        'fifo': 'boolean'
+      },
+      'logging': {
+        's3Bucket': {
+          'bucketArn': '*',
+          'bucketName': '*',
+          'bucketWebsiteUrl': '*',
+          'bucketWebsiteDomainName': '*',
+          'bucketDomainName': '*',
+          'bucketDualStackDomainName': '*',
+          'bucketRegionalDomainName': '*',
+          'isWebsite': 'boolean',
+          'encryptionKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'policy': '*',
+          'replicationRoleArn': '*'
+        },
+        's3KeyPrefix': '*'
+      },
+      'ec2InstanceAvailabilityZone': '*',
+      'ec2InstanceHostId': '*',
+      'ec2InstanceHostResourceGroupArn': '*',
+      'ec2InstanceTenancy': 'Tenancy',
+      'resourceTags': '*',
+      'tags': '*',
+      '_bind': [
+        {
+          'isContainerBuild': 'boolean'
+        }
+      ]
+    }
+  },
   '@aws-cdk.aws-iot-alpha': {
     'AccountAuditConfiguration': {},
     'Logging': {},
@@ -3986,11 +4154,71 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'variantName': '*'
       },
+      'serverlessProductionVariant': {
+        'maxConcurrency': '*',
+        'memorySizeInMB': '*',
+        'provisionedConcurrency': '*',
+        'initialVariantWeight': '*',
+        'model': {
+          'modelArn': '*',
+          'modelName': '*',
+          'role': {
+            'roleArn': '*',
+            'roleName': '*',
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*',
+            'grantPrincipal': {
+              'assumeRoleAction': '*',
+              'principalAccount': '*'
+            },
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'connections': '*'
+        },
+        'variantName': '*'
+      },
       'addInstanceProductionVariant': [
         {
           'acceleratorType': '*',
           'initialInstanceCount': '*',
           'instanceType': '*',
+          'initialVariantWeight': '*',
+          'model': {
+            'modelArn': '*',
+            'modelName': '*',
+            'role': {
+              'roleArn': '*',
+              'roleName': '*',
+              'assumeRoleAction': '*',
+              'policyFragment': '*',
+              'principalAccount': '*',
+              'grantPrincipal': {
+                'assumeRoleAction': '*',
+                'principalAccount': '*'
+              },
+              'stack': '*',
+              'node': '*',
+              'env': {
+                'account': '*',
+                'region': '*'
+              }
+            },
+            'connections': '*'
+          },
+          'variantName': '*'
+        }
+      ],
+      'addServerlessProductionVariant': [
+        {
+          'maxConcurrency': '*',
+          'memorySizeInMB': '*',
+          'provisionedConcurrency': '*',
           'initialVariantWeight': '*',
           'model': {
             'modelArn': '*',
@@ -5970,6 +6198,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'integrationOptions': {
         'proxy': 'boolean',
         'allowTestInvoke': 'boolean',
+        'scopePermissionToMethod': 'boolean',
         'cacheKeyParameters': '*',
         'cacheNamespace': '*',
         'contentHandling': 'ContentHandling',
