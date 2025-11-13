@@ -105,7 +105,7 @@ export async function generate(modules: GenerateModuleMap, options: GenerateOpti
 /**
  * Load the service spec with patched schema files.
  */
-export async function loadPatchedSpec() {
+export async function loadPatchedSpec(): Promise<SpecDatabase> {
   const db = await loadAwsServiceSpec();
 
   // Load additional schema files
