@@ -99,7 +99,7 @@ export class GrantsModule extends Module {
       //  - encryptedResource?: iam.IEncryptedResource, which can be used to add permission to the KMS key associated with this resource.
       const propsType = new InterfaceType(this, {
         name: `${className}Props`,
-        export: true,
+        export: false,
         properties: propsProperties,
         docs: {
           summary: `Properties for ${className}`,

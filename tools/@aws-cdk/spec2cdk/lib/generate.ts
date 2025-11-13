@@ -188,7 +188,7 @@ async function generator(
         destinationSubmodule: moduleName,
         nameSuffix: req.suffix,
         deprecated: req.deprecated,
-        grantsConfig: readGrantsConfig(moduleName),
+        grantsConfig: readGrantsConfig(moduleName, options.outputPath),
       });
 
       moduleResources[moduleName] = moduleResources[moduleName] ?? {};
@@ -234,11 +234,10 @@ function noUndefined<A extends object>(x: A | undefined): A | undefined {
   return Object.fromEntries(Object.entries(x).filter(([, v]) => v !== undefined)) as any;
 }
 
-function readGrantsConfig(moduleName: string): string | undefined {
+function readGrantsConfig(moduleName: string, rootDir: string): string | undefined {
   const filename = `${moduleName}/grants.json`;
   try {
-    const location = path.join(__dirname, '../../../../packages/aws-cdk-lib', filename);
-    return fs.readFileSync(location, 'utf-8');
+    return fs.readFileSync(path.join(rootDir, filename), 'utf-8');
   } catch (e: any) {
     if (e.code === 'ENOENT') {
       return undefined;
