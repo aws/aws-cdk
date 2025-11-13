@@ -8,7 +8,7 @@ import * as iam from "aws-cdk-lib/aws-iam";
 /**
  * Properties for TopicGrants
  */
-export interface TopicGrantsProps {
+interface TopicGrantsProps {
   /**
    * The resource on which actions will be allowed
    */
@@ -63,8 +63,7 @@ export class TopicGrants {
    */
   public publish(grantee: iam.IGrantable): iam.Grant {
     const actions = ["sns:Publish"];
-    this.encryptedResource?.grantOnKey(grantee, "kms:Decrypt", "kms:GenerateDataKey*");
-    return (this.policyResource ? iam.Grant.addToPrincipalOrResource({
+    const result = (this.policyResource ? iam.Grant.addToPrincipalOrResource({
       actions: actions,
       grantee: grantee,
       resourceArns: [sns.CfnTopic.arnForTopic(this.resource)],
@@ -74,6 +73,8 @@ export class TopicGrants {
       grantee: grantee,
       resourceArns: [sns.CfnTopic.arnForTopic(this.resource)]
     }));
+    this.encryptedResource?.grantOnKey(grantee, "kms:Decrypt", "kms:GenerateDataKey*");
+    return result;
   }
 
   /**
@@ -81,7 +82,7 @@ export class TopicGrants {
    */
   public subscribe(grantee: iam.IGrantable): iam.Grant {
     const actions = ["sns:Subscribe"];
-    return (this.policyResource ? iam.Grant.addToPrincipalOrResource({
+    const result = (this.policyResource ? iam.Grant.addToPrincipalOrResource({
       actions: actions,
       grantee: grantee,
       resourceArns: [sns.CfnTopic.arnForTopic(this.resource)],
@@ -91,6 +92,7 @@ export class TopicGrants {
       grantee: grantee,
       resourceArns: [sns.CfnTopic.arnForTopic(this.resource)]
     }));
+    return result;
   }
 }"
 `;
