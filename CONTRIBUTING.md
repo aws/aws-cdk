@@ -851,7 +851,7 @@ Once your PR passes all CI checks with no conflicts:
 
 * Your PR will be added to the [pending-community-review](https://github.com/aws/aws-cdk/pulls?q=is%3Apr+is%3Aopen+label%3Apr%2Fneeds-community-review) queue
 * [Eligible community reviewers](https://github.com/aws/aws-cdk/wiki/CDK-Community-PR-Reviews) can review and provide feedback on your changes
-* **One approving community review** is required before your PR moves forward
+* **One approving community review** will immediately bump your PR to the pending maintainer review queue
 
 #### 3. Maintainer Review Queue
 
