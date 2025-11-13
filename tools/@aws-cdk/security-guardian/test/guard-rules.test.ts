@@ -33,7 +33,7 @@ describe('Guard Rules Validation', () => {
       // Run validation with IAM role rules
       const success = await runCfnGuardValidation(
         outputDir,
-        path.join(rulesDir, 'iam/role-no-broad-principals.guard'),
+        path.join(rulesDir, 'iam/iam-role-no-broad-principals.guard'),
         path.join(outputDir, 'trust-scope-test.xml'),
         'Trust Scope',
         new Map(),
@@ -54,7 +54,7 @@ describe('Guard Rules Validation', () => {
       // Run validation with guard-hooks rule
       const success = await runCfnGuardValidation(
         outputDir,
-        path.join(rulesDir, 'guard-hooks/no-root-principals-except-kms-secrets.guard'),
+        path.join(rulesDir, 'guard-hooks/guardhooks-no-root-principals-except-kms-secrets.guard'),
         path.join(outputDir, 'guard-hooks-test.xml'),
         'Guard Hooks',
         new Map(),
@@ -139,7 +139,7 @@ describe('Guard Rules Validation', () => {
       // Run validation with CodePipeline rules
       const success = await runCfnGuardValidation(
         outputDir,
-        path.join(rulesDir, 'codepipeline/cross-account-role-trust-scope.guard'),
+        path.join(rulesDir, 'codepipeline/codepipeline-cross-account-role-trust-scope.guard'),
         path.join(outputDir, 'codepipeline-test.xml'),
         'CodePipeline',
         new Map(),
@@ -159,7 +159,7 @@ describe('Guard Rules Validation', () => {
       // Run validation with trust scope rules on compliant template
       const success = await runCfnGuardValidation(
         compliantTemplate,
-        path.join(rulesDir, 'iam/role-no-broad-principals.guard'),
+        path.join(rulesDir, 'iam/iam-role-no-broad-principals.guard'),
         path.join(outputDir, 'compliant-trust-test.xml'),
         'Compliant Trust',
         new Map(),
@@ -175,7 +175,7 @@ describe('Guard Rules Validation', () => {
       // Run validation with S3 rules on compliant template
       const success = await runCfnGuardValidation(
         compliantTemplate,
-        path.join(rulesDir, 's3/encryption-enabled.guard'),
+        path.join(rulesDir, 's3/s3-encryption-enabled.guard'),
         path.join(outputDir, 'compliant-s3-test.xml'),
         'Compliant S3',
         new Map(),
@@ -191,7 +191,7 @@ describe('Guard Rules Validation', () => {
       // Run validation with EC2 rules on compliant template
       const success = await runCfnGuardValidation(
         compliantTemplate,
-        path.join(rulesDir, 'ec2/ebs-encryption-enabled.guard'),
+        path.join(rulesDir, 'ec2/ec2-ebs-encryption-enabled.guard'),
         path.join(outputDir, 'compliant-ebs-test.xml'),
         'Compliant EBS',
         new Map(),
@@ -212,7 +212,7 @@ describe('Guard Rules Validation', () => {
 
       const success = await runCfnGuardValidation(
         path.join(templatesDir, 'compliant-secure.template.json'),
-        path.join(rulesDir, 'iam/role-no-broad-principals.guard'),
+        path.join(rulesDir, 'iam/iam-role-no-broad-principals.guard'),
         path.join(outputDir, 'xml-success-test.xml'),
         'Success Type',
         fileMapping,
@@ -238,7 +238,7 @@ describe('Guard Rules Validation', () => {
 
       const success = await runCfnGuardValidation(
         outputDir,
-        path.join(rulesDir, 'iam/role-no-broad-principals.guard'),
+        path.join(rulesDir, 'iam/iam-role-no-broad-principals.guard'),
         path.join(outputDir, 'xml-failure-test.xml'),
         'Failure Type',
         fileMapping,
