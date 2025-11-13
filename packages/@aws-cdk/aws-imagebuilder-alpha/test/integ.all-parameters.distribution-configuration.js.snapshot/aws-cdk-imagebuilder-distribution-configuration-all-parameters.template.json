@@ -1,0 +1,258 @@
+{
+ "Resources": {
+  "LaunchTemplate04EC5460": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t3.small",
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-imagebuilder-distribution-configuration-all-parameters/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-imagebuilder-distribution-configuration-all-parameters/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": "#!/bin/bash"
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-cdk-imagebuilder-distribution-configuration-all-parameters/LaunchTemplate"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "Repository22E53BBD": {
+   "Type": "AWS::ECR::Repository",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "DistributionConfiguration26801BDF": {
+   "Type": "AWS::ImageBuilder::DistributionConfiguration",
+   "Properties": {
+    "Description": "This is a distribution configuration.",
+    "Distributions": [
+     {
+      "AmiDistributionConfiguration": {
+       "AmiTags": {
+        "Environment": "test",
+        "Version": "{{ imagebuilder:buildVersion }}"
+       },
+       "Description": "Build AMI",
+       "KmsKeyId": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":kms:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":alias/distribution-encryption-key"
+         ]
+        ]
+       },
+       "LaunchPermissionConfiguration": {
+        "OrganizationalUnitArns": [
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":organizations::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":ou/o-1234567abc/ou-a123-b4567890"
+           ]
+          ]
+         }
+        ],
+        "OrganizationArns": [
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":organizations::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":organization/o-1234567abc"
+           ]
+          ]
+         }
+        ],
+        "UserGroups": [
+         "all"
+        ],
+        "UserIds": [
+         "234567890123"
+        ]
+       },
+       "Name": "imagebuilder-{{ imagebuilder:buildDate }}",
+       "TargetAccountIds": [
+        "123456789012",
+        "098765432109"
+       ]
+      },
+      "FastLaunchConfigurations": [
+       {
+        "Enabled": true,
+        "LaunchTemplate": {
+         "LaunchTemplateId": {
+          "Ref": "LaunchTemplate04EC5460"
+         },
+         "LaunchTemplateVersion": {
+          "Fn::GetAtt": [
+           "LaunchTemplate04EC5460",
+           "LatestVersionNumber"
+          ]
+         }
+        },
+        "MaxParallelLaunches": 10,
+        "SnapshotConfiguration": {
+         "TargetResourceCount": 25
+        }
+       }
+      ],
+      "LaunchTemplateConfigurations": [
+       {
+        "LaunchTemplateId": {
+         "Ref": "LaunchTemplate04EC5460"
+        },
+        "SetDefaultVersion": true
+       }
+      ],
+      "LicenseConfigurationArns": [
+       {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":license-manager:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":license-configuration:lic-abcdefghijklmnopqrstuvwxyz123456"
+         ]
+        ]
+       }
+      ],
+      "Region": {
+       "Ref": "AWS::Region"
+      },
+      "SsmParameterConfigurations": [
+       {
+        "AmiAccountId": "098765432109",
+        "ParameterName": "/imagebuilder/ami"
+       }
+      ]
+     },
+     {
+      "ContainerDistributionConfiguration": {
+       "ContainerTags": [
+        "latest",
+        "latest-1.0"
+       ],
+       "Description": "Test container image",
+       "TargetRepository": {
+        "RepositoryName": {
+         "Ref": "Repository22E53BBD"
+        },
+        "Service": "ECR"
+       }
+      },
+      "Region": "us-east-1"
+     }
+    ],
+    "Name": "aws-cdk-imagebuilder-distribution-configuration-all-parameters-distributionconfiguration-64f609ec",
+    "Tags": {
+     "key1": "value1",
+     "key2": "value2"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
