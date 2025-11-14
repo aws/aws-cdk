@@ -443,6 +443,7 @@ export class Runtime extends RuntimeBase {
         codeConfiguration: config,
       };
     } else {
+      // EcrImage or AssetImage
       const containerUri = (config as any).containerUri;
       if (containerUri) {
         this.validateContainerUri(containerUri);
@@ -451,7 +452,7 @@ export class Runtime extends RuntimeBase {
         containerConfiguration: {
           containerUri: containerUri,
         },
-      }; 
+      };
     }
   }
 
@@ -489,9 +490,8 @@ export class Runtime extends RuntimeBase {
       if (requestHeaderConfiguration.allowList.length < 1 || requestHeaderConfiguration.allowList.length > 20) {
         allErrors.push('Request header allow list contain between 1 and 20 headers');
       }
-      
-      for (const header of requestHeaderConfiguration.allowList) {
 
+      for (const header of requestHeaderConfiguration.allowList) {
         // Validate length
         const lengthErrors = validateStringField({
           value: header,
@@ -521,13 +521,13 @@ export class Runtime extends RuntimeBase {
    */
   private validateLifecycleConfiguration(lifecycleConfiguration: LifecycleConfiguration): void {
     if (lifecycleConfiguration.idleRuntimeSessionTimeout) {
-      if (lifecycleConfiguration.idleRuntimeSessionTimeout.toSeconds() < LIFECYCLE_MIN_TIMEOUT.toSeconds() 
+      if (lifecycleConfiguration.idleRuntimeSessionTimeout.toSeconds() < LIFECYCLE_MIN_TIMEOUT.toSeconds()
         || lifecycleConfiguration.idleRuntimeSessionTimeout.toSeconds() > LIFECYCLE_MAX_LIFETIME.toSeconds()) {
         throw new ValidationError(`Idle runtime session timeout must be between ${LIFECYCLE_MIN_TIMEOUT.toSeconds()} seconds and ${LIFECYCLE_MAX_LIFETIME.toSeconds()} seconds`);
       }
     }
     if (lifecycleConfiguration.maxLifetime) {
-      if (lifecycleConfiguration.maxLifetime.toSeconds() < LIFECYCLE_MAX_LIFETIME.toSeconds() 
+      if (lifecycleConfiguration.maxLifetime.toSeconds() < LIFECYCLE_MAX_LIFETIME.toSeconds()
         || lifecycleConfiguration.maxLifetime.toSeconds() < LIFECYCLE_MIN_TIMEOUT.toSeconds()) {
         throw new ValidationError(`Maximum lifetime must be between ${LIFECYCLE_MIN_TIMEOUT.toSeconds()} seconds and ${LIFECYCLE_MAX_LIFETIME.toSeconds()} seconds`);
       }
@@ -550,7 +550,7 @@ export class Runtime extends RuntimeBase {
       value: this.agentRuntimeName,
       fieldName: 'Runtime name',
       minLength: 1,
-      maxLength: 256,
+      maxLength: 48,
     });
 
     // Validate pattern

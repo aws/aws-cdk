@@ -59,8 +59,8 @@ const BROWSER_TAG_MAX_LENGTH = 256;
  *                                Enums
  *****************************************************************************/
 /**
- * Browser signing. Specifies whether browser signing is enabled. 
- * When enabled, the browser will cryptographically sign HTTP requests to identify 
+ * Browser signing. Specifies whether browser signing is enabled.
+ * When enabled, the browser will cryptographically sign HTTP requests to identify
  * itself as an AI agent to bot control vendors.
  */
 export enum BrowserSigning {
@@ -550,10 +550,10 @@ export interface BrowserCustomProps {
   readonly tags?: { [key: string]: string };
 
   /**
-   * Specifies whether browser signing is enabled. 
-   * When enabled, the browser will cryptographically sign 
+   * Specifies whether browser signing is enabled.
+   * When enabled, the browser will cryptographically sign
    * HTTP requests to identify itself as an AI agent to bot control vendors.
-   * @default - BrowserSigning.ENABLED
+   * @default - BrowserSigning.DISABLED
    */
   readonly browserSigning?: BrowserSigning;
 }
@@ -739,7 +739,7 @@ export class BrowserCustom extends BrowserCustomBase {
     this.executionRole = props.executionRole ?? this._createBrowserRole();
     this.grantPrincipal = this.executionRole;
     this.tags = props.tags;
-    this.browserSigning = props.browserSigning ?? BrowserSigning.ENABLED;
+    this.browserSigning = props.browserSigning ?? BrowserSigning.DISABLED;
 
     // Validate browser name
     throwIfInvalid(this._validateBrowserName, this.name);
@@ -769,7 +769,7 @@ export class BrowserCustom extends BrowserCustomBase {
       recordingConfig: this._renderRecordingConfig(),
       executionRoleArn: this.executionRole?.roleArn,
       tags: this.tags,
-      //browserSigning: this._renderBrowserSigning(),
+      browserSigning: this._renderBrowserSigning(),
     };
 
     // L1 instantiation
@@ -823,12 +823,12 @@ export class BrowserCustom extends BrowserCustomBase {
    * @default - undefined if no browser signing configuration is provided
    * @internal This is an internal core function and should not be called directly.
    */
-  private _renderBrowserSigning(): any {
+  private _renderBrowserSigning(): agent_core.CfnBrowserCustom.BrowserSigningProperty {
     return this.browserSigning === BrowserSigning.ENABLED ? {
       enabled: true,
     } : {
       enabled: false,
-    }
+    };
   }
 
   /**

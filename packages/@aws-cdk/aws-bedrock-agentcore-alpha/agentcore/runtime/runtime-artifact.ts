@@ -151,7 +151,7 @@ class S3Image extends AgentRuntimeArtifact {
       this.bound = true;
     }
   }
-  
+
   public _render(): CfnRuntime.AgentRuntimeArtifactProperty {
     return {
       code: {

@@ -497,6 +497,7 @@ For more information on VPC connectivity for Amazon Bedrock AgentCore Browser, p
 | `recordingConfig` | `RecordingConfig` | No | Recording configuration for browser. Defaults to no recording |
 | `executionRole` | `iam.IRole` | No | The IAM role that provides permissions for the browser to access AWS services. A new role will be created if not provided |
 | `tags` | `{ [key: string]: string }` | No | Tags to apply to the browser resource |
+| `browserSigning` | BrowserSigning | No | Browser signing configuration. Defaults to DISABLED |
 
 ### Basic Browser Creation
 
@@ -621,6 +622,21 @@ const browser = new agentcore.BrowserCustom(this, "MyBrowser", {
 
 // The browser construct automatically grants S3 permissions to the execution role
 // when recording is enabled, so no additional IAM configuration is needed
+```
+
+### Browser with Browser signing
+
+AI agents need to browse the web on your behalf. When your agent visits a website to gather information, complete a form, or verify data, it encounters the same defenses designed to stop unwanted bots: CAPTCHAs, rate limits, and outright blocks.
+
+Amazon Bedrock AgentCore Browser supports Web Bot Auth. Web Bot Auth is a draft IETF protocol that gives agents verifiable cryptographic identities. When you enable Web Bot Auth in AgentCore Browser, the service issues cryptographic credentials that websites can verify. The agent presents these credentials with every request. The WAF may now additionally check the signature, confirm it matches a trusted directory, and allow the request through if verified bots are allowed by the domain owner and other WAF checks are clear.
+
+To enable the browser to sign requests using the Web Bot Auth protocol, create a browser tool with the browserSigning configuration:
+
+```typescript fixture=default
+const browser = new agentcore.BrowserCustom(this, 'test-browser', {
+  browserCustomName: 'test_browser',
+  browserSigning: BrowserSigning.ENABLED
+});
 ```
 
 ### Browser IAM Permissions
