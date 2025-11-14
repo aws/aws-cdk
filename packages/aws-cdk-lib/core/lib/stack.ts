@@ -439,7 +439,6 @@ export class Stack extends Construct implements ITaggable {
     // as the parent because apps implement much of the synthesis logic.
     scope = scope ?? new App({
       autoSynth: false,
-      outdir: FileSystem.mkdtemp('cdk-test-app-'),
     });
 
     // "Default" is a "hidden id" from a `node.uniqueId` perspective
@@ -1863,7 +1862,6 @@ function count(xs: string[]): Record<string, number> {
 /* eslint-disable import/order */
 import { CfnOutput } from './cfn-output';
 import { addDependency, Element } from './deps';
-import { FileSystem } from './fs';
 import { Names } from './names';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
