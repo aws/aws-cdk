@@ -2010,16 +2010,16 @@ const service = new ecs.FargateService(this, 'Service', {
 
 ### Service Connect Access Logs
 
-Service Connect access logs provide detailed telemetry about individual requests processed by the Service Connect proxy,
-including HTTP methods, paths, response codes, and timing information. These logs complement application logs by capturing
-per-request traffic metadata.
+[Service Connect access logs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-connect-envoy-access-logs.html) provide detailed telemetry about individual requests processed by the Service Connect proxy,
+including HTTP methods, paths, response codes, and timing information.
+These logs complement application logs by capturing per-request traffic metadata.
 
-To enable access logs, you must specify both a `logDriver` (to define where logs should be sent) and an `accessLogConfiguration`
-(to configure the log format and content).
+To enable access logs, you must specify both a `logDriver` (to define where logs should be sent) and an `accessLogConfiguration` (to configure the log format and content).
 
 ```ts
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
+
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
@@ -2046,11 +2046,8 @@ The `format` option determines the format of the access log output:
 - `ServiceConnectAccessLogFormat.JSON` - Structured JSON format for log analysis tools
 
 The `includeQueryParameters` option specifies whether to include query parameters in the access logs.
-When enabled, query parameters from HTTP requests are included in the logs. Consider security and privacy
-implications, as query parameters may contain sensitive information such as request IDs and tokens.
+When enabled, query parameters from HTTP requests are included in the logs. Consider security and privacy implications, as query parameters may contain sensitive information such as request IDs and tokens.
 By default, this parameter is `false`.
-
-> Visit [Amazon ECS Service Connect access logs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-connect-envoy-access-logs.html) for more details.
 
 ## ServiceManagedVolume
 
