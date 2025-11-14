@@ -2,6 +2,7 @@ import {
   IntegrationPattern,
   JsonPath,
 } from '../../../aws-stepfunctions';
+import { isValidJsonataExpression } from '../../../aws-stepfunctions/lib/private/jsonata';
 import { Aws, UnscopedValidationError } from '../../../core';
 
 /**
@@ -36,15 +37,8 @@ export function integrationResourceArn(service: string, api: string, integration
 }
 
 /**
- * Determines if the indicated string is an JSONata expression
- */
-export function isJsonataExpression(value: string) {
-  return /^{%(.*)%}$/.test(value);
-}
-
-/**
  * Determines if the indicated string is an encoded JSON path or JSONata expression
  */
 export function isJsonPathOrJsonataExpression(value: string) {
-  return JsonPath.isEncodedJsonPath(value) || isJsonataExpression(value);
+  return JsonPath.isEncodedJsonPath(value) || isValidJsonataExpression(value);
 }
