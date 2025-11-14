@@ -1,5 +1,5 @@
 import { Template } from '../../assertions';
-import { Runtime, RuntimeFamily } from '../../aws-lambda';
+import { Architecture, Runtime, RuntimeFamily } from '../../aws-lambda';
 import * as sfn from '../../aws-stepfunctions';
 import { Stack } from '../../core';
 import * as tasks from '../lib';
@@ -116,5 +116,35 @@ test('With Node.js 22.x', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Runtime: 'nodejs22.x',
+  });
+});
+
+test('With ARM64 architecture', () => {
+  // WHEN
+  const task = new tasks.EvaluateExpression(stack, 'Task', {
+    expression: '$.a + $.b',
+    architecture: Architecture.ARM_64,
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Architectures: ['arm64'],
+  });
+});
+
+test('With X86_64 architecture', () => {
+  // WHEN
+  const task = new tasks.EvaluateExpression(stack, 'Task', {
+    expression: '$.a + $.b',
+    architecture: Architecture.X86_64,
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Architectures: ['x86_64'],
   });
 });
