@@ -1,6 +1,6 @@
 export * as queryDb from './db';
 export * as log from './log';
-export * as pkglint from './pkglint';
+export * as jsii from './jsii';
 export * from './jsdoc-tags';
 export * from './patterned-name';
 export * from './split-summary';
