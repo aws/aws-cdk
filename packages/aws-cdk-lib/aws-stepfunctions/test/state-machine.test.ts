@@ -187,7 +187,15 @@ describe('State Machine', () => {
             ],
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, ':*'])],
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    Ref: stateMachineLogicalId,
+                  },
+                  ':*',
+                ],
+              ],
             },
           },
           {
@@ -253,7 +261,15 @@ describe('State Machine', () => {
             ],
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, ':*'])],
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    Ref: stateMachineLogicalId,
+                  },
+                  ':*',
+                ],
+              ],
             },
           },
           {
@@ -325,7 +341,15 @@ describe('State Machine', () => {
             ],
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, ':*'])],
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    Ref: stateMachineLogicalId,
+                  },
+                  ':*',
+                ],
+              ],
             },
           },
           {
@@ -409,7 +433,15 @@ describe('State Machine', () => {
             ],
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, ':*'])],
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    Ref: stateMachineLogicalId,
+                  },
+                  ':*',
+                ],
+              ],
             },
           },
           {
@@ -474,7 +506,15 @@ describe('State Machine', () => {
             ],
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, ':*'])],
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    Ref: stateMachineLogicalId,
+                  },
+                  ':*',
+                ],
+              ],
             },
           },
           {
@@ -541,7 +581,15 @@ describe('State Machine', () => {
             ],
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', Match.arrayWith([':execution:', stateMachineNameTemplate, ':*'])],
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    Ref: stateMachineLogicalId,
+                  },
+                  ':*',
+                ],
+              ],
             },
           },
           {

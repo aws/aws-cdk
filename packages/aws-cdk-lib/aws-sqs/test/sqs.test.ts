@@ -573,6 +573,15 @@ describe('queue encryption', () => {
         'Statement': [
           {
             'Action': [
+              'sqs:SendMessage',
+              'sqs:GetQueueAttributes',
+              'sqs:GetQueueUrl',
+            ],
+            'Effect': 'Allow',
+            'Resource': { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] },
+          },
+          {
+            'Action': [
               'kms:Decrypt',
               'kms:Encrypt',
               'kms:ReEncrypt*',
@@ -580,15 +589,6 @@ describe('queue encryption', () => {
             ],
             'Effect': 'Allow',
             'Resource': { 'Fn::GetAtt': ['QueueKey39FCBAE6', 'Arn'] },
-          },
-          {
-            'Action': [
-              'sqs:SendMessage',
-              'sqs:GetQueueAttributes',
-              'sqs:GetQueueUrl',
-            ],
-            'Effect': 'Allow',
-            'Resource': { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] },
           },
         ],
         'Version': '2012-10-17',
