@@ -7,15 +7,6 @@ import * as iam from '../../aws-iam';
  * Customize the CodeBuild Event Target
  */
 export interface CodeBuildProjectProps extends TargetBaseProps {
-
-  /**
-   * The role to assume before invoking the target
-   * (i.e., the codebuild) when the given rule is triggered.
-   *
-   * @default - a new role will be created
-   */
-  readonly eventRole?: iam.IRole;
-
   /**
    * The event to send to CodeBuild
    *

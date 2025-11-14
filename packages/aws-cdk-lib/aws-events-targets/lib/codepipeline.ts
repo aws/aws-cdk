@@ -6,15 +6,7 @@ import * as iam from '../../aws-iam';
 /**
  * Customization options when creating a `CodePipeline` event target.
  */
-export interface CodePipelineTargetOptions extends TargetBaseProps {
-  /**
-   * The role to assume before invoking the target
-   * (i.e., the pipeline) when the given rule is triggered.
-   *
-   * @default - a new role will be created
-   */
-  readonly eventRole?: iam.IRole;
-}
+export interface CodePipelineTargetOptions extends TargetBaseProps {}
 
 /**
  * Allows the pipeline to be used as an EventBridge rule target.

@@ -14,13 +14,6 @@ export interface ApiDestinationProps extends TargetBaseProps {
   readonly event?: events.RuleTargetInput;
 
   /**
-   * The role to assume before invoking the target
-   *
-   * @default - a new role will be created
-   */
-  readonly eventRole?: iam.IRole;
-
-  /**
    * Additional headers sent to the API Destination
    *
    * These are merged with headers specified on the Connection, with
