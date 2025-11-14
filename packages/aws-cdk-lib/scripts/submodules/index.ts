@@ -1,5 +1,5 @@
 import * as path from 'node:path';
-import { createLibraryReadme, ModuleDefinition } from '@aws-cdk/pkglint';
+import { createLibraryReadme } from '@aws-cdk/pkglint';
 import { topo } from '@aws-cdk/spec2cdk';
 import * as fs from 'fs-extra';
 
@@ -84,25 +84,27 @@ async function ensureInterfaceSubmoduleJsiiJsonRc(submodule: topo.ModuleMapEntry
   const interfacesModuleJsiiRcPath = path.join(interfacesModulePath, '.jsiirc.json');
   const interfacesModuleJsiiRc = JSON.parse(await fs.readFile(interfacesModuleJsiiRcPath, 'utf-8'));
 
-  const jsiiRcPath = path.join(interfacesModulePath, 'generated', `${submodule.name}-interfaces.generated.jsiirc.json`);
+  const jsiiRcPath = path.join(interfacesModulePath, 'generated', `.${submodule.name}-interfaces.generated.jsiirc.json`);
 
   const jsiirc = {
     targets: {
-      ...combineLanguageNamespace('java', 'package', 'javaPackage'),
-      ...combineLanguageNamespace('dotnet', 'namespace', 'dotnetPackage'),
-      ...combineLanguageNamespace('python', 'module', 'pythonModuleName'),
-      // No Go...
+      ...combineLanguageNamespace('java', 'package', submodule.definition?.javaPackage),
+      ...combineLanguageNamespace('dotnet', 'namespace', submodule.definition?.dotnetPackage),
+      ...combineLanguageNamespace('python', 'module', submodule.definition?.pythonModuleName),
+      ...combineLanguageNamespace('go', 'packageName', submodule.definition?.moduleName.replace(/[^a-z0-9.]/gi, '')),
     },
   };
   await fs.writeJson(jsiiRcPath, jsiirc, { spaces: 2 });
 
-  function combineLanguageNamespace(language: string, whatName: string, k: keyof ModuleDefinition) {
-    const ns = `${interfacesModuleJsiiRc.targets[language][whatName]}.${lastPart(submodule.definition?.[k] ?? 'undefined')}`;
-    if (ns.includes('undefined')) {
-      throw new Error(`Could not build child namespace for language ${language} from ${JSON.stringify(interfacesModuleJsiiRc.targets[language])} and ${k} from ${JSON.stringify(submodule.definition)}`);
+  function combineLanguageNamespace(language: string, whatName: string, fromDef?: string) {
+    if (fromDef == null) {
+      throw new Error(`Could not build child namespace for language ${language} from ${JSON.stringify(interfacesModuleJsiiRc.targets[language])} and definition ${JSON.stringify(submodule.definition)}`);
     }
 
-    return { [language]: { [whatName]: ns } };
+    const nsParts = [interfacesModuleJsiiRc.targets[language][whatName], lastPart(fromDef)];
+    const nsSep = language === 'go' ? '' : '.';
+
+    return { [language]: { [whatName]: nsParts.join(nsSep) } };
   }
 }
 
