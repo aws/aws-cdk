@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "MTDistributionOriginId/DefaultTest": {
+      "stacks": [
+        "integ-mt-distribution-origin-id"
+      ],
+      "assertionStack": "MTDistributionOriginId/DefaultTest/DeployAssert",
+      "assertionStackName": "MTDistributionOriginIdDefaultTestDeployAssert007548EF"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}
