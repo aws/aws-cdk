@@ -567,18 +567,10 @@ describe('queue encryption', () => {
     queue.grantSendMessages(role);
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    let template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
-          {
-            'Action': [
-              'sqs:SendMessage',
-              'sqs:GetQueueAttributes',
-              'sqs:GetQueueUrl',
-            ],
-            'Effect': 'Allow',
-            'Resource': { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] },
-          },
           {
             'Action': [
               'kms:Decrypt',
@@ -588,6 +580,15 @@ describe('queue encryption', () => {
             ],
             'Effect': 'Allow',
             'Resource': { 'Fn::GetAtt': ['QueueKey39FCBAE6', 'Arn'] },
+          },
+          {
+            'Action': [
+              'sqs:SendMessage',
+              'sqs:GetQueueAttributes',
+              'sqs:GetQueueUrl',
+            ],
+            'Effect': 'Allow',
+            'Resource': { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] },
           },
         ],
         'Version': '2012-10-17',

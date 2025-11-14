@@ -250,31 +250,8 @@
         "Fn::Join": [
          "",
          [
-          "arn:",
           {
-           "Ref": "AWS::Partition"
-          },
-          ":states:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":execution:",
-          {
-           "Fn::Select": [
-            6,
-            {
-             "Fn::Split": [
-              ":",
-              {
-               "Ref": "StateMachine2E01A3A5"
-              }
-             ]
-            }
-           ]
+           "Ref": "StateMachine2E01A3A5"
           },
           ":*"
          ]

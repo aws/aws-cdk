@@ -421,13 +421,25 @@ interface GrantProps {
 }
 
 /**
+ * Result of a call to grantOnKey().
+ */
+export interface GrantOnKeyResult {
+  /**
+   * The Grant object, if a grant was created.
+   *
+   * @default No grant
+   */
+  readonly grant?: Grant;
+}
+
+/**
  * A resource that contains data that can be encrypted, using a KMS key.
  */
 export interface IEncryptedResource extends cdk.IResource {
   /**
    * Gives permissions to a grantable entity to perform actions on the encryption key.
    */
-  grantOnKey(grantee: IGrantable, ...actions: string[]): void;
+  grantOnKey(grantee: IGrantable, ...actions: string[]): GrantOnKeyResult;
 }
 
 /**

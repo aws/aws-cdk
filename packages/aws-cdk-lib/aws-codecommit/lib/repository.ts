@@ -257,7 +257,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
   /**
    * Collection of grant methods for a Repository
    */
-  public grants = RepositoryGrants._fromRepository(this);
+  public readonly grants = RepositoryGrants._fromRepository(this);
 
   public get repositoryRef(): RepositoryReference {
     return {

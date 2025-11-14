@@ -1964,6 +1964,21 @@ describe('bucket', () => {
           'Statement': [
             {
               Action: [
+                'kms:Encrypt',
+                'kms:ReEncrypt*',
+                'kms:GenerateDataKey*',
+                'kms:Decrypt',
+              ],
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::GetAtt': [
+                  'MyBucketKeyC17130CF',
+                  'Arn',
+                ],
+              },
+            },
+            {
+              Action: [
                 's3:DeleteObject*',
                 's3:PutObject',
                 's3:PutObjectLegalHold',
@@ -1995,21 +2010,6 @@ describe('bucket', () => {
                   ],
                 },
               ],
-            },
-            {
-              Action: [
-                'kms:Encrypt',
-                'kms:ReEncrypt*',
-                'kms:GenerateDataKey*',
-                'kms:Decrypt',
-              ],
-              'Effect': 'Allow',
-              'Resource': {
-                'Fn::GetAtt': [
-                  'MyBucketKeyC17130CF',
-                  'Arn',
-                ],
-              },
             },
           ],
           'Version': '2012-10-17',
@@ -2138,8 +2138,7 @@ describe('bucket', () => {
 
     const resources = Template.fromStack(stack).toJSON().Resources;
     const actions = (id: string) => resources[id].Properties.PolicyDocument.Statement[0].Action;
-
-    expect(actions('WriterDefaultPolicyDC585BCE')).toEqual([
+    expect(resources.WriterDefaultPolicyDC585BCE.Properties.PolicyDocument.Statement[1].Action).toEqual([
       's3:DeleteObject*',
       's3:PutObject',
       's3:PutObjectLegalHold',
@@ -2148,7 +2147,7 @@ describe('bucket', () => {
       's3:PutObjectVersionTagging',
       's3:Abort*',
     ]);
-    expect(actions('PutterDefaultPolicyAB138DD3')).toEqual([
+    expect(resources.PutterDefaultPolicyAB138DD3.Properties.PolicyDocument.Statement[1].Action).toEqual([
       's3:PutObject',
       's3:PutObjectLegalHold',
       's3:PutObjectRetention',

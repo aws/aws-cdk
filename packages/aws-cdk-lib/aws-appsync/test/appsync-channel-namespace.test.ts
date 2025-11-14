@@ -358,36 +358,6 @@ describe('Channel namespace security tests', () => {
     });
   });
 
-  test('Appsync Event API channel namespace - grant publish from channel (CfnChannelNamespace)', () => {
-    // WHEN
-    const api = new appsync.EventApi(stack, 'api', {
-      apiName: 'api',
-      authorizationConfig: {
-        authProviders: [{ authorizationType: appsync.AppSyncAuthorizationType.IAM }],
-      },
-    });
-
-    const namespace = new appsync.CfnChannelNamespace(stack, 'default', {
-      name: 'NS',
-      apiId: api.apiId,
-    });
-
-    ChannelNamespaceGrants._fromChannelNamespace(namespace).publish(func);
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'appsync:EventPublish',
-            Effect: 'Allow',
-            Resource: { Ref: 'default' },
-          },
-        ],
-      },
-    });
-  });
-
   test('Appsync Event API channel namespace - grant subscribe from channel', () => {
     // WHEN
     const api = new appsync.EventApi(stack, 'api', {

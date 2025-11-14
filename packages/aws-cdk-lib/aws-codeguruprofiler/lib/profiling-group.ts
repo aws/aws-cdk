@@ -75,7 +75,7 @@ abstract class ProfilingGroupBase extends Resource implements IProfilingGroup {
   /**
    * Collection of grant methods for a ProfilingGroup
    */
-  public grants = ProfilingGroupGrants._fromProfilingGroup(this);
+  public readonly grants = ProfilingGroupGrants._fromProfilingGroup(this);
 
   public get profilingGroupRef(): ProfilingGroupReference {
     return {

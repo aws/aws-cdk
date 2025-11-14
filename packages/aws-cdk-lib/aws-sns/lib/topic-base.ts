@@ -7,7 +7,7 @@ import { ITopicSubscription } from './subscriber';
 import { Subscription } from './subscription';
 import * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
-import { IEncryptedResource, IGrantable } from '../../aws-iam';
+import { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { IResource, Resource, ResourceProps, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -97,7 +97,7 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
   /**
    * Collection of grant methods for a Topic
    */
-  public grants: TopicGrants = TopicGrants._fromTopic(this);
+  public readonly grants: TopicGrants = TopicGrants._fromTopic(this);
 
   /**
    * Controls automatic creation of policy objects.
@@ -215,10 +215,12 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
     });
   }
 
-  public grantOnKey(grantee: IGrantable, ...actions: string[]): void {
-    if (this.masterKey) {
-      this.masterKey.grant(grantee, ...actions);
-    }
+  public grantOnKey(grantee: IGrantable, ...actions: string[]): GrantOnKeyResult {
+    const grant = this.masterKey
+      ? this.masterKey.grant(grantee, ...actions)
+      : undefined;
+
+    return { grant };
   }
 
   /**
