@@ -56,7 +56,7 @@ Any code that you submit will be released under that license.
 
 ## What are contributions?
 
-A *contribution* refers to any improvement or addition to the AWS CDK from the
+A _contribution_ refers to any improvement or addition to the AWS CDK from the
 community. You make contributions to the AWS CDK through the `aws-cdk`
 repository. They can include the following:
 
@@ -71,7 +71,7 @@ repository. They can include the following:
 - **Refactoring** - Improve the code structure or performance without altering
   its behavior.
 
-Contributions can be *major* or *minor* in scope and size:
+Contributions can be _major_ or _minor_ in scope and size:
 
 - **Major contributions** - Includes major new additions, such as new L2
   constructs, updates that change how the AWS CDK works, or enhancements to
@@ -153,10 +153,12 @@ Another reason we hear from authors that they don't want to publish their own pa
 ## Quick Start
 
 ### Setup
+
 Fork the aws-cdk repository into your account: https://github.com/aws/aws-cdk/fork
 Note: Install Git LFS using `git lfs install` command, as it is necessary for handling large file changes.
 
 Clone the forked repository:
+
 ```console
 $ git clone https://github.com/{your-account}/aws-cdk.git
 $ cd aws-cdk
@@ -164,36 +166,44 @@ $ yarn install
 ```
 
 Before you create a pull request:
-* Write code changes
-* Write unit tests
-* Write integ tests (aws-cdk/packages/@aws-cdk-testing/)
-* Commit changes and push to remote branch
+
+- Write code changes
+- Write unit tests
+- Write integ tests (aws-cdk/packages/@aws-cdk-testing/)
+- Commit changes and push to remote branch
 
 Build the entire aws-cdk repo (this may take some time):
+
 ```console
 $ npx lerna run build --skip-nx-cache
 ```
 
 ### Testing
+
 Run the unit tests for the modules(e.g. aws-lambda) you've changed:
+
 ```console
 $ cd aws-cdk/packages/aws-cdk-lib
 $ yarn test aws-lambda
 ```
 
 Run the integration tests for the modules(e.g. aws-lambda) you've changed:
+
 ```console
 $ cd aws-cdk/packages/@aws-cdk-testing/framework-integ
 $ yarn integ test/aws-lambda/test/integ.lambda.js --update-on-failed
 ```
 
 If you've made changes to sample code in any README, ensure those examples compile with:
+
 ```console
 $ /bin/bash ./scripts/run-rosetta.sh
 ```
 
 ### Linking
+
 If you would like to test your code changes against a CDK App, create the App and link your local CDK with it:
+
 ```console
 $ mkdir cdkApp # in parent dir of aws-cdk
 $ cd cdkApp
@@ -222,6 +232,8 @@ The following tools need to be installed on your system prior to installing the 
 - [Python >= 3.8.0, < 4.0](https://www.python.org/downloads/release/python-380/)
 - Either [Docker >= 19.03](https://docs.docker.com/get-docker/), [Finch >= 0.3.0](https://runfinch.com/), or another Docker replacement
   - If using a Docker replacement, the `CDK_DOCKER` environment variable must be set to the replacement command's name (e.g. `export CDK_DOCKER=finch`)
+  - For some Docker replacements like Finch and Podman, you may also need to set the `DOCKER_HOST` environment variable to specify the socket path
+    - For Podman: `export DOCKER_HOST=$(podman machine inspect --format 'unix://{{.ConnectionInfo.PodmanSocket.Path}}')`
   - The Docker or replacement daemon must be running
 - [git-lfs](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage)
   - Without this, you'll get the message that the clone succeeded but the checkout failed when you initially clone the repo.
@@ -384,6 +396,7 @@ $ NODE_OPTIONS=--max-old-space-size=8192 npx lerna run build --scope=aws-cdk-lib
 You may [configure your Dev Env](https://docs.aws.amazon.com/codecatalyst/latest/userguide/devenvironment-devfile.html) with the `devfile.yaml` to further customize your Dev Env for CDK development.
 
 Read the links below for more details:
+
 - [Dev Environments in CodeCatalyst](https://docs.aws.amazon.com/codecatalyst/latest/userguide/devenvironment.html)
 - [Using GitHub repositories in CodeCatalyst](https://docs.aws.amazon.com/codecatalyst/latest/userguide/extensions-github.html)
 - [Setting up to use the AWS CLI with CodeCatalyst](https://docs.aws.amazon.com/codecatalyst/latest/userguide/set-up-cli.html)
@@ -446,30 +459,31 @@ In many cases, the comments section of the relevant GitHub issue is sufficient f
 1. Write an [RFC](https://github.com/aws/aws-cdk-rfcs) - This is a process for discussing new functionality that is large in scope, may incur breaking changes, or may otherwise warrant discussion from multiple stakeholders on the core team or within the community. Specifically, it is a good place to discuss new features in the core CDK framework or the CLI that are unable to be decoupled from the core cdk codebase.
 1. Publish a package - A separate package is the best place to demonstrate the value of new functionality that you believe should be included within the CDK core libraries. It not only illustrates a complete solution with its entire API surface area available to review, it also proves that your design works! When publishing a package with the goal for eventual inclusion within aws-cdk-lib, make sure to follow our [design guidelines](./docs/DESIGN_GUIDELINES.md) wherever relevant.
 
-Performing any of the above processes helps us to ensure that expectations are clearly set before a contribution is made. We want to ensure that everyone is able to contribute to the CDK ecosystem effectively. If you make a contribution that is ultimately not merged by into aws-cdk-lib, but you believe it should be, we encourage you to keep pursuing it. The scope of the core framework is intentionally limited to ensure that we can effectively maintain its surface area and ensure code quality and reliability over the long term. However, new patterns may emerge in the ecosystem that clearly provide better solutions than those currently in aws-cdk-lib. If your solutions gains popularity within the community, and you want us to re-evaluate its inclusion, reach out to us on cdk.dev or create a GitHub issue with a feature request and references to your package. See [demonstrating value](#demonstrating-value) for more information. 
+Performing any of the above processes helps us to ensure that expectations are clearly set before a contribution is made. We want to ensure that everyone is able to contribute to the CDK ecosystem effectively. If you make a contribution that is ultimately not merged by into aws-cdk-lib, but you believe it should be, we encourage you to keep pursuing it. The scope of the core framework is intentionally limited to ensure that we can effectively maintain its surface area and ensure code quality and reliability over the long term. However, new patterns may emerge in the ecosystem that clearly provide better solutions than those currently in aws-cdk-lib. If your solutions gains popularity within the community, and you want us to re-evaluate its inclusion, reach out to us on cdk.dev or create a GitHub issue with a feature request and references to your package. See [demonstrating value](#demonstrating-value) for more information.
 
 ### Step 3: Work your Magic
 
 Work your magic. Here are some guidelines:
 
-* Coding style.
-  * If your change introduces a new construct, take a look at our [design guidelines](./docs/DESIGN_GUIDELINES.md) for
+- Coding style.
+  - If your change introduces a new construct, take a look at our [design guidelines](./docs/DESIGN_GUIDELINES.md) for
     construct libraries.
     We also have an [example construct library](packages/@aws-cdk/example-construct-library) that showcases a simple
     construct library with a single construct.
-  * We have a number of linters that run during standard build that will enforce coding consistency and correctness.
+  - We have a number of linters that run during standard build that will enforce coding consistency and correctness.
     Watch out for their error messages and adjust your code accordingly.
-* Every change requires a unit test
-* If you change APIs, make sure to update the module's README file
-  * When you add new examples to the module's README file, you must also ensure they compile - the PR build will fail
+- Every change requires a unit test
+- If you change APIs, make sure to update the module's README file
+  - When you add new examples to the module's README file, you must also ensure they compile - the PR build will fail
     if they do not. To learn more about how to ensure that they compile, see [Documentation](#documentation).
-* Try to maintain a single feature/bugfix per pull request. It's okay to introduce a little bit of housekeeping
+- Try to maintain a single feature/bugfix per pull request. It's okay to introduce a little bit of housekeeping
   changes along the way, but try to avoid conflating multiple features. Eventually, all these are going to go into a
   single commit, so you can use that to frame your scope.
 
 #### Integration Tests
 
 Integration tests perform a few functions in the CDK code base -
+
 1. Acts as a regression detector. It does this by running `cdk synth` on the integration test and comparing it against
    the `*.snapshot` directory. This highlights how a change affects the synthesized stacks.
 2. Allows for a way to verify if the stacks are still valid CloudFormation templates, as part of an intrusive change.
@@ -512,8 +526,9 @@ assertions against the deployed infrastructure.
 ```
 
 Examples:
-* [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.ts#L7)
-* [integ.put-events.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/eventbridge/integ.put-events.ts)
+
+- [integ.destinations.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.ts#L7)
+- [integ.put-events.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/eventbridge/integ.put-events.ts)
 
 **What if you cannot run integration tests**
 
@@ -544,7 +559,6 @@ $ yarn watch & # runs in the background
 If your PR updates a specific library, you might want to write a simple CDK application and make sure it synthesizes and
 deploys correctly. For example, if you modify files under `packages/aws-cdk-lib/aws-eks`, you can write a simple CDK app in typescript to verify its behavior:
 
-
 ```console
 $ cd packages/@aws-cdk-testing/framework-integ/test/aws-eks/test
 ```
@@ -552,15 +566,14 @@ $ cd packages/@aws-cdk-testing/framework-integ/test/aws-eks/test
 Create a `sample.ts` like this:
 
 ```ts
-import {
-  App, Stack,
-  aws_eks as eks,
-  aws_ec2 as ec2,
-} from 'aws-cdk-lib';
+import { App, Stack, aws_eks as eks, aws_ec2 as ec2 } from 'aws-cdk-lib';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 
 const app = new App();
-const env = { region: process.env.CDK_DEFAULT_REGION, account: process.env.CDK_DEFAULT_ACCOUNT };
+const env = {
+  region: process.env.CDK_DEFAULT_REGION,
+  account: process.env.CDK_DEFAULT_ACCOUNT,
+};
 const stack = new Stack(app, 'my-test-stack', { env });
 
 const cluster = new eks.Cluster(stack, 'Cluster', {
@@ -642,54 +655,56 @@ $ yarn integ test/aws-eks/test/integ.name.js
 See the [integration test guide](./INTEGRATION_TESTS.md) for a more complete guide on running
 CDK integration tests.
 
-
 ### Step 4: Pull Request
 
-* Create a [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) of the CDK repository.
-* Create a new branch for your change, and push the change commits on it.
+- Create a [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) of the CDK repository.
+- Create a new branch for your change, and push the change commits on it.
+
   > [!IMPORTANT]
   > Your pull request must be based off of a branch in a personal account (not an organization owned account, and not the `main` branch).
   > You must also have the setting enabled that [allows the CDK team to push changes to your branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork) (this setting is enabled by default for personal accounts,
   > and cannot be enabled for organization owned accounts).
   > The reason for this is that our automation needs to synchronize your branch with our `main` after it has been approved, and
   > we cannot do that if we cannot push to your branch.
-  
+
   > [!NOTE]
   > CDK core members can push to a branch on the AWS CDK repo (naming convention: `<user>/<feature-bug-name>`).
 
-* Create a [pull request on
+- Create a [pull request on
   GitHub](https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork).
 
-* Pull request title and message (and PR title and description) must adhere to
+- Pull request title and message (and PR title and description) must adhere to
   [conventionalcommits](https://www.conventionalcommits.org).
-  * The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or
-    `chore(module): title`.
-    * `feat`: indicates a feature added (requires tests and README updates in principle, but can be suppressed)
-    * `fix`: indicates a bug fix (requires tests in principle, but can be suppressed)
-    * `docs`: indicates updated documentation (docstrings or Markdown files)
-    * `refactor`: indicates a feature-preserving refactoring
-    * `chore`: something without directly visible user benefit (does not end up in the CHANGELOG). Typically used for build scripts, config, or changes so minor they don't warrant showing up the CHANGELOG.
-  * Titles for `feat` and `fix` PRs end up in the change log. Think about what makes most sense for users reading the changelog while writing them.
-    * `feat`: describe the feature (not the action of creating the commit or PR, for example, avoid words like "added" or "changed")
-    * `fix`: describe the bug (not the solution)
-  * Title should be lowercase.
-  * No period at the end of the title.
 
-* Pull request body should describe _motivation_. Think about your code reviewers and what information they need in
+  - The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or
+    `chore(module): title`.
+    - `feat`: indicates a feature added (requires tests and README updates in principle, but can be suppressed)
+    - `fix`: indicates a bug fix (requires tests in principle, but can be suppressed)
+    - `docs`: indicates updated documentation (docstrings or Markdown files)
+    - `refactor`: indicates a feature-preserving refactoring
+    - `chore`: something without directly visible user benefit (does not end up in the CHANGELOG). Typically used for build scripts, config, or changes so minor they don't warrant showing up the CHANGELOG.
+  - Titles for `feat` and `fix` PRs end up in the change log. Think about what makes most sense for users reading the changelog while writing them.
+    - `feat`: describe the feature (not the action of creating the commit or PR, for example, avoid words like "added" or "changed")
+    - `fix`: describe the bug (not the solution)
+  - Title should be lowercase.
+  - No period at the end of the title.
+
+- Pull request body should describe _motivation_. Think about your code reviewers and what information they need in
   order to understand what you did. If it's a big commit (hopefully not), try to provide some good entry points so
   it will be easier to follow.
-  * For bugs, describe bug, root cause, solution, potential alternatives considered but discarded.
-  * For features, describe use case, most salient design aspects (especially if new), potential alternatives.
 
-* Pull request message should indicate which issues are fixed: `fixes #<issue>` or `closes #<issue>`.
+  - For bugs, describe bug, root cause, solution, potential alternatives considered but discarded.
+  - For features, describe use case, most salient design aspects (especially if new), potential alternatives.
 
-* Shout out to collaborators.
+- Pull request message should indicate which issues are fixed: `fixes #<issue>` or `closes #<issue>`.
 
-* Call out any new [runtime dependencies](#adding-construct-runtime-dependencies) that are created as part of your PR.
+- Shout out to collaborators.
 
-* If not obvious (i.e. from unit tests), describe how you verified that your change works.
+- Call out any new [runtime dependencies](#adding-construct-runtime-dependencies) that are created as part of your PR.
 
-* If this PR includes breaking changes, they must be listed at the end in the following format *before* the `---` or else it will not be included in the CHANGELOG
+- If not obvious (i.e. from unit tests), describe how you verified that your change works.
+
+- If this PR includes breaking changes, they must be listed at the end in the following format _before_ the `---` or else it will not be included in the CHANGELOG
   (notice how multiple breaking changes should be formatted):
 
   ```
@@ -698,9 +713,9 @@ CDK integration tests.
   * **module-name:** Yet another breaking change
 
   ---
-  
+
   *By submitting this pull request, I confirm that my contribution is made under the terms of the Apache-2.0 license*
-  
+
   ---
   ```
 
@@ -708,16 +723,16 @@ CDK integration tests.
   libraries are published with an `-alpha` suffix, and have the `stability`
   property set to `experimental` in their `package.json`.
 
-* Once the pull request is submitted, a reviewer will be assigned by the maintainers.
+- Once the pull request is submitted, a reviewer will be assigned by the maintainers.
 
-* If the PR build is failing, update the PR with fixes until the build succeeds. You may have trouble getting attention
+- If the PR build is failing, update the PR with fixes until the build succeeds. You may have trouble getting attention
   from maintainers if your build is failing, and after 4 weeks of staleness, your PR will be automatically closed.
 
-* Discuss review comments and iterate until you get at least one "Approve". When iterating, push new commits to the
+- Discuss review comments and iterate until you get at least one "Approve". When iterating, push new commits to the
   same branch. Usually all these are going to be squashed when you merge to main. The commit messages should be hints
   for you when you finalize your merge commit message.
 
-* Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
+- Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
   commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
 
 #### Getting a review from a maintainer
@@ -739,7 +754,6 @@ to be fixed before it can be reviewed.
 
 > [!NOTE]  
 > The `aws-cdk` repository is frequently updated, so PR branches may quickly become out-of-date, showing "This branch is out-of-date with the base branch." This is not an issue as long as there are no conflicts with the newly merged commits. Once the PR is approved, our automation will update it with the latest `main` branch and handle the merge. No action is needed on your part.
-
 
 #### Adding construct runtime dependencies
 
@@ -792,7 +806,7 @@ out in the description so that we can discuss the best way to manage that depend
 We leverage [Codecov](https://about.codecov.io/) to track code coverage of the project.
 If your PR doesn't meet the coverage requirements, you'll see failing status checks, which will prevent the PR from merging.
 
-There are two requirements we define, each are enforced both on the overall 
+There are two requirements we define, each are enforced both on the overall
 project as well as individual packages.
 
 1. Coverage percentage must not decrease.
@@ -818,19 +832,18 @@ To disable coverage of specific lines, you can use:
 
 ```ts
 /* istanbul ignore next */
-console.log('This cannot be covered')
+console.log('This cannot be covered');
 ```
 
 ### Step 5: Merge
 
-* Make sure your PR builds successfully (we have CodeBuild setup to automatically build all PRs).
-* Once approved and tested, one of our bots will squash-merge to main and will use your PR title/description as the
+- Make sure your PR builds successfully (we have CodeBuild setup to automatically build all PRs).
+- Once approved and tested, one of our bots will squash-merge to main and will use your PR title/description as the
   commit message.
 
 > [!NOTE]
 > If your PR is failing one of the required checks (e.g Codecov), it will not be auto-merged. If you believe the PR should be merged
 > inspite of this, let a maintainer know. The maintainer may agree and merge the PR manually, or ask you to address the failing checks.
-
 
 ## Breaking Changes
 
@@ -843,20 +856,19 @@ _main `aws-cdk-lib` release, and all `experimental` modules are released indepen
 _and not included in the main CDK library._
 
 Whenever you are making changes, there is a chance for those changes to be
-*breaking* existing users of the library. A change is breaking if there are
+_breaking_ existing users of the library. A change is breaking if there are
 programs that customers could have been writing against the current version
 of the CDK, that will no longer "work correctly" with the proposed new
 version of the CDK.
 
-Breaking changes are not allowed in *stable* libraries. They are permitted
+Breaking changes are not allowed in _stable_ libraries. They are permitted
 in experimental libraries, unless the maintainer of the module decides that it should be avoided.
 Breaking changes require explicit callouts in the bodies of Pull Requests that introduce them.
 
 Breaking changes come in two flavors:
 
-* API surface changes
-* Behavior changes
-
+- API surface changes
+- Behavior changes
 
 ### API surface changes
 
@@ -864,10 +876,10 @@ This encompasses any changes that affect the shape of the API. Changes that
 will make existing programs fail to compile are not allowed. Typical examples
 of that are:
 
-* Renaming classes or methods
-* Adding required properties to a struct that is used as an input to a constructor
+- Renaming classes or methods
+- Adding required properties to a struct that is used as an input to a constructor
   or method. This also includes changing a type from nullable to non-nullable.
-* Removing properties from a struct that is returned from a method, or removing
+- Removing properties from a struct that is returned from a method, or removing
   properties from a class. This also includes changing a type from non-nullable
   to nullable.
 
@@ -915,13 +927,14 @@ messages that will be useful to a user of your construct):
 
 ```ts
 class SomeClass implements ICountable {
-  constructor(private readonly _count?: number) {
-  }
+  constructor(private readonly _count?: number) {}
 
   public get count(): number {
     if (this._count === undefined) {
       // ✅ DO: throw a descriptive error that tells the user what to do
-      throw new Error('This operation requires that a \'count\' is specified when SomeClass is created.');
+      throw new Error(
+        "This operation requires that a 'count' is specified when SomeClass is created."
+      );
       // ❌ DO NOT: just throw an error like 'count is missing'
     }
     return this._count;
@@ -941,8 +954,8 @@ created a Stack using the previous version of the library, has updated their
 version of the CDK library and is now deploying an update. A behavior change
 is breaking if:
 
-* The update cannot be applied at all
-* The update can be applied but causes service interruption or data loss.
+- The update cannot be applied at all
+- The update can be applied but causes service interruption or data loss.
 
 Data loss happens when the [Logical
 ID](https://docs.aws.amazon.com/cdk/latest/guide/identifiers.html#identifiers_logical_ids)
@@ -968,10 +981,10 @@ interpretation of what it means if the value is missing).
 
 If the new behavior is going to be breaking, the user must opt in to it, either by:
 
-* Adding a new API element (class, property, method, ...) to have users
+- Adding a new API element (class, property, method, ...) to have users
   explicitly opt in to the new behavior at the source code level (potentially
   `@deprecate`ing the old API element); or
-* Use the [feature flag](#feature-flags) mechanism to have the user opt in to the new
+- Use the [feature flag](#feature-flags) mechanism to have the user opt in to the new
   behavior without changing the source code.
 
 Of these two, the first one is preferred if possible (as feature flags have
@@ -1020,7 +1033,7 @@ be deprecated and the final version - `grantAwesomePower` will be added.
 
 ### Adding new experimental CLI features
 
-In order to move fast when developing new CLI features, we may decide to release 
+In order to move fast when developing new CLI features, we may decide to release
 functionality as "experimental" or "incremental." In this scenario we can utilize
 explicit opt-in via an `--unstable` flag.
 
@@ -1044,7 +1057,7 @@ the README for the `aws-ec2` module - https://docs.aws.amazon.com/cdk/api/latest
 ### Rosetta
 
 The README file contains code snippets written as typescript code. Code snippets typed in fenced code blocks
-(such as `` ```ts ``) will be automatically extracted, compiled and translated to other languages 
+(such as ` ```ts `) will be automatically extracted, compiled and translated to other languages
 during the [pack](#pack) step. We call this feature 'rosetta'.
 
 You can run rosetta on the aws-cdk-lib module (or any other module) by running:
@@ -1055,7 +1068,7 @@ $ yarn rosetta:extract --strict
 ```
 
 To successfully do that, they must be compilable. The easiest way to do that is using
-a *fixture*, which looks like this:
+a _fixture_, which looks like this:
 
 ````
 ```ts fixture=with-bucket
@@ -1168,8 +1181,8 @@ This will execute `COMMAND` against `my-module` and all its deps (in a topologic
 
 Consequently, there are two useful scripts that are built on top of `foreach.sh`, and lets you build modules.
 
-- __`scripts/buildup`__: builds the current module and all of its dependencies (in topological order).
-- __`scripts/builddown`__: builds the current module and all of its consumers (in topological order).
+- **`scripts/buildup`**: builds the current module and all of its dependencies (in topological order).
+- **`scripts/builddown`**: builds the current module and all of its consumers (in topological order).
 
 ### Linters
 
@@ -1228,19 +1241,19 @@ the [guidelines](./docs/DESIGN_GUIDELINES.md).
 
 Here are a few useful commands:
 
- * `yarn awslint` in every module will run __awslint__ for that module.
- * `yarn awslint list` prints all rules (details and rationale in the guidelines doc).
- * `scripts/foreach.sh yarn awslint` will start linting the entire repo, progressively. Rerun `scripts/foreach.sh` after fixing to continue.
- * `lerna run awslint --no-bail --stream 2> awslint.txt` will run __awslint__ in all modules and collect all results into awslint.txt
- * `lerna run awslint -- -i <RULE>` will run awslint throughout the repo and
-   evaluate only the rule specified [awslint README](./packages/awslint/README.md)
-   for details on include/exclude rule patterns.
+- `yarn awslint` in every module will run **awslint** for that module.
+- `yarn awslint list` prints all rules (details and rationale in the guidelines doc).
+- `scripts/foreach.sh yarn awslint` will start linting the entire repo, progressively. Rerun `scripts/foreach.sh` after fixing to continue.
+- `lerna run awslint --no-bail --stream 2> awslint.txt` will run **awslint** in all modules and collect all results into awslint.txt
+- `lerna run awslint -- -i <RULE>` will run awslint throughout the repo and
+  evaluate only the rule specified [awslint README](./packages/awslint/README.md)
+  for details on include/exclude rule patterns.
 
 ### JetBrains support (WebStorm/IntelliJ)
 
 This project uses lerna and utilizes symlinks inside nested `node_modules` directories. You may encounter an issue during
 indexing where the IDE attempts to index these directories and keeps following links until the process runs out of
-available memory and crashes. To fix this, you can run ```node ./scripts/jetbrains-remove-node-modules.js``` to exclude
+available memory and crashes. To fix this, you can run `node ./scripts/jetbrains-remove-node-modules.js` to exclude
 these directories.
 
 ### Linking against this repository
@@ -1335,32 +1348,32 @@ Adding a new flag looks as follows:
    with the name of the context key that enables this new feature (for
    example, `ENABLE_STACK_NAME_DUPLICATES`). The context key should be in the
    form `module.Type:feature` (e.g. `@aws-cdk/core:enableStackNameDuplicates`).
-    - Set `introducedIn.v2` to the literal string `'V2NEXT'`.
-    - Double negatives should be avoided. If you want to add a flag that disables something that was previously
-      enabled, set `default.v2` to `true` and the `recommendedValue` to `false`. You will need to update
-      a test in `features.test.ts` -- this is okay if you have a good reason.
-    - A note on the fields
-      - default.v2: This is the boolean value used by the cdk commands at runtime unless its specified in `cdk.json`.
-      - recommendedValue: This is the boolean value will be set in `cdk.json` on `cdk init` when you init a new application.
-    - As a contributor, if you are advised to introduce a feature flag, consider the following scenarios when determining how your feature should behave for
-      - Customers who are creating new app (`cdk init`). `cdk.json` will now contain the new feature flag set to the `recommendedValue`.
-      - Customers who have an existing app. `cdk.json` doesnt contain the `new` feature flag. The value of the new feature flag set to the `default.v2` value in context of cdk commands.
-      - E.g. in the following case, unless overridden in `cdk.json`
-        - New apps will get [USE_CDK_MANAGED_LAMBDA_LOGGROUP]: true
-        - Existing apps on cdk v2 will get [USE_CDK_MANAGED_LAMBDA_LOGGROUP]: false
-        ```typescript
-        [USE_CDK_MANAGED_LAMBDA_LOGGROUP]: {
-            type: FlagType.ApiDefault,
-            summary: 'When enabled, CDK creates and manages loggroup for the lambda function',
-            detailsMd: `
-                ...
-              `,
-            introducedIn: { v2: 'V2_NEXT' },
-            defaults: { v2: false },
-            recommendedValue: true,
-            compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
-        },
-        ```
+   - Set `introducedIn.v2` to the literal string `'V2NEXT'`.
+   - Double negatives should be avoided. If you want to add a flag that disables something that was previously
+     enabled, set `default.v2` to `true` and the `recommendedValue` to `false`. You will need to update
+     a test in `features.test.ts` -- this is okay if you have a good reason.
+   - A note on the fields
+     - default.v2: This is the boolean value used by the cdk commands at runtime unless its specified in `cdk.json`.
+     - recommendedValue: This is the boolean value will be set in `cdk.json` on `cdk init` when you init a new application.
+   - As a contributor, if you are advised to introduce a feature flag, consider the following scenarios when determining how your feature should behave for
+     - Customers who are creating new app (`cdk init`). `cdk.json` will now contain the new feature flag set to the `recommendedValue`.
+     - Customers who have an existing app. `cdk.json` doesnt contain the `new` feature flag. The value of the new feature flag set to the `default.v2` value in context of cdk commands.
+     - E.g. in the following case, unless overridden in `cdk.json`
+       - New apps will get [USE_CDK_MANAGED_LAMBDA_LOGGROUP]: true
+       - Existing apps on cdk v2 will get [USE_CDK_MANAGED_LAMBDA_LOGGROUP]: false
+       ```typescript
+       [USE_CDK_MANAGED_LAMBDA_LOGGROUP]: {
+           type: FlagType.ApiDefault,
+           summary: 'When enabled, CDK creates and manages loggroup for the lambda function',
+           detailsMd: `
+               ...
+             `,
+           introducedIn: { v2: 'V2_NEXT' },
+           defaults: { v2: false },
+           recommendedValue: true,
+           compatibilityWithOldBehaviorMd: 'Disable the feature flag to let lambda service create logGroup or specify logGroup or logRetention',
+       },
+       ```
 2. Use `FeatureFlags.of(construct).isEnabled(cxapi.ENABLE_XXX)` to check if this feature is enabled
    in your code. If it is not defined, revert to the legacy behavior.
 3. Add your feature flag to the `FLAGS` map in
@@ -1374,13 +1387,13 @@ Adding a new flag looks as follows:
    ```ts
    const myFeatureFlag = { [cxapi.MY_FEATURE_FLAG]: true };
    const app = new App({
-      context: myFeatureFlag,
-   }),
+     context: myFeatureFlag,
+   });
    const stackUnderTest = new Stack(app);
    ```
-7. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
+6. In your PR title (which goes into CHANGELOG), add a `(under feature flag)` suffix. e.g:
 
-    `fix(core): impossible to use the same physical stack name for two stacks (under feature flag)`
+   `fix(core): impossible to use the same physical stack name for two stacks (under feature flag)`
 
 [jest helper methods]: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/lib/feature-flags.ts
 
@@ -1406,10 +1419,10 @@ aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/aws-api.ts:7:27 - error TS27
 7 import * as metadata from '../../custom-resources/lib/helpers-internal/sdk-v3-metadata.json';
 ```
 
-This is most probably caused by the fact that your CDK app is using `--prefer-ts-exts` option (which is the [default in new CDK TS-based apps]([url](https://github.com/aws/aws-cdk/issues/7475))). To fix this, try one of the following:
+This is most probably caused by the fact that your CDK app is using `--prefer-ts-exts` option (which is the [default in new CDK TS-based apps](<[url](https://github.com/aws/aws-cdk/issues/7475)>)). To fix this, try one of the following:
+
 - Don't compile aws-cdk-lib. You can do this by removing `--prefer-ts-exts` from your app command in `cdk.json` - this means you will have to run a build in the lib repo every time you make a change (or use `npm run watch / yarn watch`).
 - Update your `tsconfig.json`. In this case it's going to be adding `"resolveJsonModule": true` as suggested by the error to the `"compilerOptions"` section. If you change the test app, different or more errors might come up that will have a similar resolution.
-
 
 #### The compiler is throwing errors on files that I renamed/it's running old tests that I meant to remove/code coverage is low and I didn't change anything.
 
@@ -1474,13 +1487,14 @@ Once Git LFS is installed, use the following command:
 ```shell
 $ git lfs migrate import --no-rewrite <path to files that make the gh action fail>
 ```
+
 This will create a new commit that you can push to your branch to make the Github action pass.
 
 ## Debugging
 
 ### Connecting the VS Code Debugger
 
-*Note:* This applies to typescript CDK application only.
+_Note:_ This applies to typescript CDK application only.
 
 To debug your CDK application along with the CDK repository,
 
@@ -1495,37 +1509,37 @@ To debug your CDK application along with the CDK repository,
 3. Open the CDK application (assume it's `hello-cdk` in these steps) and the CDK repository as a [VS code multi-root workspace](https://code.visualstudio.com/docs/editor/multi-root-workspaces).
 4. Open the [workspace settings file](https://code.visualstudio.com/docs/editor/multi-root-workspaces#_settings) and verify that the following two folders must already exist
 
-  ```json
-  {
-    "folders": [
-      { "path": "<path-to-cdk-repo>/aws-cdk" },
-      { "path": "<path-to-cdk-app>/hello-cdk" }
-    ],
-  }
-  ```
+```json
+{
+  "folders": [
+    { "path": "<path-to-cdk-repo>/aws-cdk" },
+    { "path": "<path-to-cdk-app>/hello-cdk" }
+  ]
+}
+```
 
 5. Add the following launch configuration to the settings file -
 
-  ```json
-  "launch": {
-    "configurations": [{
-      "type": "node",
-      "request": "launch",
-      "name": "Debug hello-cdk",
-      "program": "${workspaceFolder:hello-cdk}/bin/hello-cdk.js",
-      "cwd": "${workspaceFolder:hello-cdk}",
-      "console": "internalConsole",
-      "sourceMaps": true,
-      "skipFiles": [ "<node_internals>/**/*" ],
-      "outFiles": [
-        "${workspaceFolder:aws-cdk}/**/*.js",
-        "${workspaceFolder:hello-cdk}/**/*.js",
-      ],
-    }]
-  }
-  ```
+```json
+"launch": {
+  "configurations": [{
+    "type": "node",
+    "request": "launch",
+    "name": "Debug hello-cdk",
+    "program": "${workspaceFolder:hello-cdk}/bin/hello-cdk.js",
+    "cwd": "${workspaceFolder:hello-cdk}",
+    "console": "internalConsole",
+    "sourceMaps": true,
+    "skipFiles": [ "<node_internals>/**/*" ],
+    "outFiles": [
+      "${workspaceFolder:aws-cdk}/**/*.js",
+      "${workspaceFolder:hello-cdk}/**/*.js",
+    ],
+  }]
+}
+```
 
-  *NOTE: Go [here](https://code.visualstudio.com/docs/editor/debugging#_launch-configurations) for more about launch configurations.*
+_NOTE: Go [here](https://code.visualstudio.com/docs/editor/debugging#_launch-configurations) for more about launch configurations._
 
 6. The debug view, should now have a launch configuration called 'Debug hello-cdk' and launching that will start the debugger.
 7. Any time you modify the CDK app or any of the CDK modules, they need to be re-built and depending on the change the `link-all.sh` script from step#2, may need to be re-run. Only then, would VS code recognize the change and potentially the breakpoint.
@@ -1547,29 +1561,3 @@ $ node --inspect-brk /path/to/aws-cdk/node_modules/.bin/jest -i -t 'TESTNAME'
 ```
 
 3. On the `Run` pane of VSCode, select the run configuration **Attach to NodeJS** and click the button.
-
-## Badges (Pilot Program)
-
-> CDK Merit Badges is a Pilot Program. The badges you get are experimental and may change.
-
-CDK Merit Badges is a program aimed at enhancing the CDK contributor experience. When you
-submit new pull requests to the CDK repository, you will receive a merit badge that reflects
-how many prior successful contributions you have to the repository. Right now, these badges
-are just for fun and are meant as a small incentive to continued contributions to the CDK.
-
-The badges have the following meaning:
-
-- `beginning-contributor`: contributed between 0-2 PRs to the CDK
-- `repeat-contributor`: contributed between 3-5 PRs to the CDK
-- `valued-contributor`: contributed between 6-12 PRs to the CDK
-- `admired-contributor`: contributed between 13-24 PRs to the CDK
-- `star-contributor`: contributed between 25-49 PRs to the CDK
-- `distinguished-contributor`: contributed 50+ PRs to the CDK
-
-## Related Repositories
-
-* [Samples](https://github.com/aws-samples/aws-cdk-examples): includes sample code in multiple languages
-* [Workshop](https://github.com/aws-samples/aws-cdk-intro-workshop): source for https://cdkworkshop.com
-* [Developer Guide](https://github.com/awsdocs/aws-cdk-guide): markdown source for developer guide
-* [jsii](https://github.com/aws/jsii): the technology we use for multi-language support. If you are looking to help us support new languages, start there.
-
