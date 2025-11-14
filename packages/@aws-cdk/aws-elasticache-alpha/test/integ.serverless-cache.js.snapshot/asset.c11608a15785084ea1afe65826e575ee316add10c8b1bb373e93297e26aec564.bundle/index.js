@@ -64,14 +64,18 @@ var init_matcher = __esm({
       }
     };
     MatchResult = class {
+      /**
+       * The target for which this result was generated.
+       */
+      target;
+      failuresHere = /* @__PURE__ */ new Map();
+      captures = /* @__PURE__ */ new Map();
+      finalized = false;
+      innerMatchFailures = /* @__PURE__ */ new Map();
+      _hasFailed = false;
+      _failCount = 0;
+      _cost = 0;
       constructor(target) {
-        this.failuresHere = /* @__PURE__ */ new Map();
-        this.captures = /* @__PURE__ */ new Map();
-        this.finalized = false;
-        this.innerMatchFailures = /* @__PURE__ */ new Map();
-        this._hasFailed = false;
-        this._failCount = 0;
-        this._cost = 0;
         this.target = target;
       }
       /**
@@ -404,9 +408,7 @@ var init_sparse_matrix = __esm({
   "../../aws-cdk-lib/assertions/lib/private/sparse-matrix.ts"() {
     "use strict";
     SparseMatrix = class {
-      constructor() {
-        this.matrix = /* @__PURE__ */ new Map();
-      }
+      matrix = /* @__PURE__ */ new Map();
       get(row, col) {
         return this.matrix.get(row)?.get(col);
       }
@@ -533,6 +535,7 @@ var init_match = __esm({
           throw new AssertionError("LiteralMatch cannot directly contain another matcher. Remove the top-level matcher or nest it more deeply.");
         }
       }
+      partialObjects;
       test(actual) {
         if (Array.isArray(this.pattern)) {
           return new ArrayMatch(this.name, this.pattern, { subsequence: false, partialObjects: this.partialObjects }).test(actual);
@@ -567,6 +570,8 @@ var init_match = __esm({
         this.subsequence = options.subsequence ?? true;
         this.partialObjects = options.partialObjects ?? false;
       }
+      subsequence;
+      partialObjects;
       test(actual) {
         if (!Array.isArray(actual)) {
           return new MatchResult(actual).recordFailure({
@@ -667,6 +672,7 @@ var init_match = __esm({
         this.pattern = pattern;
         this.partial = options.partial ?? true;
       }
+      partial;
       test(actual) {
         if (typeof actual !== "object" || Array.isArray(actual)) {
           return new MatchResult(actual).recordFailure({
@@ -30150,6 +30156,12 @@ var init_api_call = __esm({
     init_find_client_constructor();
     init_sdk_info();
     ApiCall = class {
+      service;
+      action;
+      v3PackageName;
+      v3Package;
+      // For testing purposes
+      client;
       // For testing purposes
       constructor(service, action) {
         this.service = normalizeServiceName(service);
@@ -30284,7 +30296,6 @@ var CustomResourceHandler = class {
   constructor(event, context) {
     this.event = event;
     this.context = context;
-    this.timedOut = false;
     this.timeout = setTimeout(async () => {
       await this.respond({
         status: "FAILED",
@@ -30296,6 +30307,9 @@ var CustomResourceHandler = class {
     this.event = event;
     this.physicalResourceId = extractPhysicalResourceId(event);
   }
+  physicalResourceId;
+  timeout;
+  timedOut = false;
   /**
    * Handles executing the custom resource event. If `stateMachineArn` is present
    * in the props then trigger the waiter statemachine
@@ -30429,6 +30443,7 @@ var AssertionHandler = class extends CustomResourceHandler {
   }
 };
 var MatchCreator = class {
+  parsedObj;
   constructor(obj) {
     this.parsedObj = {
       matcher: obj
