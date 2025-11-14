@@ -1210,24 +1210,13 @@ export class UserPool extends UserPoolBase {
     });
     this.emailConfiguration = emailConfiguration;
 
-    if (
-      props.featurePlan !== FeaturePlan.PLUS &&
-      (props.advancedSecurityMode && (props.advancedSecurityMode !== AdvancedSecurityMode.OFF))
-    ) {
-      throw new ValidationError('you cannot enable Advanced Security when feature plan is not Plus.', this);
-    }
+    // Note: We do not validate feature plan requirements for threat protection at CDK synthesis time.
+    // CloudFormation will validate these requirements at deployment time, which allows existing user pools
+    // that are grandfathered on LITE plan with threat protection to continue working.
 
     const advancedSecurityAdditionalFlows = undefinedIfNoKeys({
       customAuthMode: props.customThreatProtectionMode,
     });
-
-    if (
-      (props.featurePlan !== FeaturePlan.PLUS) &&
-      (props.standardThreatProtectionMode && (props.standardThreatProtectionMode !== StandardThreatProtectionMode.NO_ENFORCEMENT) ||
-      advancedSecurityAdditionalFlows)
-    ) {
-      throw new ValidationError('you cannot enable Threat Protection when feature plan is not Plus.', this);
-    }
 
     if (
       props.advancedSecurityMode &&
