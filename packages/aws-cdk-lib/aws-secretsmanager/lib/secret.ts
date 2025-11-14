@@ -627,6 +627,7 @@ export class Secret extends SecretBase {
   public readonly excludeCharacters?: string;
 
   private replicaRegions: secretsmanager.CfnSecret.ReplicaRegionProperty[] = [];
+  private readonly resource: secretsmanager.CfnSecret;
 
   protected readonly autoCreatePolicy = true;
 
@@ -655,7 +656,7 @@ export class Secret extends SecretBase {
       ? this.resolveSecretObjectValue(props.secretObjectValue)
       : props.secretStringValue?.unsafeUnwrap() ?? props.secretStringBeta1?.secretValue();
 
-    const resource = new secretsmanager.CfnSecret(this, 'Resource', {
+    this.resource = new secretsmanager.CfnSecret(this, 'Resource', {
       description: props.description,
       kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
       generateSecretString: props.generateSecretString ?? (secretString ? undefined : {}),
@@ -664,11 +665,11 @@ export class Secret extends SecretBase {
       replicaRegions: Lazy.any({ produce: () => this.replicaRegions }, { omitEmptyArray: true }),
     });
 
-    resource.applyRemovalPolicy(props.removalPolicy, {
+    this.resource.applyRemovalPolicy(props.removalPolicy, {
       default: RemovalPolicy.DESTROY,
     });
 
-    this.secretArn = this.getResourceArnAttribute(resource.ref, {
+    this.secretArn = this.getResourceArnAttribute(this.resource.ref, {
       service: 'secretsmanager',
       resource: 'secret',
       resourceName: this.physicalName,
@@ -692,6 +693,13 @@ export class Secret extends SecretBase {
     }
 
     this.excludeCharacters = props.generateSecretString?.excludeCharacters;
+  }
+
+  /**
+   * The full ARN of the secret in AWS Secrets Manager, which is the ARN including the Secrets Manager-supplied 6-character suffix.
+   */
+  public get secretFullArn(): string {
+    return this.resource.ref;
   }
 
   private resolveSecretObjectValue(secretObject: { [key: string]: SecretValue }): string {

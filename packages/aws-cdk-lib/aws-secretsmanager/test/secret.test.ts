@@ -23,6 +23,15 @@ test('default secret', () => {
   });
 });
 
+test('owned secret has secretFullArn', () => {
+  // WHEN
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+
+  // THEN
+  expect(secret.secretFullArn).toBeDefined();
+  expect(stack.resolve(secret.secretFullArn)).toEqual({ Ref: 'SecretA720EF05' });
+});
+
 test('set removalPolicy to secret', () => {
   // WHEN
   new secretsmanager.Secret(stack, 'Secret', {
@@ -1028,9 +1037,6 @@ testDeprecated('import by secret name', () => {
 testDeprecated('import by secret name with grants', () => {
   // GIVEN
   const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
-testDeprecated('import by secret name with grants', () => {
-  // GIVEN
-  const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
   const secret = secretsmanager.Secret.fromSecretName(stack, 'Secret', 'MySecret');
 
   // WHEN
@@ -1060,7 +1066,9 @@ testDeprecated('import by secret name with grants', () => {
         ],
         Effect: 'Allow',
         Resource: expectedSecretReference,
-      },  'secretsmanager:PutSecretValue',
+      }, {
+        Action: [
+          'secretsmanager:PutSecretValue',
           'secretsmanager:UpdateSecret',
           'secretsmanager:UpdateSecretVersionStage',
         ],
