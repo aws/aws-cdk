@@ -1020,6 +1020,8 @@ export class MysqlEngineVersion {
   public static readonly VER_8_4_5 = MysqlEngineVersion.of('8.4.5', '8.4');
   /** Version "8.4.6". */
   public static readonly VER_8_4_6 = MysqlEngineVersion.of('8.4.6', '8.4');
+  /** Version "8.4.7". */
+  public static readonly VER_8_4_7 = MysqlEngineVersion.of('8.4.7', '8.4');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.
