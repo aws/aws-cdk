@@ -4,7 +4,6 @@ import * as lambda from '../../aws-lambda';
 import { App } from '../../core';
 import * as cdk from '../../core';
 import * as appsync from '../lib';
-import { ChannelNamespaceGrants } from '../lib/appsync-grants.generated';
 
 // GIVEN
 let stack: cdk.Stack;
