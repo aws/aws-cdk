@@ -2138,7 +2138,6 @@ describe('bucket', () => {
 
     const resources = Template.fromStack(stack).toJSON().Resources;
     const actions = (id: string) => resources[id].Properties.PolicyDocument.Statement[0].Action;
-
     expect(actions('WriterDefaultPolicyDC585BCE')).toEqual([
       's3:DeleteObject*',
       's3:PutObject',

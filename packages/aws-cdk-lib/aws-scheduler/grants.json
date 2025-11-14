@@ -1,0 +1,31 @@
+{
+  "resources": {
+    "ScheduleGroup": {
+      "grants": {
+        "readSchedules": {
+          "actions": [
+            "scheduler:GetSchedule",
+            "scheduler:ListSchedules"
+          ],
+          "arnFormat": "${scheduleGroupArn}/*",
+          "docSummary": "Grant list and get schedule permissions for schedules in this group to the given principal"
+        },
+        "writeSchedules": {
+          "actions": [
+            "scheduler:CreateSchedule",
+            "scheduler:UpdateSchedule"
+          ],
+          "arnFormat": "${scheduleGroupArn}/*",
+          "docSummary": "Grant create and update schedule permissions for schedules in this group to the given principal"
+        },
+        "deleteSchedules": {
+          "actions": [
+            "scheduler:DeleteSchedule"
+          ],
+          "arnFormat": "${scheduleGroupArn}/*",
+          "docSummary": "Grant delete schedule permission for schedules in this group to the given principal"
+        }
+      }
+    }
+  }
+}

@@ -8,5 +8,6 @@ export * from './delivery-policy';
 
 // AWS::SNS CloudFormation Resources:
 export * from './sns.generated';
+export * from './sns-grants.generated';
 
 import './sns-augmentations.generated';

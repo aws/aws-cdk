@@ -185,11 +185,13 @@ describe('Schedule Group', () => {
               'Fn::Join': [
                 '',
                 [
-                  'arn:',
                   {
-                    Ref: 'AWS::Partition',
+                    'Fn::GetAtt': [
+                      'TestGroupAF88660E',
+                      'Arn',
+                    ],
                   },
-                  ':scheduler:us-east-1:123456789012:schedule/MyGroup/*',
+                  '/*',
                 ],
               ],
             },
@@ -226,11 +228,13 @@ describe('Schedule Group', () => {
               'Fn::Join': [
                 '',
                 [
-                  'arn:',
                   {
-                    Ref: 'AWS::Partition',
+                    'Fn::GetAtt': [
+                      'TestGroupAF88660E',
+                      'Arn',
+                    ],
                   },
-                  ':scheduler:us-east-1:123456789012:schedule/MyGroup/*',
+                  '/*',
                 ],
               ],
             },
@@ -254,7 +258,8 @@ describe('Schedule Group', () => {
     group.grantDeleteSchedules(user);
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    let template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -264,11 +269,13 @@ describe('Schedule Group', () => {
               'Fn::Join': [
                 '',
                 [
-                  'arn:',
                   {
-                    Ref: 'AWS::Partition',
+                    'Fn::GetAtt': [
+                      'TestGroupAF88660E',
+                      'Arn',
+                    ],
                   },
-                  ':scheduler:us-east-1:123456789012:schedule/MyGroup/*',
+                  '/*',
                 ],
               ],
             },

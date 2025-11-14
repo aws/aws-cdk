@@ -368,31 +368,8 @@ describe('State Machine Resources', () => {
               'Fn::Join': [
                 '',
                 [
-                  'arn:',
                   {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':states:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':execution:',
-                  {
-                    'Fn::Select': [
-                      6,
-                      {
-                        'Fn::Split': [
-                          ':',
-                          {
-                            Ref: 'StateMachine2E01A3A5',
-                          },
-                        ],
-                      },
-                    ],
+                    Ref: 'StateMachine2E01A3A5',
                   },
                   ':*',
                 ],
@@ -472,31 +449,8 @@ describe('State Machine Resources', () => {
             'Fn::Join': [
               '',
               [
-                'arn:',
                 {
-                  Ref: 'AWS::Partition',
-                },
-                ':states:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':execution:',
-                {
-                  'Fn::Select': [
-                    6,
-                    {
-                      'Fn::Split': [
-                        ':',
-                        {
-                          Ref: 'StateMachine2E01A3A5',
-                        },
-                      ],
-                    },
-                  ],
+                  Ref: 'StateMachine2E01A3A5',
                 },
                 ':*',
               ],
@@ -532,31 +486,8 @@ describe('State Machine Resources', () => {
               'Fn::Join': [
                 '',
                 [
-                  'arn:',
                   {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':states:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':execution:',
-                  {
-                    'Fn::Select': [
-                      6,
-                      {
-                        'Fn::Split': [
-                          ':',
-                          {
-                            Ref: 'StateMachine2E01A3A5',
-                          },
-                        ],
-                      },
-                    ],
+                    Ref: 'StateMachine2E01A3A5',
                   },
                   ':*',
                 ],
@@ -644,7 +575,8 @@ describe('State Machine Resources', () => {
     stateMachine.grantRead(role);
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    let template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -662,26 +594,7 @@ describe('State Machine Resources', () => {
               'states:GetExecutionHistory',
             ],
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':states:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':execution:*',
-                ],
-              ],
-            },
+            Resource: 'arn:aws:states:::my-state-machine:*',
           },
           {
             Action: [

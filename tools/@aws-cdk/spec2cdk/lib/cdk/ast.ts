@@ -5,6 +5,7 @@ import { Module, stmt } from '@cdklabs/typewriter';
 import { AugmentationsModule } from './augmentation-generator';
 import { CannedMetricsModule } from './canned-metrics';
 import { CDK_CORE, CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from './cdk';
+import { GrantsModule } from './grants-module';
 import { SelectiveImport } from './relationship-decider';
 import { ResourceClass } from './resource-class';
 import { submoduleSymbolFromName } from '../naming/conventions';
@@ -30,12 +31,16 @@ export interface AddServiceProps {
    * experiment to emit `aws-kinesisanalyticsv2` into `aws-kinesisanalytics`.
    */
   readonly destinationSubmodule?: string;
+
+  readonly grantsConfig?: string;
 }
 
 export interface AstBuilderProps {
   readonly db: SpecDatabase;
 
   readonly filePatterns?: Partial<GenerateFilePatterns>;
+
+  readonly grantsConfig?: string;
 
   /**
    * Whether we are generating code INSIDE `aws-cdk-lib` or outside it
@@ -62,6 +67,12 @@ export interface GenerateFilePatterns {
   readonly cannedMetrics: string;
 
   /**
+   * The pattern used to name grants.
+   * @default "%serviceName%/%serviceShortName%-grants.generated.ts"
+   */
+  readonly grants: string;
+
+  /**
    * The pattern used to name the interfaces entry point file
    */
   readonly interfacesEntry: string;
@@ -81,6 +92,7 @@ export const DEFAULT_FILE_PATTERNS: GenerateFilePatterns = {
   resources: '%moduleName%/%serviceShortName%.generated.ts',
   augmentations: '%moduleName%/%serviceShortName%-augmentations.generated.ts',
   cannedMetrics: '%moduleName%/%serviceShortName%-canned-metrics.generated.ts',
+  grants: '%moduleName%/%serviceShortName%-grants.generated.ts',
   interfacesEntry: 'interfaces/index.generated.ts',
   interfaces: 'interfaces/generated/%serviceName%-interfaces.generated.ts',
 };
@@ -133,14 +145,18 @@ export class AstBuilder {
    */
   public addService(service: Service, props?: AddServiceProps) {
     const resources = this.db.follow('hasResource', service);
-    const submod = this.createServiceSubmodule(service, props?.destinationSubmodule);
+    // Sometimes we emit multiple services into the same submodule
+    // (aws-kinesisanalyticsv2 gets emitted into aws-kinesisanalytics with a
+    // suffix. This was a failed experiment we still need to maintain.)
+    const submod = this.createServiceSubmodule(service, props?.destinationSubmodule, props?.grantsConfig);
 
+    const resourceClasses: Record<string, ResourceClass> = {};
     for (const { entity: resource } of resources) {
-      this.addResourceToSubmodule(submod, resource, props);
+      resourceClasses[resource.cloudFormationType] = this.addResourceToSubmodule(submod, resource, props);
     }
 
     this.postprocessSubmodule(submod);
-
+    submod.grants?.module.build(resourceClasses, props?.nameSuffix);
     return submod;
   }
 
@@ -191,7 +207,7 @@ export class AstBuilder {
     return ret;
   }
 
-  private addResourceToSubmodule(submodule: ServiceSubmodule, resource: Resource, props?: AddServiceProps) {
+  private addResourceToSubmodule(submodule: ServiceSubmodule, resource: Resource, props?: AddServiceProps): ResourceClass {
     const resourceModule = submodule.resourcesMod.module;
 
     const resourceClass = new ResourceClass(resourceModule, this.db, resource, {
@@ -208,6 +224,7 @@ export class AstBuilder {
 
     this.addSelectiveImports(submodule, resourceClass.imports);
     submodule.augmentations.module.augmentResource(resource, resourceClass);
+    return resourceClass;
   }
 
   private addSelectiveImports(submodule: ServiceSubmodule, imports: SelectiveImport[]) {
@@ -256,7 +273,7 @@ export class AstBuilder {
     }
   }
 
-  private createServiceSubmodule(service: Service, targetSubmodule?: string): ServiceSubmodule {
+  private createServiceSubmodule(service: Service, targetSubmodule?: string, grantsConfig?: string): ServiceSubmodule {
     const submoduleName = targetSubmodule ?? service.name;
     const key = `${submoduleName}/${service.name}`;
 
@@ -271,6 +288,10 @@ export class AstBuilder {
     const cannedMetrics = this.rememberModule(this.createCannedMetricsModule(submoduleName, service));
     const [interfaces, didCreateInterfaceModule] = this.obtainInterfaceModule(service);
 
+    const grants = grantsConfig != null
+      ? this.rememberModule(this.createGrantsModule(submoduleName, service, grantsConfig))
+      : undefined;
+
     const ret: ServiceSubmodule = {
       service,
       submoduleName: submoduleName,
@@ -280,6 +301,7 @@ export class AstBuilder {
       interfaces,
       didCreateInterfaceModule,
       selectiveImports: [],
+      grants,
       resources: {},
     };
 
@@ -335,6 +357,14 @@ export class AstBuilder {
     const filePath = this.pathsFor(moduleName, service).augmentations;
     return {
       module: new AugmentationsModule(this.db, service.shortName),
+      filePath,
+    };
+  }
+
+  private createGrantsModule(moduleName: string, service: Service, grantsConfig: string): LocatedModule<GrantsModule> {
+    const filePath = this.pathsFor(moduleName, service).grants;
+    return {
+      module: new GrantsModule(service, this.db, JSON.parse(grantsConfig)),
       filePath,
     };
   }
@@ -407,6 +437,7 @@ export interface ServiceSubmodule {
   readonly resourcesMod: LocatedModule<Module>;
   readonly augmentations: LocatedModule<AugmentationsModule>;
   readonly cannedMetrics: LocatedModule<CannedMetricsModule>;
+  readonly grants?: LocatedModule<GrantsModule>;
   readonly interfaces: LocatedModule<Module>;
 
   readonly didCreateInterfaceModule: boolean;

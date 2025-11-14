@@ -1,13 +1,14 @@
 {
-  "version": "34.0.0",
+  "version": "48.0.0",
   "files": {
     "2748a200bf25c8ee2c2898271226a9f7bdc386b8ce9669528731eb36c5ed9e28": {
+      "displayName": "Connect Function/Code",
       "source": {
         "path": "asset.2748a200bf25c8ee2c2898271226a9f7bdc386b8ce9669528731eb36c5ed9e28",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-7caf269d": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "2748a200bf25c8ee2c2898271226a9f7bdc386b8ce9669528731eb36c5ed9e28.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
@@ -15,27 +16,29 @@
       }
     },
     "e593848af17fee558eece2cd2719347804c0c141cff4f8ea1fb8556cf986b5a0": {
+      "displayName": "Disconnect Function/Code",
       "source": {
         "path": "asset.e593848af17fee558eece2cd2719347804c0c141cff4f8ea1fb8556cf986b5a0",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-a29d55e4": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "e593848af17fee558eece2cd2719347804c0c141cff4f8ea1fb8556cf986b5a0.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "8d51b7c174041dae18b57745e88660ee14de05b2ac0e42fb860dca1ff5677b71": {
+    "df85733ede94a8a3727522cccad68379c02894e182ef9e1e22dc6fe5b8f8c8bf": {
+      "displayName": "integ-apigwv2-lambda-connect-integration Template",
       "source": {
         "path": "integ-apigwv2-lambda-connect-integration.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-080fc7c4": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8d51b7c174041dae18b57745e88660ee14de05b2ac0e42fb860dca1ff5677b71.json",
+          "objectKey": "df85733ede94a8a3727522cccad68379c02894e182ef9e1e22dc6fe5b8f8c8bf.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
