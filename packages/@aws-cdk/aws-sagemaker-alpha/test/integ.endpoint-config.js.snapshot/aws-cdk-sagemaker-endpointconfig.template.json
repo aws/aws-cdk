@@ -18,9 +18,6 @@
   "VPCPublicSubnet1SubnetB4246D30": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -44,21 +41,24 @@
       "Key": "Name",
       "Value": "aws-cdk-sagemaker-endpointconfig/VPC/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet1RouteTableFEE4B781": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-sagemaker-endpointconfig/VPC/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
@@ -75,12 +75,12 @@
   "VPCPublicSubnet1DefaultRoute91CEF279": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VPCIGWB7E252D3"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
     }
    },
    "DependsOn": [
@@ -102,14 +102,14 @@
   "VPCPublicSubnet1NATGatewayE0556630": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VPCPublicSubnet1SubnetB4246D30"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VPCPublicSubnet1EIP6AD938E8",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
     },
     "Tags": [
      {
@@ -126,9 +126,6 @@
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -152,21 +149,24 @@
       "Key": "Name",
       "Value": "aws-cdk-sagemaker-endpointconfig/VPC/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet2RouteTable6F1A15F1": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-sagemaker-endpointconfig/VPC/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet2RouteTableAssociation5A808732": {
@@ -183,12 +183,12 @@
   "VPCPublicSubnet2DefaultRouteB7481BBA": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VPCIGWB7E252D3"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
     }
    },
    "DependsOn": [
@@ -210,14 +210,14 @@
   "VPCPublicSubnet2NATGateway3C070193": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VPCPublicSubnet2Subnet74179F39"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VPCPublicSubnet2EIP4947BC00",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
     },
     "Tags": [
      {
@@ -234,9 +234,6 @@
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -260,21 +257,24 @@
       "Key": "Name",
       "Value": "aws-cdk-sagemaker-endpointconfig/VPC/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPrivateSubnet1RouteTableBE8A6027": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-sagemaker-endpointconfig/VPC/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPrivateSubnet1RouteTableAssociation347902D1": {
@@ -291,21 +291,18 @@
   "VPCPrivateSubnet1DefaultRouteAE1D6490": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
     }
    }
   },
   "VPCPrivateSubnet2SubnetCFCDAA7A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -329,21 +326,24 @@
       "Key": "Name",
       "Value": "aws-cdk-sagemaker-endpointconfig/VPC/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPrivateSubnet2RouteTable0A19E10E": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-sagemaker-endpointconfig/VPC/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPrivateSubnet2RouteTableAssociation0C73D413": {
@@ -360,12 +360,12 @@
   "VPCPrivateSubnet2DefaultRouteF4F5CFD2": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VPCPublicSubnet2NATGateway3C070193"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
     }
    }
   },
@@ -383,11 +383,11 @@
   "VPCVPCGW99B986DC": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "InternetGatewayId": {
      "Ref": "VPCIGWB7E252D3"
+    },
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
     }
    }
   },
@@ -542,7 +542,7 @@
     },
     "PrimaryContainer": {
      "Image": {
-      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:442a71de95281cb26bd41da567c79060206108b97bdde93cb4ce5f213f50013a"
+      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:98e27853307092de1d03c86e89a5ead7aab9f8ea8f6722e4f113f04f34a329fd"
      },
      "ModelDataUrl": {
       "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/126d48fa0e32fbef5078b9d88658b35ad29d4291eb86675a64c75fa4f1338916.gz"
@@ -666,7 +666,7 @@
     },
     "PrimaryContainer": {
      "Image": {
-      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:442a71de95281cb26bd41da567c79060206108b97bdde93cb4ce5f213f50013a"
+      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:98e27853307092de1d03c86e89a5ead7aab9f8ea8f6722e4f113f04f34a329fd"
      }
     }
    },
@@ -716,6 +716,117 @@
       "VariantName": "thirdVariant"
      }
     ]
+   }
+  },
+  "ServerlessEndpointConfig0EF1560E": {
+   "Type": "AWS::SageMaker::EndpointConfig",
+   "Properties": {
+    "ProductionVariants": [
+     {
+      "InitialVariantWeight": 1,
+      "ModelName": {
+       "Fn::GetAtt": [
+        "ModelWithoutArtifactAndVpcModel9A8AD144",
+        "ModelName"
+       ]
+      },
+      "ServerlessConfig": {
+       "MaxConcurrency": 10,
+       "MemorySizeInMB": 2048,
+       "ProvisionedConcurrency": 5
+      },
+      "VariantName": "serverlessVariant"
+     }
+    ]
+   }
+  },
+  "MinimalServerlessEndpointConfig68CC9C3F": {
+   "Type": "AWS::SageMaker::EndpointConfig",
+   "Properties": {
+    "ProductionVariants": [
+     {
+      "InitialVariantWeight": 1,
+      "ModelName": {
+       "Fn::GetAtt": [
+        "ModelWithoutArtifactAndVpcModel9A8AD144",
+        "ModelName"
+       ]
+      },
+      "ServerlessConfig": {
+       "MaxConcurrency": 1,
+       "MemorySizeInMB": 1024
+      },
+      "VariantName": "minimalServerlessVariant"
+     }
+    ]
+   }
+  },
+  "BoundaryServerlessEndpointConfig0B181608": {
+   "Type": "AWS::SageMaker::EndpointConfig",
+   "Properties": {
+    "ProductionVariants": [
+     {
+      "InitialVariantWeight": 1,
+      "ModelName": {
+       "Fn::GetAtt": [
+        "ModelWithoutArtifactAndVpcModel9A8AD144",
+        "ModelName"
+       ]
+      },
+      "ServerlessConfig": {
+       "MaxConcurrency": 200,
+       "MemorySizeInMB": 6144,
+       "ProvisionedConcurrency": 200
+      },
+      "VariantName": "boundaryServerlessVariant"
+     }
+    ]
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttEndpointConfigFD7B6F91EndpointConfigName60C5B163": {
+   "Value": {
+    "Fn::GetAtt": [
+     "EndpointConfigFD7B6F91",
+     "EndpointConfigName"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-sagemaker-endpointconfig:ExportsOutputFnGetAttEndpointConfigFD7B6F91EndpointConfigName60C5B163"
+   }
+  },
+  "ExportsOutputFnGetAttServerlessEndpointConfig0EF1560EEndpointConfigNameA7681BAF": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ServerlessEndpointConfig0EF1560E",
+     "EndpointConfigName"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-sagemaker-endpointconfig:ExportsOutputFnGetAttServerlessEndpointConfig0EF1560EEndpointConfigNameA7681BAF"
+   }
+  },
+  "ExportsOutputFnGetAttMinimalServerlessEndpointConfig68CC9C3FEndpointConfigName452A76B6": {
+   "Value": {
+    "Fn::GetAtt": [
+     "MinimalServerlessEndpointConfig68CC9C3F",
+     "EndpointConfigName"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-sagemaker-endpointconfig:ExportsOutputFnGetAttMinimalServerlessEndpointConfig68CC9C3FEndpointConfigName452A76B6"
+   }
+  },
+  "ExportsOutputFnGetAttBoundaryServerlessEndpointConfig0B181608EndpointConfigName73B652E2": {
+   "Value": {
+    "Fn::GetAtt": [
+     "BoundaryServerlessEndpointConfig0B181608",
+     "EndpointConfigName"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-sagemaker-endpointconfig:ExportsOutputFnGetAttBoundaryServerlessEndpointConfig0B181608EndpointConfigName73B652E2"
    }
   }
  },
