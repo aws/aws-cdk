@@ -153,6 +153,43 @@ describe.each([
         Template.fromStack(stack2).resourceCountIs('AWS::KMS::Key', 0);
         Template.fromStack(stack2).resourceCountIs('AWS::S3::Bucket', 1);
       });
+
+      test('support stack bucket has DeletionPolicy Delete', () => {
+        // WHEN
+        stage.addAction(new FakeBuildAction({
+          actionName: 'Deploy',
+          input: sourceArtifact,
+          region: 'eu-west-1',
+        }));
+
+        // THEN
+        let asm = app.synth();
+        asm = inStage ? asm.getNestedAssembly('assembly-MyStage') : asm;
+        const supportStack = asm.getStackByName(`${stack.stackName}-support-eu-west-1`);
+
+        // Assert: Bucket has DeletionPolicy Delete
+        Template.fromJSON(supportStack.template).hasResource('AWS::S3::Bucket', {
+          DeletionPolicy: 'Delete',
+        });
+      });
+
+      test('bucket has DeletionPolicy Delete matching KMS key pattern', () => {
+        // WHEN
+        stage.addAction(new FakeBuildAction({
+          actionName: 'Deploy',
+          input: sourceArtifact,
+          region: 'eu-west-1',
+        }));
+
+        // THEN
+        let asm = app.synth();
+        asm = inStage ? asm.getNestedAssembly('assembly-MyStage') : asm;
+        const supportStack = asm.getStackByName(`${stack.stackName}-support-eu-west-1`);
+        const template = Template.fromJSON(supportStack.template);
+
+        // Bucket should have DeletionPolicy: Delete (matching KMS key pattern when keys are created)
+        template.hasResource('AWS::S3::Bucket', { DeletionPolicy: 'Delete' });
+      });
     });
   });
 });
