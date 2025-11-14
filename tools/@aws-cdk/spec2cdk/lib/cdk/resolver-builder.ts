@@ -80,8 +80,8 @@ export class ResolverBuilder {
     ].join(' | ');
 
     // Generates code like:
-    // For single value: (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? (props.roleArn as IUserRef)?.userRef?.userArn ?? props.roleArn
-    // For array: props.roleArns?.map((item: any) => (item as IRoleRef)?.roleRef?.roleArn ?? (item as IUserRef)?.userRef?.userArn ?? item)
+    // For single value T | string : (props.xx as IxxxRef)?.xxxRef?.xxxArn ?? cdk.ensureStringOrUndefined(props.xxx, "xxx", "iam.IxxxRef | string");
+    // For array <T | string>[]: (props.xx?.forEach((item: T | string, i: number, arr: Array<T | string>) => { arr[i] = (item as T)?.xxxRef?.xx ?? cdk.ensureStringOrUndefined(item, "xxx", "lambda.T | string"); }), props.xxx as Array<string>);
     // Ensures that arn properties always appear first in the chain as they are more general
     const arnRels = relationships.filter(r => r.propName.toLowerCase().endsWith('arn'));
     const otherRels = relationships.filter(r => !r.propName.toLowerCase().endsWith('arn'));
@@ -93,7 +93,9 @@ export class ResolverBuilder {
     ].join(' ?? ');
     const resolver = (_: Expression) => {
       if (resolvableType.arrayOfType) {
-        return expr.directCode(`props.${name}?.map((item: any) => ${ buildChain('item') })`);
+        return expr.directCode(
+          `(props.${name}?.forEach((item: ${propType.arrayOfType!.toString()}, i: number, arr: ${propType.toString()}) => { arr[i] = ${buildChain('item')}; }), props.${name} as ${resolvableType.toString()})`,
+        );
       } else {
         return expr.directCode(buildChain(`props.${name}`));
       }
@@ -118,11 +120,11 @@ export class ResolverBuilder {
       const isArray = baseType.arrayOfType !== undefined;
 
       const flattenCall = isArray
-        ? propValue.callMethod('map', expr.ident(functionName))
+        ? expr.directCode(`props.${name}.forEach((item: any, i: number, arr: any[]) => { arr[i] = ${functionName}(item) }), props.${name}`)
         : expr.ident(functionName).call(propValue);
 
       const condition = optional
-        ? expr.cond(propValue).then(flattenCall).else(expr.UNDEFINED)
+        ? expr.cond(expr.not(propValue)).then(expr.UNDEFINED).else(flattenCall)
         : flattenCall;
 
       return isArray

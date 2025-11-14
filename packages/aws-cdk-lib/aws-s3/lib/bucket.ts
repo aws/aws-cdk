@@ -2354,7 +2354,7 @@ export class Bucket extends BucketBase {
 
     const objectLockConfiguration = this.parseObjectLockConfig(props);
     const replicationConfiguration = this.renderReplicationConfiguration(props);
-    this.replicationRoleArn = replicationConfiguration?.role;
+    this.replicationRoleArn = (replicationConfiguration?.role as iam.IRoleRef)?.roleRef?.roleArn ?? replicationConfiguration?.role;
     this.objectOwnership = props.objectOwnership;
     this.transitionDefaultMinimumObjectSize = props.transitionDefaultMinimumObjectSize;
     const resource = new CfnBucket(this, 'Resource', {
