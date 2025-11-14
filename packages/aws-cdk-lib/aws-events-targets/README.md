@@ -756,7 +756,7 @@ fifoRule.addTarget(new targets.SqsQueue(fifoQueue, {
   messageGroupId: 'MyMessageGroupId',
 }));
 
-// Standard queue - messageGroupId optional (for message grouping)
+// Standard queue - messageGroupId optional (SQS Fair queue feature)
 const standardQueue = new sqs.Queue(this, 'MyStandardQueue');
 
 const standardRule = new events.Rule(this, 'StandardRule', {

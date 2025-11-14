@@ -14,7 +14,7 @@ export interface SqsQueueProps extends TargetBaseProps {
    * Message Group ID for messages sent to this queue
    *
    * Required for FIFO queues. For standard queues, this parameter is optional
-   * and can be used for message grouping and deduplication.
+   * and can be used for SQS fair queue feature and deduplication.
    *
    * @default - no message group ID
    */
