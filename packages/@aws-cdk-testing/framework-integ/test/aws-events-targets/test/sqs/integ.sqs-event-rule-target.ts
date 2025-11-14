@@ -30,4 +30,15 @@ event.addTarget(new targets.SqsQueue(queue, {
   deadLetterQueue,
 }));
 
+// Test messageGroupId support for standard (non-FIFO) queues
+const standardQueue = new sqs.Queue(stack, 'StandardQueue');
+
+const standardQueueEvent = new events.Rule(stack, 'StandardQueueRule', {
+  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+});
+
+standardQueueEvent.addTarget(new targets.SqsQueue(standardQueue, {
+  messageGroupId: 'MyMessageGroupId',
+}));
+
 app.synth();
