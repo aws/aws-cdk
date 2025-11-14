@@ -9,8 +9,8 @@
     "./.jsii": "./.jsii",
     "./.warnings.jsii.js": "./.warnings.jsii.js",
     "./core": "./lib/core/index.js",
-    "./with": "./lib/with.js",
-    "./mixins": "./lib/mixins/index.js"
+    "./mixins": "./lib/mixins/index.js",
+    "./with": "./lib/with.js"
   },
   "jsii": {
     "outdir": "dist",

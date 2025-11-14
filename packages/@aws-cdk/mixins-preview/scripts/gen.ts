@@ -101,7 +101,7 @@ async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
         module: submodule.definition.pythonModuleName,
       },
       go: {
-        packageName: `mixins${submodule.definition.moduleName}`,
+        packageName: `mixins${submodule.definition.moduleName}`.replace(/[^a-z0-9.]/gi, ''),
       },
     },
   };
