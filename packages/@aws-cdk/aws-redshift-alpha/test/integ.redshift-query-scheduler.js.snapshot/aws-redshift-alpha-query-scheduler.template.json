@@ -1,0 +1,316 @@
+{
+ "Resources": {
+  "ClusterSchedulerRule433DC541": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": "Daily order count report for cluster",
+    "Name": "QS2-cluster-daily-report",
+    "ScheduleExpression": "rate(1 day)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": "arn:aws:redshift:us-east-1:123456789012:cluster:test-cluster",
+      "Id": "Target0",
+      "RedshiftDataParameters": {
+       "Database": "analytics",
+       "DbUser": "scheduler_user",
+       "Sql": "SELECT COUNT(*) FROM orders WHERE created_date = CURRENT_DATE",
+       "StatementName": "QS2-cluster-daily-report",
+       "WithEvent": true
+      },
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "ClusterSchedulerRuleEventsRole346D0951",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "ClusterSchedulerRuleEventsRole346D0951": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ClusterSchedulerRuleEventsRoleDefaultPolicy9DF76113": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "redshift-data:ExecuteStatement",
+       "Effect": "Allow",
+       "Resource": "arn:aws:redshift:us-east-1:123456789012:cluster:test-cluster"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ClusterSchedulerRuleEventsRoleDefaultPolicy9DF76113",
+    "Roles": [
+     {
+      "Ref": "ClusterSchedulerRuleEventsRole346D0951"
+     }
+    ]
+   }
+  },
+  "WorkgroupSchedulerRule89FA52DD": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": "Hourly cleanup for workgroup",
+    "Name": "QS2-workgroup-hourly-cleanup",
+    "ScheduleExpression": "rate(1 hour)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": "arn:aws:redshift-serverless:us-east-1:123456789012:workgroup/test-workgroup",
+      "Id": "Target0",
+      "RedshiftDataParameters": {
+       "Database": "warehouse",
+       "SecretManagerArn": "arn:aws:secretsmanager:us-east-1:123456789012:secret:redshift-credentials-abc123",
+       "Sqls": [
+        "DELETE FROM temp_table WHERE created_at < CURRENT_TIMESTAMP - INTERVAL '1 hour'",
+        "VACUUM temp_table",
+        "ANALYZE temp_table"
+       ],
+       "StatementName": "QS2-workgroup-hourly-cleanup",
+       "WithEvent": true
+      },
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "WorkgroupSchedulerRuleEventsRole36C21F42",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "WorkgroupSchedulerRuleEventsRole36C21F42": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "WorkgroupSchedulerRuleEventsRoleDefaultPolicyD52F34D7": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "redshift-data:BatchExecuteStatement",
+       "Effect": "Allow",
+       "Resource": "arn:aws:redshift-serverless:us-east-1:123456789012:workgroup/test-workgroup"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "WorkgroupSchedulerRuleEventsRoleDefaultPolicyD52F34D7",
+    "Roles": [
+     {
+      "Ref": "WorkgroupSchedulerRuleEventsRole36C21F42"
+     }
+    ]
+   }
+  },
+  "DisabledSchedulerRuleDF088B11": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": "Disabled scheduler for testing",
+    "Name": "QS2-disabled-test",
+    "ScheduleExpression": "rate(30 minutes)",
+    "State": "DISABLED",
+    "Targets": [
+     {
+      "Arn": "arn:aws:redshift:us-east-1:123456789012:cluster:test-cluster-2",
+      "Id": "Target0",
+      "RedshiftDataParameters": {
+       "Database": "test_db",
+       "DbUser": "test_user",
+       "Sql": "SELECT 1",
+       "StatementName": "QS2-disabled-test",
+       "WithEvent": true
+      },
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "DisabledSchedulerRuleEventsRoleAFECDCB4",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "DisabledSchedulerRuleEventsRoleAFECDCB4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "DisabledSchedulerRuleEventsRoleDefaultPolicyED0B743B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "redshift-data:ExecuteStatement",
+       "Effect": "Allow",
+       "Resource": "arn:aws:redshift:us-east-1:123456789012:cluster:test-cluster-2"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DisabledSchedulerRuleEventsRoleDefaultPolicyED0B743B",
+    "Roles": [
+     {
+      "Ref": "DisabledSchedulerRuleEventsRoleAFECDCB4"
+     }
+    ]
+   }
+  },
+  "CustomRedshiftRole1EB1A91A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Custom role for Redshift query execution"
+   }
+  },
+  "CustomRedshiftRoleDefaultPolicy85816695": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "redshift-data:DescribeStatement",
+        "redshift-data:ExecuteStatement",
+        "redshift-data:GetStatementResult"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "redshift-data:ExecuteStatement",
+       "Effect": "Allow",
+       "Resource": "arn:aws:redshift:us-east-1:123456789012:cluster:test-cluster"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomRedshiftRoleDefaultPolicy85816695",
+    "Roles": [
+     {
+      "Ref": "CustomRedshiftRole1EB1A91A"
+     }
+    ]
+   }
+  },
+  "CustomRoleSchedulerRuleE4CDC4C6": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": "Scheduler with custom IAM role",
+    "Name": "QS2-custom-role-test",
+    "ScheduleExpression": "rate(12 hours)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": "arn:aws:redshift:us-east-1:123456789012:cluster:test-cluster",
+      "Id": "Target0",
+      "RedshiftDataParameters": {
+       "Database": "analytics",
+       "DbUser": "scheduler_user",
+       "Sql": "SELECT COUNT(*) FROM users",
+       "StatementName": "QS2-custom-role-test",
+       "WithEvent": true
+      },
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "CustomRedshiftRole1EB1A91A",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
