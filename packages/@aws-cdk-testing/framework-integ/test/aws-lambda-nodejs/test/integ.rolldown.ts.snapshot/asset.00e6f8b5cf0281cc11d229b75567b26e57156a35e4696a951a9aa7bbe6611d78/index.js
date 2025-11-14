@@ -1,0 +1,2 @@
+async function e(e){console.log(`Event:`,JSON.stringify(e,null,2));let t={message:`Hello from Rolldown bundler!`,timestamp:new Date().toISOString(),event:e,delayed:await Promise.resolve(`async works`),optional:e?.test?.value??`default`,numbers:[1,2,3,4,5].map(e=>e*2)};return{statusCode:200,body:JSON.stringify(t)}}export{e as handler};
+//# sourceMappingURL=index.js.map
