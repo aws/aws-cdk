@@ -36,6 +36,207 @@ EC2 Image Builder supports AWS-managed components for common tasks, AWS Marketpl
 that you create. Components run during specific workflow phases: build and validate phases during the build stage, and
 test phase during the test stage.
 
+### Component
+
+A component defines the sequence of steps required to customize an instance during image creation (build component) or
+test an instance launched from the created image (test component). Components are created from declarative YAML or JSON
+documents that describe runtime configuration for building, validating, or testing instances. Components are included
+when added to the image recipe or container recipe for an image build.
+
+EC2 Image Builder supports AWS-managed components for common tasks, AWS Marketplace components, and custom components
+that you create. Components run during specific workflow phases: build and validate phases during the build stage, and
+test phase during the test stage.
+
+#### Basic Usage
+
+Create a component with the required properties: platform and component data.
+
+```ts
+const component = new imagebuilder.Component(this, 'MyComponent', {
+  platform: imagebuilder.OSVersion.LINUX,
+  data: imagebuilder.ComponentData.fromJsonObject({
+    schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
+    phases: [
+      {
+        name: imagebuilder.ComponentPhaseName.BUILD,
+        steps: [
+          {
+            name: 'install-app',
+            action: imagebuilder.ComponentAction.EXECUTE_BASH,
+            inputs: {
+              commands: ['echo "Installing my application..."', 'yum update -y'],
+            },
+          },
+        ],
+      },
+    ],
+  }),
+});
+```
+
+#### Component Data Sources
+
+##### Inline Component Data
+
+Use `ComponentData.fromInline()` for existing YAML/JSON definitions:
+
+```ts
+const component = new imagebuilder.Component(this, 'InlineComponent', {
+  platform: imagebuilder.OSVersion.LINUX,
+  data: imagebuilder.ComponentData.fromInline(`
+name: my-component
+schemaVersion: 1.0
+phases:
+  - name: build
+    steps:
+      - name: update-os
+        action: ExecuteBash
+        inputs:
+          commands: ['yum update -y']
+`)
+});
+```
+
+##### JSON Object Component Data
+
+Most developer-friendly approach using objects:
+
+```ts
+const component = new imagebuilder.Component(this, 'JsonComponent', {
+  platform: imagebuilder.OSVersion.LINUX,
+  data: imagebuilder.ComponentData.fromJsonObject({
+    schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
+    phases: [
+      {
+        name: imagebuilder.ComponentPhaseName.BUILD,
+        steps: [
+          {
+            name: 'configure-app',
+            action: imagebuilder.ComponentAction.CREATE_FILE,
+            inputs: {
+              path: '/etc/myapp/config.json',
+              content: '{"env": "production"}',
+            },
+          },
+        ],
+      },
+    ],
+  }),
+});
+```
+
+##### Structured Component Document
+
+For type-safe, CDK-native definitions with enhanced properties like `timeout` and `onFailure`:
+
+```ts  
+const component = new imagebuilder.Component(this, 'StructuredComponent', {
+  platform: imagebuilder.OSVersion.LINUX,
+  data: imagebuilder.ComponentData.fromComponentDocumentJsonObject({
+    schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
+    phases: [
+      {
+        name: imagebuilder.ComponentPhaseName.BUILD,
+        steps: [
+          {
+            name: 'install-with-timeout',
+            action: imagebuilder.ComponentAction.EXECUTE_BASH,
+            timeout: Duration.minutes(10),
+            onFailure: imagebuilder.ComponentOnFailure.CONTINUE,
+            inputs: {
+              commands: ['./install-script.sh'],
+            },
+          },
+        ],
+      },
+    ],
+  }),
+});
+```
+
+##### S3 Component Data
+
+For those components you want to upload or have uploaded to S3:
+
+```ts
+// Upload a local file
+const componentFromAsset = new imagebuilder.Component(this, 'AssetComponent', {
+  platform: imagebuilder.OSVersion.LINUX,
+  data: imagebuilder.ComponentData.fromAsset(this, 'ComponentAsset', './my-component.yml'),
+});
+
+// Reference an existing S3 object
+const bucket = s3.Bucket.fromBucketName(this, 'ComponentBucket', 'my-components-bucket');
+const componentFromS3 = new imagebuilder.Component(this, 'S3Component', {
+  platform: imagebuilder.OSVersion.LINUX,
+  data: imagebuilder.ComponentData.fromS3(bucket, 'components/my-component.yml'),
+});
+```
+
+#### Encrypt component data with a KMS key
+
+```ts
+const component = new imagebuilder.Component(this, 'EncryptedComponent', {
+  platform: imagebuilder.OSVersion.LINUX,
+  kmsKey: new kms.Key(this, 'ComponentKey'),
+  data: imagebuilder.ComponentData.fromJsonObject({
+    schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
+    phases: [
+      {
+        name: imagebuilder.ComponentPhaseName.BUILD,
+        steps: [
+          {
+            name: 'secure-setup',
+            action: imagebuilder.ComponentAction.EXECUTE_BASH,
+            inputs: {
+              commands: ['echo "This component data is encrypted with KMS"'],
+            },
+          },
+        ],
+      },
+    ],
+  }),
+});
+```
+
+#### AWS-Managed Components
+
+AWS provides a collection of managed components for common tasks:
+
+```ts
+// Install AWS CLI v2
+const awsCliComponent = imagebuilder.AwsManagedComponent.awsCliV2(this, 'AwsCli', {
+  platform: imagebuilder.OSVersion.LINUX,
+});
+
+// Update the operating system
+const updateComponent = imagebuilder.AwsManagedComponent.updateOS(this, 'UpdateOS', {
+  platform: imagebuilder.OSVersion.LINUX,
+});
+
+// Reference any AWS-managed component by name
+const customAwsComponent = imagebuilder.AwsManagedComponent.fromAwsManagedComponentName(
+  this,
+  'CloudWatchAgent',
+  'amazon-cloudwatch-agent-linux'
+);
+```
+
+#### AWS Marketplace Components
+
+You can reference AWS Marketplace components using the marketplace component name and its product ID:
+
+```ts
+const marketplaceComponent = imagebuilder.AwsMarketplaceComponent.fromAwsMarketplaceComponentAttributes(
+  this,
+  'MarketplaceComponent',
+  {
+    componentName: 'my-marketplace-component',
+    marketplaceProductId: 'prod-1234567890abcdef0',
+  }
+);
+```
+
 ### Infrastructure Configuration
 
 Infrastructure configuration defines the compute resources and environment settings used during the image building
