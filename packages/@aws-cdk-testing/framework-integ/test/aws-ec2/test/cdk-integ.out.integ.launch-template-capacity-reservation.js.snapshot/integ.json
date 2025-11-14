@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "LaunchTemplateCapacityReservationTest/DefaultTest": {
+      "stacks": [
+        "LaunchTemplateCapacityReservationStack"
+      ],
+      "assertionStack": "LaunchTemplateCapacityReservationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LaunchTemplateCapacityReservationTestDefaultTestDeployAssert86A66D95"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
