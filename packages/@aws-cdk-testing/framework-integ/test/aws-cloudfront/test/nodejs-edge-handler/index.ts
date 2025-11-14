@@ -1,6 +1,4 @@
-import { CloudFrontRequestEvent, CloudFrontRequestResult } from 'aws-lambda';
-
-export const handler = async (event: CloudFrontRequestEvent): Promise<CloudFrontRequestResult> => {
+export const handler = async (event: any): Promise<any> => {
   const request = event.Records[0].cf.request;
 
   // Simple TypeScript logic to verify bundling works
