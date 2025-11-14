@@ -602,7 +602,7 @@ describe('S3 destination', () => {
           bufferingInterval: cdk.Duration.minutes(16),
           bufferingSize: cdk.Size.mebibytes(1),
         }),
-      })).toThrow('Buffering interval must be less than 900 seconds. Buffering interval provided was 960 seconds.');
+      })).toThrow('Buffering interval must be less than 900 seconds, got 960 seconds.');
     });
 
     it('validates bufferingSize', () => {
@@ -612,14 +612,14 @@ describe('S3 destination', () => {
           bufferingSize: cdk.Size.mebibytes(0),
 
         }),
-      })).toThrow('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 0 MiBs');
+      })).toThrow('Buffering size must be at least 1 MiB, got 0 MiBs.');
 
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
         destination: new firehose.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(1),
           bufferingSize: cdk.Size.mebibytes(256),
         }),
-      })).toThrow('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 256 MiBs');
+      })).toThrow('Buffering size must be at most 128 MiBs, got 256 MiBs.');
     });
   });
 
@@ -969,6 +969,198 @@ describe('S3 destination', () => {
             SchemaConfiguration: {},
             InputFormatConfiguration: {},
             OutputFormatConfiguration: {},
+          },
+        },
+      });
+    });
+  });
+
+  describe('dynamic partitioning', () => {
+    it('configures dynamic partitioning', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: destination,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          DynamicPartitioningConfiguration: {
+            Enabled: true,
+          },
+          BufferingHints: {
+            SizeInMBs: 128,
+            IntervalInSeconds: 300,
+          },
+        },
+      });
+    });
+    it('configures dynamic partitioning with retry options', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true, retryDuration: cdk.Duration.minutes(5) },
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: destination,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          DynamicPartitioningConfiguration: {
+            Enabled: true,
+            RetryOptions: {
+              DurationInSeconds: 300,
+            },
+          },
+          BufferingHints: {
+            SizeInMBs: 128,
+            IntervalInSeconds: 300,
+          },
+        },
+      });
+    });
+
+    it('validates retryDuration', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true, retryDuration: cdk.Duration.minutes(121) },
+      });
+
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow('Retry duration must be less than 7200 seconds, got 7260 seconds.');
+    });
+
+    it('validates bufferingSize', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        bufferingSize: cdk.Size.mebibytes(63),
+      });
+
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow('When data format conversion or dynamic partitioning is enabled, buffering size must be at least 64 MiBs, got 63 MiBs.');
+    });
+
+    it('validates bufferingInterval', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        bufferingInterval: cdk.Duration.seconds(50),
+      });
+
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow('When dynamic partitioning is enabled, buffering interval must be at least 60 seconds, got 50 seconds.');
+    });
+
+    it('configures multi record deaggregation with JSON', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        processors: [
+          firehose.RecordDeAggregationProcessor.json(),
+        ],
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: destination,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          DynamicPartitioningConfiguration: {
+            Enabled: true,
+          },
+          ProcessingConfiguration: {
+            Enabled: true,
+            Processors: [{
+              Type: 'RecordDeAggregation',
+              Parameters: [
+                { ParameterName: 'SubRecordType', ParameterValue: 'JSON' },
+              ],
+            }],
+          },
+        },
+      });
+    });
+
+    it('configures multi record deaggregation with custom delimiter', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        processors: [
+          firehose.RecordDeAggregationProcessor.delimited('####'),
+        ],
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: destination,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          DynamicPartitioningConfiguration: {
+            Enabled: true,
+          },
+          ProcessingConfiguration: {
+            Enabled: true,
+            Processors: [{
+              Type: 'RecordDeAggregation',
+              Parameters: [
+                { ParameterName: 'SubRecordType', ParameterValue: 'DELIMITED' },
+                { ParameterName: 'Delimiter', ParameterValue: 'IyMjIw==' },
+              ],
+            }],
+          },
+        },
+      });
+    });
+
+    it('throws when multi record deaggregation delimiter is not specified', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        processors: [
+          new firehose.RecordDeAggregationProcessor({ subRecordType: firehose.SubRecordType.DELIMITED }),
+        ],
+      });
+
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow('delimiter must be specified when subRecordType is DELIMITED.');
+    });
+
+    it('configures inline parsing with JQ 1.6', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        processors: [
+          firehose.MetadataExtractionProcessor.jq16({
+            customer_id: '.customer_id',
+            device: '.type.device',
+            year: '.event_timestamp|strftime("%Y")',
+          }),
+        ],
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: destination,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          DynamicPartitioningConfiguration: {
+            Enabled: true,
+          },
+          ProcessingConfiguration: {
+            Enabled: true,
+            Processors: [{
+              Type: 'MetadataExtraction',
+              Parameters: [
+                { ParameterName: 'MetadataExtractionQuery', ParameterValue: '{"customer_id":.customer_id,"device":.type.device,"year":.event_timestamp|strftime("%Y")}' },
+                { ParameterName: 'JsonParsingEngine', ParameterValue: 'JQ-1.6' },
+              ],
+            }],
           },
         },
       });
