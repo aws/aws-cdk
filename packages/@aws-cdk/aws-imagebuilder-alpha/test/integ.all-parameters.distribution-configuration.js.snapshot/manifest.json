@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6b8e56b5a08a60ac52a54c80456a0410af473a62592b39c114a14b48be87856c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bd1f475972ae85294ea1f85354352592e58178f9f873f2406875412bcaaf5dbf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,12 @@
         "aws-cdk-imagebuilder-distribution-configuration-all-parameters.assets"
       ],
       "metadata": {
+        "/aws-cdk-imagebuilder-distribution-configuration-all-parameters/CrossRegion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CrossRegion"
+          }
+        ],
         "/aws-cdk-imagebuilder-distribution-configuration-all-parameters/LaunchTemplate": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -67,13 +73,34 @@
             "data": "Repository22E53BBD"
           }
         ],
+        "/aws-cdk-imagebuilder-distribution-configuration-all-parameters/DistributionConfiguration": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "AMI is configured for public access, making it available to any AWS account globally. Ensure no sensitive data, credentials, or proprietary configurations are included. Review your organization's security policies before deploying public AMIs."
+          }
+        ],
         "/aws-cdk-imagebuilder-distribution-configuration-all-parameters/DistributionConfiguration/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DistributionConfiguration26801BDF",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "DistributionConfiguration26801BDF"
+          }
+        ],
+        "/aws-cdk-imagebuilder-distribution-configuration-all-parameters/AMIDistributionConfiguration": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "AMI is configured for public access, making it available to any AWS account globally. Ensure no sensitive data, credentials, or proprietary configurations are included. Review your organization's security policies before deploying public AMIs."
+          }
+        ],
+        "/aws-cdk-imagebuilder-distribution-configuration-all-parameters/AMIDistributionConfiguration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AMIDistributionConfigurationA286FE05"
+          }
+        ],
+        "/aws-cdk-imagebuilder-distribution-configuration-all-parameters/ContainerDistributionConfiguration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ContainerDistributionConfiguration18609EDB"
           }
         ],
         "/aws-cdk-imagebuilder-distribution-configuration-all-parameters/BootstrapVersion": [
@@ -91,19 +118,19 @@
       },
       "displayName": "aws-cdk-imagebuilder-distribution-configuration-all-parameters"
     },
-    "InfrastructureConfigurationTestDefaultTestDeployAssert6566C732.assets": {
+    "DistributionConfigurationTestDefaultTestDeployAssertF6EA9373.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "InfrastructureConfigurationTestDefaultTestDeployAssert6566C732.assets.json",
+        "file": "DistributionConfigurationTestDefaultTestDeployAssertF6EA9373.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "InfrastructureConfigurationTestDefaultTestDeployAssert6566C732": {
+    "DistributionConfigurationTestDefaultTestDeployAssertF6EA9373": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "InfrastructureConfigurationTestDefaultTestDeployAssert6566C732.template.json",
+        "templateFile": "DistributionConfigurationTestDefaultTestDeployAssertF6EA9373.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -112,7 +139,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "InfrastructureConfigurationTestDefaultTestDeployAssert6566C732.assets"
+          "DistributionConfigurationTestDefaultTestDeployAssertF6EA9373.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -121,23 +148,23 @@
         }
       },
       "dependencies": [
-        "InfrastructureConfigurationTestDefaultTestDeployAssert6566C732.assets"
+        "DistributionConfigurationTestDefaultTestDeployAssertF6EA9373.assets"
       ],
       "metadata": {
-        "/InfrastructureConfigurationTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/DistributionConfigurationTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/InfrastructureConfigurationTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/DistributionConfigurationTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "InfrastructureConfigurationTest/DefaultTest/DeployAssert"
+      "displayName": "DistributionConfigurationTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

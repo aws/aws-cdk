@@ -68,6 +68,15 @@ export interface AmiLaunchPermission {
   /**
    * Whether to make the AMI public. Block public access for AMIs must be disabled to make the AMI public.
    *
+   * WARNING: Making an AMI public exposes it to any AWS account globally.
+   *  Ensure the AMI does not contain:
+   *  - Sensitive data or credentials
+   *  - Proprietary software or configurations
+   *  - Internal network information or security settings
+   *
+   * For more information on blocking public access for AMIs, see: [Understand block public access for AMIs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-public-access-to-amis.html)
+   *
+   *
    * @default false
    */
   readonly isPublicUserGroup?: boolean;
@@ -112,6 +121,10 @@ export interface LaunchTemplateConfiguration {
   /**
    * The launch template to apply the distributed AMI to. A new launch template version will be created for the
    * provided launch template with the distributed AMI applied.
+   *
+   * *Note:* The launch template should expose a `launchTemplateId`. Templates
+   * imported by name only are not supported.
+   *
    */
   readonly launchTemplate: ec2.ILaunchTemplate;
 
@@ -123,7 +136,9 @@ export interface LaunchTemplateConfiguration {
   readonly accountId?: string;
 
   /**
-   * Whether to set the new launch template version that is created as the default launch template version
+   * Whether to set the new launch template version that is created as the default launch template version. After
+   * creation of the launch template version containing the distributed AMI, it will be automatically set as the
+   * default version for the launch template.
    *
    * @default false
    */
@@ -153,6 +168,7 @@ export interface FastLaunchConfiguration {
    * The maximum number of parallel instances that are launched for creating resources
    *
    * @default A maximum of 6 instances are launched in parallel
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_EnableFastLaunch.html
    */
   readonly maxParallelLaunches?: number;
 
@@ -160,6 +176,7 @@ export interface FastLaunchConfiguration {
    * The number of pre-provisioned snapshots to keep on hand for a fast-launch enabled Windows AMI
    *
    * @default 10 snapshots are kept pre-provisioned
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_EnableFastLaunch.html
    */
   readonly targetSnapshotCount?: number;
 }
@@ -519,7 +536,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
   public addAmiDistributions(...amiDistributions: AmiDistribution[]): void {
     amiDistributions.forEach((amiDistribution) => {
       const region = amiDistribution.region ?? cdk.Stack.of(this).region;
-      if (!cdk.Token.isUnresolved(region) && this.amiDistributionsByRegion[region]) {
+      if (this.amiDistributionsByRegion[region]) {
         throw new cdk.ValidationError(
           `duplicate AMI distribution found for region "${region}"; only one AMI distribution per region is allowed`,
           this,
@@ -539,7 +556,10 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
     containerDistributions.forEach((containerDistribution) => {
       const region = containerDistribution.region ?? cdk.Stack.of(this).region;
       if (this.containerDistributionsByRegion[region]) {
-        throw new cdk.ValidationError('You may not specify multiple container distributions in the same region', this);
+        throw new cdk.ValidationError(
+          `duplicate Container distribution found for region "${region}"; only one Container distribution per region is allowed`,
+          this,
+        );
       }
 
       this.containerDistributionsByRegion[region] = containerDistribution;
@@ -632,6 +652,14 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
   }
 
   private buildAmiLaunchPermissions(amiDistribution: AmiDistribution): object | undefined {
+    if (amiDistribution.amiLaunchPermission?.isPublicUserGroup) {
+      cdk.Annotations.of(this).addWarning(
+        'AMI is configured for public access, making it available to any AWS account globally. ' +
+          'Ensure no sensitive data, credentials, or proprietary configurations are included. ' +
+          "Review your organization's security policies before deploying public AMIs.",
+      );
+    }
+
     const launchPermissions = {
       ...(amiDistribution.amiLaunchPermission?.organizationalUnitArns !== undefined && {
         OrganizationalUnitArns: amiDistribution.amiLaunchPermission?.organizationalUnitArns,
@@ -660,26 +688,30 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
           !cdk.Token.isUnresolved(fastLaunchConfiguration.maxParallelLaunches) &&
           fastLaunchConfiguration.maxParallelLaunches < MIN_PARALLEL_LAUNCHES
         ) {
-          throw new cdk.ValidationError('You must specify a maximum parallel launch count of at least 6', this);
+          throw new cdk.ValidationError(
+            `you must specify a maximum parallel launch count of at least ${MIN_PARALLEL_LAUNCHES}`,
+            this,
+          );
         }
 
-        const useFastLaunchLaunchTemplateId = fastLaunchConfiguration.launchTemplate?.launchTemplateId !== undefined;
-        const launchTemplate: CfnDistributionConfiguration.FastLaunchLaunchTemplateSpecificationProperty = {
+        const launchTemplate = fastLaunchConfiguration.launchTemplate;
+        const useFastLaunchLaunchTemplateId = launchTemplate?.launchTemplateId !== undefined;
+        const fastLaunchLaunchTemplate: CfnDistributionConfiguration.FastLaunchLaunchTemplateSpecificationProperty = {
           ...(useFastLaunchLaunchTemplateId && {
-            launchTemplateId: fastLaunchConfiguration.launchTemplate?.launchTemplateId,
+            launchTemplateId: launchTemplate?.launchTemplateId,
           }),
           ...(!useFastLaunchLaunchTemplateId && {
-            launchTemplateName: fastLaunchConfiguration.launchTemplate?.launchTemplateName,
+            launchTemplateName: launchTemplate?.launchTemplateName,
           }),
-          ...(fastLaunchConfiguration.launchTemplate?.versionNumber !== undefined && {
-            launchTemplateVersion: fastLaunchConfiguration.launchTemplate?.versionNumber,
+          ...(launchTemplate?.versionNumber !== undefined && {
+            launchTemplateVersion: launchTemplate?.versionNumber,
           }),
         };
 
         return {
           enabled: fastLaunchConfiguration.enabled,
           maxParallelLaunches: fastLaunchConfiguration.maxParallelLaunches,
-          ...(Object.keys(launchTemplate).length && { launchTemplate }),
+          ...(Object.keys(fastLaunchLaunchTemplate).length && { launchTemplate: fastLaunchLaunchTemplate }),
           ...(fastLaunchConfiguration.targetSnapshotCount !== undefined && {
             snapshotConfiguration: { targetResourceCount: fastLaunchConfiguration.targetSnapshotCount },
           }),
@@ -714,11 +746,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
   }
 
   private buildLicenseConfigurationArns(amiDistribution: AmiDistribution): string[] | undefined {
-    const licenseConfigurationArns = amiDistribution.licenseConfigurationArns?.map(
-      (licenseConfigurationArn) => licenseConfigurationArn,
-    );
-
-    return licenseConfigurationArns?.length ? licenseConfigurationArns : undefined;
+    return amiDistribution.licenseConfigurationArns?.length ? amiDistribution.licenseConfigurationArns : undefined;
   }
 
   private buildSsmParameterConfigurations(

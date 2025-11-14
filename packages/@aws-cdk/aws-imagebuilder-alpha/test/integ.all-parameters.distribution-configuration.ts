@@ -8,6 +8,11 @@ import * as imagebuilder from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-distribution-configuration-all-parameters');
+const crossRegionParameter = new cdk.CfnParameter(stack, 'CrossRegion', {
+  type: 'String',
+  description: 'Unresolved token testing',
+  default: 'ap-northeast-1',
+});
 
 const launchTemplate = new ec2.LaunchTemplate(stack, 'LaunchTemplate', {
   machineImage: ec2.MachineImage.latestAmazonLinux2023(),
@@ -23,7 +28,32 @@ const distributionConfiguration = new imagebuilder.DistributionConfiguration(sta
   },
 });
 
-distributionConfiguration.addAmiDistributions({
+const amiOnlyDistributionConfiguration = new imagebuilder.DistributionConfiguration(
+  stack,
+  'AMIDistributionConfiguration',
+  {
+    description: 'This is an AMI distribution configuration.',
+    tags: {
+      key1: 'value1',
+      key2: 'value2',
+    },
+  },
+);
+
+const containerOnlyDistributionConfiguration = new imagebuilder.DistributionConfiguration(
+  stack,
+  'ContainerDistributionConfiguration',
+  {
+    description: 'This is an AMI distribution configuration.',
+    tags: {
+      key1: 'value1',
+      key2: 'value2',
+    },
+  },
+);
+
+const amiDistributionConfiguration: imagebuilder.AmiDistribution = {
+  region: 'us-east-1',
   amiName: 'imagebuilder-{{ imagebuilder:buildDate }}',
   amiDescription: 'Build AMI',
   amiKmsKey: kms.Alias.fromAliasName(stack, 'DistributedAMIKey', 'alias/distribution-encryption-key'),
@@ -83,14 +113,58 @@ distributionConfiguration.addAmiDistributions({
       arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
     }),
   ],
-});
-distributionConfiguration.addContainerDistributions({
+};
+
+const crossRegionAmiDistributionConfiguration: imagebuilder.AmiDistribution = {
+  region: crossRegionParameter.valueAsString,
+  amiName: 'imagebuilder-{{ imagebuilder:buildDate }}',
+  amiDescription: 'Build AMI',
+  amiTags: {
+    Environment: 'test',
+    Version: '{{ imagebuilder:buildVersion }}',
+  },
+  ssmParameters: [
+    {
+      parameter: ssm.StringParameter.fromStringParameterAttributes(stack, 'CrossRegionParameter', {
+        parameterName: '/imagebuilder/ami',
+        forceDynamicReference: true,
+      }),
+    },
+  ],
+};
+
+const containerDistributionConfiguration: imagebuilder.ContainerDistribution = {
   region: 'us-east-1',
   containerRepository: imagebuilder.Repository.fromEcr(repository),
   containerDescription: 'Test container image',
   containerTags: ['latest', 'latest-1.0'],
-});
+};
 
-new integ.IntegTest(app, 'InfrastructureConfigurationTest', {
+const crossRegionContainerDistributionConfiguration: imagebuilder.ContainerDistribution = {
+  region: crossRegionParameter.valueAsString,
+  containerRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(stack, 'CrossRegionRepository', 'cross-region-repository'),
+  ),
+  containerDescription: 'Test container image',
+  containerTags: ['cross-region-latest', 'cross-region-latest-1.0'],
+};
+
+distributionConfiguration.addAmiDistributions(amiDistributionConfiguration, crossRegionAmiDistributionConfiguration);
+distributionConfiguration.addContainerDistributions(
+  containerDistributionConfiguration,
+  crossRegionContainerDistributionConfiguration,
+);
+
+amiOnlyDistributionConfiguration.addAmiDistributions(
+  amiDistributionConfiguration,
+  crossRegionAmiDistributionConfiguration,
+);
+
+containerOnlyDistributionConfiguration.addContainerDistributions(
+  containerDistributionConfiguration,
+  crossRegionContainerDistributionConfiguration,
+);
+
+new integ.IntegTest(app, 'DistributionConfigurationTest', {
   testCases: [stack],
 });
