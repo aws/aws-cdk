@@ -2243,6 +2243,18 @@ const service = new ecs.FargateService(this, 'Service', {
   },
 });
 
+// Alternatively, configure after service creation
+const service2 = new ecs.FargateService(this, 'Service2', {
+  cluster,
+  taskDefinition,
+  deploymentStrategy: ecs.DeploymentStrategy.LINEAR,
+});
+
+service2.configureLinearDeployment({
+  stepPercent: 10.0,
+  stepBakeTime: Duration.minutes(5),
+});
+
 const target = service.loadBalancerTarget({
   containerName: 'web',
   containerPort: 80,
@@ -2275,9 +2287,21 @@ const service = new ecs.FargateService(this, 'Service', {
   taskDefinition,
   deploymentStrategy: ecs.DeploymentStrategy.CANARY,
   canaryConfiguration: {
-    canaryPercent: 5.0,
-    canaryBakeTime: Duration.minutes(10),
+    stepPercent: 5.0,
+    stepBakeTime: Duration.minutes(10),
   },
+});
+
+// Alternatively, configure after service creation
+const service2 = new ecs.FargateService(this, 'Service2', {
+  cluster,
+  taskDefinition,
+  deploymentStrategy: ecs.DeploymentStrategy.CANARY,
+});
+
+service2.configureCanaryDeployment({
+  stepPercent: 5.0,
+  stepBakeTime: Duration.minutes(10),
 });
 
 const target = service.loadBalancerTarget({
@@ -2293,8 +2317,8 @@ target.attachToApplicationTargetGroup(blueTargetGroup);
 ```
 
 Valid values:
-- `canaryPercent`: 0.1 to 100.0 (multiples of 0.1). Default: 5.0
-- `canaryBakeTime`: 0 to 1440 minutes (24 hours). Default: 10 minutes
+- `stepPercent`: 0.1 to 100.0 (multiples of 0.1). Default: 5.0
+- `stepBakeTime`: 0 to 1440 minutes (24 hours). Default: 10 minutes
 
 ## Daemon Scheduling Strategy
 You can specify whether service use Daemon scheduling strategy by specifying `daemon` option in Service constructs. See [differences between Daemon and Replica scheduling strategy](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html)

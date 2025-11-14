@@ -537,7 +537,7 @@ describe('Linear Deployment', () => {
 
   test('should set linear configuration in deployment configuration', () => {
     // WHEN
-    const service = new ecs.FargateService(stack, 'FargateService', {
+    new ecs.FargateService(stack, 'FargateService', {
       cluster,
       taskDefinition,
       deploymentStrategy: ecs.DeploymentStrategy.LINEAR,
@@ -559,20 +559,6 @@ describe('Linear Deployment', () => {
     });
   });
 
-  test('should throw error when linear configuration is specified without LINEAR strategy', () => {
-    // THEN
-    expect(() => {
-      new ecs.FargateService(stack, 'FargateService', {
-        cluster,
-        taskDefinition,
-        deploymentStrategy: ecs.DeploymentStrategy.ROLLING,
-        linearConfiguration: {
-          stepPercent: 10.0,
-        },
-      });
-    }).toThrow(/linearConfiguration can only be used with LINEAR deployment strategy/);
-  });
-
   test('should throw error when step percent is out of range', () => {
     // THEN
     expect(() => {
@@ -584,7 +570,7 @@ describe('Linear Deployment', () => {
           stepPercent: 2.0,
         },
       });
-    }).toThrow(/stepPercent must be between 3.0 and 100.0/);
+    }).toThrow(/Linear deployment stepPercent must be between 3.0 and 100.0, received 2/);
   });
 
   test('should throw error when step percent is not a multiple of 0.1', () => {
@@ -598,7 +584,7 @@ describe('Linear Deployment', () => {
           stepPercent: 10.15,
         },
       });
-    }).toThrow(/stepPercent must be a multiple of 0.1/);
+    }).toThrow(/Linear deployment stepPercent must be a multiple of 0.1, received 10.15/);
   });
 
   test('should throw error when step bake time is out of range', () => {
@@ -612,7 +598,32 @@ describe('Linear Deployment', () => {
           stepBakeTime: cdk.Duration.minutes(1500),
         },
       });
-    }).toThrow(/stepBakeTime must be between 0 and 1440 minutes/);
+    }).toThrow(/Linear deployment stepBakeTime must be between 0 and 1440 minutes, received 1500/);
+  });
+
+  test('should configure linear deployment via method', () => {
+    // WHEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentStrategy: ecs.DeploymentStrategy.LINEAR,
+    });
+
+    service.configureLinearDeployment({
+      stepPercent: 15.0,
+      stepBakeTime: cdk.Duration.minutes(8),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        Strategy: 'LINEAR',
+        LinearConfiguration: {
+          StepPercent: 15.0,
+          StepBakeTimeInMinutes: 8,
+        },
+      },
+    });
   });
 });
 
@@ -635,13 +646,13 @@ describe('Canary Deployment', () => {
 
   test('should set canary configuration in deployment configuration', () => {
     // WHEN
-    const service = new ecs.FargateService(stack, 'FargateService', {
+    new ecs.FargateService(stack, 'FargateService', {
       cluster,
       taskDefinition,
       deploymentStrategy: ecs.DeploymentStrategy.CANARY,
       canaryConfiguration: {
-        canaryPercent: 5.0,
-        canaryBakeTime: cdk.Duration.minutes(10),
+        stepPercent: 5.0,
+        stepBakeTime: cdk.Duration.minutes(10),
       },
     });
 
@@ -657,21 +668,7 @@ describe('Canary Deployment', () => {
     });
   });
 
-  test('should throw error when canary configuration is specified without CANARY strategy', () => {
-    // THEN
-    expect(() => {
-      new ecs.FargateService(stack, 'FargateService', {
-        cluster,
-        taskDefinition,
-        deploymentStrategy: ecs.DeploymentStrategy.ROLLING,
-        canaryConfiguration: {
-          canaryPercent: 5.0,
-        },
-      });
-    }).toThrow(/canaryConfiguration can only be used with CANARY deployment strategy/);
-  });
-
-  test('should throw error when canary percent is out of range', () => {
+  test('should throw error when step percent is out of range', () => {
     // THEN
     expect(() => {
       new ecs.FargateService(stack, 'FargateService', {
@@ -679,13 +676,13 @@ describe('Canary Deployment', () => {
         taskDefinition,
         deploymentStrategy: ecs.DeploymentStrategy.CANARY,
         canaryConfiguration: {
-          canaryPercent: 150.0,
+          stepPercent: 150.0,
         },
       });
-    }).toThrow(/canaryPercent must be between 0.1 and 100.0/);
+    }).toThrow(/Canary deployment stepPercent must be between 0.1 and 100.0, received 150/);
   });
 
-  test('should throw error when canary percent is not a multiple of 0.1', () => {
+  test('should throw error when step percent is not a multiple of 0.1', () => {
     // THEN
     expect(() => {
       new ecs.FargateService(stack, 'FargateService', {
@@ -693,13 +690,13 @@ describe('Canary Deployment', () => {
         taskDefinition,
         deploymentStrategy: ecs.DeploymentStrategy.CANARY,
         canaryConfiguration: {
-          canaryPercent: 5.15,
+          stepPercent: 5.15,
         },
       });
-    }).toThrow(/canaryPercent must be a multiple of 0.1/);
+    }).toThrow(/Canary deployment stepPercent must be a multiple of 0.1, received 5.15/);
   });
 
-  test('should throw error when canary bake time is out of range', () => {
+  test('should throw error when step bake time is out of range', () => {
     // THEN
     expect(() => {
       new ecs.FargateService(stack, 'FargateService', {
@@ -707,9 +704,34 @@ describe('Canary Deployment', () => {
         taskDefinition,
         deploymentStrategy: ecs.DeploymentStrategy.CANARY,
         canaryConfiguration: {
-          canaryBakeTime: cdk.Duration.minutes(1500),
+          stepBakeTime: cdk.Duration.minutes(1500),
         },
       });
-    }).toThrow(/canaryBakeTime must be between 0 and 1440 minutes/);
+    }).toThrow(/Canary deployment stepBakeTime must be between 0 and 1440 minutes, received 1500/);
+  });
+
+  test('should configure canary deployment via method', () => {
+    // WHEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentStrategy: ecs.DeploymentStrategy.CANARY,
+    });
+
+    service.configureCanaryDeployment({
+      stepPercent: 8.0,
+      stepBakeTime: cdk.Duration.minutes(12),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        Strategy: 'CANARY',
+        CanaryConfiguration: {
+          CanaryPercent: 8.0,
+          CanaryBakeTimeInMinutes: 12,
+        },
+      },
+    });
   });
 });

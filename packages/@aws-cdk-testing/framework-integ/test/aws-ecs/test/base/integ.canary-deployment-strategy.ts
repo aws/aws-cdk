@@ -95,8 +95,8 @@ const service = new ecs.FargateService(stack, 'Service', {
   securityGroups: [ecsSecurityGroup],
   deploymentStrategy: ecs.DeploymentStrategy.CANARY,
   canaryConfiguration: {
-    canaryPercent: 5.0,
-    canaryBakeTime: cdk.Duration.minutes(10),
+    stepPercent: 5.0,
+    stepBakeTime: cdk.Duration.minutes(10),
   },
 });
 
