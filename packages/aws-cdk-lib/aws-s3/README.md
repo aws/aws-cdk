@@ -792,6 +792,16 @@ const bucket = new s3.Bucket(this, 'MyTempFileBucket', {
 });
 ```
 
+Alternatively, you can enable object auto-deletion after the bucket has been created, allowing for conditional or dynamic configuration:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyTempFileBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+
+bucket.enableAutoDeleteObjects();
+```
+
 **Warning** if you have deployed a bucket with `autoDeleteObjects: true`,
 switching this to `false` in a CDK version _before_ `1.126.0` will lead to
 all objects in the bucket being deleted. Be sure to update your bucket resources
