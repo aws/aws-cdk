@@ -141,7 +141,12 @@ describe('When import an ECS Service', () => {
     });
   });
 
-  test('should add access log configuration to service connect', () => {
+  test.each([
+    { format: ecs.ServiceConnectAccessLogFormat.JSON, includeQueryParameters: true },
+    { format: ecs.ServiceConnectAccessLogFormat.JSON, includeQueryParameters: false },
+    { format: ecs.ServiceConnectAccessLogFormat.TEXT, includeQueryParameters: true },
+    { format: ecs.ServiceConnectAccessLogFormat.TEXT, includeQueryParameters: false },
+  ])('add access log configuration to service connect with format %p and includeQueryParameters %p', (testCase) => {
     // GIVEN
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -170,8 +175,8 @@ describe('When import an ECS Service', () => {
       namespace: 'test namespace',
       logDriver: ecs.LogDrivers.awsLogs({ streamPrefix: 'sc' }),
       accessLogConfiguration: {
-        format: ecs.ServiceConnectAccessLogFormat.JSON,
-        includeQueryParameters: true,
+        format: testCase.format,
+        includeQueryParameters: testCase.includeQueryParameters,
       },
     });
 
@@ -179,52 +184,8 @@ describe('When import an ECS Service', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       ServiceConnectConfiguration: {
         AccessLogConfiguration: {
-          Format: 'JSON',
-          IncludeQueryParameters: 'ENABLED',
-        },
-      },
-    });
-  });
-
-  test('should add access log configuration with TEXT format and no query parameters', () => {
-    // GIVEN
-    const vpc = new ec2.Vpc(stack, 'Vpc');
-    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
-    taskDefinition.addContainer('Web', {
-      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      portMappings: [
-        {
-          name: 'api',
-          containerPort: 80,
-        },
-      ],
-    });
-    const service = new ecs.FargateService(stack, 'Service', {
-      cluster,
-      taskDefinition,
-    });
-
-    // WHEN
-    service.enableServiceConnect({
-      services: [
-        {
-          portMappingName: 'api',
-        },
-      ],
-      namespace: 'test namespace',
-      logDriver: ecs.LogDrivers.awsLogs({ streamPrefix: 'sc' }),
-      accessLogConfiguration: {
-        format: ecs.ServiceConnectAccessLogFormat.TEXT,
-      },
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-      ServiceConnectConfiguration: {
-        AccessLogConfiguration: {
-          Format: 'TEXT',
-          IncludeQueryParameters: 'DISABLED',
+          Format: testCase.format,
+          IncludeQueryParameters: testCase.includeQueryParameters ? 'ENABLED' : 'DISABLED',
         },
       },
     });
