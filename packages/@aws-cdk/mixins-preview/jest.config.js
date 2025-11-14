@@ -1,2 +1,9 @@
 const baseConfig = require('@aws-cdk/cdk-build-tools/config/jest.config');
-module.exports = baseConfig;
+
+/** @type {import('ts-jest').JestConfigWithTsJest} */
+module.exports = {
+  ...baseConfig,
+  transform: {
+    '^.+\\.tsx?$': ['ts-jest'],
+  },
+};
