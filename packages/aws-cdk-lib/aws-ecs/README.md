@@ -2010,11 +2010,8 @@ const service = new ecs.FargateService(this, 'Service', {
 
 ### Service Connect Access Logs
 
-[Service Connect access logs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-connect-envoy-access-logs.html) provide detailed telemetry about individual requests processed by the Service Connect proxy,
-including HTTP methods, paths, response codes, and timing information.
+[Service Connect access logs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-connect-envoy-access-logs.html) provide detailed telemetry about individual requests processed by the Service Connect proxy, including HTTP methods, paths, response codes, and timing information.
 These logs complement application logs by capturing per-request traffic metadata.
-
-To enable access logs, you must specify both a `logDriver` (to define where logs should be sent) and an `accessLogConfiguration` (to configure the log format and content).
 
 ```ts
 declare const cluster: ecs.Cluster;
@@ -2029,9 +2026,6 @@ const service = new ecs.FargateService(this, 'Service', {
         portMappingName: 'api',
       },
     ],
-    logDriver: ecs.LogDrivers.awsLogs({
-      streamPrefix: 'sc-traffic',
-    }),
     accessLogConfiguration: {
       format: ecs.ServiceConnectAccessLogFormat.JSON,
       includeQueryParameters: true,
