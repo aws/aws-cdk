@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { Mixin } from '../lib';
+import { Mixin } from '../lib/core';
 
 class TestConstruct extends Construct {
   constructor(scope: Construct, id: string) {
@@ -24,5 +24,20 @@ describe('IMixin', () => {
 
     const result = mixin.applyTo(construct);
     expect((result as any).mixinApplied).toBe(true);
+  });
+});
+
+describe('Mixin', () => {
+  test('isMixin returns true for Mixin instances', () => {
+    const mixin = new TestMixin();
+    expect(Mixin.isMixin(mixin)).toBe(true);
+  });
+
+  test('isMixin returns false for non-Mixin objects', () => {
+    expect(Mixin.isMixin({})).toBe(false);
+    expect(Mixin.isMixin(null)).toBe(false);
+    expect(Mixin.isMixin(undefined)).toBe(false);
+    expect(Mixin.isMixin('string')).toBe(false);
+    expect(Mixin.isMixin(123)).toBe(false);
   });
 });
