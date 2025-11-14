@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "84b3d189743ae26478c0c72663132f28046aaa8b1a05c2606a9997762c96ccf0": {
+      "displayName": "aws-ecs-canary-deployment Template",
+      "source": {
+        "path": "aws-ecs-canary-deployment.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-002520a3": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "84b3d189743ae26478c0c72663132f28046aaa8b1a05c2606a9997762c96ccf0.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

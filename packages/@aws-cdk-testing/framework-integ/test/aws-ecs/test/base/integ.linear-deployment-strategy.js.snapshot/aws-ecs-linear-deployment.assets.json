@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "477d17c38510db23f3043d228208689e59370e55c797fd69e63b9f1a474e5a3e": {
+      "displayName": "aws-ecs-linear-deployment Template",
+      "source": {
+        "path": "aws-ecs-linear-deployment.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-ae8606fb": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "477d17c38510db23f3043d228208689e59370e55c797fd69e63b9f1a474e5a3e.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
