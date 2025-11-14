@@ -1,9 +1,13 @@
+import * as path from 'path';
 import { Construct } from 'constructs';
 import { EdgeFunction } from './edge-function';
 import * as lambda from '../../../aws-lambda';
+import { Architecture } from '../../../aws-lambda';
 import { NodejsFunctionProps } from '../../../aws-lambda-nodejs';
-import { prepareBundling } from '../../../aws-lambda-nodejs/lib/bundling-preparation';
+import { Bundling } from '../../../aws-lambda-nodejs/lib/bundling';
+import { getRuntime, findEntry, findLockFile } from '../../../aws-lambda-nodejs/lib/bundling-preparation';
 import { ValidationError } from '../../../core';
+
 /**
  * Properties for a NodejsEdgeFunction
  */
@@ -27,14 +31,45 @@ export class NodejsEdgeFunction extends EdgeFunction {
       throw new ValidationError('Only `NODEJS` runtimes are supported.', scope);
     }
 
-    const bundlingConfig = prepareBundling(scope, id, props, 'NodejsEdgeFunction');
+    const runtime = getRuntime(scope, props);
 
-    super(scope, id, {
-      ...props,
-      runtime: bundlingConfig.runtime,
-      code: bundlingConfig.code,
-      handler: bundlingConfig.handler,
-    });
+    if (props.code !== undefined) {
+      if (props.handler === undefined) {
+        throw new ValidationError(
+          'Cannot determine handler when `code` property is specified. Use `handler` property to specify a handler.\n'
+          + 'The handler should be the name of the exported function to be invoked and the file containing that function.\n'
+          + 'For example, handler should be specified in the form `myFile.myFunction`', scope,
+        );
+      }
+
+      super(scope, id, {
+        ...props,
+        runtime,
+        code: props.code,
+        handler: props.handler,
+      });
+    } else {
+      // Entry and defaults
+      const entry = path.resolve(findEntry(scope, id, props.entry, 'NodejsEdgeFunction'));
+      const architecture = props.architecture ?? Architecture.X86_64;
+      const depsLockFilePath = findLockFile(scope, props.depsLockFilePath);
+      const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
+      const handler = props.handler ?? 'handler';
+
+      super(scope, id, {
+        ...props,
+        runtime,
+        code: Bundling.bundle(scope, {
+          ...props.bundling ?? {},
+          entry,
+          runtime,
+          architecture,
+          depsLockFilePath,
+          projectRoot,
+        }),
+        handler: handler.indexOf('.') !== -1 ? `${handler}` : `index.${handler}`,
+      });
+    }
   }
 }
 
