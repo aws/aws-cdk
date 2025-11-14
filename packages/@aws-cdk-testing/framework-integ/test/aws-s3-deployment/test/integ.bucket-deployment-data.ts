@@ -65,7 +65,7 @@ class TestBucketDeploymentData extends Stack {
     const file8 = Source.data('file8.txt', '');
 
     // Test null JSON data value
-    const file9 = Source.jsonData('my-json/config-with-null.json', { hello: "there", goodbye: null })
+    const file9 = Source.jsonData('my-json/config-with-null.json', { hello: 'there', goodbye: null });
 
     const deployment = new BucketDeployment(this, 'DeployWithDataSources', {
       destinationBucket: this.bucket,
