@@ -95,14 +95,15 @@ export async function main(argv: string[]) {
   const outputPath = outputDir ?? path.join(__dirname, '..', 'services');
   const generatorOptions: GenerateOptions = {
     outputPath,
-    filePatterns: {
-      resources: options.pattern,
-      augmentations: options.augmentations,
-      cannedMetrics: options.metrics,
-    },
     clearOutput: options['clear-output'],
-    augmentationsSupport: options['augmentations-support'],
     debug: options.debug as boolean,
+    builderProps: {
+      filePatterns: {
+        resources: options.pattern,
+        augmentations: options.augmentations,
+        cannedMetrics: options.metrics,
+      },
+    },
   };
 
   if (options.service?.length) {

@@ -4,7 +4,8 @@ import { DatabaseBuilder } from '@aws-cdk/service-spec-importers';
 import { SpecDatabase } from '@aws-cdk/service-spec-types';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
-import { AstBuilder, AstBuilderProps, DEFAULT_FILE_PATTERNS } from './cdk/ast';
+import { AwsCdkLibBuilder, AwsCdkLibBuilderProps } from './cdk/aws-cdk-lib';
+import { LibraryBuilder, LibraryBuilderProps } from './cdk/library-builder';
 import { queryDb, log, TsFileWriter } from './util';
 
 export interface GenerateServiceRequest {
@@ -41,7 +42,10 @@ export interface GenerateModuleOptions {
   readonly services: GenerateServiceRequest[];
 }
 
-export interface GenerateOptions extends Pick<AstBuilderProps, 'filePatterns' | 'inCdkLib'> {
+export interface GenerateOptions<
+  Builder extends LibraryBuilder = AwsCdkLibBuilder,
+  BuilderProps extends LibraryBuilderProps = AwsCdkLibBuilderProps,
+>{
   /**
    * Base path for generated files
    *
@@ -58,23 +62,21 @@ export interface GenerateOptions extends Pick<AstBuilderProps, 'filePatterns' | 
   readonly clearOutput?: boolean;
 
   /**
-   * Generate L2 stub support files for augmentations (only for testing)
-   *
-   * @default false
-   */
-  readonly augmentationsSupport?: boolean;
-
-  /**
    * Output debug messages
    * @default false
    */
   readonly debug?: boolean;
 
   /**
+   * Additional builder options.
+   */
+  readonly builderProps?: Partial<BuilderProps>;
+
+  /**
    * A function that returns an AstBuilder instance.
    * @default - The default AstBuilder is constructed
    */
-  readonly astBuilder?: (props: AstBuilderProps) => AstBuilder;
+  readonly astBuilder?: (props: BuilderProps) => Builder;
 
   /**
    * Provide an already loaded spec database.
@@ -109,10 +111,13 @@ export interface GeneratedServiceInfo {
  * @param modules A map of arbitrary module names to GenerateModuleOptions. This allows for flexible generation of different configurations at a time.
  * @param options Configure the code generation
  */
-export async function generate(modules: GenerateModuleMap, options: GenerateOptions) {
+export async function generate<
+  Builder extends LibraryBuilder = AwsCdkLibBuilder,
+  BuilderProps extends LibraryBuilderProps = AwsCdkLibBuilderProps,
+>(modules: GenerateModuleMap, options: GenerateOptions<Builder, BuilderProps>) {
   enableDebug(options);
   const db = options.db ?? await loadPatchedSpec();
-  return generator(db, modules, options);
+  return generator<Builder, BuilderProps>(db, modules, options);
 }
 
 /**
@@ -153,16 +158,19 @@ export async function generateAll(options: GenerateOptions) {
   await generator(db, modules, options);
 }
 
-function enableDebug(options: GenerateOptions) {
+function enableDebug(options: { debug?: boolean }) {
   if (options.debug) {
     process.env.DEBUG = '1';
   }
 }
 
-async function generator(
+async function generator<
+  Builder extends LibraryBuilder = AwsCdkLibBuilder,
+  BuilderProps extends LibraryBuilderProps = AwsCdkLibBuilderProps,
+>(
   db: SpecDatabase,
   modules: { [name: string]: GenerateModuleOptions },
-  options: GenerateOptions,
+  options: GenerateOptions<Builder, BuilderProps>,
 ): Promise<GenerateOutput> {
   const timeLabel = '🐢  Completed in';
   log.time(timeLabel);
@@ -178,15 +186,11 @@ async function generator(
     fs.removeSync(outputPath);
   }
 
-  const createAst = options.astBuilder ?? ((props: AstBuilderProps) => new AstBuilder(props));
+  const createAst = options.astBuilder ?? ((props: AwsCdkLibBuilderProps) => new AwsCdkLibBuilder(props));
   const ast = createAst({
     db,
-    filePatterns: {
-      ...DEFAULT_FILE_PATTERNS,
-      ...noUndefined(options.filePatterns),
-    },
-    inCdkLib: options.inCdkLib,
-  });
+    ...options.builderProps,
+  } as any);
 
   const moduleResources: Record<string, Record<string, string>> = {};
 
@@ -238,11 +242,4 @@ function mergeObjects<T>(all: T, res: T) {
     ...all,
     ...res,
   };
-}
-
-function noUndefined<A extends object>(x: A | undefined): A | undefined {
-  if (!x) {
-    return undefined;
-  }
-  return Object.fromEntries(Object.entries(x).filter(([, v]) => v !== undefined)) as any;
 }
