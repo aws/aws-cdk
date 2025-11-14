@@ -23,6 +23,15 @@ test('default secret', () => {
   });
 });
 
+test('owned secret has secretFullArn', () => {
+  // WHEN
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+
+  // THEN
+  expect(secret.secretFullArn).toBeDefined();
+  expect(stack.resolve(secret.secretFullArn)).toEqual({ Ref: 'SecretA720EF05' });
+});
+
 test('set removalPolicy to secret', () => {
   // WHEN
   new secretsmanager.Secret(stack, 'Secret', {
@@ -1053,8 +1062,7 @@ testDeprecated('import by secret name with grants', () => {
         ],
         Effect: 'Allow',
         Resource: expectedSecretReference,
-      },
-      {
+      }, {
         Action: [
           'secretsmanager:PutSecretValue',
           'secretsmanager:UpdateSecret',
