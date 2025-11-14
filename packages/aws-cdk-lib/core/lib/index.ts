@@ -36,7 +36,7 @@ export * from './duration';
 export * from './expiration';
 export * from './size';
 export * from './stack-trace';
-export { Element } from './deps';
+export type { Element } from './deps';
 export * from './errors';
 
 export * from './app';
