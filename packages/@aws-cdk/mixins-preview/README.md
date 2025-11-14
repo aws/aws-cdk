@@ -37,6 +37,22 @@ Mixins.of(bucket)
   .apply(new AutoDeleteObjects());
 ```
 
+### Fluent Syntax with `.with()`
+
+For convenience, you can use the `.with()` method for a more fluent syntax:
+
+```typescript
+import '@aws-cdk/mixins-preview/with';
+
+const bucket = new s3.CfnBucket(scope, "MyBucket")
+  .with(new EnableVersioning())
+  .with(new AutoDeleteObjects());
+```
+
+The `.with()` method is available after importing `@aws-cdk/mixins-preview/with`, which augments all constructs with this method. It provides the same functionality as `Mixins.of().apply()` but with a more chainable API.
+
+> **Note**: The `.with()` fluent syntax is only available in JavaScript and TypeScript. Other jsii languages (Python, Java, C#, and Go) should use the `Mixins.of(...).mustApply()` syntax instead. The import requirement is temporary during the preview phase. Once the API is stable, the `.with()` method will be available by default on all constructs and in all languages.
+
 ## Creating Custom Mixins
 
 Mixins are simple classes that implement the `IMixin` interface:
