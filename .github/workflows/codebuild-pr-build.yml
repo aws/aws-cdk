@@ -24,17 +24,20 @@ concurrency:
 
 jobs:
   build:
+    # Runner exists only for aws-cdk repo
+    if: github.repository == 'aws/aws-cdk'
     runs-on: codebuild-aws-cdk-github-actions-runner-${{ github.run_id }}-${{ github.run_attempt }}
 
     env:
       PR_BUILD: true
+      JSII_SILENCE_WARNING_DEPRECATED_NODE_VERSION: true
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: "18"
           cache: "yarn"
@@ -67,7 +70,7 @@ jobs:
           sudo sysctl -w vm.max_map_count=2251954
 
       - name: Build
-        run: /bin/bash ./build.sh --ci
+        run: /bin/bash ./build.sh --ci --concurrency 10
 
       - name: Run Rosetta
         run: /bin/bash ./scripts/run-rosetta.sh

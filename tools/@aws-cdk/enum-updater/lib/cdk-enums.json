@@ -28,6 +28,15 @@
         "AMPLIFY_MANAGED_NO_COOKIES"
       ]
     },
+    "BuildComputeType": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-amplify-alpha/lib/app.ts",
+      "enumLike": false,
+      "values": [
+        "STANDARD_8GB",
+        "LARGE_16GB",
+        "XLARGE_72GB"
+      ]
+    },
     "CustomRule": {
       "path": "aws-cdk/packages/@aws-cdk/aws-amplify-alpha/lib/app.ts",
       "enumLike": true,
@@ -522,6 +531,7 @@
         "ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0_200K",
         "ANTHROPIC_CLAUDE_3_7_SONNET_20250219_V1_0",
         "ANTHROPIC_CLAUDE_SONNET_4_20250514_V1_0",
+        "ANTHROPIC_CLAUDE_SONNET_4_5_20250929_V1_0",
         "ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0",
         "ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_48K",
         "ANTHROPIC_CLAUDE_3_5_HAIKU_20241022_V1_0",
@@ -545,7 +555,9 @@
         "COHERE_EMBED_ENGLISH_V3_0_512",
         "COHERE_EMBED_MULTILINGUAL_V3",
         "COHERE_EMBED_MULTILINGUAL_V3_0_512",
+        "COHERE_EMBED_V4",
         "DEEP_SEEK_R1_V1_0",
+        "DEEP_SEEK_V3_V1_0",
         "OPENAI_GPT_OSS_120B_1",
         "OPENAI_GPT_OSS_20B_1",
         "LUMA_RAY_V2_0",
@@ -577,6 +589,10 @@
         "MISTRAL_SMALL_V0_1",
         "MISTRAL_LARGE_2_V0_1",
         "MISTRAL_PIXTRAL_LARGE_2502_V1_0",
+        "QWEN_QWEN3_32B_V1_0",
+        "QWEN_QWEN3_235B_A22B_2507_V1_0",
+        "QWEN_QWEN3_CODER_30B_A3B_V1_0",
+        "QWEN_QWEN3_CODER_480B_A35B_V1_0",
         "STABILITY_STABLE_DIFFUSION_XL",
         "STABILITY_STABLE_DIFFUSION_XL_V0",
         "STABILITY_STABLE_DIFFUSION_XL_V1",
@@ -707,6 +723,91 @@
         24
       ]
     },
+    "AcceleratorType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts",
+      "enumLike": false,
+      "values": [
+        "gpu",
+        "fpga",
+        "inference"
+      ]
+    },
+    "AcceleratorManufacturer": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts",
+      "enumLike": false,
+      "values": [
+        "amazon-web-services",
+        "amd",
+        "nvidia",
+        "xilinx"
+      ]
+    },
+    "AcceleratorName": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts",
+      "enumLike": false,
+      "values": [
+        "a100",
+        "k80",
+        "m60",
+        "radeon-pro-v520",
+        "t4",
+        "v100",
+        "vu9p"
+      ]
+    },
+    "BareMetal": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts",
+      "enumLike": false,
+      "values": [
+        "included",
+        "required",
+        "excluded"
+      ]
+    },
+    "BurstablePerformance": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts",
+      "enumLike": false,
+      "values": [
+        "included",
+        "required",
+        "excluded"
+      ]
+    },
+    "CpuManufacturer": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts",
+      "enumLike": false,
+      "values": [
+        "intel",
+        "amd",
+        "amazon-web-services",
+        "apple"
+      ]
+    },
+    "InstanceGeneration": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts",
+      "enumLike": false,
+      "values": [
+        "current",
+        "previous"
+      ]
+    },
+    "LocalStorage": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts",
+      "enumLike": false,
+      "values": [
+        "included",
+        "required",
+        "excluded"
+      ]
+    },
+    "LocalStorageType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts",
+      "enumLike": false,
+      "values": [
+        "hdd",
+        "ssd"
+      ]
+    },
     "InstanceClass": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-types.ts",
       "enumLike": false,
@@ -795,12 +896,20 @@
         "r7i",
         "memory7-intel",
         "r7iz",
+        "memory8-intel-base",
+        "r8i",
+        "memory8-intel-flex",
+        "r8i-flex",
         "memory7-amd",
         "r7a",
         "memory8-graviton",
         "r8g",
         "memory8-graviton4-nvme-drive",
         "r8gd",
+        "memory8-graviton4-high-network-bandwidth",
+        "r8gn",
+        "memory8-graviton4-ebs-optimized",
+        "r8gb",
         "compute3",
         "c3",
         "compute4",
@@ -845,6 +954,10 @@
         "c7i",
         "compute7-intel-flex",
         "c7i-flex",
+        "compute8-intel",
+        "c8i",
+        "compute8-intel-flex",
+        "c8i-flex",
         "compute7-amd",
         "c7a",
         "storage2",
@@ -881,6 +994,8 @@
         "i7i",
         "storage8-graviton",
         "i8g",
+        "storage8-graviton-storage-optimized",
+        "i8ge",
         "burstable2",
         "t2",
         "burstable3",
@@ -967,12 +1082,18 @@
         "m7gd",
         "standard8-graviton4-nvme-drive",
         "m8gd",
+        "standard8-intel",
+        "m8i",
+        "standard8-intel-flex",
+        "m8i-flex",
         "standard7-intel",
         "m7i",
         "standard7-intel-flex",
         "m7i-flex",
         "standard7-amd",
         "m7a",
+        "standard8-amd",
+        "m8a",
         "high-compute-memory1",
         "z1d",
         "inference1",
@@ -2025,6 +2146,8 @@
         "BEDROCK",
         "BEDROCK_AGENT",
         "BEDROCK_AGENT_RUNTIME",
+        "BEDROCK_AGENTCORE",
+        "BEDROCK_AGENTCORE_GATEWAY",
         "BEDROCK_RUNTIME",
         "BEDROCK_DATA_AUTOMATION",
         "BEDROCK_DATA_AUTOMATION_FIPS",
@@ -2540,6 +2663,7 @@
         "AL2023_x86_64_STANDARD",
         "AL2023_x86_64_NEURON",
         "AL2023_x86_64_NVIDIA",
+        "AL2023_ARM_64_NVIDIA",
         "AL2023_ARM_64_STANDARD"
       ]
     },
@@ -2650,6 +2774,35 @@
         "V1_31",
         "V1_32",
         "V1_33"
+      ]
+    }
+  },
+  "elasticache": {
+    "UserEngine": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/common.ts",
+      "enumLike": false,
+      "values": [
+        "valkey",
+        "redis"
+      ]
+    },
+    "CacheEngine": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache-base.ts",
+      "enumLike": false,
+      "values": [
+        "valkey",
+        "valkey_7",
+        "valkey_8",
+        "redis",
+        "redis_7",
+        "memcached"
+      ]
+    },
+    "DataStorageUnit": {
+      "path": "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache.ts",
+      "enumLike": false,
+      "values": [
+        "GB"
       ]
     }
   },
@@ -3861,7 +4014,9 @@
         "nodejs18.x",
         "python3.9",
         "python3.10",
-        "python3.11"
+        "python3.11",
+        "python3.13",
+        "python3.13"
       ]
     },
     "ComponentType": {
@@ -4989,7 +5144,8 @@
       "path": "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/job-queue.ts",
       "enumLike": false,
       "values": [
-        "CANCEL"
+        "CANCEL",
+        "TERMINATE"
       ]
     },
     "JobStateTimeLimitActionsReason": {
@@ -5087,6 +5243,14 @@
         "BEST_FIT_PROGRESSIVE",
         "SPOT_CAPACITY_OPTIMIZED",
         "SPOT_PRICE_CAPACITY_OPTIMIZED"
+      ]
+    },
+    "DefaultInstanceClass": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/managed-compute-environment.ts",
+      "enumLike": false,
+      "values": [
+        "default_x86_64",
+        "default_arm64"
       ]
     }
   },
@@ -5193,7 +5357,8 @@
         "TLSv1.1_2016",
         "TLSv1.2_2018",
         "TLSv1.2_2019",
-        "TLSv1.2_2021"
+        "TLSv1.2_2021",
+        "TLSv1.3_2025"
       ]
     },
     "LambdaEdgeEventType": {
@@ -5257,6 +5422,15 @@
       "values": [
         "default",
         "media-quality-based"
+      ]
+    },
+    "OriginIpAddressType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/origin.ts",
+      "enumLike": false,
+      "values": [
+        "ipv4",
+        "ipv6",
+        "dualstack"
       ]
     },
     "HeadersFrameOption": {
@@ -5695,7 +5869,19 @@
         "BUILD_LAMBDA_4GB",
         "BUILD_LAMBDA_8GB",
         "BUILD_LAMBDA_10GB",
-        "ATTRIBUTE_BASED_COMPUTE"
+        "ATTRIBUTE_BASED_COMPUTE",
+        "CUSTOM_INSTANCE_TYPE"
+      ]
+    },
+    "DockerServerComputeType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/compute-type.ts",
+      "enumLike": false,
+      "values": [
+        "BUILD_GENERAL1_SMALL",
+        "BUILD_GENERAL1_MEDIUM",
+        "BUILD_GENERAL1_LARGE",
+        "BUILD_GENERAL1_XLARGE",
+        "BUILD_GENERAL1_2XLARGE"
       ]
     },
     "EnvironmentType": {
@@ -5730,11 +5916,20 @@
         "BUILD_GENERAL1_LARGE",
         "BUILD_GENERAL1_XLARGE",
         "BUILD_GENERAL1_2XLARGE",
-        "ATTRIBUTE_BASED_COMPUTE"
+        "ATTRIBUTE_BASED_COMPUTE",
+        "CUSTOM_INSTANCE_TYPE"
+      ]
+    },
+    "FleetOverflowBehavior": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/fleet.ts",
+      "enumLike": false,
+      "values": [
+        "QUEUE",
+        "ON_DEMAND"
       ]
     },
     "ImagePullPrincipalType": {
-      "path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.ts",
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/image-pull-principal-type.ts",
       "enumLike": false,
       "values": [
         "CODEBUILD",
@@ -7069,7 +7264,9 @@
       "enumLike": false,
       "values": [
         "MUTABLE",
-        "IMMUTABLE"
+        "IMMUTABLE",
+        "IMMUTABLE_WITH_EXCLUSION",
+        "MUTABLE_WITH_EXCLUSION"
       ]
     },
     "RepositoryEncryption": {
@@ -7245,7 +7442,11 @@
         0,
         1,
         2,
-        3
+        3,
+        4,
+        5,
+        6,
+        7
       ]
     },
     "MachineImageType": {
@@ -7272,6 +7473,22 @@
         "NONE",
         "DEFAULT",
         "OVERRIDE"
+      ]
+    },
+    "InstanceMonitoring": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.ts",
+      "enumLike": false,
+      "values": [
+        "BASIC",
+        "DETAILED"
+      ]
+    },
+    "PropagateManagedInstancesTags": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.ts",
+      "enumLike": false,
+      "values": [
+        "CAPACITY_PROVIDER",
+        "NONE"
       ]
     },
     "UlimitName": {
@@ -7717,6 +7934,7 @@
         "AL2023_x86_64_STANDARD",
         "AL2023_x86_64_NEURON",
         "AL2023_x86_64_NVIDIA",
+        "AL2023_ARM_64_NVIDIA",
         "AL2023_ARM_64_STANDARD"
       ]
     },
@@ -8106,6 +8324,24 @@
         "OAUTH_CLIENT_CREDENTIALS"
       ]
     },
+    "IncludeDetail": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-events/lib/event-bus.ts",
+      "enumLike": false,
+      "values": [
+        "FULL",
+        "NONE"
+      ]
+    },
+    "Level": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-events/lib/event-bus.ts",
+      "enumLike": false,
+      "values": [
+        "INFO",
+        "ERROR",
+        "TRACE",
+        "OFF"
+      ]
+    },
     "InputType": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-events/lib/input.ts",
       "enumLike": false,
@@ -8226,7 +8462,8 @@
       "enumLike": false,
       "values": [
         "Active",
-        "Inactive"
+        "Inactive",
+        "Expired"
       ]
     },
     "Effect": {
@@ -8239,6 +8476,20 @@
     }
   },
   "kinesis": {
+    "ShardLevelMetrics": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-kinesis/lib/stream.ts",
+      "enumLike": false,
+      "values": [
+        "IncomingBytes",
+        "IncomingRecords",
+        "IteratorAgeMilliseconds",
+        "OutgoingBytes",
+        "OutgoingRecords",
+        "ReadProvisionedThroughputExceeded",
+        "WriteProvisionedThroughputExceeded",
+        "ALL"
+      ]
+    },
     "StreamEncryption": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-kinesis/lib/stream.ts",
       "enumLike": false,
@@ -8341,6 +8592,7 @@
         "package-lock.json",
         "yarn.lock",
         "bun.lockb",
+        "bun.lock",
         "pnpm-lock.yaml"
       ]
     },
@@ -8743,7 +8995,12 @@
       "values": [
         "BASIC_AUTH",
         "CLIENT_CERTIFICATE_TLS_AUTH",
-        "SERVER_ROOT_CA_CERTIFICATE"
+        "SERVER_ROOT_CA_CERTIFICATE",
+        "VIRTUAL_HOST",
+        "SASL_SCRAM_256_AUTH",
+        "SASL_SCRAM_512_AUTH",
+        "VPC_SECURITY_GROUP",
+        "VPC_SUBNET"
       ]
     },
     "KafkaSchemaValidationAttribute": {
@@ -9101,7 +9358,8 @@
         "OPENSEARCH_2_13",
         "OPENSEARCH_2_15",
         "OPENSEARCH_2_17",
-        "OPENSEARCH_2_19"
+        "OPENSEARCH_2_19",
+        "OPENSEARCH_3_1"
       ]
     }
   },
@@ -9221,6 +9479,14 @@
         "open-source-rds-extended-support-disabled"
       ]
     },
+    "ProxyEndpointTargetRole": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy-endpoint.ts",
+      "enumLike": false,
+      "values": [
+        "READ_WRITE",
+        "READ_ONLY"
+      ]
+    },
     "ClientPasswordAuthType": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.ts",
       "enumLike": false,
@@ -9228,7 +9494,8 @@
         "MYSQL_NATIVE_PASSWORD",
         "POSTGRES_SCRAM_SHA_256",
         "POSTGRES_MD5",
-        "SQL_SERVER_AUTHENTICATION"
+        "SQL_SERVER_AUTHENTICATION",
+        "MYSQL_CACHING_SHA2_PASSWORD"
       ]
     },
     "AuroraCapacityUnit": {
@@ -9381,7 +9648,8 @@
         "VER_3_08_1",
         "VER_3_08_2",
         "VER_3_09_0",
-        "VER_3_10_0"
+        "VER_3_10_0",
+        "VER_3_10_1"
       ]
     },
     "AuroraPostgresEngineVersion": {
@@ -9501,6 +9769,7 @@
         "VER_16_8",
         "VER_16_8_LIMITLESS",
         "VER_16_9",
+        "VER_16_9_LIMITLESS",
         "VER_17_1",
         "VER_17_2",
         "VER_17_4",
@@ -9628,7 +9897,8 @@
         "VER_11_4_3",
         "VER_11_4_4",
         "VER_11_4_5",
-        "VER_11_4_7"
+        "VER_11_4_7",
+        "VER_11_8_3"
       ]
     },
     "MysqlEngineVersion": {
@@ -9686,6 +9956,7 @@
         "VER_5_7_44_RDS_20250103",
         "VER_5_7_44_RDS_20250213",
         "VER_5_7_44_RDS_20250508",
+        "VER_5_7_44_RDS_20250818",
         "VER_8_0",
         "VER_8_0_11",
         "VER_8_0_13",
@@ -9860,6 +10131,7 @@
         "VER_13_19",
         "VER_13_20",
         "VER_13_21",
+        "VER_13_22",
         "VER_14",
         "VER_14_1",
         "VER_14_2",
@@ -9879,6 +10151,7 @@
         "VER_14_16",
         "VER_14_17",
         "VER_14_18",
+        "VER_14_19",
         "VER_15",
         "VER_15_2",
         "VER_15_3",
@@ -9892,6 +10165,7 @@
         "VER_15_11",
         "VER_15_12",
         "VER_15_13",
+        "VER_15_14",
         "VER_16",
         "VER_16_1",
         "VER_16_2",
@@ -9902,12 +10176,14 @@
         "VER_16_7",
         "VER_16_8",
         "VER_16_9",
+        "VER_16_10",
         "VER_17",
         "VER_17_1",
         "VER_17_2",
         "VER_17_3",
         "VER_17_4",
-        "VER_17_5"
+        "VER_17_5",
+        "VER_17_6"
       ]
     },
     "OracleLegacyEngineVersion": {
@@ -10026,6 +10302,7 @@
         "VER_19_0_0_0_2024_07_R1",
         "VER_19_0_0_0_2024_10_R1",
         "VER_19_0_0_0_2025_01_R1",
+        "VER_19_0_0_0_2025_07_R1",
         "VER_21",
         "VER_21_0_0_0_2022_01_R1",
         "VER_21_0_0_0_2022_04_R1",
@@ -10040,7 +10317,8 @@
         "VER_21_0_0_0_2024_04_R1",
         "VER_21_0_0_0_2024_07_R1",
         "VER_21_0_0_0_2024_10_R1",
-        "VER_21_0_0_0_2025_01_R1"
+        "VER_21_0_0_0_2025_01_R1",
+        "VER_21_0_0_0_2025_07_R1"
       ]
     },
     "SqlServerEngineVersion": {
@@ -10087,6 +10365,7 @@
         "VER_13_00_6450_1_V1",
         "VER_13_00_6455_2_V1",
         "VER_13_00_6460_7_V1",
+        "VER_13_00_6465_1_V1",
         "VER_14",
         "VER_14_00_1000_169_V1",
         "VER_14_00_3015_40_V1",
@@ -10108,6 +10387,7 @@
         "VER_14_00_3480_1_V1",
         "VER_14_00_3485_1_V1",
         "VER_14_00_3495_9_V1",
+        "VER_14_00_3500_1_V1",
         "VER_15",
         "VER_15_00_4043_16_V1",
         "VER_15_00_4355_3_V1",
@@ -10132,6 +10412,7 @@
         "VER_15_00_4420_2_V1",
         "VER_15_00_4430_1_V1",
         "VER_15_00_4435_7_V1",
+        "VER_15_00_4440_1_V1",
         "VER_16",
         "VER_16_00_4085_2_V1",
         "VER_16_00_4095_4_V1",
@@ -10147,7 +10428,8 @@
         "VER_16_00_4175_1_V1",
         "VER_16_00_4185_3_V1",
         "VER_16_00_4195_2_V1",
-        "VER_16_00_4205_1_V1"
+        "VER_16_00_4205_1_V1",
+        "VER_16_00_4210_1_V1"
       ]
     },
     "DatabaseInstanceEngine": {
@@ -10252,6 +10534,15 @@
         "issue",
         "issuewild",
         "iodef"
+      ]
+    },
+    "Alpn": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.ts",
+      "enumLike": true,
+      "values": [
+        "HTTP1_1",
+        "H2",
+        "H3"
       ]
     }
   },
@@ -11298,6 +11589,14 @@
     }
   },
   "synthetics": {
+    "BrowserType": {
+      "path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts",
+      "enumLike": false,
+      "values": [
+        "CHROME",
+        "FIREFOX"
+      ]
+    },
     "Cleanup": {
       "path": "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts",
       "enumLike": false,
@@ -11350,8 +11649,11 @@
         "SYNTHETICS_NODEJS_PUPPETEER_8_0",
         "SYNTHETICS_NODEJS_PUPPETEER_9_0",
         "SYNTHETICS_NODEJS_PUPPETEER_9_1",
+        "SYNTHETICS_NODEJS_PUPPETEER_10_0",
+        "SYNTHETICS_NODEJS_PUPPETEER_11_0",
         "SYNTHETICS_NODEJS_PLAYWRIGHT_1_0",
         "SYNTHETICS_NODEJS_PLAYWRIGHT_2_0",
+        "SYNTHETICS_NODEJS_PLAYWRIGHT_3_0",
         "SYNTHETICS_PYTHON_SELENIUM_1_0",
         "SYNTHETICS_PYTHON_SELENIUM_1_1",
         "SYNTHETICS_PYTHON_SELENIUM_1_2",
@@ -12191,7 +12493,8 @@
         "V1_4_2_0",
         "V1_4_3_0",
         "V1_4_4_0",
-        "V1_4_5_0"
+        "V1_4_5_0",
+        "V1_4_5_1"
       ]
     },
     "LogType": {

@@ -15,6 +15,11 @@
     "CacheConfigType": [
       "AMPLIFY_MANAGED",
       "AMPLIFY_MANAGED_NO_COOKIES"
+    ],
+    "BuildComputeType": [
+      "STANDARD_8GB",
+      "LARGE_16GB",
+      "XLARGE_72GB"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-apprunner-alpha/lib/observability-configuration.ts": {
@@ -38,6 +43,21 @@
     "IpAddressType": [
       "IPV4",
       "DUAL_STACK"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/memory/memory-strategy.ts": {
+    "MemoryStrategyType": [
+      "SUMMARIZATION",
+      "SEMANTIC",
+      "USER_PREFERENCE",
+      "CUSTOM"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/runtime/types.ts": {
+    "ProtocolType": [
+      "MCP",
+      "HTTP",
+      "A2A"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent-collaborator.ts": {
@@ -284,6 +304,7 @@
       "AL2023_x86_64_STANDARD",
       "AL2023_x86_64_NEURON",
       "AL2023_x86_64_NVIDIA",
+      "AL2023_ARM_64_NVIDIA",
       "AL2023_ARM_64_STANDARD"
     ],
     "CapacityType": [
@@ -307,6 +328,27 @@
     "LifecycleLabel": [
       "OnDemand",
       "Ec2Spot"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/common.ts": {
+    "UserEngine": [
+      "valkey",
+      "redis"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache-base.ts": {
+    "CacheEngine": [
+      "valkey",
+      "valkey_7",
+      "valkey_8",
+      "redis",
+      "redis_7",
+      "memcached"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache.ts": {
+    "DataStorageUnit": [
+      "GB"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-gamelift-alpha/lib/build.ts": {
@@ -732,6 +774,10 @@
       "LOCAL",
       "TIERED"
     ],
+    "BrokerType": [
+      "STANDARD",
+      "EXPRESS"
+    ],
     "ClusterMonitoringLevel": [
       "DEFAULT",
       "PER_BROKER",
@@ -928,10 +974,12 @@
   },
   "aws-cdk/packages/@aws-cdk/custom-resource-handlers/lib/custom-resources-framework/config.ts": {
     "Runtime": [
-      "nodejs18.x",
+      "nodejs20.x",
       "python3.9",
       "python3.10",
-      "python3.11"
+      "python3.11",
+      "python3.13",
+      "python3.13"
     ],
     "ComponentType": [
       "Function",
@@ -1635,7 +1683,8 @@
   },
   "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/job-queue.ts": {
     "JobStateTimeLimitActionsAction": [
-      "CANCEL"
+      "CANCEL",
+      "TERMINATE"
     ],
     "JobStateTimeLimitActionsReason": [
       "CAPACITY:INSUFFICIENT_INSTANCE_CAPACITY",
@@ -1709,6 +1758,10 @@
       "BEST_FIT_PROGRESSIVE",
       "SPOT_CAPACITY_OPTIMIZED",
       "SPOT_PRICE_CAPACITY_OPTIMIZED"
+    ],
+    "DefaultInstanceClass": [
+      "default_x86_64",
+      "default_arm64"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts": {
@@ -1766,7 +1819,9 @@
       "TLSv1.1_2016",
       "TLSv1.2_2018",
       "TLSv1.2_2019",
-      "TLSv1.2_2021"
+      "TLSv1.2_2021",
+      "TLSv1.2_2025",
+      "TLSv1.3_2025"
     ],
     "LambdaEdgeEventType": [
       "origin-request",
@@ -1808,6 +1863,11 @@
     "OriginSelectionCriteria": [
       "default",
       "media-quality-based"
+    ],
+    "OriginIpAddressType": [
+      "ipv4",
+      "ipv6",
+      "dualstack"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/response-headers-policy.ts": {
@@ -2052,7 +2112,15 @@
       "BUILD_LAMBDA_4GB",
       "BUILD_LAMBDA_8GB",
       "BUILD_LAMBDA_10GB",
-      "ATTRIBUTE_BASED_COMPUTE"
+      "ATTRIBUTE_BASED_COMPUTE",
+      "CUSTOM_INSTANCE_TYPE"
+    ],
+    "DockerServerComputeType": [
+      "BUILD_GENERAL1_SMALL",
+      "BUILD_GENERAL1_MEDIUM",
+      "BUILD_GENERAL1_LARGE",
+      "BUILD_GENERAL1_XLARGE",
+      "BUILD_GENERAL1_2XLARGE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/environment-type.ts": {
@@ -2079,14 +2147,21 @@
       "BUILD_GENERAL1_LARGE",
       "BUILD_GENERAL1_XLARGE",
       "BUILD_GENERAL1_2XLARGE",
-      "ATTRIBUTE_BASED_COMPUTE"
+      "ATTRIBUTE_BASED_COMPUTE",
+      "CUSTOM_INSTANCE_TYPE"
+    ],
+    "FleetOverflowBehavior": [
+      "QUEUE",
+      "ON_DEMAND"
     ]
   },
-  "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.ts": {
+  "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/image-pull-principal-type.ts": {
     "ImagePullPrincipalType": [
       "CODEBUILD",
       "SERVICE_ROLE"
-    ],
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.ts": {
     "WindowsImageType": [
       "WINDOWS_CONTAINER",
       "WINDOWS_SERVER_2019_CONTAINER",
@@ -2526,6 +2601,63 @@
       24
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-requirements.ts": {
+    "AcceleratorType": [
+      "gpu",
+      "fpga",
+      "inference"
+    ],
+    "AcceleratorManufacturer": [
+      "amazon-web-services",
+      "amd",
+      "nvidia",
+      "xilinx",
+      "habana"
+    ],
+    "AcceleratorName": [
+      "a100",
+      "k80",
+      "m60",
+      "radeon-pro-v520",
+      "t4",
+      "v100",
+      "vu9p",
+      "a10g",
+      "h100",
+      "inferentia",
+      "k520",
+      "t4g"
+    ],
+    "BareMetal": [
+      "included",
+      "required",
+      "excluded"
+    ],
+    "BurstablePerformance": [
+      "included",
+      "required",
+      "excluded"
+    ],
+    "CpuManufacturer": [
+      "intel",
+      "amd",
+      "amazon-web-services",
+      "apple"
+    ],
+    "InstanceGeneration": [
+      "current",
+      "previous"
+    ],
+    "LocalStorage": [
+      "included",
+      "required",
+      "excluded"
+    ],
+    "LocalStorageType": [
+      "hdd",
+      "ssd"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/instance-types.ts": {
     "InstanceClass": [
       "standard3",
@@ -2612,12 +2744,20 @@
       "r7i",
       "memory7-intel",
       "r7iz",
+      "memory8-intel-base",
+      "r8i",
+      "memory8-intel-flex",
+      "r8i-flex",
       "memory7-amd",
       "r7a",
       "memory8-graviton",
       "r8g",
       "memory8-graviton4-nvme-drive",
       "r8gd",
+      "memory8-graviton4-high-network-bandwidth",
+      "r8gn",
+      "memory8-graviton4-ebs-optimized",
+      "r8gb",
       "compute3",
       "c3",
       "compute4",
@@ -2662,6 +2802,10 @@
       "c7i",
       "compute7-intel-flex",
       "c7i-flex",
+      "compute8-intel",
+      "c8i",
+      "compute8-intel-flex",
+      "c8i-flex",
       "compute7-amd",
       "c7a",
       "storage2",
@@ -2698,6 +2842,8 @@
       "i7i",
       "storage8-graviton",
       "i8g",
+      "storage8-graviton-storage-optimized",
+      "i8ge",
       "burstable2",
       "t2",
       "burstable3",
@@ -2784,12 +2930,18 @@
       "m7gd",
       "standard8-graviton4-nvme-drive",
       "m8gd",
+      "standard8-intel",
+      "m8i",
+      "standard8-intel-flex",
+      "m8i-flex",
       "standard7-intel",
       "m7i",
       "standard7-intel-flex",
       "m7i-flex",
       "standard7-amd",
       "m7a",
+      "standard8-amd",
+      "m8a",
       "high-compute-memory1",
       "z1d",
       "inference1",
@@ -3638,7 +3790,9 @@
     ],
     "TagMutability": [
       "MUTABLE",
-      "IMMUTABLE"
+      "IMMUTABLE",
+      "IMMUTABLE_WITH_EXCLUSION",
+      "MUTABLE_WITH_EXCLUSION"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ecs-patterns/lib/base/application-load-balanced-service-base.ts": {
@@ -3743,7 +3897,11 @@
       0,
       1,
       2,
-      3
+      3,
+      4,
+      5,
+      6,
+      7
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.ts": {
@@ -3760,6 +3918,14 @@
       "NONE",
       "DEFAULT",
       "OVERRIDE"
+    ],
+    "InstanceMonitoring": [
+      "BASIC",
+      "DETAILED"
+    ],
+    "PropagateManagedInstancesTags": [
+      "CAPACITY_PROVIDER",
+      "NONE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/container-definition.ts": {
@@ -4062,6 +4228,7 @@
       "AL2023_x86_64_STANDARD",
       "AL2023_x86_64_NEURON",
       "AL2023_x86_64_NVIDIA",
+      "AL2023_ARM_64_NVIDIA",
       "AL2023_ARM_64_STANDARD"
     ],
     "CapacityType": [
@@ -4254,6 +4421,18 @@
       "OAUTH_CLIENT_CREDENTIALS"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-events/lib/event-bus.ts": {
+    "IncludeDetail": [
+      "FULL",
+      "NONE"
+    ],
+    "Level": [
+      "INFO",
+      "ERROR",
+      "TRACE",
+      "OFF"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-events/lib/input.ts": {
     "InputType": [
       0,
@@ -4332,7 +4511,8 @@
   "aws-cdk/packages/aws-cdk-lib/aws-iam/lib/access-key.ts": {
     "AccessKeyStatus": [
       "Active",
-      "Inactive"
+      "Inactive",
+      "Expired"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy-statement.ts": {
@@ -4342,6 +4522,16 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-kinesis/lib/stream.ts": {
+    "ShardLevelMetrics": [
+      "IncomingBytes",
+      "IncomingRecords",
+      "IteratorAgeMilliseconds",
+      "OutgoingBytes",
+      "OutgoingRecords",
+      "ReadProvisionedThroughputExceeded",
+      "WriteProvisionedThroughputExceeded",
+      "ALL"
+    ],
     "StreamEncryption": [
       "NONE",
       "KMS",
@@ -4363,6 +4553,16 @@
       0,
       1,
       2
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/output.ts": {
+    "ParquetWriterVersion": [
+      "V1",
+      "V2"
+    ],
+    "OrcFormatVersion": [
+      "V0_11",
+      "V0_12"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.ts": {
@@ -4404,6 +4604,7 @@
       "package-lock.json",
       "yarn.lock",
       "bun.lockb",
+      "bun.lock",
       "pnpm-lock.yaml"
     ]
   },
@@ -4751,12 +4952,19 @@
       "open-source-rds-extended-support-disabled"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy-endpoint.ts": {
+    "ProxyEndpointTargetRole": [
+      "READ_WRITE",
+      "READ_ONLY"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.ts": {
     "ClientPasswordAuthType": [
       "MYSQL_NATIVE_PASSWORD",
       "POSTGRES_SCRAM_SHA_256",
       "POSTGRES_MD5",
-      "SQL_SERVER_AUTHENTICATION"
+      "SQL_SERVER_AUTHENTICATION",
+      "MYSQL_CACHING_SHA2_PASSWORD"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/serverless-cluster.ts": {
@@ -5476,6 +5684,10 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-synthetics/lib/canary.ts": {
+    "BrowserType": [
+      "CHROME",
+      "FIREFOX"
+    ],
     "Cleanup": [
       "nothing",
       "lambda"
