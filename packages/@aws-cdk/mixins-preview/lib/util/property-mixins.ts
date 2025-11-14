@@ -21,7 +21,7 @@ export function deepMerge(target: any, source: any, mergeOnly: string[]): any {
 
     if (typeof sourceValue === 'object' && sourceValue != null && !Array.isArray(sourceValue) &&
         typeof targetValue === 'object' && targetValue != null && !Array.isArray(targetValue)) {
-      target[key] = deepMergeCopy({}, targetValue, sourceValue);
+      target[key] = deepMergeCopy(Object.create(null), targetValue, sourceValue);
     } else {
       target[key] = sourceValue;
     }
@@ -58,6 +58,9 @@ const MERGE_EXCLUDE_KEYS: string[] = [
 ];
 
 /**
+ * This is an unchanged copy from packages/aws-cdk-lib/core/lib/cfn-resource.ts
+ * The intention will be to use this function from core once the package is merged.
+ *
  * Merges `source` into `target`, overriding any existing values.
  * `null`s will cause a value to be deleted.
  */
@@ -68,7 +71,7 @@ function deepMergeCopy(target: any, ...sources: any[]) {
     }
 
     for (const key of Object.keys(source)) {
-      if (key === '__proto__' || key === 'constructor') {
+      if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
         continue;
       }
 

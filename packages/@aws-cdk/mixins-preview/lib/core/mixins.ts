@@ -2,6 +2,9 @@ import type { IConstruct } from 'constructs';
 import type { ConstructSelector } from './selectors';
 import { MixinApplicator } from './applicator';
 
+// this will change when we update the interface to deliberately break compatibility checks
+const MIXIN_SYMBOL = Symbol.for('@aws-cdk/mixins-preview.Mixin.pre1');
+
 /**
  * Main entry point for applying mixins.
  */
@@ -39,6 +42,20 @@ export interface IMixin {
  * Abstract base class for mixins that provides default implementations.
  */
 export abstract class Mixin implements IMixin {
+  /**
+   * Checks if `x` is a Mixin.
+   *
+   * @param x Any object
+   * @returns true if `x` is an object created from a class which extends `Mixin`.
+   */
+  static isMixin(x: any): x is Mixin {
+    return x != null && typeof x === 'object' && MIXIN_SYMBOL in x;
+  }
+
+  constructor() {
+    Object.defineProperty(this, MIXIN_SYMBOL, { value: true });
+  }
+
   public supports(_construct: IConstruct): boolean {
     return true;
   }

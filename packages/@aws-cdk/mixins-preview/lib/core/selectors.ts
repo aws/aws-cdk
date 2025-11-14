@@ -41,15 +41,7 @@ export abstract class ConstructSelector {
 
 class AllConstructsSelector extends ConstructSelector {
   select(scope: IConstruct): IConstruct[] {
-    const result: IConstruct[] = [];
-    const visit = (node: IConstruct) => {
-      result.push(node);
-      for (const child of node.node.children) {
-        visit(child);
-      }
-    };
-    visit(scope);
-    return result;
+    return scope.node.findAll();
   }
 }
 

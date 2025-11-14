@@ -26,3 +26,18 @@ describe('IMixin', () => {
     expect((result as any).mixinApplied).toBe(true);
   });
 });
+
+describe('Mixin', () => {
+  test('isMixin returns true for Mixin instances', () => {
+    const mixin = new TestMixin();
+    expect(Mixin.isMixin(mixin)).toBe(true);
+  });
+
+  test('isMixin returns false for non-Mixin objects', () => {
+    expect(Mixin.isMixin({})).toBe(false);
+    expect(Mixin.isMixin(null)).toBe(false);
+    expect(Mixin.isMixin(undefined)).toBe(false);
+    expect(Mixin.isMixin('string')).toBe(false);
+    expect(Mixin.isMixin(123)).toBe(false);
+  });
+});
