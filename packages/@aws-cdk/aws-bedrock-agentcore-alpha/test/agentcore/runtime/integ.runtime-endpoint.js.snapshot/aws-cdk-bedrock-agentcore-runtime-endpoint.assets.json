@@ -18,7 +18,7 @@
   },
   "dockerImages": {
     "f06c9f54828243752afd2df4e39ab9d2987b5ccf44e6bdc05621c18d5488f240": {
-      "displayName": "ExistingRuntime/AgentRuntimeArtifact57925e7ddb91ee239b55009d714f9548",
+      "displayName": "ExistingRuntime/Artifact",
       "source": {
         "directory": "asset.f06c9f54828243752afd2df4e39ab9d2987b5ccf44e6bdc05621c18d5488f240"
       },
