@@ -106,6 +106,9 @@ describe('app', () => {
 
   test('context can be passed through CONTEXT_OVERFLOW_LOCATION_ENV', async () => {
     const contextDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-context'));
+    process.on('exit', () => {
+      fs.rmSync(contextDir, { force: true, recursive: true });
+    });
     const overflow = path.join(contextDir, 'overflow.json');
     fs.writeJSONSync(overflow, {
       key1: 'val1',
@@ -131,6 +134,10 @@ describe('app', () => {
 
   test('context passed through CONTEXT_OVERFLOW_LOCATION_ENV is merged with the context passed through CONTEXT_ENV', async () => {
     const contextDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-context'));
+    process.on('exit', () => {
+      fs.rmSync(contextDir, { force: true, recursive: true });
+    });
+
     const contextLocation = path.join(contextDir, 'context-temp.json');
     fs.writeJSONSync(contextLocation, {
       key1: 'val1',

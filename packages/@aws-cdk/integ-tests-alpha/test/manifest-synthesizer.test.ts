@@ -18,6 +18,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  fs.rmSync(tmpDir, { force: true, recursive: true });
   jest.restoreAllMocks();
 });
 

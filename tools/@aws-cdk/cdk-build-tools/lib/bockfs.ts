@@ -76,4 +76,8 @@ namespace bockfs {
   }
 }
 
+process.on('exit', () => {
+  fs.removeSync(bockFsRoot);
+});
+
 export = bockfs;

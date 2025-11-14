@@ -69,5 +69,12 @@ export class FileSystem {
     return fs.mkdtempSync(path.join(FileSystem.tmpdir, prefix));
   }
 
+  /**
+   * Deletes a directory
+   */
+  public static rmrf(dirname: string) {
+    fs.rmSync(dirname, { force: true, recursive: true });
+  }
+
   private static _tmpdir?: string;
 }
