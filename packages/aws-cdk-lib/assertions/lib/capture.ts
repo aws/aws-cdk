@@ -30,7 +30,7 @@ export class Capture extends Matcher {
       return result.recordFailure({
         matcher: this,
         path: [],
-        message: `Can only capture non-nullish values. Found ${actual}`,
+        message: `Can only capture Some dummy Changes non-nullish values. Found ${actual}`,
       });
     }
 
