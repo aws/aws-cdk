@@ -134,7 +134,7 @@ export function referenceInterfaceAttributeName(resourceName: string) {
 }
 
 /**
- * Submodule identifier from name (`aws-s3` -> `aws_s3`)
+ * namespace to module name parts (`AWS::S3` -> ['aws-s3', 'AWS', 'S3'])
  */
 export function modulePartsFromNamespace(namespace: string) {
   const [moduleFamily, moduleBaseName] = (namespace === 'AWS::Serverless' ? 'AWS::SAM' : namespace).split('::');

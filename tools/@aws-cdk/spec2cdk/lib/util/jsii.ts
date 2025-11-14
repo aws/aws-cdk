@@ -1,3 +1,4 @@
+import type { ModuleDefinition } from '@aws-cdk/pkglint';
 import * as naming from '../naming';
 
 export interface PackageBaseNames {
@@ -21,15 +22,16 @@ export const AWS_CDK_LIB_BASE_NAMES: PackageBaseNames = {
  * @param bases - provide different package base names and overwrite jsii targets
  * @returns the module definition
  */
-export function namespaceToModuleDefinition(namespace: string, bases: PackageBaseNames = AWS_CDK_LIB_BASE_NAMES) {
+export function namespaceToModuleDefinition(namespace: string, bases: PackageBaseNames = AWS_CDK_LIB_BASE_NAMES): ModuleDefinition {
+  // [aws-s3, AWS, S3]
   const { moduleName, moduleFamily, moduleBaseName } = naming.modulePartsFromNamespace(namespace);
-  const submoduleName = moduleName.replace('-', '_');
+  const submoduleName = moduleName.replace('-', '_'); // aws_s3
 
-  const lowcaseModuleName = moduleBaseName.toLocaleLowerCase();
-  const packageName = `${bases.javascript}/${moduleName}`;
+  const lowcaseModuleName = moduleBaseName.toLocaleLowerCase(); // s3
+  const packageName = `${bases.javascript}/${moduleName}`; // aws-cdk-lib/aws-s3
 
   // dotnet names
-  const dotnetPackage = `${bases.dotnet}.${moduleFamily}.${moduleBaseName}`;
+  const dotnetPackage = `${bases.dotnet}.${moduleFamily}.${moduleBaseName}`; // Amazon.CDK.AWS.S3
 
   // java names
   const javaGroupId = bases.java;
@@ -41,8 +43,8 @@ export function namespaceToModuleDefinition(namespace: string, bases: PackageBas
     moduleFamily === 'AWS' ? lowcaseModuleName : `${moduleFamily.toLocaleLowerCase()}-${lowcaseModuleName}`;
 
   // python names
-  const pythonDistName = `${bases.python}.${moduleName}`;
-  const pythonModuleName = pythonDistName.replace(/-/g, '_');
+  const pythonDistName = `${bases.python}.${moduleName}`; // aws-cdk.aws-s3
+  const pythonModuleName = pythonDistName.replace(/-/g, '_'); // aws_cdk.aws_s3
 
   return {
     namespace,
