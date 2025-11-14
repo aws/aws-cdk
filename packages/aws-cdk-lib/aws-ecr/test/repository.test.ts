@@ -1509,3 +1509,234 @@ describe('repository', () => {
     });
   });
 });
+
+describe('LifecycleRuleClass', () => {
+  test('can create lifecycle rule with basic properties', () => {
+    // WHEN
+    const rule = new ecr.LifecycleRuleClass({
+      maxImageCount: 5,
+    });
+
+    // THEN
+    expect(rule.maxImageCount).toBe(5);
+    expect(rule.tagStatus).toBe(ecr.TagStatus.ANY);
+    expect(rule.rulePriority).toBeUndefined();
+    expect(rule.description).toBeUndefined();
+  });
+
+  test('can create lifecycle rule with all properties', () => {
+    // WHEN
+    const rule = new ecr.LifecycleRuleClass({
+      rulePriority: 1,
+      description: 'Test rule',
+      tagStatus: ecr.TagStatus.TAGGED,
+      tagPrefixList: ['prod'],
+      maxImageCount: 10,
+    });
+
+    // THEN
+    expect(rule.rulePriority).toBe(1);
+    expect(rule.description).toBe('Test rule');
+    expect(rule.tagStatus).toBe(ecr.TagStatus.TAGGED);
+    expect(rule.tagPrefixList).toEqual(['prod']);
+    expect(rule.maxImageCount).toBe(10);
+  });
+
+  test('toJSON produces correct CloudFormation structure', () => {
+    // GIVEN
+    const rule = new ecr.LifecycleRuleClass({
+      rulePriority: 1,
+      description: 'Test rule',
+      tagStatus: ecr.TagStatus.TAGGED,
+      tagPrefixList: ['prod'],
+      maxImageCount: 5,
+    });
+
+    // WHEN
+    const json = rule.toJSON();
+
+    // THEN
+    expect(json).toEqual({
+      rulePriority: 1,
+      description: 'Test rule',
+      selection: {
+        tagStatus: 'tagged',
+        tagPrefixList: ['prod'],
+        tagPatternList: undefined,
+        countType: 'imageCountMoreThan',
+        countNumber: 5,
+        countUnit: undefined,
+      },
+      action: {
+        type: 'expire',
+      },
+    });
+  });
+
+  test('toJSON with maxImageAge produces correct structure', () => {
+    // GIVEN
+    const rule = new ecr.LifecycleRuleClass({
+      maxImageAge: cdk.Duration.days(7),
+    });
+
+    // WHEN
+    const json = rule.toJSON();
+
+    // THEN
+    expect(json).toEqual({
+      rulePriority: undefined,
+      description: undefined,
+      selection: {
+        tagStatus: 'any',
+        tagPrefixList: undefined,
+        tagPatternList: undefined,
+        countType: 'sinceImagePushed',
+        countNumber: 7,
+        countUnit: 'days',
+      },
+      action: {
+        type: 'expire',
+      },
+    });
+  });
+
+  test('toJSON output matches renderLifecycleRule for interface', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    const interfaceRule: ecr.LifecycleRule = {
+      rulePriority: 1,
+      description: 'Test rule',
+      tagStatus: ecr.TagStatus.TAGGED,
+      tagPrefixList: ['prod'],
+      maxImageCount: 5,
+    };
+
+    const classRule = new ecr.LifecycleRuleClass({
+      rulePriority: 1,
+      description: 'Test rule',
+      tagStatus: ecr.TagStatus.TAGGED,
+      tagPrefixList: ['prod'],
+      maxImageCount: 5,
+    });
+
+    // WHEN
+    repo.addLifecycleRule(interfaceRule);
+    const classJson = classRule.toJSON();
+
+    // THEN - Both should produce the same CloudFormation template
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+      LifecyclePolicy: {
+        LifecyclePolicyText: JSON.stringify({
+          rules: [classJson],
+        }),
+      },
+    });
+  });
+
+  test('validates TagStatus.Tagged requires tagPrefixList or tagPatternList', () => {
+    // THEN
+    expect(() => {
+      new ecr.LifecycleRuleClass({
+        tagStatus: ecr.TagStatus.TAGGED,
+        maxImageCount: 1,
+      });
+    }).toThrow(/TagStatus.Tagged requires the specification of a tagPrefixList or a tagPatternList/);
+  });
+
+  test('validates tagPrefixList only with TagStatus.Tagged', () => {
+    // THEN
+    expect(() => {
+      new ecr.LifecycleRuleClass({
+        tagStatus: ecr.TagStatus.ANY,
+        tagPrefixList: ['abc'],
+        maxImageCount: 1,
+      });
+    }).toThrow(/tagPrefixList and tagPatternList can only be specified when tagStatus is set to Tagged/);
+  });
+
+  test('validates both tagPrefixList and tagPatternList cannot be specified', () => {
+    // THEN
+    expect(() => {
+      new ecr.LifecycleRuleClass({
+        tagPrefixList: ['abc'],
+        tagPatternList: ['abc*'],
+        maxImageCount: 1,
+      });
+    }).toThrow(/Both tagPrefixList and tagPatternList cannot be specified together in a rule/);
+  });
+
+  test('validates tag pattern wildcard limit', () => {
+    // THEN
+    expect(() => {
+      new ecr.LifecycleRuleClass({
+        tagPatternList: ['abc*d*e*f*g*h'],
+        maxImageCount: 1,
+      });
+    }).toThrow(/A tag pattern cannot contain more than four wildcard characters \(\*\), pattern: abc\*d\*e\*f\*g\*h, counts: 5/);
+  });
+
+  test('validates exactly one of maxImageAge and maxImageCount', () => {
+    // THEN
+    expect(() => {
+      new ecr.LifecycleRuleClass({
+        maxImageAge: cdk.Duration.days(5),
+        maxImageCount: 5,
+      });
+    }).toThrow(/Life cycle rule must contain exactly one of 'maxImageAge' and 'maxImageCount'/);
+
+    expect(() => {
+      new ecr.LifecycleRuleClass({});
+    }).toThrow(/Life cycle rule must contain exactly one of 'maxImageAge' and 'maxImageCount'/);
+  });
+
+  test('Repository can use LifecycleRuleClass instances', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const repo = new ecr.Repository(stack, 'Repo');
+    const rule = new ecr.LifecycleRuleClass({
+      tagPrefixList: ['prod'],
+      maxImageCount: 5,
+    });
+
+    // WHEN
+    repo.addLifecycleRule(rule);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+      LifecyclePolicy: {
+        LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["prod"],"countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
+      },
+    });
+  });
+
+  test('JSON.stringify works with LifecycleRuleClass', () => {
+    // GIVEN
+    const rule = new ecr.LifecycleRuleClass({
+      maxImageCount: 5,
+      tagPrefixList: ['prod'],
+    });
+
+    // WHEN
+    const jsonString = JSON.stringify(rule);
+    const parsed = JSON.parse(jsonString);
+
+    // THEN
+    expect(parsed).toEqual({
+      rulePriority: undefined,
+      description: undefined,
+      selection: {
+        tagStatus: 'tagged',
+        tagPrefixList: ['prod'],
+        tagPatternList: undefined,
+        countType: 'imageCountMoreThan',
+        countNumber: 5,
+        countUnit: undefined,
+      },
+      action: {
+        type: 'expire',
+      },
+    });
+  });
+});
