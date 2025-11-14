@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "EcrCustomRepositoryTest/DefaultTest": {
+      "stacks": [
+        "integ-custom-repository"
+      ],
+      "assertionStack": "EcrCustomRepositoryTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EcrCustomRepositoryTestDefaultTestDeployAssert85D554DF"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
