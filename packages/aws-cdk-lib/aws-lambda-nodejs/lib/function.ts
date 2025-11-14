@@ -1,10 +1,8 @@
-import * as path from 'path';
 import { Construct } from 'constructs';
 import { Bundling } from './bundling';
-import { findEntry, findLockFile, getRuntime } from './function-helpers';
+import { getRuntime, resolveBundlingConfig } from './function-helpers';
 import { BundlingOptions } from './types';
 import { isSdkV2Runtime } from './util';
-import { Architecture } from '../../aws-lambda';
 import * as lambda from '../../aws-lambda';
 import { Annotations, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -132,25 +130,20 @@ export class NodejsFunction extends lambda.Function {
         handler: props.handler,
       });
     } else {
-      // Entry and defaults
-      const entry = path.resolve(findEntry(scope, id, props.entry));
-      const architecture = props.architecture ?? Architecture.X86_64;
-      const depsLockFilePath = findLockFile(scope, props.depsLockFilePath);
-      const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
-      const handler = props.handler ?? 'handler';
+      const config = resolveBundlingConfig(scope, id, props);
 
       super(scope, id, {
         ...props,
         runtime,
         code: Bundling.bundle(scope, {
           ...props.bundling ?? {},
-          entry,
+          entry: config.entry,
           runtime,
-          architecture,
-          depsLockFilePath,
-          projectRoot,
+          architecture: config.architecture,
+          depsLockFilePath: config.depsLockFilePath,
+          projectRoot: config.projectRoot,
         }),
-        handler: handler.indexOf('.') !== -1 ? `${handler}` : `index.${handler}`,
+        handler: config.handler.indexOf('.') !== -1 ? `${config.handler}` : `index.${config.handler}`,
       });
     }
     // Enhanced CDK Analytics Telemetry

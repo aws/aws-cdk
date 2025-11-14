@@ -1,11 +1,8 @@
-import * as path from 'path';
 import { Construct } from 'constructs';
 import { EdgeFunction } from './edge-function';
-import * as lambda from '../../../aws-lambda';
-import { Architecture } from '../../../aws-lambda';
 import { NodejsFunctionProps } from '../../../aws-lambda-nodejs';
 import { Bundling } from '../../../aws-lambda-nodejs/lib/bundling';
-import { getRuntime, findEntry, findLockFile } from '../../../aws-lambda-nodejs/lib/function-helpers';
+import { getRuntime, resolveBundlingConfig, validateNodejsRuntime } from '../../../aws-lambda-nodejs/lib/function-helpers';
 import { ValidationError } from '../../../core';
 
 /**
@@ -27,9 +24,7 @@ export interface NodejsEdgeFunctionProps extends NodejsFunctionProps {
  */
 export class NodejsEdgeFunction extends EdgeFunction {
   constructor(scope: Construct, id: string, props: NodejsEdgeFunctionProps = {}) {
-    if (props.runtime && props.runtime.family !== lambda.RuntimeFamily.NODEJS) {
-      throw new ValidationError('Only `NODEJS` runtimes are supported.', scope);
-    }
+    validateNodejsRuntime(scope, props.runtime);
 
     const runtime = getRuntime(scope, props);
 
@@ -49,27 +44,21 @@ export class NodejsEdgeFunction extends EdgeFunction {
         handler: props.handler,
       });
     } else {
-      // Entry and defaults
-      const entry = path.resolve(findEntry(scope, id, props.entry));
-      const architecture = props.architecture ?? Architecture.X86_64;
-      const depsLockFilePath = findLockFile(scope, props.depsLockFilePath);
-      const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
-      const handler = props.handler ?? 'handler';
+      const config = resolveBundlingConfig(scope, id, props);
 
       super(scope, id, {
         ...props,
         runtime,
         code: Bundling.bundle(scope, {
           ...props.bundling ?? {},
-          entry,
+          entry: config.entry,
           runtime,
-          architecture,
-          depsLockFilePath,
-          projectRoot,
+          architecture: config.architecture,
+          depsLockFilePath: config.depsLockFilePath,
+          projectRoot: config.projectRoot,
         }),
-        handler: handler.indexOf('.') !== -1 ? `${handler}` : `index.${handler}`,
+        handler: config.handler.indexOf('.') !== -1 ? `${config.handler}` : `index.${config.handler}`,
       });
     }
   }
 }
-

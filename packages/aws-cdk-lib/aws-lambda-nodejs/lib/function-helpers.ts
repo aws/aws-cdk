@@ -133,3 +133,55 @@ export function findDefiningFile(scope: Construct): string {
   // compatibility with the NodeJS filesystem functions.
   return sites[definingIndex].getFileName().replace(/^file:\/\//, '');
 }
+
+/**
+ * Validates that the runtime is Node.js family
+ */
+export function validateNodejsRuntime(scope: Construct, runtime?: lambda.Runtime): void {
+  if (runtime && runtime.family !== lambda.RuntimeFamily.NODEJS) {
+    throw new ValidationError('Only `NODEJS` runtimes are supported.', scope);
+  }
+}
+
+/**
+ * Validates that handler is provided when code is specified
+ */
+export function validateHandlerWithCode(scope: Construct, code?: lambda.Code, handler?: string): void {
+  if (code !== undefined && handler === undefined) {
+    throw new ValidationError(
+      'Cannot determine handler when `code` property is specified. Use `handler` property to specify a handler.\n'
+      + 'The handler should be the name of the exported function to be invoked and the file containing that function.\n'
+      + 'For example, handler should be specified in the form `myFile.myFunction`', scope,
+    );
+  }
+}
+
+/**
+ * Configuration values resolved for bundling
+ */
+export interface BundlingConfig {
+  readonly entry: string;
+  readonly handler: string;
+  readonly architecture: lambda.Architecture;
+  readonly depsLockFilePath: string;
+  readonly projectRoot: string;
+}
+
+/**
+ * Resolves bundling configuration from props
+ */
+export function resolveBundlingConfig(scope: Construct, id: string, props: NodejsFunctionProps): BundlingConfig {
+  const entry = path.resolve(findEntry(scope, id, props.entry));
+  const handler = props.handler ?? 'handler';
+  const architecture = props.architecture ?? lambda.Architecture.X86_64;
+  const depsLockFilePath = findLockFile(scope, props.depsLockFilePath);
+  const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
+
+  return {
+    entry,
+    handler,
+    architecture,
+    depsLockFilePath,
+    projectRoot,
+  };
+}
