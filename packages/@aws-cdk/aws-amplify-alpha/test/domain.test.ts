@@ -170,7 +170,6 @@ test('map a branch to the domain root', () => {
             'BranchName',
           ],
         },
-        Prefix: '',
       },
     ],
   });
