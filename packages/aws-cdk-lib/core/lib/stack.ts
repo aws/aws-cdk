@@ -559,7 +559,7 @@ export class Stack extends Construct implements ITaggable {
    * @param scope the construct scope to retrieve the permissions boundary name from
    * @returns the name of the permissions boundary or undefined if not set
    */
-  private get permissionsBoundaryArn(): string | undefined {
+  public get permissionsBoundaryArn(): string | undefined {
     const qualifier = this.synthesizer.bootstrapQualifier
       ?? this.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT)
       ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
