@@ -5,7 +5,7 @@ import * as lambda from '../../../aws-lambda';
 import { Architecture } from '../../../aws-lambda';
 import { NodejsFunctionProps } from '../../../aws-lambda-nodejs';
 import { Bundling } from '../../../aws-lambda-nodejs/lib/bundling';
-import { getRuntime, findEntry, findLockFile } from '../../../aws-lambda-nodejs/lib/bundling-preparation';
+import { getRuntime, findEntry, findLockFile } from '../../../aws-lambda-nodejs/lib/function-helpers';
 import { ValidationError } from '../../../core';
 
 /**
@@ -50,7 +50,7 @@ export class NodejsEdgeFunction extends EdgeFunction {
       });
     } else {
       // Entry and defaults
-      const entry = path.resolve(findEntry(scope, id, props.entry, 'NodejsEdgeFunction'));
+      const entry = path.resolve(findEntry(scope, id, props.entry));
       const architecture = props.architecture ?? Architecture.X86_64;
       const depsLockFilePath = findLockFile(scope, props.depsLockFilePath);
       const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);

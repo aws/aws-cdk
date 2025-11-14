@@ -10,7 +10,7 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
 const app = new cdk.App();
 
 const region = 'eu-west-1';
-const stack = new cdk.Stack(app, 'integ-nodejs-edge-function', { 
+const stack = new cdk.Stack(app, 'integ-nodejs-edge-function', {
   env: { region: region },
 });
 
