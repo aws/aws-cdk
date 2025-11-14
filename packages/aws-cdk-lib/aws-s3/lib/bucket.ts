@@ -2498,6 +2498,56 @@ export class Bucket extends BucketBase {
   }
 
   /**
+   * Enable auto-delete objects for the bucket.
+   */
+  @MethodMetadata()
+  public enableAutoDeleteObjects() {
+    const provider = AutoDeleteObjectsProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
+      useCfnResponseWrapper: false,
+      description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
+    });
+
+    // Use a bucket policy to allow the custom resource to delete
+    // objects in the bucket
+    this.addToResourcePolicy(new iam.PolicyStatement({
+      actions: [
+        // prevent further PutObject calls
+        ...perms.BUCKET_PUT_POLICY_ACTIONS,
+        // list objects
+        ...perms.BUCKET_READ_METADATA_ACTIONS,
+        ...perms.BUCKET_DELETE_ACTIONS, // and then delete them
+      ],
+      resources: [
+        this.bucketArn,
+        this.arnForObjects('*'),
+      ],
+      principals: [new iam.ArnPrincipal(provider.roleArn)],
+    }));
+
+    const customResource = new CustomResource(this, 'AutoDeleteObjectsCustomResource', {
+      resourceType: AUTO_DELETE_OBJECTS_RESOURCE_TYPE,
+      serviceToken: provider.serviceToken,
+      properties: {
+        BucketName: this.bucketName,
+      },
+    });
+
+    // Ensure bucket policy is deleted AFTER the custom resource otherwise
+    // we don't have permissions to list and delete in the bucket.
+    // (add a `if` to make TS happy)
+    if (this.policy) {
+      customResource.node.addDependency(this.policy);
+    }
+
+    // We also tag the bucket to record the fact that we want it autodeleted.
+    // The custom resource will check this tag before actually doing the delete.
+    // Because tagging and untagging will ALWAYS happen before the CR is deleted,
+    // we can set `autoDeleteObjects: false` without the removal of the CR emptying
+    // the bucket as a side effect.
+    Tags.of(this._resource).add(AUTO_DELETE_OBJECTS_TAG, 'true');
+  }
+
+  /**
    * Adds an iam statement to enforce SSL requests only.
    */
   private enforceSSLStatement() {
@@ -3133,52 +3183,6 @@ export class Bucket extends BucketBase {
         prefix: inventory.objectsPrefix,
       };
     });
-  }
-
-  private enableAutoDeleteObjects() {
-    const provider = AutoDeleteObjectsProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
-      useCfnResponseWrapper: false,
-      description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
-    });
-
-    // Use a bucket policy to allow the custom resource to delete
-    // objects in the bucket
-    this.addToResourcePolicy(new iam.PolicyStatement({
-      actions: [
-        // prevent further PutObject calls
-        ...perms.BUCKET_PUT_POLICY_ACTIONS,
-        // list objects
-        ...perms.BUCKET_READ_METADATA_ACTIONS,
-        ...perms.BUCKET_DELETE_ACTIONS, // and then delete them
-      ],
-      resources: [
-        this.bucketArn,
-        this.arnForObjects('*'),
-      ],
-      principals: [new iam.ArnPrincipal(provider.roleArn)],
-    }));
-
-    const customResource = new CustomResource(this, 'AutoDeleteObjectsCustomResource', {
-      resourceType: AUTO_DELETE_OBJECTS_RESOURCE_TYPE,
-      serviceToken: provider.serviceToken,
-      properties: {
-        BucketName: this.bucketName,
-      },
-    });
-
-    // Ensure bucket policy is deleted AFTER the custom resource otherwise
-    // we don't have permissions to list and delete in the bucket.
-    // (add a `if` to make TS happy)
-    if (this.policy) {
-      customResource.node.addDependency(this.policy);
-    }
-
-    // We also tag the bucket to record the fact that we want it autodeleted.
-    // The custom resource will check this tag before actually doing the delete.
-    // Because tagging and untagging will ALWAYS happen before the CR is deleted,
-    // we can set `autoDeleteObjects: false` without the removal of the CR emptying
-    // the bucket as a side effect.
-    Tags.of(this._resource).add(AUTO_DELETE_OBJECTS_TAG, 'true');
   }
 
   /**

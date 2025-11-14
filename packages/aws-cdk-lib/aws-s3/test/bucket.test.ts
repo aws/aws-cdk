@@ -3630,6 +3630,30 @@ describe('bucket', () => {
     })).toThrow(/Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'/);
   });
 
+  test('can enable auto-delete objects after creation with enableAutoDeleteObjects()', () => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+    bucket.enableAutoDeleteObjects();
+    Template.fromStack(stack).hasResource('Custom::S3AutoDeleteObjects', {
+      'Properties': {
+        'ServiceToken': {
+          'Fn::GetAtt': [
+            'CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F',
+            'Arn',
+          ],
+        },
+        'BucketName': {
+          'Ref': 'MyBucketF68F3FF0',
+        },
+      },
+      'DependsOn': [
+        'MyBucketPolicyE7FBAC7B',
+      ],
+    });
+  });
+
   test('bucket with transfer acceleration turned on', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
