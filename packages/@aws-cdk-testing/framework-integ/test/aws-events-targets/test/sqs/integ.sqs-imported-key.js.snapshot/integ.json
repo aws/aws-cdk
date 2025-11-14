@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "SqsImportedKeyTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-sqs-event-target-imported-key"
+      ],
+      "assertionStack": "SqsImportedKeyTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SqsImportedKeyTestDefaultTestDeployAssert37A5E2D1"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
