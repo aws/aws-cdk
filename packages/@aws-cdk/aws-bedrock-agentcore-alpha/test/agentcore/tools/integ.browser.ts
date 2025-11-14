@@ -24,10 +24,11 @@ const recordingBucket = new s3.Bucket(stack, 'RecordingBucket', {
   autoDeleteObjects: true,
 });
 
-// Create a browser with recording configuration
+// Create a browser with recording configuration and browser signing
 new agentcore.BrowserCustom(stack, 'BrowserWithRecording', {
   browserCustomName: 'browser_recording',
   networkConfiguration: agentcore.BrowserNetworkConfiguration.usingPublicNetwork(),
+  browserSigning: agentcore.BrowserSigning.ENABLED,
   recordingConfig: {
     enabled: true,
     s3Location: {

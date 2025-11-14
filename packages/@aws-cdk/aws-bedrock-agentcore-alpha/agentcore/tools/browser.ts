@@ -56,8 +56,28 @@ const BROWSER_TAG_MIN_LENGTH = 1;
 const BROWSER_TAG_MAX_LENGTH = 256;
 
 /******************************************************************************
+ *                                Enums
+ *****************************************************************************/
+/**
+ * Browser signing. Specifies whether browser signing is enabled.
+ * When enabled, the browser will cryptographically sign HTTP requests to identify
+ * itself as an AI agent to bot control vendors.
+ */
+export enum BrowserSigning {
+  /**
+   * Browser signing is enabled.
+   */
+  ENABLED = 'ENABLED',
+  /**
+   * Browser signing is disabled.
+   */
+  DISABLED = 'DISABLED',
+}
+
+/******************************************************************************
  *                                Interface
  *****************************************************************************/
+
 /**
  * Interface for Browser resources
  */
@@ -528,6 +548,14 @@ export interface BrowserCustomProps {
    * @required - No
    */
   readonly tags?: { [key: string]: string };
+
+  /**
+   * Specifies whether browser signing is enabled.
+   * When enabled, the browser will cryptographically sign
+   * HTTP requests to identify itself as an AI agent to bot control vendors.
+   * @default - BrowserSigning.DISABLED
+   */
+  readonly browserSigning?: BrowserSigning;
 }
 
 /******************************************************************************
@@ -684,7 +712,10 @@ export class BrowserCustom extends BrowserCustomBase {
    * The recording configuration of the browser
    */
   public readonly recordingConfig?: RecordingConfig;
-
+  /**
+   * The browser signing configuration of the browser
+   */
+  public readonly browserSigning?: BrowserSigning;
   // ------------------------------------------------------
   // Internal Only
   // ------------------------------------------------------
@@ -708,6 +739,7 @@ export class BrowserCustom extends BrowserCustomBase {
     this.executionRole = props.executionRole ?? this._createBrowserRole();
     this.grantPrincipal = this.executionRole;
     this.tags = props.tags;
+    this.browserSigning = props.browserSigning ?? BrowserSigning.DISABLED;
 
     // Validate browser name
     throwIfInvalid(this._validateBrowserName, this.name);
@@ -737,6 +769,7 @@ export class BrowserCustom extends BrowserCustomBase {
       recordingConfig: this._renderRecordingConfig(),
       executionRoleArn: this.executionRole?.roleArn,
       tags: this.tags,
+      browserSigning: this._renderBrowserSigning(),
     };
 
     // L1 instantiation
@@ -781,6 +814,21 @@ export class BrowserCustom extends BrowserCustomBase {
         prefix: this.recordingConfig.s3Location.objectKey,
       } : undefined,
     } : undefined;
+  }
+
+  /**
+   * Render the browser signing configuration.
+   *
+   * @returns BrowserSigningProperty object in CloudFormation format, or undefined if no browser signing configuration is defined
+   * @default - undefined if no browser signing configuration is provided
+   * @internal This is an internal core function and should not be called directly.
+   */
+  private _renderBrowserSigning(): agent_core.CfnBrowserCustom.BrowserSigningProperty {
+    return this.browserSigning === BrowserSigning.ENABLED ? {
+      enabled: true,
+    } : {
+      enabled: false,
+    };
   }
 
   /**
