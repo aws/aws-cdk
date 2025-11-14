@@ -1,0 +1,7 @@
+{
+  "exclude": [
+    "props-physical-name:@aws-cdk/aws-s3vectors-alpha.VectorBucketPolicyProps",
+    "attribute-tag:@aws-cdk/aws-s3vectors-alpha.VectorBucket.vectorBucketPolicy",
+    "attribute-readonly:@aws-cdk/aws-s3vectors-alpha.VectorBucket.vectorBucketPolicy"
+  ]
+}

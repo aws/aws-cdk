@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "538abcb3639517e6b5a0fe558bf6fa37768693d6b624b802930f90272162a1a8": {
+      "displayName": "OnlyS3ManagedEncryptionTest Template",
+      "source": {
+        "path": "OnlyS3ManagedEncryptionTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-c6d76a7f": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "538abcb3639517e6b5a0fe558bf6fa37768693d6b624b802930f90272162a1a8.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
