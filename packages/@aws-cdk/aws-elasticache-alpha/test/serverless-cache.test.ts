@@ -27,6 +27,7 @@ describe('serverless cache', () => {
       [CacheEngine.REDIS_LATEST],
       [CacheEngine.REDIS_7],
       [CacheEngine.MEMCACHED_LATEST],
+      [CacheEngine.MEMCACHED_1_6],
     ])('import serverless cache for %s', (cacheEngine) => {
       const cache = ServerlessCache.fromServerlessCacheAttributes(stack, 'ImportedCache', {
         serverlessCacheName: 'my-serverless-cache',
@@ -96,6 +97,7 @@ describe('serverless cache', () => {
       [CacheEngine.REDIS_LATEST, 'redis', Match.absent()],
       [CacheEngine.REDIS_7, 'redis', '7'],
       [CacheEngine.MEMCACHED_LATEST, 'memcached', Match.absent()],
+      [CacheEngine.MEMCACHED_1_6, 'memcached', '1.6'],
     ])('test serverless cache version for %s', (cacheEngine, engine, version) => {
       new ServerlessCache(stack, 'Cache', {
         description: 'Serverless cache',
