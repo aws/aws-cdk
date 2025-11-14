@@ -156,13 +156,13 @@ class S3Image extends AgentRuntimeArtifact {
     return {
       code: {
         s3: {
-          bucketName: this.s3Location.bucketName,
-          objectKey: this.s3Location.objectKey,
+          bucket: this.s3Location.bucketName,
+          prefix: this.s3Location.objectKey,
           versionId: this.s3Location.objectVersion,
         },
       },
       runtime: this.runtime.name,
-      entrypoint: this.entrypoint,
+      entryPoint: this.entrypoint,
     } as any;
   }
 }

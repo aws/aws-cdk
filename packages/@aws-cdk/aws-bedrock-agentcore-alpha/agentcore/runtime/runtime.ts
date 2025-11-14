@@ -330,9 +330,11 @@ export class Runtime extends RuntimeBase {
         produce: () => this.renderEnvironmentVariables(props.environmentVariables),
       }),
       tags: props.tags ?? {},
-      requestHeaderConfiguration: this.renderRequestHeaderConfiguration(props.requestHeaderConfiguration),
       lifecycleConfiguration: this.renderLifecycleConfiguration(),
     };
+    if (props.requestHeaderConfiguration) {
+      cfnProps.requestHeaderConfiguration = this.renderRequestHeaderConfiguration(props.requestHeaderConfiguration);
+    }
     if (props.authorizerConfiguration) {
       cfnProps.authorizerConfiguration = Lazy.any({
         produce: () => this.authorizerConfiguration!._render(),
@@ -440,7 +442,11 @@ export class Runtime extends RuntimeBase {
     const config = this.agentRuntimeArtifact._render();
     if ((config as any).code) { // S3Image
       return {
-        codeConfiguration: config,
+        codeConfiguration: {
+          code: (config as any).code,
+          runtime: (config as any).runtime,
+          entryPoint: (config as any).entryPoint,
+        },
       };
     } else {
       // EcrImage or AssetImage
@@ -465,7 +471,7 @@ export class Runtime extends RuntimeBase {
       return undefined;
     }
     return {
-      allowList: requestHeaderConfiguration.allowList,
+      requestHeaderAllowlist: requestHeaderConfiguration.allowList,
     };
   }
 
@@ -527,8 +533,8 @@ export class Runtime extends RuntimeBase {
       }
     }
     if (lifecycleConfiguration.maxLifetime) {
-      if (lifecycleConfiguration.maxLifetime.toSeconds() < LIFECYCLE_MAX_LIFETIME.toSeconds()
-        || lifecycleConfiguration.maxLifetime.toSeconds() < LIFECYCLE_MIN_TIMEOUT.toSeconds()) {
+      if (lifecycleConfiguration.maxLifetime.toSeconds() < LIFECYCLE_MIN_TIMEOUT.toSeconds()
+        || lifecycleConfiguration.maxLifetime.toSeconds() > LIFECYCLE_MAX_LIFETIME.toSeconds()) {
         throw new ValidationError(`Maximum lifetime must be between ${LIFECYCLE_MIN_TIMEOUT.toSeconds()} seconds and ${LIFECYCLE_MAX_LIFETIME.toSeconds()} seconds`);
       }
     }
