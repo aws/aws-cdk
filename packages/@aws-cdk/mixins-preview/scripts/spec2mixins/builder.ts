@@ -33,7 +33,7 @@ export class MixinsBuilder extends LibraryBuilder<BaseServiceSubmodule> {
 
   protected addResourceToSubmodule(submodule: BaseServiceSubmodule, resource: Resource, _props?: AddServiceProps): void {
     const service = this.db.incoming('hasResource', resource).only().entity;
-    const mixins = this.rememberModule(this.createMixinsModule(submodule.submoduleName, service));
+    const mixins = this.obtainMixinsModule(submodule.submoduleName, service);
 
     const l1PropsMixin = new L1PropsMixin(mixins.module, this.db, resource);
     submodule.registerResource(resource.cloudFormationType, l1PropsMixin);
@@ -50,10 +50,22 @@ export class MixinsBuilder extends LibraryBuilder<BaseServiceSubmodule> {
     CDK_CORE.import(module, 'cdk');
     CONSTRUCTS.import(module, 'constructs');
     MIXINS_CORE.import(module, 'core', { fromLocation: relativeImportPath(filePath, '../core') });
-    MIXINS_COMMON.import(module, 'mixins', { fromLocation: '../mixins' });
-    MIXINS_UTILS.import(module, 'helpers', { fromLocation: '../util/property-mixins' });
+    MIXINS_COMMON.import(module, 'mixins', { fromLocation: '../../mixins' });
+    MIXINS_UTILS.import(module, 'helpers', { fromLocation: '../../util/property-mixins' });
 
     return { module, filePath };
+  }
+
+  private obtainMixinsModule(moduleName: string, service: Service): LocatedModule<Module> {
+    const mod = this.createMixinsModule(moduleName, service);
+    if (this.modules.has(mod.filePath)) {
+      return {
+        module: this.modules.get(mod.filePath)!,
+        filePath: mod.filePath,
+      };
+    }
+
+    return this.rememberModule(mod);
   }
 }
 
@@ -195,7 +207,7 @@ class L1PropsMixin extends ClassType {
   private makeSupportsMethod(): Method {
     const method = this.addMethod({
       name: 'supports',
-      returnType: Type.ambient(`construct is a ${naming.classNameFromResource(this.resource)}`),
+      returnType: Type.ambient(`construct is ${naming.classNameFromResource(this.resource)}`),
       docs: {
         summary: 'Check if this mixin supports the given construct',
       },
