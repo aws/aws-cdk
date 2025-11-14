@@ -4,9 +4,11 @@ import { DatabaseBuilder } from '@aws-cdk/service-spec-importers';
 import { SpecDatabase } from '@aws-cdk/service-spec-types';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
-import { AwsCdkLibBuilder, AwsCdkLibBuilderProps } from './cdk/aws-cdk-lib';
-import { LibraryBuilder, LibraryBuilderProps } from './cdk/library-builder';
+import { AwsCdkLibBuilder } from './cdk/aws-cdk-lib';
+import { LibraryBuilder } from './cdk/library-builder';
 import { queryDb, log, TsFileWriter } from './util';
+
+export type BuilderProps<T> = T extends new (first: infer P, ...args: any[]) => any ? P : never;
 
 export interface GenerateServiceRequest {
   /**
@@ -42,10 +44,9 @@ export interface GenerateModuleOptions {
   readonly services: GenerateServiceRequest[];
 }
 
-export interface GenerateOptions<
-  Builder extends LibraryBuilder = AwsCdkLibBuilder,
-  BuilderProps extends LibraryBuilderProps = AwsCdkLibBuilderProps,
->{
+type LBC = new (...args: any[]) => LibraryBuilder;
+
+export interface GenerateOptions<Builder extends LBC>{
   /**
    * Base path for generated files
    *
@@ -70,13 +71,13 @@ export interface GenerateOptions<
   /**
    * Additional builder options.
    */
-  readonly builderProps?: Partial<BuilderProps>;
+  readonly builderProps?: Partial<BuilderProps<Builder>>;
 
   /**
    * A function that returns an AstBuilder instance.
    * @default - The default AstBuilder is constructed
    */
-  readonly astBuilder?: (props: BuilderProps) => Builder;
+  readonly astBuilder?: Builder;
 
   /**
    * Provide an already loaded spec database.
@@ -111,13 +112,10 @@ export interface GeneratedServiceInfo {
  * @param modules A map of arbitrary module names to GenerateModuleOptions. This allows for flexible generation of different configurations at a time.
  * @param options Configure the code generation
  */
-export async function generate<
-  Builder extends LibraryBuilder = AwsCdkLibBuilder,
-  BuilderProps extends LibraryBuilderProps = AwsCdkLibBuilderProps,
->(modules: GenerateModuleMap, options: GenerateOptions<Builder, BuilderProps>) {
+export async function generate<Builder extends LBC = typeof AwsCdkLibBuilder>(modules: GenerateModuleMap, options: GenerateOptions<Builder>) {
   enableDebug(options);
   const db = options.db ?? await loadPatchedSpec();
-  return generator<Builder, BuilderProps>(db, modules, options);
+  return generator<Builder>(db, modules, options);
 }
 
 /**
@@ -142,7 +140,7 @@ export async function loadPatchedSpec(): Promise<SpecDatabase> {
  * @param outputPath Base path for generated files. Use `options.filePatterns` to configure more complex scenarios.
  * @param options Additional configuration
  */
-export async function generateAll(options: GenerateOptions) {
+export async function generateAll<Builder extends LBC = typeof AwsCdkLibBuilder>(options: GenerateOptions<Builder>) {
   enableDebug(options);
   const db = await loadAwsServiceSpec();
   const services = queryDb.getAllServices(db);
@@ -164,13 +162,10 @@ function enableDebug(options: { debug?: boolean }) {
   }
 }
 
-async function generator<
-  Builder extends LibraryBuilder = AwsCdkLibBuilder,
-  BuilderProps extends LibraryBuilderProps = AwsCdkLibBuilderProps,
->(
+async function generator<Builder extends LBC = typeof AwsCdkLibBuilder>(
   db: SpecDatabase,
   modules: { [name: string]: GenerateModuleOptions },
-  options: GenerateOptions<Builder, BuilderProps>,
+  options: GenerateOptions<Builder>,
 ): Promise<GenerateOutput> {
   const timeLabel = '🐢  Completed in';
   log.time(timeLabel);
@@ -186,8 +181,8 @@ async function generator<
     fs.removeSync(outputPath);
   }
 
-  const createAst = options.astBuilder ?? ((props: AwsCdkLibBuilderProps) => new AwsCdkLibBuilder(props));
-  const ast = createAst({
+  const LibBuilder = options.astBuilder ?? AwsCdkLibBuilder;
+  const ast = new LibBuilder({
     db,
     ...options.builderProps,
   } as any);

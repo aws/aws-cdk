@@ -1,13 +1,12 @@
 /* eslint-disable @cdklabs/no-throw-default-error */
 import { Resource, Service } from '@aws-cdk/service-spec-types';
 import { Module, stmt } from '@cdklabs/typewriter';
-import { AddServiceProps, LibraryBuilder, LibraryBuilderProps } from './library-builder';
-import { LocatedModule, relativeImportPath, BaseServiceSubmodule } from './service-submodule';
-import { FilePatternValues, substituteFilePattern } from '../util';
 import { AugmentationsModule } from './augmentation-generator';
 import { CannedMetricsModule } from './canned-metrics';
 import { CDK_CORE, CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from './cdk';
+import { AddServiceProps, LibraryBuilder, LibraryBuilderProps } from './library-builder';
 import { ResourceClass } from './resource-class';
+import { LocatedModule, relativeImportPath, BaseServiceSubmodule } from './service-submodule';
 import { submoduleSymbolFromName } from '../naming';
 
 class AwsCdkLibServiceSubmodule extends BaseServiceSubmodule {
@@ -97,6 +96,7 @@ export const DEFAULT_FILE_PATTERNS: AwsCdkLibFilePatterns = {
  * Contains the spec
  */
 export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> {
+  declare ['constructor']: typeof AwsCdkLibBuilder;
   private readonly inCdkLib: boolean;
   private readonly filePatterns: AwsCdkLibFilePatterns;
   private readonly interfacesEntry: LocatedModule<Module>;

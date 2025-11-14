@@ -1,12 +1,10 @@
 import type { GenerateModuleMap, GenerateOptions as Spec2CdkOptions } from '@aws-cdk/spec2cdk';
 import { generate, loadPatchedSpec } from '@aws-cdk/spec2cdk';
-import { MixinAstBuilder } from './ast';
+import { MixinsBuilder } from './builder';
 import { MIXINS_PREVIEW_BASE_NAMES } from './config';
-import type { AstBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/ast';
-import { DEFAULT_FILE_PATTERNS } from '@aws-cdk/spec2cdk/lib/cdk/ast';
 import { loadModuleMap, type ModuleMap } from '@aws-cdk/spec2cdk/lib/module-topology';
 
-type GenerateOptions = Pick<Spec2CdkOptions, 'outputPath' | 'clearOutput' | 'debug'>;
+type GenerateOptions = Pick<Spec2CdkOptions<typeof MixinsBuilder>, 'outputPath' | 'clearOutput' | 'debug'>;
 
 export async function generateAll(options: GenerateOptions): Promise<ModuleMap> {
   const db = await loadPatchedSpec();
@@ -25,18 +23,12 @@ export async function generateAll(options: GenerateOptions): Promise<ModuleMap> 
     }
   }
 
-  const generated = await generate(moduleRequests, {
+  const generated = await generate<typeof MixinsBuilder>(moduleRequests, {
     ...options,
     db,
-    astBuilder: (props: AstBuilderProps) => {
-      return new MixinAstBuilder({
-        ...props,
-        filePatterns: {
-          ...DEFAULT_FILE_PATTERNS,
-          resources: '%moduleName%/%serviceShortName%.generated.ts',
-        },
-        inCdkLib: false,
-      });
+    astBuilder: MixinsBuilder,
+    builderProps: {
+      filePattern: '%moduleName%/%serviceShortName%.generated.ts',
     },
   });
 

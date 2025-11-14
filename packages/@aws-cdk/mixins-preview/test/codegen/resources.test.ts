@@ -2,8 +2,8 @@ import type { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-type
 import { emptyDatabase } from '@aws-cdk/service-spec-types';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
 import { ref } from '@cdklabs/tskb';
-import { MixinAstBuilder } from '../../scripts/spec2mixins';
-import type { AstBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/ast';
+import type { MixinsBuilderProps } from '../../scripts/spec2mixins';
+import { MixinsBuilder } from '../../scripts/spec2mixins';
 
 const renderer = new TypeScriptRenderer();
 let db: SpecDatabase;
@@ -73,8 +73,8 @@ test('L1 property mixin for a standard-issue resource', () => {
   expect(rendered).toMatchSnapshot();
 });
 
-function moduleForResource(resource: Resource, props: AstBuilderProps) {
-  const ast = new MixinAstBuilder(props);
+function moduleForResource(resource: Resource, props: MixinsBuilderProps) {
+  const ast = new MixinsBuilder(props);
   const info = ast.addResource(resource);
-  return info.resourcesMod.module;
+  return info.locatedModules[0].module;
 }

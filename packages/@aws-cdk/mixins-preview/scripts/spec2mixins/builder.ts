@@ -1,44 +1,59 @@
-import type { Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
+import type { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { naming, util } from '@aws-cdk/spec2cdk';
-import type { AddServiceProps, AstBuilderProps, ImportPaths, ServiceSubmodule } from '@aws-cdk/spec2cdk/lib/cdk/ast';
-import { AstBuilder } from '@aws-cdk/spec2cdk/lib/cdk/ast';
 import { CDK_CORE, CONSTRUCTS } from '@aws-cdk/spec2cdk/lib/cdk/cdk';
 import { ResourceDecider } from '@aws-cdk/spec2cdk/lib/cdk/resource-decider';
 import { TypeConverter } from '@aws-cdk/spec2cdk/lib/cdk/type-converter';
-import type { SelectiveImport } from '@aws-cdk/spec2cdk/lib/cdk/relationship-decider';
 import { RelationshipDecider } from '@aws-cdk/spec2cdk/lib/cdk/relationship-decider';
-import type { IScope, Method, Module } from '@cdklabs/typewriter';
-import { ClassType, Stability, StructType, Type, expr, stmt, $E, $T, ThingSymbol } from '@cdklabs/typewriter';
+import type { IScope, Method } from '@cdklabs/typewriter';
+import { Module, ClassType, Stability, StructType, Type, expr, stmt, $E, $T, ThingSymbol } from '@cdklabs/typewriter';
 import { MIXINS_COMMON, MIXINS_CORE, MIXINS_UTILS } from './helpers';
+import type { AddServiceProps, LibraryBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
+import { LibraryBuilder } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
+import type { LocatedModule, SelectiveImport } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
+import { BaseServiceSubmodule, relativeImportPath } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 
-export class MixinAstBuilder extends AstBuilder {
-  public constructor(props: AstBuilderProps) {
-    super({
-      ...props,
-      extensions: {
-        augmentations: false,
-        cannedMetrics: false,
-      },
+export interface MixinsBuilderProps extends LibraryBuilderProps {
+  filePattern?: string;
+}
+
+export class MixinsBuilder extends LibraryBuilder<BaseServiceSubmodule> {
+  private readonly filePattern: string;
+
+  public constructor(props: MixinsBuilderProps) {
+    super(props);
+    this.filePattern = props.filePattern ?? '%moduleName%/%serviceShortName%.generated.ts';
+  }
+
+  protected createServiceSubmodule(service: Service, submoduleName: string): BaseServiceSubmodule {
+    return new BaseServiceSubmodule({
+      submoduleName,
+      service,
     });
   }
 
-  protected addImports(targetModule: Module, imports: ImportPaths) {
-    CDK_CORE.import(targetModule, 'cdk', { fromLocation: imports.core });
-    CONSTRUCTS.import(targetModule, 'constructs');
-    MIXINS_CORE.import(targetModule, 'core', { fromLocation: '../../core' });
-    MIXINS_COMMON.import(targetModule, 'mixins', { fromLocation: '../../mixins' });
-    MIXINS_UTILS.import(targetModule, 'helpers', { fromLocation: '../../util/property-mixins' });
-  }
+  protected addResourceToSubmodule(submodule: BaseServiceSubmodule, resource: Resource, _props?: AddServiceProps): void {
+    const service = this.db.incoming('hasResource', resource).only().entity;
+    const mixins = this.rememberModule(this.createMixinsModule(submodule.submoduleName, service));
 
-  protected addResourceToSubmodule(submodule: ServiceSubmodule, resource: Resource, _props?: AddServiceProps) {
-    const resourceModule = submodule.resourcesMod.module;
-
-    const l1PropsMixin = new L1PropsMixin(resourceModule, this.db, resource);
-    submodule.resources[resource.cloudFormationType] = l1PropsMixin.spec.name;
+    const l1PropsMixin = new L1PropsMixin(mixins.module, this.db, resource);
+    submodule.registerResource(resource.cloudFormationType, l1PropsMixin);
 
     l1PropsMixin.build();
 
-    this.addSelectiveImports(submodule, l1PropsMixin.imports);
+    submodule.registerSelectiveImports(...l1PropsMixin.imports);
+  }
+
+  private createMixinsModule(moduleName: string, service: Service): LocatedModule<Module> {
+    const module = new Module(`@aws-cdk/mixins-preview/${moduleName}/mixins`);
+    const filePath = this.pathFor(this.filePattern, moduleName, service);
+
+    CDK_CORE.import(module, 'cdk');
+    CONSTRUCTS.import(module, 'constructs');
+    MIXINS_CORE.import(module, 'core', { fromLocation: relativeImportPath(filePath, '../core') });
+    MIXINS_COMMON.import(module, 'mixins', { fromLocation: '../mixins' });
+    MIXINS_UTILS.import(module, 'helpers', { fromLocation: '../util/property-mixins' });
+
+    return { module, filePath };
   }
 }
 
@@ -180,9 +195,7 @@ class L1PropsMixin extends ClassType {
   private makeSupportsMethod(): Method {
     const method = this.addMethod({
       name: 'supports',
-      // @todo can we make this a type guard?
-      // returnType: Type.ambient(`construct is a ${this.cfnResourceName}`),
-      returnType: Type.BOOLEAN,
+      returnType: Type.ambient(`construct is a ${naming.classNameFromResource(this.resource)}`),
       docs: {
         summary: 'Check if this mixin supports the given construct',
       },

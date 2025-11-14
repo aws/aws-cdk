@@ -49,6 +49,8 @@ export interface LibraryBuilderProps {
  * means submodules that represent an AWS service.
  */
 export abstract class LibraryBuilder<ServiceSubmodule extends BaseServiceSubmodule = BaseServiceSubmodule> {
+  declare ['constructor']: typeof LibraryBuilder<ServiceSubmodule>;
+
   public readonly db: SpecDatabase;
   public readonly modules = new Map<string, Module>();
 
