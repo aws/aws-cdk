@@ -1822,7 +1822,7 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
               sid: 'ECSAgentDiscoverPollEndpointPermissions',
               effect: iam.Effect.ALLOW,
               actions: ['ecs:DiscoverPollEndpoint'],
-              resources: ['*'], // DiscoverPollEndpoint cannot be scoped to a resource. See https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonelasticcontainerservice.html
+              resources: ['*'], // DiscoverPollEndpoint does not support resource-level permissions. See https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonelasticcontainerservice.html
             }),
             new iam.PolicyStatement({
               sid: 'ECSAgentRegisterPermissions',
