@@ -54,6 +54,12 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
 
   /**
    * Subscribe some endpoint to this topic
+   *
+   * Creates a subscription between this SNS topic and an endpoint, such as
+   * an SQS queue, Lambda function, email address, or HTTP/HTTPS endpoint.
+   * The subscription will be created with the configuration specified in the
+   * ITopicSubscription implementation and will generate the corresponding
+   * AWS::SNS::Subscription resource in the CloudFormation template.
    */
   addSubscription(subscription: ITopicSubscription): Subscription;
 
@@ -68,11 +74,28 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
 
   /**
    * Grant topic publishing permissions to the given identity
+   *
+   * This will grant the following permissions:
+   *
+   *   - sns:Publish
+   *
+   * If the topic is encrypted with a customer-managed KMS key, this will also grant the following permissions to the key:
+   *
+   *   - kms:Decrypt
+   *   - kms:GenerateDataKey*
+   *
+   * @param identity Principal to grant publish rights to
    */
   grantPublish(identity: iam.IGrantable): iam.Grant;
 
   /**
    * Grant topic subscribing permissions to the given identity
+   *
+   * This will grant the following permissions:
+   *
+   *   - sns:Subscribe
+   *
+   * @param identity Principal to grant subscribe rights to
    */
   grantSubscribe(identity: iam.IGrantable): iam.Grant;
 }
@@ -113,6 +136,12 @@ export abstract class TopicBase extends Resource implements ITopic {
 
   /**
    * Subscribe some endpoint to this topic
+   *
+   * Creates a subscription between this SNS topic and an endpoint, such as
+   * an SQS queue, Lambda function, email address, or HTTP/HTTPS endpoint.
+   * The subscription will be created with the configuration specified in the
+   * ITopicSubscription implementation and will generate the corresponding
+   * AWS::SNS::Subscription resource in the CloudFormation template.
    */
   public addSubscription(topicSubscription: ITopicSubscription): Subscription {
     const subscriptionConfig = topicSubscription.bind(this);
@@ -203,6 +232,17 @@ export abstract class TopicBase extends Resource implements ITopic {
 
   /**
    * Grant topic publishing permissions to the given identity
+   *
+   * This will grant the following permissions:
+   *
+   *   - sns:Publish
+   *
+   * If the topic is encrypted with a customer-managed KMS key, this will also grant the following permissions to the key:
+   *
+   *   - kms:Decrypt
+   *   - kms:GenerateDataKey*
+   *
+   * @param grantee Principal to grant publish rights to
    */
   public grantPublish(grantee: iam.IGrantable) {
     const ret = iam.Grant.addToPrincipalOrResource({
@@ -219,6 +259,12 @@ export abstract class TopicBase extends Resource implements ITopic {
 
   /**
    * Grant topic subscribing permissions to the given identity
+   *
+   * This will grant the following permissions:
+   *
+   *   - sns:Subscribe
+   *
+   * @param grantee Principal to grant subscribe rights to
    */
   public grantSubscribe(grantee: iam.IGrantable) {
     return iam.Grant.addToPrincipalOrResource({
