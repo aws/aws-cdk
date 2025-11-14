@@ -1,12 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
+import { NodejsFunctionProps } from './function';
 import { LockFile } from './package-manager';
 import { callsites, findUpMultiple } from './util';
 import * as lambda from '../../aws-lambda';
 import { FeatureFlags, ValidationError } from '../../core';
 import { LAMBDA_NODEJS_USE_LATEST_RUNTIME } from '../../cx-api';
-import { NodejsFunctionProps } from './function';
 
 /**
  * Check if the feature flag is enabled and default to NODEJS_LATEST if so.

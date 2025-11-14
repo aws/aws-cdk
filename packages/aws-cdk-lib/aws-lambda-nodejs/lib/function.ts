@@ -1,13 +1,13 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
 import { Bundling } from './bundling';
+import { findEntry, findLockFile, getRuntime } from './function-helpers';
 import { BundlingOptions } from './types';
 import { isSdkV2Runtime } from './util';
 import { Architecture } from '../../aws-lambda';
 import * as lambda from '../../aws-lambda';
 import { Annotations, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { findEntry, findLockFile, getRuntime } from './function-helpers';
 
 /**
  * Properties for a NodejsFunction
