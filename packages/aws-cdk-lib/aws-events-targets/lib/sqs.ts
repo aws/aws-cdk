@@ -2,7 +2,7 @@ import { addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConf
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as sqs from '../../aws-sqs';
-import { FeatureFlags, ValidationError } from '../../core';
+import { FeatureFlags } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
