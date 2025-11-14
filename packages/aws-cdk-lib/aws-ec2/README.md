@@ -316,6 +316,8 @@ Space will be allocated to subnets in the following order:
 
 The argument to `IpAddresses.cidr` may not be a token, and concrete Cidr values are generated in the synthesized CloudFormation template.
 
+> **Note:** supplying a mis‐aligned base CIDR (e.g. `10.0.40.0/19`) will now throw a validation error instead of silently “rounding up.”
+
 #### Allocating an IP range from AWS IPAM
 
 Amazon VPC IP Address Manager (IPAM) manages a large IP space, from which chunks can be allocated for use in the Vpc. For information on Amazon VPC IP Address Manager please see the [official documentation](https://docs.aws.amazon.com/vpc/latest/ipam/what-it-is-ipam.html). An example of allocating from AWS IPAM looks like this:
