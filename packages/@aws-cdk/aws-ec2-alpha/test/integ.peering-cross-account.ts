@@ -82,9 +82,12 @@ class RequestorStack extends cdk.Stack {
       primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.2.0.0/16'),
     });
 
+    // Create a role using the new createRequestorPeerRole method
+    const peerRole = requestorVpc.createRequestorPeerRole(acceptorAccount);
+
     const peeringConnection = requestorVpc.createPeeringConnection('acceptorAccountCrossRegionPeering', {
       acceptorVpc: acceptorVpc,
-      peerRoleArn: 'arn:aws:iam::916743627080:role/VpcPeeringRole',
+      peerRole: peerRole,
     });
 
     const routeTable = new RouteTable(this, 'RouteTable', {
