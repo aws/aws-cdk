@@ -4,8 +4,8 @@ import { CDK_CORE, CONSTRUCTS } from '@aws-cdk/spec2cdk/lib/cdk/cdk';
 import { ResourceDecider } from '@aws-cdk/spec2cdk/lib/cdk/resource-decider';
 import { TypeConverter } from '@aws-cdk/spec2cdk/lib/cdk/type-converter';
 import { RelationshipDecider } from '@aws-cdk/spec2cdk/lib/cdk/relationship-decider';
-import type { IScope, Method } from '@cdklabs/typewriter';
-import { Module, ClassType, Stability, StructType, Type, expr, stmt, $E, $T, ThingSymbol } from '@cdklabs/typewriter';
+import type { Method } from '@cdklabs/typewriter';
+import { Module, ClassType, Stability, StructType, Type, expr, stmt, $E, $T, ThingSymbol, $this, ExternalModule } from '@cdklabs/typewriter';
 import { MIXINS_COMMON, MIXINS_CORE, MIXINS_UTILS } from './helpers';
 import type { AddServiceProps, LibraryBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
 import { LibraryBuilder } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
@@ -74,6 +74,7 @@ interface L1PropsMixinProps {
 }
 
 class L1PropsMixin extends ClassType {
+  public scope: Module;
   private readonly propsType: StructType;
   private readonly decider: ResourceDecider;
   private readonly relationshipDecider: RelationshipDecider;
@@ -81,7 +82,7 @@ class L1PropsMixin extends ClassType {
   public readonly imports = new Array<SelectiveImport>();
 
   constructor(
-    scope: IScope,
+    scope: Module,
     public readonly db: SpecDatabase,
     private readonly resource: Resource,
     public readonly props: L1PropsMixinProps = {},
@@ -106,6 +107,7 @@ class L1PropsMixin extends ClassType {
       },
     });
 
+    this.scope = scope;
     this.propsType = new StructType(this.scope, {
       export: true,
       name: `${naming.classNameFromResource(resource)}MixinProps`,
@@ -196,7 +198,6 @@ class L1PropsMixin extends ClassType {
       documentation: 'Mixin options',
     });
 
-    const $this = $E(expr.this_());
     init.addBody(
       expr.sym(new ThingSymbol('super', this.scope)).call(),
       stmt.assign($this.props, props),
@@ -205,9 +206,13 @@ class L1PropsMixin extends ClassType {
   }
 
   private makeSupportsMethod(): Method {
+    const serviceMod = new ExternalModule('aws-cdk-lib/alexa-ask');
+    serviceMod.import(this.scope, 'service');
+    const resClass = Type.fromName(serviceMod, naming.classNameFromResource(this.resource));
+
     const method = this.addMethod({
       name: 'supports',
-      returnType: Type.ambient(`construct is ${naming.classNameFromResource(this.resource)}`),
+      returnType: Type.ambient(`construct is service.${resClass.symbol}`),
       docs: {
         summary: 'Check if this mixin supports the given construct',
       },
@@ -245,7 +250,6 @@ class L1PropsMixin extends ClassType {
       type: CONSTRUCTS.IConstruct,
     });
 
-    const $this = $E(expr.this_());
     const CFN_PROPERTY_KEYS = $T(this.type).CFN_PROPERTY_KEYS;
 
     method.addBody(
