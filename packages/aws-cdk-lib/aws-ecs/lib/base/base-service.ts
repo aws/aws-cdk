@@ -185,9 +185,8 @@ export enum ServiceConnectAccessLogFormat {
 /**
  * Configuration for Service Connect access logs.
  *
- * Service Connect access logs provide detailed telemetry about individual requests
- * processed by the Service Connect proxy, including HTTP methods, paths, response codes,
- * and timing information.
+ * Service Connect access logs provide detailed telemetry about individual requests processed by the Service Connect proxy,
+ * including HTTP methods, paths, response codes, and timing information.
  *
  * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-connect-envoy-access-logs.html
  */
@@ -204,10 +203,9 @@ export interface ServiceConnectAccessLogConfiguration {
    * Whether to include query parameters in Service Connect access logs.
    *
    * When enabled, query parameters from HTTP requests are included in the access logs.
-   * Consider security and privacy implications as query parameters may contain sensitive
-   * information such as request IDs and tokens.
+   * Consider security and privacy implications as query parameters may contain sensitive information such as request IDs and tokens.
    *
-   * @default false - query parameters are not included in access logs
+   * @default undefined - AWS ECS default is false, which means that query parameters are not included in access logs
    */
   readonly includeQueryParameters?: boolean;
 }
@@ -242,11 +240,9 @@ export interface ServiceConnectProps {
   /**
    * The configuration for Service Connect access logs.
    *
-   * Access logs provide detailed telemetry about individual requests processed by the
-   * Service Connect proxy. To enable access logs, you must also specify a logConfiguration
-   * (via logDriver) to define where the logs should be sent.
+   * Access logs provide detailed telemetry about individual requests processed by the　Service Connect proxy.
    *
-   * @default - access logs are not enabled
+   * @default undefined - AWS ECS default is disabled, which means that access logs are not recorded
    */
   readonly accessLogConfiguration?: ServiceConnectAccessLogConfiguration;
 }
