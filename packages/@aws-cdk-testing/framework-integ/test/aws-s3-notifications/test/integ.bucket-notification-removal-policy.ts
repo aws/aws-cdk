@@ -35,7 +35,7 @@ const notificationTopic = new sns.Topic(stack, 'NotificationTopic', {
 bucketWithRetainPolicy.addEventNotification(
   s3.EventType.OBJECT_CREATED,
   new s3n.SnsDestination(notificationTopic),
-  { prefix: 'uploads/' }
+  { prefix: 'uploads/' },
 );
 
 // Also test with DESTROY policy for comparison
@@ -47,7 +47,7 @@ const bucketWithDestroyPolicy = new s3.Bucket(stack, 'BucketWithDestroyPolicy', 
 bucketWithDestroyPolicy.addEventNotification(
   s3.EventType.OBJECT_REMOVED,
   new s3n.SnsDestination(notificationTopic),
-  { suffix: '.txt' }
+  { suffix: '.txt' },
 );
 
 // Output the bucket names for verification
