@@ -235,7 +235,7 @@
       }
      }
     },
-    "AgentRuntimeName": "integ_test_runtime",
+    "AgentRuntimeName": "integTest_runtime",
     "Description": "Integration test runtime for BedrockAgentCore",
     "EnvironmentVariables": {
      "TEST_ENV": "integration",
