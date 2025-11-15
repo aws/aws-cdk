@@ -133,6 +133,7 @@ export function prepareForExecution() {
 export async function startExecutionMock(req: StartExecutionInput) {
   startStateMachineInput = req;
   expect(req.stateMachineArn).toEqual(MOCK_SFN_ARN);
+  expect(req.name).toBeUndefined();
   return {
     executionArn: req.stateMachineArn + '/execution',
     startDate: new Date(),
