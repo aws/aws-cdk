@@ -1058,6 +1058,15 @@ export class KubernetesVersion {
   public static readonly V1_33 = KubernetesVersion.of('1.33');
 
   /**
+   * Kubernetes version 1.34
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV34Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v34`.
+   */
+  public static readonly V1_34 = KubernetesVersion.of('1.34');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
