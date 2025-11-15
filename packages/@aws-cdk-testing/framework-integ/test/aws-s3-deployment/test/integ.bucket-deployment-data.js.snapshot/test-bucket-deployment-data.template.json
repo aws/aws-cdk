@@ -220,6 +220,9 @@
      },
      {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      }
     ],
     "SourceObjectKeys": [
@@ -230,7 +233,8 @@
      "4ba8cfb53da242e91a423f3333c95db70ac0b5c2481a2d7e5c51142e5738403f.zip",
      "4458891c23c9754723db261b607985ee4fce5a087343fca93e9608fb49e083ba.zip",
      "c3f91ed893cc759513d80ebd56bcaae5061b08bff3dd8ad10daeb62558bac52e.zip",
-     "10cb9bf43614add407e699e4af8e1ba4a9789363f48fa816662b15885c354e1a.zip"
+     "10cb9bf43614add407e699e4af8e1ba4a9789363f48fa816662b15885c354e1a.zip",
+     "8de7dc173740857dd772ca214c7ac8381483f7ee406d94fb9ff9e95ad407d876.zip"
     ],
     "SourceMarkers": [
      {},
@@ -334,6 +338,7 @@
        ]
       }
      },
+     {},
      {}
     ],
     "SourceMarkersConfig": [
@@ -345,6 +350,7 @@
      {
       "jsonEscape": true
      },
+     {},
      {},
      {}
     ],
