@@ -64,6 +64,9 @@ class TestBucketDeploymentData extends Stack {
     // Test empty string handling
     const file8 = Source.data('file8.txt', '');
 
+    // Test null JSON data value
+    const file9 = Source.jsonData('my-json/config-with-null.json', { hello: 'there', goodbye: null });
+
     const deployment = new BucketDeployment(this, 'DeployWithDataSources', {
       destinationBucket: this.bucket,
       sources: [file1, file2],
@@ -77,6 +80,7 @@ class TestBucketDeploymentData extends Stack {
     deployment.addSource(file6);
     deployment.addSource(file7);
     deployment.addSource(file8);
+    deployment.addSource(file9);
 
     new CfnOutput(this, 'BucketName', { value: this.bucket.bucketName });
   }
@@ -103,6 +107,17 @@ const assertionProvider = integTest.assertions.awsApiCall('S3', 'getObject', {
 assertionProvider.expect(ExpectedResult.objectLike({
   // Properly escaped JSON.
   Body: '{"secret_value":"test\\"with\\"quotes"}',
+}));
+
+// Assert that JSON data with a null value is represented properly
+const jsonNullAssertionProvider = integTest.assertions.awsApiCall('S3', 'getObject', {
+  Bucket: testCase.bucket.bucketName,
+  Key: path.join('deploy/here', 'my-json/config-with-null.json'),
+});
+
+// Verify the content is valid JSON and both null and non-null fields are present
+jsonNullAssertionProvider.expect(ExpectedResult.objectLike({
+  Body: '{"hello":"there","goodbye":null}',
 }));
 
 // Add assertions to verify the YAML file
