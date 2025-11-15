@@ -292,11 +292,11 @@ export class EcsTask implements events.IRuleTarget {
       throw new ValidationError('assignPublicIp is only supported for FARGATE tasks', rule);
     }
 
-    const baseEcsParameters = { 
-      taskCount, 
-      taskDefinitionArn, 
-      propagateTags, 
-      tagList, 
+    const baseEcsParameters = {
+      taskCount,
+      taskDefinitionArn,
+      propagateTags,
+      tagList,
       enableExecuteCommand,
       launchType,
     };
