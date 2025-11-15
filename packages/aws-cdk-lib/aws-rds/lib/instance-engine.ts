@@ -1944,6 +1944,11 @@ export class PostgresEngineVersion {
   /** Version "17.7". */
   public static readonly VER_17_7 = PostgresEngineVersion.of('17.7', '17', { s3Import: true, s3Export: true });
 
+  /** Version "18" (only a major version, without a specific minor version). */
+  public static readonly VER_18 = PostgresEngineVersion.of('18', '18', { s3Import: true, s3Export: true });
+  /** Version "18.1". */
+  public static readonly VER_18_1 = PostgresEngineVersion.of('18.1', '18', { s3Import: true, s3Export: true });
+
   /**
    * Create a new PostgresEngineVersion with an arbitrary version.
    *
