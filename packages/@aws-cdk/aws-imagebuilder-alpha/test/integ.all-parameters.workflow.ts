@@ -1,4 +1,3 @@
-import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as kms from 'aws-cdk-lib/aws-kms';
@@ -13,7 +12,7 @@ const key = new kms.Key(stack, 'Workflow-EncryptionKey', {
 });
 
 new imagebuilder.Workflow(stack, 'InlineWorkflow', {
-  workflowName: 'aws-cdk-imagebuilder-workflow-all-parameters-inline-workflow',
+  workflowName: 'aws-cdk-imagebuilder-workflow-all-parameters-inline',
   workflowVersion: '1.0.0',
   workflowType: imagebuilder.WorkflowType.BUILD,
   description: 'This is a test workflow',
@@ -26,28 +25,29 @@ new imagebuilder.Workflow(stack, 'InlineWorkflow', {
   data: imagebuilder.WorkflowData.fromJsonObject({
     name: 'build-image',
     description: 'Workflow to build an AMI',
-    schemaVersion: '1.0',
+    schemaVersion: imagebuilder.WorkflowSchemaVersion.V1_0,
+    parameters: [{ name: 'snsTopicArn', type: imagebuilder.WorkflowParameterType.STRING }],
     steps: [
       {
         name: 'LaunchBuildInstance',
-        action: 'LaunchInstance',
-        onFailure: 'Abort',
+        action: imagebuilder.WorkflowAction.LAUNCH_INSTANCE,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
         inputs: {
           waitFor: 'ssmAgent',
         },
       },
       {
         name: 'ApplyBuildComponents',
-        action: 'ExecuteComponents',
-        onFailure: 'Abort',
+        action: imagebuilder.WorkflowAction.EXECUTE_COMPONENTS,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
         inputs: {
           'instanceId.$': '$.stepOutputs.LaunchBuildInstance.instanceId',
         },
       },
       {
         name: 'InventoryCollection',
-        action: 'CollectImageMetadata',
-        onFailure: 'Abort',
+        action: imagebuilder.WorkflowAction.COLLECT_IMAGE_METADATA,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
         if: {
           and: [
             {
@@ -66,8 +66,8 @@ new imagebuilder.Workflow(stack, 'InlineWorkflow', {
       },
       {
         name: 'RunSanitizeScript',
-        action: 'SanitizeInstance',
-        onFailure: 'Abort',
+        action: imagebuilder.WorkflowAction.SANITIZE_INSTANCE,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
         if: {
           and: [
             {
@@ -88,8 +88,8 @@ new imagebuilder.Workflow(stack, 'InlineWorkflow', {
       },
       {
         name: 'RunSysPrepScript',
-        action: 'RunSysPrep',
-        onFailure: 'Abort',
+        action: imagebuilder.WorkflowAction.RUN_SYS_PREP,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
         if: {
           and: [
             {
@@ -108,8 +108,8 @@ new imagebuilder.Workflow(stack, 'InlineWorkflow', {
       },
       {
         name: 'CreateOutputAMI',
-        action: 'CreateImage',
-        onFailure: 'Abort',
+        action: imagebuilder.WorkflowAction.CREATE_IMAGE,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
         if: {
           stringEquals: 'AMI',
           value: '$.imagebuilder.imageType',
@@ -119,9 +119,17 @@ new imagebuilder.Workflow(stack, 'InlineWorkflow', {
         },
       },
       {
+        name: 'WaitForApproval',
+        action: imagebuilder.WorkflowAction.WAIT_FOR_ACTION,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
+        inputs: {
+          'snsTopicArn.$': '$.parameters.snsTopicArn',
+        },
+      },
+      {
         name: 'TerminateBuildInstance',
-        action: 'TerminateInstance',
-        onFailure: 'Continue',
+        action: imagebuilder.WorkflowAction.TERMINATE_INSTANCE,
+        onFailure: imagebuilder.WorkflowOnFailure.CONTINUE,
         inputs: {
           'instanceId.$': '$.stepOutputs.LaunchBuildInstance.instanceId',
         },
@@ -134,24 +142,6 @@ new imagebuilder.Workflow(stack, 'InlineWorkflow', {
       },
     ],
   }),
-});
-
-new imagebuilder.Workflow(stack, 'S3AssetWorkflow', {
-  workflowName: 'aws-cdk-imagebuilder-workflow-all-parameters-s3-asset-workflow',
-  workflowVersion: '1.0.0',
-  workflowType: imagebuilder.WorkflowType.TEST,
-  description: 'This is a test workflow',
-  changeDescription: 'This is a change description',
-  kmsKey: key,
-  tags: {
-    Environment: 'Test',
-    Application: 'ImageBuilder',
-  },
-  data: imagebuilder.WorkflowData.fromAsset(
-    stack,
-    'WorkflowData',
-    path.join(__dirname, 'assets', 'workflow-data.yaml'),
-  ),
 });
 
 new integ.IntegTest(app, 'WorkflowTest', {

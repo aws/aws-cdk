@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "aws-cdk-imagebuilder-workflow-all-parameters.assets": {
+    "aws-cdk-imagebuilder-workflow-asset.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-imagebuilder-workflow-all-parameters.assets.json",
+        "file": "aws-cdk-imagebuilder-workflow-asset.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-imagebuilder-workflow-all-parameters": {
+    "aws-cdk-imagebuilder-workflow-asset": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-imagebuilder-workflow-all-parameters.template.json",
+        "templateFile": "aws-cdk-imagebuilder-workflow-asset.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5be1e62507aac59729d7193e40e4e5bb4d8eb7813a0e8bde36b7f79c5d06cb49.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6fa073cf9268a662466992376cb6252054c8d81ae2b4dc9ff4fe644ae60a1280.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-imagebuilder-workflow-all-parameters.assets"
+          "aws-cdk-imagebuilder-workflow-asset.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,53 +31,29 @@
         }
       },
       "dependencies": [
-        "aws-cdk-imagebuilder-workflow-all-parameters.assets"
+        "aws-cdk-imagebuilder-workflow-asset.assets"
       ],
       "metadata": {
-        "/aws-cdk-imagebuilder-workflow-all-parameters/Workflow-EncryptionKey": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy",
-              "pendingWindow": "*"
-            }
-          }
-        ],
-        "/aws-cdk-imagebuilder-workflow-all-parameters/Workflow-EncryptionKey/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "WorkflowEncryptionKey173B2605"
-          }
-        ],
-        "/aws-cdk-imagebuilder-workflow-all-parameters/InlineWorkflow/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "InlineWorkflowD945BA7A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
-          }
-        ],
-        "/aws-cdk-imagebuilder-workflow-all-parameters/S3AssetWorkflow/Resource": [
+        "/aws-cdk-imagebuilder-workflow-asset/S3AssetWorkflow/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "S3AssetWorkflow5387EDDC"
           }
         ],
-        "/aws-cdk-imagebuilder-workflow-all-parameters/BootstrapVersion": [
+        "/aws-cdk-imagebuilder-workflow-asset/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-imagebuilder-workflow-all-parameters/CheckBootstrapVersion": [
+        "/aws-cdk-imagebuilder-workflow-asset/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-imagebuilder-workflow-all-parameters"
+      "displayName": "aws-cdk-imagebuilder-workflow-asset"
     },
     "WorkflowTestDefaultTestDeployAssertAB988DED.assets": {
       "type": "cdk:asset-manifest",

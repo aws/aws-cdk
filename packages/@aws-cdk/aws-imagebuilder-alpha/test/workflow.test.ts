@@ -9,8 +9,6 @@ import {
   Workflow,
   WorkflowAction,
   WorkflowData,
-  WorkflowOnFailure,
-  WorkflowParameterType,
   WorkflowParameterValue,
   WorkflowSchemaVersion,
   WorkflowType,
@@ -145,40 +143,113 @@ describe('Workflow', () => {
       ),
       tags: { Environment: 'test', Project: 'imagebuilder' },
       data: WorkflowData.fromJsonObject({
-        name: 'test-workflow',
-        schemaVersion: WorkflowSchemaVersion.V1_0,
-        description: 'Test workflow for building images',
-        parameters: [
-          {
-            name: 'instanceType',
-            type: WorkflowParameterType.STRING,
-            defaultValue: 't3.medium',
-            description: 'Instance type for the build',
-          },
-        ],
+        name: 'build-image',
+        description: 'Workflow to build an AMI',
+        schemaVersion: '1.0',
         steps: [
           {
-            name: 'launch-instance',
-            action: WorkflowAction.LAUNCH_INSTANCE,
-            onFailure: WorkflowOnFailure.ABORT,
+            name: 'LaunchBuildInstance',
+            action: 'LaunchInstance',
+            onFailure: 'Abort',
             inputs: {
-              instanceType: '{{ instanceType }}',
+              waitFor: 'ssmAgent',
             },
           },
           {
-            name: 'execute-components',
-            action: WorkflowAction.EXECUTE_COMPONENTS,
-            onFailure: WorkflowOnFailure.ABORT,
+            name: 'ApplyBuildComponents',
+            action: 'ExecuteComponents',
+            onFailure: 'Abort',
+            inputs: {
+              'instanceId.$': '$.stepOutputs.LaunchBuildInstance.instanceId',
+            },
           },
           {
-            name: 'create-image',
-            action: WorkflowAction.CREATE_IMAGE,
-            onFailure: WorkflowOnFailure.ABORT,
+            name: 'InventoryCollection',
+            action: 'CollectImageMetadata',
+            onFailure: 'Abort',
+            if: {
+              and: [
+                {
+                  stringEquals: 'AMI',
+                  value: '$.imagebuilder.imageType',
+                },
+                {
+                  booleanEquals: true,
+                  value: '$.imagebuilder.collectImageMetadata',
+                },
+              ],
+            },
+            inputs: {
+              'instanceId.$': '$.stepOutputs.LaunchBuildInstance.instanceId',
+            },
           },
           {
-            name: 'terminate-instance',
-            action: WorkflowAction.TERMINATE_INSTANCE,
-            onFailure: WorkflowOnFailure.CONTINUE,
+            name: 'RunSanitizeScript',
+            action: 'SanitizeInstance',
+            onFailure: 'Abort',
+            if: {
+              and: [
+                {
+                  stringEquals: 'AMI',
+                  value: '$.imagebuilder.imageType',
+                },
+                {
+                  not: {
+                    stringEquals: 'Windows',
+                    value: '$.imagebuilder.platform',
+                  },
+                },
+              ],
+            },
+            inputs: {
+              'instanceId.$': '$.stepOutputs.LaunchBuildInstance.instanceId',
+            },
+          },
+          {
+            name: 'RunSysPrepScript',
+            action: 'RunSysPrep',
+            onFailure: 'Abort',
+            if: {
+              and: [
+                {
+                  stringEquals: 'AMI',
+                  value: '$.imagebuilder.imageType',
+                },
+                {
+                  stringEquals: 'Windows',
+                  value: '$.imagebuilder.platform',
+                },
+              ],
+            },
+            inputs: {
+              'instanceId.$': '$.stepOutputs.LaunchBuildInstance.instanceId',
+            },
+          },
+          {
+            name: 'CreateOutputAMI',
+            action: 'CreateImage',
+            onFailure: 'Abort',
+            if: {
+              stringEquals: 'AMI',
+              value: '$.imagebuilder.imageType',
+            },
+            inputs: {
+              'instanceId.$': '$.stepOutputs.LaunchBuildInstance.instanceId',
+            },
+          },
+          {
+            name: 'TerminateBuildInstance',
+            action: 'TerminateInstance',
+            onFailure: 'Continue',
+            inputs: {
+              'instanceId.$': '$.stepOutputs.LaunchBuildInstance.instanceId',
+            },
+          },
+        ],
+        outputs: [
+          {
+            name: 'ImageId',
+            value: '$.stepOutputs.CreateOutputAMI.imageId',
           },
         ],
       }),

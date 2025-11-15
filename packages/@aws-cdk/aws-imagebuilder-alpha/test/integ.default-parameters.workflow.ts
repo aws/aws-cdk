@@ -10,28 +10,28 @@ new imagebuilder.Workflow(stack, 'Workflow', {
   data: imagebuilder.WorkflowData.fromJsonObject({
     name: 'build-image',
     description: 'Workflow to build an AMI',
-    schemaVersion: '1.0',
+    schemaVersion: imagebuilder.WorkflowSchemaVersion.V1_0,
     steps: [
       {
         name: 'LaunchBuildInstance',
-        action: 'LaunchInstance',
-        onFailure: 'Abort',
+        action: imagebuilder.WorkflowAction.LAUNCH_INSTANCE,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
         inputs: {
           waitFor: 'ssmAgent',
         },
       },
       {
         name: 'ApplyBuildComponents',
-        action: 'ExecuteComponents',
-        onFailure: 'Abort',
+        action: imagebuilder.WorkflowAction.EXECUTE_COMPONENTS,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
         inputs: {
           'instanceId.$': '$.stepOutputs.LaunchBuildInstance.instanceId',
         },
       },
       {
         name: 'InventoryCollection',
-        action: 'CollectImageMetadata',
-        onFailure: 'Abort',
+        action: imagebuilder.WorkflowAction.COLLECT_IMAGE_METADATA,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
         if: {
           and: [
             {
@@ -50,8 +50,8 @@ new imagebuilder.Workflow(stack, 'Workflow', {
       },
       {
         name: 'RunSanitizeScript',
-        action: 'SanitizeInstance',
-        onFailure: 'Abort',
+        action: imagebuilder.WorkflowAction.SANITIZE_INSTANCE,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
         if: {
           and: [
             {
@@ -72,8 +72,8 @@ new imagebuilder.Workflow(stack, 'Workflow', {
       },
       {
         name: 'RunSysPrepScript',
-        action: 'RunSysPrep',
-        onFailure: 'Abort',
+        action: imagebuilder.WorkflowAction.RUN_SYS_PREP,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
         if: {
           and: [
             {
@@ -92,8 +92,8 @@ new imagebuilder.Workflow(stack, 'Workflow', {
       },
       {
         name: 'CreateOutputAMI',
-        action: 'CreateImage',
-        onFailure: 'Abort',
+        action: imagebuilder.WorkflowAction.CREATE_IMAGE,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
         if: {
           stringEquals: 'AMI',
           value: '$.imagebuilder.imageType',
@@ -104,8 +104,8 @@ new imagebuilder.Workflow(stack, 'Workflow', {
       },
       {
         name: 'TerminateBuildInstance',
-        action: 'TerminateInstance',
-        onFailure: 'Continue',
+        action: imagebuilder.WorkflowAction.TERMINATE_INSTANCE,
+        onFailure: imagebuilder.WorkflowOnFailure.CONTINUE,
         inputs: {
           'instanceId.$': '$.stepOutputs.LaunchBuildInstance.instanceId',
         },

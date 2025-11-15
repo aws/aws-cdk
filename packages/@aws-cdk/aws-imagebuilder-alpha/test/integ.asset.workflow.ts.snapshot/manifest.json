@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5be1e62507aac59729d7193e40e4e5bb4d8eb7813a0e8bde36b7f79c5d06cb49.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f47dfb816e52ca9e12e8efc88549fc643e3e24ed513635f4e49a656e674a1c8d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,30 +34,6 @@
         "aws-cdk-imagebuilder-workflow-all-parameters.assets"
       ],
       "metadata": {
-        "/aws-cdk-imagebuilder-workflow-all-parameters/Workflow-EncryptionKey": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy",
-              "pendingWindow": "*"
-            }
-          }
-        ],
-        "/aws-cdk-imagebuilder-workflow-all-parameters/Workflow-EncryptionKey/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "WorkflowEncryptionKey173B2605"
-          }
-        ],
-        "/aws-cdk-imagebuilder-workflow-all-parameters/InlineWorkflow/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "InlineWorkflowD945BA7A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
-          }
-        ],
         "/aws-cdk-imagebuilder-workflow-all-parameters/S3AssetWorkflow/Resource": [
           {
             "type": "aws:cdk:logicalId",

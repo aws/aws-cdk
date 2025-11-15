@@ -48,7 +48,7 @@
       "Arn"
      ]
     },
-    "Name": "aws-cdk-imagebuilder-workflow-all-parameters-inline-workflow",
+    "Name": "aws-cdk-imagebuilder-workflow-all-parameters-inline",
     "Tags": {
      "Application": "ImageBuilder",
      "Environment": "Test"

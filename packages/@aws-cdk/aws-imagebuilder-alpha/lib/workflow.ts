@@ -9,6 +9,8 @@ import * as yaml from 'yaml';
 
 const WORKFLOW_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.Workflow');
 
+const LATEST_VERSION = 'x.x.x';
+
 /**
  * An EC2 Image Builder Workflow.
  */
@@ -44,15 +46,15 @@ export interface IWorkflow extends cdk.IResource {
   /**
    * Grant custom actions to the given grantee for the workflow
    *
-   * @param grantee - The principal
-   * @param actions - The list of actions
+   * @param grantee The principal
+   * @param actions The list of actions
    */
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
    * Grant read permissions to the given grantee for the workflow
    *
-   * @param grantee - The principal
+   * @param grantee The principal
    */
   grantRead(grantee: iam.IGrantable): iam.Grant;
 }
@@ -74,7 +76,7 @@ export interface WorkflowProps {
   /**
    * The name of the workflow.
    *
-   * @default A name is generated
+   * @default - a name is generated
    */
   readonly workflowName?: string;
 
@@ -103,7 +105,7 @@ export interface WorkflowProps {
   /**
    * The KMS key used to encrypt this workflow.
    *
-   * @default An Image Builder owned key will be used to encrypt the workflow.
+   * @default - an Image Builder owned key will be used to encrypt the workflow.
    */
   readonly kmsKey?: kms.IKey;
 
@@ -122,64 +124,33 @@ export interface WorkflowAttributes {
   /**
    * The ARN of the workflow
    *
-   * @default The ARN is automatically constructed if a workflowName and workflowType is provided, otherwise a
-   *          workflowArn is required
+   * @default - the ARN is automatically constructed if a workflowName and workflowType is provided, otherwise a
+   *            workflowArn is required
    */
   readonly workflowArn?: string;
 
   /**
    * The name of the workflow
    *
-   * @default The name is automatically constructed if a workflowArn is provided, otherwise a workflowName is required
+   * @default - the name is automatically constructed if a workflowArn is provided, otherwise a workflowName is required
    */
   readonly workflowName?: string;
 
   /**
-   * The ype of the workflow
+   * The type of the workflow
    *
-   * @default The type is automatically constructed if a workflowArn is provided, otherwise a workflowType is required
+   * @default - the type is automatically constructed if a workflowArn is provided, otherwise a workflowType is required
    */
   readonly workflowType?: WorkflowType;
 
   /**
    * The version of the workflow
    *
-   * @default The latest version of the workflow, x.x.x
+   * @default - x.x.x
    */
   readonly workflowVersion?: string;
 }
 
-/**
- * Configuration details for a workflow
- */
-export interface WorkflowConfiguration {
-  /**
-   * The action to take if the workflow fails
-   *
-   * @default WorkflowOnFailure.ABORT
-   */
-  readonly onFailure?: WorkflowOnFailure;
-
-  /**
-   * The named parallel group to include this workflow in. Workflows in the same parallel group run in parallel of each
-   * other.
-   *
-   * @default None
-   */
-  readonly parallelGroup?: string;
-
-  /**
-   * The parameters to pass to the workflow at execution time
-   *
-   * @default None if the workflow has no parameters, otherwise the default parameter values are used
-   */
-  readonly parameters?: { [name: string]: WorkflowParameterValue };
-
-  /**
-   * The workflow to execute in the image build
-   */
-  readonly workflow: IWorkflow;
-}
 /**
  * Properties for an EC2 Image Builder AWS-managed workflow
  */
@@ -341,10 +312,10 @@ export abstract class WorkflowData {
   /**
    * Uploads workflow data from a local file to S3 to use as the workflow data
    *
-   * @param scope - The construct scope
-   * @param id - Identifier of the construct
-   * @param path - The local path to the workflow data file
-   * @param options - S3 asset upload options
+   * @param scope The construct scope
+   * @param id Identifier of the construct
+   * @param path The local path to the workflow data file
+   * @param options S3 asset upload options
    */
   public static fromAsset(
     scope: Construct,
@@ -359,8 +330,8 @@ export abstract class WorkflowData {
   /**
    * References workflow data from a pre-existing S3 object
    *
-   * @param bucket - The S3 bucket where the workflow data is stored
-   * @param key - The S3 key of the workflow data file
+   * @param bucket The S3 bucket where the workflow data is stored
+   * @param key The S3 key of the workflow data file
    */
   public static fromS3(bucket: s3.IBucket, key: string): S3WorkflowData {
     return new S3WorkflowDataFromBucketKey(bucket, key);
@@ -369,7 +340,7 @@ export abstract class WorkflowData {
   /**
    * Uses an inline JSON object as the workflow data
    *
-   * @param data - An inline JSON object representing the workflow data
+   * @param data An inline JSON object representing the workflow data
    */
   public static fromJsonObject(data: { [key: string]: any }): WorkflowData {
     const inlineData = yaml.stringify(data, { indent: 2 });
@@ -377,9 +348,9 @@ export abstract class WorkflowData {
   }
 
   /**
-   * Uses an inline JSON/YAML string as the workflow data
+   * Uses an inline JSON or YAML string as the workflow data
    *
-   * @param data - An inline JSON/YAML string representing the workflow data
+   * @param data An inline JSON or YAML string representing the workflow data
    */
   public static fromInline(data: string): WorkflowData {
     return new InlineWorkflowData(data);
@@ -462,7 +433,7 @@ export class WorkflowParameterValue {
   /**
    * The value of the parameter as a boolean
    *
-   * @param value - The boolean value of the parameter
+   * @param value The boolean value of the parameter
    */
   public static fromBoolean(value: boolean): WorkflowParameterValue {
     return new WorkflowParameterValue([value.toString()]);
@@ -471,7 +442,7 @@ export class WorkflowParameterValue {
   /**
    * The value of the parameter as an integer
    *
-   * @param value - The integer value of the parameter
+   * @param value The integer value of the parameter
    */
   public static fromInteger(value: number): WorkflowParameterValue {
     return new WorkflowParameterValue([value.toString()]);
@@ -479,7 +450,7 @@ export class WorkflowParameterValue {
 
   /**
    * The value of the parameter as a string
-   * @param value - The string value of the parameter
+   * @param value The string value of the parameter
    */
   public static fromString(value: string): WorkflowParameterValue {
     return new WorkflowParameterValue([value]);
@@ -488,7 +459,7 @@ export class WorkflowParameterValue {
   /**
    * The value of the parameter as a string list
    *
-   * @param values - The string list value of the parameter
+   * @param values The string list value of the parameter
    */
   public static fromStringList(values: string[]): WorkflowParameterValue {
     return new WorkflowParameterValue(values);
@@ -511,8 +482,8 @@ export class AwsManagedWorkflow {
   /**
    * Imports the build-container AWS-managed workflow
    *
-   * @param scope - The construct scope
-   * @param id - Identifier of the construct
+   * @param scope The construct scope
+   * @param id Identifier of the construct
    */
   public static buildContainer(scope: Construct, id: string): IWorkflow {
     return this.fromAwsManagedWorkflowAttributes(scope, id, {
@@ -522,10 +493,10 @@ export class AwsManagedWorkflow {
   }
 
   /**
-   * Imports the build-container AWS-managed workflow
+   * Imports the build-image AWS-managed workflow
    *
-   * @param scope - The construct scope
-   * @param id - Identifier of the construct
+   * @param scope The construct scope
+   * @param id Identifier of the construct
    */
   public static buildImage(scope: Construct, id: string): IWorkflow {
     return this.fromAwsManagedWorkflowAttributes(scope, id, {
@@ -537,8 +508,8 @@ export class AwsManagedWorkflow {
   /**
    * Imports the distribute-container AWS-managed workflow
    *
-   * @param scope - The construct scope
-   * @param id - Identifier of the construct
+   * @param scope The construct scope
+   * @param id Identifier of the construct
    */
   public static distributeContainer(scope: Construct, id: string): IWorkflow {
     return this.fromAwsManagedWorkflowAttributes(scope, id, {
@@ -550,8 +521,8 @@ export class AwsManagedWorkflow {
   /**
    * Imports the test-container AWS-managed workflow
    *
-   * @param scope - The construct scope
-   * @param id - Identifier of the construct
+   * @param scope The construct scope
+   * @param id Identifier of the construct
    */
   public static testContainer(scope: Construct, id: string): IWorkflow {
     return this.fromAwsManagedWorkflowAttributes(scope, id, {
@@ -563,8 +534,8 @@ export class AwsManagedWorkflow {
   /**
    * Imports the test-image AWS-managed workflow
    *
-   * @param scope - The construct scope
-   * @param id - Identifier of the construct
+   * @param scope The construct scope
+   * @param id Identifier of the construct
    */
   public static testImage(scope: Construct, id: string): IWorkflow {
     return this.fromAwsManagedWorkflowAttributes(scope, id, {
@@ -576,9 +547,9 @@ export class AwsManagedWorkflow {
   /**
    * Imports an AWS-managed workflow from its attributes
    *
-   * @param scope - The construct scope
-   * @param id - Identifier of the construct
-   * @param attrs - The attributes of the AWS-managed workflow
+   * @param scope The construct scope
+   * @param id Identifier of the construct
+   * @param attrs The attributes of the AWS-managed workflow
    */
   public static fromAwsManagedWorkflowAttributes(
     scope: Construct,
@@ -596,7 +567,7 @@ export class AwsManagedWorkflow {
         service: 'imagebuilder',
         account: 'aws',
         resource: 'workflow',
-        resourceName: `${attrs.workflowType.toLowerCase()}/${attrs.workflowName}/x.x.x`,
+        resourceName: `${attrs.workflowType.toLowerCase()}/${attrs.workflowName}/${LATEST_VERSION}`,
       }),
     );
   }
@@ -623,16 +594,14 @@ abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
 
   /**
    * The version of the workflow
-   *
-   * @attribute
    */
   abstract readonly workflowVersion: string;
 
   /**
    * Grant custom actions to the given grantee for the workflow
    *
-   * @param grantee - The principal
-   * @param actions - The list of actions
+   * @param grantee The principal
+   * @param actions The list of actions
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
@@ -646,7 +615,7 @@ abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
   /**
    * Grant read permissions to the given grantee for the workflow
    *
-   * @param grantee - The principal
+   * @param grantee The principal
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, 'imagebuilder:GetWorkflow');
@@ -677,13 +646,13 @@ export class Workflow extends WorkflowBase {
       (attrs.workflowName !== undefined || attrs.workflowType !== undefined || attrs.workflowVersion !== undefined)
     ) {
       throw new cdk.ValidationError(
-        'A workflowName/workflowType/workflowVersion cannot be provided when a workflowArn is provided',
+        'a workflowName, workflowType, or workflowVersion cannot be provided when a workflowArn is provided',
         scope,
       );
     }
 
     if (attrs.workflowArn === undefined && (attrs.workflowName === undefined || attrs.workflowType === undefined)) {
-      throw new cdk.ValidationError('Either workflowArn or workflowName/workflowType is required', scope);
+      throw new cdk.ValidationError('either workflowArn, or workflowName and workflowType is required', scope);
     }
 
     if (attrs.workflowType && cdk.Token.isUnresolved(attrs.workflowType)) {
@@ -698,13 +667,13 @@ export class Workflow extends WorkflowBase {
       return cdk.Stack.of(scope).formatArn({
         service: 'imagebuilder',
         resource: 'workflow',
-        resourceName: `${attrs.workflowType!.toLowerCase()}/${attrs.workflowName!}/${attrs.workflowVersion ?? 'x.x.x'}`,
+        resourceName: `${attrs.workflowType!.toLowerCase()}/${attrs.workflowName!}/${attrs.workflowVersion ?? LATEST_VERSION}`,
       });
     })();
 
     const [workflowType, workflowName, workflowVersion] = (() => {
       if (attrs.workflowName !== undefined) {
-        return [attrs.workflowType!.toUpperCase(), attrs.workflowName, attrs.workflowVersion ?? 'x.x.x'];
+        return [attrs.workflowType!.toUpperCase(), attrs.workflowName, attrs.workflowVersion ?? LATEST_VERSION];
       }
 
       const workflowNameTypeVersion = cdk.Stack.of(scope).splitArn(
@@ -714,14 +683,14 @@ export class Workflow extends WorkflowBase {
 
       if (cdk.Token.isUnresolved(workflowNameTypeVersion)) {
         throw new cdk.ValidationError(
-          'The workflowName/workflowType/workflowVersion in the workflowArn cannot be an unresolved token',
+          'the workflowName, workflowType, and workflowVersion in the workflowArn cannot be an unresolved token',
           scope,
         );
       }
 
-      if (![3, 4].includes(workflowNameTypeVersion.split('/').length)) {
+      if (workflowNameTypeVersion.split('/').length < 3) {
         throw new cdk.ValidationError(
-          'The workflow ARN must end with <workflow-name>/<workflow-type>/<workflow-version>',
+          'the workflow ARN must end with <workflow-type>/<workflow-name>/<workflow-version>',
           scope,
         );
       }
@@ -814,19 +783,19 @@ export class Workflow extends WorkflowBase {
     }
 
     if (this.physicalName.length > 128) {
-      throw new cdk.ValidationError('The workflowName cannot be longer than 128 characters', this);
+      throw new cdk.ValidationError('the workflowName cannot be longer than 128 characters', this);
     }
 
     if (this.physicalName.includes(' ')) {
-      throw new cdk.ValidationError('The workflowName cannot contain spaces', this);
+      throw new cdk.ValidationError('the workflowName cannot contain spaces', this);
     }
 
     if (this.physicalName.includes('_')) {
-      throw new cdk.ValidationError('The workflowName cannot contain underscores', this);
+      throw new cdk.ValidationError('the workflowName cannot contain underscores', this);
     }
 
     if (this.physicalName !== this.physicalName.toLowerCase()) {
-      throw new cdk.ValidationError('The workflowName must be lowercase', this);
+      throw new cdk.ValidationError('the workflowName must be lowercase', this);
     }
   }
 }
