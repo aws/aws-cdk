@@ -392,9 +392,9 @@ test('waiter state machine execution does not include name field (allows retries
   // THEN
   expect(mocks.startStateMachineInput).toBeDefined();
   expect(mocks.startStateMachineInput?.stateMachineArn).toEqual(mocks.MOCK_SFN_ARN);
-  expect(mocks.startStateMachineInput?.name).toBeUndefined(); 
+  expect(mocks.startStateMachineInput?.name).toBeUndefined();
   expect(mocks.startStateMachineInput?.input).toBeDefined();
-  
+
   expectCloudFormationSuccess({ PhysicalResourceId: MOCK_PHYSICAL_ID });
 });
 
