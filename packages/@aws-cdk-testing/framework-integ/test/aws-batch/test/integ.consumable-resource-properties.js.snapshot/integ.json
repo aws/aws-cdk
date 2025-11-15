@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "BatchConsumableResourcePropertiesTest/DefaultTest": {
+      "stacks": [
+        "BatchConsumableResourcePropertiesStack"
+      ],
+      "assertionStack": "BatchConsumableResourcePropertiesTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BatchConsumableResourcePropertiesTestDefaultTestDeployAssertDB05EFFE"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
