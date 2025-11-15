@@ -1,0 +1,378 @@
+{
+ "Resources": {
+  "ParentZoneECA3B259": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "uniqueexample.com."
+   }
+  },
+  "ZoneDelegationRoleD3AA833E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "ArnLike": {
+         "aws:PrincipalArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":iam::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":role/ZoneDelegationStack-*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": "ExampleDelegationRole"
+   }
+  },
+  "ZoneDelegationRoleDefaultPolicy2187EBE7": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "route53:ChangeResourceRecordSets",
+       "Condition": {
+        "ForAllValues:StringEquals": {
+         "route53:ChangeResourceRecordSetsRecordTypes": [
+          "NS"
+         ],
+         "route53:ChangeResourceRecordSetsActions": [
+          "UPSERT",
+          "DELETE"
+         ],
+         "route53:ChangeResourceRecordSetsNormalizedRecordNames": [
+          "sub1.uniqueexample.com",
+          "sub2_\\052\\044.uniqueexample.com"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":route53:::hostedzone/",
+          {
+           "Ref": "ParentZoneECA3B259"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "route53:ListHostedZonesByName",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ZoneDelegationRoleDefaultPolicy2187EBE7",
+    "Roles": [
+     {
+      "Ref": "ZoneDelegationRoleD3AA833E"
+     }
+    ]
+   }
+  },
+  "SubZoneF7955E1A": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "sub1.uniqueexample.com."
+   }
+  },
+  "SubZoneZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZoneZoneDelegationcrossaccountzonedelegationhandlerrole9EBB2EA476FBB2F1": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ZoneDelegationRoleD3AA833E",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PolicyZoneDelegationStackSubZoneZoneDelegationcrossaccountzonedelegationhandlerrole9EBB2EA4",
+    "Roles": [
+     {
+      "Fn::Select": [
+       1,
+       {
+        "Fn::Split": [
+         "/",
+         {
+          "Fn::Select": [
+           5,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::GetAtt": [
+               "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B",
+               "Arn"
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "ZoneDelegationRoleDefaultPolicy2187EBE7"
+   ]
+  },
+  "SubZoneZoneDelegationCrossAccountZoneDelegationCustomResource688D1556": {
+   "Type": "Custom::CrossAccountZoneDelegation",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265",
+      "Arn"
+     ]
+    },
+    "AssumeRoleArn": {
+     "Fn::GetAtt": [
+      "ZoneDelegationRoleD3AA833E",
+      "Arn"
+     ]
+    },
+    "ParentZoneName": "uniqueexample.com",
+    "DelegatedZoneName": "sub1.uniqueexample.com",
+    "DelegatedZoneNameServers": {
+     "Fn::GetAtt": [
+      "SubZoneF7955E1A",
+      "NameServers"
+     ]
+    },
+    "TTL": 172800
+   },
+   "DependsOn": [
+    "SubZoneZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZoneZoneDelegationcrossaccountzonedelegationhandlerrole9EBB2EA476FBB2F1",
+    "ZoneDelegationRoleDefaultPolicy2187EBE7"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "2a1e3a5c062d73050b47001ce8443b5cce3002e2af38029f60659b7002ce4b51.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x"
+   },
+   "DependsOn": [
+    "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B"
+   ]
+  },
+  "SubZoneSpecialChars13B7A67B": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "sub2_*$.uniqueexample.com."
+   }
+  },
+  "SubZoneSpecialCharsZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZoneSpecialCharsZoneDelegationcrossaccountzonedelegationhandlerroleD01CC77D6D37D8F2": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ZoneDelegationRoleD3AA833E",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PolicyZoneDelegationStackSubZoneSpecialCharsZoneDelegationcrossaccountzonedelegationhandlerroleD01CC77D",
+    "Roles": [
+     {
+      "Fn::Select": [
+       1,
+       {
+        "Fn::Split": [
+         "/",
+         {
+          "Fn::Select": [
+           5,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::GetAtt": [
+               "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B",
+               "Arn"
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "ZoneDelegationRoleDefaultPolicy2187EBE7"
+   ]
+  },
+  "SubZoneSpecialCharsZoneDelegationCrossAccountZoneDelegationCustomResourceC4CC9C77": {
+   "Type": "Custom::CrossAccountZoneDelegation",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265",
+      "Arn"
+     ]
+    },
+    "AssumeRoleArn": {
+     "Fn::GetAtt": [
+      "ZoneDelegationRoleD3AA833E",
+      "Arn"
+     ]
+    },
+    "ParentZoneName": "uniqueexample.com",
+    "DelegatedZoneName": "sub2_*$.uniqueexample.com",
+    "DelegatedZoneNameServers": {
+     "Fn::GetAtt": [
+      "SubZoneSpecialChars13B7A67B",
+      "NameServers"
+     ]
+    },
+    "TTL": 172800
+   },
+   "DependsOn": [
+    "SubZoneSpecialCharsZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZoneSpecialCharsZoneDelegationcrossaccountzonedelegationhandlerroleD01CC77D6D37D8F2",
+    "ZoneDelegationRoleDefaultPolicy2187EBE7"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
