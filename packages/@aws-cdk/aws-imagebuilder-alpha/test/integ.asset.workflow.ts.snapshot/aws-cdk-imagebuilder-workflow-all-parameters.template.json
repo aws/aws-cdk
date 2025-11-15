@@ -1,0 +1,64 @@
+{
+ "Resources": {
+  "S3AssetWorkflow5387EDDC": {
+   "Type": "AWS::ImageBuilder::Workflow",
+   "Properties": {
+    "ChangeDescription": "This is a change description",
+    "Description": "This is a test workflow",
+    "Name": "aws-cdk-imagebuilder-workflow-all-parameters-s3-asset-workflow",
+    "Tags": {
+     "Application": "ImageBuilder",
+     "Environment": "Test"
+    },
+    "Type": "TEST",
+    "Uri": {
+     "Fn::Join": [
+      "",
+      [
+       "s3://",
+       {
+        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+       },
+       "/6c2589532cc1551b2029f968e301fcbfc599120cb34cc72f8d59321b025ef594.yaml"
+      ]
+     ]
+    },
+    "Version": "1.0.0"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

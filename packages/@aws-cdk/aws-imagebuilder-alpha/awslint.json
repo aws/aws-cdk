@@ -1,5 +1,10 @@
 {
   "exclude": [
-    "props-no-arn-refs:@aws-cdk/aws-imagebuilder-alpha.InfrastructureConfigurationProps.ec2InstanceHostResourceGroupArn"
+    "props-no-arn-refs:@aws-cdk/aws-imagebuilder-alpha.InfrastructureConfigurationProps.ec2InstanceHostResourceGroupArn",
+    "no-unused-type:@aws-cdk/aws-imagebuilder-alpha.WorkflowAction",
+    "no-unused-type:@aws-cdk/aws-imagebuilder-alpha.WorkflowConfiguration",
+    "no-unused-type:@aws-cdk/aws-imagebuilder-alpha.WorkflowOnFailure",
+    "no-unused-type:@aws-cdk/aws-imagebuilder-alpha.WorkflowParameterType",
+    "no-unused-type:@aws-cdk/aws-imagebuilder-alpha.WorkflowSchemaVersion"
   ]
 }
