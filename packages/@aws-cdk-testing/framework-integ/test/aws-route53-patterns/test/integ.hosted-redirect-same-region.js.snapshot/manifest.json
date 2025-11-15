@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "42.0.0",
   "artifacts": {
     "integ-https-redirect-same-region.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/us-east-1",
       "properties": {
         "templateFile": "integ-https-redirect-same-region.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/cfd1c229f1b6f82ba7c98886bbb9cce3f98c3d07fc1cee4b2525494d7cd8d4bf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/269e0e4b08b68c89e95fc53741e7495bb04cc23c8bc41bed114e2ba52d60e848.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,10 +34,33 @@
         "integ-https-redirect-same-region.assets"
       ],
       "metadata": {
+        "/integ-https-redirect-same-region/redirect/RedirectCertificate": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "domainName": "*",
+              "subjectAlternativeNames": "*",
+              "validation": "*"
+            }
+          }
+        ],
         "/integ-https-redirect-same-region/redirect/RedirectCertificate/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "redirectRedirectCertificateD6C59F7F"
+          }
+        ],
+        "/integ-https-redirect-same-region/redirect/RedirectBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "websiteRedirect": {
+                "hostName": "*",
+                "protocol": "https"
+              },
+              "removalPolicy": "destroy",
+              "blockPublicAccess": "*"
+            }
           }
         ],
         "/integ-https-redirect-same-region/redirect/RedirectBucket/Resource": [
@@ -45,16 +69,68 @@
             "data": "redirectRedirectBucketAA44E2FE"
           }
         ],
-        "/integ-https-redirect-same-region/redirect/RedirectDistribution/CFDistribution": [
+        "/integ-https-redirect-same-region/redirect/RedirectDistribution": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "defaultRootObject": "*",
+              "defaultBehavior": {
+                "origin": "*",
+                "viewerProtocolPolicy": "redirect-to-https"
+              },
+              "domainNames": "*",
+              "certificate": "*",
+              "comment": "*",
+              "priceClass": "PriceClass_All"
+            }
+          }
+        ],
+        "/integ-https-redirect-same-region/redirect/RedirectDistribution/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "redirectRedirectDistributionCFDistribution1A4C48E3"
+            "data": "redirectRedirectDistribution5423F951"
+          }
+        ],
+        "/integ-https-redirect-same-region/redirect/RedirectAliasRecorde7728a": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "recordName": "*",
+              "zone": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "recordName": "*",
+              "zone": "*",
+              "target": "*"
+            }
           }
         ],
         "/integ-https-redirect-same-region/redirect/RedirectAliasRecorde7728a/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "redirectRedirectAliasRecorde7728a9F2A656C"
+          }
+        ],
+        "/integ-https-redirect-same-region/redirect/RedirectAliasRecordSixe7728a": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "recordName": "*",
+              "zone": "*",
+              "target": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "recordName": "*",
+              "zone": "*",
+              "target": "*"
+            }
           }
         ],
         "/integ-https-redirect-same-region/redirect/RedirectAliasRecordSixe7728a/Resource": [
@@ -81,37 +157,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "redirectRedirectCertificateCertificateRequestorFunctionServiceRole9E01E94F": [
+        "redirectRedirectDistributionCFDistribution1A4C48E3": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "redirectRedirectCertificateCertificateRequestorFunctionServiceRole9E01E94F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "redirectRedirectCertificateCertificateRequestorFunctionServiceRoleDefaultPolicy7AC24A96": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "redirectRedirectCertificateCertificateRequestorFunctionServiceRoleDefaultPolicy7AC24A96",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "redirectRedirectCertificateCertificateRequestorFunctionBBD1548C": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "redirectRedirectCertificateCertificateRequestorFunctionBBD1548C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "redirectRedirectCertificateCertificateRequestorResourceBB4D62C1": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "redirectRedirectCertificateCertificateRequestorResourceBB4D62C1",
+            "data": "redirectRedirectDistributionCFDistribution1A4C48E3",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
@@ -133,6 +182,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integtestDefaultTestDeployAssert24D5C536.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -173,5 +223,6 @@
         "file": "tree.json"
       }
     }
-  }
+  },
+  "minimumCliVersion": "2.1006.0"
 }
