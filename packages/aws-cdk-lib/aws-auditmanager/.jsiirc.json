@@ -1,10 +1,10 @@
 {
   "targets": {
-    "dotnet": {
-      "namespace": "Amazon.CDK.AWS.AuditManager"
-    },
     "java": {
       "package": "software.amazon.awscdk.services.auditmanager"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.AuditManager"
     },
     "python": {
       "module": "aws_cdk.aws_auditmanager"
