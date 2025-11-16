@@ -9,8 +9,10 @@ import {
   AwsMarketplaceComponent,
   Component,
   ComponentAction,
+  ComponentConstantType,
   ComponentData,
   ComponentOnFailure,
+  ComponentParameterType,
   ComponentPhaseName,
   ComponentSchemaVersion,
   OSVersion,
@@ -288,6 +290,14 @@ describe('Component', () => {
       data: ComponentData.fromComponentDocumentJsonObject({
         name: 'test-component',
         schemaVersion: ComponentSchemaVersion.V1_0,
+        constants: {
+          Constant1: { type: ComponentConstantType.STRING, value: 'Constant1Value' },
+          Constant2: { type: ComponentConstantType.STRING, value: 'Constant2Value' },
+        },
+        parameters: {
+          Parameter1: { type: ComponentParameterType.STRING, default: 'Parameter1Value' },
+          Parameter2: { type: ComponentParameterType.STRING, default: 'Parameter2Value' },
+        },
         phases: [
           {
             name: ComponentPhaseName.BUILD,
@@ -334,7 +344,10 @@ describe('Component', () => {
                 name: 'hello-world-test',
                 action: ComponentAction.EXECUTE_BASH,
                 inputs: {
-                  commands: ['echo "Hello test!"'],
+                  commands: [
+                    'echo "Hello {{ Constant1 }} {{ Parameter1 }}!"',
+                    'echo "Hello {{ Constant2 }} {{ Parameter2 }}!"',
+                  ],
                 },
               },
             ],
@@ -369,6 +382,20 @@ describe('Component', () => {
             },
             Data: `name: test-component
 schemaVersion: "1.0"
+constants:
+  - Constant1:
+      type: string
+      value: Constant1Value
+  - Constant2:
+      type: string
+      value: Constant2Value
+parameters:
+  - Parameter1:
+      type: string
+      default: Parameter1Value
+  - Parameter2:
+      type: string
+      default: Parameter2Value
 phases:
   - name: build
     steps:
@@ -403,7 +430,8 @@ phases:
         action: ExecuteBash
         inputs:
           commands:
-            - echo "Hello test!"
+            - echo "Hello {{ Constant1 }} {{ Parameter1 }}!"
+            - echo "Hello {{ Constant2 }} {{ Parameter2 }}!"
 `,
           },
         }),
@@ -765,7 +793,7 @@ phases:
     });
   });
 
-  test('throws a validation error when a componentName and componentVersion are provided when importing by attributes', () => {
+  test('throws a validation error when a componentArn and componentName are provided when importing by attributes', () => {
     expect(() =>
       Component.fromComponentAttributes(stack, 'Component', {
         componentArn: 'arn:aws:imagebuilder:us-east-1:123456789012:component/imported-component/x.x.x',
@@ -774,7 +802,7 @@ phases:
     ).toThrow(cdk.ValidationError);
   });
 
-  test('throws a validation error when neither a componentName or componentVersion are provided when importing by attributes', () => {
+  test('throws a validation error when neither a componentArn and componentName are provided when importing by attributes', () => {
     expect(() => Component.fromComponentAttributes(stack, 'Component', {})).toThrow(cdk.ValidationError);
   });
 

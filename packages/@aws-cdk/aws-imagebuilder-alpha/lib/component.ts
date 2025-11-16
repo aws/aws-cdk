@@ -232,6 +232,20 @@ export interface ComponentDocument {
    * @default None
    */
   readonly description?: string;
+
+  /**
+   * The constants to define in the document
+   *
+   * @default None
+   */
+  readonly constants?: { [constantName: string]: ComponentDocumentConstantDefinition };
+
+  /**
+   * The parameters to define in the document
+   *
+   * @default None
+   */
+  readonly parameters?: { [parameterName: string]: ComponentDocumentParameterDefinition };
 }
 
 /**
@@ -344,6 +358,45 @@ export interface ComponentDocumentForLoop {
    * value. Does not accept chaining expressions.
    */
   readonly updateBy: number;
+}
+
+/**
+ * The definition of the constant
+ */
+export interface ComponentDocumentConstantDefinition {
+  /**
+   * The data type of the constant
+   */
+  readonly type: ComponentConstantType;
+
+  /**
+   * The value of the constant
+   */
+  readonly value: any;
+}
+
+/**
+ * The definition of the parameter
+ */
+export interface ComponentDocumentParameterDefinition {
+  /**
+   * The type of the parameter
+   */
+  readonly type: ComponentParameterType;
+
+  /**
+   * The default value of the parameter
+   *
+   * @default - none, indicating the parameter is required
+   */
+  readonly default?: any;
+
+  /**
+   * The description of the parameter
+   *
+   * @default None
+   */
+  readonly description?: string;
 }
 
 /**
@@ -524,6 +577,26 @@ export enum ComponentOnFailure {
 }
 
 /**
+ * The constant type in a component document
+ */
+export enum ComponentConstantType {
+  /**
+   * Indicates the constant value is a string
+   */
+  STRING = 'string',
+}
+
+/**
+ * The parameter type in a component document
+ */
+export enum ComponentParameterType {
+  /**
+   * Indicates the parameter value is a string
+   */
+  STRING = 'string',
+}
+
+/**
  * The phases of a component document
  */
 export enum ComponentPhaseName {
@@ -608,11 +681,17 @@ export abstract class ComponentData {
    * @param data An inline JSON object representing the component data
    */
   public static fromComponentDocumentJsonObject(data: ComponentDocument): ComponentData {
-    const { name, description, schemaVersion, phases } = data;
+    const { name, description, schemaVersion, constants, parameters, phases } = data;
     return this.fromJsonObject({
       ...(name !== undefined && { name }),
       ...(description !== undefined && { description }),
       schemaVersion: schemaVersion,
+      ...(constants !== undefined && {
+        constants: Object.entries(constants).map(([constantName, value]) => ({ [constantName]: value })),
+      }),
+      ...(parameters !== undefined && {
+        parameters: Object.entries(parameters).map(([parameterName, value]) => ({ [parameterName]: value })),
+      }),
       phases: phases.map((phase) => ({
         name: phase.name,
         steps: phase.steps.map((step) => ({

@@ -2,6 +2,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as imagebuilder from '../lib';
+import { ComponentConstantType, ComponentParameterType } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-component-all-parameters');
@@ -12,7 +13,7 @@ const key = new kms.Key(stack, 'Component-EncryptionKey', {
 });
 
 new imagebuilder.Component(stack, 'InlineComponent', {
-  componentName: 'aws-cdk-imagebuilder-component-all-parameters-inline-component',
+  componentName: 'aws-cdk-imagebuilder-component-all-parameters-inline',
   componentVersion: '1.0.0',
   description: 'This is a test component',
   changeDescription: 'This is a change description',
@@ -25,6 +26,19 @@ new imagebuilder.Component(stack, 'InlineComponent', {
   data: imagebuilder.ComponentData.fromComponentDocumentJsonObject({
     name: 'test-component',
     schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
+    parameters: {
+      parameter: {
+        type: ComponentParameterType.STRING,
+        description: 'This is a parameter',
+        default: 'default value',
+      },
+    },
+    constants: {
+      constant: {
+        type: ComponentConstantType.STRING,
+        value: 'constant value',
+      },
+    },
     phases: [
       {
         name: imagebuilder.ComponentPhaseName.BUILD,
@@ -35,7 +49,7 @@ new imagebuilder.Component(stack, 'InlineComponent', {
             onFailure: imagebuilder.ComponentOnFailure.CONTINUE,
             timeout: cdk.Duration.seconds(720),
             inputs: {
-              commands: ['echo "Hello build!"'],
+              commands: ['echo "Hello build! {{ parameter }} {{ constant }}"'],
             },
           },
         ],
