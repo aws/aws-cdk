@@ -2559,7 +2559,6 @@ describe('fargate service', () => {
         }));
       }).toThrow("'throughput' must be less than or equal to 2000 MiB/s, got 2001 MiB/s");
     });
-
   });
 
   describe('When setting up a health check', () => {
