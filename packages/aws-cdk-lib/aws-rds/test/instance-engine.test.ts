@@ -294,6 +294,7 @@ describe('instance engine', () => {
       ['10.6.20', rds.MariaDbEngineVersion.VER_10_6_20],
       ['10.6.21', rds.MariaDbEngineVersion.VER_10_6_21],
       ['10.6.22', rds.MariaDbEngineVersion.VER_10_6_22],
+      ['10.6.23', rds.MariaDbEngineVersion.VER_10_6_23],
       ['10.11', rds.MariaDbEngineVersion.VER_10_11],
       ['10.11.4', rds.MariaDbEngineVersion.VER_10_11_4],
       ['10.11.5', rds.MariaDbEngineVersion.VER_10_11_5],
@@ -304,10 +305,12 @@ describe('instance engine', () => {
       ['10.11.10', rds.MariaDbEngineVersion.VER_10_11_10],
       ['10.11.11', rds.MariaDbEngineVersion.VER_10_11_11],
       ['10.11.13', rds.MariaDbEngineVersion.VER_10_11_13],
+      ['10.11.14', rds.MariaDbEngineVersion.VER_10_11_14],
       ['11.4.3', rds.MariaDbEngineVersion.VER_11_4_3],
       ['11.4.4', rds.MariaDbEngineVersion.VER_11_4_4],
       ['11.4.5', rds.MariaDbEngineVersion.VER_11_4_5],
       ['11.4.7', rds.MariaDbEngineVersion.VER_11_4_7],
+      ['11.4.8', rds.MariaDbEngineVersion.VER_11_4_8],
       ['11.8.3', rds.MariaDbEngineVersion.VER_11_8_3],
     ])('is passed correctly for %s', (engineVersion, version) => {
       // WHEN
