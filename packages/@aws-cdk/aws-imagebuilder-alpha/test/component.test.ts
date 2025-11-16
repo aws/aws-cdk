@@ -11,7 +11,6 @@ import {
   ComponentAction,
   ComponentData,
   ComponentOnFailure,
-  ComponentParameterValue,
   ComponentPhaseName,
   ComponentSchemaVersion,
   OSVersion,
@@ -97,9 +96,29 @@ describe('Component', () => {
       ],
     });
     expect(stack.resolve(component.componentName)).toEqual({
-      'Fn::Join': ['', ['imported-component-by-arn-', { Ref: 'AWS::Partition' }]],
+      'Fn::Select': [
+        0,
+        {
+          'Fn::Split': [
+            '/',
+            { 'Fn::Join': ['', ['imported-component-by-arn-', { Ref: 'AWS::Partition' }, '/1.2.3/4']] },
+          ],
+        },
+      ],
     });
-    expect(stack.resolve(component.componentVersion)).toEqual('1.2.3');
+    expect(stack.resolve(component.componentVersion)).toEqual({
+      'Fn::Select': [
+        1,
+        {
+          'Fn::Split': [
+            '/',
+            {
+              'Fn::Join': ['', ['imported-component-by-arn-', { Ref: 'AWS::Partition' }, '/1.2.3/4']],
+            },
+          ],
+        },
+      ],
+    });
   });
 
   test('imported by attributes', () => {
@@ -164,31 +183,31 @@ describe('Component', () => {
   });
 
   test('AWS-managed component pre-defined method import', () => {
-    const awsCliV2Linux = AwsManagedComponent.awsCliV2(stack, 'AwsCliV2Linux-Component', { platform: OSVersion.LINUX });
+    const awsCliV2Linux = AwsManagedComponent.awsCliV2(stack, 'AwsCliV2Linux-Component', { platform: Platform.LINUX });
     const awsCliV2Windows = AwsManagedComponent.awsCliV2(stack, 'AwsCliV2Windows-Component', {
-      platform: OSVersion.WINDOWS,
+      platform: Platform.WINDOWS,
     });
     const helloWorldLinux = AwsManagedComponent.helloWorld(stack, 'HelloWorldLinux-Component', {
-      platform: OSVersion.LINUX,
+      platform: Platform.LINUX,
     });
     const helloWorldWindows = AwsManagedComponent.helloWorld(stack, 'HelloWorldWindows-Component', {
-      platform: OSVersion.WINDOWS,
+      platform: Platform.WINDOWS,
     });
-    const python3Linux = AwsManagedComponent.python3(stack, 'Python3Linux-Component', { platform: OSVersion.LINUX });
+    const python3Linux = AwsManagedComponent.python3(stack, 'Python3Linux-Component', { platform: Platform.LINUX });
     const python3Windows = AwsManagedComponent.python3(stack, 'Python3Windows-Component', {
-      platform: OSVersion.WINDOWS,
+      platform: Platform.WINDOWS,
     });
-    const rebootLinux = AwsManagedComponent.reboot(stack, 'RebootLinux-Component', { platform: OSVersion.LINUX });
-    const rebootWindows = AwsManagedComponent.reboot(stack, 'RebootWindows-Component', { platform: OSVersion.WINDOWS });
+    const rebootLinux = AwsManagedComponent.reboot(stack, 'RebootLinux-Component', { platform: Platform.LINUX });
+    const rebootWindows = AwsManagedComponent.reboot(stack, 'RebootWindows-Component', { platform: Platform.WINDOWS });
     const stigBuildLinux = AwsManagedComponent.stigBuild(stack, 'StigBuildLinux-Component', {
-      platform: OSVersion.LINUX,
+      platform: Platform.LINUX,
     });
     const stigBuildWindows = AwsManagedComponent.stigBuild(stack, 'StigBuildWindows-Component', {
-      platform: OSVersion.WINDOWS,
+      platform: Platform.WINDOWS,
     });
-    const updateLinux = AwsManagedComponent.updateOS(stack, 'UpdateLinux-Component', { platform: OSVersion.LINUX });
+    const updateLinux = AwsManagedComponent.updateOS(stack, 'UpdateLinux-Component', { platform: Platform.LINUX });
     const updateWindows = AwsManagedComponent.updateOS(stack, 'UpdateWindows-Component', {
-      platform: OSVersion.WINDOWS,
+      platform: Platform.WINDOWS,
     });
 
     const expectedComponentArn = (componentName: string) => ({
@@ -259,7 +278,7 @@ describe('Component', () => {
       componentVersion: '1.0.0',
       description: 'This is a test component',
       changeDescription: 'This is a change description',
-      platform: OSVersion.LINUX,
+      platform: Platform.LINUX,
       kmsKey: kms.Key.fromKeyArn(
         stack,
         'ComponentKey',
@@ -278,8 +297,12 @@ describe('Component', () => {
                 action: ComponentAction.EXECUTE_BASH,
                 onFailure: ComponentOnFailure.CONTINUE,
                 timeout: cdk.Duration.seconds(720),
+                loop: {
+                  name: 'scope',
+                  forEach: ['world', 'universe'],
+                },
                 inputs: {
-                  commands: ['echo "Hello build!"'],
+                  commands: ['echo "Hello {{ scope.value }}!"'],
                 },
               },
             ],
@@ -290,8 +313,16 @@ describe('Component', () => {
               {
                 name: 'hello-world-validate',
                 action: ComponentAction.EXECUTE_BASH,
+                loop: {
+                  name: 'scope',
+                  for: {
+                    start: 0,
+                    end: 10,
+                    updateBy: 1,
+                  },
+                },
                 inputs: {
-                  commands: ['echo "Hello validate!"'],
+                  commands: ['echo "Hello {{ scope.index }} validate!"'],
                 },
               },
             ],
@@ -343,18 +374,29 @@ phases:
     steps:
       - name: hello-world-build
         action: ExecuteBash
-        inputs:
-          commands:
-            - echo "Hello build!"
         onFailure: Continue
         timeoutSeconds: 720
+        loop:
+          name: scope
+          forEach:
+            - world
+            - universe
+        inputs:
+          commands:
+            - echo "Hello {{ scope.value }}!"
   - name: validate
     steps:
       - name: hello-world-validate
         action: ExecuteBash
+        loop:
+          name: scope
+          for:
+            start: 0
+            end: 10
+            updateBy: 1
         inputs:
           commands:
-            - echo "Hello validate!"
+            - echo "Hello {{ scope.index }} validate!"
   - name: test
     steps:
       - name: hello-world-test
@@ -371,7 +413,7 @@ phases:
 
   test('with required parameters', () => {
     new Component(stack, 'Component', {
-      platform: OSVersion.LINUX,
+      platform: Platform.LINUX,
       data: ComponentData.fromJsonObject({
         name: 'test-component',
         schemaVersion: ComponentSchemaVersion.V1_0,
@@ -419,7 +461,7 @@ phases:
 
   test('with component data as a file asset', () => {
     new Component(stack, 'Component', {
-      platform: OSVersion.LINUX,
+      platform: Platform.LINUX,
       data: ComponentData.fromAsset(stack, 'ComponentData', path.join(__dirname, 'assets', 'component-data.yaml')),
     });
 
@@ -441,7 +483,7 @@ phases:
   test('with component data as an S3 location', () => {
     const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'component-bucket-123456789012-us-east-1');
     new Component(stack, 'Component', {
-      platform: OSVersion.LINUX,
+      platform: Platform.LINUX,
       data: ComponentData.fromS3(bucket, 'components/component.yaml'),
     });
 
@@ -462,7 +504,7 @@ phases:
 
   test('with component data as an inline string', () => {
     new Component(stack, 'Component', {
-      platform: OSVersion.LINUX,
+      platform: Platform.LINUX,
       data: ComponentData.fromInline(`name: test-component
 schemaVersion: "1.0"
 phases:
@@ -501,14 +543,9 @@ phases:
     });
   });
 
-  test('component string parameter value renders as expected', () => {
-    const parameterValue = ComponentParameterValue.fromString('test-value');
-    expect(parameterValue.value).toEqual(['test-value']);
-  });
-
   test('grants read access to IAM roles', () => {
     const component = new Component(stack, 'Component', {
-      platform: OSVersion.LINUX,
+      platform: Platform.LINUX,
       data: ComponentData.fromJsonObject({
         name: 'test-component',
         schemaVersion: ComponentSchemaVersion.V1_0,
@@ -574,7 +611,7 @@ phases:
 
   test('grants permissions to IAM roles', () => {
     const component = new Component(stack, 'Component', {
-      platform: OSVersion.LINUX,
+      platform: Platform.LINUX,
       data: ComponentData.fromJsonObject({
         name: 'test-component',
         schemaVersion: ComponentSchemaVersion.V1_0,
@@ -643,7 +680,7 @@ phases:
     const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountPrincipal('123456789012') });
     const componentData = ComponentData.fromS3(bucket, 'components/component.yaml');
     new Component(stack, 'Component', {
-      platform: OSVersion.LINUX,
+      platform: Platform.LINUX,
       data: componentData,
     });
 
@@ -685,7 +722,7 @@ phases:
     const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountPrincipal('123456789012') });
     const componentData = ComponentData.fromS3(bucket, 'components/component.yaml');
     new Component(stack, 'Component', {
-      platform: OSVersion.LINUX,
+      platform: Platform.LINUX,
       data: componentData,
     });
 
@@ -745,7 +782,7 @@ phases:
     expect(() =>
       AwsManagedComponent.fromAwsManagedComponentAttributes(stack, 'Component', {
         componentName: 'hello-world-linux',
-        platform: OSVersion.LINUX,
+        platform: Platform.LINUX,
       }),
     ).toThrow(cdk.ValidationError);
   });
@@ -763,9 +800,9 @@ phases:
   test('throws a validation error when importing a pre-defined AWS-managed component with an unresolved platform attribute', () => {
     const platform = new cdk.CfnParameter(stack, 'Platform', { type: 'String' }).valueAsString;
 
-    expect(() =>
-      AwsManagedComponent.helloWorld(stack, 'Component', { platform: OSVersion.custom(platform as Platform) }),
-    ).toThrow(cdk.ValidationError);
+    expect(() => AwsManagedComponent.helloWorld(stack, 'Component', { platform: platform as Platform })).toThrow(
+      cdk.ValidationError,
+    );
   });
 
   test('throws a validation error when importing a pre-defined AWS-managed component with the componentName attribute', () => {
@@ -775,7 +812,7 @@ phases:
   });
 
   test('throws a validation error when importing a pre-defined AWS-managed component with an unsupported platform provided', () => {
-    expect(() => AwsManagedComponent.helloWorld(stack, 'Component', { platform: OSVersion.MAC_OS })).toThrow(
+    expect(() => AwsManagedComponent.helloWorld(stack, 'Component', { platform: Platform.MAC_OS })).toThrow(
       cdk.ValidationError,
     );
   });
@@ -785,7 +822,7 @@ phases:
       () =>
         new Component(stack, 'Component', {
           componentName: 'a'.repeat(129),
-          platform: OSVersion.LINUX,
+          platform: Platform.LINUX,
           data: ComponentData.fromJsonObject({
             name: 'test-component',
             schemaVersion: ComponentSchemaVersion.V1_0,
@@ -813,7 +850,7 @@ phases:
       () =>
         new Component(stack, 'Component', {
           componentName: 'hello world',
-          platform: OSVersion.LINUX,
+          platform: Platform.LINUX,
           data: ComponentData.fromJsonObject({
             name: 'test-component',
             schemaVersion: ComponentSchemaVersion.V1_0,
@@ -841,7 +878,7 @@ phases:
       () =>
         new Component(stack, 'Component', {
           componentName: 'hello_world',
-          platform: OSVersion.LINUX,
+          platform: Platform.LINUX,
           data: ComponentData.fromJsonObject({
             name: 'test-component',
             schemaVersion: ComponentSchemaVersion.V1_0,
@@ -869,7 +906,7 @@ phases:
       () =>
         new Component(stack, 'Component', {
           componentName: 'HelloWorld',
-          platform: OSVersion.LINUX,
+          platform: Platform.LINUX,
           data: ComponentData.fromJsonObject({
             name: 'test-component',
             schemaVersion: ComponentSchemaVersion.V1_0,

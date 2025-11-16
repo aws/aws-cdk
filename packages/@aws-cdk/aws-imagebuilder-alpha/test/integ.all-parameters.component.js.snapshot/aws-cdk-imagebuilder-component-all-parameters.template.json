@@ -40,7 +40,7 @@
    "Type": "AWS::ImageBuilder::Component",
    "Properties": {
     "ChangeDescription": "This is a change description",
-    "Data": "name: test-component\nschemaVersion: \"1.0\"\nphases:\n  - name: build\n    steps:\n      - name: hello-world-build\n        action: ExecuteBash\n        inputs:\n          commands:\n            - echo \"Hello build!\"\n        onFailure: Continue\n        timeoutSeconds: 720\n  - name: validate\n    steps:\n      - name: hello-world-validate\n        action: ExecuteBash\n        inputs:\n          commands:\n            - echo \"Hello validate!\"\n  - name: test\n    steps:\n      - name: hello-world-test\n        action: ExecuteBash\n        inputs:\n          commands:\n            - echo \"Hello test!\"\n",
+    "Data": "name: test-component\nschemaVersion: \"1.0\"\nphases:\n  - name: build\n    steps:\n      - name: hello-world-build\n        action: ExecuteBash\n        onFailure: Continue\n        timeoutSeconds: 720\n        inputs:\n          commands:\n            - echo \"Hello build!\"\n  - name: validate\n    steps:\n      - name: hello-world-validate\n        action: ExecuteBash\n        inputs:\n          commands:\n            - echo \"Hello validate!\"\n  - name: test\n    steps:\n      - name: hello-world-test\n        action: ExecuteBash\n        inputs:\n          commands:\n            - echo \"Hello test!\"\n",
     "Description": "This is a test component",
     "KmsKeyId": {
      "Fn::GetAtt": [
@@ -48,7 +48,7 @@
       "Arn"
      ]
     },
-    "Name": "aws-cdk-imagebuilder-component-all-parameters-inline",
+    "Name": "aws-cdk-imagebuilder-component-all-parameters-inline-component",
     "Platform": "Linux",
     "SupportedOsVersions": [
      "Amazon Linux",

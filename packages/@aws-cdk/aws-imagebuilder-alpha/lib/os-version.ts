@@ -55,12 +55,12 @@ export class OSVersion {
   /**
    * OS version for macOS 14
    */
-  public static readonly MAC_OS_14 = new OSVersion(Platform.LINUX, 'macOS 14');
+  public static readonly MAC_OS_14 = new OSVersion(Platform.MAC_OS, 'macOS 14');
 
   /**
    * OS version for macOS 15
    */
-  public static readonly MAC_OS_15 = new OSVersion(Platform.LINUX, 'macOS 15');
+  public static readonly MAC_OS_15 = new OSVersion(Platform.MAC_OS, 'macOS 15');
 
   /**
    * OS version for all Red Hat Enterprise Linux images
@@ -110,24 +110,24 @@ export class OSVersion {
   /**
    * OS version for all Windows server images
    */
-  public static readonly WINDOWS_SERVER = new OSVersion(Platform.LINUX, 'Microsoft Windows Server');
+  public static readonly WINDOWS_SERVER = new OSVersion(Platform.WINDOWS, 'Microsoft Windows Server');
 
   /**
    * OS version for Windows Server 2016
    */
-  public static readonly WINDOWS_SERVER_2016 = new OSVersion(Platform.LINUX, 'Microsoft Windows Server 2016');
+  public static readonly WINDOWS_SERVER_2016 = new OSVersion(Platform.WINDOWS, 'Microsoft Windows Server 2016');
   /**
    * OS version for Windows Server 2019
    */
-  public static readonly WINDOWS_SERVER_2019 = new OSVersion(Platform.LINUX, 'Microsoft Windows Server 2019');
+  public static readonly WINDOWS_SERVER_2019 = new OSVersion(Platform.WINDOWS, 'Microsoft Windows Server 2019');
   /**
    * OS version for Windows Server 2022
    */
-  public static readonly WINDOWS_SERVER_2022 = new OSVersion(Platform.LINUX, 'Microsoft Windows Server 2022');
+  public static readonly WINDOWS_SERVER_2022 = new OSVersion(Platform.WINDOWS, 'Microsoft Windows Server 2022');
   /**
    * OS version for Windows Server 2025
    */
-  public static readonly WINDOWS_SERVER_2025 = new OSVersion(Platform.LINUX, 'Microsoft Windows Server 2025');
+  public static readonly WINDOWS_SERVER_2025 = new OSVersion(Platform.WINDOWS, 'Microsoft Windows Server 2025');
 
   /**
    * Constructs an OS version with a custom name

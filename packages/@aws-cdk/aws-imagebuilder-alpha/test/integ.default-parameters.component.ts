@@ -6,7 +6,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-component-default-parameters');
 
 new imagebuilder.Component(stack, 'Component', {
-  platform: imagebuilder.OSVersion.LINUX,
+  platform: imagebuilder.Platform.LINUX,
   data: imagebuilder.ComponentData.fromJsonObject({
     name: 'test-component',
     schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,

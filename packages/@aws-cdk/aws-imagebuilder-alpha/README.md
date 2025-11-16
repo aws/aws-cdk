@@ -53,7 +53,7 @@ Create a component with the required properties: platform and component data.
 
 ```ts
 const component = new imagebuilder.Component(this, 'MyComponent', {
-  platform: imagebuilder.OSVersion.LINUX,
+  platform: imagebuilder.Platform.LINUX,
   data: imagebuilder.ComponentData.fromJsonObject({
     schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
     phases: [
@@ -82,7 +82,7 @@ Use `ComponentData.fromInline()` for existing YAML/JSON definitions:
 
 ```ts
 const component = new imagebuilder.Component(this, 'InlineComponent', {
-  platform: imagebuilder.OSVersion.LINUX,
+  platform: imagebuilder.Platform.LINUX,
   data: imagebuilder.ComponentData.fromInline(`
 name: my-component
 schemaVersion: 1.0
@@ -103,7 +103,7 @@ Most developer-friendly approach using objects:
 
 ```ts
 const component = new imagebuilder.Component(this, 'JsonComponent', {
-  platform: imagebuilder.OSVersion.LINUX,
+  platform: imagebuilder.Platform.LINUX,
   data: imagebuilder.ComponentData.fromJsonObject({
     schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
     phases: [
@@ -131,7 +131,7 @@ For type-safe, CDK-native definitions with enhanced properties like `timeout` an
 
 ```ts  
 const component = new imagebuilder.Component(this, 'StructuredComponent', {
-  platform: imagebuilder.OSVersion.LINUX,
+  platform: imagebuilder.Platform.LINUX,
   data: imagebuilder.ComponentData.fromComponentDocumentJsonObject({
     schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
     phases: [
@@ -161,23 +161,26 @@ For those components you want to upload or have uploaded to S3:
 ```ts
 // Upload a local file
 const componentFromAsset = new imagebuilder.Component(this, 'AssetComponent', {
-  platform: imagebuilder.OSVersion.LINUX,
+  platform: imagebuilder.Platform.LINUX,
   data: imagebuilder.ComponentData.fromAsset(this, 'ComponentAsset', './my-component.yml'),
 });
 
 // Reference an existing S3 object
 const bucket = s3.Bucket.fromBucketName(this, 'ComponentBucket', 'my-components-bucket');
 const componentFromS3 = new imagebuilder.Component(this, 'S3Component', {
-  platform: imagebuilder.OSVersion.LINUX,
+  platform: imagebuilder.Platform.LINUX,
   data: imagebuilder.ComponentData.fromS3(bucket, 'components/my-component.yml'),
 });
 ```
 
 #### Encrypt component data with a KMS key
 
+You can encrypt component data with a KMS key, so that only principals with access to decrypt with the key are able to
+access the component data.
+
 ```ts
 const component = new imagebuilder.Component(this, 'EncryptedComponent', {
-  platform: imagebuilder.OSVersion.LINUX,
+  platform: imagebuilder.Platform.LINUX,
   kmsKey: new kms.Key(this, 'ComponentKey'),
   data: imagebuilder.ComponentData.fromJsonObject({
     schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
@@ -206,12 +209,12 @@ AWS provides a collection of managed components for common tasks:
 ```ts
 // Install AWS CLI v2
 const awsCliComponent = imagebuilder.AwsManagedComponent.awsCliV2(this, 'AwsCli', {
-  platform: imagebuilder.OSVersion.LINUX,
+  platform: imagebuilder.Platform.LINUX
 });
 
 // Update the operating system
 const updateComponent = imagebuilder.AwsManagedComponent.updateOS(this, 'UpdateOS', {
-  platform: imagebuilder.OSVersion.LINUX,
+  platform: imagebuilder.Platform.LINUX
 });
 
 // Reference any AWS-managed component by name

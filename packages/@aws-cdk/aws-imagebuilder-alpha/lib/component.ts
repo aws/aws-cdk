@@ -67,7 +67,7 @@ export interface ComponentProps {
   /**
    * The operating system platform of the component.
    */
-  readonly platform: OSVersion;
+  readonly platform: Platform;
 
   /**
    * The name of the component.
@@ -143,7 +143,7 @@ export interface ComponentAttributes {
   /**
    * The version of the component
    *
-   * @default the latest version of the component, x.x.x
+   * @default - the latest version of the component, x.x.x
    */
   readonly componentVersion?: string;
 }
@@ -168,7 +168,7 @@ export interface AwsManagedComponentAttributes {
   /**
    * The version of the AWS-managed component
    *
-   * @default the latest version of the component, x.x.x
+   * @default - the latest version of the component, x.x.x
    */
   readonly componentVersion?: string;
 
@@ -180,7 +180,7 @@ export interface AwsManagedComponentAttributes {
    * @default - none if using `this.fromAwsManagedComponentAttributes()`, otherwise a platform is
    *            required when using the pre-defined managed component methods
    */
-  readonly platform?: OSVersion;
+  readonly platform?: Platform;
 }
 
 /**
@@ -200,7 +200,7 @@ export interface AwsMarketplaceComponentAttributes {
   /**
    * The version of the AWS Marketplace component
    *
-   * @default The latest version of the component, x.x.x
+   * @default - the latest version of the component, x.x.x
    */
   readonly componentVersion?: string;
 }
@@ -273,7 +273,7 @@ export interface ComponentDocumentStep {
   /**
    * The condition to apply to the step. If the condition is false, then the step is skipped
    *
-   * @default no condition is applied to the step and it gets executed
+   * @default - no condition is applied to the step and it gets executed
    */
   readonly if?: any;
 
@@ -282,7 +282,7 @@ export interface ComponentDocumentStep {
    *
    * @default None
    */
-  readonly loop?: any;
+  readonly loop?: ComponentDocumentLoop;
 
   /**
    * The timeout of the step
@@ -297,6 +297,53 @@ export interface ComponentDocumentStep {
    * @default ComponentOnFailure.ABORT
    */
   readonly onFailure?: ComponentOnFailure;
+}
+
+/**
+ * The looping construct of a component defines a repeated sequence of instructions
+ */
+export interface ComponentDocumentLoop {
+  /**
+   * The name of the loop, which can be used to reference
+   *
+   * @default loop
+   */
+  readonly name?: string;
+
+  /**
+   * The for loop iterates on a range of integers specified within a boundary outlined by the start and end of the
+   * variables
+   *
+   * @default - none if `forEach` is provided. otherwise, `for` is required.
+   */
+  readonly for?: ComponentDocumentForLoop;
+
+  /**
+   * The forEach loop iterates on an explicit list of values, which can be strings and chained expressions
+   *
+   * @default - none if `for` is provided. otherwise, `forEach` is required.
+   */
+  readonly forEach?: string[];
+}
+
+/**
+ * The for loop iterates on a range of integers specified within a boundary outlined by the start and end of the
+ * variables. The iterating values are in the set [start, end] and includes boundary values.
+ */
+export interface ComponentDocumentForLoop {
+  /**
+   * Starting value of iteration. Does not accept chaining expressions.
+   */
+  readonly start: number;
+  /**
+   * Ending value of iteration. Does not accept chaining expressions.
+   */
+  readonly end: number;
+  /**
+   * Difference by which an iterating value is updated through addition. It must be a negative or positive non-zero
+   * value. Does not accept chaining expressions.
+   */
+  readonly updateBy: number;
 }
 
 /**
@@ -571,9 +618,11 @@ export abstract class ComponentData {
         steps: phase.steps.map((step) => ({
           name: step.name,
           action: step.action,
-          inputs: step.inputs,
           ...(step.onFailure !== undefined && { onFailure: step.onFailure }),
           ...(step.timeout !== undefined && { timeoutSeconds: step.timeout.toSeconds() }),
+          ...(step.if !== undefined && { if: step.if }),
+          ...(step.loop !== undefined && { loop: step.loop }),
+          inputs: step.inputs,
         })),
       })),
     });
@@ -659,29 +708,6 @@ class S3ComponentDataFromAsset extends S3ComponentData {
 }
 
 /**
- * The parameter value for a component parameter
- */
-export class ComponentParameterValue {
-  /**
-   * The value of the parameter as a string
-   *
-   * @param value The string value of the parameter
-   */
-  public static fromString(value: string): ComponentParameterValue {
-    return new ComponentParameterValue([value]);
-  }
-
-  /**
-   * The rendered parameter value
-   */
-  public readonly value: string[];
-
-  protected constructor(value: string[]) {
-    this.value = value;
-  }
-}
-
-/**
  * Helper class for working with AWS-managed components
  */
 export abstract class AwsManagedComponent {
@@ -700,7 +726,7 @@ export abstract class AwsManagedComponent {
       allowedPlatforms: [Platform.LINUX, Platform.WINDOWS],
     });
 
-    if (attrs.platform?.platform === Platform.WINDOWS) {
+    if (attrs.platform === Platform.WINDOWS) {
       return this.fromAwsManagedComponentAttributes(scope, id, {
         componentName: 'aws-cli-version-2-windows',
         componentVersion: attrs.componentVersion,
@@ -728,7 +754,7 @@ export abstract class AwsManagedComponent {
       allowedPlatforms: [Platform.LINUX, Platform.WINDOWS],
     });
 
-    if (attrs.platform?.platform === Platform.WINDOWS) {
+    if (attrs.platform === Platform.WINDOWS) {
       return this.fromAwsManagedComponentAttributes(scope, id, {
         componentName: 'hello-world-windows',
         componentVersion: attrs.componentVersion,
@@ -756,7 +782,7 @@ export abstract class AwsManagedComponent {
       allowedPlatforms: [Platform.LINUX, Platform.WINDOWS],
     });
 
-    if (attrs.platform?.platform === Platform.WINDOWS) {
+    if (attrs.platform === Platform.WINDOWS) {
       return this.fromAwsManagedComponentAttributes(scope, id, {
         componentName: 'python-3-windows',
         componentVersion: attrs.componentVersion,
@@ -784,7 +810,7 @@ export abstract class AwsManagedComponent {
       allowedPlatforms: [Platform.LINUX, Platform.WINDOWS],
     });
 
-    if (attrs.platform?.platform === Platform.WINDOWS) {
+    if (attrs.platform === Platform.WINDOWS) {
       return this.fromAwsManagedComponentAttributes(scope, id, {
         componentName: 'reboot-windows',
         componentVersion: attrs.componentVersion,
@@ -814,7 +840,7 @@ export abstract class AwsManagedComponent {
       allowedPlatforms: [Platform.LINUX, Platform.WINDOWS],
     });
 
-    if (attrs.platform?.platform === Platform.WINDOWS) {
+    if (attrs.platform === Platform.WINDOWS) {
       return this.fromAwsManagedComponentAttributes(scope, id, {
         componentName: 'stig-build-windows',
         componentVersion: attrs.componentVersion,
@@ -842,7 +868,7 @@ export abstract class AwsManagedComponent {
       allowedPlatforms: [Platform.LINUX, Platform.WINDOWS],
     });
 
-    if (attrs.platform?.platform === Platform.WINDOWS) {
+    if (attrs.platform === Platform.WINDOWS) {
       return this.fromAwsManagedComponentAttributes(scope, id, {
         componentName: 'update-windows',
         componentVersion: attrs.componentVersion,
@@ -923,7 +949,7 @@ export abstract class AwsManagedComponent {
       throw new cdk.ValidationError(`platform cannot be a token for ${component}`, scope);
     }
 
-    if (!allowedPlatforms.includes(attrs.platform.platform)) {
+    if (!allowedPlatforms.includes(attrs.platform)) {
       throw new cdk.ValidationError(`${attrs.platform} is not a supported platform for ${component}`, scope);
     }
   }
@@ -1060,12 +1086,8 @@ export class Component extends ComponentBase {
         cdk.ArnFormat.SLASH_RESOURCE_NAME,
       ).resourceName!;
 
-      const [componentNameFromArn, componentVersionFromArn] = (() => {
-        const componentNameVersionSplit = componentNameVersion.split('/');
-        return [componentNameVersionSplit[0], componentNameVersionSplit[1]];
-      })();
-
-      return [componentNameFromArn, componentVersionFromArn];
+      const componentNameVersionSplit = cdk.Fn.split('/', componentNameVersion);
+      return [cdk.Fn.select(0, componentNameVersionSplit), cdk.Fn.select(1, componentNameVersionSplit)];
     })();
 
     class Import extends ComponentBase {
@@ -1111,6 +1133,8 @@ export class Component extends ComponentBase {
    */
   public readonly componentType: string;
 
+  protected readonly kmsKey?: kms.IKey;
+
   public constructor(scope: Construct, id: string, props: ComponentProps) {
     super(scope, id, {
       physicalName:
@@ -1130,7 +1154,7 @@ export class Component extends ComponentBase {
     this.validateComponentName();
 
     props.supportedOsVersions?.forEach((osVersion) => {
-      if (osVersion.platform !== props.platform.platform) {
+      if (osVersion.platform !== props.platform) {
         throw new cdk.ValidationError(
           `os version ${osVersion.osVersion} is not compatible with platform ${props.platform}`,
           this,
@@ -1146,7 +1170,7 @@ export class Component extends ComponentBase {
       version: componentVersion,
       changeDescription: props.changeDescription,
       description: props.description,
-      platform: props.platform.platform,
+      platform: props.platform,
       kmsKeyId: props.kmsKey?.keyArn,
       tags: props.tags,
       ...(props.data.isS3Reference ? { uri: props.data.value } : { data: props.data.value }),
@@ -1164,6 +1188,7 @@ export class Component extends ComponentBase {
     this.componentVersion = componentVersion;
     this.encrypted = true; // Components are always encrypted
     this.componentType = component.attrType;
+    this.kmsKey = props.kmsKey;
   }
 
   private validateComponentName() {

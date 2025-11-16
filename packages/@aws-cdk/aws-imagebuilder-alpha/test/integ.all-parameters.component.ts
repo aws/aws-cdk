@@ -12,11 +12,11 @@ const key = new kms.Key(stack, 'Component-EncryptionKey', {
 });
 
 new imagebuilder.Component(stack, 'InlineComponent', {
-  componentName: 'aws-cdk-imagebuilder-component-all-parameters-inline',
+  componentName: 'aws-cdk-imagebuilder-component-all-parameters-inline-component',
   componentVersion: '1.0.0',
   description: 'This is a test component',
   changeDescription: 'This is a change description',
-  platform: imagebuilder.OSVersion.LINUX,
+  platform: imagebuilder.Platform.LINUX,
   kmsKey: key,
   supportedOsVersions: [
     imagebuilder.OSVersion.AMAZON_LINUX,

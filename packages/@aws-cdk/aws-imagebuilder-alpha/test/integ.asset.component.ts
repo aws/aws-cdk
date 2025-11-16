@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-component-asset');
 new imagebuilder.Component(stack, 'S3AssetComponent', {
   componentName: 'aws-cdk-imagebuilder-component-all-parameters-s3-asset-component',
   componentVersion: '1.0.0',
-  platform: imagebuilder.OSVersion.LINUX,
+  platform: imagebuilder.Platform.LINUX,
   data: imagebuilder.ComponentData.fromAsset(
     stack,
     'ComponentData',
