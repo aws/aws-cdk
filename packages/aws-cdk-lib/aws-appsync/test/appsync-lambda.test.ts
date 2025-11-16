@@ -66,19 +66,19 @@ describe('Lambda Data Source configuration', () => {
   });
 
   test.each([
-    [true, 'ENABLED'],
-    [false, 'DISABLED'],
+    [appsync.DataSourceMetricsConfig.ENABLED, 'ENABLED'],
+    [appsync.DataSourceMetricsConfig.DISABLED, 'DISABLED'],
     [undefined, Match.absent()],
-  ])('appsync configures metrics config correctly to set %s', (enhancedMetricsEnabled, metricsConfig) => {
+  ])('appsync configures metrics config correctly to set %s', (metricsConfig, expected) => {
     // WHEN
     api.addLambdaDataSource('ds', func, {
-      enhancedMetricsEnabled: enhancedMetricsEnabled,
+      metricsConfig: metricsConfig,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AWS_LAMBDA',
-      MetricsConfig: metricsConfig,
+      MetricsConfig: expected,
     });
   });
 

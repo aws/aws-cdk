@@ -259,6 +259,20 @@ export enum DataSourceLevelMetricsBehavior {
 }
 
 /**
+ * Controls how operation metrics will be emitted to CloudWatch.
+ */
+export enum OperationLevelMetricsConfig {
+  /**
+   * Sends operation metrics to CloudWatch.
+   */
+  ENABLED = 'ENABLED',
+  /**
+   * Does not send operation metrics to CloudWatch.
+   */
+  DISABLED = 'DISABLED'
+}
+
+/**
  * Controls how resolver metrics will be emitted to CloudWatch.
  */
 export enum ResolverLevelMetricsBehavior {
@@ -285,7 +299,7 @@ export interface EnhancedMetricsConfig {
    *
    * @default disabled
    */
-  readonly operationLevelMetricsEnabled?: boolean;
+  readonly operationLevelMetricsConfig?: OperationLevelMetricsConfig;
   /**
    * Controls how resolver metrics will be emitted to CloudWatch.
    */

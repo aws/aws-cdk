@@ -11,6 +11,21 @@ import { FunctionRuntime } from './runtime';
 import { Token, ValidationError } from '../../core';
 
 /**
+ * Enum for enhanced resolver metrics for specified resolvers
+ */
+export enum ResolverMetricsConfig {
+  /**
+   * Enables enhanced resolver metrics for specified resolvers
+   */
+  ENABLED = 'ENABLED',
+
+  /**
+   * Disables enhanced resolver metrics for specified resolvers
+   */
+  DISABLED = 'DISABLED',
+}
+
+/**
  * Basic properties for an AppSync resolver
  */
 export interface BaseResolverProps {
@@ -70,10 +85,8 @@ export interface BaseResolverProps {
   /**
    * Whether to enable enhanced metrics
    * Value will be ignored, if `enhancedMetricsConfig.resolverLevelMetricsBehavior` on AppSync GraphqlApi construct is set to `FULL_REQUEST_RESOLVER_METRICS`
-   *
-   * @default - Enhanced metrics are disabled
    */
-  readonly enhancedMetricsEnabled?: boolean;
+  readonly metricsConfig?: ResolverMetricsConfig;
 }
 
 /**
@@ -141,8 +154,6 @@ export class Resolver extends Construct {
     }
 
     const code = props.code?.bind(this);
-    const metricsConfig = props.enhancedMetricsEnabled === undefined ? undefined
-      : (props.enhancedMetricsEnabled ? 'ENABLED': 'DISABLED');
     this.resolver = new CfnResolver(this, 'Resource', {
       apiId: props.api.apiId,
       typeName: props.typeName,
@@ -157,7 +168,7 @@ export class Resolver extends Construct {
       responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
       cachingConfig: this.createCachingConfig(props.cachingConfig),
       maxBatchSize: props.maxBatchSize,
-      metricsConfig: metricsConfig,
+      metricsConfig: props.metricsConfig,
     });
     props.api.addSchemaDependency(this.resolver);
     if (props.dataSource) {

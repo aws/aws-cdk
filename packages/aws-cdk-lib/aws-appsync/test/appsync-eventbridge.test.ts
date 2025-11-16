@@ -89,19 +89,19 @@ describe('EventBridge Data Source Configuration', () => {
   });
 
   test.each([
-    [true, 'ENABLED'],
-    [false, 'DISABLED'],
+    [appsync.DataSourceMetricsConfig.ENABLED, 'ENABLED'],
+    [appsync.DataSourceMetricsConfig.DISABLED, 'DISABLED'],
     [undefined, Match.absent()],
-  ])('appsync configures metrics config correctly to set %s', (enhancedMetricsEnabled, metricsConfig) => {
+  ])('appsync configures metrics config correctly to set %s', (metricsConfig, expected) => {
     // WHEN
     api.addEventBridgeDataSource('ds', eventBus, {
-      enhancedMetricsEnabled: enhancedMetricsEnabled,
+      metricsConfig: metricsConfig,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'AMAZON_EVENTBRIDGE',
-      MetricsConfig: metricsConfig,
+      MetricsConfig: expected,
     });
   });
 

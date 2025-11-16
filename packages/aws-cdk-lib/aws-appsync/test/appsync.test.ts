@@ -97,20 +97,20 @@ test('appsync should configure resolver as unit when pipelineConfig is empty arr
 });
 
 test.each([
-  [true, 'ENABLED'],
-  [false, 'DISABLED'],
+  [appsync.ResolverMetricsConfig.ENABLED, 'ENABLED'],
+  [appsync.ResolverMetricsConfig.DISABLED, 'DISABLED'],
   [undefined, Match.absent()],
-])('appsync resolver has MetricConfig set to %s', (enhancedMetricsEnabled, metricsConfig) => {
+])('appsync resolver has MetricConfig set to %s', (metricsConfig, expected) => {
   // WHEN
   api.createResolver('Resolver', {
     typeName: 'test',
     fieldName: 'test2',
-    enhancedMetricsEnabled: enhancedMetricsEnabled,
+    metricsConfig: metricsConfig,
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Resolver', {
-    MetricsConfig: metricsConfig,
+    MetricsConfig: expected,
   });
 });
 
@@ -451,7 +451,7 @@ test('GraphqlApi with attach enhanced metrics', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
     EnhancedMetricsConfig: {
       DataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.PER_DATA_SOURCE_METRICS,
-      OperationLevelMetricsConfig: 'DISABLED',
+      OperationLevelMetricsConfig: appsync.OperationLevelMetricsConfig.DISABLED,
       ResolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.PER_RESOLVER_METRICS,
     },
   });
@@ -464,7 +464,7 @@ test('GraphqlApi with attach enhanced metrics to all data sources', () => {
     schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
     enhancedMetricsConfig: {
       dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS,
-      operationLevelMetricsEnabled: true,
+      operationLevelMetricsConfig: appsync.OperationLevelMetricsConfig.ENABLED,
       resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.FULL_REQUEST_RESOLVER_METRICS,
     },
   });
