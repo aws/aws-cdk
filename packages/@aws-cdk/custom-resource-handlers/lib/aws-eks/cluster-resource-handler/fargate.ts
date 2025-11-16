@@ -37,7 +37,7 @@ export class FargateProfileResourceHandler extends ResourceHandler {
     // Use the same logic as onCreate to determine the profile name
     // If fargateProfileName was explicitly provided, use it; otherwise use physicalResourceId
     // If physicalResourceId is too long (> 100 chars), fall back to generating a name
-    const fargateProfileName = this.event.ResourceProperties.Config.fargateProfileName 
+    const fargateProfileName = this.event.ResourceProperties.Config.fargateProfileName
       ?? (this.physicalResourceId.length > 100 ? this.generateProfileName() : this.physicalResourceId);
 
     const deleteFargateProfile: EKS.DeleteFargateProfileCommandInput = {
