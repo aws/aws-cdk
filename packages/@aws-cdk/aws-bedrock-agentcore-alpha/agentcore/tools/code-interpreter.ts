@@ -4,6 +4,7 @@ import {
   IResource,
   Lazy,
   Resource,
+  ValidationError,
 } from 'aws-cdk-lib';
 import {
   DimensionsMap,
@@ -182,7 +183,7 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new Error('Cannot manage network access without configuring a VPC');
+      throw new ValidationError('Cannot manage network access without configuring a VPC', this);
     }
     return this._connections;
   }
