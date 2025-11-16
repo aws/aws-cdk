@@ -1046,6 +1046,10 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
         grantee,
         actions: opts.tableActions,
         resourceArns: resources,
+        // Use wildcard for resource policy to avoid circular dependency when grantee is a resource principal
+        // (e.g., AccountRootPrincipal). This follows the same pattern as KMS (aws-kms/lib/key.ts).
+        // resourceArns is used for principal policies, resourceSelfArns is used for resource policies.
+        resourceSelfArns: ['*'],
         resource: this,
       });
       return ret;
@@ -1206,7 +1210,7 @@ export class Table extends TableBase {
    */
   public readonly tableStreamArn: string | undefined;
 
-  protected readonly table: CfnTable;
+  private readonly table: CfnTable;
 
   private readonly keySchema = new Array<CfnTable.KeySchemaProperty>();
   private readonly attributeDefinitions = new Array<CfnTable.AttributeDefinitionProperty>();
@@ -1338,6 +1342,7 @@ export class Table extends TableBase {
    *
    * @param statement The policy statement to add
    */
+  @MethodMetadata()
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument({ statements: [] });
 
