@@ -62,7 +62,6 @@ export interface ManagedStrategyProps extends MemoryStrategyCommonProps {
    * This configuration provides customization to how the model identifies
    * and extracts relevant information for memory storage.
    * @default - No custom extraction
-   * @required - No
    */
   readonly customExtraction?: OverrideConfig;
   /**
@@ -70,7 +69,6 @@ export interface ManagedStrategyProps extends MemoryStrategyCommonProps {
    * This configuration provides customization to how the model identifies
    * and extracts relevant information for memory storage.
    * @default - No custom extraction
-   * @required - No
    */
   readonly customConsolidation?: OverrideConfig;
   /**
@@ -90,7 +88,6 @@ export interface ManagedStrategyProps extends MemoryStrategyCommonProps {
    *
    * After memory creation, this namespace might look like:
    * /actor/actor-3afc5aa8fef9/strategy/summarization-fy5c5fwc7/session/session-qj7tpd1kvr8
-   * @required - Yes
    */
   readonly namespaces: string[];
 }
