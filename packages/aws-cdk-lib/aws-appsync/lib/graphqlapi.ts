@@ -1,3 +1,4 @@
+import { Annotations } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation, CfnSourceApiAssociation } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase, Visibility, AuthorizationType } from './graphqlapi-base';
@@ -993,9 +994,14 @@ export class GraphqlApi extends GraphqlApiBase {
   private setupEnhancedMetricsConfig(config?: EnhancedMetricsConfig) {
     if (!config) return undefined;
     const dataSourceLevelMetricsBehavior = config.dataSourceLevelMetricsBehavior;
-    const operationLevelMetricsEnabled = config.operationLevelMetricsEnabled
-      ? 'ENABLED' : 'DISABLED';
+    if (dataSourceLevelMetricsBehavior === DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS ) {
+      Annotations.of(this).addWarningV2(this.node.id, 'When DataSourceLevelMetricsBehavior is set to FULL_REQUEST_DATA_SOURCE_METRICS, metrics are sent to CloudWatch for all data sources used in the request, regardless of whether a data source’s MetricsConfig is set to ENABLED or DISABLED.');
+    }
+    const operationLevelMetricsEnabled = config.operationLevelMetricsConfig ? config.operationLevelMetricsConfig: OperationLevelMetricsConfig.DISABLED;
     const resolverLevelMetricsBehavior = config.resolverLevelMetricsBehavior;
+    if (resolverLevelMetricsBehavior === ResolverLevelMetricsBehavior.FULL_REQUEST_RESOLVER_METRICS ) {
+      Annotations.of(this).addWarningV2(this.node.id, 'When ResolverLevelMetricsBehavior is set to FULL_REQUEST_RESOLVER_METRICS, metrics are sent to CloudWatch for all resolvers used in the request, regardless of whether a resolver’s MetricsConfig is set to ENABLED or DISABLED.');
+    }
     return {
       dataSourceLevelMetricsBehavior: dataSourceLevelMetricsBehavior,
       operationLevelMetricsConfig: operationLevelMetricsEnabled,
