@@ -3,6 +3,8 @@ import * as path from 'path';
 import { SpecDatabase, Resource, Service } from '@aws-cdk/service-spec-types';
 import { Module } from '@cdklabs/typewriter';
 import { IWriter, substituteFilePattern } from '../util';
+import { GrantsModule } from './grants-module';
+import { ResourceClass } from './resource-class';
 import { BaseServiceSubmodule, LocatedModule, relativeImportPath } from './service-submodule';
 
 export interface AddServiceProps {
@@ -25,6 +27,13 @@ export interface AddServiceProps {
    * experiment to emit `aws-kinesisanalyticsv2` into `aws-kinesisanalytics`.
    */
   readonly destinationSubmodule?: string;
+
+  /**
+   * The JSON string to configure the grants for the service
+   *
+   * @default No grants module is generated
+   */
+  readonly grantsConfig?: string;
 }
 
 export interface LibraryBuilderProps {
@@ -63,10 +72,19 @@ export abstract class LibraryBuilder<ServiceSubmodule extends BaseServiceSubmodu
    */
   public addService(service: Service, props?: AddServiceProps) {
     const resources = this.db.follow('hasResource', service);
-    const submod = this.obtainServiceSubmodule(service, props?.destinationSubmodule);
+    const submod = this.obtainServiceSubmodule(service, props?.destinationSubmodule, props?.grantsConfig);
 
+    const resourceClasses: Record<string, ResourceClass> = {};
     for (const { entity: resource } of resources) {
-      this.addResourceToSubmodule(submod, resource, props);
+      resourceClasses[resource.cloudFormationType] = this.addResourceToSubmodule(submod, resource, props);
+    }
+
+    const grantModule = submod.locatedModules
+      .map(lm => lm.module)
+      .find(m => m instanceof GrantsModule);
+
+    if (grantModule != null) {
+      grantModule.build(resourceClasses, props?.nameSuffix);
     }
 
     this.postprocessSubmodule(submod);
@@ -130,7 +148,7 @@ export abstract class LibraryBuilder<ServiceSubmodule extends BaseServiceSubmodu
    *  - submodule.registerResource(resource.cloudFormationType, ...)
    *  - submodule.registerSelectiveImports(..)
    */
-  protected abstract addResourceToSubmodule(submodule: ServiceSubmodule, resource: Resource, props?: AddServiceProps): void;
+  protected abstract addResourceToSubmodule(submodule: ServiceSubmodule, resource: Resource, props?: AddServiceProps): ResourceClass;
 
   /**
    * Do whatever we need to do after a service has been rendered to a submodule
@@ -147,7 +165,7 @@ export abstract class LibraryBuilder<ServiceSubmodule extends BaseServiceSubmodu
     }
   }
 
-  private obtainServiceSubmodule(service: Service, targetSubmodule?: string): ServiceSubmodule {
+  private obtainServiceSubmodule(service: Service, targetSubmodule?: string, grantsConfig?: string): ServiceSubmodule {
     const submoduleName = targetSubmodule ?? service.name;
     const key = `${submoduleName}/${service.name}`;
 
@@ -156,7 +174,7 @@ export abstract class LibraryBuilder<ServiceSubmodule extends BaseServiceSubmodu
       return existingSubmod;
     }
 
-    const createdSubmod = this.createServiceSubmodule(service, submoduleName);
+    const createdSubmod = this.createServiceSubmodule(service, submoduleName, grantsConfig);
     this.serviceSubmodules.set(key, createdSubmod);
     return createdSubmod;
   }
@@ -164,7 +182,7 @@ export abstract class LibraryBuilder<ServiceSubmodule extends BaseServiceSubmodu
   /**
    * Implement this to create an instance of a service module.
    */
-  protected abstract createServiceSubmodule(service: Service, submoduleName: string): ServiceSubmodule;
+  protected abstract createServiceSubmodule(service: Service, submoduleName: string, grantsConfig?: string): ServiceSubmodule;
 
   public module(key: string) {
     const ret = this.modules.get(key);

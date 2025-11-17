@@ -260,17 +260,7 @@ describe('codecommit', () => {
         PolicyDocument: {
           Statement: [
             {
-              Action: 'codecommit:GitPull',
-              Effect: 'Allow',
-              Resource: {
-                'Fn::GetAtt': [
-                  'Repo02AC86CF',
-                  'Arn',
-                ],
-              },
-            },
-            {
-              Action: 'codecommit:GitPush',
+              Action: ['codecommit:GitPull', 'codecommit:GitPush'],
               Effect: 'Allow',
               Resource: {
                 'Fn::GetAtt': [
