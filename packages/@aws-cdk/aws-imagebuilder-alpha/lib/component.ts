@@ -1138,7 +1138,7 @@ export class Component extends ComponentBase {
   public static fromComponentAttributes(scope: Construct, id: string, attrs: ComponentAttributes): IComponent {
     if (attrs.componentArn && (attrs.componentName || attrs.componentVersion)) {
       throw new cdk.ValidationError(
-        'a componentName/componentVersion cannot be provided when a componentArn is provided',
+        'a componentName or componentVersion cannot be provided when a componentArn is provided',
         scope,
       );
     }
@@ -1157,7 +1157,7 @@ export class Component extends ComponentBase {
 
     const [componentName, componentVersion] = (() => {
       if (attrs.componentName) {
-        return [attrs.componentName, attrs.componentVersion ?? 'x.x.x'];
+        return [attrs.componentName, attrs.componentVersion ?? LATEST_VERSION];
       }
 
       const componentNameVersion = cdk.Stack.of(scope).splitArn(
