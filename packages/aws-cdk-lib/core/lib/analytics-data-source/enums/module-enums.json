@@ -1021,6 +1021,12 @@
       "DryRun"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/mixins-preview/lib/mixins/property-mixins.ts": {
+    "PropertyMergeStrategy": [
+      "override",
+      "merge"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/assets/lib/fs/follow-mode.ts": {
     "FollowMode": [
       "never",
