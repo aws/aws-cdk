@@ -14,7 +14,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "amazon-web-services",
     "amd",
     "nvidia",
-    "xilinx"
+    "xilinx",
+    "habana"
   ],
   "AcceleratorName": [
     "a100",
@@ -23,7 +24,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "radeon-pro-v520",
     "t4",
     "v100",
-    "vu9p"
+    "vu9p",
+    "a10g",
+    "h100",
+    "inferentia",
+    "k520",
+    "t4g"
   ],
   "AcceleratorType": [
     "gpu",
@@ -449,6 +455,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "aws-ecs-1-nvidia",
     "aws-ecs-2",
     "aws-ecs-2-nvidia"
+  ],
+  "BrokerType": [
+    "STANDARD",
+    "EXPRESS"
   ],
   "BrowserType": [
     "CHROME",
@@ -1152,7 +1162,14 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "BUILD_GENERAL1_MEDIUM",
     "BUILD_GENERAL1_LARGE",
     "BUILD_GENERAL1_XLARGE",
-    "BUILD_GENERAL1_2XLARGE"
+    "BUILD_GENERAL1_2XLARGE",
+    "ATTRIBUTE_BASED_COMPUTE",
+    "BUILD_LAMBDA_10GB",
+    "BUILD_LAMBDA_1GB",
+    "BUILD_LAMBDA_2GB",
+    "BUILD_LAMBDA_4GB",
+    "BUILD_LAMBDA_8GB",
+    "CUSTOM_INSTANCE_TYPE"
   ],
   "DockerVolumeConsistency": [
     "consistent",
@@ -1642,6 +1659,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "http",
     "https"
   ],
+  "HttpTokens": [
+    "optional",
+    "required"
+  ],
   "HttpVersion": [
     "http1.1",
     "http2",
@@ -1825,6 +1846,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "r8i-flex",
     "memory7-amd",
     "r7a",
+    "memory8-amd",
+    "r8a",
     "memory8-graviton",
     "r8g",
     "memory8-graviton4-nvme-drive",
@@ -2516,6 +2539,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "HD",
     "SD"
   ],
+  "MemoryStrategyType": [
+    "SUMMARIZATION",
+    "SEMANTIC",
+    "USER_PREFERENCE",
+    "CUSTOM"
+  ],
   "MemoryType": [
     "SESSION_SUMMARY"
   ],
@@ -3043,6 +3072,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TASK_DEFINITION",
     "NONE"
   ],
+  "PropertyMergeStrategy": [
+    "override",
+    "merge"
+  ],
   "Protocol": [
     "HTTP",
     "HTTPS",
@@ -3053,7 +3086,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "ProtocolType": [
     "MCP",
-    "HTTP"
+    "HTTP",
+    "A2A"
   ],
   "ProviderType": [
     "CodeStarSourceConnection"
@@ -3279,7 +3313,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "NetworkInterface",
     "TransitGateway",
     "VpcPeeringConnection",
-    "VpcEndpoint"
+    "VpcEndpoint",
+    "CoreNetwork"
   ],
   "RoutingPolicy": [
     "WEIGHTED",
@@ -3784,6 +3819,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "TemplateType": [
     "Text",
     "Object"
+  ],
+  "Tenancy": [
+    "default",
+    "dedicated",
+    "host"
   ],
   "TerminationPolicy": [
     "AllocationStrategy",

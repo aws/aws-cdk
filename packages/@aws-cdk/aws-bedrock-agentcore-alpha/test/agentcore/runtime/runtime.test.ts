@@ -1,7 +1,8 @@
 
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
-import { Template, Match } from 'aws-cdk-lib/assertions';
+import { Annotations, Template, Match } from 'aws-cdk-lib/assertions';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -94,6 +95,10 @@ describe('Runtime default tests', () => {
       MaxSessionDuration: 28800, // 8 hours in seconds
     });
   });
+
+  test('Should have policy for execution role with correct permissions', () => {
+    template.hasResourceProperties('AWS::IAM::Policy', expectedExecutionRolePolicy);
+  });
 });
 
 describe('Runtime with custom execution role tests', () => {
@@ -172,6 +177,10 @@ describe('Runtime with custom execution role tests', () => {
         Version: '2012-10-17',
       },
     });
+  });
+
+  test('Should have policy for custom execution role with correct permissions', () => {
+    template.hasResourceProperties('AWS::IAM::Policy', expectedExecutionRolePolicy);
   });
 });
 
@@ -335,6 +344,13 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
       },
     });
 
+    const userPool = new cognito.UserPool(stack, 'MyUserPool', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const userPoolClient = userPool.addClient('MyUserPoolClient', {});
+    const anotherUserPoolClient = userPool.addClient('MyAnotherUserPoolClient', {});
+
     repository = new ecr.Repository(stack, 'TestRepository', {
       repositoryName: 'test-agent-runtime-cognito',
     });
@@ -346,8 +362,8 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
       description: 'A test runtime with Cognito authorizer configuration',
       agentRuntimeArtifact: agentRuntimeArtifact,
       authorizerConfiguration: RuntimeAuthorizerConfiguration.usingCognito(
-        'us-west-2_ABC123',
-        'client123',
+        userPool,
+        [userPoolClient, anotherUserPoolClient],
       ),
     });
 
@@ -384,13 +400,14 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
         'Fn::Join': [
           '',
           [
-            'https://cognito-idp.',
-            { Ref: 'AWS::Region' },
-            '.amazonaws.com/us-west-2_ABC123/.well-known/openid-configuration',
+            'https://cognito-idp.us-east-1.amazonaws.com/',
+            { Ref: 'MyUserPoolD09D1D74' },
+            '/.well-known/openid-configuration',
           ],
         ],
       });
-      expect(jwtConfig.AllowedClients).toEqual(['client123']);
+      expect(jwtConfig.AllowedClients).toContainEqual({ Ref: 'MyUserPoolMyUserPoolClient01266CD6' });
+      expect(jwtConfig.AllowedClients).toContainEqual({ Ref: 'MyUserPoolMyAnotherUserPoolClient4444CD16' });
     } else {
       // L1 construct might not be handling the authorizer configuration properly
       // This is acceptable as the configuration is still passed to the construct
@@ -1098,12 +1115,18 @@ describe('Runtime authentication configuration error cases', () => {
   });
 
   test('Should create runtime with Cognito auth using static factory', () => {
+    const userPool = new cognito.UserPool(stack, 'MyUserPool', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const userPoolClient = userPool.addClient('MyUserPoolClient', {});
+
     const runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
       agentRuntimeArtifact: agentRuntimeArtifact,
       authorizerConfiguration: RuntimeAuthorizerConfiguration.usingCognito(
-        'us-west-2_ABC123',
-        'client456',
+        userPool,
+        [userPoolClient],
       ),
     });
 
@@ -1297,13 +1320,18 @@ describe('Runtime metrics and grant methods tests', () => {
   });
 
   test('Should add policy statement to runtime role', () => {
-    const statement = new iam.PolicyStatement({
+    const result = runtime.addToRolePolicy(new iam.PolicyStatement({
       actions: ['s3:GetObject'],
       resources: ['arn:aws:s3:::bucket/*'],
-    });
-
-    const result = runtime.addToRolePolicy(statement);
+    }));
     expect(result).toBe(runtime);
+
+    // Can call multiple times
+    const result2 = runtime.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:Query'],
+      resources: ['arn:aws:dynamodb:us-east-1:123456789012:table/test-table'],
+    }));
+    expect(result2).toBe(runtime);
   });
 
   test('Should add policy to imported runtime role', () => {
@@ -1319,13 +1347,18 @@ describe('Runtime metrics and grant methods tests', () => {
       agentRuntimeVersion: '1',
     });
 
-    const statement = new iam.PolicyStatement({
+    const result = imported.addToRolePolicy(new iam.PolicyStatement({
       actions: ['s3:GetObject'],
       resources: ['arn:aws:s3:::bucket/*'],
-    });
-
-    const result = imported.addToRolePolicy(statement);
+    }));
     expect(result).toBe(imported);
+
+    // Can call multiple times
+    const result2 = imported.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:Query'],
+      resources: ['arn:aws:dynamodb:us-east-1:123456789012:table/test-table'],
+    }));
+    expect(result2).toBe(imported);
   });
 });
 
@@ -1593,18 +1626,31 @@ describe('Runtime role validation tests', () => {
     }).toThrow(/Invalid IAM role ARN format/);
   });
 
-  test('Should handle cross-account role with warning', () => {
-    const crossAccountRole = {
-      roleArn: 'arn:aws:iam::123456789012:role/test-role',
-      roleName: 'test-role',
-      assumeRoleAction: 'sts:AssumeRole',
-      grantPrincipal: {} as iam.IPrincipal,
-      principalAccount: '123456789012',
-      applyRemovalPolicy: () => {},
-      node: {} as any,
-      stack: stack,
-      env: { account: '123456789012', region: 'us-east-1' },
-    } as unknown as iam.IRole;
+  test('Should handle cross-account role with no warnings', () => {
+    const crossAccountStack = new cdk.Stack(app, 'cross-account-stack', {
+      env: {
+        account: '111111111111',
+        region: 'us-east-1',
+      },
+    });
+    const crossAccountRole = new iam.Role(crossAccountStack, 'ImportedCrossAccountRole', {
+      roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+    });
+
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      executionRole: crossAccountRole,
+    });
+
+    // Should not throw
+    expect(runtime.role).toBe(crossAccountRole);
+  });
+
+  test('Should handle cross-account imported role with warning', () => {
+    const crossAccountRole = iam.Role.fromRoleArn(stack, 'ImportedCrossAccountRole',
+      'arn:aws:iam::111111111111:role/test-cross-account-role');
 
     const runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
@@ -1614,5 +1660,147 @@ describe('Runtime role validation tests', () => {
 
     // Should not throw, just add warning
     expect(runtime.role).toBe(crossAccountRole);
+
+    const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
+    expect(annotations.length).toBe(1);
+
+    Annotations.fromStack(stack).hasWarning('/test-stack/test-runtime', 'IAM role is from a different account (111111111111) than the stack account (123456789012). Ensure cross-account permissions are properly configured.');
   });
 });
+
+const logGroupPolicyStatement = {
+  Sid: 'LogGroupAccess',
+  Action: ['logs:DescribeLogStreams', 'logs:CreateLogGroup'],
+  Effect: 'Allow',
+  Resource: {
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/*',
+      ],
+    ],
+  },
+};
+
+const describeLogGroupsPolicyStatement = {
+  Sid: 'DescribeLogGroups',
+  Action: 'logs:DescribeLogGroups',
+  Effect: 'Allow',
+  Resource: {
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':logs:us-east-1:123456789012:log-group:*',
+      ],
+    ],
+  },
+};
+
+const logStreamPolicyStatement = {
+  Sid: 'LogStreamAccess',
+  Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+  Effect: 'Allow',
+  Resource: {
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/*:log-stream:*',
+      ],
+    ],
+  },
+};
+
+const xrayPolicyStatement = {
+  Sid: 'XRayAccess',
+  Action: [
+    'xray:PutTraceSegments',
+    'xray:PutTelemetryRecords',
+    'xray:GetSamplingRules',
+    'xray:GetSamplingTargets',
+  ],
+  Effect: 'Allow',
+  Resource: '*',
+};
+
+const cloudWatchMetricsPolicyStatement = {
+  Sid: 'CloudWatchMetrics',
+  Action: 'cloudwatch:PutMetricData',
+  Condition: {
+    StringEquals: {
+      'cloudwatch:namespace': 'bedrock-agentcore',
+    },
+  },
+  Effect: 'Allow',
+  Resource: '*',
+};
+
+const getAgentAccessTokenPolicyStatement = {
+  Sid: 'GetAgentAccessToken',
+  Action: [
+    'bedrock-agentcore:GetWorkloadAccessToken',
+    'bedrock-agentcore:GetWorkloadAccessTokenForJWT',
+    'bedrock-agentcore:GetWorkloadAccessTokenForUserId',
+  ],
+  Effect: 'Allow',
+  Resource: [
+    {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':bedrock-agentcore:us-east-1:123456789012:workload-identity-directory/default',
+        ],
+      ],
+    },
+    {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':bedrock-agentcore:us-east-1:123456789012:workload-identity-directory/default/workload-identity/*',
+        ],
+      ],
+    },
+  ],
+};
+
+const ecrReadPolicyStatement = {
+  Action: [
+    'ecr:BatchCheckLayerAvailability',
+    'ecr:GetDownloadUrlForLayer',
+    'ecr:BatchGetImage',
+  ],
+  Effect: 'Allow',
+  Resource: {
+    'Fn::GetAtt': ['TestRepositoryC0DA8195', 'Arn'],
+  },
+};
+
+const ecrAuthTokenPolicyStatement = {
+  Action: 'ecr:GetAuthorizationToken',
+  Effect: 'Allow',
+  Resource: '*',
+};
+
+const expectedExecutionRolePolicy = {
+  PolicyDocument: {
+    Statement: [
+      logGroupPolicyStatement,
+      describeLogGroupsPolicyStatement,
+      logStreamPolicyStatement,
+      xrayPolicyStatement,
+      cloudWatchMetricsPolicyStatement,
+      getAgentAccessTokenPolicyStatement,
+      ecrReadPolicyStatement,
+      ecrAuthTokenPolicyStatement,
+    ],
+  },
+};
