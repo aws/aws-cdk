@@ -145,8 +145,8 @@ export interface WorkflowAttributes {
 
   /**
    * The version of the workflow
-   *
-   * @default - x.x.x
+   * - x.x.x
+   * @default x.x.x
    */
   readonly workflowVersion?: string;
 }
