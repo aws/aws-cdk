@@ -705,7 +705,7 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
   }
 
   /**
-   * Instance-level read I/O operations per second.
+   * The average number of read I/O operations per second.
    *
    * Represents the average of the ReadIOPS values across all instances in the cluster.
    */
