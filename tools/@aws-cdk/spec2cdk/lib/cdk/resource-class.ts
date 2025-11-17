@@ -49,7 +49,8 @@ import {
   staticResourceTypeName,
 } from '../naming';
 import { isDefined, splitDocumentation, maybeDeprecated } from '../util';
-import { RelationshipDecider, SelectiveImport } from './relationship-decider';
+import { RelationshipDecider } from './relationship-decider';
+import { SelectiveImport } from './service-submodule';
 
 export interface ITypeHost {
   typeFromSpecType(type: PropertyType): Type;
