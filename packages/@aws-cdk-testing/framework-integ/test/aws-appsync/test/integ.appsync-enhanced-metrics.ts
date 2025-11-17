@@ -11,14 +11,14 @@ const api = new appsync.GraphqlApi(stack, 'EnhancedMetrics', {
   definition: appsync.Definition.fromFile(join(__dirname, 'appsync.test.graphql')),
   enhancedMetricsConfig: {
     dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.PER_DATA_SOURCE_METRICS,
-    operationLevelMetricsEnabled: true,
+    operationLevelMetricsConfig: appsync.OperationLevelMetricsConfig.ENABLED,
     resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.PER_RESOLVER_METRICS,
   },
 });
 
 const noneDS = api.addNoneDataSource('none', {
   name: 'None',
-  enhancedMetricsEnabled: true,
+  metricsConfig: appsync.DataSourceMetricsConfig.ENABLED,
 });
 
 noneDS.createResolver('QuerygetServiceVersion', {
@@ -30,7 +30,7 @@ noneDS.createResolver('QuerygetServiceVersion', {
   responseMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
     version: 'v1',
   })),
-  enhancedMetricsEnabled: true,
+  metricsConfig: appsync.ResolverMetricsConfig.ENABLED,
 });
 
 new IntegTest(app, 'api', {
