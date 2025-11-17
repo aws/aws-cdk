@@ -5,9 +5,6 @@ import { getReferenceProps } from './reference-props';
 import { log } from '../util';
 import { SelectiveImport } from './service-submodule';
 
-// For now we want relationships to be applied only for these services
-export const RELATIONSHIP_SERVICES: string[] = [];
-
 /**
  * We currently disable the relationship on the properties of types because they would create a backwards incompatible change
  * by broadening the output type as types are used both in input and output. This represents:

@@ -1,15 +1,10 @@
 import { Service, SpecDatabase, emptyDatabase } from '@aws-cdk/service-spec-types';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
 import { AwsCdkLibBuilder } from '../lib/cdk/aws-cdk-lib';
-import { RELATIONSHIP_SERVICES } from '../lib/cdk/relationship-decider';
 
 const renderer = new TypeScriptRenderer();
 let db: SpecDatabase;
 let service: Service;
-
-// Only run these tests if we're rendering relationships for IAM
-const iamHasRelationships = RELATIONSHIP_SERVICES.includes('iam');
-const maybeTest = iamHasRelationships ? test : test.skip;
 
 beforeEach(() => {
   db = emptyDatabase();
@@ -22,7 +17,7 @@ beforeEach(() => {
   });
 });
 
-maybeTest('resource with relationship reference', () => {
+test('resource with relationship reference', () => {
   // Target resource
   const targetResource = db.allocate('resource', {
     name: 'Role',
@@ -60,7 +55,7 @@ maybeTest('resource with relationship reference', () => {
   expect(rendered).toMatchSnapshot();
 });
 
-maybeTest('resource with multiple relationship references', () => {
+test('resource with multiple relationship references', () => {
   // Target resource 1
   const roleResource = db.allocate('resource', {
     name: 'Role',
@@ -117,7 +112,7 @@ maybeTest('resource with multiple relationship references', () => {
   expect(rendered).toMatchSnapshot();
 });
 
-maybeTest('resource with nested relationship requiring flattening', () => {
+test('resource with nested relationship requiring flattening', () => {
   // Target resource
   const roleResource = db.allocate('resource', {
     name: 'Role',
@@ -166,7 +161,7 @@ maybeTest('resource with nested relationship requiring flattening', () => {
   expect(rendered).toMatchSnapshot();
 });
 
-maybeTest('resource with array of nested properties with relationship', () => {
+test('resource with array of nested properties with relationship', () => {
   // Target resource
   const roleResource = db.allocate('resource', {
     name: 'Role',
@@ -215,7 +210,7 @@ maybeTest('resource with array of nested properties with relationship', () => {
   expect(rendered).toMatchSnapshot();
 });
 
-maybeTest('resource with nested relationship with type history', () => {
+test('resource with nested relationship with type history', () => {
   // Target resource
   const roleResource = db.allocate('resource', {
     name: 'Role',
@@ -283,7 +278,7 @@ maybeTest('resource with nested relationship with type history', () => {
   expect(rendered).toMatchSnapshot();
 });
 
-maybeTest('relationship have arns appear first in the constructor chain', () => {
+test('relationship have arns appear first in the constructor chain', () => {
   // Target resource
   const roleResource = db.allocate('resource', {
     name: 'Role',
@@ -336,7 +331,6 @@ maybeTest('relationship have arns appear first in the constructor chain', () => 
 
   const rendered = renderer.render(module);
 
-  const chain = '"roleArn": (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? (props.roleArn as IRoleRef)?.roleRef?.roleName ?? (props.roleArn as IRoleRef)?.roleRef?.otherPrimaryId ?? props.roleArn';
-
+  const chain = 'roleArn: (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? (props.roleArn as IRoleRef)?.roleRef?.roleName ?? (props.roleArn as IRoleRef)?.roleRef?.otherPrimaryId ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | iam.IRoleRef | iam.IRoleRef | string")';
   expect(rendered).toContain(chain);
 });
