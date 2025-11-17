@@ -965,13 +965,13 @@ const api = new appsync.GraphqlApi(this, 'api', {
 });
 
 const noneDS = api.addNoneDataSource('none', {
-  metricsConfig: appsync.ResolverMetricsConfig.ENABLED,
+  metricsConfig: appsync.DataSourceMetricsConfig.ENABLED,
 });
 
 noneDS.createResolver('noneResolver', {
   typeName: 'Mutation',
   fieldName: 'addDemoMetricsConfig',
-  metricsConfig: appsync.DataSourceMetricsConfig.ENABLED,
+  metricsConfig: appsync.ResolverMetricsConfig.ENABLED,
 });
 ```
 
