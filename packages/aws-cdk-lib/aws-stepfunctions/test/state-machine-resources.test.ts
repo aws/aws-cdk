@@ -208,13 +208,13 @@ describe('State Machine Resources', () => {
       Catch: undefined,
       InputPath: '$',
       Parameters:
-        {
-          'input.$': '$',
-          'stringArgument': 'inital-task',
-          'numberArgument': 123,
-          'booleanArgument': true,
-          'arrayArgument': ['a', 'b', 'c'],
-        },
+              {
+                'input.$': '$',
+                'stringArgument': 'inital-task',
+                'numberArgument': 123,
+                'booleanArgument': true,
+                'arrayArgument': ['a', 'b', 'c'],
+              },
       OutputPath: '$.state',
       Type: 'Task',
       Comment: undefined,
@@ -256,10 +256,10 @@ describe('State Machine Resources', () => {
       Catch: undefined,
       InputPath: '$',
       Parameters:
-        {
-          a: 'aa',
-          b: 'bb',
-        },
+              {
+                a: 'aa',
+                b: 'bb',
+              },
       OutputPath: '$.state',
       Type: 'Task',
       Comment: undefined,
@@ -368,8 +368,31 @@ describe('State Machine Resources', () => {
               'Fn::Join': [
                 '',
                 [
+                  'arn:',
                   {
-                    Ref: 'StateMachine2E01A3A5',
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':execution:',
+                  {
+                    'Fn::Select': [
+                      6,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            Ref: 'StateMachine2E01A3A5',
+                          },
+                        ],
+                      },
+                    ],
                   },
                   ':*',
                 ],
@@ -449,8 +472,31 @@ describe('State Machine Resources', () => {
             'Fn::Join': [
               '',
               [
+                'arn:',
                 {
-                  Ref: 'StateMachine2E01A3A5',
+                  Ref: 'AWS::Partition',
+                },
+                ':states:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':execution:',
+                {
+                  'Fn::Select': [
+                    6,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          Ref: 'StateMachine2E01A3A5',
+                        },
+                      ],
+                    },
+                  ],
                 },
                 ':*',
               ],
@@ -486,8 +532,31 @@ describe('State Machine Resources', () => {
               'Fn::Join': [
                 '',
                 [
+                  'arn:',
                   {
-                    Ref: 'StateMachine2E01A3A5',
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':execution:',
+                  {
+                    'Fn::Select': [
+                      6,
+                      {
+                        'Fn::Split': [
+                          ':',
+                          {
+                            Ref: 'StateMachine2E01A3A5',
+                          },
+                        ],
+                      },
+                    ],
                   },
                   ':*',
                 ],
@@ -575,8 +644,7 @@ describe('State Machine Resources', () => {
     stateMachine.grantRead(role);
 
     // THEN
-    let template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -594,7 +662,26 @@ describe('State Machine Resources', () => {
               'states:GetExecutionHistory',
             ],
             Effect: 'Allow',
-            Resource: 'arn:aws:states:::my-state-machine:*',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':execution:*',
+                ],
+              ],
+            },
           },
           {
             Action: [
@@ -717,13 +804,13 @@ describe('State Machine Resources', () => {
       InputPath: '$',
       OutputPath: '$.state',
       Parameters:
-        {
-          'input.$': '$',
-          'stringArgument': 'inital-task',
-          'numberArgument': 123,
-          'booleanArgument': true,
-          'arrayArgument': ['a', 'b', 'c'],
-        },
+              {
+                'input.$': '$',
+                'stringArgument': 'inital-task',
+                'numberArgument': 123,
+                'booleanArgument': true,
+                'arrayArgument': ['a', 'b', 'c'],
+              },
       Type: 'Pass',
       QueryLanguage: undefined,
       Comment: undefined,
@@ -882,7 +969,7 @@ describe('State Machine Resources', () => {
     expect(taskState).toEqual({
       End: true,
       Parameters:
-          { 'input.$': '$.myField' },
+              { 'input.$': '$.myField' },
       Type: 'Pass',
     });
   }),
