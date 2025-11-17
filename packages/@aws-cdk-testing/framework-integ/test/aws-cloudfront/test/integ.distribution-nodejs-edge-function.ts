@@ -3,7 +3,6 @@ import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import { TestOrigin } from './test-origin';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
@@ -35,14 +34,18 @@ const distribution = new cloudfront.Distribution(stack, 'Dist', {
 const integTest = new integ.IntegTest(app, 'cdk-integ-nodejs-edge-function', {
   testCases: [stack],
   diffAssets: true,
+  // Lambda@Edge functions cannot be immediately deleted due to CloudFront replication.
+  // They must be disassociated from distributions and replicas cleared (takes hours).
+  // See: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-edge-delete-replicas.html
+  stackUpdateWorkflow: false,
 });
 
-// Assertion 1: Verify Lambda exists in us-east-1
+// Verify the Lambda function was deployed to us-east-1
 integTest.assertions.awsApiCall('Lambda', 'getFunction', {
   FunctionName: edgeFunction.functionName,
-}).expect(ExpectedResult.objectLike({
+}).expect(integ.ExpectedResult.objectLike({
   Configuration: {
-    FunctionName: edgeFunction.functionName,
+    Runtime: STANDARD_NODEJS_RUNTIME.name,
   },
 })).provider.addToRolePolicy({
   Effect: 'Allow',
@@ -50,10 +53,10 @@ integTest.assertions.awsApiCall('Lambda', 'getFunction', {
   Resource: '*',
 });
 
-// Assertion 2: Verify CloudFront distribution has the edge lambda attached
+// Verify CloudFront distribution has the edge lambda attached
 integTest.assertions.awsApiCall('CloudFront', 'getDistributionConfig', {
   Id: distribution.distributionId,
-}).expect(ExpectedResult.objectLike({
+}).expect(integ.ExpectedResult.objectLike({
   DistributionConfig: {
     DefaultCacheBehavior: {
       LambdaFunctionAssociations: {
