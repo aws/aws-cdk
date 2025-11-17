@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "test-bucket-deployment-data.assets": {
+    "ZoneDelegationStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "test-bucket-deployment-data.assets.json",
+        "file": "ZoneDelegationStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "test-bucket-deployment-data": {
+    "ZoneDelegationStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "test-bucket-deployment-data.template.json",
+        "templateFile": "ZoneDelegationStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/90eee6815ebdfd28f058837e77e135109b8a8055bff465c9bdf7e36fab0c7b46.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6d8a7dc9318b45fe9086898bd60f3453daea9b3a9693fb2d331e24f291396f7d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "test-bucket-deployment-data.assets"
+          "ZoneDelegationStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,344 +31,283 @@
         }
       },
       "dependencies": [
-        "test-bucket-deployment-data.assets"
+        "ZoneDelegationStack.assets"
       ],
       "metadata": {
-        "/test-bucket-deployment-data/Bucket": [
+        "/ZoneDelegationStack/ParentZone": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "removalPolicy": "destroy",
-              "autoDeleteObjects": true
+              "zoneName": "*"
             }
-          }
-        ],
-        "/test-bucket-deployment-data/Bucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Bucket83908E77"
-          }
-        ],
-        "/test-bucket-deployment-data/Bucket/Policy": [
+          },
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "bucket": "*"
+              "zoneName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/ZoneDelegationStack/ParentZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ParentZoneECA3B259"
+          }
+        ],
+        "/ZoneDelegationStack/ZoneDelegationRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
             }
           }
         ],
-        "/test-bucket-deployment-data/Bucket/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketPolicyE9A3008A"
-          }
-        ],
-        "/test-bucket-deployment-data/Bucket/AutoDeleteObjectsCustomResource": [
+        "/ZoneDelegationStack/ZoneDelegationRole/ImportZoneDelegationRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/test-bucket-deployment-data/Bucket/AutoDeleteObjectsCustomResource/Default": [
+        "/ZoneDelegationStack/ZoneDelegationRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
+            "data": "ZoneDelegationRoleD3AA833E"
           }
         ],
-        "/test-bucket-deployment-data/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+        "/ZoneDelegationStack/ZoneDelegationRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/ZoneDelegationStack/ZoneDelegationRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ZoneDelegationRoleDefaultPolicy2187EBE7"
+          }
+        ],
+        "/ZoneDelegationStack/SubZone": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "zoneName": "*"
+            }
+          }
+        ],
+        "/ZoneDelegationStack/SubZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubZoneF7955E1A"
+          }
+        ],
+        "/ZoneDelegationStack/SubZone/ZoneDelegation/cross-account-zone-delegation-handler-role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/ZoneDelegationStack/SubZone/ZoneDelegation/cross-account-zone-delegation-handler-role/PolicyZoneDelegationStackSubZoneZoneDelegationcrossaccountzonedelegationhandlerrole9EBB2EA4": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "policyName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/ZoneDelegationStack/SubZone/ZoneDelegation/cross-account-zone-delegation-handler-role/PolicyZoneDelegationStackSubZoneZoneDelegationcrossaccountzonedelegationhandlerrole9EBB2EA4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubZoneZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZoneZoneDelegationcrossaccountzonedelegationhandlerrole9EBB2EA476FBB2F1"
+          }
+        ],
+        "/ZoneDelegationStack/SubZone/ZoneDelegation/CrossAccountZoneDelegationCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/ZoneDelegationStack/SubZone/ZoneDelegation/CrossAccountZoneDelegationCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubZoneZoneDelegationCrossAccountZoneDelegationCustomResource688D1556"
+          }
+        ],
+        "/ZoneDelegationStack/Custom::CrossAccountZoneDelegationCustomResourceProvider": [
           {
             "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
             "data": true
           }
         ],
-        "/test-bucket-deployment-data/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+        "/ZoneDelegationStack/Custom::CrossAccountZoneDelegationCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+            "data": "CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B"
           }
         ],
-        "/test-bucket-deployment-data/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+        "/ZoneDelegationStack/Custom::CrossAccountZoneDelegationCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+            "data": "CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265"
           }
         ],
-        "/test-bucket-deployment-data/TestSecret": [
+        "/ZoneDelegationStack/SubZoneSpecialChars": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "generateSecretString": {
-                "secretStringTemplate": "*",
-                "generateStringKey": "*"
-              }
-            }
-          }
-        ],
-        "/test-bucket-deployment-data/TestSecret/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestSecret16AF87B1"
-          }
-        ],
-        "/test-bucket-deployment-data/SecretParam": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "stringValue": "*"
-            }
-          }
-        ],
-        "/test-bucket-deployment-data/SecretParam/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SecretParam0C31D215"
-          }
-        ],
-        "/test-bucket-deployment-data/IsToken": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IsToken"
-          }
-        ],
-        "/test-bucket-deployment-data/SecretValue": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SecretValue"
-          }
-        ],
-        "/test-bucket-deployment-data/DeployWithDataSources/AwsCliLayer": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {}
-          }
-        ],
-        "/test-bucket-deployment-data/DeployWithDataSources/AwsCliLayer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeployWithDataSourcesAwsCliLayerC67F66A7"
-          }
-        ],
-        "/test-bucket-deployment-data/DeployWithDataSources/CustomResourceHandler": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "uuid": "*",
-              "layers": [
-                "*"
-              ],
-              "environment": "*",
-              "lambdaPurpose": "*",
-              "timeout": "*",
-              "role": "*",
-              "memorySize": "*",
-              "ephemeralStorageSize": "*",
-              "vpc": "*",
-              "vpcSubnets": "*",
-              "securityGroups": "*",
-              "filesystem": "*",
-              "logGroup": "*",
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
+              "zoneName": "*"
             }
           },
           {
-            "type": "aws:cdk:analytics:method",
+            "type": "aws:cdk:analytics:construct",
             "data": {
-              "addMetadata": [
-                "*",
-                true
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addMetadata": [
-                "*",
-                "*"
-              ]
+              "zoneName": "*"
             }
           }
         ],
-        "/test-bucket-deployment-data/DeployWithDataSources/CustomResource": [
+        "/ZoneDelegationStack/SubZoneSpecialChars/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubZoneSpecialChars13B7A67B"
+          }
+        ],
+        "/ZoneDelegationStack/SubZoneSpecialChars/ZoneDelegation/cross-account-zone-delegation-handler-role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
-          }
-        ],
-        "/test-bucket-deployment-data/DeployWithDataSources/CustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeployWithDataSourcesCustomResourceD6FDC738"
-          }
-        ],
-        "/test-bucket-deployment-data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "layers": [
-                "*"
-              ],
-              "environment": "*",
-              "timeout": "*",
-              "role": "*",
-              "memorySize": "*",
-              "ephemeralStorageSize": "*",
-              "vpc": "*",
-              "vpcSubnets": "*",
-              "securityGroups": "*",
-              "filesystem": "*",
-              "logGroup": "*",
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
-            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEnvironment": [
-                "*",
-                "*"
-              ]
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addLayers": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:is-custom-resource-handler-singleton",
-            "data": true
-          },
-          {
-            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-            "data": 2
-          }
-        ],
-        "/test-bucket-deployment-data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/test-bucket-deployment-data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/test-bucket-deployment-data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
-          }
-        ],
-        "/test-bucket-deployment-data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+        "/ZoneDelegationStack/SubZoneSpecialChars/ZoneDelegation/cross-account-zone-delegation-handler-role/PolicyZoneDelegationStackSubZoneSpecialCharsZoneDelegationcrossaccountzonedelegationhandlerroleD01CC77D": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "policyName": "*"
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -393,141 +332,117 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
-        "/test-bucket-deployment-data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+        "/ZoneDelegationStack/SubZoneSpecialChars/ZoneDelegation/cross-account-zone-delegation-handler-role/PolicyZoneDelegationStackSubZoneSpecialCharsZoneDelegationcrossaccountzonedelegationhandlerroleD01CC77D/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+            "data": "SubZoneSpecialCharsZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZoneSpecialCharsZoneDelegationcrossaccountzonedelegationhandlerroleD01CC77D6D37D8F2"
           }
         ],
-        "/test-bucket-deployment-data/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+        "/ZoneDelegationStack/SubZoneSpecialChars/ZoneDelegation/CrossAccountZoneDelegationCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/ZoneDelegationStack/SubZoneSpecialChars/ZoneDelegation/CrossAccountZoneDelegationCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+            "data": "SubZoneSpecialCharsZoneDelegationCrossAccountZoneDelegationCustomResourceC4CC9C77"
           }
         ],
-        "/test-bucket-deployment-data/BucketName": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketName"
-          }
-        ],
-        "/test-bucket-deployment-data/Exports/Output{\"Ref\":\"Bucket83908E77\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefBucket83908E7781C90AC0"
-          }
-        ],
-        "/test-bucket-deployment-data/BootstrapVersion": [
+        "/ZoneDelegationStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/test-bucket-deployment-data/CheckBootstrapVersion": [
+        "/ZoneDelegationStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "SubZone1D8A18689": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubZone1D8A18689",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "SubZone1ZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZone1ZoneDelegationcrossaccountzonedelegationhandlerrole3B7BF93FFA2749E6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubZone1ZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZone1ZoneDelegationcrossaccountzonedelegationhandlerrole3B7BF93FFA2749E6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "SubZone1ZoneDelegationCrossAccountZoneDelegationCustomResource59C2B413": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubZone1ZoneDelegationCrossAccountZoneDelegationCustomResource59C2B413",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "SubZone25FFB0233": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubZone25FFB0233",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "SubZone2ZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZone2ZoneDelegationcrossaccountzonedelegationhandlerrole36D1478DA98EDD29": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubZone2ZoneDelegationcrossaccountzonedelegationhandlerrolePolicyZoneDelegationStackSubZone2ZoneDelegationcrossaccountzonedelegationhandlerrole36D1478DA98EDD29",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "SubZone2ZoneDelegationCrossAccountZoneDelegationCustomResourceEC5E24F9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubZone2ZoneDelegationCrossAccountZoneDelegationCustomResourceEC5E24F9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
-      "displayName": "test-bucket-deployment-data"
+      "displayName": "ZoneDelegationStack"
     },
-    "integtestbucketdeploymentdataDefaultTestDeployAssert6FF3075D.assets": {
+    "ZoneDelegationIamDefaultTestDeployAssert7D0B25D2.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integtestbucketdeploymentdataDefaultTestDeployAssert6FF3075D.assets.json",
+        "file": "ZoneDelegationIamDefaultTestDeployAssert7D0B25D2.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integtestbucketdeploymentdataDefaultTestDeployAssert6FF3075D": {
+    "ZoneDelegationIamDefaultTestDeployAssert7D0B25D2": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integtestbucketdeploymentdataDefaultTestDeployAssert6FF3075D.template.json",
+        "templateFile": "ZoneDelegationIamDefaultTestDeployAssert7D0B25D2.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2385366203cc10c9e6cc4ca63a8073ab8e35dce11c0bc5f3c3634ab0310586d3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integtestbucketdeploymentdataDefaultTestDeployAssert6FF3075D.assets"
+          "ZoneDelegationIamDefaultTestDeployAssert7D0B25D2.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -536,114 +451,23 @@
         }
       },
       "dependencies": [
-        "test-bucket-deployment-data",
-        "integtestbucketdeploymentdataDefaultTestDeployAssert6FF3075D.assets"
+        "ZoneDelegationIamDefaultTestDeployAssert7D0B25D2.assets"
       ],
       "metadata": {
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/AwsApiCallS3getObject780d452f7611fd1c0e0b1c423e1bda6d/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/AwsApiCallS3getObject780d452f7611fd1c0e0b1c423e1bda6d/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3getObject780d452f7611fd1c0e0b1c423e1bda6d"
-          }
-        ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/AwsApiCallS3getObject780d452f7611fd1c0e0b1c423e1bda6d/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallS3getObject780d452f7611fd1c0e0b1c423e1bda6d"
-          }
-        ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/AwsApiCallS3getObject4098f16b1e7b6f4ed8fcb258e72e3188/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/AwsApiCallS3getObject4098f16b1e7b6f4ed8fcb258e72e3188/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3getObject4098f16b1e7b6f4ed8fcb258e72e3188"
-          }
-        ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/AwsApiCallS3getObject4098f16b1e7b6f4ed8fcb258e72e3188/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallS3getObject4098f16b1e7b6f4ed8fcb258e72e3188"
-          }
-        ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/AwsApiCallS3getObjectf9e2d3ce58742177bed058632f0fe5f9/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/AwsApiCallS3getObjectf9e2d3ce58742177bed058632f0fe5f9/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3getObjectf9e2d3ce58742177bed058632f0fe5f9"
-          }
-        ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/AwsApiCallS3getObjectf9e2d3ce58742177bed058632f0fe5f9/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallS3getObjectf9e2d3ce58742177bed058632f0fe5f9"
-          }
-        ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/ZoneDelegationIam/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-test-bucket-deployment-data/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/ZoneDelegationIam/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-test-bucket-deployment-data/DefaultTest/DeployAssert"
+      "displayName": "ZoneDelegationIam/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -657,7 +481,6 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -676,7 +499,6 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -788,7 +610,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -1124,13 +946,9 @@
             "explanation": "When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined."
           },
           "@aws-cdk/aws-lambda:useCdkManagedLogGroup": {
-            "userValue": false,
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
-          },
-          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
-            "recommendedValue": true,
-            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
           "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
             "recommendedValue": true,
@@ -1147,5 +965,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1031.2"
+  "minimumCliVersion": "2.1027.0"
 }
