@@ -944,7 +944,7 @@ new appsync.GraphqlApi(this, 'api', {
   definition: appsync.Definition.fromSchema(schema),
   enhancedMetricsConfig: {
     dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS,
-    operationLevelMetricsEnabled: appsync.OperationLevelMetricsConfig.ENABLED,
+    operationLevelMetricsConfig: appsync.OperationLevelMetricsConfig.ENABLED,
     resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.FULL_REQUEST_RESOLVER_METRICS,
   },
 });
@@ -959,7 +959,7 @@ const api = new appsync.GraphqlApi(this, 'api', {
   definition: appsync.Definition.fromSchema(schema),
   enhancedMetricsConfig: {
     dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.PER_DATA_SOURCE_METRICS,
-    operationLevelMetricsEnabled: appsync.OperationLevelMetricsConfig.ENABLED,
+    operationLevelMetricsConfig: appsync.OperationLevelMetricsConfig.ENABLED,
     resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.PER_RESOLVER_METRICS,
   },
 });
@@ -971,7 +971,7 @@ const noneDS = api.addNoneDataSource('none', {
 noneDS.createResolver('noneResolver', {
   typeName: 'Mutation',
   fieldName: 'addDemoMetricsConfig',
-  enhancedMetricsEnabled: appsync.DataSourceMetricsConfig.ENABLED,
+  metricsConfig: appsync.DataSourceMetricsConfig.ENABLED,
 });
 ```
 
