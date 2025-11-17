@@ -1,7 +1,7 @@
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
 import { SpecDatabase } from '@aws-cdk/service-spec-types';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
-import { AstBuilder } from '../lib/cdk/ast';
+import { AwsCdkLibBuilder } from '../lib/cdk/aws-cdk-lib';
 
 const renderer = new TypeScriptRenderer();
 let db: SpecDatabase;
@@ -13,9 +13,9 @@ beforeAll(async () => {
 test('can codegen service with arbitrary suffix', () => {
   const service = db.lookup('service', 'name', 'equals', 'aws-kinesisanalyticsv2').only();
 
-  const ast = AstBuilder.forService(service, { db, nameSuffix: 'V2' });
+  const module = new AwsCdkLibBuilder({ db }).addService(service, { nameSuffix: 'V2' }).resourcesMod.module;
 
-  const rendered = renderer.render(ast.module);
+  const rendered = renderer.render(module);
 
   // Snapshot tests will fail every time the docs get updated
   // expect(rendered).toMatchSnapshot();

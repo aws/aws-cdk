@@ -1,13 +1,13 @@
 {
   "version": "48.0.0",
   "testCases": {
-    "TestBucketDeploymentInteg/DefaultTest": {
+    "integ-test-bucket-deployment-cloudfront/DefaultTest": {
       "stacks": [
-        "test-bucket-deployments-1"
+        "test-bucket-deployment-cloudfront"
       ],
       "diffAssets": true,
-      "assertionStack": "TestBucketDeploymentInteg/DefaultTest/DeployAssert",
-      "assertionStackName": "TestBucketDeploymentIntegDefaultTestDeployAssert08D70206"
+      "assertionStack": "integ-test-bucket-deployment-cloudfront/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentcloudfrontDefaultTestDeployAssert71A41C16"
     }
   },
   "minimumCliVersion": "2.1027.0"
