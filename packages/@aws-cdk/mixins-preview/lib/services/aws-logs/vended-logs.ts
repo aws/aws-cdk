@@ -18,6 +18,7 @@ abstract class DeliveryDestinationBase extends Resource implements IDeliveryDest
 
 interface DeliveryDestinationProps {
   readonly permissionsVersion: 'V1' | 'V2';
+  readonly destinationService: 'S3' | 'CWL' | 'FH' | 'XRAY';
   readonly s3Bucket?: Bucket;
   readonly logGroup?: LogGroup;
   readonly deliveryStream?: DeliveryStream;
@@ -71,9 +72,11 @@ export class S3DeliveryDestination extends DeliveryDestinationBase {
       policyDocument: bucketPolicyDoc.toJSON(),
     });
 
+    const destinationNamePrefix = 's3-delivery-destination-';
     const deliveryDestination = new CfnDeliveryDestination(scope, 'S3DeliveryDestination', {
       destinationResourceArn: props.s3Bucket.bucketArn,
-      name: `s3-delivery-destination-${Names.uniqueResourceName(props.s3Bucket, { maxLength: 20 })}`,
+      name: `${destinationNamePrefix}${Names.uniqueResourceName(props.s3Bucket, { maxLength: 60 - destinationNamePrefix.length })}`,
+      deliveryDestinationType: props.destinationService,
     });
     deliveryDestination.addDependency(bucketPolicy);
     this.destinationArn = deliveryDestination.attrArn;
@@ -86,9 +89,11 @@ export class FirehoseDeliveryDestination extends DeliveryDestinationBase {
     super(scope, id);
 
     Tags.of(props.deliveryStream).add('LogDeliveryEnabled', 'true');
+    const destinationNamePrefix = 'fh-delivery-destination-';
     const deliveryDestination = new CfnDeliveryDestination(scope, 'FirehoseDeliveryDestination', {
       destinationResourceArn: props.deliveryStream.deliveryStreamArn,
-      name: `fh-delivery-destination-${Names.uniqueResourceName(props.deliveryStream, { maxLength: 20 })}`,
+      name: `${destinationNamePrefix}${Names.uniqueResourceName(props.deliveryStream, { maxLength: 60 - destinationNamePrefix.length })}`,
+      deliveryDestinationType: props.destinationService,
     });
     this.destinationArn = deliveryDestination.attrArn;
   }
@@ -128,11 +133,27 @@ export class CloudwatchDeliveryDestination extends DeliveryDestinationBase {
       }),
     });
 
+    const destinationNamePrefix = 'cwl-delivery-destination-';
     const deliveryDestination = new CfnDeliveryDestination(scope, 'CloudwatchDeliveryDestination', {
       destinationResourceArn: props.logGroup.logGroupArn,
-      name: `cwl-delivery-destination-${Names.uniqueResourceName(props.logGroup, { maxLength: 20 })}`,
+      name: `${destinationNamePrefix}${Names.uniqueResourceName(props.logGroup, { maxLength: 60 - destinationNamePrefix.length })}`,
+      deliveryDestinationType: props.destinationService,
     });
     deliveryDestination.addDependency(logGroupPolicy);
+    this.destinationArn = deliveryDestination.attrArn;
+  }
+}
+
+export class XRayDeliveryDestination extends DeliveryDestinationBase {
+  public readonly destinationArn: string;
+  constructor(scope: Construct, id: string, props: DeliveryDestinationProps) {
+    super(scope, id);
+
+    const destinationNamePrefix = 'xray-delivery-destination-';
+    const deliveryDestination = new CfnDeliveryDestination(scope, 'XRayDeliveryDestination', {
+      name: `${destinationNamePrefix}${Names.uniqueResourceName(scope, { maxLength: 60 - destinationNamePrefix.length })}`, // there is no resource for XRays
+      deliveryDestinationType: props.destinationService,
+    });
     this.destinationArn = deliveryDestination.attrArn;
   }
 }
