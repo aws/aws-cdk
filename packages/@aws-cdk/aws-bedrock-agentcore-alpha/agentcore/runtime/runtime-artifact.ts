@@ -86,7 +86,7 @@ class AssetImage extends AgentRuntimeArtifact {
   public bind(scope: Construct, runtime: Runtime): void {
     // Create the asset if not already created
     if (!this.asset) {
-      this.asset = new assets.DockerImageAsset(scope, "Artifact", {
+      this.asset = new assets.DockerImageAsset(scope, 'Artifact', {
         directory: this.directory,
         ...this.options,
       });
