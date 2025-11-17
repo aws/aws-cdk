@@ -63,13 +63,11 @@ export enum MemoryStrategyType {
 export interface MemoryStrategyCommonProps {
   /**
    * The name for the strategy
-   * @required - Yes
    */
   readonly name: string;
   /**
    * The description of the strategy
-   * @default No description
-   * @required - No
+   * @default - No description
    */
   readonly description?: string;
 }
