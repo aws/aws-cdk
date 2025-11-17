@@ -7,8 +7,8 @@ import {
   ParameterMapping,
 } from '../../../aws-apigatewayv2';
 import { ServicePrincipal } from '../../../aws-iam';
-import { IFunction } from '../../../aws-lambda';
-import { Duration, Stack } from '../../../core';
+import { CfnPermission, IFunction } from '../../../aws-lambda';
+import { Duration, Names, Stack } from '../../../core';
 
 /**
  * Lambda Proxy integration properties
@@ -35,6 +35,18 @@ export interface HttpLambdaIntegrationProps {
    * @default Duration.seconds(29)
    */
   readonly timeout?: Duration;
+
+  /**
+   * Scope the permission for invoking the AWS Lambda down to the specific route
+   * associated with this integration.
+   *
+   * If this is set to `false`, the permission will allow invoking the AWS Lambda
+   * from any route. This is useful for reducing the AWS Lambda policy size
+   * for cases where the same AWS Lambda function is reused for many integrations.
+   *
+   * @default true
+   */
+  readonly scopePermissionToRoute?: boolean;
 }
 
 /**
@@ -58,15 +70,32 @@ export class HttpLambdaIntegration extends HttpRouteIntegration {
 
   protected completeBind(options: HttpRouteIntegrationBindOptions) {
     const route = options.route;
-    this.handler.addPermission(`${this._id}-Permission`, {
-      scope: options.scope,
-      principal: new ServicePrincipal('apigateway.amazonaws.com'),
-      sourceArn: Stack.of(route).formatArn({
-        service: 'execute-api',
-        resource: route.httpApi.apiId,
-        resourceName: `*/*${route.path ?? ''}`, // empty string in the case of the catch-all route $default
-      }),
-    });
+    if (this.props.scopePermissionToRoute ?? true) {
+      this.handler.addPermission(`${this._id}-Permission`, {
+        scope: options.scope,
+        principal: new ServicePrincipal('apigateway.amazonaws.com'),
+        sourceArn: Stack.of(route).formatArn({
+          service: 'execute-api',
+          resource: route.httpApi.apiId,
+          resourceName: `*/*${route.path ?? ''}`, // empty string in the case of the catch-all route $default
+        }),
+      });
+    } else {
+      const apiScopedPermissionId = `ApiPermission.ApiScoped.${Names.nodeUniqueId(this.handler.node)}.${Names.nodeUniqueId(route.httpApi.node)}`;
+      const existingPermission = Stack.of(options.scope).node.findAll()
+        .find(c => c instanceof CfnPermission && c.node.id === apiScopedPermissionId);
+      if (!existingPermission) {
+        this.handler.addPermission(apiScopedPermissionId, {
+          scope: options.scope,
+          principal: new ServicePrincipal('apigateway.amazonaws.com'),
+          sourceArn: Stack.of(route).formatArn({
+            service: 'execute-api',
+            resource: route.httpApi.apiId,
+            resourceName: '*/*/*',
+          }),
+        });
+      }
+    }
   }
 
   public bind(_options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {

@@ -45,10 +45,19 @@
       "DUAL_STACK"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/memory/memory-strategy.ts": {
+    "MemoryStrategyType": [
+      "SUMMARIZATION",
+      "SEMANTIC",
+      "USER_PREFERENCE",
+      "CUSTOM"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/runtime/types.ts": {
     "ProtocolType": [
       "MCP",
-      "HTTP"
+      "HTTP",
+      "A2A"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent-collaborator.ts": {
@@ -542,6 +551,17 @@
       "write.kms.key.id"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/infrastructure-configuration.ts": {
+    "HttpTokens": [
+      "optional",
+      "required"
+    ],
+    "Tenancy": [
+      "default",
+      "dedicated",
+      "host"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/firehose-put-record-action.ts": {
     "FirehoseRecordSeparator": [
       "\n",
@@ -764,6 +784,10 @@
     "StorageMode": [
       "LOCAL",
       "TIERED"
+    ],
+    "BrokerType": [
+      "STANDARD",
+      "EXPRESS"
     ],
     "ClusterMonitoringLevel": [
       "DEFAULT",
@@ -995,6 +1019,12 @@
       "Event",
       "RequestResponse",
       "DryRun"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/mixins-preview/lib/mixins/property-mixins.ts": {
+    "PropertyMergeStrategy": [
+      "override",
+      "merge"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/assets/lib/fs/follow-mode.ts": {
@@ -2107,7 +2137,14 @@
       "BUILD_GENERAL1_MEDIUM",
       "BUILD_GENERAL1_LARGE",
       "BUILD_GENERAL1_XLARGE",
-      "BUILD_GENERAL1_2XLARGE"
+      "BUILD_GENERAL1_2XLARGE",
+      "ATTRIBUTE_BASED_COMPUTE",
+      "BUILD_LAMBDA_10GB",
+      "BUILD_LAMBDA_1GB",
+      "BUILD_LAMBDA_2GB",
+      "BUILD_LAMBDA_4GB",
+      "BUILD_LAMBDA_8GB",
+      "CUSTOM_INSTANCE_TYPE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/environment-type.ts": {
@@ -2598,7 +2635,8 @@
       "amazon-web-services",
       "amd",
       "nvidia",
-      "xilinx"
+      "xilinx",
+      "habana"
     ],
     "AcceleratorName": [
       "a100",
@@ -2607,7 +2645,12 @@
       "radeon-pro-v520",
       "t4",
       "v100",
-      "vu9p"
+      "vu9p",
+      "a10g",
+      "h100",
+      "inferentia",
+      "k520",
+      "t4g"
     ],
     "BareMetal": [
       "included",
@@ -2731,6 +2774,8 @@
       "r8i-flex",
       "memory7-amd",
       "r7a",
+      "memory8-amd",
+      "r8a",
       "memory8-graviton",
       "r8g",
       "memory8-graviton4-nvme-drive",
@@ -3355,7 +3400,8 @@
       "NetworkInterface",
       "TransitGateway",
       "VpcPeeringConnection",
-      "VpcEndpoint"
+      "VpcEndpoint",
+      "CoreNetwork"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpn.ts": {

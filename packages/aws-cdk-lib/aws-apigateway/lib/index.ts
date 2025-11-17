@@ -25,3 +25,4 @@ export * from './stepfunctions-api';
 
 // AWS::ApiGateway CloudFormation Resources:
 export * from './apigateway.generated';
+export * from './apigateway-grants.generated';
