@@ -9,7 +9,7 @@ import {
   AwsMarketplaceComponent,
   Component,
   ComponentAction,
-  ComponentConstantType,
+  ComponentConstantValue,
   ComponentData,
   ComponentOnFailure,
   ComponentParameterType,
@@ -291,8 +291,8 @@ describe('Component', () => {
         name: 'test-component',
         schemaVersion: ComponentSchemaVersion.V1_0,
         constants: {
-          Constant1: { type: ComponentConstantType.STRING, value: 'Constant1Value' },
-          Constant2: { type: ComponentConstantType.STRING, value: 'Constant2Value' },
+          Constant1: ComponentConstantValue.fromString('Constant1Value'),
+          Constant2: ComponentConstantValue.fromString('Constant2Value'),
         },
         parameters: {
           Parameter1: { type: ComponentParameterType.STRING, default: 'Parameter1Value' },

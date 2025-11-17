@@ -238,7 +238,7 @@ export interface ComponentDocument {
    *
    * @default None
    */
-  readonly constants?: { [constantName: string]: ComponentDocumentConstantDefinition };
+  readonly constants?: { [constantName: string]: ComponentConstantValue };
 
   /**
    * The parameters to define in the document
@@ -361,18 +361,32 @@ export interface ComponentDocumentForLoop {
 }
 
 /**
- * The definition of the constant
+ * The value of a constant in a component document
  */
-export interface ComponentDocumentConstantDefinition {
+export class ComponentConstantValue {
+  /**
+   * Creates a string type constant in a component document
+   *
+   * @param value The value of the constant
+   */
+  public static fromString(value: string): ComponentConstantValue {
+    return new ComponentConstantValue('string', value);
+  }
+
   /**
    * The data type of the constant
    */
-  readonly type: ComponentConstantType;
+  public readonly type: string;
 
   /**
    * The value of the constant
    */
-  readonly value: any;
+  public readonly value: any;
+
+  protected constructor(type: string, value: any) {
+    this.type = type;
+    this.value = value;
+  }
 }
 
 /**
@@ -577,16 +591,6 @@ export enum ComponentOnFailure {
 }
 
 /**
- * The constant type in a component document
- */
-export enum ComponentConstantType {
-  /**
-   * Indicates the constant value is a string
-   */
-  STRING = 'string',
-}
-
-/**
  * The parameter type in a component document
  */
 export enum ComponentParameterType {
@@ -687,7 +691,9 @@ export abstract class ComponentData {
       ...(description !== undefined && { description }),
       schemaVersion: schemaVersion,
       ...(constants !== undefined && {
-        constants: Object.entries(constants).map(([constantName, value]) => ({ [constantName]: value })),
+        constants: Object.entries(constants).map(([constantName, value]) => ({
+          [constantName]: { type: value.type, value: value.value },
+        })),
       }),
       ...(parameters !== undefined && {
         parameters: Object.entries(parameters).map(([parameterName, value]) => ({ [parameterName]: value })),

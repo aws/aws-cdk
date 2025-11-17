@@ -2,7 +2,6 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as imagebuilder from '../lib';
-import { ComponentConstantType, ComponentParameterType } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-component-all-parameters');
@@ -28,17 +27,12 @@ new imagebuilder.Component(stack, 'InlineComponent', {
     schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
     parameters: {
       parameter: {
-        type: ComponentParameterType.STRING,
+        type: imagebuilder.ComponentParameterType.STRING,
         description: 'This is a parameter',
         default: 'default value',
       },
     },
-    constants: {
-      constant: {
-        type: ComponentConstantType.STRING,
-        value: 'constant value',
-      },
-    },
+    constants: { constant: imagebuilder.ComponentConstantValue.fromString('constant value') },
     phases: [
       {
         name: imagebuilder.ComponentPhaseName.BUILD,
