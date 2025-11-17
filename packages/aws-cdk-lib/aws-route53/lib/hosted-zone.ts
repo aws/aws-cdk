@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { HostedZoneGrants } from './hosted-zone-grants';
 import { HostedZoneProviderProps } from './hosted-zone-provider';
-import { HostedZoneAttributes, IHostedZone, PublicHostedZoneAttributes, PrivateHostedZoneAttributes } from './hosted-zone-ref';
+import { GrantDelegationOptions, HostedZoneAttributes, IHostedZone, PublicHostedZoneAttributes, PrivateHostedZoneAttributes } from './hosted-zone-ref';
 import { IKeySigningKey, KeySigningKey } from './key-signing-key';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
 import { CfnHostedZone, CfnDNSSEC, CfnKeySigningKey, HostedZoneReference } from './route53.generated';
@@ -124,8 +124,8 @@ export class HostedZone extends Resource implements IHostedZone {
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
-      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-        return HostedZoneGrants.fromHostedZone(this).delegation(grantee);
+      public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
+        return HostedZoneGrants.fromHostedZone(this).delegation(grantee, options);
       }
       public get hostedZoneRef(): HostedZoneReference {
         return {
@@ -153,8 +153,8 @@ export class HostedZone extends Resource implements IHostedZone {
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
-      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-        return HostedZoneGrants.fromHostedZone(this).delegation(grantee);
+      public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
+        return HostedZoneGrants.fromHostedZone(this).delegation(grantee, options);
       }
       public get hostedZoneRef(): HostedZoneReference {
         return {
@@ -258,8 +258,8 @@ export class HostedZone extends Resource implements IHostedZone {
   }
 
   @MethodMetadata()
-  public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-    return HostedZoneGrants.fromHostedZone(this).delegation(grantee);
+  public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
+    return HostedZoneGrants.fromHostedZone(this).delegation(grantee, options);
   }
 
   /**
@@ -362,8 +362,8 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
-      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-        return HostedZoneGrants.fromHostedZone(this).delegation(grantee);
+      public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
+        return HostedZoneGrants.fromHostedZone(this).delegation(grantee, options);
       }
       public get hostedZoneRef(): HostedZoneReference {
         return {
@@ -391,7 +391,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
       public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-        return HostedZoneGrants.fromHostedZone(this).delegation(grantee);
+        return HostedZoneGrants.fromHostedZone(this).delegation(grantee, options);
       }
       public get hostedZoneRef(): HostedZoneReference {
         return {
@@ -540,8 +540,8 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
-      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-        return HostedZoneGrants.fromHostedZone(this).delegation(grantee);
+      public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
+        return HostedZoneGrants.fromHostedZone(this).delegation(grantee, options);
       }
       public get hostedZoneRef(): HostedZoneReference {
         return {
@@ -568,8 +568,8 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
-      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-        return HostedZoneGrants.fromHostedZone(this).delegation(grantee);
+      public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
+        return HostedZoneGrants.fromHostedZone(this).delegation(grantee, options);
       }
       public get hostedZoneRef(): HostedZoneReference {
         return {
