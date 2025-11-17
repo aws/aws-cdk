@@ -89,3 +89,20 @@ jobs:
           path: |
             ~/.docker-images.tar
           key: docker-cache-${{ runner.os }}
+          
+      - name: Save PR info for PR Linter
+        if: github.event_name == 'pull_request'
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          mkdir -p ./pr
+          echo $PR_NUMBER > ./pr/pr_number
+          echo $PR_SHA > ./pr/pr_sha
+
+      - name: Upload PR info artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v5
+        with:
+          name: pr_info
+          path: pr/

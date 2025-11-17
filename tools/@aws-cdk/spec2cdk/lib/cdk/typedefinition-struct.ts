@@ -55,6 +55,7 @@ export class TypeDefinitionStruct extends StructType {
       },
     });
 
+    this.options = options;
     this.typeDefinition = options.typeDefinition;
     this.converter = options.converter;
     this.resource = options.resource;
