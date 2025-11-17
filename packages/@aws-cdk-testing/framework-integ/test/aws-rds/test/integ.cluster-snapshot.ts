@@ -52,7 +52,7 @@ class TestStack extends Stack {
     });
     fromSnapshot.addRotationSingleUser();
 
-    fromSnapshot.metricReadIOPs({
+    fromSnapshot.metricReadIOPS({
       period: Duration.minutes(10),
     }).createAlarm(this, 'ReadIOPsAlarm', {
       threshold: 1000,

@@ -66,7 +66,7 @@ class TestStack extends cdk.Stack {
       deleteAutomatedBackups: false,
     });
 
-    cluster.metricReadIOPs({
+    cluster.metricReadIOPS({
       period: cdk.Duration.minutes(10),
     }).createAlarm(this, 'ReadIOPsAlarm', {
       threshold: 1000,

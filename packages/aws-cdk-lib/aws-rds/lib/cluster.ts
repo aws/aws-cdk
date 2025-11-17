@@ -709,7 +709,7 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
    *
    * Represents the average of the ReadIOPS values across all instances in the cluster.
    */
-  public metricReadIOPs(props?: cloudwatch.MetricOptions) {
+  public metricReadIOPS(props?: cloudwatch.MetricOptions) {
     return this.metric('ReadIOPS', { statistic: 'Average', ...props });
   }
 }

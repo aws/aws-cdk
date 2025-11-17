@@ -228,7 +228,7 @@ cluster.metricACUUtilization({
   evaluationPeriods: 3,
   threshold: 90,
 });
-cluster.metricReadIOPs({
+cluster.metricReadIOPS({
   period: Duration.minutes(10),
 }).createAlarm(this, 'readIOPsAlarm', {
   threshold: 1000,
