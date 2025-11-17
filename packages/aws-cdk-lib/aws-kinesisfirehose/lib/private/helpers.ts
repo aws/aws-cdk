@@ -183,3 +183,23 @@ export function createBackupConfig(scope: Construct, role: iam.IRole, props?: De
     dependables: [bucketGrant, ...(loggingDependables ?? [])],
   };
 }
+
+export function createTimezoneName(scope: Construct, timezone?: cdk.TimeZone): string | undefined {
+  if (!timezone) return undefined;
+
+  const timezoneName = timezone.timezoneName;
+  if (!/^$|^[a-zA-Z/_]+$/.test(timezoneName)) {
+    throw new cdk.ValidationError('Member must satisfy regular expression pattern: ^$|[a-zA-Z/_]+', scope);
+  }
+
+  const extendsNon3LetterIANATimezoneNames = [
+    cdk.TimeZone.ETC_UTC,
+    cdk.TimeZone.ETC_GMT,
+    cdk.TimeZone.FACTORY,
+  ].map((_timezone) => _timezone.timezoneName);
+  if (/^[A-Z]{3}$/.test(timezoneName) || extendsNon3LetterIANATimezoneNames.includes(timezoneName)) {
+    throw new cdk.ValidationError('Custom time zones are limited to UTC and non-3-letter IANA time zones', scope);
+  }
+
+  return timezoneName;
+}

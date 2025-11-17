@@ -4,7 +4,7 @@ import { DestinationBindOptions, DestinationConfig, IDestination } from './desti
 import { IInputFormat, IOutputFormat, SchemaConfiguration } from './record-format';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
-import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
+import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig, createTimezoneName } from './private/helpers';
 import * as cdk from '../../core';
 
 /**
@@ -24,6 +24,8 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
 
   /**
    * The time zone you prefer.
+   * 
+   * Custom time zones are limited to UTC and non-3-letter IANA time zones and allowed patterns: `^$|[a-zA-Z/_]+`
    *
    * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html#timestamp-namespace
    *
@@ -137,7 +139,7 @@ export class S3Bucket implements IDestination {
         errorOutputPrefix: this.props.errorOutputPrefix,
         prefix: this.props.dataOutputPrefix,
         fileExtension: this.props.fileExtension,
-        customTimeZone: this.props.timeZone?.timezoneName,
+        customTimeZone: createTimezoneName(scope, this.props.timeZone),
       },
       dependables: [bucketGrant, ...(loggingDependables ?? []), ...(backupDependables ?? [])],
     };
