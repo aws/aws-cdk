@@ -73,7 +73,7 @@ export class S3DeliveryDestination extends DeliveryDestinationBase {
 
     const deliveryDestination = new CfnDeliveryDestination(scope, 'S3DeliveryDestination', {
       destinationResourceArn: props.s3Bucket.bucketArn,
-      name: `s3-delivery-destination-${Names.uniqueResourceName(props.s3Bucket, {maxLength: 20})}`,
+      name: `s3-delivery-destination-${Names.uniqueResourceName(props.s3Bucket, { maxLength: 20 })}`,
     });
     deliveryDestination.addDependency(bucketPolicy);
     this.destinationArn = deliveryDestination.attrArn;
@@ -88,7 +88,7 @@ export class FirehoseDeliveryDestination extends DeliveryDestinationBase {
     Tags.of(props.deliveryStream).add('LogDeliveryEnabled', 'true');
     const deliveryDestination = new CfnDeliveryDestination(scope, 'FirehoseDeliveryDestination', {
       destinationResourceArn: props.deliveryStream.deliveryStreamArn,
-      name: `fh-delivery-destination-${Names.uniqueResourceName(props.deliveryStream, {maxLength: 20})}`,
+      name: `fh-delivery-destination-${Names.uniqueResourceName(props.deliveryStream, { maxLength: 20 })}`,
     });
     this.destinationArn = deliveryDestination.attrArn;
   }
@@ -130,7 +130,7 @@ export class CloudwatchDeliveryDestination extends DeliveryDestinationBase {
 
     const deliveryDestination = new CfnDeliveryDestination(scope, 'CloudwatchDeliveryDestination', {
       destinationResourceArn: props.logGroup.logGroupArn,
-      name: `cwl-delivery-destination-${Names.uniqueResourceName(props.logGroup, {maxLength: 20})}`,
+      name: `cwl-delivery-destination-${Names.uniqueResourceName(props.logGroup, { maxLength: 20 })}`,
     });
     deliveryDestination.addDependency(logGroupPolicy);
     this.destinationArn = deliveryDestination.attrArn;
