@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "22.0.0",
   "testCases": {
     "integ.dynamodb": {
       "stacks": [
@@ -10,6 +10,5 @@
     }
   },
   "synthContext": {},
-  "enableLookups": false,
-  "minimumCliVersion": "2.1031.2"
+  "enableLookups": false
 }

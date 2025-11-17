@@ -71,12 +71,17 @@
         "dynamodb:UpdateItem"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "TestTable5769773A",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TestTable5769773A",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -98,6 +103,8 @@
       "ApiId"
      ]
     },
+    "Name": "testDataSource",
+    "Type": "AMAZON_DYNAMODB",
     "DynamoDBConfig": {
      "AwsRegion": {
       "Ref": "AWS::Region"
@@ -106,14 +113,12 @@
       "Ref": "TestTable5769773A"
      }
     },
-    "Name": "testDataSource",
     "ServiceRoleArn": {
      "Fn::GetAtt": [
       "ApitestDataSourceServiceRoleACBC3F3D",
       "Arn"
      ]
-    },
-    "Type": "AMAZON_DYNAMODB"
+    }
    }
   },
   "ApiQueryGetTestsF8C40170": {
@@ -125,12 +130,12 @@
       "ApiId"
      ]
     },
-    "DataSourceName": "testDataSource",
     "FieldName": "getTests",
+    "TypeName": "Query",
+    "DataSourceName": "testDataSource",
     "Kind": "UNIT",
     "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
-    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)",
-    "TypeName": "Query"
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
    },
    "DependsOn": [
     "ApiSchema510EECD7",
@@ -146,12 +151,12 @@
       "ApiId"
      ]
     },
-    "DataSourceName": "testDataSource",
     "FieldName": "addTest",
+    "TypeName": "Mutation",
+    "DataSourceName": "testDataSource",
     "Kind": "UNIT",
     "RequestMappingTemplate": "\n      #set($input = $ctx.args.test)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
-    "ResponseMappingTemplate": "$util.toJson($ctx.result)",
-    "TypeName": "Mutation"
+    "ResponseMappingTemplate": "$util.toJson($ctx.result)"
    },
    "DependsOn": [
     "ApiSchema510EECD7",
@@ -161,19 +166,19 @@
   "TestTable5769773A": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
     "AttributeDefinitions": [
      {
       "AttributeName": "id",
       "AttributeType": "S"
      }
     ],
-    "BillingMode": "PAY_PER_REQUEST",
-    "KeySchema": [
-     {
-      "AttributeName": "id",
-      "KeyType": "HASH"
-     }
-    ]
+    "BillingMode": "PAY_PER_REQUEST"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
