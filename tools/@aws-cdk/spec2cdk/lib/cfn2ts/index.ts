@@ -82,11 +82,13 @@ export async function generateAll(
     {
       outputPath: outPath,
       clearOutput: false,
-      inCdkLib: true,
-      filePatterns: {
-        resources: '%moduleName%/lib/%serviceShortName%.generated.ts',
-        augmentations: '%moduleName%/lib/%serviceShortName%-augmentations.generated.ts',
-        cannedMetrics: '%moduleName%/lib/%serviceShortName%-canned-metrics.generated.ts',
+      builderProps: {
+        inCdkLib: true,
+        filePatterns: {
+          resources: '%moduleName%/lib/%serviceShortName%.generated.ts',
+          augmentations: '%moduleName%/lib/%serviceShortName%-augmentations.generated.ts',
+          cannedMetrics: '%moduleName%/lib/%serviceShortName%-canned-metrics.generated.ts',
+        },
       },
     },
   );
