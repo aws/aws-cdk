@@ -141,6 +141,17 @@ The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
 runtime to use to evaluate the expression. Currently, only runtimes
 of the Node.js family are supported.
 
+The `EvaluateExpression` also supports an `architecture` prop to specify the Lambda
+architecture. This can be useful when migrating to ARM64 or when running integration
+tests on ARM64 systems.
+
+```ts
+const convertToSecondsArm64 = new tasks.EvaluateExpression(this, 'Convert to seconds', {
+  expression: '$.waitMilliseconds / 1000',
+  architecture: lambda.Architecture.ARM_64,
+});
+```
+
 ## API Gateway
 
 Step Functions supports [API Gateway](https://docs.aws.amazon.com/step-functions/latest/dg/connect-api-gateway.html) through the service integration pattern.
@@ -1374,12 +1385,12 @@ The following code snippet includes a Task state that uses eks:call to list the 
 
 ```ts
 import * as eks from 'aws-cdk-lib/aws-eks';
-import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 
 const myEksCluster = new eks.Cluster(this, 'my sample cluster', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   clusterName: 'myEksCluster',
-  kubectlLayer: new KubectlV33Layer(this, 'kubectl'),
+  kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
 });
 
 new tasks.EksCall(this, 'Call a EKS Endpoint', {
@@ -1582,7 +1593,7 @@ const connection = new events.Connection(this, 'Connection', {
 
 new tasks.HttpInvoke(this, 'Invoke HTTP API', {
   apiRoot: 'https://api.example.com',
-  apiEndpoint: sfn.TaskInput.fromText('path/to/resource'),
+  apiEndpoint: sfn.TaskInput.fromText(sfn.JsonPath.format('resource/{}/details', sfn.JsonPath.stringAt('$.resourceId'))),
   body: sfn.TaskInput.fromObject({ foo: 'bar' }),
   connection,
   headers: sfn.TaskInput.fromObject({ 'Content-Type': 'application/json' }),

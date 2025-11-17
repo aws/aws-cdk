@@ -15,6 +15,7 @@ import { FeatureFlags } from './feature-flags';
 import { ResolutionTypeHint } from './type-hints';
 import * as cxapi from '../../cx-api';
 import { AssumptionError, ValidationError } from './errors';
+import { ResourceEnvironment } from './environment';
 
 export interface CfnResourceProps {
   /**
@@ -99,6 +100,13 @@ export class CfnResource extends CfnRefElement {
     if (Node.of(this).tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
       this.addMetadata(cxapi.PATH_METADATA_KEY, Node.of(this).path);
     }
+  }
+
+  public get env(): ResourceEnvironment {
+    return {
+      account: this.stack.account,
+      region: this.stack.region,
+    };
   }
 
   /**
@@ -653,7 +661,7 @@ function deepMerge(target: any, ...sources: any[]) {
     }
 
     for (const key of Object.keys(source)) {
-      if (key === '__proto__' || key === 'constructor') {
+      if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
         continue;
       }
 

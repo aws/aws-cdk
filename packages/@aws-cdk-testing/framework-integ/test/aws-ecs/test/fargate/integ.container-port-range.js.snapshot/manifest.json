@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b9359080e48d259117c6713b4a9d862903c4b15313ff0e4ea013ba87af5c7485.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/883a5b787ba344fb86abd16104ef7dbcdb31d67480a4bd978d0ddb974ea3abfc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -330,12 +330,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EcsClusterVpcRestrictDefaultSecurityGroupCustomResource8F588911"
-          }
-        ],
-        "/aws-ecs-container-port-range/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-ecs-container-port-range/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
