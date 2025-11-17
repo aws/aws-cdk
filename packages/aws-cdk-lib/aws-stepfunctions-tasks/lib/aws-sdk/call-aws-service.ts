@@ -33,8 +33,11 @@ interface CallAwsServiceOptions {
    * machine role's policy to allow the state machine to make the API call.
    *
    * By default the action for this IAM statement will be `service:action`.
+   *
+   * @default - No IAM policy statements are added. You must attach the necessary
+   * permissions to the state machine role manually.
    */
-  readonly iamResources: string[];
+  readonly iamResources?: string[];
 
   /**
    * The action for the IAM statement that will be added to the state
@@ -132,15 +135,21 @@ export class CallAwsService extends sfn.TaskStateBase {
     };
     const iamService = iamServiceMap[props.service] ?? props.service;
 
-    this.taskPolicies = [
-      new iam.PolicyStatement({
-        resources: props.iamResources,
-        // The prefix and the action name are case insensitive
-        // https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_action.html
-        actions: [props.iamAction ?? `${iamService}:${props.action}`],
-      }),
-      ...props.additionalIamStatements ?? [],
-    ];
+    if (props.iamResources) {
+      this.taskPolicies = [
+        new iam.PolicyStatement({
+          resources: props.iamResources,
+          // The prefix and the action name are case insensitive
+          // https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_action.html
+          actions: [props.iamAction ?? `${iamService}:${props.action}`],
+        }),
+        ...props.additionalIamStatements ?? [],
+      ];
+    } else if (props.additionalIamStatements?.length) {
+      this.taskPolicies = [...props.additionalIamStatements];
+    }
+    // If neither iamResources nor additionalIamStatements are provided,
+    // taskPolicies remains undefined and no IAM policies are generated
   }
 
   /**
