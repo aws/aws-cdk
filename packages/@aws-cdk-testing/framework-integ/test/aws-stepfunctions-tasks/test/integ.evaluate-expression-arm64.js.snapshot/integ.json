@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "EvaluateExpressionArm64Test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-sfn-evaluate-expression-arm64-integ"
+      ],
+      "assertionStack": "EvaluateExpressionArm64Test/DefaultTest/DeployAssert",
+      "assertionStackName": "EvaluateExpressionArm64TestDefaultTestDeployAssertC985F24C"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
