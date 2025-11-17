@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-eks-addon-removal-policy/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-addon-removal-policy-test"
+      ],
+      "diffAssets": false,
+      "assertionStack": "aws-cdk-eks-addon-removal-policy/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksaddonremovalpolicyDefaultTestDeployAssert7E3BE525"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
