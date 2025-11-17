@@ -45,6 +45,21 @@
       "DUAL_STACK"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/memory/memory-strategy.ts": {
+    "MemoryStrategyType": [
+      "SUMMARIZATION",
+      "SEMANTIC",
+      "USER_PREFERENCE",
+      "CUSTOM"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/runtime/types.ts": {
+    "ProtocolType": [
+      "MCP",
+      "HTTP",
+      "A2A"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent-collaborator.ts": {
     "AgentCollaboratorType": [
       "SUPERVISOR",
@@ -536,6 +551,17 @@
       "write.kms.key.id"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/infrastructure-configuration.ts": {
+    "HttpTokens": [
+      "optional",
+      "required"
+    ],
+    "Tenancy": [
+      "default",
+      "dedicated",
+      "host"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/firehose-put-record-action.ts": {
     "FirehoseRecordSeparator": [
       "\n",
@@ -759,6 +785,10 @@
       "LOCAL",
       "TIERED"
     ],
+    "BrokerType": [
+      "STANDARD",
+      "EXPRESS"
+    ],
     "ClusterMonitoringLevel": [
       "DEFAULT",
       "PER_BROKER",
@@ -955,7 +985,7 @@
   },
   "aws-cdk/packages/@aws-cdk/custom-resource-handlers/lib/custom-resources-framework/config.ts": {
     "Runtime": [
-      "nodejs18.x",
+      "nodejs20.x",
       "python3.9",
       "python3.10",
       "python3.11",
@@ -1801,6 +1831,7 @@
       "TLSv1.2_2018",
       "TLSv1.2_2019",
       "TLSv1.2_2021",
+      "TLSv1.2_2025",
       "TLSv1.3_2025"
     ],
     "LambdaEdgeEventType": [
@@ -2100,7 +2131,14 @@
       "BUILD_GENERAL1_MEDIUM",
       "BUILD_GENERAL1_LARGE",
       "BUILD_GENERAL1_XLARGE",
-      "BUILD_GENERAL1_2XLARGE"
+      "BUILD_GENERAL1_2XLARGE",
+      "ATTRIBUTE_BASED_COMPUTE",
+      "BUILD_LAMBDA_10GB",
+      "BUILD_LAMBDA_1GB",
+      "BUILD_LAMBDA_2GB",
+      "BUILD_LAMBDA_4GB",
+      "BUILD_LAMBDA_8GB",
+      "CUSTOM_INSTANCE_TYPE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/environment-type.ts": {
@@ -2591,7 +2629,8 @@
       "amazon-web-services",
       "amd",
       "nvidia",
-      "xilinx"
+      "xilinx",
+      "habana"
     ],
     "AcceleratorName": [
       "a100",
@@ -2600,7 +2639,12 @@
       "radeon-pro-v520",
       "t4",
       "v100",
-      "vu9p"
+      "vu9p",
+      "a10g",
+      "h100",
+      "inferentia",
+      "k520",
+      "t4g"
     ],
     "BareMetal": [
       "included",
@@ -2724,6 +2768,8 @@
       "r8i-flex",
       "memory7-amd",
       "r7a",
+      "memory8-amd",
+      "r8a",
       "memory8-graviton",
       "r8g",
       "memory8-graviton4-nvme-drive",
@@ -3348,7 +3394,8 @@
       "NetworkInterface",
       "TransitGateway",
       "VpcPeeringConnection",
-      "VpcEndpoint"
+      "VpcEndpoint",
+      "CoreNetwork"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpn.ts": {
@@ -4527,6 +4574,16 @@
       0,
       1,
       2
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/output.ts": {
+    "ParquetWriterVersion": [
+      "V1",
+      "V2"
+    ],
+    "OrcFormatVersion": [
+      "V0_11",
+      "V0_12"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.ts": {
