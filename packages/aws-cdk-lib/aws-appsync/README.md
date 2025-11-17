@@ -1421,3 +1421,75 @@ api.addChannelNamespace('lambda-direct-async-ns', {
   },
 });
 ```
+
+### Advanced Handler Configuration
+
+For more fine-grained control over channel namespace handlers, you can use the `handlerConfigs` property to directly configure the handler behavior and integration options. This provides a more flexible way to define how your handlers work with data sources.
+
+```ts
+declare const api: appsync.EventApi;
+declare const lambdaDataSource: appsync.AppSyncLambdaDataSource;
+declare const ddbDataSource: appsync.AppSyncDynamoDbDataSource;
+
+// Using direct handlerConfigs property for advanced configuration
+api.addChannelNamespace('advanced-handlers', {
+  handlerConfigs: {
+    onPublish: {
+      behavior: appsync.HandlerBehavior.DIRECT,
+      integration: {
+        dataSourceName: lambdaDataSource.name,
+        lambdaConfig: {
+          invokeType: appsync.LambdaInvokeType.EVENT,
+        },
+      },
+    },
+    onSubscribe: {
+      behavior: appsync.HandlerBehavior.CODE,
+      integration: {
+        dataSourceName: ddbDataSource.name,
+      },
+    },
+  },
+  code: appsync.Code.fromInline('/* Used for CODE behavior handler only */'),
+});
+
+// Using handlerConfigs with only publish handler
+new appsync.ChannelNamespace(this, 'PublishOnlyHandler', {
+  api,
+  handlerConfigs: {
+    onPublish: {
+      behavior: appsync.HandlerBehavior.DIRECT,
+      integration: {
+        dataSourceName: lambdaDataSource.name,
+      },
+    },
+  },
+});
+```
+
+The `handlerConfigs` property accepts a configuration object with optional `onPublish` and `onSubscribe` handlers. Each handler requires a `behavior` that can be either `CODE` or `DIRECT`, and an `integration` configuration specifying the data source to use.
+
+When using `HandlerBehavior.DIRECT` with Lambda data sources, you can also specify the Lambda invocation type:
+
+```ts
+declare const api: appsync.EventApi;
+declare const lambdaDataSource: appsync.AppSyncLambdaDataSource;
+
+// Configure Lambda invocation type for direct handler
+new appsync.ChannelNamespace(this, 'AsyncLambdaHandler', {
+  api,
+  handlerConfigs: {
+    onPublish: {
+      behavior: appsync.HandlerBehavior.DIRECT,
+      integration: {
+        dataSourceName: lambdaDataSource.name,
+        lambdaConfig: {
+          invokeType: appsync.LambdaInvokeType.EVENT, // Asynchronous invocation
+        },
+      },
+    },
+  },
+});
+```
+
+Note that when both publish and subscribe handlers use `HandlerBehavior.DIRECT`, you should not provide a `code` property, as code handlers are not used with direct data source behavior.
