@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "lambda-permission-consolidation/DefaultTest": {
+      "stacks": [
+        "LambdaPermissionConsolidationStack"
+      ],
+      "assertionStack": "lambda-permission-consolidation/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdapermissionconsolidationDefaultTestDeployAssert13A06BC9"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
