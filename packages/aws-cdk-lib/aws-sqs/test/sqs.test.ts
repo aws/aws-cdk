@@ -567,8 +567,7 @@ describe('queue encryption', () => {
     queue.grantSendMessages(role);
 
     // THEN
-    let template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
