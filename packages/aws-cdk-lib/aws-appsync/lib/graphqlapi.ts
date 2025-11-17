@@ -1,4 +1,3 @@
-import { Annotations } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation, CfnSourceApiAssociation } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase, Visibility, AuthorizationType } from './graphqlapi-base';
@@ -9,7 +8,7 @@ import { IUserPool } from '../../aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, IRoleRef } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack, Token, ValidationError } from '../../core';
+import { Annotations, CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -270,7 +269,7 @@ export enum OperationLevelMetricsConfig {
   /**
    * Does not send operation metrics to CloudWatch.
    */
-  DISABLED = 'DISABLED'
+  DISABLED = 'DISABLED',
 }
 
 /**
@@ -997,7 +996,8 @@ export class GraphqlApi extends GraphqlApiBase {
     if (dataSourceLevelMetricsBehavior === DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS ) {
       Annotations.of(this).addWarningV2(this.node.id, 'When DataSourceLevelMetricsBehavior is set to FULL_REQUEST_DATA_SOURCE_METRICS, metrics are sent to CloudWatch for all data sources used in the request, regardless of whether a data source’s MetricsConfig is set to ENABLED or DISABLED.');
     }
-    const operationLevelMetricsEnabled = config.operationLevelMetricsConfig ? config.operationLevelMetricsConfig: OperationLevelMetricsConfig.DISABLED;
+    const operationLevelMetricsEnabled = config.operationLevelMetricsConfig
+      ? config.operationLevelMetricsConfig: OperationLevelMetricsConfig.DISABLED;
     const resolverLevelMetricsBehavior = config.resolverLevelMetricsBehavior;
     if (resolverLevelMetricsBehavior === ResolverLevelMetricsBehavior.FULL_REQUEST_RESOLVER_METRICS ) {
       Annotations.of(this).addWarningV2(this.node.id, 'When ResolverLevelMetricsBehavior is set to FULL_REQUEST_RESOLVER_METRICS, metrics are sent to CloudWatch for all resolvers used in the request, regardless of whether a resolver’s MetricsConfig is set to ENABLED or DISABLED.');
