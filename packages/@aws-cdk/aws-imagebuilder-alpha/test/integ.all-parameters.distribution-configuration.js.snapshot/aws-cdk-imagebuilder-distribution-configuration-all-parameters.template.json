@@ -144,6 +144,9 @@
        },
        "Name": "imagebuilder-{{ imagebuilder:buildDate }}",
        "TargetAccountIds": [
+        {
+         "Ref": "AWS::AccountId"
+        },
         "123456789012",
         "098765432109"
        ]
@@ -211,7 +214,9 @@
         ]
        }
       ],
-      "Region": "us-east-1",
+      "Region": {
+       "Ref": "AWS::Region"
+      },
       "SsmParameterConfigurations": [
        {
         "AmiAccountId": "098765432109",
@@ -334,6 +339,9 @@
        },
        "Name": "imagebuilder-{{ imagebuilder:buildDate }}",
        "TargetAccountIds": [
+        {
+         "Ref": "AWS::AccountId"
+        },
         "123456789012",
         "098765432109"
        ]
@@ -388,7 +396,9 @@
         ]
        }
       ],
-      "Region": "us-east-1",
+      "Region": {
+       "Ref": "AWS::Region"
+      },
       "SsmParameterConfigurations": [
        {
         "AmiAccountId": "098765432109",
@@ -425,7 +435,7 @@
   "ContainerDistributionConfiguration18609EDB": {
    "Type": "AWS::ImageBuilder::DistributionConfiguration",
    "Properties": {
-    "Description": "This is an AMI distribution configuration.",
+    "Description": "This is a Container distribution configuration.",
     "Distributions": [
      {
       "ContainerDistributionConfiguration": {
@@ -441,7 +451,9 @@
         "Service": "ECR"
        }
       },
-      "Region": "us-east-1"
+      "Region": {
+       "Ref": "AWS::Region"
+      }
      },
      {
       "ContainerDistributionConfiguration": {

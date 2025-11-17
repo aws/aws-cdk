@@ -596,30 +596,26 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
       throw new cdk.ValidationError('You must specify at least one AMI or container distribution', this);
     }
 
-    const distributionByRegion: { [region: string]: CfnDistributionConfiguration.DistributionProperty } =
-      Object.fromEntries(
-        Object.entries(this.amiDistributionsByRegion).map(
-          ([region, distribution]): [string, CfnDistributionConfiguration.DistributionProperty] => [
-            region,
-            {
-              region,
-              amiDistributionConfiguration: this.buildAmiDistribution(distribution),
-              fastLaunchConfigurations: this.buildFastLaunchConfigurations(distribution),
-              launchTemplateConfigurations: this.buildLaunchTemplateConfigurations(distribution),
-              ssmParameterConfigurations: this.buildSsmParameterConfigurations(distribution),
-              licenseConfigurationArns: this.buildLicenseConfigurationArns(distribution),
-            },
-          ],
-        ),
-      );
-    Object.values(this.containerDistributionsByRegion).forEach((containerDistribution) => {
-      const region = containerDistribution.region ?? cdk.Stack.of(this).region;
+    const distributionByRegion: { [region: string]: CfnDistributionConfiguration.DistributionProperty } = {};
+
+    for (const [region, distribution] of Object.entries(this.amiDistributionsByRegion)) {
+      distributionByRegion[region] = {
+        region,
+        amiDistributionConfiguration: this.buildAmiDistribution(distribution),
+        fastLaunchConfigurations: this.buildFastLaunchConfigurations(distribution),
+        launchTemplateConfigurations: this.buildLaunchTemplateConfigurations(distribution),
+        ssmParameterConfigurations: this.buildSsmParameterConfigurations(distribution),
+        licenseConfigurationArns: this.buildLicenseConfigurationArns(distribution),
+      };
+    }
+
+    for (const [region, containerDistribution] of Object.entries(this.containerDistributionsByRegion)) {
       distributionByRegion[region] = {
         ...(distributionByRegion[region] ?? {}),
         region,
         containerDistributionConfiguration: this.buildContainerDistribution(containerDistribution),
       };
-    });
+    }
 
     return Object.values(distributionByRegion);
   }

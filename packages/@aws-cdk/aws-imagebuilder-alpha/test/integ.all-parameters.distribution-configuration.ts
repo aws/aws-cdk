@@ -44,7 +44,7 @@ const containerOnlyDistributionConfiguration = new imagebuilder.DistributionConf
   stack,
   'ContainerDistributionConfiguration',
   {
-    description: 'This is an AMI distribution configuration.',
+    description: 'This is a Container distribution configuration.',
     tags: {
       key1: 'value1',
       key2: 'value2',
@@ -53,11 +53,11 @@ const containerOnlyDistributionConfiguration = new imagebuilder.DistributionConf
 );
 
 const amiDistributionConfiguration: imagebuilder.AmiDistribution = {
-  region: 'us-east-1',
+  region: stack.region,
   amiName: 'imagebuilder-{{ imagebuilder:buildDate }}',
   amiDescription: 'Build AMI',
   amiKmsKey: kms.Alias.fromAliasName(stack, 'DistributedAMIKey', 'alias/distribution-encryption-key'),
-  amiTargetAccountIds: ['123456789012', '098765432109'],
+  amiTargetAccountIds: [stack.account, '123456789012', '098765432109'],
   amiLaunchPermission: {
     organizationArns: [
       stack.formatArn({
@@ -134,7 +134,7 @@ const crossRegionAmiDistributionConfiguration: imagebuilder.AmiDistribution = {
 };
 
 const containerDistributionConfiguration: imagebuilder.ContainerDistribution = {
-  region: 'us-east-1',
+  region: stack.region,
   containerRepository: imagebuilder.Repository.fromEcr(repository),
   containerDescription: 'Test container image',
   containerTags: ['latest', 'latest-1.0'],

@@ -374,14 +374,14 @@ distributionConfiguration.addAmiDistributions({
   launchTemplates: [
     {
       launchTemplate: ec2.LaunchTemplate.fromLaunchTemplateAttributes(this, 'LaunchTemplate', {
-        launchTemplateName: 'imagebuilder-ami'
+        launchTemplateId: 'lt-1234'
       }),
       setDefaultVersion: true
     },
     {
       accountId: '123456789012',
       launchTemplate: ec2.LaunchTemplate.fromLaunchTemplateAttributes(this, 'CrossAccountLaunchTemplate', {
-        launchTemplateName: 'imagebuilder-cross-account-ami'
+        launchTemplateId: 'lt-5678'
       }),
       setDefaultVersion: true
     }
