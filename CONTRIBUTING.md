@@ -47,7 +47,7 @@ Any code that you submit will be released under that license.
 - [Changing the Cloud Assembly Schema](#changing-cloud-assembly-schema)
 - [Feature Flags](#feature-flags)
 - [Versioning and Release](#versioning-and-release)
-- [Troubleshooting](#troubleshooting)
+- [Common Issues](#common-issues)
 - [Debugging](#debugging)
   - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
   - [Run a CDK unit test in the debugger](#run-a-cdk-unit-test-in-the-debugger)

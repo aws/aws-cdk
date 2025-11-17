@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.225.0](https://github.com/aws/aws-cdk/compare/v2.224.0...v2.225.0) (2025-11-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+  - **aws-dynamodb**: AWS::DynamoDB::GlobalTable: ResourcePolicy property is now required.
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#36082](https://github.com/aws/aws-cdk/issues/36082)) ([3df1d81](https://github.com/aws/aws-cdk/commit/3df1d81014f305c21e33522aa7cd26a91a21371b))
+* **custom-resource:** add External ID support for AwsCustomResource ([#35252](https://github.com/aws/aws-cdk/issues/35252)) ([9f6c02b](https://github.com/aws/aws-cdk/commit/9f6c02ba7a1c5369add94d0f2c3ffe4ecadd2761)), closes [#34018](https://github.com/aws/aws-cdk/issues/34018)
+* **route53:** support restricting delegated zone names when using grantDelegation ([#35129](https://github.com/aws/aws-cdk/issues/35129)) ([d832aca](https://github.com/aws/aws-cdk/commit/d832aca6059a9737437d2fe9d349d79cddbb0605))
+
+
+### Bug Fixes
+
+* **aws-cdk-lib:** temporary Cloud Assemblies are not cleaned up ([#36043](https://github.com/aws/aws-cdk/issues/36043)) ([1ace1ef](https://github.com/aws/aws-cdk/commit/1ace1efdca879f3e871a7f32bababfe62d8b0afc)), closes [#802](https://github.com/aws/aws-cdk/issues/802)
+* **cognito:** remove overly strict validation for threat protection on non-PLUS plans ([#36027](https://github.com/aws/aws-cdk/issues/36027)) ([172c65f](https://github.com/aws/aws-cdk/commit/172c65feb7f25060abf98fc704d815acfe4c9d6d)), closes [#36023](https://github.com/aws/aws-cdk/issues/36023)
+* **s3-deployment:** `Source.jsonData()` fails with null JSON values ([#36054](https://github.com/aws/aws-cdk/issues/36054)) ([67b85f2](https://github.com/aws/aws-cdk/commit/67b85f2e71ca59bd7dd522bb5a63fef6401e51b0)), closes [#36052](https://github.com/aws/aws-cdk/issues/36052)
+
+
+### Reverts
+
+* (dynamodb) revert Table.table field to private to fix .NET naming ([#36029](https://github.com/aws/aws-cdk/issues/36029)) ([d84fce8](https://github.com/aws/aws-cdk/commit/d84fce84868157649f5a3cabbdbe06233317aacc)), closes [#36025](https://github.com/aws/aws-cdk/issues/36025) [#35554](https://github.com/aws/aws-cdk/issues/35554)
+
 ## [2.224.0](https://github.com/aws/aws-cdk/compare/v2.223.0...v2.224.0) (2025-11-13)
 
 

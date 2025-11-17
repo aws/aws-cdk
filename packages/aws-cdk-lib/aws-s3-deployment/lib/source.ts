@@ -193,17 +193,22 @@ export class Source {
     return {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
         const workdir = FileSystem.mkdtemp('s3-deployment');
-        const outputPath = join(workdir, objectKey);
-        const rendered = renderData(data);
-        fs.mkdirSync(dirname(outputPath), { recursive: true });
-        fs.writeFileSync(outputPath, rendered.text);
-        const asset = this.asset(workdir).bind(scope, context);
-        return {
-          bucket: asset.bucket,
-          zipObjectKey: asset.zipObjectKey,
-          markers: rendered.markers,
-          markersConfig: markersConfig,
-        };
+        try {
+          const outputPath = join(workdir, objectKey);
+          const rendered = renderData(data);
+          fs.mkdirSync(dirname(outputPath), { recursive: true });
+          fs.writeFileSync(outputPath, rendered.text);
+          const asset = this.asset(workdir).bind(scope, context);
+          return {
+            bucket: asset.bucket,
+            zipObjectKey: asset.zipObjectKey,
+            markers: rendered.markers,
+            markersConfig: markersConfig,
+          };
+        } finally {
+          // Calling `this.asset()` has copied files to the assembly, so we can delete the temporary directory.
+          FileSystem.rmrf(workdir);
+        }
       },
     };
   }
@@ -275,7 +280,7 @@ export class Source {
       return obj.map(v => Source.escapeTokens(scope, v));
     }
 
-    if (typeof obj === 'object') {
+    if (obj !== null && typeof obj === 'object') {
       return Object.fromEntries(
         Object.entries(obj).map(([key, value]) => {
           // As JSON keys are always strings, keys are assumed to be either regular strings or string tokens.

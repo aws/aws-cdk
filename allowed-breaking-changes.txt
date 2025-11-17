@@ -4001,3 +4001,4 @@ move:aws-cdk-lib.aws_xray.TransactionSearchConfigReference                      
 move:aws-cdk-lib.IEnvironmentAware                                                          aws-cdk-lib.interfaces.IEnvironmentAware
 move:aws-cdk-lib.ResourceEnvironment                                                        aws-cdk-lib.interfaces.ResourceEnvironment
 
+removed:aws-cdk-lib.aws_dynamodb.Table.table

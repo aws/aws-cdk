@@ -7,7 +7,7 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const instanceTypes = ['i4g.large.search', 'i4i.xlarge.search', 'r7gd.xlarge.search'];
+    const instanceTypes = ['i4g.large.search', 'i4i.xlarge.search', 'r7gd.xlarge.search', 'r8gd.medium.search'];
 
     instanceTypes.forEach((instanceType, index) => {
       new opensearch.Domain(this, `Domain${index + 1}`, {
