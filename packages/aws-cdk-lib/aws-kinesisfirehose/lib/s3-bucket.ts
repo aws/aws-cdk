@@ -24,7 +24,7 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
 
   /**
    * The time zone you prefer.
-   * 
+   *
    * Custom time zones are limited to UTC and non-3-letter IANA time zones and allowed patterns: `^$|[a-zA-Z/_]+`
    *
    * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html#timestamp-namespace
