@@ -3072,6 +3072,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TASK_DEFINITION",
     "NONE"
   ],
+  "PropertyMergeStrategy": [
+    "override",
+    "merge"
+  ],
   "Protocol": [
     "HTTP",
     "HTTPS",

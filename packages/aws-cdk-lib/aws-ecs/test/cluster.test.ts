@@ -1323,14 +1323,12 @@ describe('cluster', () => {
               'Fn::Join': [
                 '',
                 [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':ecs:',
-                  { Ref: 'AWS::Region' },
-                  ':',
-                  { Ref: 'AWS::AccountId' },
-                  ':task/',
-                  { Ref: 'EcsCluster97242B84' },
+                  {
+                    'Fn::GetAtt': [
+                      'EcsCluster97242B84',
+                      'Arn',
+                    ],
+                  },
                   '/*',
                 ],
               ],
