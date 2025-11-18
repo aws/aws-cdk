@@ -1113,10 +1113,6 @@ When tools are exposed through gateway targets, AgentCore Gateway prefixes each 
 
 **Naming Pattern:**
 
-```typescript
-${target_name}__${tool_name}
-```
-
 **Example:**
 
 If your target is named `my-lambda-target` and provides a tool called `calculate_price`, agents will discover and invoke it as `my-lambda-target__calculate_price`.
@@ -1363,6 +1359,7 @@ const mcpTarget = gateway.addMcpServerTarget("MyMcpServer", {
     agentcore.GatewayCredentialProvider.fromOauthIdentityArn({
       providerArn: oauthProviderArn,
       secretArn: oauthSecretArn,
+      scopes:['mcp-runtime-server/invoke']
     }),
   ],
 });
@@ -1499,6 +1496,7 @@ const mcpTarget = agentcore.GatewayTarget.forMcpServer(this, "MyMcpServer", {
     agentcore.GatewayCredentialProvider.fromOauthIdentityArn({
       providerArn: oauthProviderArn,
       secretArn: oauthSecretArn,
+      scopes:['mcp-runtime-server/invoke']
     }),
   ],
 });
