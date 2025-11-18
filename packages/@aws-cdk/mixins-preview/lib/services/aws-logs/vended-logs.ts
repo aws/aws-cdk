@@ -1,8 +1,8 @@
-import { Aws, CfnResource, Names, Resource, Stack, Tags } from 'aws-cdk-lib';
+import { Aws, Names, Resource, Stack, Tags } from 'aws-cdk-lib';
 import { Effect, PolicyDocument, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import type { DeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
-import { CfnDeliveryDestination, CfnResourcePolicy } from 'aws-cdk-lib/aws-logs';
-import { DeliveryDestinationReference, IDeliveryDestinationRef, LogGroup, ResourcePolicy } from 'aws-cdk-lib/aws-logs';
+import { CfnDeliveryDestination } from 'aws-cdk-lib/aws-logs';
+import type { DeliveryDestinationReference, IDeliveryDestinationRef, LogGroup } from 'aws-cdk-lib/aws-logs';
 import { BucketPolicy } from 'aws-cdk-lib/aws-s3';
 import type { Bucket } from 'aws-cdk-lib/aws-s3';
 import type { Construct } from 'constructs';
@@ -35,7 +35,7 @@ export class S3DeliveryDestination extends DeliveryDestinationBase {
     const bucketPolicy = this.getOrCreateBucketPolicy(scope, props);
 
     const destinationNamePrefix = 'cdk-s3-dest-';
-    const deliveryDestination = new CfnDeliveryDestination(scope, 'S3DeliveryDestination', {
+    const deliveryDestination = new CfnDeliveryDestination(scope, 'CDKS3DeliveryDestination', {
       destinationResourceArn: props.s3Bucket.bucketArn,
       name: `${destinationNamePrefix}${Names.uniqueResourceName(props.s3Bucket, { maxLength: 60 - destinationNamePrefix.length })}`,
       deliveryDestinationType: props.destinationService,
@@ -46,19 +46,19 @@ export class S3DeliveryDestination extends DeliveryDestinationBase {
 
   getOrCreateBucketPolicy(stack: Construct, bucketProps: S3DestinationProps): BucketPolicy {
     const allConstructs = stack.node.findAll();
-    const bucketPolicies = allConstructs.filter(construct => CfnResource.isCfnResource(construct) && construct.cfnResourceType === 'AWS::S3::BucketPolicy') as BucketPolicy[];
-    const policiesForCurBucket = bucketPolicies.length > 0 ? bucketPolicies.filter(policy => policy.bucket.bucketName == bucketProps.s3Bucket.bucketName) : undefined;
+    const bucketPolicies = allConstructs.filter(construct => construct instanceof BucketPolicy) as BucketPolicy[];
+    const policiesForCurBucket = bucketPolicies.length > 0 ?
+      bucketPolicies.filter(policy => policy.bucket === bucketProps.s3Bucket) : undefined;
     let bucketPolicy: BucketPolicy;
     const statements = [];
-    if(policiesForCurBucket && policiesForCurBucket.length > 0) {
+    if (policiesForCurBucket && policiesForCurBucket.length > 0) {
       bucketPolicy = policiesForCurBucket[0];
     } else {
-      bucketPolicy = new BucketPolicy(stack, 'S3Policy', {
+      bucketPolicy = new BucketPolicy(stack, 'CDKS3DeliveryDestinationPolicy', {
         bucket: bucketProps.s3Bucket,
         document: new PolicyDocument(),
       });
     }
-    
     const bucketStatement = new PolicyStatement({
       effect: Effect.ALLOW,
       principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
@@ -106,7 +106,7 @@ export class FirehoseDeliveryDestination extends DeliveryDestinationBase {
 
     Tags.of(props.deliveryStream).add('LogDeliveryEnabled', 'true');
     const destinationNamePrefix = 'cdk-fh-dest-';
-    const deliveryDestination = new CfnDeliveryDestination(scope, 'FirehoseDeliveryDestination', {
+    const deliveryDestination = new CfnDeliveryDestination(scope, 'CDKFirehoseDeliveryDestination', {
       destinationResourceArn: props.deliveryStream.deliveryStreamArn,
       name: `${destinationNamePrefix}${Names.uniqueResourceName(props.deliveryStream, { maxLength: 60 - destinationNamePrefix.length })}`,
       deliveryDestinationType: props.destinationService,
@@ -120,21 +120,19 @@ export class LogsDeliveryDestination extends DeliveryDestinationBase {
   constructor(scope: Construct, id: string, props: LogsDestinationProps) {
     super(scope, id);
 
-    const logGroupPolicy = this.findOrCreateLogsResourcePolicy(scope, props.logGroup);
+    this.findOrCreateLogsResourcePolicy(props.logGroup);
 
     const destinationNamePrefix = 'cdk-cwl-dest-';
-    const deliveryDestination = new CfnDeliveryDestination(scope, 'CloudwatchDeliveryDestination', {
+    const deliveryDestination = new CfnDeliveryDestination(scope, 'CDKCloudwatchDeliveryDestination', {
       destinationResourceArn: props.logGroup.logGroupArn,
       name: `${destinationNamePrefix}${Names.uniqueResourceName(props.logGroup, { maxLength: 60 - destinationNamePrefix.length })}`,
       deliveryDestinationType: props.destinationService,
     });
-    deliveryDestination.node.addDependency(logGroupPolicy);
+    deliveryDestination.node.addDependency(props.logGroup);
     this.deliveryDestinationRef = deliveryDestination.deliveryDestinationRef;
   }
 
-  findOrCreateLogsResourcePolicy(stack: Construct, logGroup: LogGroup): ResourcePolicy {
-    const allConstructs = stack.node.findAll();
-    const resourcePolicies = allConstructs.filter(construct => CfnResource.isCfnResource(construct) && construct.cfnResourceType === 'AWS::Logs::ResourcePolicy') as ResourcePolicy[];
+  findOrCreateLogsResourcePolicy(logGroup: LogGroup) {
     const logGroupDeliveryStatement = new PolicyStatement({
       effect: Effect.ALLOW,
       principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
@@ -147,30 +145,21 @@ export class LogsDeliveryDestination extends DeliveryDestinationBase {
         ArnLike: {
           'aws:SourceArn': `arn:${Aws.PARTITION}:logs:${Stack.of(this).region}:${Stack.of(this).account}:*`,
         },
-      }
+      },
     });
 
-    if(resourcePolicies.length === 0) {
-      const logGroupPolicy = new ResourcePolicy(stack, 'CloudwatchDeliveryPolicy', {
-        resourcePolicyName: 'CloudFrontLogDeliveryPolicy',
-        policyStatements: [
-          logGroupDeliveryStatement,
-         ]
-      });
-      return logGroupPolicy;
-    }
-    resourcePolicies[0].document.addStatements(logGroupDeliveryStatement);
-    return resourcePolicies[0];
+    logGroup.addToResourcePolicy(logGroupDeliveryStatement);
   }
 }
 
-class XRayDeliveryDestination extends DeliveryDestinationBase {
+// remove export from this thing
+export class XRayDeliveryDestination extends DeliveryDestinationBase {
   public readonly deliveryDestinationRef: DeliveryDestinationReference;
   constructor(scope: Construct, id: string, props: DeliveryDestinationProps) {
     super(scope, id);
 
     const destinationNamePrefix = 'cdk-xray-dest-';
-    const deliveryDestination = new CfnDeliveryDestination(scope, 'XRayDeliveryDestination', {
+    const deliveryDestination = new CfnDeliveryDestination(scope, 'CDKXRayDeliveryDestination', {
       name: `${destinationNamePrefix}${Names.uniqueResourceName(scope, { maxLength: 60 - destinationNamePrefix.length })}`, // there is no resource for XRays
       deliveryDestinationType: props.destinationService,
     });
