@@ -3106,9 +3106,9 @@ function synthesizeBlockDeviceMappings(
       if (ebs) {
         const { iops, volumeType, throughput } = ebs;
 
-        if (throughput) {
-          const throughputRange = { Min: 125, Max: 1000 };
-          const { Min, Max } = throughputRange;
+      if (throughput) {
+        const throughputRange = { Min: 125, Max: 2000 };
+        const { Min, Max } = throughputRange;
 
           if (volumeType != EbsDeviceVolumeType.GP3) {
             throw new ValidationError(

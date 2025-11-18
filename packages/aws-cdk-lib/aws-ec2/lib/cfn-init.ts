@@ -411,7 +411,7 @@ function deepMerge(target?: Record<string, any>, src?: Record<string, any>) {
   }
 
   for (const [key, value] of Object.entries(src)) {
-    if (key === '__proto__' || key === 'constructor') {
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
       continue;
     }
 
