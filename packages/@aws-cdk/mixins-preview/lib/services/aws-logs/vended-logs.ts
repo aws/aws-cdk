@@ -152,7 +152,6 @@ export class LogsDeliveryDestination extends DeliveryDestinationBase {
   }
 }
 
-// remove export from this thing
 export class XRayDeliveryDestination extends DeliveryDestinationBase {
   public readonly deliveryDestinationRef: DeliveryDestinationReference;
   constructor(scope: Construct, id: string, props: DeliveryDestinationProps) {

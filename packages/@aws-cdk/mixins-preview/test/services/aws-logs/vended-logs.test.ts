@@ -1,10 +1,10 @@
-import { Stack } from "aws-cdk-lib";
-import { Bucket, BucketPolicy } from "aws-cdk-lib/aws-s3";
-import { FirehoseDeliveryDestination, LogsDeliveryDestination, S3DeliveryDestination } from "../../../lib/services/aws-logs/vended-logs";
-import { Match, Template } from "aws-cdk-lib/assertions";
-import { AccountRootPrincipal, Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
-import { DeliveryStream, S3Bucket } from "aws-cdk-lib/aws-kinesisfirehose";
-import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
+import { Stack } from 'aws-cdk-lib';
+import { Bucket, BucketPolicy } from 'aws-cdk-lib/aws-s3';
+import { FirehoseDeliveryDestination, LogsDeliveryDestination, S3DeliveryDestination } from '../../../lib/services/aws-logs/vended-logs';
+import { Match, Template } from 'aws-cdk-lib/assertions';
+import { AccountRootPrincipal, Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { DeliveryStream, S3Bucket } from 'aws-cdk-lib/aws-kinesisfirehose';
+import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 
 describe('S3 Delivery Destination', () => {
   test('creates an S3 delivery destination when given a bucket', () => {
@@ -22,75 +22,75 @@ describe('S3 Delivery Destination', () => {
       DestinationResourceArn: {
         'Fn::GetAtt': [
           'Destination920A3C57',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
-      Name: Match.stringLikeRegexp('cdk-s3-dest-.*')
+      Name: Match.stringLikeRegexp('cdk-s3-dest-.*'),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
       Bucket: {
-        Ref: "Destination920A3C57"
+        Ref: 'Destination920A3C57',
       },
       PolicyDocument: {
         Statement: [
           {
-            Action: "s3:PutObject",
+            Action: 's3:PutObject',
             Condition: {
               StringEquals: {
-                "s3:x-amz-acl": "bucket-owner-full-control",
-                "aws:SourceAccount": {
-                  "Ref": "AWS::AccountId"
-                }
+                's3:x-amz-acl': 'bucket-owner-full-control',
+                'aws:SourceAccount': {
+                  Ref: 'AWS::AccountId',
+                },
               },
               ArnLike: {
-                "aws:SourceArn": {
-                  "Fn::Join": [
-                    "",
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
                     [
-                      "arn:",
+                      'arn:',
                       {
-                        "Ref": "AWS::Partition"
+                        Ref: 'AWS::Partition',
                       },
-                      ":logs:",
+                      ':logs:',
                       {
-                        "Ref": "AWS::Region"
+                        Ref: 'AWS::Region',
                       },
-                      ":",
+                      ':',
                       {
-                        "Ref": "AWS::AccountId"
+                        Ref: 'AWS::AccountId',
                       },
-                      ":delivery-source:*"
-                    ]
-                  ]
-                }
-              } 
+                      ':delivery-source:*',
+                    ],
+                  ],
+                },
+              },
             },
-            Effect: "Allow",
+            Effect: 'Allow',
             Principal: {
-              Service: "delivery.logs.amazonaws.com"
+              Service: 'delivery.logs.amazonaws.com',
             },
             Resource: {
-              "Fn::Join": [
-                "",
+              'Fn::Join': [
+                '',
                 [
                   {
-                    "Fn::GetAtt": [
-                      "Destination920A3C57",
-                      "Arn"
-                    ]
+                    'Fn::GetAtt': [
+                      'Destination920A3C57',
+                      'Arn',
+                    ],
                   },
-                  "/AWSLogs/",
+                  '/AWSLogs/',
                   {
-                    "Ref": "AWS::AccountId"
+                    Ref: 'AWS::AccountId',
                   },
-                  "/*"
-                ]
-              ]
-            }
-          }
-          ]
-        }
+                  '/*',
+                ],
+              ],
+            },
+          },
+        ],
+      },
     });
 
     // Validate that DeliveryDestination depends on the S3 bucket policy
@@ -116,112 +116,112 @@ describe('S3 Delivery Destination', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
       Bucket: {
-        "Ref": "Destination920A3C57"
+        Ref: 'Destination920A3C57',
       },
       PolicyDocument: {
         Statement: [
           {
-            Action: "s3:PutObject",
+            Action: 's3:PutObject',
             Condition: {
               StringEquals: {
-                "s3:x-amz-acl": "bucket-owner-full-control",
-                "aws:SourceAccount": {
-                  "Ref": "AWS::AccountId"
-                }
+                's3:x-amz-acl': 'bucket-owner-full-control',
+                'aws:SourceAccount': {
+                  Ref: 'AWS::AccountId',
+                },
               },
               ArnLike: {
-                "aws:SourceArn": {
-                  "Fn::Join": [
-                    "",
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
                     [
-                      "arn:",
+                      'arn:',
                       {
-                        "Ref": "AWS::Partition"
+                        Ref: 'AWS::Partition',
                       },
-                      ":logs:",
+                      ':logs:',
                       {
-                        "Ref": "AWS::Region"
+                        Ref: 'AWS::Region',
                       },
-                      ":",
+                      ':',
                       {
-                        "Ref": "AWS::AccountId"
+                        Ref: 'AWS::AccountId',
                       },
-                      ":delivery-source:*"
-                    ]
-                  ]
-                }
-              }
+                      ':delivery-source:*',
+                    ],
+                  ],
+                },
+              },
             },
-            Effect: "Allow",
+            Effect: 'Allow',
             Principal: {
-                Service: "delivery.logs.amazonaws.com"
+              Service: 'delivery.logs.amazonaws.com',
             },
             Resource: {
-              "Fn::Join": [
-                "",
+              'Fn::Join': [
+                '',
                 [
                   {
-                    "Fn::GetAtt": [
-                      "Destination920A3C57",
-                      "Arn"
-                    ]
+                    'Fn::GetAtt': [
+                      'Destination920A3C57',
+                      'Arn',
+                    ],
                   },
-                  "/AWSLogs/",
+                  '/AWSLogs/',
                   {
-                    "Ref": "AWS::AccountId"
+                    Ref: 'AWS::AccountId',
                   },
-                  "/*"
-                ]
-              ]
-            }
+                  '/*',
+                ],
+              ],
+            },
           },
           {
             Action: [
-              "s3:GetBucketAcl",
-              "s3:ListBucket"
+              's3:GetBucketAcl',
+              's3:ListBucket',
             ],
             Condition: {
               StringEquals: {
-                "aws:SourceAccount": {
-                  "Ref": "AWS::AccountId"
-                }
+                'aws:SourceAccount': {
+                  Ref: 'AWS::AccountId',
+                },
               },
               ArnLike: {
-                "aws:SourceArn": {
-                  "Fn::Join": [
-                    "",
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
                     [
-                      "arn:",
+                      'arn:',
                       {
-                        "Ref": "AWS::Partition"
+                        Ref: 'AWS::Partition',
                       },
-                      ":logs:",
+                      ':logs:',
                       {
-                        "Ref": "AWS::Region"
+                        Ref: 'AWS::Region',
                       },
-                      ":",
+                      ':',
                       {
-                        "Ref": "AWS::AccountId"
+                        Ref: 'AWS::AccountId',
                       },
-                      ":*"
-                    ]
-                  ]
-                }
-              }
+                      ':*',
+                    ],
+                  ],
+                },
+              },
             },
-            Effect: "Allow",
+            Effect: 'Allow',
             Principal: {
-              Service: "delivery.logs.amazonaws.com"
+              Service: 'delivery.logs.amazonaws.com',
             },
             Resource: {
-              "Fn::GetAtt": [
-                "Destination920A3C57",
-                "Arn"
-              ]
-            }
-          }
-        ]
-      }
+              'Fn::GetAtt': [
+                'Destination920A3C57',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
     });
   });
 
@@ -237,8 +237,8 @@ describe('S3 Delivery Destination', () => {
           principals: [new AccountRootPrincipal()],
           actions: ['s3:GetObject'],
           resources: [bucket.arnForObjects('*')],
-        }),]
-      })
+        })],
+      }),
     });
 
     new S3DeliveryDestination(stack, 'S3Destination', {
@@ -270,45 +270,45 @@ describe('Cloudwatch Logs Delivery Destination', () => {
       DestinationResourceArn: {
         'Fn::GetAtt': [
           'LogGroupDelivery0EF9ECE4',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
-      Name: Match.stringLikeRegexp('cdk-cwl-dest-.*')
+      Name: Match.stringLikeRegexp('cdk-cwl-dest-.*'),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
       PolicyDocument: {
-        "Fn::Join": [
-          "",
+        'Fn::Join': [
+          '',
           [
-            "{\"Statement\":[{\"Action\":[\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Condition\":{\"StringEquals\":{\"aws:SourceAccount\":\"",
+            '{\'Statement\':[{\'Action\':[\'logs:CreateLogStream\',\'logs:PutLogEvents\'],\'Condition\':{\'StringEquals\':{\'aws:SourceAccount\':\'',
             {
-              "Ref": "AWS::AccountId"
+              Ref: 'AWS::AccountId',
             },
-            "\"},\"ArnLike\":{\"aws:SourceArn\":\"arn:",
+            '\'},\'ArnLike\':{\'aws:SourceArn\':\'arn:',
             {
-              "Ref": "AWS::Partition"
+              Ref: 'AWS::Partition',
             },
-            ":logs:",
+            ':logs:',
             {
-              "Ref": "AWS::Region"
+              Ref: 'AWS::Region',
             },
-            ":",
+            ':',
             {
-              "Ref": "AWS::AccountId"
+              Ref: 'AWS::AccountId',
             },
-            ":*\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"delivery.logs.amazonaws.com\"},\"Resource\":\"",
+            ':*\'}},\'Effect\':\'Allow\',\'Principal\':{\'Service\':\'delivery.logs.amazonaws.com\'},\'Resource\':\'',
             {
-              "Fn::GetAtt": [
-                "LogGroupDelivery0EF9ECE4",
-                "Arn"
-              ]
+              'Fn::GetAtt': [
+                'LogGroupDelivery0EF9ECE4',
+                'Arn',
+              ],
             },
-            ":log-stream:*\"}],\"Version\":\"2012-10-17\"}"
-          ]
-        ]
+            ':log-stream:*\'}],\'Version\':\'2012-10-17\'}',
+          ],
+        ],
       },
-      "PolicyName": "LogGroupDeliveryPolicy7F26860F"        
+      PolicyName: 'LogGroupDeliveryPolicy7F26860F',
     });
 
     // Validate that DeliveryDestination depends on the Cloudwatch resource policy
@@ -343,7 +343,7 @@ describe('Cloudwatch Logs Delivery Destination', () => {
     });
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 1);
-  })
+  });
 });
 
 describe('Firehose Stream Delivery Destination', () => {
@@ -379,17 +379,17 @@ describe('Firehose Stream Delivery Destination', () => {
       DestinationResourceArn: {
         'Fn::GetAtt': [
           'FirehoseEF5AC2A2',
-          'Arn'
-        ]
+          'Arn',
+        ],
       },
-      Name: Match.stringLikeRegexp('cdk-fh-dest-.*')
+      Name: Match.stringLikeRegexp('cdk-fh-dest-.*'),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
       Tags: Match.arrayWith([Match.objectLike({
-        'Key': 'LogDeliveryEnabled',
-        'Value': 'true'
+        Key: 'LogDeliveryEnabled',
+        Value: 'true',
       })]),
-    })
+    });
   });
 });
