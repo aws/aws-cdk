@@ -5,7 +5,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
 import { Construct } from 'constructs';
-import * as yaml from 'yaml';
+import { ImageBuilderData } from './imagebuilder-data';
 
 const WORKFLOW_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.Workflow');
 
@@ -145,7 +145,7 @@ export interface WorkflowAttributes {
 
   /**
    * The version of the workflow
-   * - x.x.x
+   *
    * @default x.x.x
    */
   readonly workflowVersion?: string;
@@ -308,7 +308,7 @@ export enum WorkflowType {
 /**
  * Helper class for referencing and uploading workflow data
  */
-export abstract class WorkflowData {
+export abstract class WorkflowData extends ImageBuilderData {
   /**
    * Uploads workflow data from a local file to S3 to use as the workflow data
    *
@@ -322,8 +322,8 @@ export abstract class WorkflowData {
     id: string,
     path: string,
     options: s3assets.AssetOptions = {},
-  ): WorkflowData {
-    const asset = new s3assets.Asset(scope, id, { ...options, path });
+  ): S3WorkflowData {
+    const asset = this.createAsset(scope, id, path, options);
     return new S3WorkflowDataFromAsset(asset);
   }
 
@@ -343,7 +343,7 @@ export abstract class WorkflowData {
    * @param data An inline JSON object representing the workflow data
    */
   public static fromJsonObject(data: { [key: string]: any }): WorkflowData {
-    const inlineData = yaml.stringify(data, { indent: 2 });
+    const inlineData = this.createInlineYaml(data);
     return new InlineWorkflowData(inlineData);
   }
 
@@ -354,20 +354,6 @@ export abstract class WorkflowData {
    */
   public static fromInline(data: string): WorkflowData {
     return new InlineWorkflowData(data);
-  }
-
-  /**
-   * Indicates that the provided workflow data is an S3 reference
-   */
-  abstract readonly isS3Reference: boolean;
-
-  /**
-   * The resulting inline string or S3 URL which references the workflow data
-   */
-  public readonly value: string;
-
-  protected constructor(value: string) {
-    this.value = value;
   }
 }
 
@@ -390,7 +376,7 @@ export abstract class S3WorkflowData extends WorkflowData {
   /**
    * Grant put permissions to the given grantee for the workflow data in S3
    *
-   * @param grantee - The principal
+   * @param grantee The principal
    */
   public grantPut(grantee: iam.IGrantable): iam.Grant {
     return this.bucket.grantPut(grantee, this.key);
@@ -399,7 +385,7 @@ export abstract class S3WorkflowData extends WorkflowData {
   /**
    * Grant read permissions to the given grantee for the workflow data in S3
    *
-   * @param grantee - The principal
+   * @param grantee The principal
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     return this.bucket.grantRead(grantee, this.key);

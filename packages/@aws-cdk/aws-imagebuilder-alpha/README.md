@@ -222,7 +222,7 @@ EC2 Image Builder supports AWS-managed components for common tasks, AWS Marketpl
 that you create. Components run during specific workflow phases: build and validate phases during the build stage, and
 test phase during the test stage.
 
-#### Basic Usage
+#### Basic Component Usage
 
 Create a component with the required properties: platform and component data.
 
@@ -659,7 +659,7 @@ containerDistributionConfiguration.addContainerDistributions({
 
 Workflows define the sequence of steps that Image Builder performs during image creation. There are three workflow types: BUILD (image building), TEST (testing images), and DISTRIBUTION (distributing container images).
 
-#### Basic Usage
+#### Basic Workflow Usage
 
 Create a workflow with the required properties: workflow type and workflow data.
 
