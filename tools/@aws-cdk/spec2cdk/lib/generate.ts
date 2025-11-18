@@ -202,6 +202,7 @@ async function generator<Builder extends LBC = typeof AwsCdkLibBuilder>(
         destinationSubmodule: moduleName,
         nameSuffix: req.suffix,
         deprecated: req.deprecated,
+        grantsConfig: readGrantsConfig(moduleName, options.outputPath),
       });
 
       servicesPerModule[moduleName] ??= [];
@@ -245,4 +246,16 @@ function mergeObjects<T>(all: T, res: T) {
     ...all,
     ...res,
   };
+}
+
+function readGrantsConfig(moduleName: string, rootDir: string): string | undefined {
+  const filename = `${moduleName}/grants.json`;
+  try {
+    return fs.readFileSync(path.join(rootDir, filename), 'utf-8');
+  } catch (e: any) {
+    if (e.code === 'ENOENT') {
+      return undefined;
+    }
+    throw e;
+  }
 }
