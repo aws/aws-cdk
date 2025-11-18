@@ -21206,6 +21206,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'policyFragment': '*',
             'principalAccount': '*'
           }
+        },
+        {
+          'delegatedZoneNames': '*'
         }
       ],
       'enableDnssec': [
@@ -29528,6 +29531,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'stack': '*',
       'applyRemovalPolicy': '*',
       'node': '*',
+      'with': '*',
       'env': {
         'account': '*',
         'region': '*'
