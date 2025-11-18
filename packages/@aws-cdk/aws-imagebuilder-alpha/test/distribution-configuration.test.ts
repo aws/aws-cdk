@@ -380,6 +380,38 @@ describe('Distribution Configuration', () => {
     });
   });
 
+  test('does not throw a validation error when empty AMI distribution is provided in the same region as a container distribution', () => {
+    const distributionConfiguration = new DistributionConfiguration(stack, 'DistributionConfiguration');
+    distributionConfiguration.addAmiDistributions({});
+    distributionConfiguration.addContainerDistributions({
+      containerRepository: Repository.fromEcr(
+        ecr.Repository.fromRepositoryName(stack, 'TargetRepository', 'target-repository'),
+      ),
+    });
+
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        DistributionConfiguration26801BDF: Match.objectEquals({
+          Type: 'AWS::ImageBuilder::DistributionConfiguration',
+          Properties: {
+            Name: 'stack-distributionconfiguration-15e7372b',
+            Distributions: [
+              {
+                Region: 'us-east-1',
+                ContainerDistributionConfiguration: {
+                  TargetRepository: {
+                    RepositoryName: 'target-repository',
+                    Service: 'ECR',
+                  },
+                },
+              },
+            ],
+          },
+        }),
+      },
+    });
+  });
+
   test('grants read access to IAM roles', () => {
     const distributionConfiguration = new DistributionConfiguration(stack, 'DistributionConfiguration');
     distributionConfiguration.addAmiDistributions({ amiName: 'imagebuilder-{{ imagebuilder:buildDate }}' });
@@ -526,6 +558,17 @@ describe('Distribution Configuration', () => {
         ),
       });
     }).toThrow(cdk.ValidationError);
+  });
+
+  test('throws a validation error when no properties are defined on a distribution', () => {
+    const distributionConfiguration = new DistributionConfiguration(stack, 'DistributionConfiguration');
+    distributionConfiguration.addAmiDistributions({ region: 'us-east-1' });
+    distributionConfiguration.addAmiDistributions({
+      region: 'us-west-2',
+      amiName: 'imagebuilder-{{ imagebuilder:buildDate }}',
+    });
+
+    expect(() => Template.fromStack(stack)).toThrow(cdk.ValidationError);
   });
 
   test('throws a validation error when providing a max parallel launch below 6 for fast launch configurations', () => {

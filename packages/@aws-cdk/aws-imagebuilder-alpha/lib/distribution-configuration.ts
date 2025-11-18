@@ -617,7 +617,19 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
       };
     }
 
-    return Object.values(distributionByRegion);
+    const distributions = Object.values(distributionByRegion);
+
+    distributions.forEach((distribution) => {
+      const { region: _, ...distributionWithoutRegion } = distribution;
+      if (!Object.entries(distributionWithoutRegion).some(([__, value]) => value !== undefined)) {
+        throw new cdk.ValidationError(
+          `at least one distribution property must be set for region "${distribution.region}"`,
+          this,
+        );
+      }
+    });
+
+    return distributions;
   }
 
   private buildAmiDistribution(amiDistribution: AmiDistribution): object | undefined {
