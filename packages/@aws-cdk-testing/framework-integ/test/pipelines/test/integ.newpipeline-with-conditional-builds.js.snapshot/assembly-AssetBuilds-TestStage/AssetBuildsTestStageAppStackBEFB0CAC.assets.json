@@ -32,7 +32,7 @@
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
       "displayName": "TestStage-AppStack Template",
       "source": {
-        "path": "PipelineStackWithConditionalAssetBuildsTestStageAppStackAF9E0CAB.template.json",
+        "path": "AssetBuildsTestStageAppStackBEFB0CAC.template.json",
         "packaging": "file"
       },
       "destinations": {

@@ -8,7 +8,7 @@
     },
     "build": {
       "commands": [
-        "ASSET_MANIFEST='assembly-PipelineStackWithConditionalAssetBuilds-TestStage/PipelineStackWithConditionalAssetBuildsTestStageAppStackAF9E0CAB.assets.json'",
+        "ASSET_MANIFEST='assembly-AssetBuilds-TestStage/AssetBuildsTestStageAppStackBEFB0CAC.assets.json'",
         "ASSET_ID='3e4669bbf32c538f2913b383b0293fed1dfd522feed18cf1e062d7d2c4d8e45a'",
         "DEST_ID='current_account-current_region-773f660b'",
         "",

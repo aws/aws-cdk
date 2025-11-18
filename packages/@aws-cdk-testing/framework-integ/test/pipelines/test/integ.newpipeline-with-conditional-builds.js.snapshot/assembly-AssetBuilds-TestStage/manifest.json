@@ -1,19 +1,19 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "PipelineStackWithConditionalAssetBuildsTestStageAppStackAF9E0CAB.assets": {
+    "AssetBuildsTestStageAppStackBEFB0CAC.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "PipelineStackWithConditionalAssetBuildsTestStageAppStackAF9E0CAB.assets.json",
+        "file": "AssetBuildsTestStageAppStackBEFB0CAC.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "PipelineStackWithConditionalAssetBuildsTestStageAppStackAF9E0CAB": {
+    "AssetBuildsTestStageAppStackBEFB0CAC": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "PipelineStackWithConditionalAssetBuildsTestStageAppStackAF9E0CAB.template.json",
+        "templateFile": "AssetBuildsTestStageAppStackBEFB0CAC.template.json",
         "terminationProtection": false,
         "validateOnSynth": true,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -22,7 +22,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "PipelineStackWithConditionalAssetBuildsTestStageAppStackAF9E0CAB.assets"
+          "AssetBuildsTestStageAppStackBEFB0CAC.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -32,23 +32,23 @@
         "stackName": "TestStage-AppStack"
       },
       "dependencies": [
-        "PipelineStackWithConditionalAssetBuildsTestStageAppStackAF9E0CAB.assets"
+        "AssetBuildsTestStageAppStackBEFB0CAC.assets"
       ],
       "metadata": {
-        "/PipelineStackWithConditionalAssetBuilds/TestStage/AppStack/BootstrapVersion": [
+        "/AssetBuilds/TestStage/AppStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/PipelineStackWithConditionalAssetBuilds/TestStage/AppStack/CheckBootstrapVersion": [
+        "/AssetBuilds/TestStage/AppStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "PipelineStackWithConditionalAssetBuilds/TestStage/AppStack"
+      "displayName": "AssetBuilds/TestStage/AppStack"
     },
     "aws-cdk-lib/feature-flag-report": {
       "type": "cdk:feature-flag-report",
@@ -56,6 +56,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -75,6 +76,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
