@@ -13,3 +13,4 @@ export * from './transformer';
 
 // AWS::Logs CloudFormation Resources:
 export * from './logs.generated';
+export * from './logs-grants.generated';
