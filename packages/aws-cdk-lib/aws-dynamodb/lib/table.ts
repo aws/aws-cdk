@@ -38,6 +38,10 @@ const RANGE_KEY_TYPE = 'RANGE';
 // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
 const MAX_LOCAL_SECONDARY_INDEX_COUNT = 5;
 
+/**
+ * A DynamoDB table that can be replicated to additional regions and
+ * can also have indexes.
+ */
 export interface IIndexableRegionalTable extends ITableRef {
   /**
    * Additional regions other than the main one that this table is replicated to
@@ -674,7 +678,7 @@ export abstract class TableBase extends Resource implements ITable, IIndexableRe
    * Additional regions other than the main one that this table is replicated to
    *
    */
-  public abstract readonly regions: string[];
+  public abstract readonly regions?: string[];
 
   /**
    * @deprecated This member is still filled but it is not read
@@ -1211,7 +1215,7 @@ export class Table extends TableBase {
 
   private readonly globalReplicaCustomResources = new Array<CustomResource>();
 
-  public readonly regions = new Array<string>();
+  public readonly regions? = new Array<string>();
 
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id, {
@@ -1834,7 +1838,7 @@ export class Table extends TableBase {
       }
 
       // Save regional arns for grantXxx() methods
-      this.regions.push(region);
+      this.regions?.push(region);
       this.regionalArns.push(stack.formatArn({
         region,
         service: 'dynamodb',
