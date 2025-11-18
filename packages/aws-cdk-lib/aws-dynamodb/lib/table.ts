@@ -39,28 +39,6 @@ const RANGE_KEY_TYPE = 'RANGE';
 const MAX_LOCAL_SECONDARY_INDEX_COUNT = 5;
 
 /**
- * A DynamoDB table that can be replicated to additional regions and
- * can also have indexes.
- */
-export interface IIndexableRegionalTable extends ITableRef {
-  /**
-   * Additional regions other than the main one that this table is replicated to
-   *
-   * @default no regions
-   */
-  readonly regions?: string[];
-
-  /**
-   * Whether this table has indexes
-   *
-   * If so, permissions are granted on all table indexes as well.
-   *
-   * @default false
-   */
-  readonly hasIndex: boolean;
-}
-
-/**
  * Represents the table schema attributes.
  */
 export interface SchemaOptions {
@@ -647,7 +625,7 @@ export interface TableAttributes {
   readonly grantIndexPermissions?: boolean;
 }
 
-export abstract class TableBase extends Resource implements ITable, IIndexableRegionalTable, iam.IResourceWithPolicy, IEncryptedResource {
+export abstract class TableBase extends Resource implements ITable, ITableRef, iam.IResourceWithPolicy, IEncryptedResource {
   /**
    * @attribute
    */
@@ -702,7 +680,13 @@ export abstract class TableBase extends Resource implements ITable, IIndexableRe
    * Grant a predefined set of permissions on this Table.
    */
   public get grants(): TableGrants {
-    return TableGrants._fromTable(this);
+    return new TableGrants({
+      table: this,
+      encryptedResource: this,
+      policyResource: this,
+      regions: this.regions,
+      hasIndex: this.hasIndex,
+    });
   }
 
   /**
@@ -1052,7 +1036,7 @@ export abstract class TableBase extends Resource implements ITable, IIndexableRe
     return metrics;
   }
 
-  public abstract get hasIndex(): boolean;
+  protected abstract get hasIndex(): boolean;
 
   private cannedMetric(
     fn: (dims: { TableName: string }) => cloudwatch.MetricProps,
@@ -1319,10 +1303,6 @@ export class Table extends TableBase {
     }
 
     this.node.addValidation({ validate: () => this.validateTable() });
-  }
-
-  public get grants(): TableGrants {
-    return TableGrants._fromTable(this);
   }
 
   /**
@@ -1879,7 +1859,7 @@ export class Table extends TableBase {
   /**
    * Whether this table has indexes
    */
-  public get hasIndex(): boolean {
+  protected get hasIndex(): boolean {
     return this.globalSecondaryIndexes.length + this.localSecondaryIndexes.length > 0;
   }
 

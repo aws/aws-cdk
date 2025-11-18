@@ -1,13 +1,12 @@
 import { ITableRef } from './dynamodb.generated';
 import * as perms from './perms';
-import { IIndexableRegionalTable } from './table';
 import * as iam from '../../aws-iam';
 import { Stack } from '../../core';
 
 /**
  * Construction properties for TableGrants
  */
-interface TableGrantsProps {
+export interface TableGrantsProps {
   /**
    * The table to grant permissions on
    */
@@ -29,8 +28,18 @@ interface TableGrantsProps {
    */
   readonly hasIndex?: boolean;
 
+  /**
+   * The encrypted resource on which actions will be allowed
+   *
+   * @default - No permission is added to the KMS key, even if it exists
+   */
   readonly encryptedResource?: iam.IEncryptedResource;
 
+  /**
+   * The resource with policy on which actions will be allowed
+   *
+   * @default - No resource policy is created
+   */
   readonly policyResource?: iam.IResourceWithPolicyV2;
 }
 
@@ -38,27 +47,12 @@ interface TableGrantsProps {
  * A set of permissions to grant on a Table
  */
 export class TableGrants {
-  /**
-   * Creates grants for a Table
-   *
-   * @internal
-   */
-  public static _fromTable(table: IIndexableRegionalTable): TableGrants {
-    return new TableGrants({
-      table,
-      encryptedResource: (iam.GrantableResources.isEncryptedResource(table) ? table : undefined),
-      policyResource: (iam.GrantableResources.isResourceWithPolicy(table) ? table : undefined),
-      regions: table.regions,
-      hasIndex: table.hasIndex,
-    });
-  }
-
   private readonly table: ITableRef;
   private readonly arns: string[] = [];
   private readonly encryptedResource?: iam.IEncryptedResource;
   private readonly policyResource?: iam.IResourceWithPolicyV2;
 
-  private constructor(props: TableGrantsProps) {
+  constructor(props: TableGrantsProps) {
     this.table = props.table;
     this.encryptedResource = props.encryptedResource;
     this.policyResource = props.policyResource;
