@@ -42,8 +42,9 @@ export interface IIndexableRegionalTable extends ITableRef {
   /**
    * Additional regions other than the main one that this table is replicated to
    *
+   * @default no regions
    */
-  readonly regions: string[];
+  readonly regions?: string[];
 
   /**
    * Whether this table has indexes

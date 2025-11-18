@@ -18,7 +18,7 @@ interface TableGrantsProps {
    *
    * @default - No regions
    */
-  readonly regions: string[];
+  readonly regions?: string[];
 
   /**
    * Whether this table has indexes
