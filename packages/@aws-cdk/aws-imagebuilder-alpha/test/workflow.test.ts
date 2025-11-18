@@ -9,6 +9,8 @@ import {
   Workflow,
   WorkflowAction,
   WorkflowData,
+  WorkflowOnFailure,
+  WorkflowParameterType,
   WorkflowParameterValue,
   WorkflowSchemaVersion,
   WorkflowType,
@@ -131,10 +133,10 @@ describe('Workflow', () => {
 
   test('with all parameters', () => {
     const workflow = new Workflow(stack, 'Workflow', {
-      workflowName: 'test-workflow',
+      workflowName: 'build-workflow',
       workflowVersion: '1.0.0',
       workflowType: WorkflowType.BUILD,
-      description: 'This is a test workflow',
+      description: 'This is a build workflow',
       changeDescription: 'This is a change description',
       kmsKey: kms.Key.fromKeyArn(
         stack,
@@ -145,28 +147,36 @@ describe('Workflow', () => {
       data: WorkflowData.fromJsonObject({
         name: 'build-image',
         description: 'Workflow to build an AMI',
-        schemaVersion: '1.0',
+        schemaVersion: WorkflowSchemaVersion.V1_0,
+        parameters: [
+          {
+            name: 'snsTopicArn',
+            description: 'SNS topic to publish waiting event to',
+            type: WorkflowParameterType.STRING,
+            default: 'none',
+          },
+        ],
         steps: [
           {
             name: 'LaunchBuildInstance',
-            action: 'LaunchInstance',
-            onFailure: 'Abort',
+            action: WorkflowAction.LAUNCH_INSTANCE,
+            onFailure: WorkflowOnFailure.ABORT,
             inputs: {
               waitFor: 'ssmAgent',
             },
           },
           {
             name: 'ApplyBuildComponents',
-            action: 'ExecuteComponents',
-            onFailure: 'Abort',
+            action: WorkflowAction.EXECUTE_COMPONENTS,
+            onFailure: WorkflowOnFailure.ABORT,
             inputs: {
               'instanceId.$': '$.stepOutputs.LaunchBuildInstance.instanceId',
             },
           },
           {
             name: 'InventoryCollection',
-            action: 'CollectImageMetadata',
-            onFailure: 'Abort',
+            action: WorkflowAction.COLLECT_IMAGE_METADATA,
+            onFailure: WorkflowOnFailure.ABORT,
             if: {
               and: [
                 {
@@ -185,8 +195,8 @@ describe('Workflow', () => {
           },
           {
             name: 'RunSanitizeScript',
-            action: 'SanitizeInstance',
-            onFailure: 'Abort',
+            action: WorkflowAction.SANITIZE_INSTANCE,
+            onFailure: WorkflowOnFailure.ABORT,
             if: {
               and: [
                 {
@@ -207,8 +217,8 @@ describe('Workflow', () => {
           },
           {
             name: 'RunSysPrepScript',
-            action: 'RunSysPrep',
-            onFailure: 'Abort',
+            action: WorkflowAction.RUN_SYS_PREP,
+            onFailure: WorkflowOnFailure.ABORT,
             if: {
               and: [
                 {
@@ -227,8 +237,8 @@ describe('Workflow', () => {
           },
           {
             name: 'CreateOutputAMI',
-            action: 'CreateImage',
-            onFailure: 'Abort',
+            action: WorkflowAction.CREATE_IMAGE,
+            onFailure: WorkflowOnFailure.ABORT,
             if: {
               stringEquals: 'AMI',
               value: '$.imagebuilder.imageType',
@@ -238,9 +248,17 @@ describe('Workflow', () => {
             },
           },
           {
+            name: 'WaitForApproval',
+            action: WorkflowAction.WAIT_FOR_ACTION,
+            onFailure: WorkflowOnFailure.ABORT,
+            inputs: {
+              'snsTopicArn.$': '$.parameters.snsTopicArn',
+            },
+          },
+          {
             name: 'TerminateBuildInstance',
-            action: 'TerminateInstance',
-            onFailure: 'Continue',
+            action: WorkflowAction.TERMINATE_INSTANCE,
+            onFailure: WorkflowOnFailure.CONTINUE,
             inputs: {
               'instanceId.$': '$.stepOutputs.LaunchBuildInstance.instanceId',
             },
@@ -263,10 +281,10 @@ describe('Workflow', () => {
         Workflow193EF7C1: Match.objectEquals({
           Type: 'AWS::ImageBuilder::Workflow',
           Properties: {
-            Name: 'test-workflow',
+            Name: 'build-workflow',
             Version: '1.0.0',
             Type: 'BUILD',
-            Description: 'This is a test workflow',
+            Description: 'This is a build workflow',
             ChangeDescription: 'This is a change description',
             KmsKeyId: {
               'Fn::Join': [
@@ -282,29 +300,80 @@ describe('Workflow', () => {
               Environment: 'test',
               Project: 'imagebuilder',
             },
-            Data: `name: test-workflow
+            Data: `name: build-image
+description: Workflow to build an AMI
 schemaVersion: "1.0"
-description: Test workflow for building images
 parameters:
-  - name: instanceType
+  - name: snsTopicArn
+    description: SNS topic to publish waiting event to
     type: string
-    defaultValue: t3.medium
-    description: Instance type for the build
+    default: none
 steps:
-  - name: launch-instance
+  - name: LaunchBuildInstance
     action: LaunchInstance
     onFailure: Abort
     inputs:
-      instanceType: "{{ instanceType }}"
-  - name: execute-components
+      waitFor: ssmAgent
+  - name: ApplyBuildComponents
     action: ExecuteComponents
     onFailure: Abort
-  - name: create-image
+    inputs:
+      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId
+  - name: InventoryCollection
+    action: CollectImageMetadata
+    onFailure: Abort
+    if:
+      and:
+        - stringEquals: AMI
+          value: $.imagebuilder.imageType
+        - booleanEquals: true
+          value: $.imagebuilder.collectImageMetadata
+    inputs:
+      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId
+  - name: RunSanitizeScript
+    action: SanitizeInstance
+    onFailure: Abort
+    if:
+      and:
+        - stringEquals: AMI
+          value: $.imagebuilder.imageType
+        - not:
+            stringEquals: Windows
+            value: $.imagebuilder.platform
+    inputs:
+      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId
+  - name: RunSysPrepScript
+    action: RunSysPrep
+    onFailure: Abort
+    if:
+      and:
+        - stringEquals: AMI
+          value: $.imagebuilder.imageType
+        - stringEquals: Windows
+          value: $.imagebuilder.platform
+    inputs:
+      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId
+  - name: CreateOutputAMI
     action: CreateImage
     onFailure: Abort
-  - name: terminate-instance
+    if:
+      stringEquals: AMI
+      value: $.imagebuilder.imageType
+    inputs:
+      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId
+  - name: WaitForApproval
+    action: WaitForAction
+    onFailure: Abort
+    inputs:
+      snsTopicArn.$: $.parameters.snsTopicArn
+  - name: TerminateBuildInstance
     action: TerminateInstance
     onFailure: Continue
+    inputs:
+      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId
+outputs:
+  - name: ImageId
+    value: $.stepOutputs.CreateOutputAMI.imageId
 `,
           },
         }),

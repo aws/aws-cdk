@@ -5,7 +5,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
 import { Construct } from 'constructs';
-import { ImageBuilderData } from './imagebuilder-data';
+import * as yaml from 'yaml';
 
 const WORKFLOW_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.Workflow');
 
@@ -198,6 +198,12 @@ export enum WorkflowAction {
   EXECUTE_COMPONENTS = 'ExecuteComponents',
 
   /**
+   * The ExecuteStateMachine action executes a the state machine provided and waits for completion as part of the
+   * workflow
+   */
+  EXECUTE_STATE_MACHINE = 'ExecuteStateMachine',
+
+  /**
    * The LaunchInstance action launches an instance using the settings from your recipe and infrastructure configuration
    * resources
    */
@@ -233,6 +239,11 @@ export enum WorkflowAction {
    * imagebuilder:SendWorkflowStepAction API
    */
   WAIT_FOR_ACTION = 'WaitForAction',
+
+  /**
+   * The WaitForSSMAgent action waits for the given instance to have connectivity with SSM before proceeding
+   */
+  WAIT_FOR_SSM_AGENT = 'WaitForSSMAgent',
 }
 
 /**
@@ -308,7 +319,7 @@ export enum WorkflowType {
 /**
  * Helper class for referencing and uploading workflow data
  */
-export abstract class WorkflowData extends ImageBuilderData {
+export abstract class WorkflowData {
   /**
    * Uploads workflow data from a local file to S3 to use as the workflow data
    *
@@ -323,7 +334,7 @@ export abstract class WorkflowData extends ImageBuilderData {
     path: string,
     options: s3assets.AssetOptions = {},
   ): S3WorkflowData {
-    const asset = this.createAsset(scope, id, path, options);
+    const asset = new s3assets.Asset(scope, id, { ...options, path });
     return new S3WorkflowDataFromAsset(asset);
   }
 
@@ -343,7 +354,7 @@ export abstract class WorkflowData extends ImageBuilderData {
    * @param data An inline JSON object representing the workflow data
    */
   public static fromJsonObject(data: { [key: string]: any }): WorkflowData {
-    const inlineData = this.createInlineYaml(data);
+    const inlineData = yaml.stringify(data, { indent: 2 });
     return new InlineWorkflowData(inlineData);
   }
 
@@ -354,6 +365,20 @@ export abstract class WorkflowData extends ImageBuilderData {
    */
   public static fromInline(data: string): WorkflowData {
     return new InlineWorkflowData(data);
+  }
+
+  /**
+   * Indicates that the provided workflow data is an S3 reference
+   */
+  abstract readonly isS3Reference: boolean;
+
+  /**
+   * The resulting inline string or S3 URL which references the workflow data
+   */
+  public readonly value: string;
+
+  protected constructor(value: string) {
+    this.value = value;
   }
 }
 

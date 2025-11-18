@@ -40,7 +40,7 @@
    "Type": "AWS::ImageBuilder::Workflow",
    "Properties": {
     "ChangeDescription": "This is a change description",
-    "Data": "name: build-image\ndescription: Workflow to build an AMI\nschemaVersion: \"1.0\"\nsteps:\n  - name: LaunchBuildInstance\n    action: LaunchInstance\n    onFailure: Abort\n    inputs:\n      waitFor: ssmAgent\n  - name: ApplyBuildComponents\n    action: ExecuteComponents\n    onFailure: Abort\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: InventoryCollection\n    action: CollectImageMetadata\n    onFailure: Abort\n    if:\n      and:\n        - stringEquals: AMI\n          value: $.imagebuilder.imageType\n        - booleanEquals: true\n          value: $.imagebuilder.collectImageMetadata\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: RunSanitizeScript\n    action: SanitizeInstance\n    onFailure: Abort\n    if:\n      and:\n        - stringEquals: AMI\n          value: $.imagebuilder.imageType\n        - not:\n            stringEquals: Windows\n            value: $.imagebuilder.platform\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: RunSysPrepScript\n    action: RunSysPrep\n    onFailure: Abort\n    if:\n      and:\n        - stringEquals: AMI\n          value: $.imagebuilder.imageType\n        - stringEquals: Windows\n          value: $.imagebuilder.platform\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: CreateOutputAMI\n    action: CreateImage\n    onFailure: Abort\n    if:\n      stringEquals: AMI\n      value: $.imagebuilder.imageType\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: TerminateBuildInstance\n    action: TerminateInstance\n    onFailure: Continue\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\noutputs:\n  - name: ImageId\n    value: $.stepOutputs.CreateOutputAMI.imageId\n",
+    "Data": "name: build-image\ndescription: Workflow to build an AMI\nschemaVersion: \"1.0\"\nparameters:\n  - name: snsTopicArn\n    type: string\nsteps:\n  - name: LaunchBuildInstance\n    action: LaunchInstance\n    onFailure: Abort\n    inputs:\n      waitFor: ssmAgent\n  - name: ApplyBuildComponents\n    action: ExecuteComponents\n    onFailure: Abort\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: InventoryCollection\n    action: CollectImageMetadata\n    onFailure: Abort\n    if:\n      and:\n        - stringEquals: AMI\n          value: $.imagebuilder.imageType\n        - booleanEquals: true\n          value: $.imagebuilder.collectImageMetadata\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: RunSanitizeScript\n    action: SanitizeInstance\n    onFailure: Abort\n    if:\n      and:\n        - stringEquals: AMI\n          value: $.imagebuilder.imageType\n        - not:\n            stringEquals: Windows\n            value: $.imagebuilder.platform\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: RunSysPrepScript\n    action: RunSysPrep\n    onFailure: Abort\n    if:\n      and:\n        - stringEquals: AMI\n          value: $.imagebuilder.imageType\n        - stringEquals: Windows\n          value: $.imagebuilder.platform\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: CreateOutputAMI\n    action: CreateImage\n    onFailure: Abort\n    if:\n      stringEquals: AMI\n      value: $.imagebuilder.imageType\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: WaitForApproval\n    action: WaitForAction\n    onFailure: Abort\n    inputs:\n      snsTopicArn.$: $.parameters.snsTopicArn\n  - name: TerminateBuildInstance\n    action: TerminateInstance\n    onFailure: Continue\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\noutputs:\n  - name: ImageId\n    value: $.stepOutputs.CreateOutputAMI.imageId\n",
     "Description": "This is a test workflow",
     "KmsKeyId": {
      "Fn::GetAtt": [
@@ -54,38 +54,6 @@
      "Environment": "Test"
     },
     "Type": "BUILD",
-    "Version": "1.0.0"
-   }
-  },
-  "S3AssetWorkflow5387EDDC": {
-   "Type": "AWS::ImageBuilder::Workflow",
-   "Properties": {
-    "ChangeDescription": "This is a change description",
-    "Description": "This is a test workflow",
-    "KmsKeyId": {
-     "Fn::GetAtt": [
-      "WorkflowEncryptionKey173B2605",
-      "Arn"
-     ]
-    },
-    "Name": "aws-cdk-imagebuilder-workflow-all-parameters-s3-asset-workflow",
-    "Tags": {
-     "Application": "ImageBuilder",
-     "Environment": "Test"
-    },
-    "Type": "TEST",
-    "Uri": {
-     "Fn::Join": [
-      "",
-      [
-       "s3://",
-       {
-        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-       },
-       "/6c2589532cc1551b2029f968e301fcbfc599120cb34cc72f8d59321b025ef594.yaml"
-      ]
-     ]
-    },
     "Version": "1.0.0"
    }
   }

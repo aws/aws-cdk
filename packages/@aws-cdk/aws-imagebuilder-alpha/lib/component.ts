@@ -6,7 +6,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
-import { ImageBuilderData } from './imagebuilder-data';
+import * as yaml from 'yaml';
 import { OSVersion, Platform } from './os-version';
 
 const COMPONENT_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.Component');
@@ -700,7 +700,7 @@ export class ComponentStepIfCondition {
 /**
  * Helper class for referencing and uploading component data
  */
-export abstract class ComponentData extends ImageBuilderData {
+export abstract class ComponentData {
   /**
    * Uploads component data from a local file to S3 to use as the component data
    *
@@ -715,7 +715,7 @@ export abstract class ComponentData extends ImageBuilderData {
     path: string,
     options: s3assets.AssetOptions = {},
   ): S3ComponentData {
-    const asset = this.createAsset(scope, id, path, options);
+    const asset = new s3assets.Asset(scope, id, { ...options, path });
     return new S3ComponentDataFromAsset(asset);
   }
 
@@ -735,7 +735,7 @@ export abstract class ComponentData extends ImageBuilderData {
    * @param data An inline JSON object representing the component data
    */
   public static fromJsonObject(data: { [key: string]: any }): ComponentData {
-    const inlineData = this.createInlineYaml(data);
+    const inlineData = yaml.stringify(data, { indent: 2 });
     return new InlineComponentData(inlineData);
   }
 
@@ -781,6 +781,20 @@ export abstract class ComponentData extends ImageBuilderData {
   public static fromInline(data: string): ComponentData {
     return new InlineComponentData(data);
   }
+
+  /**
+   * Indicates that the provided component data is an S3 reference
+   */
+  abstract readonly isS3Reference: boolean;
+
+  /**
+   * The resulting inline string or S3 URL which references the component data
+   */
+  public readonly value: string;
+
+  protected constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -802,7 +816,7 @@ export abstract class S3ComponentData extends ComponentData {
   /**
    * Grant put permissions to the given grantee for the component data in S3
    *
-   * @param grantee - The principal
+   * @param grantee The principal
    */
   public grantPut(grantee: iam.IGrantable): iam.Grant {
     return this.bucket.grantPut(grantee, this.key);
@@ -811,7 +825,7 @@ export abstract class S3ComponentData extends ComponentData {
   /**
    * Grant read permissions to the given grantee for the component data in S3
    *
-   * @param grantee - The principal
+   * @param grantee The principal
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     return this.bucket.grantRead(grantee, this.key);
