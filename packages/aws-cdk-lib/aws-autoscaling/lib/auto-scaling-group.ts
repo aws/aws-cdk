@@ -1,4 +1,3 @@
-
 import { Construct } from 'constructs';
 import { AutoScalingGroupRequireImdsv2Aspect } from './aspects';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
@@ -2610,7 +2609,7 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
       const { iops, volumeType, throughput } = ebs;
 
       if (throughput) {
-        const throughputRange = { Min: 125, Max: 1000 };
+        const throughputRange = { Min: 125, Max: 2000 };
         const { Min, Max } = throughputRange;
 
         if (volumeType != EbsDeviceVolumeType.GP3) {
