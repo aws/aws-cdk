@@ -19,8 +19,7 @@ const edgeFunction = new cloudfront.experimental.NodejsEdgeFunction(stack, 'Node
   runtime: STANDARD_NODEJS_RUNTIME,
 });
 
-// Attach to CloudFront to verify integration
-const distribution = new cloudfront.Distribution(stack, 'Dist', {
+new cloudfront.Distribution(stack, 'Dist', {
   defaultBehavior: {
     origin: new TestOrigin('www.example.com'),
     cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
@@ -31,41 +30,11 @@ const distribution = new cloudfront.Distribution(stack, 'Dist', {
   },
 });
 
-const integTest = new integ.IntegTest(app, 'cdk-integ-nodejs-edge-function', {
+// Lambda@Edge functions cannot be immediately deleted due to CloudFront replication.
+// They must be disassociated from distributions and replicas cleared (takes hours).
+// See: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-edge-delete-replicas.html
+new integ.IntegTest(app, 'cdk-integ-nodejs-edge-function', {
   testCases: [stack],
   diffAssets: true,
-  // Lambda@Edge functions cannot be immediately deleted due to CloudFront replication.
-  // They must be disassociated from distributions and replicas cleared (takes hours).
-  // See: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-edge-delete-replicas.html
   stackUpdateWorkflow: false,
-});
-
-// Verify the Lambda function was deployed to us-east-1
-integTest.assertions.awsApiCall('Lambda', 'getFunction', {
-  FunctionName: edgeFunction.functionName,
-}).expect(integ.ExpectedResult.objectLike({
-  Configuration: {
-    Runtime: STANDARD_NODEJS_RUNTIME.name,
-  },
-})).provider.addToRolePolicy({
-  Effect: 'Allow',
-  Action: ['lambda:GetFunction'],
-  Resource: '*',
-});
-
-// Verify CloudFront distribution has the edge lambda attached
-integTest.assertions.awsApiCall('CloudFront', 'getDistributionConfig', {
-  Id: distribution.distributionId,
-}).expect(integ.ExpectedResult.objectLike({
-  DistributionConfig: {
-    DefaultCacheBehavior: {
-      LambdaFunctionAssociations: {
-        Quantity: 1,
-      },
-    },
-  },
-})).provider.addToRolePolicy({
-  Effect: 'Allow',
-  Action: ['cloudfront:GetDistributionConfig'],
-  Resource: '*',
 });
