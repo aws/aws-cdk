@@ -57,7 +57,7 @@ export interface IIndexableRegionalTable extends ITableRef {
    *
    * @default false
    */
-  readonly hasIndex?: boolean;
+  readonly hasIndex: boolean;
 }
 
 /**
@@ -1052,7 +1052,7 @@ export abstract class TableBase extends Resource implements ITable, IIndexableRe
     return metrics;
   }
 
-  public abstract get hasIndex(): boolean | undefined;
+  public abstract get hasIndex(): boolean;
 
   private cannedMetric(
     fn: (dims: { TableName: string }) => cloudwatch.MetricProps,
@@ -1879,7 +1879,7 @@ export class Table extends TableBase {
   /**
    * Whether this table has indexes
    */
-  public get hasIndex(): boolean | undefined {
+  public get hasIndex(): boolean {
     return this.globalSecondaryIndexes.length + this.localSecondaryIndexes.length > 0;
   }
 
