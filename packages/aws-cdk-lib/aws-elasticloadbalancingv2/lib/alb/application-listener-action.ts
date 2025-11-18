@@ -34,6 +34,22 @@ export class ListenerAction implements IListenerAction {
   }
 
   /**
+   * Authenticate using JWT validation
+   *
+   * You can configure ALB to verify JSON Web Tokens (JWT) provided by clients
+   * for secure service-to-service (S2S) or machine-to-machine (M2M) communications.
+   *
+   * ALB validates the token signature and requires mandatory claims: 'iss' (issuer)
+   * and 'exp' (expiration). Additionally, if present, ALB validates 'nbf' (not before)
+   * and 'iat' (issued at time) claims.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-verify-jwt.html
+   */
+  public static authenticateJwt(options: AuthenticateJwtOptions): ListenerAction {
+    return new AuthenticateJwtAction(options);
+  }
+
+  /**
    * Forward to one or more Target Groups
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#forward-actions
@@ -434,6 +450,37 @@ export interface AuthenticateOidcOptions {
 }
 
 /**
+ * Options for `ListenerAction.authenticateJwt()`
+ */
+export interface AuthenticateJwtOptions {
+  /**
+   * What action to execute next
+   *
+   * Multiple actions form a linked chain; the chain must always terminate in a
+   * (weighted)forward, fixedResponse or redirect action.
+   */
+  readonly next: ListenerAction;
+
+  /**
+   * The issuer of the JWT token
+   *
+   * This must be a full URL, including the HTTPS protocol, the domain, and the path.
+   *
+   * @example 'https://issuer.example.com'
+   */
+  readonly issuer: string;
+
+  /**
+   * The JWKS (JSON Web Key Set) endpoint URL
+   *
+   * The endpoint must be publicly accessible and return the public keys used to verify JWT signatures.
+   *
+   * @example 'https://issuer.example.com/jwks'
+   */
+  readonly jwksEndpoint: string;
+}
+
+/**
  * What to do with unauthenticated requests
  */
 export enum UnauthenticatedAction {
@@ -465,6 +512,21 @@ class TargetGroupListenerAction extends ListenerAction {
     for (const tg of this.targetGroups) {
       tg.registerListener(listener, associatingConstruct);
     }
+  }
+}
+
+/**
+ * A Listener Action to authenticate with JWT
+ */
+class AuthenticateJwtAction extends ListenerAction {
+  constructor(options: AuthenticateJwtOptions) {
+    super({
+      type: 'jwt-validation',
+      jwtValidationConfig: {
+        issuer: options.issuer,
+        jwksEndpoint: options.jwksEndpoint,
+      },
+    }, options.next);
   }
 }
 

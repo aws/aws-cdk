@@ -137,7 +137,9 @@ Balancer that the other two convenience methods don't:
 * **Redirects**: use `ListenerAction.redirect()` to serve an HTTP
   redirect response (ALB only).
 * **Authentication**: use `ListenerAction.authenticateOidc()` to
-  perform OpenID authentication before serving a request (see the
+  perform OpenID authentication before serving a request, or
+  `ListenerAction.authenticateJwt()` to verify JSON Web Tokens (JWT)
+  for secure service-to-service communications (see the
   `aws-cdk-lib/aws-elasticloadbalancingv2-actions` package for direct authentication
   integration with Cognito) (ALB only).
 
@@ -175,6 +177,21 @@ listener.addAction('DefaultAction', {
     userInfoEndpoint: '...',
 
     // Next
+    next: elbv2.ListenerAction.forward([myTargetGroup]),
+  }),
+});
+```
+
+Here's an example of using JWT authentication for service-to-service communication:
+
+```ts
+declare const listener: elbv2.ApplicationListener;
+declare const myTargetGroup: elbv2.ApplicationTargetGroup;
+
+listener.addAction('DefaultAction', {
+  action: elbv2.ListenerAction.authenticateJwt({
+    issuer: 'https://issuer.example.com',
+    jwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
     next: elbv2.ListenerAction.forward([myTargetGroup]),
   }),
 });

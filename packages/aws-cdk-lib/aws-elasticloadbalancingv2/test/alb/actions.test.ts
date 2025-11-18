@@ -353,4 +353,61 @@ describe('tests', () => {
       });
     }).toThrow('Redirect path must start with a \'/\', got: example');
   });
+
+  test('Chaining JWT authentication action', () => {
+    // WHEN
+    const listener = lb.addListener('Listener', {
+      port: 80,
+      defaultAction: elbv2.ListenerAction.authenticateJwt({
+        issuer: 'https://issuer.example.com',
+        jwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
+        next: elbv2.ListenerAction.forward([group1]),
+      }),
+    });
+    listener.addAction('AdditionalJwtAuthenticationAction', {
+      priority: 1,
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/api/*'])],
+      action: elbv2.ListenerAction.authenticateJwt({
+        issuer: 'https://issuer.example.com',
+        jwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
+        next: elbv2.ListenerAction.forward([group1]),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      DefaultActions: [
+        {
+          JwtValidationConfig: {
+            Issuer: 'https://issuer.example.com',
+            JwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
+          },
+          Order: 1,
+          Type: 'jwt-validation',
+        },
+        {
+          Order: 2,
+          TargetGroupArn: { Ref: 'TargetGroup1E5480F51' },
+          Type: 'forward',
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Actions: [
+        {
+          JwtValidationConfig: {
+            Issuer: 'https://issuer.example.com',
+            JwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
+          },
+          Order: 1,
+          Type: 'jwt-validation',
+        },
+        {
+          Order: 2,
+          TargetGroupArn: { Ref: 'TargetGroup1E5480F51' },
+          Type: 'forward',
+        },
+      ],
+    });
+  });
 });
