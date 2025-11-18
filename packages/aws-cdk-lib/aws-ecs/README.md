@@ -1785,6 +1785,7 @@ While we work on a long-term solution, you can use the following [escape hatch](
 ```ts
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
+declare const miCapacityProvider: ecs.ManagedInstancesCapacityProvider;
 
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
