@@ -17,6 +17,7 @@ class AwsCdkLibServiceSubmodule extends BaseServiceSubmodule {
   public readonly interfaces: LocatedModule<Module>;
   public readonly grants?: LocatedModule<GrantsModule>;
   public readonly didCreateInterfaceModule: boolean;
+  public readonly resources: Map<string, ResourceClass> = new Map();
 
   public constructor(props: {
     readonly submoduleName: string;
@@ -164,7 +165,7 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
     };
   }
 
-  protected addResourceToSubmodule(submodule: AwsCdkLibServiceSubmodule, resource: Resource, props?: AddServiceProps): ResourceClass {
+  protected addResourceToSubmodule(submodule: AwsCdkLibServiceSubmodule, resource: Resource, props?: AddServiceProps): void {
     const resourceModule = submodule.resourcesMod.module;
 
     const resourceClass = new ResourceClass(resourceModule, this.db, resource, {
@@ -188,8 +189,6 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
         fromLocation: relativeImportPath(submodule.resourcesMod.filePath, sourceModule.name),
       });
     }
-
-    return resourceClass;
   }
 
   private createResourceModule(moduleName: string, service: Service): LocatedModule<Module> {
@@ -254,7 +253,15 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
    *
    * (Mostly: create additional files that import generated files)
    */
-  protected postprocessSubmodule(submodule: AwsCdkLibServiceSubmodule) {
+  protected postprocessSubmodule(submodule: AwsCdkLibServiceSubmodule, props?: AddServiceProps) {
+    const grantModule = submodule.locatedModules
+      .map(lm => lm.module)
+      .find(m => m instanceof GrantsModule);
+
+    if (grantModule != null) {
+      grantModule.build(Object.fromEntries(submodule.resources), props?.nameSuffix);
+    }
+
     super.postprocessSubmodule(submodule);
 
     // Add an import for the interfaces file to the entry point file (make sure not to do it twice)
