@@ -72,6 +72,7 @@ export function createBufferingHints(
   scope: Construct,
   interval?: cdk.Duration,
   size?: cdk.Size,
+  dataFormatConversionConfiguration?: CfnDeliveryStream.DataFormatConversionConfigurationProperty,
 ): CfnDeliveryStream.BufferingHintsProperty | undefined {
   if (!interval && !size) {
     return undefined;
@@ -81,9 +82,14 @@ export function createBufferingHints(
   if (intervalInSeconds > 900) {
     throw new cdk.ValidationError(`Buffering interval must be less than 900 seconds. Buffering interval provided was ${intervalInSeconds} seconds.`, scope);
   }
-  const sizeInMBs = size?.toMebibytes() ?? 5;
+  const defaultSizeInMBs = dataFormatConversionConfiguration?.enabled ? 128 : 5;
+  const sizeInMBs = size?.toMebibytes() ?? defaultSizeInMBs;
   if (sizeInMBs < 1 || sizeInMBs > 128) {
     throw new cdk.ValidationError(`Buffering size must be between 1 and 128 MiBs. Buffering size provided was ${sizeInMBs} MiBs.`, scope);
+  }
+
+  if (dataFormatConversionConfiguration?.enabled && sizeInMBs < 64) {
+    throw new cdk.ValidationError(`When data format conversion is enabled, buffering size must be at least 64 MiBs. Buffering size provided was ${sizeInMBs} MiBs.`, scope);
   }
   return { intervalInSeconds, sizeInMBs };
 }
@@ -101,14 +107,21 @@ export function createEncryptionConfig(
 export function createProcessingConfig(
   scope: Construct,
   role: iam.IRole,
-  dataProcessor?: IDataProcessor,
+  dataProcessors?: IDataProcessor[],
 ): CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
-  return dataProcessor
-    ? {
-      enabled: true,
-      processors: [renderDataProcessor(dataProcessor, scope, role)],
-    }
-    : undefined;
+  if (!dataProcessors?.length) return undefined;
+
+  const processors = dataProcessors.map((dp) => renderDataProcessor(dp, scope, role));
+  const processorTypes = new Set(processors.map((p) => p.type));
+
+  if (processorTypes.has('CloudWatchLogProcessing') && !processorTypes.has('Decompression')) {
+    throw new cdk.ValidationError('CloudWatchLogProcessor can only be enabled with DecompressionProcessor', scope);
+  }
+
+  return {
+    enabled: true,
+    processors,
+  };
 }
 
 function renderDataProcessor(
@@ -117,6 +130,14 @@ function renderDataProcessor(
   role: iam.IRole,
 ): CfnDeliveryStream.ProcessorProperty {
   const processorConfig = processor.bind(scope, { role });
+
+  if (processorConfig.parameters) {
+    return {
+      type: processorConfig.processorType,
+      parameters: processorConfig.parameters,
+    };
+  }
+
   const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
   parameters.push(processorConfig.processorIdentifier);
   if (processor.props.bufferInterval) {

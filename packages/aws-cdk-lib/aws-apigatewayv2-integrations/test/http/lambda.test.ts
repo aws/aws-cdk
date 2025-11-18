@@ -123,6 +123,51 @@ describe('LambdaProxyIntegration', () => {
 
     Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Integration', 1);
   });
+
+  test('scopePermissionToRoute set to false creates API-scoped permission', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'HttpApi');
+    const fooFn = fooFunction(stack, 'Fn');
+
+    new HttpRoute(stack, 'LambdaProxyRoute', {
+      httpApi: api,
+      integration: new HttpLambdaIntegration('Integration', fooFn, { scopePermissionToRoute: false }),
+      routeKey: HttpRouteKey.with('/pets'),
+    });
+
+    // Should have a single API-scoped permission
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      SourceArn: {
+        'Fn::Join': ['', Match.arrayWith([':execute-api:', '/*/*/*'])],
+      },
+    });
+  });
+
+  test('scopePermissionToRoute set to false reuses permission for multiple routes', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'HttpApi');
+    const fooFn = fooFunction(stack, 'Fn');
+    const integration = new HttpLambdaIntegration('Integration', fooFn, { scopePermissionToRoute: false });
+
+    api.addRoutes({
+      path: '/foo',
+      integration,
+    });
+
+    api.addRoutes({
+      path: '/bar',
+      integration,
+    });
+
+    // Should have only a single API-scoped permission (reused for both routes)
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      SourceArn: {
+        'Fn::Join': ['', Match.arrayWith([':execute-api:', '/*/*/*'])],
+      },
+    });
+  });
 });
 
 function fooFunction(stack: Stack, id: string) {

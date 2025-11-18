@@ -1,5 +1,6 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import * as path from 'path';
+/* eslint-disable import/no-extraneous-dependencies */
+import { MemberVisibility } from '@cdklabs/typewriter';
 
 /**
  * Handler framework runtimes used for code generation.
@@ -8,7 +9,7 @@ export enum Runtime {
   /**
    * The NodeJs 18.x runtime
    */
-  NODEJS_18_X = 'nodejs18.x',
+  NODEJS_20_X = 'nodejs20.x',
 
   /**
    * The Python 3.9 runtime
@@ -97,6 +98,13 @@ export interface ComponentProps {
    * @default true
    */
   readonly minifyAndBundle?: boolean;
+
+  /**
+   * Visibility for the constructor.
+   *
+   * @default MemberVisibility.Public
+   */
+  readonly constructorVisibility?: MemberVisibility;
 }
 
 export type HandlerFrameworkConfig = { [module: string]: { [identifier: string]: ComponentProps[] } };
@@ -341,6 +349,7 @@ export const config: HandlerFrameworkConfig = {
       {
         type: ComponentType.CUSTOM_RESOURCE_PROVIDER,
         sourceCode: path.resolve(__dirname, '..', 'core', 'cross-region-ssm-writer-handler', 'index.ts'),
+        constructorVisibility: MemberVisibility.Public,
       },
     ],
     'cross-region-ssm-reader-provider': [
