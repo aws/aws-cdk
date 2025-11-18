@@ -51,6 +51,14 @@ class CompositeAlarmIntegrationTest extends Stack {
           alarm5,
         ),
         AlarmRule.not(AlarmRule.fromAlarm(alarm4, AlarmState.INSUFFICIENT_DATA)),
+        AlarmRule.hasAtLeastAlarm({
+          operands: [alarm1, alarm2, alarm3],
+          count: 2,
+        }),
+        AlarmRule.hasAtLeastNotOk({
+          operands: [alarm1, alarm2, alarm3],
+          percentage: 60,
+        }),
       ),
       AlarmRule.fromBoolean(false),
     );

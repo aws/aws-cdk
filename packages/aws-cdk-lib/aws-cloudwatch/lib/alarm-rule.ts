@@ -35,6 +35,34 @@ enum Operator {
 }
 
 /**
+ * Options to AT_LEAST AlarmRule wrapper function
+ */
+export interface HasAtLeastOptions {
+
+  /**
+   * function to wrap provided AlarmRule in AT_LEAST expression.
+   */
+  readonly operands: IAlarm[];
+
+  /**
+   * minimum number of specified alarms
+   *
+   * Units: Count
+   *
+   * @default - Exactly one of `count`, `percentage` is required.
+   */
+  readonly count?: number;
+  /**
+   * minimum percentage of specified alarms
+   *
+   * Units: Percentage
+   *
+   * @default - Exactly one of `count`, `percentage` is required.
+   */
+  readonly percentage?: number;
+}
+
+/**
  * Class with static functions to build AlarmRule for Composite Alarms.
  */
 export class AlarmRule {
@@ -67,6 +95,66 @@ export class AlarmRule {
         return `(NOT (${operand.renderAlarmRule()}))`;
       }
     };
+  }
+
+  /**
+   * function to wrap provided AlarmRule in AT_LEAST expression for ALARM state.
+   *
+   * @param options options for creating a new AlarmRule.
+   */
+  public static hasAtLeastAlarm(options: HasAtLeastOptions): IAlarmRule {
+    const alarmState = `${AlarmState.ALARM}`;
+    return this.hasAtLeast(alarmState, options);
+  }
+
+  /**
+   * function to wrap provided AlarmRule in AT_LEAST expression for OK state.
+   *
+   * @param options options for creating a new AlarmRule.
+   */
+  public static hasAtLeastOk(options: HasAtLeastOptions): IAlarmRule {
+    const alarmState = `${AlarmState.OK}`;
+    return this.hasAtLeast(alarmState, options);
+  }
+
+  /**
+   * function to wrap provided AlarmRule in AT_LEAST expression for INSUFFICIENT_DATA state.
+   *
+   * @param options options for creating a new AlarmRule.
+   */
+  public static hasAtLeastInsufficient(options: HasAtLeastOptions): IAlarmRule {
+    const alarmState = `${AlarmState.INSUFFICIENT_DATA}`;
+    return this.hasAtLeast(alarmState, options);
+  }
+
+  /**
+   * function to wrap provided AlarmRule in AT_LEAST expression for NOT ALARM state.
+   *
+   * @param options options for creating a new AlarmRule.
+   */
+  public static hasAtLeastNotAlarm(options: HasAtLeastOptions): IAlarmRule {
+    const alarmState = `${Operator.NOT} ${AlarmState.ALARM}`;
+    return this.hasAtLeast(alarmState, options);
+  }
+
+  /**
+   * function to wrap provided AlarmRule in AT_LEAST expression for NOT OK state.
+   *
+   * @param options options for creating a new AlarmRule.
+   */
+  public static hasAtLeastNotOk(options: HasAtLeastOptions): IAlarmRule {
+    const alarmState = `${Operator.NOT} ${AlarmState.OK}`;
+    return this.hasAtLeast(alarmState, options);
+  }
+
+  /**
+   * function to wrap provided AlarmRule in AT_LEAST expression for NOT INSUFFICIENT_DATA state.
+   *
+   * @param options options for creating a new AlarmRule.
+   */
+  public static hasAtLeastNotInsufficient(options: HasAtLeastOptions): IAlarmRule {
+    const alarmState = `${Operator.NOT} ${AlarmState.INSUFFICIENT_DATA}`;
+    return this.hasAtLeast(alarmState, options);
   }
 
   /**
@@ -120,6 +208,36 @@ export class AlarmRule {
           .map(operand => `${operand.renderAlarmRule()}`)
           .join(` ${operator} `);
         return `(${expression})`;
+      }
+    };
+  }
+
+  private static hasAtLeast(alarmState: string, options: HasAtLeastOptions): IAlarmRule {
+    return new class implements IAlarmRule {
+      public renderAlarmRule(): string {
+        if (options.operands.length === 0) {
+          throw new UnscopedValidationError(`Did not detect any operands for AT_LEAST ${alarmState}`);
+        }
+
+        if ((options.count !== undefined) === (options.percentage !== undefined)) {
+          throw new UnscopedValidationError('Specify exactly one of \'count\' and \'percentage\'');
+        }
+
+        if (options.count !== undefined && (options.count < 1 || options.operands.length < options.count
+        || !Number.isInteger(options.count))) {
+          throw new UnscopedValidationError(`count must be between 1 and alarm length(${options.operands.length}) integer, got ${options.count}`);
+        }
+
+        if (options.percentage !== undefined && (options.percentage < 1
+        || 100 < options.percentage || !Number.isInteger(options.percentage))) {
+          throw new UnscopedValidationError(`percentage must be between 1 and 100, got ${options.percentage}`);
+        }
+
+        const threshold = options.count || `${options.percentage}%`;
+        const concatAlarms = options.operands
+          .map(operand => `${operand.alarmArn}`)
+          .join(', ');
+        return `AT_LEAST(${threshold}, ${alarmState} , (${concatAlarms}))`;
       }
     };
   }
