@@ -546,6 +546,37 @@
     }
    }
   },
+  "SecurityGroupfromawscdkserverlesscacheClientSG6D18D5F9IndirectPortFE633A67": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "from awscdkserverlesscacheClientSG6D18D5F9:{IndirectPort}",
+    "FromPort": {
+     "Fn::GetAtt": [
+      "Cache18F6EE16",
+      "Endpoint.Port"
+     ]
+    },
+    "GroupId": {
+     "Fn::GetAtt": [
+      "SecurityGroupDD263621",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "ClientSG4CAE4F40",
+      "GroupId"
+     ]
+    },
+    "ToPort": {
+     "Fn::GetAtt": [
+      "Cache18F6EE16",
+      "Endpoint.Port"
+     ]
+    }
+   }
+  },
   "User00B015A1": {
    "Type": "AWS::ElastiCache::User",
    "Properties": {
@@ -622,6 +653,22 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "ClientSG4CAE4F40": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-serverless-cache/ClientSG",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
   }
  },
  "Parameters": {
