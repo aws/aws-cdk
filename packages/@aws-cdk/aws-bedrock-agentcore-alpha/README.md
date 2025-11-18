@@ -59,22 +59,18 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
   - [Gateway Target Properties](#gateway-target-properties)
   - [Targets types](#targets-types)
   - [Outbound auth](#outbound-auth)
-  - [Api schema](#api-schema)
+  - [Api schema](#api-schema-for-openapi-and-smithy-target)
   - [Basic Gateway Target Creation](#basic-gateway-target-creation)
     - [Using addTarget methods (Recommended)](#using-addtarget-methods-recommended)
     - [Using static factory methods](#using-static-factory-methods)
-  - [Lambda Target with Tool Schema](#lambda-target-with-tool-schema)
-  - [Smithy Model Target with OAuth](#smithy-model-target-with-oauth)
-  - [Complex Lambda Target with S3 Tool Schema](#complex-lambda-target-with-s3-tool-schema)
-  - [Lambda Target with Local Asset Tool Schema](#lambda-target-with-local-asset-tool-schema)
+  - [Lambda Target with Tool Schema](#tools-schema-for-lambda-target)
+  - [Smithy Model Target with OAuth](#api-schema-for-openapi-and-smithy-target)
   - [Gateway Target IAM Permissions](#gateway-target-iam-permissions)
-  - [Target Configuration Types](#target-configuration-types)
 - [Memory](#memory)
   - [Memory properties](#memory-properties)
   - [Basic Memory Creation](#basic-memory-creation)
   - [LTM Memory Extraction Stategies](#ltm-memory-extraction-stategies)
   - [Memory Strategy Methods](#memory-strategy-methods)
-
 
 ## AgentCore Runtime
 
@@ -1072,6 +1068,73 @@ For example, for a DynamoDB target, your execution role needs permissions to per
 This is not managed by the construct due to the large number of options. Please refer to
 [Smithy Model Permission](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-prerequisites-permissions.html) for example.
 
+**MCP Server Target**: Model Context Protocol (MCP) servers provide external tools, data access, and custom functions for AI agents.
+MCP servers enable agents to interact with external systems and services through a standardized protocol. Gateway automatically
+discovers and indexes available tools from MCP servers through synchronization.
+
+**Key Features:**
+
+- Requires explicit authentication configuration (OAuth2 recommended, empty array for NoAuth)
+- Ideal for connecting to external MCP-compliant servers
+- The endpoint must use HTTPS protocol
+- Supported MCP protocol versions: 2025-06-18, 2025-03-26
+- Automatic tool discovery through synchronization
+
+**Synchronization Behavior:**
+
+MCP Server targets require synchronization to discover and index available tools:
+
+- **Implicit Synchronization (Automatic)**: Tool discovery happens automatically during:
+  - Target creation (`CreateGatewayTarget`)
+  - Target updates (`UpdateGatewayTarget`)
+  - The Gateway calls the MCP server's `tools/list` endpoint and indexes tools without user intervention
+
+- **Explicit Synchronization (Manual)**: When the MCP server's tools change independently (new tools added, schemas modified, tools removed):
+  - The Gateway's tool catalog becomes stale
+  - Call the `SynchronizeGatewayTargets` API to refresh the catalog
+  - Use the `grantSync()` method to grant permissions to Lambda functions, CI/CD pipelines, or scheduled tasks that will trigger synchronization
+
+**Authentication & Permissions:**
+
+When using OAuth2, the Gateway service role automatically receives:
+
+- `bedrock-agentcore:GetWorkloadAccessToken`
+- `bedrock-agentcore:GetResourceOauth2Token`
+- `secretsmanager:GetSecretValue`
+- KMS decrypt (if secrets are encrypted)
+
+For explicit synchronization, use `grantSync()` to grant `bedrock-agentcore:SynchronizeGatewayTargets` permission to your operator roles.
+
+> For more information, refer to the [MCP Server Target documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-MCPservers.html).
+
+### Understanding Tool Naming
+
+When tools are exposed through gateway targets, AgentCore Gateway prefixes each tool name with the target name to ensure uniqueness across multiple targets. This is important to understand when building your application logic.
+
+**Naming Pattern:**
+
+```typescript
+${target_name}__${tool_name}
+```
+
+**Example:**
+
+If your target is named `my-lambda-target` and provides a tool called `calculate_price`, agents will discover and invoke it as `my-lambda-target__calculate_price`.
+
+**Important Considerations:**
+
+- **For Lambda Targets**: Your Lambda handler must strip the target name prefix before processing the tool request. The full tool name (with prefix) is sent in the event.
+- **For MCP Server Targets**: The MCP server receives tool calls with the prefixed name from the gateway.
+- **For OpenAPI/Smithy Targets**: The gateway handles the prefix automatically when mapping to API operations based on the `operationId`.
+
+This naming convention ensures that:
+
+- Tools from different targets don't collide even if they have the same name
+- Agents can access tools from multiple targets through a single gateway
+- Tool names remain unique in the unified tool catalog
+
+For more details, see the [Gateway Tool Naming Documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-tool-naming.html).
+
 ### Tools schema For Lambda target
 
 The lambda target need tools schema to understand the fuunction lambda provides. You can upload the tool schema by following 3 ways:
@@ -1279,6 +1342,51 @@ const smithyTarget = gateway.addSmithyTarget("MySmithyTarget", {
 });
 ```
 
+- MCP Server Target
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+// OAuth2 authentication (recommended)
+// Note: Create the OAuth provider using AWS console or Identity L2 construct when available
+const oauthProviderArn = "arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc123/oauth2credentialprovider/my-oauth";
+const oauthSecretArn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-oauth-secret-abc123";
+
+// Add an MCP server target directly to the gateway
+const mcpTarget = gateway.addMcpServerTarget("MyMcpServer", {
+  gatewayTargetName: "my-mcp-server",
+  description: "External MCP server integration",
+  endpoint: "https://my-mcp-server.example.com",
+  credentialProviderConfigurations: [
+    agentcore.GatewayCredentialProvider.fromOauthIdentityArn({
+      providerArn: oauthProviderArn,
+      secretArn: oauthSecretArn,
+    }),
+  ],
+});
+
+// Grant sync permission to a Lambda function that will trigger synchronization
+const syncFunction = new lambda.Function(this, "SyncFunction", {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+import boto3
+
+def handler(event, context):
+    client = boto3.client('bedrock-agentcore')
+    response = client.synchronize_gateway_targets(
+        gatewayIdentifier=event['gatewayId'],
+        targetIds=[event['targetId']]
+    )
+    return response
+  `),
+});
+
+mcpTarget.grantSync(syncFunction);
+```
+
 #### Using static factory methods
 
 Create Gateway target using static convienence method.
@@ -1367,6 +1475,33 @@ const target = agentcore.GatewayTarget.forSmithy(this, "MySmithyTarget", {
   smithyModel: smithySchema,
 });
 
+```
+
+- MCP Server Target
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+// OAuth2 authentication (recommended)
+// Note: Create the OAuth provider using AWS console or Identity L2 construct when available
+const oauthProviderArn = "arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc123/oauth2credentialprovider/my-oauth";
+const oauthSecretArn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-oauth-secret-abc123";
+
+// Create a gateway target with MCP Server
+const mcpTarget = agentcore.GatewayTarget.forMcpServer(this, "MyMcpServer", {
+  gatewayTargetName: "my-mcp-server",
+  description: "External MCP server integration",
+  gateway: gateway,
+  endpoint: "https://my-mcp-server.example.com",
+  credentialProviderConfigurations: [
+    agentcore.GatewayCredentialProvider.fromOauthIdentityArn({
+      providerArn: oauthProviderArn,
+      secretArn: oauthSecretArn,
+    }),
+  ],
+});
 ```
 
 ### Advanced Usage: Direct Configuration for gateway target
@@ -1713,7 +1848,7 @@ const memory = new agentcore.Memory(this, "MyMemory", {
 
 ### Memory with self-managed Strategies
 
-A self-managed strategy in Amazon Bedrock AgentCore Memory gives you complete control over your memory extraction and consolidation pipelines. 
+A self-managed strategy in Amazon Bedrock AgentCore Memory gives you complete control over your memory extraction and consolidation pipelines.
 With a self-managed strategy, you can build custom memory processing workflows while leveraging Amazon Bedrock AgentCore for storage and retrieval.
 
 For additional information, you can refer to the [developer guide for self managed strategies](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory-self-managed-strategies.html).

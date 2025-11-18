@@ -119,6 +119,41 @@ export interface AddSmithyTargetOptions {
 }
 
 /**
+ * Options for adding an MCP Server target to a gateway
+ */
+export interface AddMcpServerTargetOptions {
+  /**
+   * The name of the gateway target
+   * Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen)
+   */
+  readonly gatewayTargetName: string;
+
+  /**
+   * Optional description for the gateway target
+   * @default - No description
+   */
+  readonly description?: string;
+
+  /**
+   * The HTTPS endpoint URL of the MCP server
+   *
+   * The endpoint must:
+   * - Use HTTPS protocol
+   * - Be properly URL-encoded
+   * - Point to an MCP server that implements tool capabilities
+   */
+  readonly endpoint: string;
+
+  /**
+   * Credential providers for authentication
+   *
+   * MCP servers require explicit authentication configuration.
+   * OAuth2 is strongly recommended over NoAuth.
+   */
+  readonly credentialProviderConfigurations: ICredentialProviderConfig[];
+}
+
+/**
  * Properties for defining a Gateway
  */
 export interface GatewayProps {
@@ -418,13 +453,19 @@ export class Gateway extends GatewayBase {
     props: AddLambdaTargetOptions,
   ): GatewayTarget {
     // Lambda invoke permissions are automatically granted in LambdaTargetConfiguration.bind()
-    const target = GatewayTarget.forLambda(this, id, {
+    // Build target props, conditionally including credentials if array has items
+    const targetProps: any = {
       gatewayTargetName: props.gatewayTargetName,
       description: props.description,
       gateway: this,
       lambdaFunction: props.lambdaFunction,
       toolSchema: props.toolSchema,
-    });
+      ...(props.credentialProviderConfigurations && props.credentialProviderConfigurations.length > 0
+        ? { credentialProviderConfigurations: props.credentialProviderConfigurations }
+        : {}),
+    };
+
+    const target = GatewayTarget.forLambda(this, id, targetProps);
 
     return target;
   }
@@ -465,12 +506,47 @@ export class Gateway extends GatewayBase {
     id: string,
     props: AddSmithyTargetOptions,
   ): GatewayTarget {
-    const target = GatewayTarget.forSmithy(this, id, {
+    // Build target props, conditionally including credentials if array has items
+    const targetProps: any = {
       gatewayTargetName: props.gatewayTargetName,
       description: props.description,
       gateway: this,
       smithyModel: props.smithyModel,
-    });
+      ...(props.credentialProviderConfigurations && props.credentialProviderConfigurations.length > 0
+        ? { credentialProviderConfigurations: props.credentialProviderConfigurations }
+        : {}),
+    };
+
+    const target = GatewayTarget.forSmithy(this, id, targetProps);
+
+    return target;
+  }
+
+  /**
+   * Add an MCP server target to this gateway
+   * This is a convenience method that creates a GatewayTarget associated with this gateway
+   *
+   * @param id The construct id for the target
+   * @param props Properties for the MCP server target
+   * @returns The created GatewayTarget
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-MCPservers.html
+   */
+  public addMcpServerTarget(
+    id: string,
+    props: AddMcpServerTargetOptions,
+  ): GatewayTarget {
+    // Build target props, conditionally including credentials if array has items
+    const targetProps: any = {
+      gatewayTargetName: props.gatewayTargetName,
+      description: props.description,
+      gateway: this,
+      endpoint: props.endpoint,
+      ...(props.credentialProviderConfigurations && props.credentialProviderConfigurations.length > 0
+        ? { credentialProviderConfigurations: props.credentialProviderConfigurations }
+        : {}),
+    };
+
+    const target = GatewayTarget.forMcpServer(this, id, targetProps);
 
     return target;
   }

@@ -1,3 +1,4 @@
+import { Token } from 'aws-cdk-lib';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import * as fs from 'fs';
@@ -5,7 +6,7 @@ import { IGateway } from '../gateway-base';
 import { ApiSchema, AssetApiSchema } from './schema/api-schema';
 import { ToolSchema } from './schema/tool-schema';
 import { McpTargetType } from './target-base';
-import { validateOpenApiSchema, ValidationError } from '../validation-helpers';
+import { validateOpenApiSchema, validateFieldPattern, ValidationError } from '../validation-helpers';
 
 /******************************************************************************
  *                          Interface
@@ -307,5 +308,100 @@ export class SmithyTargetConfiguration extends McpTargetConfiguration {
     return {
       smithyModel: this.smithyModel._render(),
     };
+  }
+}
+
+/******************************************************************************
+ *                     MCP Server Target Configuration
+ *****************************************************************************/
+
+/**
+ * Configuration for MCP Server-based targets
+ *
+ * MCP (Model Context Protocol) servers provide tools, data access, and custom
+ * functions for AI agents. When you configure an MCP server as a gateway target,
+ * the gateway automatically discovers and indexes available tools through
+ * synchronization.
+ */
+export class McpServerTargetConfiguration extends McpTargetConfiguration {
+  /**
+   * Create an MCP server target configuration
+   *
+   * @param endpoint The HTTPS endpoint URL of the MCP server
+   * @returns A new McpServerTargetConfiguration instance
+   */
+  public static create(endpoint: string): McpServerTargetConfiguration {
+    return new McpServerTargetConfiguration(endpoint);
+  }
+
+  public readonly targetType = McpTargetType.MCP_SERVER;
+
+  /**
+   * The HTTPS endpoint URL of the MCP server
+   */
+  public readonly endpoint: string;
+
+  constructor(endpoint: string) {
+    super();
+    this.endpoint = endpoint;
+    this.validateEndpoint(endpoint);
+  }
+
+  /**
+   * Binds this configuration to a construct scope
+   * No additional permissions are needed for MCP server targets
+   *
+   * @param _scope The construct scope
+   * @param _gateway The gateway that will use this target
+   */
+  public bind(_scope: Construct, _gateway: IGateway): TargetConfigurationConfig {
+    // MCP server targets don't require additional permissions setup
+    // Authentication is handled through credential provider configurations
+    return { bound: true };
+  }
+
+  /**
+   * Renders the MCP-specific configuration
+   */
+  protected renderMcpConfiguration(): any {
+    return {
+      mcpServer: {
+        endpoint: this.endpoint,
+      },
+    };
+  }
+
+  /**
+   * Validates the MCP server endpoint
+   * - Must use HTTPS protocol
+   * - Should be properly URL encoded
+   *
+   * @param endpoint The endpoint URL to validate
+   * @throws ValidationError if the endpoint is invalid
+   * @internal
+   */
+  private validateEndpoint(endpoint: string): void {
+    if (Token.isUnresolved(endpoint)) {
+      return;
+    }
+
+    const errors = validateFieldPattern(
+      endpoint,
+      'MCP server endpoint',
+      /^https:\/\/.+/,
+      'MCP server endpoint must use HTTPS protocol (e.g., https://my-server.example.com). Ensure the URL is properly encoded.',
+    );
+
+    if (errors.length > 0) {
+      throw new ValidationError(errors.join('\n'));
+    }
+
+    // Additional helpful validation for common URL encoding issues
+    if (endpoint.includes(' ') || endpoint.includes('<') || endpoint.includes('>')) {
+      throw new ValidationError(
+        'MCP server endpoint contains characters that should be URL-encoded. ' +
+        'Please ensure the URL is properly encoded before passing to the construct.',
+      );
+    }
   }
 }

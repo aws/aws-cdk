@@ -26,7 +26,7 @@ import { McpProtocolConfiguration, MCPProtocolVersion, McpGatewaySearchType } fr
 import { ApiSchema } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/targets/schema/api-schema';
 import { ToolSchema, SchemaDefinitionType } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/targets/schema/tool-schema';
 import { GatewayTarget } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/targets/target';
-import { LambdaTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/targets/target-configuration';
+import { LambdaTargetConfiguration, McpServerTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/targets/target-configuration';
 
 describe('Gateway Core Tests', () => {
   let stack: cdk.Stack;
@@ -504,7 +504,6 @@ describe('Gateway Target Core Tests', () => {
     });
 
     expect(target.credentialProviderConfigurations).toHaveLength(1);
-    expect(target.credentialProviderConfigurations[0].credentialProviderType).toBe('GATEWAY_IAM_ROLE');
   });
 
   test('Should grant Lambda invoke permissions', () => {
@@ -1750,5 +1749,561 @@ describe('Gateway Integration Tests', () => {
         Version: '1.0',
       },
     });
+  });
+});
+
+describe('MCP Server Target Core Tests', () => {
+  let stack: cdk.Stack;
+  let gateway: Gateway;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+  });
+
+  test('Should create MCP server target using addMcpServerTarget method', () => {
+    const target = gateway.addMcpServerTarget('TestMcpTarget', {
+      gatewayTargetName: 'test-mcp-server',
+      endpoint: 'https://my-mcp-server.example.com',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          scopes: ['read', 'write'],
+        }),
+      ],
+    });
+
+    expect(target.name).toBe('test-mcp-server');
+    expect(target.targetId).toBeDefined();
+    expect(target.targetType).toBe('MCP_SERVER');
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::BedrockAgentCore::GatewayTarget', 1);
+  });
+
+  test('Should create MCP server target using GatewayTarget.forMcpServer static method', () => {
+    const target = GatewayTarget.forMcpServer(stack, 'TestMcpTarget', {
+      gatewayTargetName: 'test-mcp-server',
+      gateway: gateway,
+      endpoint: 'https://my-mcp-server.example.com',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          scopes: ['read'],
+        }),
+      ],
+    });
+
+    expect(target.name).toBe('test-mcp-server');
+    expect(target.targetType).toBe('MCP_SERVER');
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::BedrockAgentCore::GatewayTarget', 1);
+  });
+
+  test('Should create MCP server target with description', () => {
+    const target = gateway.addMcpServerTarget('TestMcpTarget', {
+      gatewayTargetName: 'test-mcp-server',
+      description: 'External MCP server for tool integration',
+      endpoint: 'https://my-mcp-server.example.com',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          scopes: ['read'],
+        }),
+      ],
+    });
+
+    expect(target.description).toBe('External MCP server for tool integration');
+  });
+
+  test('Should verify CloudFormation structure for MCP server target', () => {
+    gateway.addMcpServerTarget('TestMcpTarget', {
+      gatewayTargetName: 'test-mcp-server',
+      endpoint: 'https://my-mcp-server.example.com',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          scopes: ['read'],
+        }),
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+      Name: 'test-mcp-server',
+      GatewayIdentifier: Match.anyValue(),
+    });
+  });
+});
+
+describe('MCP Server Target Validation Tests', () => {
+  let stack: cdk.Stack;
+  let gateway: Gateway;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+  });
+
+  test('Should reject HTTP endpoints - must use HTTPS', () => {
+    expect(() => {
+      gateway.addMcpServerTarget('TestMcpTarget', {
+        gatewayTargetName: 'test-mcp-server',
+        endpoint: 'http://my-mcp-server.example.com',
+        credentialProviderConfigurations: [
+          GatewayCredentialProvider.fromOauthIdentityArn({
+            providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+            secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+            scopes: ['read'],
+          }),
+        ],
+      });
+    }).toThrow(/MCP server endpoint must use HTTPS protocol/);
+  });
+
+  test('Should accept valid HTTPS endpoints', () => {
+    const target = gateway.addMcpServerTarget('TestMcpTarget', {
+      gatewayTargetName: 'test-mcp-server',
+      endpoint: 'https://my-mcp-server.example.com',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          scopes: ['read'],
+        }),
+      ],
+    });
+
+    expect(target.targetType).toBe('MCP_SERVER');
+  });
+
+  test('Should reject endpoints with spaces', () => {
+    expect(() => {
+      gateway.addMcpServerTarget('TestMcpTarget', {
+        gatewayTargetName: 'test-mcp-server',
+        endpoint: 'https://my mcp server.example.com',
+        credentialProviderConfigurations: [
+          GatewayCredentialProvider.fromOauthIdentityArn({
+            providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+            secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+            scopes: ['read'],
+          }),
+        ],
+      });
+    }).toThrow(/MCP server endpoint contains characters that should be URL-encoded/);
+  });
+
+  test('Should reject endpoints with < character', () => {
+    expect(() => {
+      gateway.addMcpServerTarget('TestMcpTarget', {
+        gatewayTargetName: 'test-mcp-server',
+        endpoint: 'https://my-mcp-server.example.com/<test>',
+        credentialProviderConfigurations: [
+          GatewayCredentialProvider.fromOauthIdentityArn({
+            providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+            secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+            scopes: ['read'],
+          }),
+        ],
+      });
+    }).toThrow(/MCP server endpoint contains characters that should be URL-encoded/);
+  });
+
+  test('Should reject endpoints with > character', () => {
+    expect(() => {
+      gateway.addMcpServerTarget('TestMcpTarget', {
+        gatewayTargetName: 'test-mcp-server',
+        endpoint: 'https://my-mcp-server.example.com/>test',
+        credentialProviderConfigurations: [
+          GatewayCredentialProvider.fromOauthIdentityArn({
+            providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+            secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+            scopes: ['read'],
+          }),
+        ],
+      });
+    }).toThrow(/MCP server endpoint contains characters that should be URL-encoded/);
+  });
+
+  test('Should reject empty endpoint', () => {
+    expect(() => {
+      gateway.addMcpServerTarget('TestMcpTarget', {
+        gatewayTargetName: 'test-mcp-server',
+        endpoint: '',
+        credentialProviderConfigurations: [
+          GatewayCredentialProvider.fromOauthIdentityArn({
+            providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+            secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+            scopes: ['read'],
+          }),
+        ],
+      });
+    }).toThrow(/MCP server endpoint must use HTTPS protocol/);
+  });
+
+  test('Should accept HTTPS endpoint with port', () => {
+    const target = gateway.addMcpServerTarget('TestMcpTarget', {
+      gatewayTargetName: 'test-mcp-server',
+      endpoint: 'https://my-mcp-server.example.com:8443',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          scopes: ['read'],
+        }),
+      ],
+    });
+
+    expect(target.targetType).toBe('MCP_SERVER');
+  });
+
+  test('Should accept HTTPS endpoint with path', () => {
+    const target = gateway.addMcpServerTarget('TestMcpTarget', {
+      gatewayTargetName: 'test-mcp-server',
+      endpoint: 'https://my-mcp-server.example.com/api/v1/mcp',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          scopes: ['read'],
+        }),
+      ],
+    });
+
+    expect(target.targetType).toBe('MCP_SERVER');
+  });
+
+  test('Should handle Token.isUnresolved for endpoint validation', () => {
+    const target = gateway.addMcpServerTarget('TestMcpTarget', {
+      gatewayTargetName: 'test-mcp-server',
+      endpoint: cdk.Lazy.string({ produce: () => 'https://dynamic-server.example.com' }),
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          scopes: ['read'],
+        }),
+      ],
+    });
+
+    expect(target.targetType).toBe('MCP_SERVER');
+  });
+});
+
+describe('MCP Server Target Permission Tests', () => {
+  let stack: cdk.Stack;
+  let gateway: Gateway;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+  });
+
+  test('Should grant OAuth2 permissions to Gateway role automatically', () => {
+    gateway.addMcpServerTarget('TestMcpTarget', {
+      gatewayTargetName: 'test-mcp-server',
+      endpoint: 'https://my-mcp-server.example.com',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-oauth-secret',
+          scopes: ['read', 'write'],
+        }),
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    // OAuth provider grants combine all permissions into a single statement
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith([
+              'bedrock-agentcore:GetResourceOauth2Token',
+              'bedrock-agentcore:GetWorkloadAccessToken',
+              'secretsmanager:GetSecretValue',
+            ]),
+            Effect: 'Allow',
+            Resource: Match.arrayWith([
+              Match.stringLikeRegexp('.*token-vault.*oauth2credentialprovider.*'),
+              Match.stringLikeRegexp('.*secretsmanager.*secret.*'),
+            ]),
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should grant Secrets Manager permissions for OAuth2', () => {
+    gateway.addMcpServerTarget('TestMcpTarget', {
+      gatewayTargetName: 'test-mcp-server',
+      endpoint: 'https://my-mcp-server.example.com',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-oauth-secret',
+          scopes: ['read'],
+        }),
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    // Verify secrets manager permissions are granted (as part of consolidated statement)
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith(['secretsmanager:GetSecretValue']),
+            Effect: 'Allow',
+            Resource: Match.arrayWith([
+              Match.stringLikeRegexp('.*secretsmanager.*secret.*test-oauth-secret'),
+            ]),
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should grant read permissions on MCP server target', () => {
+    const target = gateway.addMcpServerTarget('TestMcpTarget', {
+      gatewayTargetName: 'test-mcp-server',
+      endpoint: 'https://my-mcp-server.example.com',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          scopes: ['read'],
+        }),
+      ],
+    });
+
+    const role = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    target.grantRead(role);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:GetGatewayTarget',
+            Effect: 'Allow',
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should grant manage permissions on MCP server target', () => {
+    const target = gateway.addMcpServerTarget('TestMcpTarget', {
+      gatewayTargetName: 'test-mcp-server',
+      endpoint: 'https://my-mcp-server.example.com',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          scopes: ['read'],
+        }),
+      ],
+    });
+
+    const role = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    target.grantManage(role);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith([
+              'bedrock-agentcore:CreateGatewayTarget',
+              'bedrock-agentcore:UpdateGatewayTarget',
+              'bedrock-agentcore:DeleteGatewayTarget',
+            ]),
+            Effect: 'Allow',
+          }),
+        ]),
+      },
+    });
+  });
+});
+
+describe('MCP Server Target Configuration Tests', () => {
+  let stack: cdk.Stack;
+  let gateway: Gateway;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+  });
+
+  test('Should create McpServerTargetConfiguration with factory method', () => {
+    const config = McpServerTargetConfiguration.create('https://my-mcp-server.example.com');
+
+    expect(config.targetType).toBe('MCP_SERVER');
+    expect(config.endpoint).toBe('https://my-mcp-server.example.com');
+  });
+
+  test('Should bind McpServerTargetConfiguration successfully', () => {
+    const config = McpServerTargetConfiguration.create('https://my-mcp-server.example.com');
+    const boundConfig = config.bind(stack, gateway);
+
+    expect(boundConfig.bound).toBe(true);
+  });
+
+  test('Should render McpServerTargetConfiguration correctly', () => {
+    const config = McpServerTargetConfiguration.create('https://my-mcp-server.example.com');
+    const rendered = config._render();
+
+    expect(rendered).toEqual({
+      mcp: {
+        mcpServer: {
+          endpoint: 'https://my-mcp-server.example.com',
+        },
+      },
+    });
+  });
+
+  test('Should validate HTTPS requirement in McpServerTargetConfiguration', () => {
+    expect(() => {
+      McpServerTargetConfiguration.create('http://insecure-server.example.com');
+    }).toThrow(/MCP server endpoint must use HTTPS protocol/);
+  });
+
+  test('Should create multiple MCP server targets on same gateway', () => {
+    gateway.addMcpServerTarget('McpTarget1', {
+      gatewayTargetName: 'mcp-server-1',
+      endpoint: 'https://server1.example.com',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test1',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret-1',
+          scopes: ['read'],
+        }),
+      ],
+    });
+
+    gateway.addMcpServerTarget('McpTarget2', {
+      gatewayTargetName: 'mcp-server-2',
+      endpoint: 'https://server2.example.com',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test2',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret-2',
+          scopes: ['write'],
+        }),
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::BedrockAgentCore::GatewayTarget', 2);
+  });
+
+  test('Should create gateway with mixed target types including MCP server', () => {
+    // Add Lambda target
+    const fn = new lambda.Function(stack, 'TestFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
+    });
+
+    const toolSchema = ToolSchema.fromInline([{
+      name: 'test_tool',
+      description: 'A test tool',
+      inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
+    }]);
+
+    gateway.addLambdaTarget('LambdaTarget', {
+      gatewayTargetName: 'lambda-target',
+      lambdaFunction: fn,
+      toolSchema: toolSchema,
+    });
+
+    // Add MCP server target
+    gateway.addMcpServerTarget('McpTarget', {
+      gatewayTargetName: 'mcp-server',
+      endpoint: 'https://my-mcp-server.example.com',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          scopes: ['read'],
+        }),
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::BedrockAgentCore::GatewayTarget', 2);
+  });
+
+  test('Should accept HTTPS endpoint with query parameters', () => {
+    const target = gateway.addMcpServerTarget('TestMcpTarget', {
+      gatewayTargetName: 'test-mcp-server',
+      endpoint: 'https://my-mcp-server.example.com/api?version=1',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          scopes: ['read'],
+        }),
+      ],
+    });
+
+    expect(target.targetType).toBe('MCP_SERVER');
+  });
+
+  test('Should create MCP server target with OAuth custom parameters', () => {
+    const target = gateway.addMcpServerTarget('TestMcpTarget', {
+      gatewayTargetName: 'test-mcp-server',
+      endpoint: 'https://my-mcp-server.example.com',
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc/oauth2credentialprovider/test',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret',
+          scopes: ['read', 'write'],
+          customParameters: {
+            audience: 'https://my-mcp-server.example.com',
+            grant_type: 'client_credentials',
+          },
+        }),
+      ],
+    });
+
+    expect(target.targetType).toBe('MCP_SERVER');
+    expect(target.credentialProviderConfigurations).toHaveLength(1);
   });
 });

@@ -141,4 +141,10 @@ export namespace GatewayPerms {
 
   export const READ_PERMS = [...new Set([...GET_PERMS, ...LIST_PERMS])];
   export const MANAGE_PERMS = [...new Set([...CREATE_PERMS, ...UPDATE_PERMS, ...DELETE_PERMS])];
+
+  /**
+   * Synchronization permissions for MCP server targets
+   * Used to refresh tool catalogs when MCP server tools change
+   */
+  export const SYNC_PERMS = ['bedrock-agentcore:SynchronizeGatewayTargets'];
 }

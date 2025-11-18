@@ -24,6 +24,8 @@ export enum McpTargetType {
   SMITHY_MODEL = 'SMITHY_MODEL',
   /** Lambda function target type */
   LAMBDA = 'LAMBDA',
+  /** MCP server target type */
+  MCP_SERVER = 'MCP_SERVER',
 }
 
 /******************************************************************************
@@ -72,7 +74,7 @@ export interface IGatewayTarget extends IResource {
   /**
    * The credential provider configuration for the target
    */
-  readonly credentialProviderConfigurations: ICredentialProviderConfig[];
+  readonly credentialProviderConfigurations: ICredentialProviderConfig[] | undefined;
 
   /**
    * The status of the gateway target
@@ -142,7 +144,7 @@ export abstract class GatewayTargetBase extends Resource implements IGatewayTarg
   public abstract readonly name: string;
   public abstract readonly description?: string;
   public abstract readonly gateway: IGateway;
-  public abstract readonly credentialProviderConfigurations: ICredentialProviderConfig[];
+  public abstract readonly credentialProviderConfigurations: ICredentialProviderConfig[] | undefined;
   public abstract readonly status?: string;
   public abstract readonly statusReasons?: string[];
   public abstract readonly createdAt?: string;

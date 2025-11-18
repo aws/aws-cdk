@@ -1,13 +1,15 @@
 import { Lazy, Token } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IGateway } from '../gateway-base';
+import { GatewayPerms } from '../perms';
 import { ApiSchema } from './schema/api-schema';
 import { ToolSchema } from './schema/tool-schema';
 import { GatewayTargetBase, GatewayTargetProtocolType, IGatewayTarget, IMcpGatewayTarget, McpTargetType } from './target-base';
-import { ITargetConfiguration, LambdaTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from './target-configuration';
+import { ITargetConfiguration, LambdaTargetConfiguration, McpServerTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from './target-configuration';
 import { GatewayCredentialProvider, ICredentialProviderConfig } from '../outbound-auth/credential-provider';
 import { validateStringField, validateFieldPattern, ValidationError } from '../validation-helpers';
 
@@ -18,7 +20,7 @@ import { validateStringField, validateFieldPattern, ValidationError } from '../v
 /**
  * Common properties for all Gateway Target types
  */
-export interface McpGatewayTargetCommonProps {
+export interface GatewayTargetCommonProps {
   /**
    * The name of the gateway target
    * The name must be unique within the gateway
@@ -37,7 +39,7 @@ export interface McpGatewayTargetCommonProps {
 /**
  * Properties for creating a Gateway Target resource
  */
-export interface GatewayTargetProps extends McpGatewayTargetCommonProps {
+export interface GatewayTargetProps extends GatewayTargetCommonProps {
   /**
    * The gateway this target belongs to
    */
@@ -63,7 +65,7 @@ export interface GatewayTargetProps extends McpGatewayTargetCommonProps {
  * Properties for creating a Lambda-based Gateway Target
  * Convenience interface for the most common use case
  */
-export interface GatewayTargetLambdaProps extends McpGatewayTargetCommonProps {
+export interface GatewayTargetLambdaProps extends GatewayTargetCommonProps {
   /**
    * The gateway this target belongs to
    */
@@ -90,7 +92,7 @@ export interface GatewayTargetLambdaProps extends McpGatewayTargetCommonProps {
 /**
  * Properties for creating an OpenAPI-based Gateway Target
  */
-export interface GatewayTargetOpenApiProps extends McpGatewayTargetCommonProps {
+export interface GatewayTargetOpenApiProps extends GatewayTargetCommonProps {
   /**
    * The gateway this target belongs to
    */
@@ -120,7 +122,7 @@ export interface GatewayTargetOpenApiProps extends McpGatewayTargetCommonProps {
 /**
  * Properties for creating a Smithy-based Gateway Target
  */
-export interface GatewayTargetSmithyProps extends McpGatewayTargetCommonProps {
+export interface GatewayTargetSmithyProps extends GatewayTargetCommonProps {
   /**
    * The gateway this target belongs to
    */
@@ -137,6 +139,31 @@ export interface GatewayTargetSmithyProps extends McpGatewayTargetCommonProps {
    * @default - [GatewayCredentialProvider.fromIamRole()]
    */
   readonly credentialProviderConfigurations?: ICredentialProviderConfig[];
+}
+
+/**
+ * Properties for creating an MCP Server-based Gateway Target
+ */
+export interface GatewayTargetMcpServerProps extends GatewayTargetCommonProps {
+  /**
+   * The gateway this target belongs to
+   */
+  readonly gateway: IGateway;
+
+  /**
+   * The HTTPS endpoint URL of the MCP server
+   *
+   * The endpoint must:
+   * - Use HTTPS protocol
+   * - Be properly URL-encoded
+   * - Point to an MCP server that implements tool capabilities
+   */
+  readonly endpoint: string;
+
+  /**
+   * Credential providers for authentication
+   */
+  readonly credentialProviderConfigurations: ICredentialProviderConfig[];
 }
 
 /**
@@ -308,6 +335,30 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
   }
 
   /**
+   * Create an MCP Server-based target
+   * Convenience method for creating a target that connects to an external MCP server
+   *
+   * @param scope The construct scope
+   * @param id The construct id
+   * @param props The properties for the MCP server target
+   * @returns A new GatewayTarget instance
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-MCPservers.html
+   */
+  public static forMcpServer(
+    scope: Construct,
+    id: string,
+    props: GatewayTargetMcpServerProps,
+  ): GatewayTarget {
+    return new GatewayTarget(scope, id, {
+      gateway: props.gateway,
+      gatewayTargetName: props.gatewayTargetName,
+      description: props.description,
+      credentialProviderConfigurations: props.credentialProviderConfigurations,
+      targetConfiguration: McpServerTargetConfiguration.create(props.endpoint),
+    });
+  }
+
+  /**
    * The ARN of the gateway target
    * @attribute
    */
@@ -337,7 +388,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
   /**
    * The credential providers for this target
    */
-  public readonly credentialProviderConfigurations: ICredentialProviderConfig[];
+  public readonly credentialProviderConfigurations: ICredentialProviderConfig[] | undefined;
 
   /**
    * The protocol type (always MCP for now)
@@ -345,7 +396,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
   public readonly targetProtocolType = GatewayTargetProtocolType.MCP;
 
   /**
-   * The specific MCP target type (Lambda, OpenAPI, or Smithy)
+   * The specific MCP target type (Lambda, OpenAPI, Smithy, or MCP Server)
    */
   public readonly targetType: McpTargetType;
 
@@ -392,10 +443,10 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
     this.targetConfiguration = props.targetConfiguration;
     this.targetType = this.targetConfiguration.targetType;
 
-    // Default credential providers to IAM role if not provided
-    this.credentialProviderConfigurations = props.credentialProviderConfigurations ?? [
-      GatewayCredentialProvider.fromIamRole(),
-    ];
+    // Get target-specific credential configurations
+    this.credentialProviderConfigurations = this._getTargetSpecificCredentials(
+      props.credentialProviderConfigurations,
+    );
 
     // Bind the target configuration
     // This sets up permissions and dependencies
@@ -407,7 +458,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       name: this.name,
       description: this.description,
       credentialProviderConfigurations: Lazy.any({
-        produce: () => this.credentialProviderConfigurations.map(provider => provider._render()),
+        produce: () => this._renderCredentialProviderConfigurations(),
       }),
 
       targetConfiguration: Lazy.any({
@@ -421,10 +472,12 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       cfnProps,
     );
 
-    for (const provider of this.credentialProviderConfigurations) {
-      provider
-        .grantNeededPermissionsToRole(this.gateway.role)
-        ?.applyBefore(this.targetResource);
+    if (this.credentialProviderConfigurations) {
+      for (const provider of this.credentialProviderConfigurations) {
+        provider
+          .grantNeededPermissionsToRole(this.gateway.role)
+          ?.applyBefore(this.targetResource);
+      }
     }
 
     this.targetId = this.targetResource.attrTargetId;
@@ -433,6 +486,65 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
     this.statusReasons = this.targetResource.attrStatusReasons;
     this.createdAt = this.targetResource.attrCreatedAt;
     this.updatedAt = this.targetResource.attrUpdatedAt;
+  }
+
+  /**
+   * Grants permission to synchronize this gateway's targets
+   *
+   * This method grants the `SynchronizeGatewayTargets` permission, which is primarily
+   * needed for MCP Server targets when you need to refresh the tool catalog after the
+   * MCP server's tools have changed.
+   */
+  public grantSync(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: grantee,
+      actions: GatewayPerms.SYNC_PERMS,
+      resourceArns: [this.gateway.gatewayArn],
+    });
+  }
+
+  /**
+   * Determines the credential provider configurations based on target type
+   *
+   * - Lambda & Smithy: Default to IAM role if not provided
+   * - MCP Server: Return undefined if not provided (service handles NoAuth)
+   * - OpenAPI: Return as-is (must be explicitly provided)
+   *
+   * @param providedCredentials The credentials from props
+   * @returns The credential configurations to use, or undefined
+   * @internal
+   */
+  private _getTargetSpecificCredentials(
+    providedCredentials: ICredentialProviderConfig[] | undefined,
+  ): ICredentialProviderConfig[] | undefined {
+    if (providedCredentials && providedCredentials.length > 0) {
+      return providedCredentials;
+    }
+    // Apply target-specific defaults when not provided
+    switch (this.targetType) {
+      case McpTargetType.LAMBDA:
+      case McpTargetType.SMITHY_MODEL:
+        return [GatewayCredentialProvider.fromIamRole()];
+
+      case McpTargetType.MCP_SERVER:
+        // Return empty array, - service handles NoAuth automatically
+        return [];
+
+      case McpTargetType.OPENAPI_SCHEMA:
+        // No default - must be explicitly provided, service handles automatically
+        return undefined;
+
+      default:
+        return [GatewayCredentialProvider.fromIamRole()];
+    }
+  }
+
+  /**
+   * Renders credential provider configurations for CloudFormation
+   * @internal
+   */
+  private _renderCredentialProviderConfigurations(): any {
+    return this.credentialProviderConfigurations?.map(provider => provider._render());
   }
 
   /**
