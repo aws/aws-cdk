@@ -1,0 +1,15 @@
+{
+  "resources": {
+    "Cluster": {
+      "grants": {
+        "taskProtection": {
+          "actions": [
+            "ecs:UpdateTaskProtection"
+          ],
+          "arnFormat": "${clusterArn}/*",
+          "docSummary": "Grants an ECS Task Protection API permission to the specified grantee.\nThis method provides a streamlined way to assign the 'ecs:UpdateTaskProtection'\npermission, enabling the grantee to manage task protection in the ECS cluster."
+        }
+      }
+    }
+  }
+}
