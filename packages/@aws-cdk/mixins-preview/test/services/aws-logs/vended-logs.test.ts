@@ -281,11 +281,11 @@ describe('Cloudwatch Logs Delivery Destination', () => {
         'Fn::Join': [
           '',
           [
-            '{\'Statement\':[{\'Action\':[\'logs:CreateLogStream\',\'logs:PutLogEvents\'],\'Condition\':{\'StringEquals\':{\'aws:SourceAccount\':\'',
+            '{"Statement":[{"Action":["logs:CreateLogStream","logs:PutLogEvents"],"Condition":{"StringEquals":{"aws:SourceAccount":"',
             {
               Ref: 'AWS::AccountId',
             },
-            '\'},\'ArnLike\':{\'aws:SourceArn\':\'arn:',
+            '"},"ArnLike":{"aws:SourceArn":"arn:',
             {
               Ref: 'AWS::Partition',
             },
@@ -297,18 +297,18 @@ describe('Cloudwatch Logs Delivery Destination', () => {
             {
               Ref: 'AWS::AccountId',
             },
-            ':*\'}},\'Effect\':\'Allow\',\'Principal\':{\'Service\':\'delivery.logs.amazonaws.com\'},\'Resource\':\'',
+            ':*"}},"Effect":"Allow","Principal":{"Service":"delivery.logs.amazonaws.com"},"Resource":"',
             {
               'Fn::GetAtt': [
                 'LogGroupDelivery0EF9ECE4',
                 'Arn',
               ],
             },
-            ':log-stream:*\'}],\'Version\':\'2012-10-17\'}',
+            ':log-stream:*"}],"Version":"2012-10-17"}',
           ],
         ],
       },
-      PolicyName: 'LogGroupDeliveryPolicy7F26860F',
+      PolicyName: 'LogDestinationDeliveryPolicy',
     });
 
     // Validate that DeliveryDestination depends on the Cloudwatch resource policy
@@ -340,6 +340,33 @@ describe('Cloudwatch Logs Delivery Destination', () => {
       permissionsVersion: 'V2',
       destinationService: 'CWL',
       logGroup,
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 1);
+  });
+
+  test('creates only one resource policy if multiple Log Delivery Destinations are created', () => {
+    const stack = new Stack();
+    const logGroup1 = new LogGroup(stack, 'LogGroup1Delivery', {
+      logGroupName: 'test-1-log-group',
+      retention: RetentionDays.ONE_WEEK,
+    });
+
+    const logGroup2 = new LogGroup(stack, 'LogGroup2Delivery', {
+      logGroupName: 'test-2-log-group',
+      retention: RetentionDays.ONE_WEEK,
+    });
+
+    new LogsDeliveryDestination(stack, 'CloudwatchDelivery1', {
+      permissionsVersion: 'V2',
+      destinationService: 'CWL',
+      logGroup: logGroup1,
+    });
+
+    new LogsDeliveryDestination(stack, 'CloudwatchDelivery2', {
+      permissionsVersion: 'V1',
+      destinationService: 'CWL',
+      logGroup: logGroup2,
     });
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 1);
