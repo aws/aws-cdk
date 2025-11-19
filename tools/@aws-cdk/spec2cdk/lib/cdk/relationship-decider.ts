@@ -44,7 +44,7 @@ export class RelationshipDecider {
   private readonly namespace: string;
   public readonly imports = new Array<SelectiveImport>();
 
-  constructor(readonly resource: Resource, private readonly db: SpecDatabase) {
+  constructor(readonly resource: Resource, private readonly db: SpecDatabase, private readonly enableRelationships = true) {
     this.namespace = namespaceFromResource(resource);
   }
 
@@ -75,6 +75,9 @@ export class RelationshipDecider {
    * properties as a relationship can only target a primary identifier or arn
    */
   private findTargetResource(sourcePropName: string, relationship: RelationshipRef) {
+    if (!this.enableRelationships) {
+      return undefined;
+    }
     const targetResource = this.db.lookup('resource', 'cloudFormationType', 'equals', relationship.cloudFormationType).only();
     const refProps = getReferenceProps(targetResource);
     const expectedPropName = referencePropertyName(relationship.propertyName, targetResource.name);
