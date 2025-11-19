@@ -13,6 +13,7 @@
 
 import { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { ValidationError } from './validation-helpers';
+import { Token } from 'aws-cdk-lib';
 import { IUserPool, IUserPoolClient } from 'aws-cdk-lib/aws-cognito';
 
 /**
@@ -44,7 +45,7 @@ export abstract class RuntimeAuthorizerConfiguration {
     allowedClients?: string[],
     allowedAudience?: string[],
   ): RuntimeAuthorizerConfiguration {
-    if (!discoveryUrl.endsWith('/.well-known/openid-configuration')) {
+    if (!Token.isUnresolved(discoveryUrl) && !discoveryUrl.endsWith('/.well-known/openid-configuration')) {
       throw new ValidationError('JWT discovery URL must end with /.well-known/openid-configuration');
     }
     return new JwtAuthorizerConfiguration(discoveryUrl, allowedClients, allowedAudience);
@@ -81,7 +82,7 @@ export abstract class RuntimeAuthorizerConfiguration {
     clientId: string,
     allowedAudience?: string[],
   ): RuntimeAuthorizerConfiguration {
-    if (!discoveryUrl.endsWith('/.well-known/openid-configuration')) {
+    if (!Token.isUnresolved(discoveryUrl) && !discoveryUrl.endsWith('/.well-known/openid-configuration')) {
       throw new ValidationError('OAuth discovery URL must end with /.well-known/openid-configuration');
     }
     return new OAuthAuthorizerConfiguration(discoveryUrl, clientId, allowedAudience);
