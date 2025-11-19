@@ -152,18 +152,11 @@ IAM_NO_WILDCARD_ACTIONS_INLINE for Type: ResolvedCheck was not compliant as prop
 
 **After (Enhanced Format):**
 ```
-Rule: IAM_NO_WILDCARD_ACTIONS_INLINE (Type: ResolvedCheck)
+Rule: IAM_NO_WILDCARD_ACTIONS_INLINE (Type: Resolved)
 ==================================================
 
-1. Resource: Role1
-   Location: Line 324, Column 20
-   Property: Policies[*].PolicyDocument.Statement[*]
-   Issue: is missing.
-
-2. Resource: Role2
-   Location: Line 485, Column 20
-   Property: Policies[*].PolicyDocument.Statement[*]
-   Issue: is missing.
+- Check was not compliant as property [Policies[*].PolicyDocument.Statement[*]] is missing. Value traversed to [Path=/Resources/Role1/Properties[L:324,C:20]]
+- Check was not compliant as property [Policies[*].PolicyDocument.Statement[*]] is missing. Value traversed to [Path=/Resources/Role2/Properties[L:485,C:20]]
 ```
 
 ---
