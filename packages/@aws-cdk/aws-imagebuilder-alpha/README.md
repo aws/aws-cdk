@@ -102,6 +102,7 @@ phases:
 Most developer-friendly approach using objects:
 
 ```ts
+
 const component = new imagebuilder.Component(this, 'JsonComponent', {
   platform: imagebuilder.Platform.LINUX,
   data: imagebuilder.ComponentData.fromJsonObject({
@@ -115,19 +116,58 @@ const component = new imagebuilder.Component(this, 'JsonComponent', {
             action: imagebuilder.ComponentAction.CREATE_FILE,
             inputs: {
               path: '/etc/myapp/config.json',
-              content: '{"env": "production"}',
-            },
-          },
-        ],
-      },
-    ],
-  }),
+              content: '{"env": "production"}'
+            }
+          }
+        ]
+      }
+    ]
+  })
 });
 ```
 
 ##### Structured Component Document
 
-For type-safe, CDK-native definitions with enhanced properties like `timeout` and `onFailure`:
+For type-safe, CDK-native definitions with enhanced properties like `timeout` and `onFailure`.
+
+###### Defining a component step
+
+You can define steps in the component which will be executed in order when the component is applied:
+
+```ts
+const step: imagebuilder.ComponentDocumentStep = {
+  name: 'configure-app',
+  action: imagebuilder.ComponentAction.CREATE_FILE,
+  inputs: imagebuilder.ComponentStepInputs.fromObject({
+    path: '/etc/myapp/config.json',
+    content: '{"env": "production"}'
+  })
+};
+```
+
+###### Defining a component phase
+
+Phases group steps together, which run in sequence when building, validating or testing in the component:
+
+```ts
+const phase: imagebuilder.ComponentDocumentPhase = {
+  name: imagebuilder.ComponentPhaseName.BUILD,
+  steps: [
+    {
+      name: 'configure-app',
+      action: imagebuilder.ComponentAction.CREATE_FILE,
+      inputs: imagebuilder.ComponentStepInputs.fromObject({
+        path: '/etc/myapp/config.json',
+        content: '{"env": "production"}'
+      })
+    }
+  ]
+};
+```
+
+###### Defining a component
+
+The component data defines all steps across the provided phases to execute during the build:
 
 ```ts  
 const component = new imagebuilder.Component(this, 'StructuredComponent', {
@@ -143,14 +183,14 @@ const component = new imagebuilder.Component(this, 'StructuredComponent', {
             action: imagebuilder.ComponentAction.EXECUTE_BASH,
             timeout: Duration.minutes(10),
             onFailure: imagebuilder.ComponentOnFailure.CONTINUE,
-            inputs: {
-              commands: ['./install-script.sh'],
-            },
-          },
-        ],
-      },
-    ],
-  }),
+            inputs: imagebuilder.ComponentStepInputs.fromObject({
+              commands: ['./install-script.sh']
+            })
+          }
+        ]
+      }
+    ]
+  })
 });
 ```
 

@@ -251,29 +251,6 @@ export interface ComponentDocument {
 /**
  * The phase to run in a specific workflow in an image build, which define the steps to execute to customize or test
  * the instance.
- *
- * @example
- * const phase: imagebuilder.ComponentDocumentPhase = {
- *   name: imagebuilder.ComponentPhaseName.BUILD,
- *   steps: [
- *     {
- *       name: 'configure-app',
- *       action: imagebuilder.ComponentAction.CREATE_FILE,
- *       inputs: {
- *         path: '/etc/myapp/config.json',
- *         content: '{"env": "production"}',
- *       },
- *     }
- *   ]
- * }
- *
- * const component = new imagebuilder.Component(this, 'JsonComponent', {
- *   platform: imagebuilder.Platform.LINUX,
- *   data: imagebuilder.ComponentData.fromJsonObject({
- *     schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
- *     phases: [phase]
- *   })
- * });
  */
 export interface ComponentDocumentPhase {
   /**
@@ -290,29 +267,6 @@ export interface ComponentDocumentPhase {
 /**
  * The step to run in a specific phase of the image build, which defines the step to execute to customize or test the
  * instance.
- *
- * @example
- * const step: imagebuilder.ComponentDocumentStep = {
- *   name: 'configure-app',
- *   action: imagebuilder.ComponentAction.CREATE_FILE,
- *   inputs: {
- *     path: '/etc/myapp/config.json',
- *     content: '{"env": "production"}',
- *   },
- * }
- *
- * const component = new imagebuilder.Component(this, 'JsonComponent', {
- *   platform: imagebuilder.Platform.LINUX,
- *   data: imagebuilder.ComponentData.fromJsonObject({
- *     schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
- *     phases: [
- *       {
- *         name: imagebuilder.ComponentPhaseName.BUILD,
- *         steps: [step],
- *       }
- *     ]
- *   })
- * });
  */
 export interface ComponentDocumentStep {
   /**
@@ -330,7 +284,7 @@ export interface ComponentDocumentStep {
    *
    * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/toe-action-modules.html
    */
-  readonly inputs: any;
+  readonly inputs: ComponentStepInputs;
 
   /**
    * The condition to apply to the step. If the condition is false, then the step is skipped
@@ -340,7 +294,7 @@ export interface ComponentDocumentStep {
    * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/toe-conditional-constructs.html
    * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/toe-comparison-operators.html
    */
-  readonly if?: any;
+  readonly if?: ComponentStepIfCondition;
 
   /**
    * A looping construct defining a repeated sequence of instructions
@@ -689,6 +643,61 @@ export enum ComponentSchemaVersion {
 }
 
 /**
+ * Represents the inputs for a step in the component document
+ */
+export class ComponentStepInputs {
+  /**
+   * Creates the input value from an object, for the component step
+   *
+   * @param inputsObject The object containing the input values
+   */
+  public static fromObject(inputsObject: { [key: string]: any }): ComponentStepInputs {
+    return new ComponentStepInputs(inputsObject);
+  }
+
+  /**
+   * Creates the input value from a list of input objects, for the component step
+   *
+   * @param inputsObjectList The list of objects containing the input values
+   */
+  public static fromList(inputsObjectList: { [key: string]: any }[]): ComponentStepInputs {
+    return new ComponentStepInputs(inputsObjectList);
+  }
+
+  /**
+   * The rendered input value
+   */
+  public readonly inputs: any;
+
+  protected constructor(input: any) {
+    this.inputs = input;
+  }
+}
+
+/**
+ * Represents an `if` condition in the component document
+ */
+export class ComponentStepIfCondition {
+  /**
+   * Creates the `if` value from an object, for the component step
+   *
+   * @param ifObject The object containing the `if` condition
+   */
+  public static fromObject(ifObject: { [key: string]: any }): ComponentStepIfCondition {
+    return new ComponentStepIfCondition(ifObject);
+  }
+
+  /**
+   * The rendered input value
+   */
+  public readonly ifCondition: any;
+
+  protected constructor(ifCondition: any) {
+    this.ifCondition = ifCondition;
+  }
+}
+
+/**
  * Helper class for referencing and uploading component data
  */
 export abstract class ComponentData {
@@ -756,9 +765,9 @@ export abstract class ComponentData {
           action: step.action,
           ...(step.onFailure !== undefined && { onFailure: step.onFailure }),
           ...(step.timeout !== undefined && { timeoutSeconds: step.timeout.toSeconds() }),
-          ...(step.if !== undefined && { if: step.if }),
+          ...(step.if !== undefined && { if: step.if.ifCondition }),
           ...(step.loop !== undefined && { loop: step.loop }),
-          inputs: step.inputs,
+          inputs: step.inputs.inputs,
         })),
       })),
     });
