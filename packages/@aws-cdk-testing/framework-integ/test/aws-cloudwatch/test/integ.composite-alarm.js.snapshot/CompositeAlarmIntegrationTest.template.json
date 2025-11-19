@@ -112,7 +112,7 @@
          "Arn"
         ]
        },
-       "\"))) AND AT_LEAST(2, ALARM , (",
+       "\"))) AND AT_LEAST(2, ALARM, (",
        {
         "Fn::GetAtt": [
          "Alarm1F9009D71",
@@ -133,7 +133,7 @@
          "Arn"
         ]
        },
-       ")) AND AT_LEAST(60%, NOT OK , (",
+       ")) AND AT_LEAST(60%, NOT OK, (",
        {
         "Fn::GetAtt": [
          "Alarm1F9009D71",

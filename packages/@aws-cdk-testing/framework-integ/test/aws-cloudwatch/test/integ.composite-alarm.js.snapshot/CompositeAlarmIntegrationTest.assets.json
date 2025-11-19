@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "3943b179d9074a1006b8024b5a71901e57466caf9c2a157b6a20fd75f1faa1fd": {
+    "8284aa5320b6b544ab48fdc0420699ed873087ee3c1007224ffefea31e22caf2": {
       "displayName": "CompositeAlarmIntegrationTest Template",
       "source": {
         "path": "CompositeAlarmIntegrationTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-77901b19": {
+        "current_account-current_region-de3be2dc": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "3943b179d9074a1006b8024b5a71901e57466caf9c2a157b6a20fd75f1faa1fd.json",
+          "objectKey": "8284aa5320b6b544ab48fdc0420699ed873087ee3c1007224ffefea31e22caf2.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
