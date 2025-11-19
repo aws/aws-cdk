@@ -1,7 +1,6 @@
 import { Construct } from 'constructs';
 import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
-import { CfnTable, CfnTableProps } from './dynamodb.generated';
-import * as perms from './perms';
+import { CfnTable, CfnTableProps, ITableRef, TableReference } from './dynamodb.generated';
 import { ReplicaProvider } from './replica-provider';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
@@ -12,9 +11,12 @@ import {
   ContributorInsightsSpecification,
   validateContributorInsights,
 } from './shared';
+import { StreamGrants } from './stream-grants';
+import { TableGrants } from './table-grants';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
+import { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
@@ -623,7 +625,7 @@ export interface TableAttributes {
   readonly grantIndexPermissions?: boolean;
 }
 
-export abstract class TableBase extends Resource implements ITable, iam.IResourceWithPolicy {
+export abstract class TableBase extends Resource implements ITable, ITableRef, iam.IResourceWithPolicy, IEncryptedResource {
   /**
    * @attribute
    */
@@ -650,7 +652,58 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    */
   public abstract resourcePolicy?: iam.PolicyDocument;
 
+  /**
+   * Additional regions other than the main one that this table is replicated to
+   *
+   */
+  public abstract readonly regions?: string[];
+
+  /**
+   * @deprecated This member is still filled but it is not read
+   */
   protected readonly regionalArns = new Array<string>();
+
+  public grantOnKey(grantee: IGrantable, ...actions: string[]): GrantOnKeyResult {
+    return {
+      grant: this.encryptionKey?.grant(grantee, ...actions),
+    };
+  }
+
+  public get tableRef() {
+    return {
+      tableArn: this.tableArn,
+      tableName: this.tableName,
+    } as TableReference;
+  }
+
+  /**
+   * Grant a predefined set of permissions on this Table.
+   */
+  public get grants(): TableGrants {
+    return new TableGrants({
+      table: this,
+      encryptedResource: this,
+      policyResource: this,
+      regions: this.regions,
+      hasIndex: this.hasIndex,
+    });
+  }
+
+  /**
+   * Grant a predefined set of permissions on this Table's Stream, if present.
+   *
+   * Will throw if the Table has not been configured for streaming.
+   */
+  public get streamGrants(): StreamGrants {
+    if (!this.tableStreamArn) {
+      throw new ValidationError(`DynamoDB Streams must be enabled on the table ${this.node.path}`, this);
+    }
+    return new StreamGrants({
+      table: this,
+      tableStreamArn: this.tableStreamArn,
+      encryptionKey: this.encryptionKey,
+    });
+  }
 
   /**
    * Adds a statement to the resource policy associated with this table.
@@ -668,19 +721,7 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipalOrResource({
-      grantee,
-      actions,
-      resourceArns: [
-        this.tableArn,
-        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
-        ...this.regionalArns,
-        ...this.regionalArns.map(arn => Lazy.string({
-          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
-        })),
-      ],
-      resource: this,
-    });
+    return this.grants.actions(grantee, ...actions);
   }
   /**
    * Adds an IAM policy statement associated with this table's stream to an
@@ -693,15 +734,7 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
    */
   public grantStream(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    if (!this.tableStreamArn) {
-      throw new ValidationError(`DynamoDB Streams must be enabled on the table ${this.node.path}`, this);
-    }
-
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: [this.tableStreamArn],
-    });
+    return this.streamGrants.actions(grantee, ...actions);
   }
 
   /**
@@ -714,8 +747,7 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    * @param grantee The principal to grant access to
    */
   public grantReadData(grantee: iam.IGrantable): iam.Grant {
-    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.DESCRIBE_TABLE);
-    return this.combinedGrant(grantee, { keyActions: perms.KEY_READ_ACTIONS, tableActions });
+    return this.grants.readData(grantee);
   }
 
   /**
@@ -724,15 +756,7 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    * @param grantee The principal (no-op if undefined)
    */
   public grantTableListStreams(grantee: iam.IGrantable): iam.Grant {
-    if (!this.tableStreamArn) {
-      throw new ValidationError(`DynamoDB Streams must be enabled on the table ${this.node.path}`, this);
-    }
-
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions: ['dynamodb:ListStreams'],
-      resourceArns: ['*'],
-    });
+    return this.streamGrants.list(grantee);
   }
 
   /**
@@ -746,8 +770,7 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    * @param grantee The principal to grant access to
    */
   public grantStreamRead(grantee: iam.IGrantable): iam.Grant {
-    this.grantTableListStreams(grantee);
-    return this.combinedGrant(grantee, { keyActions: perms.KEY_READ_ACTIONS, streamActions: perms.READ_STREAM_DATA_ACTIONS });
+    return this.streamGrants.read(grantee);
   }
 
   /**
@@ -760,9 +783,7 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    * @param grantee The principal to grant access to
    */
   public grantWriteData(grantee: iam.IGrantable): iam.Grant {
-    const tableActions = perms.WRITE_DATA_ACTIONS.concat(perms.DESCRIBE_TABLE);
-    const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
-    return this.combinedGrant(grantee, { keyActions, tableActions });
+    return this.grants.writeData(grantee);
   }
 
   /**
@@ -776,9 +797,7 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    * @param grantee The principal to grant access to
    */
   public grantReadWriteData(grantee: iam.IGrantable): iam.Grant {
-    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS).concat(perms.DESCRIBE_TABLE);
-    const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
-    return this.combinedGrant(grantee, { keyActions, tableActions });
+    return this.grants.readWriteData(grantee);
   }
 
   /**
@@ -790,8 +809,7 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
    * @param grantee The principal to grant access to
    */
   public grantFullAccess(grantee: iam.IGrantable) {
-    const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
-    return this.combinedGrant(grantee, { keyActions, tableActions: ['dynamodb:*'] });
+    return this.grants.fullAccess(grantee);
   }
 
   /**
@@ -1020,56 +1038,6 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
 
   protected abstract get hasIndex(): boolean;
 
-  /**
-   * Adds an IAM policy statement associated with this table to an IAM
-   * principal's policy.
-   * @param grantee The principal (no-op if undefined)
-   * @param opts Options for keyActions, tableActions and streamActions
-   */
-  private combinedGrant(
-    grantee: iam.IGrantable,
-    opts: { keyActions?: string[]; tableActions?: string[]; streamActions?: string[] },
-  ): iam.Grant {
-    if (this.encryptionKey && opts.keyActions) {
-      this.encryptionKey.grant(grantee, ...opts.keyActions);
-    }
-    if (opts.tableActions) {
-      const resources = [
-        this.tableArn,
-        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
-        ...this.regionalArns,
-        ...this.regionalArns.map(arn => Lazy.string({
-          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
-        })),
-      ];
-      const ret = iam.Grant.addToPrincipalOrResource({
-        grantee,
-        actions: opts.tableActions,
-        resourceArns: resources,
-        // Use wildcard for resource policy to avoid circular dependency when grantee is a resource principal
-        // (e.g., AccountRootPrincipal). This follows the same pattern as KMS (aws-kms/lib/key.ts).
-        // resourceArns is used for principal policies, resourceSelfArns is used for resource policies.
-        resourceSelfArns: ['*'],
-        resource: this,
-      });
-      return ret;
-    }
-    if (opts.streamActions) {
-      if (!this.tableStreamArn) {
-        throw new ValidationError(`DynamoDB Streams must be enabled on the table ${this.node.path}`, this);
-      }
-      const resources = [this.tableStreamArn];
-      const ret = iam.Grant.addToPrincipalOrResource({
-        grantee,
-        actions: opts.streamActions,
-        resourceArns: resources,
-        resource: this,
-      });
-      return ret;
-    }
-    throw new ValidationError(`Unexpected 'action', ${opts.tableActions || opts.streamActions}`, this);
-  }
-
   private cannedMetric(
     fn: (dims: { TableName: string }) => cloudwatch.MetricProps,
     props?: cloudwatch.MetricOptions): cloudwatch.Metric {
@@ -1139,9 +1107,10 @@ export class Table extends TableBase {
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: kms.IKey;
       public resourcePolicy?: iam.PolicyDocument;
-      protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
-        (attrs.globalIndexes ?? []).length > 0 ||
-        (attrs.localIndexes ?? []).length > 0;
+      public readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
+          (attrs.globalIndexes ?? []).length > 0 ||
+          (attrs.localIndexes ?? []).length > 0;
+      public readonly regions = [];
 
       constructor(_tableArn: string, tableName: string, tableStreamArn?: string) {
         super(scope, id);
@@ -1229,6 +1198,8 @@ export class Table extends TableBase {
   private readonly scalingRole: iam.IRole;
 
   private readonly globalReplicaCustomResources = new Array<CustomResource>();
+
+  public readonly regions? = new Array<string>();
 
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id, {
@@ -1847,6 +1818,7 @@ export class Table extends TableBase {
       }
 
       // Save regional arns for grantXxx() methods
+      this.regions?.push(region);
       this.regionalArns.push(stack.formatArn({
         region,
         service: 'dynamodb',
