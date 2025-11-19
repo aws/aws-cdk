@@ -14,6 +14,10 @@ describe('framework', () => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-test'));
   });
 
+  afterEach(() => {
+    fs.removeSync(tmpDir);
+  });
+
   test('can codegen cdk function', () => {
     // GIVEN
     const module = new HandlerFrameworkModule('cdk-testing/test-provider');
