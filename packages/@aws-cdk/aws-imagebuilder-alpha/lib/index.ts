@@ -3,6 +3,7 @@
 export * from './component';
 export * from './container-recipe';
 export * from './distribution-configuration';
+export * from './image-recipe';
 export * from './infrastructure-configuration';
 
 export * from './base-image';

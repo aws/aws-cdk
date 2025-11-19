@@ -4,6 +4,66 @@ import * as ssm from 'aws-cdk-lib/aws-ssm';
 /**
  * Represents a base image that is used to start from in EC2 Image Builder image builds
  */
+export class BaseImage {
+  /**
+   * The AMI ID to use as a base image in an image recipe
+   *
+   * @param amiId The AMI ID to use as the base image
+   */
+  public static fromAmiId(amiId: string): BaseImage {
+    return new BaseImage(amiId);
+  }
+
+  /**
+   * The marketplace product ID for an AMI product to use as the base image in an image recipe
+   *
+   * @param productId The Marketplace AMI product ID to use as the base image
+   */
+  public static fromMarketplaceProductId(productId: string): BaseImage {
+    return new BaseImage(productId);
+  }
+
+  /**
+   * The SSM parameter to use as the base image in an image recipe
+   *
+   * @param parameter The SSM parameter to use as the base image
+   */
+  public static fromSsmParameter(parameter: ssm.IParameter): BaseImage {
+    return this.fromSsmParameterName(parameter.parameterArn);
+  }
+
+  /**
+   * The parameter name for the SSM parameter to use as the base image in an image recipe
+   *
+   * @param parameterName The name of the SSM parameter to use as the base image
+   */
+  public static fromSsmParameterName(parameterName: string): BaseImage {
+    return new BaseImage(`ssm:${parameterName}`);
+  }
+
+  /**
+   * The direct string value of the base image to use in an image recipe. This can be an EC2 Image Builder image ARN,
+   * an SSM parameter, an AWS Marketplace product ID, or an AMI ID.
+   *
+   * @param baseImageString The base image as a direct string value
+   */
+  public static fromString(baseImageString: string): BaseImage {
+    return new BaseImage(baseImageString);
+  }
+
+  /**
+   * The rendered base image to use
+   **/
+  public readonly image: string;
+
+  protected constructor(image: string) {
+    this.image = image;
+  }
+}
+
+/**
+ * Represents a base image that is used to start from in EC2 Image Builder image builds
+ */
 export class BaseContainerImage {
   /**
    * The DockerHub image to use as the base image in a container recipe
@@ -108,3 +168,4 @@ export class ContainerInstanceImage {
     this.image = image;
   }
 }
+
