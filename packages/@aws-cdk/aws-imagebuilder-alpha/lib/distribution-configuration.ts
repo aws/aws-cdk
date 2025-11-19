@@ -588,6 +588,17 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
     }
   }
 
+  /**
+   * Renders the AMI and container distributions provided as input to the construct, into the `Distribution[]` structure
+   * that CfnDistributionConfiguration expects to receive. Distributions provided to CfnDistributionConfiguration must
+   * map to a unique region per entry in the list - this render function also handles combining AMI and container
+   * distributions in the same region into a single entry.
+   *
+   * This is rendered at synthesis time, as users can add additional AMI and container distributions with
+   * `addAmiDistributions` and `addContainerDistributions`, after the construct has been instantiated.
+   *
+   * @private
+   */
   private renderDistributions(): CfnDistributionConfiguration.DistributionProperty[] {
     if (
       !Object.keys(this.amiDistributionsByRegion).length &&
