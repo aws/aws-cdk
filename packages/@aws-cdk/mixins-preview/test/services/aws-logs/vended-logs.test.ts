@@ -1,10 +1,11 @@
 import { Stack } from 'aws-cdk-lib';
 import { Bucket, BucketPolicy } from 'aws-cdk-lib/aws-s3';
-import { FirehoseDeliveryDestination, LogsDeliveryDestination, S3DeliveryDestination } from '../../../lib/services/aws-logs/vended-logs';
+import { FirehoseDeliveryDestination, LogsDeliveryDestination, S3DeliveryDestination, XRayDeliveryDestination } from '../../../lib/services/aws-logs/vended-logs';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { DeliveryStream, S3Bucket } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
 describe('S3 Delivery Destination', () => {
   test('creates an S3 delivery destination when given a bucket', () => {
@@ -249,6 +250,26 @@ describe('S3 Delivery Destination', () => {
 
     Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 1);
   });
+
+  test('able to make multiple delivery destinations that use the same bucket', () => {
+    const stack = new Stack();
+    const bucket = new Bucket(stack, 'Destination');
+
+    new S3DeliveryDestination(stack, 'S3Destination1', {
+      permissionsVersion: 'V1',
+      destinationService: 'S3',
+      s3Bucket: bucket,
+    });
+
+    new S3DeliveryDestination(stack, 'S3Destination2', {
+      permissionsVersion: 'V2',
+      destinationService: 'S3',
+      s3Bucket: bucket,
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 2);
+  });
 });
 
 describe('Cloudwatch Logs Delivery Destination', () => {
@@ -260,7 +281,6 @@ describe('Cloudwatch Logs Delivery Destination', () => {
     });
 
     new LogsDeliveryDestination(stack, 'CloudwatchDelivery', {
-      permissionsVersion: 'V2',
       destinationService: 'CWL',
       logGroup,
     });
@@ -337,7 +357,6 @@ describe('Cloudwatch Logs Delivery Destination', () => {
     }));
 
     new LogsDeliveryDestination(stack, 'CloudwatchDelivery', {
-      permissionsVersion: 'V2',
       destinationService: 'CWL',
       logGroup,
     });
@@ -358,18 +377,69 @@ describe('Cloudwatch Logs Delivery Destination', () => {
     });
 
     new LogsDeliveryDestination(stack, 'CloudwatchDelivery1', {
-      permissionsVersion: 'V2',
       destinationService: 'CWL',
       logGroup: logGroup1,
     });
 
     new LogsDeliveryDestination(stack, 'CloudwatchDelivery2', {
-      permissionsVersion: 'V1',
       destinationService: 'CWL',
       logGroup: logGroup2,
     });
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 1);
+  });
+
+  test('creates a new resource policy if there is an existing resource policy unrelated to Cloudwatch logs', () => {
+    const stack = new Stack();
+    const logGroup = new LogGroup(stack, 'LogGroupDelivery', {
+      logGroupName: 'test-log-group',
+      retention: RetentionDays.ONE_WEEK,
+    });
+
+    const secret = new Secret(stack, 'MySecret', {
+      description: 'Sample secret with resource policy',
+    });
+
+    secret.addToResourcePolicy(new PolicyStatement({
+      effect: Effect.ALLOW,
+      principals: [new AccountRootPrincipal()],
+      actions: ['secretsmanager:GetSecretValue'],
+      resources: ['*'],
+      conditions: {
+        StringEquals: {
+          'secretsmanager:ResourceTag/Environment': 'Production',
+        },
+      },
+    }));
+
+    new LogsDeliveryDestination(stack, 'CloudwatchDelivery', {
+      destinationService: 'CWL',
+      logGroup,
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::ResourcePolicy', 1);
+  });
+
+  test('able to make multiple delivery destinations with the same log group', () => {
+    const stack = new Stack();
+    const logGroup = new LogGroup(stack, 'LogGroupDelivery', {
+      logGroupName: 'test-log-group',
+      retention: RetentionDays.ONE_WEEK,
+    });
+
+    new LogsDeliveryDestination(stack, 'CloudwatchDelivery1', {
+      destinationService: 'CWL',
+      logGroup,
+    });
+
+    new LogsDeliveryDestination(stack, 'CloudwatchDelivery2', {
+      destinationService: 'CWL',
+      logGroup,
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 2);
   });
 });
 
@@ -396,7 +466,6 @@ describe('Firehose Stream Delivery Destination', () => {
     });
 
     new FirehoseDeliveryDestination(stack, 'FirehoseDelivery', {
-      permissionsVersion: 'V2',
       destinationService: 'FH',
       deliveryStream: stream,
     });
@@ -418,5 +487,116 @@ describe('Firehose Stream Delivery Destination', () => {
         Value: 'true',
       })]),
     });
+  });
+
+  test('able to make multiple delivery destinations that use the same stream', () => {
+    const stack = new Stack();
+    const streamBucket = new Bucket(stack, 'DeliveryBucket', {});
+    const firehoseRole = new Role(stack, 'FirehoseRole', {
+      assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
+      inlinePolicies: {
+        S3Access: new PolicyDocument({
+          statements: [
+            new PolicyStatement({
+              actions: ['s3:PutObject', 's3:GetObject', 's3:ListBucket'],
+              resources: [streamBucket.bucketArn, `${streamBucket.bucketArn}/*`],
+            }),
+          ],
+        }),
+      },
+    });
+    const stream = new DeliveryStream(stack, 'Firehose', {
+      destination: new S3Bucket(streamBucket),
+      role: firehoseRole,
+    });
+
+    new FirehoseDeliveryDestination(stack, 'FirehoseDelivery1', {
+      destinationService: 'FH',
+      deliveryStream: stream,
+    });
+
+    new FirehoseDeliveryDestination(stack, 'FirehoseDelivery2', {
+      destinationService: 'FH',
+      deliveryStream: stream,
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 2);
+  });
+});
+
+describe('XRay Delivery Destination', () => {
+  test('creates an XRay Delivery destination', () => {
+    const stack = new Stack();
+
+    new XRayDeliveryDestination(stack, 'XRayDestination', {
+      destinationService: 'XRAY',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'XRAY',
+      Name: Match.stringLikeRegexp('cdk-xray-dest-.*'),
+    });
+  });
+
+  test('when multiple XRay Delivery destinations are created on one stack, only create one XRay resource policy', () => {
+    const stack = new Stack();
+
+    new XRayDeliveryDestination(stack, 'XRayDestination1', {
+      destinationService: 'XRAY',
+    });
+
+    new XRayDeliveryDestination(stack, 'XRayDestination2', {
+      destinationService: 'XRAY',
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::XRay::ResourcePolicy', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 2);
+  });
+
+  test('XRay Delivery resource policy gets updated with log delivery sources', () => {
+    const stack = new Stack();
+
+    const xray = new XRayDeliveryDestination(stack, 'XRayDestination', {
+      destinationService: 'XRAY',
+    });
+
+    const bucket = new Bucket(stack, 'XRayTestBucket');
+    const secret = new Secret(stack, 'XRayTestSecret', {
+      description: 'Sample secret with arn to use for Xray',
+    });
+
+    xray.xrayResourcePolicy.addSourceToPolicy(bucket.bucketArn);
+    xray.xrayResourcePolicy.addSourceToPolicy(secret.secretArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::XRay::ResourcePolicy', {
+      PolicyDocument: {
+        'Fn::Join': [
+          '',
+          Match.arrayWith([
+            Match.stringLikeRegexp('.*logs:LogGeneratingResourceArns.*'),
+            { 'Fn::GetAtt': ['XRayTestBucketEE28F545', 'Arn'] },
+            { Ref: 'XRayTestSecret0AF068A2' },
+          ]),
+        ],
+      },
+    });
+  });
+
+  test('if XRay Delivery Destinations are in different stacks, make different policies', () => {
+    const stack1 = new Stack();
+    const stack2 = new Stack();
+
+    new XRayDeliveryDestination(stack1, 'XRayDestination1', {
+      destinationService: 'XRAY',
+    });
+
+    new XRayDeliveryDestination(stack2, 'XRayDestination2', {
+      destinationService: 'XRAY',
+    });
+
+    Template.fromStack(stack1).resourceCountIs('AWS::XRay::ResourcePolicy', 1);
+    Template.fromStack(stack1).resourceCountIs('AWS::Logs::DeliveryDestination', 1);
+    Template.fromStack(stack2).resourceCountIs('AWS::XRay::ResourcePolicy', 1);
+    Template.fromStack(stack2).resourceCountIs('AWS::Logs::DeliveryDestination', 1);
   });
 });
