@@ -26,32 +26,64 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
 
 ## Table of contents
 
-- [AgentCore Runtime](#agentcore-runtime)
-  - [Runtime Versioning](#runtime-versioning)
-  - [Runtime Endpoints](#runtime-endpoints)
-  - [AgentCore Runtime Properties](#agentcore-runtime-properties)
-  - [Runtime Endpoint Properties](#runtime-endpoint-properties)
-  - [Creating a Runtime](#creating-a-runtime)
-    - [Option 1: Use an existing image in ECR](#option-1-use-an-existing-image-in-ecr)
-    - [Option 2: Use a local asset](#option-2-use-a-local-asset)
-    - [Option 3: Use direct code deployment](#option-3-use-direct-code-deployment)
+- [Amazon Bedrock AgentCore Construct Library](#amazon-bedrock-agentcore-construct-library)
+  - [Table of contents](#table-of-contents)
+  - [AgentCore Runtime](#agentcore-runtime)
+    - [Runtime Endpoints](#runtime-endpoints)
+    - [AgentCore Runtime Properties](#agentcore-runtime-properties)
+    - [Runtime Endpoint Properties](#runtime-endpoint-properties)
+    - [Creating a Runtime](#creating-a-runtime)
+      - [Option 1: Use an existing image in ECR](#option-1-use-an-existing-image-in-ecr)
+      - [Option 2: Use a local asset](#option-2-use-a-local-asset)
+      - [Option 3: Use direct code deployment](#option-3-use-direct-code-deployment)
+    - [Granting Permissions to Invoke Bedrock Models or Inference Profiles](#granting-permissions-to-invoke-bedrock-models-or-inference-profiles)
     - [Runtime Versioning](#runtime-versioning)
+      - [Managing Endpoints and Versions](#managing-endpoints-and-versions)
+        - [Step 1: Initial Deployment](#step-1-initial-deployment)
+        - [Step 2: Creating Custom Endpoints](#step-2-creating-custom-endpoints)
+        - [Step 3: Runtime Update Deployment](#step-3-runtime-update-deployment)
+        - [Step 4: Testing with Staging Endpoints](#step-4-testing-with-staging-endpoints)
+        - [Step 5: Promoting to Production](#step-5-promoting-to-production)
+    - [Creating Standalone Runtime Endpoints](#creating-standalone-runtime-endpoints)
+      - [Example: Creating an endpoint for an existing runtime](#example-creating-an-endpoint-for-an-existing-runtime)
     - [Runtime Authentication Configuration](#runtime-authentication-configuration)
-- [Browser Custom tool](#browser)
-  - [Browser properties](#browser-properties)
-  - [Browser Network modes](#browser-network-modes)
-  - [Basic Browser Creation](#basic-browser-creation)
-  - [Browser IAM permissions](#browser-iam-permissions)
-- [Code Interpreter Custom tool](#code-interpreter)
-  - [Code Interpreter properties](#code-interpreter-properties)
-  - [Code Interpreter Network Modes](#code-interpreter-network-modes)
-  - [Basic Code Interpreter Creation](#basic-code-interpreter-creation)
-  - [Code Interpreter IAM permissions](#code-interpreter-iam-permissions)
-- [Memory](#memory)
-  - [Memory properties](#memory-properties)
-  - [Basic Memory Creation](#basic-memory-creation)
-  - [LTM Memory Extraction Stategies](#ltm-memory-extraction-stategies)
-  - [Memory Strategy Methods](#memory-strategy-methods)
+      - [IAM Authentication (Default)](#iam-authentication-default)
+      - [Cognito Authentication](#cognito-authentication)
+      - [JWT Authentication](#jwt-authentication)
+      - [OAuth Authentication](#oauth-authentication)
+      - [Using a Custom IAM Role](#using-a-custom-iam-role)
+    - [Runtime Network Configuration](#runtime-network-configuration)
+      - [Public Network Mode (Default)](#public-network-mode-default)
+      - [VPC Network Mode](#vpc-network-mode)
+      - [Managing Security Groups with VPC Configuration](#managing-security-groups-with-vpc-configuration)
+  - [Browser](#browser)
+    - [Browser Network modes](#browser-network-modes)
+    - [Browser Properties](#browser-properties)
+    - [Basic Browser Creation](#basic-browser-creation)
+    - [Browser with Tags](#browser-with-tags)
+    - [Browser with VPC](#browser-with-vpc)
+    - [Browser with Recording Configuration](#browser-with-recording-configuration)
+    - [Browser with Custom Execution Role](#browser-with-custom-execution-role)
+    - [Browser with S3 Recording and Permissions](#browser-with-s3-recording-and-permissions)
+    - [Browser IAM Permissions](#browser-iam-permissions)
+  - [Code Interpreter](#code-interpreter)
+    - [Code Interpreter Network Modes](#code-interpreter-network-modes)
+    - [Code Interpreter Properties](#code-interpreter-properties)
+    - [Basic Code Interpreter Creation](#basic-code-interpreter-creation)
+    - [Code Interpreter with VPC](#code-interpreter-with-vpc)
+    - [Code Interpreter with Sandbox Network Mode](#code-interpreter-with-sandbox-network-mode)
+    - [Code Interpreter with Custom Execution Role](#code-interpreter-with-custom-execution-role)
+    - [Code Interpreter IAM Permissions](#code-interpreter-iam-permissions)
+    - [Code interpreter with tags](#code-interpreter-with-tags)
+  - [Memory](#memory)
+    - [Memory Properties](#memory-properties)
+    - [Basic Memory Creation](#basic-memory-creation)
+    - [LTM Memory Extraction Stategies](#ltm-memory-extraction-stategies)
+    - [Memory with Built-in Strategies](#memory-with-built-in-strategies)
+    - [Memory with custom Strategies](#memory-with-custom-strategies)
+      - [Memory with Custom Execution Role](#memory-with-custom-execution-role)
+    - [Memory with self-managed Strategies](#memory-with-self-managed-strategies)
+    - [Memory Strategy Methods](#memory-strategy-methods)
 
 ## AgentCore Runtime
 
@@ -121,27 +153,11 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
 });
 ```
 
-To grant the runtime permission to invoke a Bedrock model or inference profile:
-
-```typescript fixture=default
-// Note: This example uses @aws-cdk/aws-bedrock-alpha which must be installed separately
-declare const runtime: agentcore.Runtime;
-
-// Create a cross-region inference profile for Claude 3.7 Sonnet
-const inferenceProfile = bedrock.CrossRegionInferenceProfile.fromConfig({
-  geoRegion: bedrock.CrossRegionInferenceProfileRegion.US,
-  model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_7_SONNET_V1_0
-});
-
-// Grant the runtime permission to invoke the inference profile
-inferenceProfile.grantInvoke(runtime);
-```
-
 #### Option 2: Use a local asset
 
 Reference a local directory containing a Dockerfile.
 Images are built from a local Docker context directory (with a Dockerfile), uploaded to Amazon Elastic Container Registry (ECR)
-by the CDK toolkit,and can be naturally referenced in your CDK app .
+by the CDK toolkit,and can be naturally referenced in your CDK app.
 
 ```typescript fixture=default
 const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
@@ -184,6 +200,29 @@ const runtimeInstance = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
   agentRuntimeArtifact: agentRuntimeArtifact,
 });
+
+### Granting Permissions to Invoke Bedrock Models or Inference Profiles
+
+To grant the runtime permissions to invoke Bedrock models or inference profiles:
+
+```typescript fixture=default
+// Note: This example uses @aws-cdk/aws-bedrock-alpha which must be installed separately
+declare const runtime: agentcore.Runtime;
+
+// Define the Bedrock Foundation Model
+const model = bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_7_SONNET_V1_0;
+
+// Grant the runtime permissions to invoke the model
+model.grantInvoke(runtime);
+
+// Create a cross-region inference profile for Claude 3.7 Sonnet
+const inferenceProfile = bedrock.CrossRegionInferenceProfile.fromConfig({
+  geoRegion: bedrock.CrossRegionInferenceProfileRegion.US,
+  model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_7_SONNET_V1_0
+});
+
+// Grant the runtime permissions to invoke the inference profile
+inferenceProfile.grantInvoke(runtime);
 ```
 
 ### Runtime Versioning
