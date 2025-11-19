@@ -19,9 +19,31 @@ import { Construct } from 'constructs';
 import { Runtime } from './runtime';
 import { ValidationError } from './validation-helpers';
 import { Location } from 'aws-cdk-lib/aws-s3';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Stack, Token } from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+
+/**
+ * Bedrock AgentCore runtime environment for code execution
+ * Allowed values: PYTHON_3_10 | PYTHON_3_11 | PYTHON_3_12 | PYTHON_3_13
+ */
+export enum AgentCoreRuntime {
+  /**
+   * Python 3.10 runtime
+   */
+  PYTHON_3_10 = 'PYTHON_3_10',
+  /**
+   * Python 3.11 runtime
+   */
+  PYTHON_3_11 = 'PYTHON_3_11',
+  /**
+   * Python 3.12 runtime
+   */
+  PYTHON_3_12 = 'PYTHON_3_12',
+  /**
+   * Python 3.13 runtime
+   */
+  PYTHON_3_13 = 'PYTHON_3_13',
+}
 
 /**
  * Abstract base class for agent runtime artifacts.
@@ -47,10 +69,10 @@ export abstract class AgentRuntimeArtifact {
   /**
    * Reference an agent runtime artifact that's constructed directly from an S3 object
    * @param s3Location The source code location and configuration details.
-   * @param runtime The runtime environment for executing the code (for example, Python 3.9 or Node.js 18).
+   * @param runtime The runtime environment for executing the code. Allowed values: PYTHON_3_10 | PYTHON_3_11 | PYTHON_3_12 | PYTHON_3_13
    * @param entrypoint The entry point for the code execution, specifying the function or method that should be invoked when the code runs.
    */
-  public static fromS3(s3Location: Location, runtime: lambda.Runtime, entrypoint: string[]): AgentRuntimeArtifact {
+  public static fromS3(s3Location: Location, runtime: AgentCoreRuntime, entrypoint: string[]): AgentRuntimeArtifact {
     return new S3Image(s3Location, runtime, entrypoint);
   }
 
@@ -131,7 +153,7 @@ class AssetImage extends AgentRuntimeArtifact {
 class S3Image extends AgentRuntimeArtifact {
   private bound = false;
 
-  constructor(private readonly s3Location: Location, private readonly runtime: lambda.Runtime, private readonly entrypoint: string[]) {
+  constructor(private readonly s3Location: Location, private readonly runtime: AgentCoreRuntime, private readonly entrypoint: string[]) {
     super();
   }
 
@@ -153,15 +175,18 @@ class S3Image extends AgentRuntimeArtifact {
   }
 
   public _render(): CfnRuntime.AgentRuntimeArtifactProperty {
+    const s3Config: any = {
+      bucket: this.s3Location.bucketName,
+      prefix: this.s3Location.objectKey,
+    };
+    if (this.s3Location.objectVersion) {
+      s3Config.versionId = this.s3Location.objectVersion;
+    }
     return {
       code: {
-        s3: {
-          bucket: this.s3Location.bucketName,
-          prefix: this.s3Location.objectKey,
-          versionId: this.s3Location.objectVersion,
-        },
+        s3: s3Config,
       },
-      runtime: this.runtime.name,
+      runtime: this.runtime,
       entryPoint: this.entrypoint,
     } as any;
   }

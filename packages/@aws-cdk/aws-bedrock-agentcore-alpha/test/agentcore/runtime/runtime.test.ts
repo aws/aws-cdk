@@ -8,10 +8,9 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Runtime } from '../../../agentcore/runtime/runtime';
 import { RuntimeEndpoint } from '../../../agentcore/runtime/runtime-endpoint';
-import { AgentRuntimeArtifact } from '../../../agentcore/runtime/runtime-artifact';
+import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../agentcore/runtime/runtime-artifact';
 import { RuntimeAuthorizerConfiguration } from '../../../agentcore/runtime/runtime-authorizer-configuration';
 import { RuntimeNetworkConfiguration } from '../../../agentcore/network/network-configuration';
 import {
@@ -1985,7 +1984,7 @@ describe('Runtime fromS3 artifact loading tests', () => {
         bucketName: bucket.bucketName,
         objectKey: 'runtime-code.zip',
       },
-      lambda.Runtime.PYTHON_3_9,
+      AgentCoreRuntime.PYTHON_3_10,
       ['main.handler'],
     );
 
@@ -2010,7 +2009,7 @@ describe('Runtime fromS3 artifact loading tests', () => {
               Prefix: 'runtime-code.zip',
             },
           },
-          Runtime: 'python3.9',
+          Runtime: 'PYTHON_3_10',
           EntryPoint: ['main.handler'],
         },
       },
@@ -2024,7 +2023,7 @@ describe('Runtime fromS3 artifact loading tests', () => {
         objectKey: 'runtime-code.zip',
         objectVersion: 'version123',
       },
-      lambda.Runtime.NODEJS_18_X,
+      AgentCoreRuntime.PYTHON_3_10,
       ['index.handler'],
     );
 
@@ -2048,7 +2047,7 @@ describe('Runtime fromS3 artifact loading tests', () => {
               VersionId: 'version123',
             },
           },
-          Runtime: 'nodejs18.x',
+          Runtime: 'PYTHON_3_10',
           EntryPoint: ['index.handler'],
         },
       },
@@ -2061,7 +2060,7 @@ describe('Runtime fromS3 artifact loading tests', () => {
         bucketName: bucket.bucketName,
         objectKey: 'runtime-code.zip',
       },
-      lambda.Runtime.PYTHON_3_9,
+      AgentCoreRuntime.PYTHON_3_10,
       ['main.handler'],
     );
 
@@ -2092,7 +2091,7 @@ describe('Runtime fromS3 artifact loading tests', () => {
         bucketName: bucket.bucketName,
         objectKey: 'runtime-code.zip',
       },
-      lambda.Runtime.PYTHON_3_9,
+      AgentCoreRuntime.PYTHON_3_10,
       ['main.handler'],
     );
 
@@ -2114,7 +2113,7 @@ describe('Runtime fromS3 artifact loading tests', () => {
           Code: {
             S3: Match.anyValue(),
           },
-          Runtime: 'python3.9',
+          Runtime: 'PYTHON_3_10',
           EntryPoint: ['main.handler'],
         },
       },
@@ -2131,7 +2130,7 @@ describe('Runtime fromS3 artifact loading tests', () => {
         bucketName: bucket.bucketName,
         objectKey: 'runtime-code.zip',
       },
-      lambda.Runtime.PYTHON_3_9,
+      AgentCoreRuntime.PYTHON_3_10,
       ['main.handler'],
     );
 
@@ -2152,7 +2151,7 @@ describe('Runtime fromS3 artifact loading tests', () => {
           Code: {
             S3: Match.anyValue(),
           },
-          Runtime: 'python3.9',
+          Runtime: 'PYTHON_3_10',
           EntryPoint: ['main.handler'],
         },
       },
@@ -2168,7 +2167,7 @@ describe('Runtime fromS3 artifact loading tests', () => {
         bucketName: 'my-custom-bucket',
         objectKey: 'runtime-code.zip',
       },
-      lambda.Runtime.JAVA_11,
+      AgentCoreRuntime.PYTHON_3_10,
       ['com.example.Handler::handleRequest'],
     );
 
@@ -2189,7 +2188,7 @@ describe('Runtime fromS3 artifact loading tests', () => {
               Prefix: 'runtime-code.zip',
             },
           },
-          Runtime: 'java11',
+          Runtime: 'PYTHON_3_10',
           EntryPoint: ['com.example.Handler::handleRequest'],
         },
       },

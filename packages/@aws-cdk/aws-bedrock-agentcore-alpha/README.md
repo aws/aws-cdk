@@ -176,7 +176,7 @@ const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromS3(
     bucketName: codeBucket.bucketName,
     objectKey: 'deployment_package.zip',
   }, 
-  lambda.Runtime.PYTHON_3_12, 
+  agentcore.AgentCoreRuntime.PYTHON_3_12, 
   ['opentelemetry-instrument', 'main.py']
 );
 
