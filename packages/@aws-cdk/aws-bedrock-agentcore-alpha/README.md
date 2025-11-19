@@ -187,6 +187,8 @@ const codeBucket = new s3.Bucket(this, "AgentCode", {
   removalPolicy: RemovalPolicy.DESTROY, // For demo purposes
 });
 
+// the bucket above needs to contain the agent code
+
 const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromS3(
   {
     bucketName: codeBucket.bucketName,
