@@ -88,6 +88,7 @@ export async function generateAll(
           resources: '%moduleName%/lib/%serviceShortName%.generated.ts',
           augmentations: '%moduleName%/lib/%serviceShortName%-augmentations.generated.ts',
           cannedMetrics: '%moduleName%/lib/%serviceShortName%-canned-metrics.generated.ts',
+          grants: '%moduleName%/lib/%serviceShortName%-grants.generated.ts',
         },
       },
     },
