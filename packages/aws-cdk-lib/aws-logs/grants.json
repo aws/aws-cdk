@@ -1,0 +1,26 @@
+{
+  "resources": {
+    "LogGroup": {
+      "hasResourcePolicy": true,
+      "grants": {
+        "write": {
+          "actions": [
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+          ],
+          "docSummary": "Give permissions to create and write to streams in this log group"
+        },
+        "read": {
+          "actions": [
+            "logs:FilterLogEvents",
+            "logs:GetLogEvents",
+            "logs:GetLogGroupFields",
+            "logs:DescribeLogGroups",
+            "logs:DescribeLogStreams"
+          ],
+          "docSummary": "Give permissions to read and filter events from this log group"
+        }
+      }
+    }
+  }
+}

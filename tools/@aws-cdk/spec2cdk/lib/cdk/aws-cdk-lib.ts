@@ -8,13 +8,16 @@ import { AddServiceProps, LibraryBuilder, LibraryBuilderProps } from './library-
 import { ResourceClass } from './resource-class';
 import { LocatedModule, relativeImportPath, BaseServiceSubmodule } from './service-submodule';
 import { submoduleSymbolFromName } from '../naming';
+import { GrantsModule } from './grants-module';
 
 class AwsCdkLibServiceSubmodule extends BaseServiceSubmodule {
   public readonly resourcesMod: LocatedModule<Module>;
   public readonly augmentations: LocatedModule<AugmentationsModule>;
   public readonly cannedMetrics: LocatedModule<CannedMetricsModule>;
   public readonly interfaces: LocatedModule<Module>;
+  public readonly grants?: LocatedModule<GrantsModule>;
   public readonly didCreateInterfaceModule: boolean;
+  public readonly resources: Map<string, ResourceClass> = new Map();
 
   public constructor(props: {
     readonly submoduleName: string;
@@ -23,6 +26,7 @@ class AwsCdkLibServiceSubmodule extends BaseServiceSubmodule {
     readonly augmentations: LocatedModule<AugmentationsModule>;
     readonly cannedMetrics: LocatedModule<CannedMetricsModule>;
     readonly interfaces: LocatedModule<Module>;
+    readonly grants?: LocatedModule<GrantsModule>;
     readonly didCreateInterfaceModule: boolean;
   }) {
     super(props);
@@ -31,11 +35,16 @@ class AwsCdkLibServiceSubmodule extends BaseServiceSubmodule {
     this.cannedMetrics = props.cannedMetrics;
     this.interfaces = props.interfaces;
     this.didCreateInterfaceModule = props.didCreateInterfaceModule;
+    this.grants = props.grants;
 
     this.registerModule(this.resourcesMod);
     this.registerModule(this.cannedMetrics);
     this.registerModule(this.augmentations);
     this.registerModule(this.interfaces);
+
+    if (this.grants) {
+      this.registerModule(this.grants);
+    }
   }
 }
 
@@ -64,6 +73,11 @@ export interface AwsCdkLibFilePatterns {
    * The pattern used to name the interfaces file
    */
   readonly interfaces: string;
+
+  /**
+   * The pattern used to name the grants module
+   */
+  readonly grants: string;
 }
 
 export interface AwsCdkLibBuilderProps extends LibraryBuilderProps{
@@ -88,6 +102,7 @@ export const DEFAULT_FILE_PATTERNS: AwsCdkLibFilePatterns = {
   cannedMetrics: '%moduleName%/%serviceShortName%-canned-metrics.generated.ts',
   interfacesEntry: 'interfaces/index.generated.ts',
   interfaces: 'interfaces/generated/%serviceName%-interfaces.generated.ts',
+  grants: '%moduleName%/%serviceShortName%-grants.generated.ts',
 };
 
 /**
@@ -118,11 +133,15 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
     });
   }
 
-  protected createServiceSubmodule(service: Service, submoduleName: string): AwsCdkLibServiceSubmodule {
+  protected createServiceSubmodule(service: Service, submoduleName: string, grantsConfig?: string): AwsCdkLibServiceSubmodule {
     const resourcesMod = this.rememberModule(this.createResourceModule(submoduleName, service));
     const augmentations = this.rememberModule(this.createAugmentationsModule(submoduleName, service));
     const cannedMetrics = this.rememberModule(this.createCannedMetricsModule(submoduleName, service));
     const [interfaces, didCreateInterfaceModule] = this.obtainInterfaceModule(service);
+
+    const grants = grantsConfig != null
+      ? this.rememberModule(this.createGrantsModule(submoduleName, service, grantsConfig))
+      : undefined;
 
     const createdSubmod: AwsCdkLibServiceSubmodule = new AwsCdkLibServiceSubmodule({
       submoduleName,
@@ -132,12 +151,21 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
       cannedMetrics,
       interfaces,
       didCreateInterfaceModule,
+      grants,
     });
 
     return createdSubmod;
   }
 
-  protected addResourceToSubmodule(submodule: AwsCdkLibServiceSubmodule, resource: Resource, props?: AddServiceProps) {
+  private createGrantsModule(moduleName: string, service: Service, grantsConfig: string): LocatedModule<GrantsModule> {
+    const filePath = this.pathsFor(moduleName, service).grants;
+    return {
+      module: new GrantsModule(service, this.db, JSON.parse(grantsConfig)),
+      filePath,
+    };
+  }
+
+  protected addResourceToSubmodule(submodule: AwsCdkLibServiceSubmodule, resource: Resource, props?: AddServiceProps): void {
     const resourceModule = submodule.resourcesMod.module;
 
     const resourceClass = new ResourceClass(resourceModule, this.db, resource, {
@@ -225,7 +253,15 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
    *
    * (Mostly: create additional files that import generated files)
    */
-  protected postprocessSubmodule(submodule: AwsCdkLibServiceSubmodule) {
+  protected postprocessSubmodule(submodule: AwsCdkLibServiceSubmodule, props?: AddServiceProps) {
+    const grantModule = submodule.locatedModules
+      .map(lm => lm.module)
+      .find(m => m instanceof GrantsModule);
+
+    if (grantModule != null) {
+      grantModule.build(Object.fromEntries(submodule.resources), props?.nameSuffix);
+    }
+
     super.postprocessSubmodule(submodule);
 
     // Add an import for the interfaces file to the entry point file (make sure not to do it twice)
