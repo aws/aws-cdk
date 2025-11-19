@@ -9,6 +9,20 @@ import { SelectiveImport } from './service-submodule';
 export const RELATIONSHIP_SERVICES: string[] = [];
 
 /**
+ * We currently disable the relationship on the properties of types because they would create a backwards incompatible change
+ * by broadening the output type as types are used both in input and output. This represents:
+ * Relationship counts:
+ *   Resource-level (non-nested): 598
+ *   Type-level (nested):         483 <- these are disabled by this flag
+ *   Total:                       1081
+ * Properties with relationships:
+ *   Resource-level (non-nested): 493
+ *   Type-level (nested):         358
+ *   Total:                       851
+ */
+export const GENERATE_RELATIONSHIPS_ON_TYPES = false;
+
+/**
  * Represents a cross-service property relationship that enables references
  * between resources from different AWS services.
  */
@@ -132,6 +146,9 @@ export class RelationshipDecider {
    * Checks if a given property needs a flattening function or not
    */
   public needsFlatteningFunction(propName: string, prop: Property, visited = new Set<string>()): boolean {
+    if (!GENERATE_RELATIONSHIPS_ON_TYPES) {
+      return false;
+    }
     if (this.hasValidRelationships(propName, prop.relationshipRefs)) {
       return true;
     }

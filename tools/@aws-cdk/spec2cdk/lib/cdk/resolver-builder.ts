@@ -1,7 +1,7 @@
 import { DefinitionReference, Property } from '@aws-cdk/service-spec-types';
 import { expr, Expression, Module, Type } from '@cdklabs/typewriter';
 import { CDK_CORE } from './cdk';
-import { RelationshipDecider, Relationship } from './relationship-decider';
+import { RelationshipDecider, Relationship, GENERATE_RELATIONSHIPS_ON_TYPES } from './relationship-decider';
 import { NON_RESOLVABLE_PROPERTY_NAMES } from './tagging';
 import { TypeConverter } from './type-converter';
 import { flattenFunctionNameFromType, propertyNameFromCloudFormation } from '../naming';
@@ -28,7 +28,8 @@ export class ResolverBuilder {
     private readonly module: Module,
   ) {}
 
-  public buildResolver(prop: Property, cfnName: string): ResolverResult {
+  public buildResolver(prop: Property, cfnName: string, isTypeProp = false): ResolverResult {
+    const shouldGenerateRelationships = isTypeProp ? GENERATE_RELATIONSHIPS_ON_TYPES : true;
     const name = propertyNameFromCloudFormation(cfnName);
     const baseType = this.converter.typeFromProperty(prop);
 
@@ -37,17 +38,19 @@ export class ResolverBuilder {
     // but didn't.
     const resolvableType = cfnName in NON_RESOLVABLE_PROPERTY_NAMES ? baseType : this.converter.makeTypeResolvable(baseType);
 
-    const relationships = this.relationshipDecider.parseRelationship(name, prop.relationshipRefs);
-    if (relationships.length > 0) {
-      return this.buildRelationshipResolver({ relationships, baseType, name, resolvableType });
-    }
+    if (shouldGenerateRelationships) {
+      const relationships = this.relationshipDecider.parseRelationship(name, prop.relationshipRefs);
+      if (relationships.length > 0) {
+        return this.buildRelationshipResolver({ relationships, baseType, name, resolvableType });
+      }
 
-    const originalType = this.converter.originalType(baseType);
-    if (this.relationshipDecider.needsFlatteningFunction(name, prop)) {
-      const optional = !prop.required;
-      const typeRef = originalType.type === 'array' ? originalType.element : originalType;
-      if (typeRef.type === 'ref') {
-        return this.buildNestedResolver({ name, baseType, typeRef: typeRef, resolvableType, optional });
+      const originalType = this.converter.originalType(baseType);
+      if (this.relationshipDecider.needsFlatteningFunction(name, prop)) {
+        const optional = !prop.required;
+        const typeRef = originalType.type === 'array' ? originalType.element : originalType;
+        if (typeRef.type === 'ref') {
+          return this.buildNestedResolver({ name, baseType, typeRef: typeRef, resolvableType, optional });
+        }
       }
     }
 
