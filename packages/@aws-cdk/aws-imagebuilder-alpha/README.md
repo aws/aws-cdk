@@ -101,6 +101,11 @@ launch template configurations. For container images, it specifies the target Am
 A distribution configuration can be associated with an image or an image pipeline to define these distribution settings
 for image builds.
 
+#### AMI Distributions
+
+AMI distributions can be defined to copy and modify AMIs in different accounts and regions, and apply them to launch
+templates, SSM parameters, etc.:
+
 ```ts
 const distributionConfiguration = new imagebuilder.DistributionConfiguration(this, 'DistributionConfiguration', {
   distributionConfigurationName: 'test-distribution-configuration',
@@ -197,5 +202,36 @@ distributionConfiguration.addAmiDistributions({
   licenseConfigurationArns: [
     'arn:aws:license-manager:us-west-2:123456789012:license-configuration:lic-abcdefghijklmnopqrstuvwxyz'
   ]
+});
+```
+
+#### Container Distributions
+
+##### Container repositories
+
+Container distributions can be configured to distribute to ECR repositories:
+
+```ts
+const ecrRepository = ecr.Repository.fromRepositoryName(this, 'ECRRepository', 'my-repo');
+const imageBuilderRepository = imagebuilder.Repository.fromEcr(ecrRepository);
+```
+
+##### Defining a container distribution
+
+You can configure the container repositories as well as the description and tags applied to the distributed container
+images:
+
+```ts
+const ecrRepository = ecr.Repository.fromRepositoryName(this, 'ECRRepository', 'my-repo');
+const containerRepository = imagebuilder.Repository.fromEcr(ecrRepository);
+const containerDistributionConfiguration = new imagebuilder.DistributionConfiguration(
+  this,
+  'ContainerDistributionConfiguration'
+);
+
+containerDistributionConfiguration.addContainerDistributions({
+  containerRepository,
+  containerDescription: 'Test container image',
+  containerTags: ['latest', 'latest-1.0']
 });
 ```
