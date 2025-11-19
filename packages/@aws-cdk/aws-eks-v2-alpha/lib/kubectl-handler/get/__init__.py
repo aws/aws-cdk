@@ -41,7 +41,11 @@ def get_handler(event, context):
     # json path should be surrouded with '{}'
     path = '{{{0}}}'.format(json_path)
     if request_type == 'Create' or request_type == 'Update':
-        output = wait_for_output(['get', '-n', object_namespace, object_type, object_name, "-o=jsonpath='{{{0}}}'".format(json_path)], int(timeout_seconds))
+        cmd = ['get', '-n', object_namespace, object_type]
+        if object_name:
+            cmd.append(object_name)
+        cmd.append("-o=jsonpath='{{{0}}}'".format(json_path))
+        output = wait_for_output(cmd, int(timeout_seconds))
         return {'Data': {'Value': output}}
     elif request_type == 'Delete':
         pass
