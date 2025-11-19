@@ -237,7 +237,7 @@ export class AlarmRule {
         const concatAlarms = options.operands
           .map(operand => `${operand.alarmArn}`)
           .join(', ');
-        return `AT_LEAST(${threshold}, ${alarmState} , (${concatAlarms}))`;
+        return `AT_LEAST(${threshold}, ${alarmState}, (${concatAlarms}))`;
       }
     };
   }
