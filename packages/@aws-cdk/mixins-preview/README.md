@@ -125,15 +125,46 @@ const bucket = new s3.CfnBucket(scope, "Bucket");
 Mixins.of(bucket).apply(new EnableVersioning());
 ```
 
-### Generic Mixins
+### L1 Property Mixins
 
-**CfnPropertiesMixin**: Applies arbitrary CloudFormation properties
+For every CloudFormation resource, CDK Mixins automatically generates type-safe property mixins. These allow you to apply L1 properties with full TypeScript support:
 
 ```typescript
-const bucket = new s3.CfnBucket(scope, "Bucket");
-Mixins.of(bucket).apply(new CfnPropertiesMixin({ 
-  customProperty: { enabled: true }
-}));
+import '@aws-cdk/mixins-preview/with';
+import { CfnBucketPropsMixin } from '@aws-cdk/mixins-preview/aws-s3/mixins';
+
+const bucket = new s3.Bucket(scope, "Bucket")
+  .with(new CfnBucketPropsMixin({
+    versioningConfiguration: { status: "Enabled" },
+    publicAccessBlockConfiguration: {
+      blockPublicAcls: true,
+      blockPublicPolicy: true
+    }
+  }));
+```
+
+Property mixins support two merge strategies:
+
+```typescript
+// MERGE (default): Deep merges properties with existing values
+Mixins.of(bucket).apply(new CfnBucketPropsMixin(
+  { versioningConfiguration: { status: "Enabled" } },
+  { strategy: PropertyMergeStrategy.MERGE }
+));
+
+// OVERWRITE: Replaces existing property values
+Mixins.of(bucket).apply(new CfnBucketPropsMixin(
+  { versioningConfiguration: { status: "Enabled" } },
+  { strategy: PropertyMergeStrategy.OVERWRITE }
+));
+```
+
+Property mixins are available for all AWS services:
+
+```typescript
+import { CfnLogGroupMixin } from '@aws-cdk/mixins-preview/aws-logs/mixins';
+import { CfnFunctionMixin } from '@aws-cdk/mixins-preview/aws-lambda/mixins';
+import { CfnTableMixin } from '@aws-cdk/mixins-preview/aws-dynamodb/mixins';
 ```
 
 ## Error Handling
@@ -149,30 +180,3 @@ Mixins.of(scope)
 Mixins.of(scope)
   .mustApply(new EncryptionAtRest()); // Throws if no constructs support the mixin
 ```
-
-## API Reference
-
-### Core Interfaces
-
-* `IMixin` - Interface that all mixins must implement
-* `Mixins` - Main entry point for applying mixins
-* `ConstructSelector` - Selects constructs from a tree based on criteria
-* `MixinApplicator` - Applies mixins to selected constructs
-
-### Mixins
-
-* `EncryptionAtRest` - Cross-service encryption mixin
-* `AutoDeleteObjects` - S3 auto-delete objects mixin  
-* `EnableVersioning` - S3 versioning mixin
-* `CfnPropertiesMixin` - Generic CloudFormation properties mixin
-
-### Selectors
-
-* `ConstructSelector.all()` - Select all constructs
-* `ConstructSelector.cfnResource()` - Select CfnResource constructs
-* `ConstructSelector.resourcesOfType()` - Select by type
-* `ConstructSelector.byId()` - Select by ID pattern
-
-## License
-
-This project is licensed under the Apache-2.0 License.
