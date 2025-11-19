@@ -251,6 +251,29 @@ export interface ComponentDocument {
 /**
  * The phase to run in a specific workflow in an image build, which define the steps to execute to customize or test
  * the instance.
+ *
+ * @example
+ * const phase: imagebuilder.ComponentDocumentPhase = {
+ *   name: imagebuilder.ComponentPhaseName.BUILD,
+ *   steps: [
+ *     {
+ *       name: 'configure-app',
+ *       action: imagebuilder.ComponentAction.CREATE_FILE,
+ *       inputs: {
+ *         path: '/etc/myapp/config.json',
+ *         content: '{"env": "production"}',
+ *       },
+ *     }
+ *   ]
+ * }
+ *
+ * const component = new imagebuilder.Component(this, 'JsonComponent', {
+ *   platform: imagebuilder.Platform.LINUX,
+ *   data: imagebuilder.ComponentData.fromJsonObject({
+ *     schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
+ *     phases: [phase]
+ *   })
+ * });
  */
 export interface ComponentDocumentPhase {
   /**
@@ -267,6 +290,29 @@ export interface ComponentDocumentPhase {
 /**
  * The step to run in a specific phase of the image build, which defines the step to execute to customize or test the
  * instance.
+ *
+ * @example
+ * const step: imagebuilder.ComponentDocumentStep = {
+ *   name: 'configure-app',
+ *   action: imagebuilder.ComponentAction.CREATE_FILE,
+ *   inputs: {
+ *     path: '/etc/myapp/config.json',
+ *     content: '{"env": "production"}',
+ *   },
+ * }
+ *
+ * const component = new imagebuilder.Component(this, 'JsonComponent', {
+ *   platform: imagebuilder.Platform.LINUX,
+ *   data: imagebuilder.ComponentData.fromJsonObject({
+ *     schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
+ *     phases: [
+ *       {
+ *         name: imagebuilder.ComponentPhaseName.BUILD,
+ *         steps: [step],
+ *       }
+ *     ]
+ *   })
+ * });
  */
 export interface ComponentDocumentStep {
   /**
