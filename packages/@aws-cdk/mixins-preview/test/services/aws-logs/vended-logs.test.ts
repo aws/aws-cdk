@@ -1,10 +1,10 @@
 import { Stack } from 'aws-cdk-lib';
-import { Bucket, BucketPolicy } from 'aws-cdk-lib/aws-s3';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { FirehoseDeliveryDestination, LogsDeliveryDestination, S3DeliveryDestination, XRayDeliveryDestination } from '../../../lib/services/aws-logs/vended-logs';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { DeliveryStream, S3Bucket } from 'aws-cdk-lib/aws-kinesisfirehose';
-import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { LogGroup, ResourcePolicy, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
 describe('S3 Delivery Destination', () => {
@@ -14,7 +14,6 @@ describe('S3 Delivery Destination', () => {
 
     new S3DeliveryDestination(stack, 'S3Destination', {
       permissionsVersion: 'V2',
-      destinationService: 'S3',
       s3Bucket: bucket,
     });
 
@@ -29,71 +28,6 @@ describe('S3 Delivery Destination', () => {
       Name: Match.stringLikeRegexp('cdk-s3-dest-.*'),
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
-      Bucket: {
-        Ref: 'Destination920A3C57',
-      },
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 's3:PutObject',
-            Condition: {
-              StringEquals: {
-                's3:x-amz-acl': 'bucket-owner-full-control',
-                'aws:SourceAccount': {
-                  Ref: 'AWS::AccountId',
-                },
-              },
-              ArnLike: {
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':logs:',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      ':',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':delivery-source:*',
-                    ],
-                  ],
-                },
-              },
-            },
-            Effect: 'Allow',
-            Principal: {
-              Service: 'delivery.logs.amazonaws.com',
-            },
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    'Fn::GetAtt': [
-                      'Destination920A3C57',
-                      'Arn',
-                    ],
-                  },
-                  '/AWSLogs/',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  '/*',
-                ],
-              ],
-            },
-          },
-        ],
-      },
-    });
-
     // Validate that DeliveryDestination depends on the S3 bucket policy
     const template = Template.fromStack(stack);
     const deliveryDestinations = template.findResources('AWS::Logs::DeliveryDestination');
@@ -105,165 +39,17 @@ describe('S3 Delivery Destination', () => {
     expect(deliveryDestinations[deliveryDestinationLogicalId].DependsOn).toContain(bucketPolicyLogicalId);
   });
 
-  test('creates policy with V1 permissions if specified', () => {
-    const stack = new Stack();
-    const bucket = new Bucket(stack, 'Destination');
-
-    new S3DeliveryDestination(stack, 'S3Destination', {
-      permissionsVersion: 'V1',
-      destinationService: 'S3',
-      s3Bucket: bucket,
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
-      Bucket: {
-        Ref: 'Destination920A3C57',
-      },
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 's3:PutObject',
-            Condition: {
-              StringEquals: {
-                's3:x-amz-acl': 'bucket-owner-full-control',
-                'aws:SourceAccount': {
-                  Ref: 'AWS::AccountId',
-                },
-              },
-              ArnLike: {
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':logs:',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      ':',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':delivery-source:*',
-                    ],
-                  ],
-                },
-              },
-            },
-            Effect: 'Allow',
-            Principal: {
-              Service: 'delivery.logs.amazonaws.com',
-            },
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    'Fn::GetAtt': [
-                      'Destination920A3C57',
-                      'Arn',
-                    ],
-                  },
-                  '/AWSLogs/',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  '/*',
-                ],
-              ],
-            },
-          },
-          {
-            Action: [
-              's3:GetBucketAcl',
-              's3:ListBucket',
-            ],
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': {
-                  Ref: 'AWS::AccountId',
-                },
-              },
-              ArnLike: {
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':logs:',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      ':',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':*',
-                    ],
-                  ],
-                },
-              },
-            },
-            Effect: 'Allow',
-            Principal: {
-              Service: 'delivery.logs.amazonaws.com',
-            },
-            Resource: {
-              'Fn::GetAtt': [
-                'Destination920A3C57',
-                'Arn',
-              ],
-            },
-          },
-        ],
-      },
-    });
-  });
-
-  test('adds to existing policy if a bucket policy already exists', () => {
-    const stack = new Stack();
-    const bucket = new Bucket(stack, 'Destination');
-
-    new BucketPolicy(stack, 'S3BucketPolicy', {
-      bucket: bucket,
-      document: new PolicyDocument({
-        statements: [new PolicyStatement({
-          effect: Effect.ALLOW,
-          principals: [new AccountRootPrincipal()],
-          actions: ['s3:GetObject'],
-          resources: [bucket.arnForObjects('*')],
-        })],
-      }),
-    });
-
-    new S3DeliveryDestination(stack, 'S3Destination', {
-      permissionsVersion: 'V2',
-      destinationService: 'S3',
-      s3Bucket: bucket,
-    });
-
-    Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 1);
-  });
-
   test('able to make multiple delivery destinations that use the same bucket', () => {
     const stack = new Stack();
     const bucket = new Bucket(stack, 'Destination');
 
     new S3DeliveryDestination(stack, 'S3Destination1', {
       permissionsVersion: 'V1',
-      destinationService: 'S3',
       s3Bucket: bucket,
     });
 
     new S3DeliveryDestination(stack, 'S3Destination2', {
       permissionsVersion: 'V2',
-      destinationService: 'S3',
       s3Bucket: bucket,
     });
 
@@ -281,7 +67,6 @@ describe('Cloudwatch Logs Delivery Destination', () => {
     });
 
     new LogsDeliveryDestination(stack, 'CloudwatchDelivery', {
-      destinationService: 'CWL',
       logGroup,
     });
 
@@ -342,7 +127,7 @@ describe('Cloudwatch Logs Delivery Destination', () => {
     expect(deliveryDestinations[deliveryDestinationLogicalId].DependsOn).toContain(cwlPolicyLogicalId);
   });
 
-  test('adds to existing policy if a resource policy already exists for Cloudwatch', () => {
+  test('do not add to existing Cloudwatch policy if it is not our singleton policy', () => {
     const stack = new Stack();
     const logGroup = new LogGroup(stack, 'LogGroupDelivery', {
       logGroupName: 'test-log-group',
@@ -357,7 +142,24 @@ describe('Cloudwatch Logs Delivery Destination', () => {
     }));
 
     new LogsDeliveryDestination(stack, 'CloudwatchDelivery', {
-      destinationService: 'CWL',
+      logGroup,
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 2);
+  });
+
+  test('if the singleton policy already exists, add to it', () => {
+    const stack = new Stack();
+    new ResourcePolicy(stack, 'CDKCWLLogDestDeliveryPolicy', {
+      resourcePolicyName: 'singletonPolicy',
+      policyStatements: [],
+    });
+    const logGroup = new LogGroup(stack, 'LogGroupDelivery', {
+      logGroupName: 'test-log-group',
+      retention: RetentionDays.ONE_WEEK,
+    });
+
+    new LogsDeliveryDestination(stack, 'CloudwatchDelivery', {
       logGroup,
     });
 
@@ -377,12 +179,10 @@ describe('Cloudwatch Logs Delivery Destination', () => {
     });
 
     new LogsDeliveryDestination(stack, 'CloudwatchDelivery1', {
-      destinationService: 'CWL',
       logGroup: logGroup1,
     });
 
     new LogsDeliveryDestination(stack, 'CloudwatchDelivery2', {
-      destinationService: 'CWL',
       logGroup: logGroup2,
     });
 
@@ -413,7 +213,6 @@ describe('Cloudwatch Logs Delivery Destination', () => {
     }));
 
     new LogsDeliveryDestination(stack, 'CloudwatchDelivery', {
-      destinationService: 'CWL',
       logGroup,
     });
 
@@ -429,12 +228,10 @@ describe('Cloudwatch Logs Delivery Destination', () => {
     });
 
     new LogsDeliveryDestination(stack, 'CloudwatchDelivery1', {
-      destinationService: 'CWL',
       logGroup,
     });
 
     new LogsDeliveryDestination(stack, 'CloudwatchDelivery2', {
-      destinationService: 'CWL',
       logGroup,
     });
 
@@ -466,7 +263,6 @@ describe('Firehose Stream Delivery Destination', () => {
     });
 
     new FirehoseDeliveryDestination(stack, 'FirehoseDelivery', {
-      destinationService: 'FH',
       deliveryStream: stream,
     });
 
@@ -511,12 +307,10 @@ describe('Firehose Stream Delivery Destination', () => {
     });
 
     new FirehoseDeliveryDestination(stack, 'FirehoseDelivery1', {
-      destinationService: 'FH',
       deliveryStream: stream,
     });
 
     new FirehoseDeliveryDestination(stack, 'FirehoseDelivery2', {
-      destinationService: 'FH',
       deliveryStream: stream,
     });
 
@@ -528,9 +322,7 @@ describe('XRay Delivery Destination', () => {
   test('creates an XRay Delivery destination', () => {
     const stack = new Stack();
 
-    new XRayDeliveryDestination(stack, 'XRayDestination', {
-      destinationService: 'XRAY',
-    });
+    new XRayDeliveryDestination(stack, 'XRayDestination');
 
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
       DeliveryDestinationType: 'XRAY',
@@ -541,58 +333,21 @@ describe('XRay Delivery Destination', () => {
   test('when multiple XRay Delivery destinations are created on one stack, only create one XRay resource policy', () => {
     const stack = new Stack();
 
-    new XRayDeliveryDestination(stack, 'XRayDestination1', {
-      destinationService: 'XRAY',
-    });
+    new XRayDeliveryDestination(stack, 'XRayDestination1');
 
-    new XRayDeliveryDestination(stack, 'XRayDestination2', {
-      destinationService: 'XRAY',
-    });
+    new XRayDeliveryDestination(stack, 'XRayDestination2');
 
     Template.fromStack(stack).resourceCountIs('AWS::XRay::ResourcePolicy', 1);
     Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 2);
-  });
-
-  test('XRay Delivery resource policy gets updated with log delivery sources', () => {
-    const stack = new Stack();
-
-    const xray = new XRayDeliveryDestination(stack, 'XRayDestination', {
-      destinationService: 'XRAY',
-    });
-
-    const bucket = new Bucket(stack, 'XRayTestBucket');
-    const secret = new Secret(stack, 'XRayTestSecret', {
-      description: 'Sample secret with arn to use for Xray',
-    });
-
-    xray.xrayResourcePolicy.addSourceToPolicy(bucket.bucketArn);
-    xray.xrayResourcePolicy.addSourceToPolicy(secret.secretArn);
-
-    Template.fromStack(stack).hasResourceProperties('AWS::XRay::ResourcePolicy', {
-      PolicyDocument: {
-        'Fn::Join': [
-          '',
-          Match.arrayWith([
-            Match.stringLikeRegexp('.*logs:LogGeneratingResourceArns.*'),
-            { 'Fn::GetAtt': ['XRayTestBucketEE28F545', 'Arn'] },
-            { Ref: 'XRayTestSecret0AF068A2' },
-          ]),
-        ],
-      },
-    });
   });
 
   test('if XRay Delivery Destinations are in different stacks, make different policies', () => {
     const stack1 = new Stack();
     const stack2 = new Stack();
 
-    new XRayDeliveryDestination(stack1, 'XRayDestination1', {
-      destinationService: 'XRAY',
-    });
+    new XRayDeliveryDestination(stack1, 'XRayDestination1');
 
-    new XRayDeliveryDestination(stack2, 'XRayDestination2', {
-      destinationService: 'XRAY',
-    });
+    new XRayDeliveryDestination(stack2, 'XRayDestination2');
 
     Template.fromStack(stack1).resourceCountIs('AWS::XRay::ResourcePolicy', 1);
     Template.fromStack(stack1).resourceCountIs('AWS::Logs::DeliveryDestination', 1);
