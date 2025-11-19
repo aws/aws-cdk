@@ -81,9 +81,6 @@ export interface SchemaDefinition {
 
   /**
    * The required fields in the schema definition. These fields must be provided when using the schema.
-   */
-  /**
-   * The required fields in the schema definition. These fields must be provided when using the schema.
    * @default - No required fields
    */
   readonly required?: string[];
@@ -190,8 +187,6 @@ export abstract class ToolSchema extends TargetSchema {
 
   /**
    * Format as CFN properties
-   * TODO: this doesn't exist yet in cloudformation, but we will render the Cfn object
-   *
    * @internal This is an internal core function and should not be called directly.
    */
   public abstract _render(): any;

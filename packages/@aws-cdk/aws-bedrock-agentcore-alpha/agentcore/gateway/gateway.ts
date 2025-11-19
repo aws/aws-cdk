@@ -290,7 +290,7 @@ export class Gateway extends GatewayBase {
           searchType: McpGatewaySearchType.SEMANTIC,
           instructions: 'Imported gateway',
         });
-        this.authorizerConfiguration = GatewayAuthorizer.awsIam;
+        this.authorizerConfiguration = GatewayAuthorizer.usingAwsIam();
       }
     }
     return new ImportedGateway(scope, id);
@@ -571,6 +571,9 @@ export class Gateway extends GatewayBase {
     const account = Stack.of(this).account;
     const partition = Stack.of(this).partition;
 
+    // This restricts role assumption to the specific gateway resource only in this account,
+    // preventing other accounts from assuming this role.
+    // See:https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-prerequisites-permissions.html#gateway-service-role-permissions
     role.assumeRolePolicy?.addStatements(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,

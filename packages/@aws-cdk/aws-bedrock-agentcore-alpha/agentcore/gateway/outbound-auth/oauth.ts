@@ -55,6 +55,7 @@ export interface OAuthConfiguration {
 /**
  * OAuth credential provider configuration implementation
  * Can be used with OpenAPI targets
+ * @internal
  */
 export class OAuthCredentialProviderConfiguration implements ICredentialProviderConfig {
   public readonly credentialProviderType = CredentialProviderType.OAUTH;

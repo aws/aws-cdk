@@ -1030,7 +1030,7 @@ describe('Authorizer Configuration Tests', () => {
   });
 
   test('Should create AWS IAM authorizer', () => {
-    const authorizer = GatewayAuthorizer.awsIam;
+    const authorizer = GatewayAuthorizer.usingAwsIam();
 
     // Just verify the authorizer is created with correct type
     expect(authorizer.authorizerType).toBe('AWS_IAM');
@@ -1039,7 +1039,7 @@ describe('Authorizer Configuration Tests', () => {
   test('Should create Gateway with AWS IAM authorizer', () => {
     new Gateway(stack, 'TestGateway', {
       gatewayName: 'test-gateway',
-      authorizerConfiguration: GatewayAuthorizer.awsIam,
+      authorizerConfiguration: GatewayAuthorizer.usingAwsIam(),
     });
 
     const template = Template.fromStack(stack);

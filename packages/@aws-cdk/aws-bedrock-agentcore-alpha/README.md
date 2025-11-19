@@ -904,7 +904,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
 ```typescript fixture=default
 const gateway = new agentcore.Gateway(this, "MyGateway", {
   gatewayName: "my-gateway",
-  authorizerConfiguration: agentcore.GatewayAuthorizer.awsIam,
+  authorizerConfiguration: agentcore.GatewayAuthorizer.usingAwsIam(),
 });
 
 // Grant access to a Lambda function's role

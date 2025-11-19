@@ -80,8 +80,6 @@ export abstract class ApiSchema extends TargetSchema {
 
   /**
    * Format as CFN properties
-   * TODO: this doesn't exist yet in cloudformation, but we will render the Cfn object
-   *
    * @internal This is an internal core function and should not be called directly.
    */
   public abstract _render(): any;

@@ -122,6 +122,7 @@ export interface ApiKeyCredentialProviderProps {
 /**
  * API Key credential provider configuration implementation
  * Can be used with OpenAPI targets
+ * @internal
  */
 export class ApiKeyCredentialProviderConfiguration implements ICredentialProviderConfig {
   public readonly credentialProviderType = CredentialProviderType.API_KEY;
