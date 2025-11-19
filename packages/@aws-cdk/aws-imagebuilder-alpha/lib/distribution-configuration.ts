@@ -392,6 +392,15 @@ export enum RepositoryService {
 
 /**
  * A container repository used to distribute container images in EC2 Image Builder
+ *
+ * @example
+ * const ecrRepository = ecr.Repository.fromRepositoryName(this, 'ECRRepository', 'my-repo');
+ * const repository = imagebuilder.Repository.fromEcr(ecrRepository);
+ *
+ * const containerDistributionConfiguration = new imagebuilder.DistributionConfiguration(this, 'Distribution');
+ * containerDistributionConfiguration.addContainerDistributions({
+ *   containerRepository: repository,
+ * });
  */
 export abstract class Repository {
   /**
