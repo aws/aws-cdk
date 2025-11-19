@@ -11,7 +11,7 @@
  *  and limitations under the License.
  */
 
-import { Arn, ArnFormat, Duration, IResource, Lazy, Resource } from 'aws-cdk-lib';
+import { Arn, ArnFormat, Duration, IResource, Lazy, Resource, Token } from 'aws-cdk-lib';
 import { IConstruct, Construct } from 'constructs';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import { CfnMemory, CfnMemoryProps } from 'aws-cdk-lib/aws-bedrockagentcore';
@@ -444,52 +444,45 @@ export interface MemoryProps {
    * Valid characters are a-z, A-Z, 0-9, _ (underscore)
    * The name must start with a letter and can be up to 48 characters long
    * Pattern: [a-zA-Z][a-zA-Z0-9_]{0,47}
-   * @required - No
    */
   readonly memoryName: string;
   /**
    * Short-term memory expiration in days (between 7 and 365).
    * Sets the short-term (raw event) memory retention.
    * Events older than the specified duration will expire and no longer be stored.
-   * @default 90
-   * @required - No
+   * @default - 90 days
    */
   readonly expirationDuration?: Duration;
   /**
    * Optional description for the memory
    * Valid characters are a-z, A-Z, 0-9, _ (underscore), - (hyphen) and spaces
    * The description can have up to 200 characters
-   * @default No description
-   * @required - No
+   * @default - No description
    */
   readonly description?: string;
   /**
    * Custom KMS key to use for encryption.
-   * @default Your data is encrypted with a key that AWS owns and manages for you
-   * @required - No
+   * @default - Your data is encrypted with a key that AWS owns and manages for you
    */
   readonly kmsKey?: kms.IKey;
   /**
    * If you need long-term memory for context recall across sessions,
    * you can setup memory extraction strategies to extract the relevant memory from the raw events.
-   * @default No extraction strategies (short term memory only)
-   * @required - No
+   * @default - No extraction strategies (short term memory only)
    */
   readonly memoryStrategies?: IMemoryStrategy[];
   /**
    * The IAM role that provides permissions for the memory to access AWS services
    * when using custom strategies.
    *
-   * @default A new role will be created.
-   * @required - No
+   * @default - A new role will be created.
    */
   readonly executionRole?: iam.IRole;
   /**
    * Tags (optional)
    * A list of key:value pairs of tags to apply to this memory resource
    *
-   * @default {} no tags
-   * @required - No
+   * @default - no tags
    */
   readonly tags?: { [key: string]: string };
 }
@@ -834,6 +827,10 @@ export class Memory extends MemoryBase {
    */
   private _validateMemoryExpirationDays = (expirationDays: number): string[] => {
     let errors: string[] = [];
+
+    if (Token.isUnresolved(expirationDays)) {
+      return errors;
+    }
 
     if (expirationDays < MEMORY_EXPIRATION_DAYS_MIN || expirationDays > MEMORY_EXPIRATION_DAYS_MAX) {
       errors.push(`Memory expiration days must be between ${MEMORY_EXPIRATION_DAYS_MIN} and ${MEMORY_EXPIRATION_DAYS_MAX}`);
