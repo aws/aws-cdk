@@ -1,8 +1,8 @@
 export namespace GatewayPerms {
 
   /******************************************************************************
- * Data Plane Permissions
- *****************************************************************************/
+   * Data Plane Permissions
+   *****************************************************************************/
 
   /**
    * Permissions to invoke the gateway
@@ -15,91 +15,50 @@ export namespace GatewayPerms {
    *****************************************************************************/
 
   /**
-   * Gateway service role permissions
-   * Used by the Gateway to manage its own resources and invoke targets
-   */
-  export const SERVICE_ROLE_PERMS = [
-    'bedrock-agentcore:*Gateway*',
-    'bedrock-agentcore:*GatewayTarget*',
-  ];
-
-  /**
-   * Workload identity permissions
-   * Used to manage authentication identities for gateway access
-   */
-  export const WORKLOAD_IDENTITY_PERMS = [
-    'bedrock-agentcore:*WorkloadIdentity',
-  ];
-
-  /**
-   * Credential provider permissions
-   * Used to manage credential configurations for outbound auth
-   */
-  export const CREDENTIAL_PROVIDER_PERMS = [
-    'bedrock-agentcore:*CredentialProvider',
-  ];
-
-  /**
-   * Token management permissions
-   * Used for JWT token operations
-   */
-  export const TOKEN_PERMS = [
-    'bedrock-agentcore:*Token*',
-  ];
-
-  /**
-   * Access control permissions
-   * Used to manage who can access the gateway
-   */
-  export const ACCESS_PERMS = [
-    'bedrock-agentcore:*Access*',
-  ];
-
-  /**
-   * Lambda target permissions
-   * Required when Gateway invokes Lambda functions
-   */
-  export const LAMBDA_INVOKE_PERMS = ['lambda:InvokeFunction'];
-
-  /**
    * KMS permissions for encryption
    * Required when using KMS keys for encryption
    */
   export const KMS_KEY_PERMS = [
     'kms:GenerateDataKey',
+    'kms:GenerateDataKeyWithoutPlaintext',
+    'kms:GenerateDataKeyPair',
+    'kms:GenerateDataKeyPairWithoutPlaintext',
     'kms:Decrypt',
     'kms:Encrypt',
-    'kms:GenerateDataKey*',
-    'kms:ReEncrypt*',
+    'kms:ReEncryptFrom',
+    'kms:ReEncryptTo',
     'kms:CreateGrant',
     'kms:DescribeKey',
   ];
 
   /**
-   * Assume role
+   * Assume role permission
+   * Required for the gateway service to assume the execution role
    */
   export const ASSUME_ROLE = ['sts:AssumeRole'];
 
-  // Outbound auth permissions
+  /**
+   * Outbound auth - Workload identity permissions
+   * Used to obtain access tokens for workload identity
+   */
   export const GATEWAY_WORKLOAD_IDENTITY_PERMS = [
     'bedrock-agentcore:GetWorkloadAccessToken',
   ];
 
+  /**
+   * Outbound auth - OAuth permissions
+   * Used to obtain OAuth tokens for target authentication
+   */
   export const GATEWAY_OAUTH_PERMS = [
     'bedrock-agentcore:GetResourceOauth2Token',
   ];
 
+  /**
+   * Outbound auth - API Key permissions
+   * Used to retrieve API keys for target authentication
+   */
   export const GATEWAY_API_KEY_PERMS = [
     'bedrock-agentcore:GetResourceApiKey',
-  ];
-
-  /**
-   * S3 permissions for schema storage
-   * Required when schemas are stored in S3
-   */
-  export const S3_SCHEMA_PERMS = [
-    's3:GetObject',
-    's3:PutObject',
   ];
 
   /**
@@ -111,35 +70,50 @@ export namespace GatewayPerms {
     'secretsmanager:DescribeSecret',
   ];
 
-  /**
-   * CloudWatch Logs permissions for gateway logs
-   */
-  export const LOGS_PERMS = [
-    'logs:CreateLogGroup',
-    'logs:CreateLogStream',
-    'logs:PutLogEvents',
-  ];
+  /******************************************************************************
+   * Control Plane Permissions
+   *****************************************************************************/
 
+  /**
+   * Get permissions for gateway resources
+   */
   export const GET_PERMS = ['bedrock-agentcore:GetGatewayTarget', 'bedrock-agentcore:GetGateway'];
+
+  /**
+   * List permissions for gateway resources
+   */
   export const LIST_PERMS = [
     'bedrock-agentcore:ListGateways',
     'bedrock-agentcore:ListGatewayTargets',
   ];
 
+  /**
+   * Create permissions for gateway resources
+   */
   export const CREATE_PERMS = [
     'bedrock-agentcore:CreateGateway',
     'bedrock-agentcore:CreateGatewayTarget',
   ];
+
+  /**
+   * Update permissions for gateway resources
+   */
   export const UPDATE_PERMS = [
     'bedrock-agentcore:UpdateGateway',
     'bedrock-agentcore:UpdateGatewayTarget',
   ];
+
+  /**
+   * Delete permissions for gateway resources
+   */
   export const DELETE_PERMS = [
     'bedrock-agentcore:DeleteGateway',
     'bedrock-agentcore:DeleteGatewayTarget',
   ];
 
-  export const READ_PERMS = [...new Set([...GET_PERMS, ...LIST_PERMS])];
+  /**
+   * Combined manage permissions (create, update, delete)
+   */
   export const MANAGE_PERMS = [...new Set([...CREATE_PERMS, ...UPDATE_PERMS, ...DELETE_PERMS])];
 
   /**

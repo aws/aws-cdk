@@ -38,21 +38,24 @@ export function validateStringField(params: StringLengthValidation): string[] {
     return errors; // Skip validation for null/undefined values
   }
 
+  // Skip validation if value is an unresolved token
+  if (Token.isUnresolved(params.value)) {
+    return errors;
+  }
+
+  // Now safe to access .length since we know it's not a token
   const currentLength = params.value.length;
 
-  // Evaluate only if it is not an unresolved Token
-  if (!Token.isUnresolved(params.fieldName)) {
-    if (params.value.length > params.maxLength) {
-      errors.push(
-        `The field ${params.fieldName} is ${currentLength} characters long but must be less than or equal to ${params.maxLength} characters`,
-      );
-    }
+  if (params.value.length > params.maxLength) {
+    errors.push(
+      `The field ${params.fieldName} is ${currentLength} characters long but must be less than or equal to ${params.maxLength} characters`,
+    );
+  }
 
-    if (params.value.length < params.minLength) {
-      errors.push(
-        `The field ${params.fieldName} is ${currentLength} characters long but must be at least ${params.minLength} characters`,
-      );
-    }
+  if (params.value.length < params.minLength) {
+    errors.push(
+      `The field ${params.fieldName} is ${currentLength} characters long but must be at least ${params.minLength} characters`,
+    );
   }
 
   return errors;

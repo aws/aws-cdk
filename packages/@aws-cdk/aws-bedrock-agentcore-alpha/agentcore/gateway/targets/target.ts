@@ -528,7 +528,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
 
       case McpTargetType.MCP_SERVER:
         // Return empty array, - service handles NoAuth automatically
-        return [];
+        return undefined;
 
       case McpTargetType.OPENAPI_SCHEMA:
         // No default - must be explicitly provided, service handles automatically
