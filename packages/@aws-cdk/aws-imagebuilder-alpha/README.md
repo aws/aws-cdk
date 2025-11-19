@@ -36,6 +36,210 @@ EC2 Image Builder supports AWS-managed components for common tasks, AWS Marketpl
 that you create. Components run during specific workflow phases: build and validate phases during the build stage, and
 test phase during the test stage.
 
+### Component
+
+A component defines the sequence of steps required to customize an instance during image creation (build component) or
+test an instance launched from the created image (test component). Components are created from declarative YAML or JSON
+documents that describe runtime configuration for building, validating, or testing instances. Components are included
+when added to the image recipe or container recipe for an image build.
+
+EC2 Image Builder supports AWS-managed components for common tasks, AWS Marketplace components, and custom components
+that you create. Components run during specific workflow phases: build and validate phases during the build stage, and
+test phase during the test stage.
+
+#### Basic Usage
+
+Create a component with the required properties: platform and component data.
+
+```ts
+const component = new imagebuilder.Component(this, 'MyComponent', {
+  platform: imagebuilder.Platform.LINUX,
+  data: imagebuilder.ComponentData.fromJsonObject({
+    schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
+    phases: [
+      {
+        name: imagebuilder.ComponentPhaseName.BUILD,
+        steps: [
+          {
+            name: 'install-app',
+            action: imagebuilder.ComponentAction.EXECUTE_BASH,
+            inputs: {
+              commands: ['echo "Installing my application..."', 'yum update -y'],
+            },
+          },
+        ],
+      },
+    ],
+  }),
+});
+```
+
+#### Component Data Sources
+
+##### Inline Component Data
+
+Use `ComponentData.fromInline()` for existing YAML/JSON definitions:
+
+```ts
+const component = new imagebuilder.Component(this, 'InlineComponent', {
+  platform: imagebuilder.Platform.LINUX,
+  data: imagebuilder.ComponentData.fromInline(`
+name: my-component
+schemaVersion: 1.0
+phases:
+  - name: build
+    steps:
+      - name: update-os
+        action: ExecuteBash
+        inputs:
+          commands: ['yum update -y']
+`)
+});
+```
+
+##### JSON Object Component Data
+
+Most developer-friendly approach using objects:
+
+```ts
+const component = new imagebuilder.Component(this, 'JsonComponent', {
+  platform: imagebuilder.Platform.LINUX,
+  data: imagebuilder.ComponentData.fromJsonObject({
+    schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
+    phases: [
+      {
+        name: imagebuilder.ComponentPhaseName.BUILD,
+        steps: [
+          {
+            name: 'configure-app',
+            action: imagebuilder.ComponentAction.CREATE_FILE,
+            inputs: {
+              path: '/etc/myapp/config.json',
+              content: '{"env": "production"}',
+            },
+          },
+        ],
+      },
+    ],
+  }),
+});
+```
+
+##### Structured Component Document
+
+For type-safe, CDK-native definitions with enhanced properties like `timeout` and `onFailure`:
+
+```ts  
+const component = new imagebuilder.Component(this, 'StructuredComponent', {
+  platform: imagebuilder.Platform.LINUX,
+  data: imagebuilder.ComponentData.fromComponentDocumentJsonObject({
+    schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
+    phases: [
+      {
+        name: imagebuilder.ComponentPhaseName.BUILD,
+        steps: [
+          {
+            name: 'install-with-timeout',
+            action: imagebuilder.ComponentAction.EXECUTE_BASH,
+            timeout: Duration.minutes(10),
+            onFailure: imagebuilder.ComponentOnFailure.CONTINUE,
+            inputs: {
+              commands: ['./install-script.sh'],
+            },
+          },
+        ],
+      },
+    ],
+  }),
+});
+```
+
+##### S3 Component Data
+
+For those components you want to upload or have uploaded to S3:
+
+```ts
+// Upload a local file
+const componentFromAsset = new imagebuilder.Component(this, 'AssetComponent', {
+  platform: imagebuilder.Platform.LINUX,
+  data: imagebuilder.ComponentData.fromAsset(this, 'ComponentAsset', './my-component.yml'),
+});
+
+// Reference an existing S3 object
+const bucket = s3.Bucket.fromBucketName(this, 'ComponentBucket', 'my-components-bucket');
+const componentFromS3 = new imagebuilder.Component(this, 'S3Component', {
+  platform: imagebuilder.Platform.LINUX,
+  data: imagebuilder.ComponentData.fromS3(bucket, 'components/my-component.yml'),
+});
+```
+
+#### Encrypt component data with a KMS key
+
+You can encrypt component data with a KMS key, so that only principals with access to decrypt with the key are able to
+access the component data.
+
+```ts
+const component = new imagebuilder.Component(this, 'EncryptedComponent', {
+  platform: imagebuilder.Platform.LINUX,
+  kmsKey: new kms.Key(this, 'ComponentKey'),
+  data: imagebuilder.ComponentData.fromJsonObject({
+    schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
+    phases: [
+      {
+        name: imagebuilder.ComponentPhaseName.BUILD,
+        steps: [
+          {
+            name: 'secure-setup',
+            action: imagebuilder.ComponentAction.EXECUTE_BASH,
+            inputs: {
+              commands: ['echo "This component data is encrypted with KMS"'],
+            },
+          },
+        ],
+      },
+    ],
+  }),
+});
+```
+
+#### AWS-Managed Components
+
+AWS provides a collection of managed components for common tasks:
+
+```ts
+// Install AWS CLI v2
+const awsCliComponent = imagebuilder.AwsManagedComponent.awsCliV2(this, 'AwsCli', {
+  platform: imagebuilder.Platform.LINUX
+});
+
+// Update the operating system
+const updateComponent = imagebuilder.AwsManagedComponent.updateOS(this, 'UpdateOS', {
+  platform: imagebuilder.Platform.LINUX
+});
+
+// Reference any AWS-managed component by name
+const customAwsComponent = imagebuilder.AwsManagedComponent.fromAwsManagedComponentName(
+  this,
+  'CloudWatchAgent',
+  'amazon-cloudwatch-agent-linux'
+);
+```
+
+#### AWS Marketplace Components
+
+You can reference AWS Marketplace components using the marketplace component name and its product ID:
+
+```ts
+const marketplaceComponent = imagebuilder.AwsMarketplaceComponent.fromAwsMarketplaceComponentAttributes(
+  this,
+  'MarketplaceComponent',
+  {
+    componentName: 'my-marketplace-component',
+    marketplaceProductId: 'prod-1234567890abcdef0',
+  }
+);
+```
+
 ### Infrastructure Configuration
 
 Infrastructure configuration defines the compute resources and environment settings used during the image building
@@ -90,5 +294,112 @@ const infrastructureConfiguration = new imagebuilder.InfrastructureConfiguration
   resourceTags: {
     Environment: 'production'
   }
+});
+```
+
+### Distribution Configuration
+
+Distribution configuration defines how and where your built images are distributed after successful creation. For AMIs,
+this includes target AWS Regions, KMS encryption keys, account sharing permissions, License Manager associations, and
+launch template configurations. For container images, it specifies the target Amazon ECR repositories across regions.
+A distribution configuration can be associated with an image or an image pipeline to define these distribution settings
+for image builds.
+
+```ts
+const distributionConfiguration = new imagebuilder.DistributionConfiguration(this, 'DistributionConfiguration', {
+  distributionConfigurationName: 'test-distribution-configuration',
+  description: 'A Distribution Configuration',
+  amiDistributions: [
+    {
+      // Distribute AMI to us-east-2 and publish the AMI ID to an SSM parameter
+      region: 'us-east-2',
+      ssmParameters: [
+        {
+          parameter: ssm.StringParameter.fromStringParameterAttributes(this, 'CrossRegionParameter', {
+            parameterName: '/imagebuilder/ami',
+            forceDynamicReference: true
+          })
+        }
+      ]
+    }
+  ]
+});
+
+// For AMI-based image builds - add an AMI distribution in the current region
+distributionConfiguration.addAmiDistributions({
+  amiName: 'imagebuilder-{{ imagebuilder:buildDate }}',
+  amiDescription: 'Build AMI',
+  amiKmsKey: kms.Key.fromLookup(this, 'ComponentKey', { aliasName: 'alias/distribution-encryption-key' }),
+  // Copy the AMI to different accounts
+  amiTargetAccountIds: ['123456789012', '098765432109'],
+  // Add launch permissions on the AMI
+  amiLaunchPermission: {
+    organizationArns: [
+      this.formatArn({ region: '', service: 'organizations', resource: 'organization', resourceName: 'o-1234567abc' })
+    ],
+    organizationalUnitArns: [
+      this.formatArn({
+        region: '',
+        service: 'organizations',
+        resource: 'ou',
+        resourceName: 'o-1234567abc/ou-a123-b4567890'
+      })
+    ],
+    isPublicUserGroup: true,
+    accountIds: ['234567890123']
+  },
+  // Attach tags to the AMI
+  amiTags: {
+    Environment: 'production',
+    Version: '{{ imagebuilder:buildVersion }}'
+  },
+  // Optional - publish the distributed AMI ID to an SSM parameter
+  ssmParameters: [
+    {
+      parameter: ssm.StringParameter.fromStringParameterAttributes(this, 'Parameter', {
+        parameterName: '/imagebuilder/ami',
+        forceDynamicReference: true
+      })
+    },
+    {
+      amiAccount: '098765432109',
+      dataType: ssm.ParameterDataType.TEXT,
+      parameter: ssm.StringParameter.fromStringParameterAttributes(this, 'CrossAccountParameter', {
+        parameterName: 'imagebuilder-prod-ami',
+        forceDynamicReference: true
+      })
+    }
+  ],
+  // Optional - create a new launch template version with the distributed AMI ID
+  launchTemplates: [
+    {
+      launchTemplate: ec2.LaunchTemplate.fromLaunchTemplateAttributes(this, 'LaunchTemplate', {
+        launchTemplateId: 'lt-1234'
+      }),
+      setDefaultVersion: true
+    },
+    {
+      accountId: '123456789012',
+      launchTemplate: ec2.LaunchTemplate.fromLaunchTemplateAttributes(this, 'CrossAccountLaunchTemplate', {
+        launchTemplateId: 'lt-5678'
+      }),
+      setDefaultVersion: true
+    }
+  ],
+  // Optional - enable Fast Launch on an imported launch template
+  fastLaunchConfigurations: [
+    {
+      enabled: true,
+      launchTemplate: ec2.LaunchTemplate.fromLaunchTemplateAttributes(this, 'FastLaunchLT', {
+        launchTemplateName: 'fast-launch-lt'
+      }),
+      maxParallelLaunches: 10,
+      targetSnapshotCount: 2
+    }
+  ],
+  // Optional - license configurations to apply to the AMI
+  licenseConfigurationArns: [
+    'arn:aws:license-manager:us-west-2:123456789012:license-configuration:lic-abcdefghijklmnopqrstuvwxyz'
+  ]
 });
 ```

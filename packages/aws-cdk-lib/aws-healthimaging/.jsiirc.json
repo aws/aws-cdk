@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.healthimaging"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.HealthImaging"
+      "namespace": "Amazon.CDK.AWS.HealthImaging"
     },
     "python": {
       "module": "aws_cdk.aws_healthimaging"
