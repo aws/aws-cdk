@@ -1,6 +1,13 @@
+/**
+ * spec2cdk CLI entry point
+ *
+ * !!! Note that this CLI is never used in the course of normal repository operations !!!
+ * !!! It only exists for experimentation purposes when developing new code gen. !!!
+ */
 import * as path from 'node:path';
 import { parseArgs } from 'node:util';
 import { PositionalArg, showHelp } from './help';
+import { AwsCdkLibBuilder } from '../cdk/aws-cdk-lib';
 import { GenerateModuleMap, GenerateOptions, generate, generateAll } from '../generate';
 import { log } from '../util';
 
@@ -87,16 +94,18 @@ export async function main(argv: string[]) {
   }
 
   const outputPath = outputDir ?? path.join(__dirname, '..', 'services');
-  const generatorOptions: GenerateOptions = {
+
+  const generatorOptions: GenerateOptions<typeof AwsCdkLibBuilder> = {
     outputPath,
-    filePatterns: {
-      resources: options.pattern,
-      augmentations: options.augmentations,
-      cannedMetrics: options.metrics,
-    },
     clearOutput: options['clear-output'],
-    augmentationsSupport: options['augmentations-support'],
     debug: options.debug as boolean,
+    builderProps: {
+      filePatterns: {
+        resources: options.pattern,
+        augmentations: options.augmentations,
+        cannedMetrics: options.metrics,
+      },
+    },
   };
 
   if (options.service?.length) {

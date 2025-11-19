@@ -439,6 +439,31 @@ describe('L1 static factory methods', () => {
       account: '23432424',
     });
   });
+
+  test('arnForTable created with fromTableName', () => {
+    const app = new App();
+    const stack = new Stack(app, 'MyStack', {
+      env: { account: '23432424', region: 'us-east-1' },
+    });
+
+    const table = CfnTable.fromTableName(stack, 'Table', 'MyTable');
+    const arn = CfnTable.arnForTable(table);
+
+    expect(stack.resolve(arn)).toEqual(stack.resolve(table.tableRef.tableArn));
+  });
+
+  test('arnForTable output matches input ARN', () => {
+    const app = new App();
+    const stack = new Stack(app, 'MyStack', {
+      env: { account: '23432424', region: 'us-east-1' },
+    });
+
+    const inputArn = 'arn:aws:dynamodb:us-east-2:123456789012:table/myDynamoDBTable';
+    const table = CfnTable.fromTableArn(stack, 'Table', 'arn:aws:dynamodb:us-east-2:123456789012:table/myDynamoDBTable');
+    const outputArn = CfnTable.arnForTable(table);
+
+    expect(stack.resolve(outputArn)).toEqual(stack.resolve(inputArn));
+  });
 });
 
 testDeprecated('when specifying every property', () => {
@@ -2304,17 +2329,12 @@ describe('grants', () => {
               'dynamodb:action2',
             ],
             'Effect': 'Allow',
-            'Resource': [
-              {
-                'Fn::GetAtt': [
-                  'mytable0324D45C',
-                  'Arn',
-                ],
-              },
-              {
-                'Ref': 'AWS::NoValue',
-              },
-            ],
+            'Resource': {
+              'Fn::GetAtt': [
+                'mytable0324D45C',
+                'Arn',
+              ],
+            },
           },
         ],
         'Version': '2012-10-17',
@@ -2562,31 +2582,26 @@ describe('grants', () => {
           {
             Action: 'dynamodb:*',
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':dynamodb:',
-                    {
-                      Ref: 'AWS::Region',
-                    },
-                    ':',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':table/my-table',
-                  ],
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':dynamodb:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':table/my-table',
                 ],
-              },
-              {
-                Ref: 'AWS::NoValue',
-              },
-            ],
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -2664,10 +2679,7 @@ describe('import', () => {
               'dynamodb:DescribeTable',
             ],
             'Effect': 'Allow',
-            'Resource': [
-              tableArn,
-              { 'Ref': 'AWS::NoValue' },
-            ],
+            'Resource': tableArn,
           },
         ],
         'Version': '2012-10-17',
@@ -2711,31 +2723,26 @@ describe('import', () => {
               'dynamodb:DescribeTable',
             ],
             'Effect': 'Allow',
-            'Resource': [
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      'Ref': 'AWS::Partition',
-                    },
-                    ':dynamodb:',
-                    {
-                      'Ref': 'AWS::Region',
-                    },
-                    ':',
-                    {
-                      'Ref': 'AWS::AccountId',
-                    },
-                    ':table/MyTable',
-                  ],
+            'Resource': {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    'Ref': 'AWS::Partition',
+                  },
+                  ':dynamodb:',
+                  {
+                    'Ref': 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    'Ref': 'AWS::AccountId',
+                  },
+                  ':table/MyTable',
                 ],
-              },
-              {
-                'Ref': 'AWS::NoValue',
-              },
-            ],
+              ],
+            },
           },
         ],
         'Version': '2012-10-17',
@@ -3152,20 +3159,6 @@ describe('global', () => {
                 'Fn::Join': [
                   '',
                   [
-                    {
-                      'Fn::GetAtt': [
-                        'TableCD117FA1',
-                        'Arn',
-                      ],
-                    },
-                    '/index/*',
-                  ],
-                ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
                     'arn:',
                     {
                       Ref: 'AWS::Partition',
@@ -3197,6 +3190,20 @@ describe('global', () => {
                     {
                       Ref: 'TableCD117FA1',
                     },
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'TableCD117FA1',
+                        'Arn',
+                      ],
+                    },
+                    '/index/*',
                   ],
                 ],
               },
@@ -3244,6 +3251,45 @@ describe('global', () => {
           },
         ],
         Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('grantReadData with AccountRootPrincipal uses wildcard resources', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+    });
+
+    // WHEN
+    table.grantReadData(new iam.AccountRootPrincipal());
+
+    // THEN - Should create resource policy with wildcard to avoid circular dependency
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      ResourcePolicy: {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: [
+                'dynamodb:BatchGetItem',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
+                'dynamodb:Query',
+                'dynamodb:GetItem',
+                'dynamodb:Scan',
+                'dynamodb:ConditionCheckItem',
+                'dynamodb:DescribeTable',
+              ],
+              Effect: 'Allow',
+              Resource: '*', // Wildcard to avoid circular dependency
+              Principal: Match.anyValue(), // AccountRootPrincipal
+            }),
+          ]),
+        },
       },
     });
   });
@@ -3321,22 +3367,6 @@ describe('global', () => {
                     {
                       Ref: 'AWS::Partition',
                     },
-                    ':dynamodb:us-east-1:',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':table/my-table/index/*',
-                  ],
-                ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
                     ':dynamodb:eu-west-2:',
                     {
                       Ref: 'AWS::AccountId',
@@ -3358,6 +3388,22 @@ describe('global', () => {
                       Ref: 'AWS::AccountId',
                     },
                     ':table/my-table',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:us-east-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table/index/*',
                   ],
                 ],
               },
@@ -3731,17 +3777,12 @@ function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal,
         {
           'Action': action,
           'Effect': 'Allow',
-          'Resource': [
-            {
-              'Fn::GetAtt': [
-                'mytable0324D45C',
-                'Arn',
-              ],
-            },
-            {
-              'Ref': 'AWS::NoValue',
-            },
-          ],
+          'Resource': {
+            'Fn::GetAtt': [
+              'mytable0324D45C',
+              'Arn',
+            ],
+          },
         },
       ],
       'Version': '2012-10-17',
