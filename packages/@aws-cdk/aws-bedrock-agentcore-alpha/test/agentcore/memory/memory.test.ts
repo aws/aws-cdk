@@ -471,6 +471,21 @@ describe('Memory expiration duration validation tests', () => {
       });
     }).not.toThrow();
   });
+
+  test('does not fail validation if expirationDuration is a late-bound value', () => {
+    // WHEN
+    const expirationDuration = new cdk.CfnParameter(stack, 'ExpirationDuration', {
+      default: 30,
+      type: 'Number',
+    });
+
+    expect(() => {
+      new Memory(stack, 'memory-late-bound', {
+        memoryName: 'memory_late_bound',
+        expirationDuration: Duration.days(expirationDuration.valueAsNumber),
+      });
+    }).not.toThrow();
+  });
 });
 
 describe('Memory with custom strategies tests', () => {
