@@ -327,6 +327,8 @@ export interface ComponentDocumentStep {
 
   /**
    * Contains parameters required by the action to run the step
+   *
+   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/toe-action-modules.html
    */
   readonly inputs: any;
 
@@ -334,6 +336,9 @@ export interface ComponentDocumentStep {
    * The condition to apply to the step. If the condition is false, then the step is skipped
    *
    * @default - no condition is applied to the step and it gets executed
+   *
+   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/toe-conditional-constructs.html
+   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/toe-comparison-operators.html
    */
   readonly if?: any;
 
