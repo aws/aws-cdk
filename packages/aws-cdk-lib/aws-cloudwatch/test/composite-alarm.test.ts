@@ -237,7 +237,7 @@ describe('CompositeAlarm', () => {
     })).toThrow('Did not detect any operands for AlarmRule.allOf');
   });
 
-  test('empty hasAtLeast', () => {
+  test('empty operands for hasAtLeast', () => {
     expect(() => new CompositeAlarm(new Stack(), 'alarm', {
       alarmRule: AlarmRule.hasAtLeastAlarm({ operands: [], percentage: 1 }),
     })).toThrow('Did not detect any operands for AT_LEAST ALARM');
