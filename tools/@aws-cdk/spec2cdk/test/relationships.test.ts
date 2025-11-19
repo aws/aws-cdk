@@ -293,9 +293,10 @@ test('relationship have arns appear first in the constructor chain', () => {
   });
   db.link('hasResource', service, roleResource);
 
-  // Type definition with relationship
-  const configType = db.allocate('typeDefinition', {
-    name: 'ExecutionConfig',
+  // Source resource with relationship
+  const sourceResource = db.allocate('resource', {
+    name: 'Function',
+    attributes: {},
     properties: {
       RoleArn: {
         type: { type: 'string' },
@@ -311,26 +312,15 @@ test('relationship have arns appear first in the constructor chain', () => {
         }],
       },
     },
+    cloudFormationType: 'AWS::IAM::Function',
   });
 
-  // Source resource with nested property
-  const taskResource = db.allocate('resource', {
-    name: 'Task',
-    attributes: {},
-    properties: {
-      ExecutionConfig: {
-        type: { type: 'ref', reference: { $ref: configType.$id } },
-      },
-    },
-    cloudFormationType: 'AWS::IAM::Task',
-  });
-  db.link('hasResource', service, taskResource);
-  db.link('usesType', taskResource, configType);
+  db.link('hasResource', service, sourceResource);
 
   const module = new AwsCdkLibBuilder({ db }).addService(service).resourcesMod.module;
 
   const rendered = renderer.render(module);
 
-  const chain = 'roleArn: (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? (props.roleArn as IRoleRef)?.roleRef?.roleName ?? (props.roleArn as IRoleRef)?.roleRef?.otherPrimaryId ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | iam.IRoleRef | iam.IRoleRef | string")';
+  const chain = 'this.roleArn = (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? (props.roleArn as IRoleRef)?.roleRef?.roleName ?? (props.roleArn as IRoleRef)?.roleRef?.otherPrimaryId ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | iam.IRoleRef | iam.IRoleRef | string")';
   expect(rendered).toContain(chain);
 });

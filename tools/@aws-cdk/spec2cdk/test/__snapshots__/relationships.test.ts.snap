@@ -44,6 +44,10 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     return ret;
   }
 
+  public static arnForRole(resource: IRoleRef): string {
+    return resource.roleRef.roleArn;
+  }
+
   /**
    * @cloudformationAttribute RoleArn
    */
@@ -189,7 +193,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.permissions = (cdk.isResolvableObject(props.permissions) ? props.permissions : (!props.permissions ? undefined : props.permissions.forEach((item: any, i: number, arr: any[]) => { arr[i] = flattenCfnResourcePermissionProperty(item) }), props.permissions));
+    this.permissions = props.permissions;
   }
 
   public get resourceRef(): ResourceReference {
@@ -227,16 +231,8 @@ export namespace CfnResource {
     /**
      * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iam-resource-permission.html#cfn-iam-resource-permission-rolearn
      */
-    readonly roleArn?: IRoleRef | string;
+    readonly roleArn?: string;
   }
-}
-
-// @ts-ignore TS6133
-function flattenCfnResourcePermissionProperty(props: cdk.IResolvable | CfnResource.PermissionProperty): cdk.IResolvable | CfnResource.PermissionProperty {
-  if (cdk.isResolvableObject(props)) return props;
-  return {
-    roleArn: (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string")
-  };
 }
 
 /**
@@ -385,6 +381,10 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     return ret;
   }
 
+  public static arnForRole(resource: IRoleRef): string {
+    return resource.roleRef.roleArn;
+  }
+
   /**
    * @cloudformationAttribute RoleArn
    */
@@ -513,6 +513,10 @@ export class CfnUser extends cdk.CfnResource implements cdk.IInspectable, IUserR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  public static arnForUser(resource: IUserRef): string {
+    return resource.userRef.userArn;
   }
 
   /**
@@ -792,6 +796,10 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     return ret;
   }
 
+  public static arnForRole(resource: IRoleRef): string {
+    return resource.roleRef.roleArn;
+  }
+
   /**
    * @cloudformationAttribute RoleArn
    */
@@ -937,7 +945,7 @@ export class CfnTask extends cdk.CfnResource implements cdk.IInspectable, ITaskR
       properties: props
     });
 
-    this.executionConfig = (!props.executionConfig ? undefined : flattenCfnTaskExecutionConfigProperty(props.executionConfig));
+    this.executionConfig = props.executionConfig;
   }
 
   public get taskRef(): TaskReference {
@@ -975,16 +983,8 @@ export namespace CfnTask {
     /**
      * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iam-task-executionconfig.html#cfn-iam-task-executionconfig-rolearn
      */
-    readonly roleArn?: IRoleRef | string;
+    readonly roleArn?: string;
   }
-}
-
-// @ts-ignore TS6133
-function flattenCfnTaskExecutionConfigProperty(props: CfnTask.ExecutionConfigProperty | cdk.IResolvable): CfnTask.ExecutionConfigProperty | cdk.IResolvable {
-  if (cdk.isResolvableObject(props)) return props;
-  return {
-    roleArn: (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string")
-  };
 }
 
 /**
@@ -1132,6 +1132,10 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     return ret;
   }
 
+  public static arnForRole(resource: IRoleRef): string {
+    return resource.roleRef.roleArn;
+  }
+
   /**
    * @cloudformationAttribute RoleArn
    */
@@ -1277,7 +1281,7 @@ export class CfnJob extends cdk.CfnResource implements cdk.IInspectable, IJobRef
       properties: props
     });
 
-    this.config = (!props.config ? undefined : flattenCfnJobOldConfigProperty(props.config));
+    this.config = props.config;
   }
 
   public get jobRef(): JobReference {
@@ -1315,7 +1319,7 @@ export namespace CfnJob {
     /**
      * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iam-job-config.html#cfn-iam-job-config-rolearn
      */
-    readonly roleArn?: IRoleRef | string;
+    readonly roleArn?: string;
 
     /**
      * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iam-job-config.html#cfn-iam-job-config-timeout
@@ -1332,17 +1336,8 @@ export namespace CfnJob {
     /**
      * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iam-job-oldconfig.html#cfn-iam-job-oldconfig-rolearn
      */
-    readonly roleArn?: IRoleRef | string;
+    readonly roleArn?: string;
   }
-}
-
-// @ts-ignore TS6133
-function flattenCfnJobConfigProperty(props: CfnJob.ConfigProperty | cdk.IResolvable): CfnJob.ConfigProperty | cdk.IResolvable {
-  if (cdk.isResolvableObject(props)) return props;
-  return {
-    roleArn: (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string"),
-    timeout: props.timeout
-  };
 }
 
 /**
@@ -1388,14 +1383,6 @@ function CfnJobConfigPropertyFromCloudFormation(properties: any): cfn_parse.From
   ret.addPropertyResult("timeout", "Timeout", (properties.Timeout != null ? cfn_parse.FromCloudFormation.getNumber(properties.Timeout) : undefined));
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}
-
-// @ts-ignore TS6133
-function flattenCfnJobOldConfigProperty(props: cdk.IResolvable | CfnJob.OldConfigProperty): cdk.IResolvable | CfnJob.OldConfigProperty {
-  if (cdk.isResolvableObject(props)) return props;
-  return {
-    roleArn: (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string")
-  };
 }
 
 /**
@@ -1541,6 +1528,10 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  public static arnForRole(resource: IRoleRef): string {
+    return resource.roleRef.roleArn;
   }
 
   /**

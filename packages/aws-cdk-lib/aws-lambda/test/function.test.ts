@@ -5154,76 +5154,6 @@ describe('L1 Relationships', () => {
     });
   });
 
-  it('nested union', () => {
-    const stack = new cdk.Stack();
-    const role = new iam.Role(stack, 'SomeRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-    const bucket = new s3.Bucket(stack, 'MyBucket');
-
-    new lambda.CfnFunction(stack, 'MyLambda', {
-      code: {
-        s3Bucket: bucket, // Nested union
-      },
-      role: role,
-    });
-    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-      Properties: {
-        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
-        Code: { S3Bucket: { Ref: 'MyBucketF68F3FF0' } },
-      },
-    });
-  });
-
-  it('deeply nested union', () => {
-    const stack = new cdk.Stack();
-    const topic = new sns.CfnTopic(stack, 'Topic');
-
-    new lambda.CfnEventInvokeConfig(stack, 'EventConfig', {
-      functionName: 'myFunction',
-      qualifier: '$LATEST',
-      destinationConfig: {
-        onFailure: {
-          destination: topic, // Deeply nested: destinationConfig -> onFailure -> destination (union)
-        },
-      },
-    });
-    Template.fromStack(stack).hasResource('AWS::Lambda::EventInvokeConfig', {
-      Properties: {
-        DestinationConfig: {
-          OnFailure: {
-            Destination: { Ref: 'Topic' },
-          },
-        },
-      },
-    });
-  });
-
-  it('nested array of unions', () => {
-    const stack = new cdk.Stack();
-    const role = new iam.Role(stack, 'SomeRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-    const securityGroup = new ec2.SecurityGroup(stack, 'SG', {
-      vpc: new ec2.Vpc(stack, 'VPC'),
-    });
-    new lambda.CfnFunction(stack, 'MyLambda', {
-      code: { zipFile: 'foo' },
-      role: role,
-      vpcConfig: {
-        securityGroupIds: [securityGroup], // Nested array of union
-      },
-    });
-    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-      Properties: {
-        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
-        VpcConfig: {
-          SecurityGroupIds: [{ 'Fn::GetAtt': ['SGADB53937', 'GroupId'] }],
-        },
-      },
-    });
-  });
-
   it('array reference should be valid', () => {
     const stack = new cdk.Stack();
     const role = new iam.Role(stack, 'SomeRole', {
@@ -5246,35 +5176,6 @@ describe('L1 Relationships', () => {
       Properties: {
         Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
         Layers: [{ Ref: 'LayerVersion139D4D7A8' }, 'layer2Arn', 'layer3Arn'],
-      },
-    });
-  });
-
-  it('nested array references should still be valid', () => {
-    const stack = new cdk.Stack();
-    const role = new iam.Role(stack, 'SomeRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-    const securityGroup = new ec2.SecurityGroup(stack, 'SG', {
-      vpc: new ec2.Vpc(stack, 'VPC'),
-    });
-    const vpcConfig = {
-      securityGroupIds: [securityGroup, 'securityGroupArn2'],
-    };
-    new lambda.CfnFunction(stack, 'MyLambda', {
-      code: { zipFile: 'foo' },
-      role: role,
-      vpcConfig,
-    });
-
-    vpcConfig.securityGroupIds.push('securityGroupArn3');
-
-    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-      Properties: {
-        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
-        VpcConfig: {
-          SecurityGroupIds: [{ 'Fn::GetAtt': ['SGADB53937', 'GroupId'] }, 'securityGroupArn2', 'securityGroupArn3'],
-        },
       },
     });
   });
