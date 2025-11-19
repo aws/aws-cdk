@@ -3,8 +3,6 @@ import * as path from 'path';
 import { SpecDatabase, Resource, Service } from '@aws-cdk/service-spec-types';
 import { Module } from '@cdklabs/typewriter';
 import { IWriter, substituteFilePattern } from '../util';
-import { GrantsModule } from './grants-module';
-import { ResourceClass } from './resource-class';
 import { BaseServiceSubmodule, LocatedModule, relativeImportPath } from './service-submodule';
 
 export interface AddServiceProps {
@@ -71,23 +69,14 @@ export abstract class LibraryBuilder<ServiceSubmodule extends BaseServiceSubmodu
    * Add all resources in a service
    */
   public addService(service: Service, props?: AddServiceProps) {
-    const resources = this.db.follow('hasResource', service);
+    const resources = this.db.follow('hasResource', service).map(e => e.entity);
     const submod = this.obtainServiceSubmodule(service, props?.destinationSubmodule, props?.grantsConfig);
 
-    const resourceClasses: Record<string, ResourceClass> = {};
-    for (const { entity: resource } of resources) {
-      resourceClasses[resource.cloudFormationType] = this.addResourceToSubmodule(submod, resource, props);
+    for (const resource of resources) {
+      this.addResourceToSubmodule(submod, resource, props);
     }
 
-    const grantModule = submod.locatedModules
-      .map(lm => lm.module)
-      .find(m => m instanceof GrantsModule);
-
-    if (grantModule != null) {
-      grantModule.build(resourceClasses, props?.nameSuffix);
-    }
-
-    this.postprocessSubmodule(submod);
+    this.postprocessSubmodule(submod, props);
 
     return submod;
   }
@@ -148,12 +137,12 @@ export abstract class LibraryBuilder<ServiceSubmodule extends BaseServiceSubmodu
    *  - submodule.registerResource(resource.cloudFormationType, ...)
    *  - submodule.registerSelectiveImports(..)
    */
-  protected abstract addResourceToSubmodule(submodule: ServiceSubmodule, resource: Resource, props?: AddServiceProps): ResourceClass;
+  protected abstract addResourceToSubmodule(submodule: ServiceSubmodule, resource: Resource, props?: AddServiceProps): void;
 
   /**
    * Do whatever we need to do after a service has been rendered to a submodule
    */
-  protected postprocessSubmodule(submodule: ServiceSubmodule) {
+  protected postprocessSubmodule(submodule: ServiceSubmodule, _props?: AddServiceProps) {
     // Selective imports from constructor
     for (const selectiveImport of submodule.imports) {
       const sourceModule = new Module(selectiveImport.moduleName);
