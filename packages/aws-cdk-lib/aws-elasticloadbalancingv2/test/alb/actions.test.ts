@@ -357,7 +357,9 @@ describe('tests', () => {
   test('Chaining JWT authentication action', () => {
     // WHEN
     const listener = lb.addListener('Listener', {
-      port: 80,
+      protocol: elbv2.ApplicationProtocol.HTTPS,
+      port: 443,
+      certificates: [elbv2.ListenerCertificate.fromArn('arn:aws:acm:us-east-1:123456789012:certificate/test-cert')],
       defaultAction: elbv2.ListenerAction.authenticateJwt({
         issuer: 'https://issuer.example.com',
         jwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
@@ -409,5 +411,19 @@ describe('tests', () => {
         },
       ],
     });
+  });
+
+  test('JWT authentication requires HTTPS listener', () => {
+    // WHEN/THEN
+    expect(() => {
+      lb.addListener('Listener', {
+        port: 80,
+        defaultAction: elbv2.ListenerAction.authenticateJwt({
+          issuer: 'https://issuer.example.com',
+          jwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
+          next: elbv2.ListenerAction.forward([group1]),
+        }),
+      });
+    }).toThrow('JWT authentication requires an HTTPS listener. Please use ApplicationProtocol.HTTPS for the listener protocol.');
   });
 });

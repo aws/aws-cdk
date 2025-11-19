@@ -1,10 +1,11 @@
 import { Construct, IConstruct } from 'constructs';
-import { IApplicationListener } from './application-listener';
+import { ApplicationListener, IApplicationListener } from './application-listener';
 import { IApplicationTargetGroup } from './application-target-group';
 import { Port } from '../../../aws-ec2';
 import { Duration, SecretValue, Token, Tokenization } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
 import { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
+import { ApplicationProtocol } from '../shared/enums';
 import { IListenerAction } from '../shared/listener-action';
 
 /**
@@ -527,6 +528,15 @@ class AuthenticateJwtAction extends ListenerAction {
         jwksEndpoint: options.jwksEndpoint,
       },
     }, options.next);
+  }
+
+  public bind(scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct): void {
+    super.bind(scope, listener, associatingConstruct);
+
+    // JWT authentication requires HTTPS listener
+    if (listener instanceof ApplicationListener && listener.protocol !== ApplicationProtocol.HTTPS) {
+      throw new UnscopedValidationError('JWT authentication requires an HTTPS listener. Please use ApplicationProtocol.HTTPS for the listener protocol.');
+    }
   }
 }
 

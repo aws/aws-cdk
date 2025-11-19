@@ -184,12 +184,19 @@ listener.addAction('DefaultAction', {
 
 Here's an example of using JWT authentication for service-to-service communication:
 
+**Note:** JWT authentication requires an HTTPS listener. If you attempt to use it with an HTTP listener, a validation error will be thrown.
+
 ```ts
-declare const listener: elbv2.ApplicationListener;
+declare const lb: elbv2.ApplicationLoadBalancer;
+declare const certificate: elbv2.IListenerCertificate;
 declare const myTargetGroup: elbv2.ApplicationTargetGroup;
 
-listener.addAction('DefaultAction', {
-  action: elbv2.ListenerAction.authenticateJwt({
+// JWT authentication requires HTTPS
+const listener = lb.addListener('Listener', {
+  protocol: elbv2.ApplicationProtocol.HTTPS,
+  port: 443,
+  certificates: [certificate],
+  defaultAction: elbv2.ListenerAction.authenticateJwt({
     issuer: 'https://issuer.example.com',
     jwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
     next: elbv2.ListenerAction.forward([myTargetGroup]),
