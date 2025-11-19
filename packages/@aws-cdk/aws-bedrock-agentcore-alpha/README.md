@@ -200,6 +200,7 @@ const runtimeInstance = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
   agentRuntimeArtifact: agentRuntimeArtifact,
 });
+```
 
 ### Granting Permissions to Invoke Bedrock Models or Inference Profiles
 
