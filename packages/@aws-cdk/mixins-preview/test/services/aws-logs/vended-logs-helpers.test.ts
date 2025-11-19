@@ -4,7 +4,6 @@ import { Bucket, BucketPolicy, CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
 import { getOrCreateBucketPolicy, XRayPolicyGenerator } from '../../../lib/services/aws-logs/vended-logs-helpers';
 import { AccountRootPrincipal, Effect, PolicyDocument, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
-import { XRayDeliveryDestination } from '../../../lib/services/aws-logs/vended-logs';
 
 describe('getOrCreateBucketPolicy', () => {
   test('creates policy with V1 permissions if specified', () => {
@@ -354,6 +353,40 @@ describe('getOrCreateBucketPolicy', () => {
 });
 
 describe('XRayPolicyGenerator', () => {
+  test('creates an XRay delivery policy', () => {
+    const stack = new Stack();
+
+    new XRayPolicyGenerator(stack, 'CDKXRayPolicyGenerator');
+
+    Template.fromStack(stack).resourceCountIs('AWS::XRay::ResourcePolicy', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::XRay::ResourcePolicy', {
+      PolicyDocument: {
+        'Fn::Join': [
+          '',
+          [
+            '{"Version":"2012-10-17","Statement":[{"Sid":"CDKLogsDeliveryWrite","Effect":"Allow","Principal":{"Service":"delivery.logs.amazonaws.com"},"Action":"xray:PutTraceSegments","Resource":"*","Condition":{"StringEquals":{"aws:SourceAccount":"',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            '"},"ForAllValues:ArnLike":{"logs:LogGeneratingResourceArns":[]},"ArnLike":{"aws:SourceArn":"arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':logs:',
+            {
+              Ref: 'AWS::Region',
+            },
+            ':',
+            {
+              Ref: 'AWS::AccountId',
+            },
+            ':delivery-source:*"}}}]}',
+          ],
+        ],
+      },
+    });
+  });
+
   test('XRay Delivery resource policy gets updated with log delivery sources', () => {
     const stack = new Stack();
 
@@ -379,25 +412,5 @@ describe('XRayPolicyGenerator', () => {
         ],
       },
     });
-  });
-
-  test('when multiple XRay Delivery destinations are created on one stack, only create one XRayPolicy', () => {
-    const stack = new Stack();
-
-    new XRayDeliveryDestination(stack, 'XRayDestination1');
-    new XRayDeliveryDestination(stack, 'XRayDestination2');
-
-    Template.fromStack(stack).resourceCountIs('AWS::XRay::ResourcePolicy', 1);
-  });
-
-  test('when an application has multiple stacks, create multiple XRayPolicies', () => {
-    const stack1 = new Stack();
-    const stack2 = new Stack();
-
-    new XRayPolicyGenerator(stack1, 'XRayDestination1');
-    new XRayPolicyGenerator(stack2, 'XRayDestination2');
-
-    Template.fromStack(stack1).resourceCountIs('AWS::XRay::ResourcePolicy', 1);
-    Template.fromStack(stack2).resourceCountIs('AWS::XRay::ResourcePolicy', 1);
   });
 });

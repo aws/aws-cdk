@@ -75,22 +75,9 @@ export class XRayPolicyGenerator extends Resource {
   private readonly logGeneratingSourceArns: string[] = [];
   constructor(scope: IConstruct, id: string) {
     super(scope, id);
-    this.XrayResourcePolicy = this.getOrCreateXRayResourcePolicy(scope);
-  }
-
-  private getOrCreateXRayResourcePolicy(stack: IConstruct) {
-    // Find existing XRay resource policy
-    const existing = stack.node.findAll().find(
-      construct => construct instanceof CfnResourcePolicy &&
-      construct.cfnResourceType === 'AWS::XRay::ResourcePolicy' &&
-      construct.policyName === 'CDKXRayDeliveryDestPolicy',
-    ) as CfnResourcePolicy;
-
-    if (existing) {
-      return existing;
-    }
-
-    return new CfnResourcePolicy(stack, `CDKXRayPolicy${Names.uniqueId(this)}`, {
+    const stack = Stack.of(scope);
+    // PolicyGenerator class is a singleton, so we will only ever make one of these per stack
+    this.XrayResourcePolicy = new CfnResourcePolicy(stack, `CDKXRayPolicy${Names.uniqueId(this)}`, {
       policyName: 'CDKXRayDeliveryDestPolicy',
       policyDocument: this.buildPolicyDocument(),
     });
