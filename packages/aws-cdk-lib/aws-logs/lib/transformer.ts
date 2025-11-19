@@ -128,8 +128,20 @@ export enum OCSFVersion {
   /**
    * OCSF schema version 1.1.
    * @see https://schema.ocsf.io/1.1.0/
+   * 
+   * OCSF schema version 1.5
+   * @see https://schema.ocsf.io/1.5.0/
    */
   V1_1 = 'V1.1',
+  V1_5 = 'V1.5',
+}
+
+/**
+ * OCSF Mapping versions supported by transformers.
+ */
+export enum OCSFMappingVersion {
+  /** OCSF mapping version 1.5.0 */
+  V1_5_0 = 'v1.5.0',
 }
 
 /**
@@ -232,6 +244,11 @@ export interface ParseToOCSFProperty {
    * Version of OCSF schema to convert to.
    */
   readonly ocsfVersion: OCSFVersion;
+
+  /**
+   * The mapping version for OCSF v1.5 ParseToOCSF.
+   */
+  readonly mappingVersion?: OCSFMappingVersion;
 }
 
 /**
@@ -877,7 +894,7 @@ export class ParserProcessor implements IProcessor {
         }
         this.parseToOCSFOptions = {
           source: '@message',
-          ... props.parseToOCSFOptions,
+          ...props.parseToOCSFOptions,
         };
         break;
 
@@ -901,7 +918,16 @@ export class ParserProcessor implements IProcessor {
       case ParserProcessorType.GROK:
         return { grok: this.grokOptions };
       case ParserProcessorType.OCSF:
-        return { parseToOcsf: this.parseToOCSFOptions };
+        const ocsfConfig: any = {
+          source: this.parseToOCSFOptions?.source,
+          eventSource: this.parseToOCSFOptions?.eventSource,
+          ocsfVersion: this.parseToOCSFOptions?.ocsfVersion,
+        };
+        // Add mappingVersion if defined - this property may not be in the L1 construct yet
+        if (this.parseToOCSFOptions?.mappingVersion !== undefined) {
+          ocsfConfig.mappingVersion = this.parseToOCSFOptions.mappingVersion;
+        }
+        return { parseToOcsf: ocsfConfig };
       default:
         throw new UnscopedValidationError(`Unsupported parser processor type: ${this.type}`);
     }

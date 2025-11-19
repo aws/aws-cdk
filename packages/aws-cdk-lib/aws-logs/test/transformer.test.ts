@@ -1,6 +1,6 @@
 import { Template } from '../../assertions';
 import { Stack } from '../../core';
-import { LogGroup, Transformer, ParserProcessor, JsonMutatorProcessor, VendedLogParser, StringMutatorProcessor, DataConverterProcessor, ParserProcessorType, JsonMutatorType, StringMutatorType, DelimiterCharacter, DataConverterType, TypeConverterType, QuoteCharacter, VendedLogType, OCSFSourceType, OCSFVersion } from '../lib';
+import { LogGroup, Transformer, ParserProcessor, JsonMutatorProcessor, VendedLogParser, StringMutatorProcessor, DataConverterProcessor, ParserProcessorType, JsonMutatorType, StringMutatorType, DelimiterCharacter, DataConverterType, TypeConverterType, QuoteCharacter, VendedLogType, OCSFSourceType, OCSFVersion, OCSFMappingVersion } from '../lib';
 
 describe('transformer', () => {
   // Parser Processor tests
@@ -284,6 +284,42 @@ describe('transformer', () => {
           Source: '@message',
           EventSource: 'CloudTrail',
           OcsfVersion: 'V1.1',
+        },
+      }],
+    });
+  });
+
+  test('create a OCSF v1.5 parser transformer against a log group', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
+
+    const ocsfParser = new ParserProcessor({
+      type: ParserProcessorType.OCSF,
+      parseToOCSFOptions: {
+        eventSource: OCSFSourceType.VPC_FLOW,
+        ocsfVersion: OCSFVersion.V1_5,
+        mappingVersion: OCSFMappingVersion.V1_5_0,
+      },
+    });
+
+    new Transformer(stack, 'Transformer', {
+      transformerName: 'MyTransformer',
+      logGroup: logGroup,
+      transformerConfig: [ocsfParser],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Transformer', {
+      LogGroupIdentifier: { Ref: 'awscdktestloggroup30AE39AB' },
+      TransformerConfig: [{
+        ParseToOCSF: {
+          Source: '@message',
+          EventSource: 'VPCFlow',
+          OcsfVersion: 'V1.5',
+          MappingVersion: 'v1.5.0',
         },
       }],
     });
