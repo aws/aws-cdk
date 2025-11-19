@@ -1,7 +1,9 @@
 import { Property, RelationshipRef, Resource, RichProperty, SpecDatabase } from '@aws-cdk/service-spec-types';
+import * as naming from '../naming';
 import { namespaceFromResource, referenceInterfaceName, referenceInterfaceAttributeName, referencePropertyName, typeAliasPrefixFromResource } from '../naming';
 import { getReferenceProps } from './reference-props';
-import { log, pkglint } from '../util';
+import { log } from '../util';
+import { SelectiveImport } from './service-submodule';
 
 // For now we want relationships to be applied only for these services
 export const RELATIONSHIP_SERVICES: string[] = [];
@@ -22,23 +24,6 @@ export interface Relationship {
 }
 
 /**
- * Represents a selective import statement for cross-module type references.
- * Used to import specific types from other CDK modules when relationships
- * are between different modules.
- */
-export interface SelectiveImport {
-  /** The module name to import from */
-  readonly moduleName: string;
-  /** Array of types that need to be imported */
-  readonly types: {
-    /** The original type name in the source module */
-    originalType: string;
-    /** The aliased name to avoid naming conflicts */
-    aliasedType: string;
-  }[];
-}
-
-/**
  * Extracts resource relationship information from the database for cross-service property references.
  */
 export class RelationshipDecider {
@@ -54,7 +39,7 @@ export class RelationshipDecider {
     originalType: string;
     aliasedType: string;
   }) {
-    const moduleName = pkglint.createModuleDefinitionFromCfnNamespace(namespace).moduleName;
+    const moduleName = naming.modulePartsFromNamespace(namespace).moduleName;
     const moduleImport = this.imports.find(i => i.moduleName === moduleName);
     if (!moduleImport) {
       this.imports.push({
