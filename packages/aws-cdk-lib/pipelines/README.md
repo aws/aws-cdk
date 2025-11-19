@@ -90,7 +90,7 @@ class MyPipelineStack extends Stack {
           'main',
           {
             connectionArn:
-              'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
+              'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console 
           }
         ),
         commands: ['npm ci', 'npm run build', 'npx cdk synth'],
