@@ -3718,3 +3718,181 @@ test('ContributorInsightsSpecification && ContributorInsights - v2', () => {
   }).toThrow('`contributorInsightsSpecification` and `contributorInsights` are set. Use `contributorInsightsSpecification` only.');
 });
 
+test('can add GSI with compound partition keys', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  table.addGlobalSecondaryIndex({
+    indexName: 'GSI1',
+    partitionKeys: [
+      { name: 'gsi1pk1', type: AttributeType.STRING },
+      { name: 'gsi1pk2', type: AttributeType.NUMBER },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    AttributeDefinitions: [
+      { AttributeName: 'pk', AttributeType: 'S' },
+      { AttributeName: 'gsi1pk1', AttributeType: 'S' },
+      { AttributeName: 'gsi1pk2', AttributeType: 'N' },
+    ],
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'GSI1',
+        KeySchema: [
+          { AttributeName: 'gsi1pk1', KeyType: 'HASH' },
+          { AttributeName: 'gsi1pk2', KeyType: 'HASH' },
+        ],
+      },
+    ],
+  });
+});
+
+test('can add GSI with compound sort keys', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  table.addGlobalSecondaryIndex({
+    indexName: 'GSI1',
+    partitionKey: { name: 'gsi1pk', type: AttributeType.STRING },
+    sortKeys: [
+      { name: 'gsi1sk1', type: AttributeType.STRING },
+      { name: 'gsi1sk2', type: AttributeType.NUMBER },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'GSI1',
+        KeySchema: [
+          { AttributeName: 'gsi1pk', KeyType: 'HASH' },
+          { AttributeName: 'gsi1sk1', KeyType: 'RANGE' },
+          { AttributeName: 'gsi1sk2', KeyType: 'RANGE' },
+        ],
+      },
+    ],
+  });
+});
+
+test('throws when both partitionKey and partitionKeys defined', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    table.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      partitionKey: { name: 'gsi1pk', type: AttributeType.STRING },
+      partitionKeys: [{ name: 'gsi1pk2', type: AttributeType.NUMBER }],
+    });
+  }).toThrow('Exactly one of \'partitionKey\', \'partitionKeys\' must be specified');
+});
+
+test('throws when both sortKey and sortKeys defined', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    table.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      partitionKey: { name: 'gsi1pk', type: AttributeType.STRING },
+      sortKey: { name: 'gsi1sk', type: AttributeType.STRING },
+      sortKeys: [{ name: 'gsi1sk2', type: AttributeType.NUMBER }],
+    });
+  }).toThrow('At most one of \'sortKey\', \'sortKeys\' may be specified');
+});
+test('throws when more than 4 partition keys', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    table.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      partitionKeys: [
+        { name: 'pk1', type: AttributeType.STRING },
+        { name: 'pk2', type: AttributeType.STRING },
+        { name: 'pk3', type: AttributeType.STRING },
+        { name: 'pk4', type: AttributeType.STRING },
+        { name: 'pk5', type: AttributeType.STRING },
+      ],
+    });
+  }).toThrow('Maximum of 4 partition keys allowed');
+});
+
+test('throws when more than 4 sort keys', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    table.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      partitionKey: { name: 'gsi1pk', type: AttributeType.STRING },
+      sortKeys: [
+        { name: 'sk1', type: AttributeType.STRING },
+        { name: 'sk2', type: AttributeType.STRING },
+        { name: 'sk3', type: AttributeType.STRING },
+        { name: 'sk4', type: AttributeType.STRING },
+        { name: 'sk5', type: AttributeType.STRING },
+      ],
+    });
+  }).toThrow('Maximum of 4 sort keys allowed');
+});
+
+test('throws when no partition key specified', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    table.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      sortKey: { name: 'sk', type: AttributeType.STRING },
+    });
+  }).toThrow('Exactly one of \'partitionKey\', \'partitionKeys\' must be specified');
+});
+
+test('can add GSI with both compound partition and sort keys', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  table.addGlobalSecondaryIndex({
+    indexName: 'GSI1',
+    partitionKeys: [
+      { name: 'gsi1pk1', type: AttributeType.STRING },
+      { name: 'gsi1pk2', type: AttributeType.NUMBER },
+    ],
+    sortKeys: [
+      { name: 'gsi1sk1', type: AttributeType.STRING },
+      { name: 'gsi1sk2', type: AttributeType.BINARY },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'GSI1',
+        KeySchema: [
+          { AttributeName: 'gsi1pk1', KeyType: 'HASH' },
+          { AttributeName: 'gsi1pk2', KeyType: 'HASH' },
+          { AttributeName: 'gsi1sk1', KeyType: 'RANGE' },
+          { AttributeName: 'gsi1sk2', KeyType: 'RANGE' },
+        ],
+      },
+    ],
+  });
+});

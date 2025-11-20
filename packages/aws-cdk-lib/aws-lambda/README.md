@@ -1258,6 +1258,36 @@ const fn = new lambda.Function(this, 'MyFunction', {
   });
 ```
 
+## Lambda with Tenant Isolation
+
+Lambda functions can be configured with tenant isolation to ensure that different tenants never share the same execution environment. This is useful for SaaS applications where you need to guarantee compute isolation between untrusted tenants while using a single Lambda function.
+
+```ts
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+});
+```
+
+**Important considerations:**
+
+* **Immutable configuration**: Tenant isolation can only be configured during function creation and cannot be modified on existing functions.
+* **Incompatible features**: The following features are not compatible with tenant isolation and will result in CloudFormation deployment errors:
+  * **Provisioned Concurrency**
+  * **Function URLs**
+  * **SnapStart**
+  * **Event Source Mappings** (except API Gateway):
+    * ❌ SQS
+    * ❌ DynamoDB
+    * ❌ Kinesis
+    * ❌ MSK
+    * ❌ Self-managed Kafka
+    * ✅ API Gateway (supported)
+
+CDK validates these restrictions at synthesis time and provides clear error messages when incompatible features are configured.
+
 ### Legacy Log Retention
 
 As an alternative to providing a custom, user controlled log group, the legacy `logRetention` property can be used to set a different expiration period.
