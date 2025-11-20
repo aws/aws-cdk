@@ -3,7 +3,7 @@ import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { BaseContainerImage, ContainerInstanceImage } from '../lib';
 
-describe('Base Image', () => {
+describe('Base Container Image', () => {
   let app: cdk.App;
   let stack: cdk.Stack;
 
@@ -35,6 +35,16 @@ describe('Base Image', () => {
   test('should return the correct container base image for a generic string', () => {
     const baseImage = BaseContainerImage.fromString('base-image');
     expect(baseImage.image).toEqual('base-image');
+  });
+});
+
+describe('Container Instance Image', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
   });
 
   test('should return the correct container instance image for an AMI ID', () => {

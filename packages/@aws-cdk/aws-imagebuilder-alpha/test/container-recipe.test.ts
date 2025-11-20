@@ -199,7 +199,7 @@ CMD ["echo", "Hello, world!"]
       },
     });
 
-    containerRecipe.addInstanceBlockDevices(
+    containerRecipe.addInstanceBlockDevice(
       {
         deviceName: '/dev/sda2',
         volume: ec2.BlockDeviceVolume.ebs(75, {
@@ -601,14 +601,14 @@ CMD ["echo", "Hello, world!"]
     });
   });
 
-  test('throws a validation error when an containerRecipeArn and containerRecipeName are provided when importing by attributes', () => {
+  test('does not throw a validation error when a containerRecipeArn and containerRecipeName are provided when importing by attributes', () => {
     expect(() =>
       ContainerRecipe.fromContainerRecipeAttributes(stack, 'ContainerRecipe', {
         containerRecipeArn:
           'arn:aws:imagebuilder:us-east-1:123456789012:container-recipe/imported-container-recipe/x.x.x',
         containerRecipeName: 'imported-container-recipe',
       }),
-    ).toThrow(cdk.ValidationError);
+    ).not.toThrow(cdk.ValidationError);
   });
 
   test('throws a validation error when neither a containerRecipeArn or containerRecipeName are provided when importing by attributes', () => {

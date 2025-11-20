@@ -23,6 +23,14 @@ const CONTAINER_RECIPE_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.Cont
 const LATEST_VERSION = 'x.x.x';
 
 /**
+ * The default version to use in the container recipe. When the recipe is updated, the `x` will be incremented off from
+ * the latest recipe version that exists.
+ *
+ * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/create-image-recipes.html
+ */
+const DEFAULT_RECIPE_VERSION = '1.0.x';
+
+/**
  * An EC2 Image Builder Container Recipe.
  */
 export interface IContainerRecipe extends IRecipeBase {
@@ -141,6 +149,16 @@ export interface ContainerRecipeProps {
    * @default None
    */
   readonly tags?: { [key: string]: string };
+}
+
+/**
+ * The type of the container being used in the container recipe
+ */
+export enum ContainerType {
+  /**
+   * Indicates the container recipe uses a Docker container
+   */
+  DOCKER = 'DOCKER',
 }
 
 /**
@@ -397,15 +415,11 @@ export class ContainerRecipe extends ContainerRecipeBase {
     id: string,
     attrs: ContainerRecipeAttributes,
   ): IContainerRecipe {
-    if (attrs.containerRecipeArn && (attrs.containerRecipeName || attrs.containerRecipeVersion)) {
+    if (!attrs.containerRecipeArn && !attrs.containerRecipeName) {
       throw new cdk.ValidationError(
-        'a containerRecipeName and containerRecipeVersion cannot be provided when a containerRecipeArn is provided',
+        'either either containerRecipeArn or containerRecipeName must be provided to import a container recipe',
         scope,
       );
-    }
-
-    if (!attrs.containerRecipeArn && !attrs.containerRecipeName) {
-      throw new cdk.ValidationError('either containerRecipeArn or containerRecipeName is required', scope);
     }
 
     const containerRecipeArn =
@@ -481,14 +495,17 @@ export class ContainerRecipe extends ContainerRecipeBase {
 
     this.validateContainerRecipeName();
 
-    this.addInstanceBlockDevices(...(props.instanceBlockDevices ?? []));
+    this.addInstanceBlockDevice(...(props.instanceBlockDevices ?? []));
 
     const components: CfnContainerRecipe.ComponentConfigurationProperty[] | undefined = props.components?.map(
       (component) => ({
         componentArn: component.component.componentArn,
-        ...(Object.keys(component.parameters ?? {}).length && {
-          parameters: Object.entries(component.parameters!).map(
-            ([key, value]): CfnContainerRecipe.ComponentParameterProperty => ({ name: key, value: value.value }),
+        ...(component.parameters && {
+          parameters: Object.entries(component.parameters).map(
+            ([name, param]): CfnContainerRecipe.ComponentParameterProperty => ({
+              name,
+              value: param.value,
+            }),
           ),
         }),
       }),
@@ -500,13 +517,13 @@ export class ContainerRecipe extends ContainerRecipeBase {
         'FROM {{{ imagebuilder:parentImage }}}\n{{{ imagebuilder:environments }}}\n{{{ imagebuilder:components }}}',
       );
 
-    const containerRecipeVersion = props.containerRecipeVersion ?? '1.0.x';
+    const containerRecipeVersion = props.containerRecipeVersion ?? DEFAULT_RECIPE_VERSION;
     const containerRecipe = new CfnContainerRecipe(this, 'Resource', {
       name: this.physicalName,
       version: containerRecipeVersion,
       description: props.description,
       parentImage: props.baseImage.image,
-      containerType: 'DOCKER',
+      containerType: ContainerType.DOCKER,
       targetRepository: {
         repositoryName: props.targetRepository.repositoryName,
         service: props.targetRepository.service,
@@ -535,7 +552,7 @@ export class ContainerRecipe extends ContainerRecipeBase {
    *
    * @param instanceBlockDevices - The list of block devices to attach
    */
-  public addInstanceBlockDevices(...instanceBlockDevices: ec2.BlockDevice[]): void {
+  public addInstanceBlockDevice(...instanceBlockDevices: ec2.BlockDevice[]): void {
     this.instanceBlockDevices.push(...instanceBlockDevices);
   }
 
@@ -543,7 +560,7 @@ export class ContainerRecipe extends ContainerRecipeBase {
    * Renders the block devices provided as input to the construct, into the block device mapping structure that
    * CfnContainerRecipe expects to receive.
    *
-   * This is rendered at synthesis time, as users can add additional block devices with `addInstanceBlockDevices`, after
+   * This is rendered at synthesis time, as users can add additional block devices with `addInstanceBlockDevice`, after
    * the construct has been instantiated.
    *
    * @private
@@ -576,6 +593,13 @@ export class ContainerRecipe extends ContainerRecipeBase {
     return blockDevices.length ? blockDevices : undefined;
   }
 
+  /**
+   * Generates the instance configuration property into the `InstanceConfiguration` type in the  CloudFormation L1
+   * definition.
+   *
+   * @param props The props passed as input to the construct
+   * @private
+   */
   private buildInstanceConfiguration(
     props: ContainerRecipeProps,
   ): CfnContainerRecipe.InstanceConfigurationProperty | undefined {

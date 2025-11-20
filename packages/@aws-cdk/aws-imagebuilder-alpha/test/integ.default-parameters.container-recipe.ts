@@ -8,10 +8,12 @@ const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-container-recipe-default-
 
 const repository = new ecr.Repository(stack, 'Repository', { removalPolicy: cdk.RemovalPolicy.DESTROY });
 
-new imagebuilder.ContainerRecipe(stack, 'ContainerRecipe', {
+const containerRecipe = new imagebuilder.ContainerRecipe(stack, 'ContainerRecipe', {
   baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
   targetRepository: imagebuilder.Repository.fromEcr(repository),
 });
+
+new cdk.CfnOutput(stack, 'ContainerRecipeVersion', { value: containerRecipe.containerRecipeVersion });
 
 new integ.IntegTest(app, 'ContainerRecipeTest', {
   testCases: [stack],

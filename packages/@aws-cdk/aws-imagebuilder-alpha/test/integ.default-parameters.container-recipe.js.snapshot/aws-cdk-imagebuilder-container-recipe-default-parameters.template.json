@@ -22,6 +22,16 @@
    }
   }
  },
+ "Outputs": {
+  "ContainerRecipeVersion": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ContainerRecipe8A7CC9ED",
+     "Version"
+    ]
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

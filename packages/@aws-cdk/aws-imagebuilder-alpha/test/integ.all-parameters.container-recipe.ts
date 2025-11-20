@@ -73,7 +73,7 @@ const containerRecipe = new imagebuilder.ContainerRecipe(stack, 'ContainerRecipe
   },
 });
 
-containerRecipe.addInstanceBlockDevices({
+containerRecipe.addInstanceBlockDevice({
   deviceName: '/dev/sda2',
   volume: ec2.BlockDeviceVolume.ebsFromSnapshot('snap-123', {
     volumeSize: 75,
@@ -83,6 +83,8 @@ containerRecipe.addInstanceBlockDevices({
     throughput: 125,
   }),
 });
+
+new cdk.CfnOutput(stack, 'ContainerRecipeVersion', { value: containerRecipe.containerRecipeVersion });
 
 new integ.IntegTest(app, 'ContainerRecipeTest', {
   testCases: [stack],

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ea874f234cebf8b00913d26fbea780ddbd09869c3e2b03e08202b620f2e78660.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/849aac21ed3e00a1f6ab3e308dbc6cc9e688fa1b13681a7bbd2ac1a4ce0babd4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -51,10 +51,13 @@
         "/aws-cdk-imagebuilder-container-recipe-default-parameters/ContainerRecipe/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ContainerRecipe8A7CC9ED",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ContainerRecipe8A7CC9ED"
+          }
+        ],
+        "/aws-cdk-imagebuilder-container-recipe-default-parameters/ContainerRecipeVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ContainerRecipeVersion"
           }
         ],
         "/aws-cdk-imagebuilder-container-recipe-default-parameters/BootstrapVersion": [
