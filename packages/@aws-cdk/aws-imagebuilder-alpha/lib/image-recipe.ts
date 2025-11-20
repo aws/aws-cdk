@@ -9,6 +9,12 @@ import { ComponentConfiguration, IRecipeBase } from './recipe-base';
 
 const IMAGE_RECIPE_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.ImageRecipe');
 
+/**
+ * Represents the latest version of an image recipe. When using the recipe in a pipeline, the pipeline will use the
+ * latest recipe at the time of execution.
+ *
+ * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/ibhow-semantic-versioning.html
+ */
 const LATEST_VERSION = 'x.x.x';
 
 /**
@@ -56,7 +62,7 @@ export interface ImageRecipeProps {
   /**
    * The version of the image recipe.
    *
-   * @default 1.0.0
+   * @default 1.0.x
    */
   readonly imageRecipeVersion?: string;
 
@@ -127,24 +133,22 @@ export interface ImageRecipeAttributes {
   /**
    * The ARN of the image recipe
    *
-   * @default - the ARN is automatically constructed if an imageRecipeName is provided, otherwise an
-   *            imageRecipeName is required
+   * @default - derived from the imageRecipeName
    */
   readonly imageRecipeArn?: string;
 
   /**
    * The name of the image recipe
    *
-   * @default - the name is automatically constructed if an imageRecipeArn is provided, otherwise an imageRecipeName is
-   *            required
+   * @default - derived from the imageRecipeArn
    */
   readonly imageRecipeName?: string;
 
   /**
    * The version of the image recipe
    *
-   * @default - the version is automatically constructed if an imageRecipeArn is provided, otherwise the latest version
-   *            is used.
+   * @default - derived from containerRecipeArn. if a containerRecipeName is provided, the latest version, x.x.x, will
+   * be used
    */
   readonly imageRecipeVersion?: string;
 }
@@ -330,7 +334,7 @@ export class ImageRecipe extends ImageRecipeBase {
       }),
     );
 
-    const imageRecipeVersion = props.imageRecipeVersion ?? '1.0.0';
+    const imageRecipeVersion = props.imageRecipeVersion ?? '1.0.x';
     const imageRecipe = new CfnImageRecipe(this, 'Resource', {
       name: this.physicalName,
       version: imageRecipeVersion,

@@ -5,7 +5,7 @@
    "Properties": {
     "Name": "aws-cdk-imagebuilder-image-recipe-default-parameters-imagerecipe-81fda979",
     "ParentImage": "ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64",
-    "Version": "1.0.0"
+    "Version": "1.0.x"
    }
   }
  },

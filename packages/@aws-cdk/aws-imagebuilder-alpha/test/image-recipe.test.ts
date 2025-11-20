@@ -308,7 +308,7 @@ describe('Image Recipe', () => {
           Type: 'AWS::ImageBuilder::ImageRecipe',
           Properties: {
             Name: 'stack-imagerecipe-1e832b66',
-            Version: '1.0.0',
+            Version: '1.0.x',
             ParentImage: 'ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64',
           },
         }),

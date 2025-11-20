@@ -5,7 +5,7 @@
    "Properties": {
     "Name": "aws-cdk-imagebuilder-image-recipe-marketplace-base-image-imagerecipe-b40d66c5",
     "ParentImage": "abcfcbaf-134e-4639-a7b4-fd285b9fcf0a",
-    "Version": "1.0.0"
+    "Version": "1.0.x"
    }
   }
  },
