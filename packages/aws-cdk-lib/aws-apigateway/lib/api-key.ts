@@ -104,7 +104,7 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
   /**
    * Collection of grant methods for an ApiKey
    */
-  public readonly grants = ApiKeyGrants._fromApiKey(this);
+  public readonly grants = ApiKeyGrants.fromApiKey(this);
 
   /**
    * Permits the IAM principal all read operations through this key
