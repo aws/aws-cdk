@@ -4,6 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import * as sns from '../lib';
+import { TopicGrants } from '../lib/sns-grants.generated';
 
 /* eslint-disable quote-props */
 
@@ -298,6 +299,31 @@ describe('Topic', () => {
             'Action': 'sns:Publish',
             'Effect': 'Allow',
             'Resource': stack.resolve(topic.topicArn),
+          },
+        ],
+      },
+    });
+  });
+
+  test('give publishing permissions to CfnTopic', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.CfnTopic(stack, 'Topic');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    TopicGrants.fromTopic(topic).publish(user);
+
+    // THEN
+    let template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        Version: '2012-10-17',
+        'Statement': [
+          {
+            'Action': 'sns:Publish',
+            'Effect': 'Allow',
+            'Resource': { Ref: 'Topic' },
           },
         ],
       },
