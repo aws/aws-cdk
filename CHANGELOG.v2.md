@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.226.0](https://github.com/aws/aws-cdk/compare/v2.225.0...v2.226.0) (2025-11-20)
+
+
+### Features
+
+* **dynamodb:** compound keys for global secondary indexes ([046b06d](https://github.com/aws/aws-cdk/commit/046b06d049641f7dd6b0f3fb20b7f8efcde750bf))
+* **lambda:** add multi-tenancy support with TenancyConfig ([5f384db](https://github.com/aws/aws-cdk/commit/5f384dbf9ee5e81c644ade62837d80be98492794))
+
 ## [2.225.0](https://github.com/aws/aws-cdk/compare/v2.224.0...v2.225.0) (2025-11-17)
 
 
