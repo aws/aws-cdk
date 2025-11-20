@@ -3,29 +3,72 @@ import { Effect, PolicyDocument, PolicyStatement, ServicePrincipal } from 'aws-c
 import type { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { CfnDeliveryDestination, ResourcePolicy } from 'aws-cdk-lib/aws-logs';
 import type { DeliveryDestinationReference, IDeliveryDestinationRef, ILogGroupRef } from 'aws-cdk-lib/aws-logs';
-import { CfnBucketPolicy, IBucketRef } from 'aws-cdk-lib/aws-s3';
+import { CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
+import type { IBucketRef } from 'aws-cdk-lib/aws-s3';
 import type { IConstruct } from 'constructs';
 import { tryFindBucketPolicy, XRayDeliveryDestinationPolicy } from './vended-logs-helpers';
 
+/**
+ * Base class for all delivery destination implementations.
+ * Provides common functionality for log delivery destinations.
+ */
 abstract class DeliveryDestinationBase extends Resource implements IDeliveryDestinationRef {
+  /**
+   * Reference to the delivery destination
+   */
   public abstract readonly deliveryDestinationRef: DeliveryDestinationReference;
 }
 
+/**
+ * Configuration properties for S3 delivery destinations.
+ */
 export interface S3DestinationProps {
+  /**
+   * The version of permissions supported by the source generating logs
+   */
   readonly permissionsVersion: 'V1' | 'V2';
+  /**
+   * The S3 bucket to deliver logs to
+   */
   readonly s3Bucket: IBucketRef;
 }
 
+/**
+ * Configuration properties for CloudWatch Logs delivery destinations.
+ */
 interface LogsDestinationProps {
+  /**
+   * The CloudWatch log group to deliver logs to
+   */
   readonly logGroup: ILogGroupRef;
 }
 
+/**
+ * Configuration properties for Kinesis Data Firehose delivery destinations.
+ */
 interface FirehoseDestinationProps {
+  /**
+   * The Kinesis Data Firehose delivery stream to deliver logs to
+   */
   readonly deliveryStream: IDeliveryStreamRef;
 }
 
+/**
+ * Creates a delivery destination for S3 buckets with appropriate IAM permissions.
+ * Supports both V1 and V2 permissions for S3 bucket access.
+ */
 export class S3DeliveryDestination extends DeliveryDestinationBase {
+  /**
+   * Reference to the S3 delivery destination
+   */
   public readonly deliveryDestinationRef: DeliveryDestinationReference;
+
+  /**
+   * Creates a new S3 delivery destination.
+   * @param scope - The construct scope
+   * @param id - The construct ID
+   * @param props - Configuration properties for the S3 destination
+   */
   constructor(scope: IConstruct, id: string, props: S3DestinationProps) {
     super(scope, id);
     const bucketPolicy = this.getOrCreateBucketPolicy(scope, props);
@@ -40,10 +83,16 @@ export class S3DeliveryDestination extends DeliveryDestinationBase {
     this.deliveryDestinationRef = deliveryDestination.deliveryDestinationRef;
   }
 
+  /**
+   * Gets an existing bucket policy or creates a new one and adds the required permissions for log delivery.
+   * @param scope - The construct scope
+   * @param bucketProps - The S3 bucket properties
+   * @returns The bucket policy with log delivery permissions
+   */
   private getOrCreateBucketPolicy(scope: IConstruct, bucketProps: S3DestinationProps): CfnBucketPolicy {
     const existingPolicy = tryFindBucketPolicy(bucketProps.s3Bucket);
     const statements = [];
-  
+
     const bucketStatement = new PolicyStatement({
       effect: Effect.ALLOW,
       principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
@@ -60,7 +109,7 @@ export class S3DeliveryDestination extends DeliveryDestinationBase {
       },
     });
     statements.push(bucketStatement);
-  
+
     if (bucketProps.permissionsVersion == 'V1') {
       const v1PermsStatement = new PolicyStatement({
         effect: Effect.ALLOW,
@@ -78,15 +127,15 @@ export class S3DeliveryDestination extends DeliveryDestinationBase {
       });
       statements.push(v1PermsStatement);
     }
-  
+
     if (existingPolicy) {
       const bucketPolicy = existingPolicy;
-  
+
       // Add new statements using addOverride to avoid circular references
       const existingDoc = bucketPolicy.policyDocument as any;
       const existingStatements = Array.isArray(existingDoc.Statement) ? existingDoc.Statement : [];
       const newStatements = statements.map(s => s.toStatementJson());
-  
+
       bucketPolicy.addOverride('Properties.PolicyDocument.Statement', [
         ...existingStatements,
         ...newStatements,
@@ -103,8 +152,22 @@ export class S3DeliveryDestination extends DeliveryDestinationBase {
   }
 }
 
+/**
+ * Creates a delivery destination for Kinesis Data Firehose delivery streams.
+ * Automatically tags the delivery stream to enable log delivery.
+ */
 export class FirehoseDeliveryDestination extends DeliveryDestinationBase {
+  /**
+   * Reference to the Firehose delivery destination
+   */
   public readonly deliveryDestinationRef: DeliveryDestinationReference;
+
+  /**
+   * Creates a new Firehose delivery destination.
+   * @param scope - The construct scope
+   * @param id - The construct ID
+   * @param props - Configuration properties for the Firehose destination
+   */
   constructor(scope: IConstruct, id: string, props: FirehoseDestinationProps) {
     super(scope, id);
 
@@ -119,8 +182,22 @@ export class FirehoseDeliveryDestination extends DeliveryDestinationBase {
   }
 }
 
+/**
+ * Creates a delivery destination for CloudWatch Logs log groups.
+ * Manages the required resource policy for cross-account log delivery.
+ */
 export class LogsDeliveryDestination extends DeliveryDestinationBase {
+  /**
+   * Reference to the CloudWatch Logs delivery destination
+   */
   public readonly deliveryDestinationRef: DeliveryDestinationReference;
+
+  /**
+   * Creates a new CloudWatch Logs delivery destination.
+   * @param scope - The construct scope
+   * @param id - The construct ID
+   * @param props - Configuration properties for the CloudWatch Logs destination
+   */
   constructor(scope: IConstruct, id: string, props: LogsDestinationProps) {
     super(scope, id);
 
@@ -136,6 +213,13 @@ export class LogsDeliveryDestination extends DeliveryDestinationBase {
     this.deliveryDestinationRef = deliveryDestination.deliveryDestinationRef;
   }
 
+  /**
+   * Uses singleton pattern to get an existing CloudWatch Logs resource policy or create a new one.
+   * Adds log delivery permissions to the policy.
+   * @param scope - The construct scope
+   * @param logGroup - The target log group
+   * @returns The resource policy with log delivery permissions
+   */
   private getOrCreateLogsResourcePolicy(scope: IConstruct, logGroup: ILogGroupRef) {
     const stack = Stack.of(scope);
     const policyId = 'CDKCWLLogDestDeliveryPolicy';
@@ -170,9 +254,23 @@ export class LogsDeliveryDestination extends DeliveryDestinationBase {
   }
 }
 
+/**
+ * Creates a delivery destination for AWS X-Ray tracing.
+ * Manages the X-Ray resource policy for log delivery permissions.
+ */
 export class XRayDeliveryDestination extends DeliveryDestinationBase {
+  /** Reference to the X-Ray delivery destination */
   public readonly deliveryDestinationRef: DeliveryDestinationReference;
+  /**
+   * The X-Ray resource policy manager
+   */
   public readonly xrayResourcePolicy: XRayDeliveryDestinationPolicy;
+
+  /**
+   * Creates a new X-Ray delivery destination.
+   * @param scope - The construct scope
+   * @param id - The construct ID
+   */
   constructor(scope: IConstruct, id: string) {
     super(scope, id);
     // only have one of these per stack
@@ -186,6 +284,12 @@ export class XRayDeliveryDestination extends DeliveryDestinationBase {
     this.deliveryDestinationRef = deliveryDestination.deliveryDestinationRef;
   }
 
+  /**
+   * Gets an existing X-Ray policy generator or creates a new one.
+   * Ensures only one X-Ray policy generator exists per stack.
+   * @param scope - The construct scope
+   * @returns The X-Ray delivery destination policy manager
+   */
   private getOrCreateXRayPolicyGenerator(scope: IConstruct) {
     const stack = Stack.of(scope);
     const poliyGeneratorId = 'CDKXRayPolicyGenerator';

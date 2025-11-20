@@ -275,7 +275,7 @@ describe('S3 Delivery Destination', () => {
 
     Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 1);
   });
-  
+
   test('adds to existing policy if a CfnBucketPolicy already exists', () => {
     const stack = new Stack();
     const bucket = new Bucket(stack, 'Destination');
