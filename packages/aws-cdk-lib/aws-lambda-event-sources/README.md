@@ -426,7 +426,7 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
 
 AWS Lambda provides enhanced observability features for Kafka event sources through logging and metrics configuration. These features help you monitor the performance and health of your Kafka event processing.
 
-**Important**: Observability features (LoggingConfig and MetricsConfig) are only available when using provisioned mode with `provisionedPollerConfig`.
+**Important**: Observability features (`LoggingConfig` and `MetricsConfig`) are only available when using provisioned mode with `provisionedPollerConfig`.
 
 #### Logging Configuration
 
