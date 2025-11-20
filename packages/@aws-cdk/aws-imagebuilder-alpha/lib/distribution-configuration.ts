@@ -5,6 +5,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnDistributionConfiguration } from 'aws-cdk-lib/aws-imagebuilder';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 
@@ -505,6 +506,8 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
             }).toLowerCase(), // Enforce lowercase for the auto-generated fallback
         }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Object.defineProperty(this, DISTRIBUTION_CONFIGURATION_SYMBOL, { value: true });
 
@@ -533,6 +536,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
    *
    * @param amiDistributions The list of AMI distribution settings to apply
    */
+  @MethodMetadata()
   public addAmiDistributions(...amiDistributions: AmiDistribution[]): void {
     amiDistributions.forEach((amiDistribution) => {
       const region = amiDistribution.region ?? cdk.Stack.of(this).region;
@@ -552,6 +556,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
    *
    * @param containerDistributions The list of container distribution settings to apply
    */
+  @MethodMetadata()
   public addContainerDistributions(...containerDistributions: ContainerDistribution[]): void {
     containerDistributions.forEach((containerDistribution) => {
       const region = containerDistribution.region ?? cdk.Stack.of(this).region;

@@ -4,6 +4,7 @@ import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 // Internal imports
@@ -390,6 +391,8 @@ export class Gateway extends GatewayBase {
 
   constructor(scope: Construct, id: string, props: GatewayProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     // ------------------------------------------------------
     // Assignments
     // ------------------------------------------------------
@@ -448,6 +451,7 @@ export class Gateway extends GatewayBase {
    * @param props Properties for the Lambda target
    * @returns The created GatewayTarget
    */
+  @MethodMetadata()
   public addLambdaTarget(
     id: string,
     props: AddLambdaTargetOptions,
@@ -478,6 +482,7 @@ export class Gateway extends GatewayBase {
    * @param props Properties for the OpenAPI target
    * @returns The created GatewayTarget
    */
+  @MethodMetadata()
   public addOpenApiTarget(
     id: string,
     props: AddOpenApiTargetOptions,
@@ -502,6 +507,7 @@ export class Gateway extends GatewayBase {
    * @param props Properties for the Smithy target
    * @returns The created GatewayTarget
    */
+  @MethodMetadata()
   public addSmithyTarget(
     id: string,
     props: AddSmithyTargetOptions,
@@ -531,6 +537,7 @@ export class Gateway extends GatewayBase {
    * @returns The created GatewayTarget
    * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-MCPservers.html
    */
+  @MethodMetadata()
   public addMcpServerTarget(
     id: string,
     props: AddMcpServerTargetOptions,
