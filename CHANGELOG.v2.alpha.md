@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
+* **bedrock-agentcore-alpha:** agentcore gateway L2 construct ([#35771](https://github.com/aws/aws-cdk/issues/35771)) ([07c4a0d](https://github.com/aws/aws-cdk/commit/07c4a0dfd4f26519f433ec3dc19b4c294ae8d56e))
 * **imagebuilder-alpha:** add support for Component Construct ([#36006](https://github.com/aws/aws-cdk/issues/36006)) ([5ebf07d](https://github.com/aws/aws-cdk/commit/5ebf07d095005f29b5e7205df750bc81cb879aa4)), closes [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789) [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789)
 * **imagebuilder-alpha:** add support for Component Construct ([#36107](https://github.com/aws/aws-cdk/issues/36107)) ([93a76e4](https://github.com/aws/aws-cdk/commit/93a76e481e79bb7e0df1aabcb158cc9b064345bf)), closes [#36006](https://github.com/aws/aws-cdk/issues/36006) [#36104](https://github.com/aws/aws-cdk/issues/36104)
 * **imagebuilder-alpha:** add support for Distribution Configuration Construct ([#36005](https://github.com/aws/aws-cdk/issues/36005)) ([c36f43d](https://github.com/aws/aws-cdk/commit/c36f43d88adefb3473dbd729e7bec58e7f06c8cf)), closes [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789) [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789)
