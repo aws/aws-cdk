@@ -142,7 +142,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
    * Collection of grant methods for a LogGroup
    */
-  public readonly grants = LogGroupGrants._fromLogGroup(this);
+  public readonly grants = LogGroupGrants.fromLogGroup(this);
 
   private policy?: ResourcePolicy;
 
