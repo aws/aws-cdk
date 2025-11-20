@@ -5,6 +5,7 @@ import { memberFqn } from './util';
  * These are the grant methods that already existed when this linter was created.
  */
 const allowList = new Set([
+  '@aws-cdk/example-construct-library.ExampleResource.grantRead',
   'aws-cdk-lib.aws_apigateway.ApiKey.grantRead',
   'aws-cdk-lib.aws_apigateway.ApiKey.grantReadWrite',
   'aws-cdk-lib.aws_apigateway.ApiKey.grantWrite',
