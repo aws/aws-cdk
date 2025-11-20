@@ -1048,52 +1048,48 @@ Grants are one of the most powerful concepts in the AWS Construct Library. They
 offer a higher level, intent-based, API for managing IAM permissions for AWS
 resources.
 
-**Despite the fact that they may be mutating**, grants should be exposed on the
-  construct interface, and not on the concrete class
-  _[awslint:grants-on-interface]_. See discussion above about mutability for
-  reasoning.
-
-Grants are represented as a set of methods with the “**grant**” prefix.
-
-All constructs that represent AWS resources must have at least one grant method
-called “**grant**” which can be used to grant a grantee (such as an IAM
-principal) permission to perform a set of actions on the resource with the
-following signature. This method is defined as an abstract method on the
-**Resource** base class (and the **IResource** interface)
-_[awslint:grants-grant-method]_:
+Grants for a given resource class are implemented in an accompanying class. For
+example, **sns.Topic** has a corresponding **sns.TopicGrants** class. To get an
+instance of the Grants class for a given resource, use the static **from<Resource>()**:
 
 ```ts
-grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+const role = new iam.Role(/*...*/);
+
+const topic = new sns.Topic(/*...*/);
+const grants = TopicGrants.fromTopic(topic);
 ```
 
-The **iam.Grant** class has a rich API for implementing grants which implements
-the desired behavior.
-
-Furthermore, resources should also include a set of grant methods for common use
-cases. For example, **dynamodb.Table.grantPutItem**,
-**s3.Bucket.grantReadWrite**, etc. In such cases, the signature of the grant
-method should adhere to the following rules _[awslint:grant-signature]_:
-
-1. Name should have a “grant” prefix
-2. Returns an **iam.Grant** object
-3. First argument must be **grantee: iam.IGrantable**
+The `fromTopic()` method accepts the resource reference interface (`sns.ITopicRef`),
+which allows you to use the same class for both L1 and L2 constructs:
 
 ```ts
-grantXxx(grantee: iam.IGrantable): iam.Grant;
+const topic = new sns.CfnTopic(/*...*/);
+const grants = TopicGrants.fromTopic(topic);
 ```
 
-It makes sense for some AWS resources to also expose grant methods on all
-resources in the account. To support such use cases, expose a set of static
-grant methods on the construct class. For example,
-**dynamodb.Table.grantAllListStreams**. The signature of static grants should be
-similar _[awslint:grants-static-all]_.
+The instance methods of the Grants classes can be used to grant a grantee
+(such as an IAM principal) permission to perform a set of actions on the resource:
 
 ```ts
-export class Table {
-  public static grantAll(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
-  public static grantAllListStreams(grantee: iam.IGrantable): iam.Grant;
+// Allow the role to publish and subscribe to the topic
+topicGrants.publish(role);
+topicGrants.subscribe(role);
+```
+
+For every resource that has an accompanying Grants class, the construct interface should
+include a public **grants** property that returns an instance of the Grants class:
+
+```ts
+export abstract class TopicBase extends Resource implements ITopic, IEncryptedResource {
+  ...
+  public readonly grants: TopicGrants = TopicGrants.fromTopic(this);
+  ...
 }
 ```
+
+The `TopicGrants` class, and many others, are generated automatically. But if there
+is no auto-generated grants class for a resource, you can implement it manually,
+following the same patterns.
 
 ### Metrics
 
