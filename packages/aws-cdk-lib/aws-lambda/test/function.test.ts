@@ -2059,6 +2059,52 @@ describe('function', () => {
     expect(bindTarget).toEqual(fn);
   });
 
+  test('multi-tenant function accepts ApiEventSource', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => {}'),
+      tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+    });
+
+    let bindCalled = false;
+    class MockApiEventSource implements lambda.IEventSource {
+      bind(target: lambda.IFunction): void {
+        bindCalled = true;
+      }
+    }
+    Object.defineProperty(MockApiEventSource, 'name', { value: 'ApiEventSource' });
+
+    // WHEN & THEN
+    expect(() => {
+      fn.addEventSource(new MockApiEventSource());
+    }).not.toThrow();
+    expect(bindCalled).toBe(true);
+  });
+
+  test('multi-tenant function rejects non-API event sources', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => {}'),
+      tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+    });
+
+    class MockSqsEventSource implements lambda.IEventSource {
+      bind(target: lambda.IFunction): void {}
+    }
+    Object.defineProperty(MockSqsEventSource, 'name', { value: 'SqsEventSource' });
+
+    // WHEN & THEN
+    expect(() => {
+      fn.addEventSource(new MockSqsEventSource());
+    }).toThrow('Event source SqsEventSource is not supported for functions with tenant isolation mode');
+  });
+
   test('layer is baked into the function version', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
@@ -3908,6 +3954,18 @@ describe('function', () => {
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
       })).toThrow('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
     });
+
+    test('multi-tenant function with snapStart should throw error', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'example.Handler::handleRequest',
+        runtime: lambda.Runtime.JAVA_11,
+        tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      })).toThrow('SnapStart is not supported for functions with tenant isolation mode');
+    });
   });
 
   describe('Recursive Loop', () => {
@@ -4201,6 +4259,37 @@ describe('function', () => {
         securityGroups: [securityGroup],
       })).toThrow(/Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroups./);
     });
+  });
+
+  test('function with tenancy config PER_TENANT', () => {
+    const stack = new cdk.Stack();
+    new lambda.Function(stack, 'Lambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      TenancyConfig: {
+        TenantIsolationMode: 'PER_TENANT',
+      },
+    });
+  });
+
+  test('function without tenancy config has no tenancy properties', () => {
+    const stack = new cdk.Stack();
+    new lambda.Function(stack, 'Lambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      // No tenancyConfig specified
+    });
+
+    const template = Template.fromStack(stack);
+    const functions = template.findResources('AWS::Lambda::Function');
+    const functionResource = functions[Object.keys(functions)[0]];
+    expect(functionResource.Properties).not.toHaveProperty('TenancyConfig');
   });
 });
 
