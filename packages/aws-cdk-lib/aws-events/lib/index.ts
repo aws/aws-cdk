@@ -12,3 +12,4 @@ export * from './api-destination';
 
 // AWS::Events CloudFormation Resources:
 export * from './events.generated';
+export * from './events-grants.generated';
