@@ -98,6 +98,6 @@ imageRecipe.addBlockDevice({
 
 new cdk.CfnOutput(stack, 'ImageRecipeVersion', { value: imageRecipe.imageRecipeVersion });
 
-new integ.IntegTest(app, 'ImageRecipeTest', {
+new integ.IntegTest(app, 'ImageRecipeTest-AllParameters', {
   testCases: [stack],
 });

@@ -13,6 +13,6 @@ const imageRecipe = new imagebuilder.ImageRecipe(stack, 'ImageRecipe', {
 
 new cdk.CfnOutput(stack, 'ImageRecipeVersion', { value: imageRecipe.imageRecipeVersion });
 
-new integ.IntegTest(app, 'ImageRecipeTest', {
+new integ.IntegTest(app, 'ImageRecipeTest-DefaultParameters', {
   testCases: [stack],
 });
