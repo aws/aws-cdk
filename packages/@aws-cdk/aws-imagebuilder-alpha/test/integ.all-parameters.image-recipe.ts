@@ -84,7 +84,7 @@ const imageRecipe = new imagebuilder.ImageRecipe(stack, 'ImageRecipe', {
   },
 });
 
-imageRecipe.addBlockDevices({
+imageRecipe.addBlockDevice({
   deviceName: '/dev/sda2',
   volume: ec2.BlockDeviceVolume.ebs(75, {
     encrypted: true,
@@ -95,6 +95,8 @@ imageRecipe.addBlockDevices({
     throughput: 125,
   }),
 });
+
+new cdk.CfnOutput(stack, 'ImageRecipeVersion', { value: imageRecipe.imageRecipeVersion });
 
 new integ.IntegTest(app, 'ImageRecipeTest', {
   testCases: [stack],

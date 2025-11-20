@@ -181,7 +181,7 @@ describe('Image Recipe', () => {
       },
     });
 
-    imageRecipe.addBlockDevices(
+    imageRecipe.addBlockDevice(
       {
         deviceName: '/dev/sda2',
         volume: ec2.BlockDeviceVolume.ebs(75, {
@@ -416,13 +416,13 @@ describe('Image Recipe', () => {
     });
   });
 
-  test('throws a validation error when an imageRecipeArn and imageRecipeName are provided when importing by attributes', () => {
+  test('does not throw a validation error when an imageRecipeArn and imageRecipeName are provided when importing by attributes', () => {
     expect(() =>
       ImageRecipe.fromImageRecipeAttributes(stack, 'ImageRecipe', {
         imageRecipeArn: 'arn:aws:imagebuilder:us-east-1:123456789012:image-recipe/imported-image-recipe/x.x.x',
         imageRecipeName: 'imported-image-recipe',
       }),
-    ).toThrow(cdk.ValidationError);
+    ).not.toThrow(cdk.ValidationError);
   });
 
   test('throws a validation error when neither an imageRecipeArn or imageRecipeName are provided when importing by attributes', () => {

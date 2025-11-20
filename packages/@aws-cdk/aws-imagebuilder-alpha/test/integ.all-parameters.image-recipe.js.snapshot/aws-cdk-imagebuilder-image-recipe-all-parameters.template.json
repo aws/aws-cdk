@@ -116,6 +116,16 @@
    }
   }
  },
+ "Outputs": {
+  "ImageRecipeVersion": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageRecipe8C789631",
+     "Version"
+    ]
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

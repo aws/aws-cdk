@@ -18,6 +18,14 @@ const IMAGE_RECIPE_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.ImageRec
 const LATEST_VERSION = 'x.x.x';
 
 /**
+ * The default version to use in the image recipe. When the recipe is updated, the `x` will be incremented off from
+ * the latest recipe version that exists.
+ *
+ * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/create-image-recipes.html
+ */
+const DEFAULT_RECIPE_VERSION = '1.0.x';
+
+/**
  * An EC2 Image Builder Image Recipe.
  */
 export interface IImageRecipe extends IRecipeBase {
@@ -48,7 +56,7 @@ export interface IImageRecipe extends IRecipeBase {
  */
 export interface ImageRecipeProps {
   /**
-   * The base image for customizations specified in the container recipe.
+   * The base image for customizations specified in the image recipe.
    */
   readonly baseImage: BaseImage;
 
@@ -147,7 +155,7 @@ export interface ImageRecipeAttributes {
   /**
    * The version of the image recipe
    *
-   * @default - derived from containerRecipeArn. if a containerRecipeName is provided, the latest version, x.x.x, will
+   * @default - derived from imageRecipeArn. if a imageRecipeName is provided, the latest version, x.x.x, will
    * be used
    */
   readonly imageRecipeVersion?: string;
@@ -237,15 +245,11 @@ export class ImageRecipe extends ImageRecipeBase {
    * underscores with hyphens.
    */
   public static fromImageRecipeAttributes(scope: Construct, id: string, attrs: ImageRecipeAttributes): IImageRecipe {
-    if (attrs.imageRecipeArn && (attrs.imageRecipeName || attrs.imageRecipeVersion)) {
+    if (!attrs.imageRecipeArn && !attrs.imageRecipeName) {
       throw new cdk.ValidationError(
-        'an imageRecipeName and imageRecipeVersion cannot be provided when an imageRecipeArn is provided',
+        'either imageRecipeArn or imageRecipeName must be provided to import a image recipe',
         scope,
       );
-    }
-
-    if (!attrs.imageRecipeArn && !attrs.imageRecipeName) {
-      throw new cdk.ValidationError('either imageRecipeArn or imageRecipeName is required', scope);
     }
 
     const imageRecipeArn =
@@ -321,20 +325,23 @@ export class ImageRecipe extends ImageRecipeBase {
 
     this.validateImageRecipeName();
 
-    this.addBlockDevices(...(props.blockDevices ?? []));
+    this.addBlockDevice(...(props.blockDevices ?? []));
 
     const components: CfnImageRecipe.ComponentConfigurationProperty[] | undefined = props.components?.map(
       (component) => ({
         componentArn: component.component.componentArn,
-        ...(Object.keys(component.parameters ?? {}).length && {
-          parameters: Object.entries(component.parameters!).map(
-            ([key, value]): CfnImageRecipe.ComponentParameterProperty => ({ name: key, value: value.value }),
+        ...(component.parameters && {
+          parameters: Object.entries(component.parameters).map(
+            ([name, param]): CfnImageRecipe.ComponentParameterProperty => ({
+              name,
+              value: param.value,
+            }),
           ),
         }),
       }),
     );
 
-    const imageRecipeVersion = props.imageRecipeVersion ?? '1.0.x';
+    const imageRecipeVersion = props.imageRecipeVersion ?? DEFAULT_RECIPE_VERSION;
     const imageRecipe = new CfnImageRecipe(this, 'Resource', {
       name: this.physicalName,
       version: imageRecipeVersion,
@@ -362,10 +369,17 @@ export class ImageRecipe extends ImageRecipeBase {
    *
    * @param blockDevices The list of block devices to attach
    */
-  public addBlockDevices(...blockDevices: ec2.BlockDevice[]): void {
+  public addBlockDevice(...blockDevices: ec2.BlockDevice[]): void {
     this.blockDevices.push(...blockDevices);
   }
 
+  /**
+   * Renders the input block devices, into the `BlockDeviceMapping[]` structure that CfnImageRecipe expects to receive.
+   * This is rendered at synthesis time, as users can add additional block devices with `addBlockDevice`, after the
+   * construct has been instantiated.
+   *
+   * @private
+   */
   private renderBlockDevices(): CfnImageRecipe.InstanceBlockDeviceMappingProperty[] | undefined {
     const blockDevices = this.blockDevices.map((blockDevice): CfnImageRecipe.InstanceBlockDeviceMappingProperty => {
       const ebsDevice = blockDevice.volume.ebsDevice;
@@ -380,11 +394,10 @@ export class ImageRecipe extends ImageRecipeBase {
         ...(ebsDevice?.volumeType !== undefined && { volumeType: ebsDevice.volumeType }),
       };
 
-      const mappingEnabled = blockDevice.mappingEnabled ?? true;
       return {
         deviceName: blockDevice.deviceName,
         virtualName: blockDevice.volume.virtualName,
-        ...(!mappingEnabled && { noDevice: '' }),
+        ...(blockDevice.mappingEnabled === false && { noDevice: '' }),
         ...(Object.keys(ebs).length && { ebs }),
       };
     });
@@ -392,6 +405,13 @@ export class ImageRecipe extends ImageRecipeBase {
     return blockDevices.length ? blockDevices : undefined;
   }
 
+  /**
+   * Generates the additional instance configuration property into the `AdditionalInstanceConfiguration` type in the
+   * CloudFormation L1 definition.
+   *
+   * @param props The props passed as input to the construct
+   * @private
+   */
   private buildAdditionalInstanceConfiguration(
     props: ImageRecipeProps,
   ): CfnImageRecipe.AdditionalInstanceConfigurationProperty | undefined {
