@@ -102,6 +102,7 @@ phases:
 Most developer-friendly approach using objects:
 
 ```ts
+
 const component = new imagebuilder.Component(this, 'JsonComponent', {
   platform: imagebuilder.Platform.LINUX,
   data: imagebuilder.ComponentData.fromJsonObject({
@@ -115,19 +116,58 @@ const component = new imagebuilder.Component(this, 'JsonComponent', {
             action: imagebuilder.ComponentAction.CREATE_FILE,
             inputs: {
               path: '/etc/myapp/config.json',
-              content: '{"env": "production"}',
-            },
-          },
-        ],
-      },
-    ],
-  }),
+              content: '{"env": "production"}'
+            }
+          }
+        ]
+      }
+    ]
+  })
 });
 ```
 
 ##### Structured Component Document
 
-For type-safe, CDK-native definitions with enhanced properties like `timeout` and `onFailure`:
+For type-safe, CDK-native definitions with enhanced properties like `timeout` and `onFailure`.
+
+###### Defining a component step
+
+You can define steps in the component which will be executed in order when the component is applied:
+
+```ts
+const step: imagebuilder.ComponentDocumentStep = {
+  name: 'configure-app',
+  action: imagebuilder.ComponentAction.CREATE_FILE,
+  inputs: imagebuilder.ComponentStepInputs.fromObject({
+    path: '/etc/myapp/config.json',
+    content: '{"env": "production"}'
+  })
+};
+```
+
+###### Defining a component phase
+
+Phases group steps together, which run in sequence when building, validating or testing in the component:
+
+```ts
+const phase: imagebuilder.ComponentDocumentPhase = {
+  name: imagebuilder.ComponentPhaseName.BUILD,
+  steps: [
+    {
+      name: 'configure-app',
+      action: imagebuilder.ComponentAction.CREATE_FILE,
+      inputs: imagebuilder.ComponentStepInputs.fromObject({
+        path: '/etc/myapp/config.json',
+        content: '{"env": "production"}'
+      })
+    }
+  ]
+};
+```
+
+###### Defining a component
+
+The component data defines all steps across the provided phases to execute during the build:
 
 ```ts  
 const component = new imagebuilder.Component(this, 'StructuredComponent', {
@@ -143,14 +183,14 @@ const component = new imagebuilder.Component(this, 'StructuredComponent', {
             action: imagebuilder.ComponentAction.EXECUTE_BASH,
             timeout: Duration.minutes(10),
             onFailure: imagebuilder.ComponentOnFailure.CONTINUE,
-            inputs: {
-              commands: ['./install-script.sh'],
-            },
-          },
-        ],
-      },
-    ],
-  }),
+            inputs: imagebuilder.ComponentStepInputs.fromObject({
+              commands: ['./install-script.sh']
+            })
+          }
+        ]
+      }
+    ]
+  })
 });
 ```
 
@@ -294,5 +334,148 @@ const infrastructureConfiguration = new imagebuilder.InfrastructureConfiguration
   resourceTags: {
     Environment: 'production'
   }
+});
+```
+
+### Distribution Configuration
+
+Distribution configuration defines how and where your built images are distributed after successful creation. For AMIs,
+this includes target AWS Regions, KMS encryption keys, account sharing permissions, License Manager associations, and
+launch template configurations. For container images, it specifies the target Amazon ECR repositories across regions.
+A distribution configuration can be associated with an image or an image pipeline to define these distribution settings
+for image builds.
+
+#### AMI Distributions
+
+AMI distributions can be defined to copy and modify AMIs in different accounts and regions, and apply them to launch
+templates, SSM parameters, etc.:
+
+```ts
+const distributionConfiguration = new imagebuilder.DistributionConfiguration(this, 'DistributionConfiguration', {
+  distributionConfigurationName: 'test-distribution-configuration',
+  description: 'A Distribution Configuration',
+  amiDistributions: [
+    {
+      // Distribute AMI to us-east-2 and publish the AMI ID to an SSM parameter
+      region: 'us-east-2',
+      ssmParameters: [
+        {
+          parameter: ssm.StringParameter.fromStringParameterAttributes(this, 'CrossRegionParameter', {
+            parameterName: '/imagebuilder/ami',
+            forceDynamicReference: true
+          })
+        }
+      ]
+    }
+  ]
+});
+
+// For AMI-based image builds - add an AMI distribution in the current region
+distributionConfiguration.addAmiDistributions({
+  amiName: 'imagebuilder-{{ imagebuilder:buildDate }}',
+  amiDescription: 'Build AMI',
+  amiKmsKey: kms.Key.fromLookup(this, 'ComponentKey', { aliasName: 'alias/distribution-encryption-key' }),
+  // Copy the AMI to different accounts
+  amiTargetAccountIds: ['123456789012', '098765432109'],
+  // Add launch permissions on the AMI
+  amiLaunchPermission: {
+    organizationArns: [
+      this.formatArn({ region: '', service: 'organizations', resource: 'organization', resourceName: 'o-1234567abc' })
+    ],
+    organizationalUnitArns: [
+      this.formatArn({
+        region: '',
+        service: 'organizations',
+        resource: 'ou',
+        resourceName: 'o-1234567abc/ou-a123-b4567890'
+      })
+    ],
+    isPublicUserGroup: true,
+    accountIds: ['234567890123']
+  },
+  // Attach tags to the AMI
+  amiTags: {
+    Environment: 'production',
+    Version: '{{ imagebuilder:buildVersion }}'
+  },
+  // Optional - publish the distributed AMI ID to an SSM parameter
+  ssmParameters: [
+    {
+      parameter: ssm.StringParameter.fromStringParameterAttributes(this, 'Parameter', {
+        parameterName: '/imagebuilder/ami',
+        forceDynamicReference: true
+      })
+    },
+    {
+      amiAccount: '098765432109',
+      dataType: ssm.ParameterDataType.TEXT,
+      parameter: ssm.StringParameter.fromStringParameterAttributes(this, 'CrossAccountParameter', {
+        parameterName: 'imagebuilder-prod-ami',
+        forceDynamicReference: true
+      })
+    }
+  ],
+  // Optional - create a new launch template version with the distributed AMI ID
+  launchTemplates: [
+    {
+      launchTemplate: ec2.LaunchTemplate.fromLaunchTemplateAttributes(this, 'LaunchTemplate', {
+        launchTemplateId: 'lt-1234'
+      }),
+      setDefaultVersion: true
+    },
+    {
+      accountId: '123456789012',
+      launchTemplate: ec2.LaunchTemplate.fromLaunchTemplateAttributes(this, 'CrossAccountLaunchTemplate', {
+        launchTemplateId: 'lt-5678'
+      }),
+      setDefaultVersion: true
+    }
+  ],
+  // Optional - enable Fast Launch on an imported launch template
+  fastLaunchConfigurations: [
+    {
+      enabled: true,
+      launchTemplate: ec2.LaunchTemplate.fromLaunchTemplateAttributes(this, 'FastLaunchLT', {
+        launchTemplateName: 'fast-launch-lt'
+      }),
+      maxParallelLaunches: 10,
+      targetSnapshotCount: 2
+    }
+  ],
+  // Optional - license configurations to apply to the AMI
+  licenseConfigurationArns: [
+    'arn:aws:license-manager:us-west-2:123456789012:license-configuration:lic-abcdefghijklmnopqrstuvwxyz'
+  ]
+});
+```
+
+#### Container Distributions
+
+##### Container repositories
+
+Container distributions can be configured to distribute to ECR repositories:
+
+```ts
+const ecrRepository = ecr.Repository.fromRepositoryName(this, 'ECRRepository', 'my-repo');
+const imageBuilderRepository = imagebuilder.Repository.fromEcr(ecrRepository);
+```
+
+##### Defining a container distribution
+
+You can configure the container repositories as well as the description and tags applied to the distributed container
+images:
+
+```ts
+const ecrRepository = ecr.Repository.fromRepositoryName(this, 'ECRRepository', 'my-repo');
+const containerRepository = imagebuilder.Repository.fromEcr(ecrRepository);
+const containerDistributionConfiguration = new imagebuilder.DistributionConfiguration(
+  this,
+  'ContainerDistributionConfiguration'
+);
+
+containerDistributionConfiguration.addContainerDistributions({
+  containerRepository,
+  containerDescription: 'Test container image',
+  containerTags: ['latest', 'latest-1.0']
 });
 ```
