@@ -1,0 +1,690 @@
+{
+    "typeName" : "AWS::Lambda::Function",
+    "description" : "Resource Type definition for AWS::Lambda::Function in region",
+    "additionalProperties" : false,
+    "properties" : {
+        "Arn" : {
+            "description" : "Unique identifier for function resources",
+            "type" : "string"
+        },
+        "Code" : {
+            "description" : "The code for the function.",
+            "$ref" : "#/definitions/Code"
+        },
+        "DeadLetterConfig" : {
+            "description" : "A dead letter queue configuration that specifies the queue or topic where Lambda sends asynchronous events when they fail processing.",
+            "$ref" : "#/definitions/DeadLetterConfig"
+        },
+        "Description" : {
+            "description" : "A description of the function.",
+            "type" : "string",
+            "maxLength" : 256
+        },
+        "Environment" : {
+            "description" : "Environment variables that are accessible from function code during execution.",
+            "$ref" : "#/definitions/Environment"
+        },
+        "EphemeralStorage" : {
+            "description" : "A function's ephemeral storage settings.",
+            "$ref" : "#/definitions/EphemeralStorage"
+        },
+        "FileSystemConfigs" : {
+            "description" : "Connection settings for an Amazon EFS file system. To connect a function to a file system, a mount target must be available in every Availability Zone that your function connects to. If your template contains an AWS::EFS::MountTarget resource, you must also specify a DependsOn attribute to ensure that the mount target is created or updated before the function.",
+            "maxItems" : 1,
+            "type" : "array",
+            "items" : {
+                "$ref" : "#/definitions/FileSystemConfig"
+            }
+        },
+        "FunctionName" : {
+            "description" : "The name of the Lambda function, up to 64 characters in length. If you don't specify a name, AWS CloudFormation generates one.",
+            "type" : "string",
+            "minLength" : 1
+        },
+        "Handler" : {
+            "description" : "The name of the method within your code that Lambda calls to execute your function. The format includes the file name. It can also include namespaces and other qualifiers, depending on the runtime",
+            "type" : "string",
+            "maxLength" : 128,
+            "pattern" : "^[^\\s]+$"
+        },
+        "Architectures" : {
+            "type" : "array",
+            "uniqueItems" : true,
+            "minItems" : 1,
+            "maxItems" : 1,
+            "items" : {
+                "type" : "string",
+                "enum" : [
+                    "x86_64",
+                    "arm64"
+                ]
+            }
+        },
+        "KmsKeyArn" : {
+            "description" : "The ARN of the AWS Key Management Service (AWS KMS) key that's used to encrypt your function's environment variables. If it's not provided, AWS Lambda uses a default service key.",
+            "type" : "string",
+            "pattern" : "^(arn:(aws[a-zA-Z-]*)?:[a-z0-9-.]+:.*)|()$"
+        },
+        "Layers" : {
+            "description" : "A list of function layers to add to the function's execution environment. Specify each layer by its ARN, including the version.",
+            "type" : "array",
+            "uniqueItems" : false,
+            "items" : {
+                "type" : "string"
+            }
+        },
+        "MemorySize" : {
+            "description" : "The amount of memory that your function has access to. Increasing the function's memory also increases its CPU allocation. The default value is 128 MB. The value must be a multiple of 64 MB.",
+            "type" : "integer"
+        },
+        "ReservedConcurrentExecutions" : {
+            "description" : "The number of simultaneous executions to reserve for the function.",
+            "type" : "integer",
+            "minimum" : 0
+        },
+        "Role" : {
+            "description" : "The Amazon Resource Name (ARN) of the function's execution role.",
+            "type" : "string",
+            "pattern" : "^arn:(aws[a-zA-Z-]*)?:iam::\\d{12}:role/?[a-zA-Z_0-9+=,.@\\-_/]+$"
+        },
+        "Runtime" : {
+            "description" : "The identifier of the function's runtime.",
+            "type" : "string"
+        },
+        "Tags" : {
+            "description" : "A list of tags to apply to the function.",
+            "type" : "array",
+            "uniqueItems" : true,
+            "insertionOrder": false,
+            "items" : {
+                "$ref" : "#/definitions/Tag"
+            }
+        },
+        "Timeout" : {
+            "description" : "The amount of time that Lambda allows a function to run before stopping it. The default is 3 seconds. The maximum allowed value is 900 seconds.",
+            "type" : "integer",
+            "minimum" : 1
+        },
+        "TracingConfig" : {
+            "description" : "Set Mode to Active to sample and trace a subset of incoming requests with AWS X-Ray.",
+            "$ref" : "#/definitions/TracingConfig"
+        },
+        "VpcConfig" : {
+            "description" : "For network connectivity to AWS resources in a VPC, specify a list of security groups and subnets in the VPC.",
+            "$ref" : "#/definitions/VpcConfig"
+        },
+        "CodeSigningConfigArn": {
+            "description": "A unique Arn for CodeSigningConfig resource",
+            "type": "string",
+            "pattern": "arn:(aws[a-zA-Z-]*)?:lambda:(eusc-)?[a-z]{2}((-gov)|(-iso([a-z]?)))?-[a-z]+-\\d{1}:\\d{12}:code-signing-config:csc-[a-z0-9]{17}"
+        },
+        "ImageConfig" : {
+            "description" : "ImageConfig",
+            "$ref" : "#/definitions/ImageConfig"
+        },
+        "PackageType" : {
+            "description" : "PackageType.",
+            "type" : "string",
+            "enum" : [
+                "Image",
+                "Zip"
+            ]
+        },
+        "SnapStart" : {
+            "description" : "The SnapStart setting of your function",
+            "$ref" : "#/definitions/SnapStart"
+        },
+        "SnapStartResponse" : {
+            "description" : "The SnapStart response of your function",
+            "$ref" : "#/definitions/SnapStartResponse"
+        },
+        "RuntimeManagementConfig": {
+            "description": "RuntimeManagementConfig",
+            "$ref": "#/definitions/RuntimeManagementConfig"
+        },
+        "LoggingConfig" : {
+            "description" : "The logging configuration of your function",
+            "$ref" : "#/definitions/LoggingConfig"
+        },
+        "PublicAccessBlockConfig" : {
+            "description" : "The block public access configuration for your function",
+            "$ref" : "#/definitions/PublicAccessBlockConfig"
+        },
+        "RecursiveLoop": {
+            "description" : "The recursion configuration of your function",
+            "$ref" : "#/definitions/RecursiveLoop"
+        },
+        "TenancyConfig" : {
+          "description" : "The tenancy configuration of your function",
+          "$ref" : "#/definitions/TenancyConfig"
+        },
+        "CapacityProviderConfig": {
+            "description" : "The capacity provider config of your function",
+            "$ref" : "#/definitions/CapacityProviderConfig"
+        },
+        "PublishToLatestPublished": {
+            "type" : "boolean",
+            "description" : "A boolean indicating whether to publish $LATEST.PUBLISHED version"
+        },
+        "FunctionScalingConfig" : {
+            "description": "The scaling config of a version published into a capacity provider.",
+            "$ref": "#/definitions/FunctionScalingConfig"
+        }
+    },
+    "nonPublicDefinitions": ["/definitions/PublicAccessBlockConfig", "/definitions/TenancyConfig", "/definitions/CapacityProviderConfig", "/definitions/EC2ManagedInstancesCapacityProviderConfig", "/definitions/FunctionScalingConfig"],
+    "nonPublicProperties": ["/properties/PublicAccessBlockConfig", "/properties/TenancyConfig", "/properties/CapacityProviderConfig", "/properties/FunctionScalingConfig", "/properties/PublishToLatestPublished"],
+    "definitions" : {
+        "Code" : {
+            "type" : "object",
+            "additionalProperties": false,
+            "properties" : {
+                "S3Bucket" : {
+                    "type" : "string",
+                    "description" : "An Amazon S3 bucket in the same AWS Region as your function. The bucket can be in a different AWS account.",
+                    "minLength" : 3,
+                    "maxLength" : 63,
+                    "pattern" : "^[0-9A-Za-z\\.\\-_]*(?<!\\.)$"
+                },
+                "S3Key" : {
+                    "type" : "string",
+                    "description" : "The Amazon S3 key of the deployment package.",
+                    "minLength" : 1,
+                    "maxLength" : 1024
+                },
+                "S3ObjectVersion" : {
+                    "type" : "string",
+                    "description" : "For versioned objects, the version of the deployment package object to use.",
+                    "minLength" : 1,
+                    "maxLength" : 1024
+                },
+                "ZipFile" : {
+                    "type" : "string",
+                    "description" : "The source code of your Lambda function. If you include your function source inline with this parameter, AWS CloudFormation places it in a file named index and zips it to create a deployment package.."
+                },
+                "ImageUri" : {
+                    "type" : "string",
+                    "description" : "ImageUri."
+                },
+                "SourceKMSKeyArn": {
+                    "type" : "string",
+                    "description" : "The ARN of the AWS Key Management Service (AWS KMS) key that's used to encrypt your function's source code.",
+                    "pattern" : "^(arn:(aws[a-zA-Z-]*)?:[a-z0-9-.]+:.*)|()$"
+                }
+            }
+        },
+        "DeadLetterConfig" : {
+            "description" : "The dead-letter queue for failed asynchronous invocations.",
+            "type" : "object",
+            "additionalProperties": false,
+            "properties" : {
+                "TargetArn" : {
+                    "type" : "string",
+                    "description" : "The Amazon Resource Name (ARN) of an Amazon SQS queue or Amazon SNS topic.",
+                    "pattern" : "^(arn:(aws[a-zA-Z-]*)?:[a-z0-9-.]+:.*)|()$"
+                }
+            }
+        },
+        "Environment" : {
+            "type" : "object",
+            "additionalProperties": false,
+            "description" : "A function's environment variable settings.",
+            "properties" : {
+                "Variables" : {
+                    "type" : "object",
+                    "additionalProperties": false,
+                    "description" : "Environment variable key-value pairs.",
+                    "patternProperties" : {
+                        "[a-zA-Z][a-zA-Z0-9_]+" : {
+                            "type" : "string"
+                        }
+                    }
+                }
+            }
+        },
+        "EphemeralStorage" : {
+            "type" : "object",
+            "additionalProperties" : false,
+            "description" : "A function's ephemeral storage settings.",
+            "properties" : {
+                "Size" : {
+                    "type": "integer",
+                    "description": "The amount of ephemeral storage that your function has access to.",
+                    "minimum": 512,
+                    "maximum": 10240
+                }
+            },
+            "required" : [
+                "Size"
+            ]
+        },
+        "FileSystemConfig" : {
+            "type" : "object",
+            "additionalProperties": false,
+            "properties" : {
+                "Arn" : {
+                    "type" : "string",
+                    "pattern": "^arn:aws[a-zA-Z-]*:elasticfilesystem:(eusc-)?[a-z]{2}((-gov)|(-iso([a-z]?)))?-[a-z]+-\\d{1}:\\d{12}:access-point/fsap-[a-f0-9]{17}$",
+                    "description" : "The Amazon Resource Name (ARN) of the Amazon EFS access point that provides access to the file system.",
+                    "maxLength" : 200
+                },
+                "LocalMountPath" : {
+                    "type" : "string",
+                    "description" : "The path where the function can access the file system, starting with /mnt/.",
+                    "pattern": "^/mnt/[a-zA-Z0-9-_.]+$",
+                    "maxLength" : 160
+                }
+            },
+            "required" : [
+                "Arn",
+                "LocalMountPath"
+            ]
+        },
+        "TracingConfig" : {
+            "type" : "object",
+            "additionalProperties": false,
+            "description" : "The function's AWS X-Ray tracing configuration. To sample and record incoming requests, set Mode to Active.",
+            "properties" : {
+                "Mode" : {
+                    "type" : "string",
+                    "description" : "The tracing mode.",
+                    "enum" : [
+                        "Active",
+                        "PassThrough"
+                    ]
+                }
+            }
+        },
+        "VpcConfig" : {
+            "type" : "object",
+            "additionalProperties": false,
+            "description" : "The VPC security groups and subnets that are attached to a Lambda function. When you connect a function to a VPC, Lambda creates an elastic network interface for each combination of security group and subnet in the function's VPC configuration. The function can only access resources and the internet through that VPC.",
+            "properties" : {
+                "SecurityGroupIds" : {
+                    "type" : "array",
+                    "description" : "A list of VPC security groups IDs.",
+                    "uniqueItems" : false,
+                    "maxItems" : 5,
+                    "items" : {
+                        "type" : "string"
+                    }
+                },
+                "SubnetIds" : {
+                    "type" : "array",
+                    "description" : "A list of VPC subnet IDs.",
+                    "uniqueItems" : false,
+                    "maxItems" : 16,
+                    "items" : {
+                        "type" : "string"
+                    }
+                },
+                "Ipv6AllowedForDualStack" : {
+                    "type" : "boolean",
+                    "description" : "A boolean indicating whether IPv6 protocols will be allowed for dual stack subnets"
+                }
+            }
+        },
+        "Tag" : {
+            "type" : "object",
+            "additionalProperties": false,
+            "properties" : {
+                "Key" : {
+                    "type" : "string",
+                    "description" : "The key name of the tag. You can specify a value that is 1 to 128 Unicode characters in length and cannot be prefixed with aws:. You can use any of the following characters: the set of Unicode letters, digits, whitespace, _, ., /, =, +, and -.",
+                    "minLength" : 1,
+                    "maxLength" : 128
+                },
+                "Value" : {
+                    "type" : "string",
+                    "description" : "The value for the tag. You can specify a value that is 0 to 256 Unicode characters in length and cannot be prefixed with aws:. You can use any of the following characters: the set of Unicode letters, digits, whitespace, _, ., /, =, +, and -.",
+                    "minLength" : 0,
+                    "maxLength" : 256
+                }
+            },
+            "required" : [
+                "Key"
+            ]
+        },
+        "ImageConfig" : {
+            "type" : "object",
+            "additionalProperties": false,
+            "properties" : {
+                "EntryPoint" : {
+                    "type" : "array",
+                    "description" : "EntryPoint.",
+                    "uniqueItems" : true,
+                    "maxItems" : 1500,
+                    "items" : {
+                        "type" : "string"
+                    }
+                },
+                "Command" : {
+                    "type" : "array",
+                    "description" : "Command.",
+                    "uniqueItems" : true,
+                    "maxItems" : 1500,
+                    "items" : {
+                        "type" : "string"
+                    }
+                },
+                "WorkingDirectory" : {
+                    "type" : "string",
+                    "description" : "WorkingDirectory."
+                }
+            }
+        },
+        "SnapStart" : {
+            "type" : "object",
+            "additionalProperties": false,
+            "description" : "The function's SnapStart setting. When set to PublishedVersions, Lambda creates a snapshot of the execution environment when you publish a function version.",
+            "properties" : {
+                "ApplyOn" : {
+                    "type" : "string",
+                    "description" : "Applying SnapStart setting on function resource type.",
+                    "enum" : [
+                        "PublishedVersions",
+                        "None"
+                    ]
+                }
+            },
+            "required" : [
+                "ApplyOn"
+            ]
+        },
+        "SnapStartResponse" : {
+            "type" : "object",
+            "additionalProperties": false,
+            "description" : "The function's SnapStart Response. When set to PublishedVersions, Lambda creates a snapshot of the execution environment when you publish a function version.",
+            "properties" : {
+                "ApplyOn" : {
+                    "type" : "string",
+                    "description" : "Applying SnapStart setting on function resource type.",
+                    "enum" : [
+                        "PublishedVersions",
+                        "None"
+                    ]
+                },
+                "OptimizationStatus" : {
+                    "type" : "string",
+                    "description" : "Indicates whether SnapStart is activated for the specified function version.",
+                    "enum" : [
+                        "On",
+                        "Off"
+                    ]
+                }
+            }
+        },
+        "RuntimeManagementConfig": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "UpdateRuntimeOn": {
+                    "type": "string",
+                    "description": "Trigger for runtime update",
+                    "enum": [
+                        "Auto",
+                        "FunctionUpdate",
+                        "Manual"
+                    ]
+                },
+                "RuntimeVersionArn": {
+                    "type": "string",
+                    "description": "Unique identifier for a runtime version arn"
+                }
+            },
+            "required": [
+                "UpdateRuntimeOn"
+            ]
+        },
+        "LoggingConfig" : {
+            "type" : "object",
+            "additionalProperties": false,
+            "description" : "The function's logging configuration.",
+            "properties" : {
+                "LogGroup" : {
+                    "type" : "string",
+                    "description" : "The log group name.",
+                    "pattern" : "[\\.\\-_/#A-Za-z0-9]+",
+                    "minLength" : 1,
+                    "maxLength" : 512
+                },
+                "LogFormat" : {
+                    "type" : "string",
+                    "description" : "Log delivery format for the lambda function",
+                    "enum" : [
+                        "Text",
+                        "JSON"
+                    ]
+                },
+                "ApplicationLogLevel" : {
+                    "type" : "string",
+                    "description" : "Application log granularity level, can only be used when LogFormat is set to JSON",
+                    "enum" : [
+                        "TRACE",
+                        "DEBUG",
+                        "INFO",
+                        "WARN",
+                        "ERROR",
+                        "FATAL"
+                    ]
+                },
+                "SystemLogLevel" : {
+                    "type" : "string",
+                    "description" : "System log granularity level, can only be used when LogFormat is set to JSON",
+                    "enum" : [
+                        "DEBUG",
+                        "INFO",
+                        "WARN"
+                    ]
+                }
+            }
+        },
+        "PublicAccessBlockConfig" : {
+            "type" : "object",
+            "additionalProperties": false,
+            "properties" : {
+                "BlockPublicPolicy" : {
+                    "type" : "boolean",
+                    "description" : "Block Public Policy from being attached to a function"
+                },
+                "RestrictPublicResource" : {
+                    "type" : "boolean",
+                    "description" : "Restrict public resource access"
+                }
+            }
+        },
+        "RecursiveLoop" : {
+            "type" : "string",
+            "description" : "The function recursion configuration.",
+            "enum" : [
+                "Allow",
+                "Terminate"
+            ]
+        },
+        "TenancyConfig" : {
+            "type" : "object",
+            "additionalProperties": false,
+            "description" : "Controls how your Lambda function handles multi-tenant execution environments. Enable this setting to configure specific tenant isolation strategies for your function invocations.",
+            "properties" : {
+                "TenantIsolationMode" : {
+                "type" : "string",
+                "description" : "Determines how your Lambda function isolates execution environments between tenants.",
+                "enum" : [
+                  "PER_TENANT"
+                ]
+              }
+            },
+            "required" : [
+                "TenantIsolationMode"
+            ]
+        },
+        "CapacityProviderConfig" : {
+            "type" : "object",
+            "additionalProperties": false,
+            "description" : "",
+            "properties" : {
+                "EC2ManagedInstancesCapacityProviderConfig": {
+                    "$ref": "#/definitions/EC2ManagedInstancesCapacityProviderConfig"
+                }
+            },
+            "required" : [
+                "EC2ManagedInstancesCapacityProviderConfig"
+            ]
+        },
+        "EC2ManagedInstancesCapacityProviderConfig": {
+            "type": "object",
+            "additionalProperties": false,
+            "description" : "",
+            "properties" : {
+                "CapacityProviderArn": {
+                    "type": "string",
+                    "description" : "",
+                    "maxLength": 140,
+                    "minLength": 1,
+                    "pattern": "^arn:aws[a-zA-Z-]*:lambda:(eusc-)?[a-z]{2}((-gov)|(-iso([a-z]?)))?-[a-z]+-\\d{1}:\\d{12}:capacity-provider:[a-zA-Z0-9-_]+$"
+                },
+                "ExecutionEnvironmentMaxConcurrency": {
+                    "type" : "integer",
+                    "description" : "",
+                    "minimum" : 1,
+                    "maximum" : 10000
+                },
+                "ExecutionEnvironmentMemoryGiBPerVCpu": {
+                    "type": "number",
+                    "description" : "",
+                    "minimum" : 2,
+                    "maximum" : 8
+                }
+            },
+            "required" : [
+                "CapacityProviderArn"
+            ]
+        },
+        "FunctionScalingConfig": {
+            "type": "object",
+            "description": "The scaling config of a version published into a capacity provider.",
+            "additionalProperties": false,
+            "properties": {
+                "MinExecutionEnvironments": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "MaxExecutionEnvironments": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            }
+        }
+    },
+    "readOnlyProperties" : [
+        "/properties/SnapStartResponse",
+        "/properties/SnapStartResponse/ApplyOn",
+        "/properties/SnapStartResponse/OptimizationStatus",
+        "/properties/Arn"
+    ],
+    "createOnlyProperties" : [
+        "/properties/FunctionName",
+        "/properties/PackageType",
+        "/properties/TenancyConfig"
+    ],
+    "writeOnlyProperties" : [
+        "/properties/SnapStart",
+        "/properties/SnapStart/ApplyOn",
+        "/properties/Code/ImageUri",
+        "/properties/Code/S3Bucket",
+        "/properties/Code/S3Key",
+        "/properties/Code/S3ObjectVersion",
+        "/properties/Code/ZipFile",
+        "/properties/Code/SourceKMSKeyArn"
+    ],
+    "required" : [
+        "Code",
+        "Role"
+    ],
+    "primaryIdentifier" : [
+        "/properties/FunctionName"
+    ],
+    "tagging": {
+        "taggable": true,
+        "tagOnCreate": true,
+        "tagUpdatable": true,
+        "cloudFormationSystemTags": true,
+        "tagProperty": "/properties/Tags",
+        "permissions": ["lambda:ListTags","lambda:TagResource","lambda:UntagResource"]
+    },
+    "handlers": {
+        "create" : {
+            "permissions" : [
+                "lambda:CreateFunction",
+                "lambda:GetFunction",
+                "lambda:PutFunctionConcurrency",
+                "iam:PassRole",
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeVpcs",
+                "elasticfilesystem:DescribeMountTargets",
+                "kms:CreateGrant",
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:GenerateDataKey",
+                "lambda:GetCodeSigningConfig",
+                "lambda:GetFunctionCodeSigningConfig",
+                "lambda:GetLayerVersion",
+                "lambda:GetRuntimeManagementConfig",
+                "lambda:PutRuntimeManagementConfig",
+                "lambda:TagResource",
+                "lambda:PutFunctionRecursionConfig",
+                "lambda:GetFunctionRecursionConfig"
+            ]
+        },
+        "update" : {
+            "permissions" : [
+                "lambda:DeleteFunctionConcurrency",
+                "lambda:GetFunction",
+                "lambda:PutFunctionConcurrency",
+                "lambda:TagResource",
+                "lambda:UntagResource",
+                "lambda:UpdateFunctionConfiguration",
+                "lambda:UpdateFunctionCode",
+                "iam:PassRole",
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeVpcs",
+                "elasticfilesystem:DescribeMountTargets",
+                "kms:CreateGrant",
+                "kms:Decrypt",
+                "kms:GenerateDataKey",
+                "lambda:GetRuntimeManagementConfig",
+                "lambda:PutRuntimeManagementConfig",
+                "lambda:PutFunctionCodeSigningConfig",
+                "lambda:DeleteFunctionCodeSigningConfig",
+                "lambda:GetCodeSigningConfig",
+                "lambda:GetFunctionCodeSigningConfig",
+                "lambda:PutFunctionRecursionConfig",
+                "lambda:GetFunctionRecursionConfig"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "lambda:GetFunction",
+                "lambda:GetFunctionCodeSigningConfig",
+                "lambda:GetFunctionRecursionConfig"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "lambda:DeleteFunction",
+                "lambda:GetFunction",
+                "ec2:DescribeNetworkInterfaces"
+            ]
+        },
+        "list": {
+            "permissions": [
+                "lambda:ListFunctions"
+            ]
+        }
+    }
+}
