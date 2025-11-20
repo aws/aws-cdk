@@ -182,13 +182,6 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
     submodule.registerResource(resource.cloudFormationType, resourceClass);
     submodule.registerSelectiveImports(...resourceClass.imports);
     submodule.augmentations?.module.augmentResource(resource, resourceClass);
-
-    for (const selectiveImport of submodule.imports) {
-      const sourceModule = new Module(selectiveImport.moduleName);
-      sourceModule.importSelective(submodule.resourcesMod.module, selectiveImport.types.map((t) => `${t.originalType} as ${t.aliasedType}`), {
-        fromLocation: relativeImportPath(submodule.resourcesMod.filePath, sourceModule.name),
-      });
-    }
   }
 
   private createResourceModule(moduleName: string, service: Service): LocatedModule<Module> {
@@ -262,7 +255,15 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
       grantModule.build(Object.fromEntries(submodule.resources), props?.nameSuffix);
     }
 
-    super.postprocessSubmodule(submodule);
+    // Apply selective imports only to resources module
+    for (const selectiveImport of submodule.imports) {
+      const sourceModule = new Module(selectiveImport.moduleName);
+      sourceModule.importSelective(
+        submodule.resourcesMod.module,
+        selectiveImport.types.map((t) => `${t.originalType} as ${t.aliasedType}`),
+        { fromLocation: relativeImportPath(submodule.resourcesMod, sourceModule.name) },
+      );
+    }
 
     // Add an import for the interfaces file to the entry point file (make sure not to do it twice)
     if (!submodule.interfaces?.module.isEmpty() && this.interfacesEntry && submodule.didCreateInterfaceModule) {
