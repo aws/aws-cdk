@@ -15,6 +15,6 @@ const containerRecipe = new imagebuilder.ContainerRecipe(stack, 'ContainerRecipe
 
 new cdk.CfnOutput(stack, 'ContainerRecipeVersion', { value: containerRecipe.containerRecipeVersion });
 
-new integ.IntegTest(app, 'ContainerRecipeTest', {
+new integ.IntegTest(app, 'ContainerRecipeTest-DefaultParameters', {
   testCases: [stack],
 });

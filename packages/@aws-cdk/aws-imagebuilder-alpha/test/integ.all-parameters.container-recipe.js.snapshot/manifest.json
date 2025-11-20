@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8f4ccf4db283ee2abc42d96efe0d4ebe1cc8f4688c8683f2ad5475399b7f4ef7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e87db65fcd4d5bb5b177638609ec2eec0b23db6f629a3c5e15e68de9919e2e68.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -57,7 +57,10 @@
         "/aws-cdk-imagebuilder-container-recipe-all-parameters/ContainerRecipe/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ContainerRecipe8A7CC9ED"
+            "data": "ContainerRecipe8A7CC9ED",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-imagebuilder-container-recipe-all-parameters/ContainerRecipeVersion": [
@@ -81,19 +84,19 @@
       },
       "displayName": "aws-cdk-imagebuilder-container-recipe-all-parameters"
     },
-    "ContainerRecipeTestDefaultTestDeployAssertB3A3E9AE.assets": {
+    "ContainerRecipeTestAllParametersDefaultTestDeployAssert5A6D24C2.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "ContainerRecipeTestDefaultTestDeployAssertB3A3E9AE.assets.json",
+        "file": "ContainerRecipeTestAllParametersDefaultTestDeployAssert5A6D24C2.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "ContainerRecipeTestDefaultTestDeployAssertB3A3E9AE": {
+    "ContainerRecipeTestAllParametersDefaultTestDeployAssert5A6D24C2": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "ContainerRecipeTestDefaultTestDeployAssertB3A3E9AE.template.json",
+        "templateFile": "ContainerRecipeTestAllParametersDefaultTestDeployAssert5A6D24C2.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -102,7 +105,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "ContainerRecipeTestDefaultTestDeployAssertB3A3E9AE.assets"
+          "ContainerRecipeTestAllParametersDefaultTestDeployAssert5A6D24C2.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -111,23 +114,23 @@
         }
       },
       "dependencies": [
-        "ContainerRecipeTestDefaultTestDeployAssertB3A3E9AE.assets"
+        "ContainerRecipeTestAllParametersDefaultTestDeployAssert5A6D24C2.assets"
       ],
       "metadata": {
-        "/ContainerRecipeTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/ContainerRecipeTest-AllParameters/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/ContainerRecipeTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/ContainerRecipeTest-AllParameters/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "ContainerRecipeTest/DefaultTest/DeployAssert"
+      "displayName": "ContainerRecipeTest-AllParameters/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

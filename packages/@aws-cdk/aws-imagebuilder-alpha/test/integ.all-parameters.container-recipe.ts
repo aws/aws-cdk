@@ -3,6 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as imagebuilder from '../lib';
+import { DockerfileData } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-container-recipe-all-parameters');
@@ -44,11 +45,15 @@ const parameterizedComponent = new imagebuilder.Component(stack, 'ParameterizedC
 
 const containerRecipe = new imagebuilder.ContainerRecipe(stack, 'ContainerRecipe', {
   containerRecipeName: 'test-container-recipe',
-  containerRecipeVersion: '1.2.3',
+  containerRecipeVersion: '1.2.x',
   description: 'A test container recipe',
   baseImage: imagebuilder.BaseContainerImage.fromEcrPublic('amazonlinux', 'amazonlinux', 'latest'),
   osVersion: imagebuilder.OSVersion.AMAZON_LINUX_2023,
   targetRepository: imagebuilder.Repository.fromEcr(repository),
+  dockerfile: DockerfileData.fromInline(`FROM {{{ imagebuilder:parentImage }}}
+CMD ["echo", "Hello, world!"]
+{{{ imagebuilder:environments }}}
+{{{ imagebuilder:components }}}`),
   components: [
     {
       component: imagebuilder.AwsManagedComponent.helloWorld(stack, 'Component2', {
@@ -86,6 +91,6 @@ containerRecipe.addInstanceBlockDevice({
 
 new cdk.CfnOutput(stack, 'ContainerRecipeVersion', { value: containerRecipe.containerRecipeVersion });
 
-new integ.IntegTest(app, 'ContainerRecipeTest', {
+new integ.IntegTest(app, 'ContainerRecipeTest-AllParameters', {
   testCases: [stack],
 });

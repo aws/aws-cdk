@@ -61,7 +61,7 @@
     ],
     "ContainerType": "DOCKER",
     "Description": "A test container recipe",
-    "DockerfileTemplateData": "FROM {{{ imagebuilder:parentImage }}}\n{{{ imagebuilder:environments }}}\n{{{ imagebuilder:components }}}",
+    "DockerfileTemplateData": "FROM {{{ imagebuilder:parentImage }}}\nCMD [\"echo\", \"Hello, world!\"]\n{{{ imagebuilder:environments }}}\n{{{ imagebuilder:components }}}",
     "ImageOsVersionOverride": "Amazon Linux 2023",
     "InstanceConfiguration": {
      "BlockDeviceMappings": [
@@ -92,7 +92,7 @@
      },
      "Service": "ECR"
     },
-    "Version": "1.2.3",
+    "Version": "1.2.x",
     "WorkingDirectory": "/var/tmp"
    }
   }
