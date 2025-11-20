@@ -102,6 +102,7 @@ phases:
 Most developer-friendly approach using objects:
 
 ```ts
+
 const component = new imagebuilder.Component(this, 'JsonComponent', {
   platform: imagebuilder.Platform.LINUX,
   data: imagebuilder.ComponentData.fromJsonObject({
@@ -115,19 +116,58 @@ const component = new imagebuilder.Component(this, 'JsonComponent', {
             action: imagebuilder.ComponentAction.CREATE_FILE,
             inputs: {
               path: '/etc/myapp/config.json',
-              content: '{"env": "production"}',
-            },
-          },
-        ],
-      },
-    ],
-  }),
+              content: '{"env": "production"}'
+            }
+          }
+        ]
+      }
+    ]
+  })
 });
 ```
 
 ##### Structured Component Document
 
-For type-safe, CDK-native definitions with enhanced properties like `timeout` and `onFailure`:
+For type-safe, CDK-native definitions with enhanced properties like `timeout` and `onFailure`.
+
+###### Defining a component step
+
+You can define steps in the component which will be executed in order when the component is applied:
+
+```ts
+const step: imagebuilder.ComponentDocumentStep = {
+  name: 'configure-app',
+  action: imagebuilder.ComponentAction.CREATE_FILE,
+  inputs: imagebuilder.ComponentStepInputs.fromObject({
+    path: '/etc/myapp/config.json',
+    content: '{"env": "production"}'
+  })
+};
+```
+
+###### Defining a component phase
+
+Phases group steps together, which run in sequence when building, validating or testing in the component:
+
+```ts
+const phase: imagebuilder.ComponentDocumentPhase = {
+  name: imagebuilder.ComponentPhaseName.BUILD,
+  steps: [
+    {
+      name: 'configure-app',
+      action: imagebuilder.ComponentAction.CREATE_FILE,
+      inputs: imagebuilder.ComponentStepInputs.fromObject({
+        path: '/etc/myapp/config.json',
+        content: '{"env": "production"}'
+      })
+    }
+  ]
+};
+```
+
+###### Defining a component
+
+The component data defines all steps across the provided phases to execute during the build:
 
 ```ts  
 const component = new imagebuilder.Component(this, 'StructuredComponent', {
@@ -143,14 +183,14 @@ const component = new imagebuilder.Component(this, 'StructuredComponent', {
             action: imagebuilder.ComponentAction.EXECUTE_BASH,
             timeout: Duration.minutes(10),
             onFailure: imagebuilder.ComponentOnFailure.CONTINUE,
-            inputs: {
-              commands: ['./install-script.sh'],
-            },
-          },
-        ],
-      },
-    ],
-  }),
+            inputs: imagebuilder.ComponentStepInputs.fromObject({
+              commands: ['./install-script.sh']
+            })
+          }
+        ]
+      }
+    ]
+  })
 });
 ```
 
@@ -305,6 +345,11 @@ launch template configurations. For container images, it specifies the target Am
 A distribution configuration can be associated with an image or an image pipeline to define these distribution settings
 for image builds.
 
+#### AMI Distributions
+
+AMI distributions can be defined to copy and modify AMIs in different accounts and regions, and apply them to launch
+templates, SSM parameters, etc.:
+
 ```ts
 const distributionConfiguration = new imagebuilder.DistributionConfiguration(this, 'DistributionConfiguration', {
   distributionConfigurationName: 'test-distribution-configuration',
@@ -401,5 +446,36 @@ distributionConfiguration.addAmiDistributions({
   licenseConfigurationArns: [
     'arn:aws:license-manager:us-west-2:123456789012:license-configuration:lic-abcdefghijklmnopqrstuvwxyz'
   ]
+});
+```
+
+#### Container Distributions
+
+##### Container repositories
+
+Container distributions can be configured to distribute to ECR repositories:
+
+```ts
+const ecrRepository = ecr.Repository.fromRepositoryName(this, 'ECRRepository', 'my-repo');
+const imageBuilderRepository = imagebuilder.Repository.fromEcr(ecrRepository);
+```
+
+##### Defining a container distribution
+
+You can configure the container repositories as well as the description and tags applied to the distributed container
+images:
+
+```ts
+const ecrRepository = ecr.Repository.fromRepositoryName(this, 'ECRRepository', 'my-repo');
+const containerRepository = imagebuilder.Repository.fromEcr(ecrRepository);
+const containerDistributionConfiguration = new imagebuilder.DistributionConfiguration(
+  this,
+  'ContainerDistributionConfiguration'
+);
+
+containerDistributionConfiguration.addContainerDistributions({
+  containerRepository,
+  containerDescription: 'Test container image',
+  containerTags: ['latest', 'latest-1.0']
 });
 ```
