@@ -147,7 +147,7 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
   /**
    * Collection of grant methods for a ScheduleGroup
    */
-  public readonly grants = ScheduleGroupGrants._fromScheduleGroup(this);
+  public readonly grants = ScheduleGroupGrants.fromScheduleGroup(this);
 
   public get scheduleGroupRef(): ScheduleGroupReference {
     return {
