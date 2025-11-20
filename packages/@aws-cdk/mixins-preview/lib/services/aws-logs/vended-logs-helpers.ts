@@ -46,7 +46,7 @@ export class XRayDeliveryDestinationPolicy extends Resource {
    * Adds a log-generating source ARN to the policy and updates the resource policy.
    * @param logGeneratingSourceArn - The ARN of the log source to add to the policy
    */
-  public addSourceToPolicy(logGeneratingSourceArn: string) {
+  public allowSource(logGeneratingSourceArn: string) {
     this.logGeneratingSourceArns.push(logGeneratingSourceArn);
     this.XrayResourcePolicy.policyDocument = this.buildPolicyDocument();
   }
