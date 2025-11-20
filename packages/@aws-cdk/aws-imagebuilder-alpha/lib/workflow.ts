@@ -125,7 +125,7 @@ export interface WorkflowAttributes {
    * The ARN of the workflow
    *
    * @default - the ARN is automatically constructed if a workflowName and workflowType is provided, otherwise a
-   *            workflowArn is required
+   * workflowArn is required
    */
   readonly workflowArn?: string;
 
@@ -171,6 +171,12 @@ export interface AwsManagedWorkflowAttributes {
  */
 export enum WorkflowAction {
   /**
+   * Applies customizations and configurations to the input AMIs, such as publishing the AMI to SSM Parameter Store,
+   * or creating launch template versions with the AMI IDs provided in the input
+   */
+  APPLY_IMAGE_CONFIGURATIONS = 'ApplyImageConfigurations',
+
+  /**
    * The BootstrapInstanceForContainer action runs a service script to bootstrap the instance with minimum requirements
    * to run container workflows
    */
@@ -193,6 +199,12 @@ export enum WorkflowAction {
   CREATE_IMAGE = 'CreateImage',
 
   /**
+   * The DistributeImage action copies an AMI using the image's distribution configuration, or using the distribution
+   * settings in the step input
+   */
+  DISTRIBUTE_IMAGE = 'DistributeImage',
+
+  /**
    * The ExecuteComponents action runs components that are specified in the recipe for the current image being built
    */
   EXECUTE_COMPONENTS = 'ExecuteComponents',
@@ -208,6 +220,11 @@ export enum WorkflowAction {
    * resources
    */
   LAUNCH_INSTANCE = 'LaunchInstance',
+
+  /**
+   * Applies attribute updates to the provided set of distributed images, such as launch permission updates
+   */
+  MODIFY_IMAGE_ATTRIBUTES = 'ModifyImageAttributes',
 
   /**
    * The RunCommand action runs a command document against the provided instance
@@ -317,6 +334,27 @@ export enum WorkflowType {
 }
 
 /**
+ * The rendered workflow data value, for use in CloudFormation.
+ * - For inline workflows, data is the workflow text
+ * - For S3-backed workflows, uri is the S3 URL
+ */
+export interface WorkflowDataConfig {
+  /**
+   * The rendered workflow data, for use in CloudFormation
+   *
+   * @default - none if uri is set
+   */
+  readonly data?: string;
+
+  /**
+   * The rendered workflow data URI, for use in CloudFormation
+   *
+   * @default - none if data is set
+   */
+  readonly uri?: string;
+}
+
+/**
  * Helper class for referencing and uploading workflow data
  */
 export abstract class WorkflowData {
@@ -368,34 +406,32 @@ export abstract class WorkflowData {
   }
 
   /**
-   * Indicates that the provided workflow data is an S3 reference
+   * The rendered workflow data value, for use in CloudFormation.
+   * - For inline workflows, data is the workflow text
+   * - For S3-backed workflows, uri is the S3 URL
    */
-  abstract readonly isS3Reference: boolean;
-
-  /**
-   * The resulting inline string or S3 URL which references the workflow data
-   */
-  public readonly value: string;
-
-  protected constructor(value: string) {
-    this.value = value;
-  }
+  abstract render(): WorkflowDataConfig;
 }
 
 /**
  * Helper class for S3-based workflow data references, containing additional permission grant methods on the S3 object
  */
 export abstract class S3WorkflowData extends WorkflowData {
-  public readonly isS3Reference = true;
-
   protected readonly bucket: s3.IBucket;
   protected readonly key: string;
 
   protected constructor(bucket: s3.IBucket, key: string) {
-    super(bucket.s3UrlForObject(key));
+    super();
 
     this.bucket = bucket;
     this.key = key;
+  }
+
+  /**
+   * The rendered workflow data text, for use in CloudFormation
+   */
+  public render(): WorkflowDataConfig {
+    return { uri: this.bucket.s3UrlForObject(this.key) };
   }
 
   /**
@@ -418,10 +454,19 @@ export abstract class S3WorkflowData extends WorkflowData {
 }
 
 class InlineWorkflowData extends WorkflowData {
-  public readonly isS3Reference = false;
+  protected readonly data: string;
 
   public constructor(data: string) {
-    super(data);
+    super();
+
+    this.data = data;
+  }
+
+  /**
+   * The rendered workflow data text, for use in CloudFormation
+   */
+  public render(): WorkflowDataConfig {
+    return { data: this.data };
   }
 }
 
@@ -434,55 +479,6 @@ class S3WorkflowDataFromBucketKey extends S3WorkflowData {
 class S3WorkflowDataFromAsset extends S3WorkflowData {
   public constructor(asset: s3assets.Asset) {
     super(asset.bucket, asset.s3ObjectKey);
-  }
-}
-
-/**
- * The parameter value for a workflow parameter
- */
-export class WorkflowParameterValue {
-  /**
-   * The value of the parameter as a boolean
-   *
-   * @param value The boolean value of the parameter
-   */
-  public static fromBoolean(value: boolean): WorkflowParameterValue {
-    return new WorkflowParameterValue([value.toString()]);
-  }
-
-  /**
-   * The value of the parameter as an integer
-   *
-   * @param value The integer value of the parameter
-   */
-  public static fromInteger(value: number): WorkflowParameterValue {
-    return new WorkflowParameterValue([value.toString()]);
-  }
-
-  /**
-   * The value of the parameter as a string
-   * @param value The string value of the parameter
-   */
-  public static fromString(value: string): WorkflowParameterValue {
-    return new WorkflowParameterValue([value]);
-  }
-
-  /**
-   * The value of the parameter as a string list
-   *
-   * @param values The string list value of the parameter
-   */
-  public static fromStringList(values: string[]): WorkflowParameterValue {
-    return new WorkflowParameterValue(values);
-  }
-
-  /**
-   * The rendered parameter value
-   */
-  public readonly value: string[];
-
-  protected constructor(value: string[]) {
-    this.value = value;
   }
 }
 
@@ -779,7 +775,7 @@ export class Workflow extends WorkflowBase {
       description: props.description,
       kmsKeyId: props.kmsKey?.keyArn,
       tags: props.tags,
-      ...(props.data.isS3Reference ? { uri: props.data.value } : { data: props.data.value }),
+      ...props.data.render(),
     });
 
     this.workflowName = this.getResourceNameAttribute(workflow.getAtt('Name').toString());

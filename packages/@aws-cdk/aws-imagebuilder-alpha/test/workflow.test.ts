@@ -11,7 +11,6 @@ import {
   WorkflowData,
   WorkflowOnFailure,
   WorkflowParameterType,
-  WorkflowParameterValue,
   WorkflowSchemaVersion,
   WorkflowType,
 } from '../lib';
@@ -510,18 +509,6 @@ steps:
         }),
       },
     });
-  });
-
-  test('workflow parameter values render as expected', () => {
-    const booleanValue = WorkflowParameterValue.fromBoolean(true);
-    const integerValue = WorkflowParameterValue.fromInteger(42);
-    const stringValue = WorkflowParameterValue.fromString('test-value');
-    const stringListValue = WorkflowParameterValue.fromStringList(['value1', 'value2', 'value3']);
-
-    expect(booleanValue.value).toEqual(['true']);
-    expect(integerValue.value).toEqual(['42']);
-    expect(stringValue.value).toEqual(['test-value']);
-    expect(stringListValue.value).toEqual(['value1', 'value2', 'value3']);
   });
 
   test('grants read access to IAM roles', () => {
