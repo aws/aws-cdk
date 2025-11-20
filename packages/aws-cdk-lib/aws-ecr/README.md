@@ -248,7 +248,7 @@ repository.addToResourcePolicy(new iam.PolicyStatement({
 }));
 ```
 
-## import existing repository
+## Import existing repository
 
 You can import an existing repository into your CDK app using the `Repository.fromRepositoryArn`, `Repository.fromRepositoryName` or `Repository.fromLookup` method.
 These methods take the ARN or the name of the repository and returns an `IRepository` object.

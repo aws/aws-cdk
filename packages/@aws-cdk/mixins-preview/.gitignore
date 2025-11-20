@@ -20,3 +20,7 @@ junit.xml
 !**/*.snapshot/**/asset.*/*.d.ts
 
 !**/*.snapshot/**/asset.*/**
+
+# we ignore generated files that cannot contain hand-written info
+lib/services/*/index.ts
+lib/services/**/*.jsiirc.json

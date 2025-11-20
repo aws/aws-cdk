@@ -393,4 +393,3 @@ export function deprecationMessage(property: Property): string | undefined {
 
   return undefined;
 }
-

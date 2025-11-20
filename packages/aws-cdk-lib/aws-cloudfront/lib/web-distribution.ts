@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { DistributionGrants } from './cloudfront-grants.generated';
 import { CfnDistribution, DistributionReference } from './cloudfront.generated';
 import {
   HttpVersion,
@@ -787,10 +788,15 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         return iam.Grant.addToPrincipal({ grantee, actions, resourceArns: [formatDistributionArn(this)] });
       }
       public grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
-        return this.grant(identity, 'cloudfront:CreateInvalidation');
+        return DistributionGrants.fromDistribution(this).createInvalidation(identity);
       }
     }();
   }
+
+  /**
+   * Collection of grant methods for a Distribution
+   */
+  public readonly grants = DistributionGrants.fromDistribution(this);
 
   /**
    * The logging bucket for this CloudFront distribution.
@@ -1044,7 +1050,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
    * @param identity The principal
    */
   grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
-    return this.grant(identity, 'cloudfront:CreateInvalidation');
+    return this.grants.createInvalidation(identity);
   }
 
   private toBehavior(input: BehaviorWithOrigin, protoPolicy?: ViewerProtocolPolicy) {
