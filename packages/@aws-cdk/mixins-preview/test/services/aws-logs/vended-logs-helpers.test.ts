@@ -82,8 +82,8 @@ describe('XRayDeliveryDestinationPolicy', () => {
       description: 'Sample secret with arn to use for XRay',
     });
 
-    xray.addSourceToPolicy(bucket.bucketArn);
-    xray.addSourceToPolicy(secret.secretArn);
+    xray.allowSource(bucket.bucketArn);
+    xray.allowSource(secret.secretArn);
 
     Template.fromStack(stack).hasResourceProperties('AWS::XRay::ResourcePolicy', {
       PolicyDocument: {
