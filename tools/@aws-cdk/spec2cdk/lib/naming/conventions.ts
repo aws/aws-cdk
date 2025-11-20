@@ -154,6 +154,27 @@ export function submoduleSymbolFromName(name: string) {
 }
 
 /**
+ * Convert event name to pattern method name (AcknowledgementCompleted -> acknowledgementCompletedPattern)
+ */
+export function eventPatternMethodName(eventName: string) {
+  return `${eventName.charAt(0).toLowerCase()}${eventName.slice(1)}Pattern`;
+}
+
+/**
+ * Get the fully qualified event pattern return type name
+ */
+export function eventPatternTypeName(eventsClassName: string, eventName: string) {
+  return `${eventsClassName}.${eventName}.EventPattern`;
+}
+
+/**
+ * Get the fully qualified event pattern props type name
+ */
+export function eventPatternPropsTypeName(eventsClassName: string, eventName: string) {
+  return `${eventsClassName}.${eventName}.PatternProps`;
+}
+
+/**
  * Generate a name for the given declaration so that we can generate helper symbols for it that won't class
  *
  * We assume that the helpers get generated at module level, so we add in the names of the

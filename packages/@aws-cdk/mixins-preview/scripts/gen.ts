@@ -1,4 +1,5 @@
-import { generateAll } from './spec2mixins/generate';
+import { generateAll as generateMixins } from './spec2mixins/generate';
+import { generateAll as generateEvents } from './spec2eventbridge/generate';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -15,12 +16,31 @@ async function main() {
   const pkgPath = path.join(__dirname, '..');
   const outputPath = path.join(pkgPath, 'lib', 'services');
 
-  const moduleMap = await generateAll({
-    outputPath: outputPath,
-  });
+  const mixinsModuleMap = await generateMixins({ outputPath });
+  const eventsModuleMap = await generateEvents({ outputPath });
+
+  const moduleMap = mergeModuleMaps(mixinsModuleMap, eventsModuleMap);
 
   await submodules(moduleMap, outputPath);
   await updateExportsAndEntryPoints(moduleMap, pkgPath);
+}
+
+function mergeModuleMaps(...maps: ModuleMap[]): ModuleMap {
+  const merged: ModuleMap = {};
+  for (const map of maps) {
+    for (const [name, entry] of Object.entries(map)) {
+      if (!merged[name]) {
+        merged[name] = entry;
+      } else {
+        merged[name] = {
+          ...entry,
+          files: [...new Set([...merged[name].files, ...entry.files])],
+          resources: { ...merged[name].resources, ...entry.resources },
+        };
+      }
+    }
+  }
+  return merged;
 }
 
 async function updateExportsAndEntryPoints(modules: ModuleMap, pkgPath: string) {
@@ -29,6 +49,14 @@ async function updateExportsAndEntryPoints(modules: ModuleMap, pkgPath: string) 
 
   const pkgJsonPath = path.join(pkgPath, 'package.json');
   const pkgJson = JSON.parse((await fs.readFile(pkgJsonPath)).toString());
+
+  // Clean up old service exports, keep only non-service exports
+  const newExports: Record<string, string> = {};
+  for (const [key, value] of Object.entries(pkgJson.exports)) {
+    if (!key.startsWith('./aws-') && !key.startsWith('./alexa-')) {
+      newExports[key] = value as string;
+    }
+  }
 
   for (const moduleName of Object.keys(modules)) {
     const moduleConfig = {
@@ -43,13 +71,17 @@ async function updateExportsAndEntryPoints(modules: ModuleMap, pkgPath: string) 
 
     // @aws-cdk/mixins-preview/aws-s3/mixins => ./lib/services/aws-s3/index.js
     const exportName = `./${moduleConfig.name}/mixins`;
-    if (!pkgJson.exports[exportName]) {
-      pkgJson.exports[exportName] = `./lib/services/${moduleConfig.name}/mixins.js`;
+    newExports[exportName] = `./lib/services/${moduleConfig.name}/mixins.js`;
+
+    const eventsFilePath = path.join(pkgPath, 'lib', 'services', moduleConfig.name, 'events.ts');
+    if (existsSync(eventsFilePath)) {
+      const eventsExportName = `./${moduleConfig.name}/events`;
+      newExports[eventsExportName] = `./lib/services/${moduleConfig.name}/events.js`;
     }
   }
 
   // sort exports
-  pkgJson.exports = Object.fromEntries(Object.entries(pkgJson.exports).sort(([e1], [e2]) => e1.localeCompare(e2)));
+  pkgJson.exports = Object.fromEntries(Object.entries(newExports).sort(([e1], [e2]) => e1.localeCompare(e2)));
 
   // package.json
   await fs.writeFile(pkgJsonPath, JSON.stringify(pkgJson, null, 2) + '\n');
@@ -74,8 +106,11 @@ async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
 
   // services/<mod>/index.ts
   const subModuleIndex = path.join(modulePath, 'index.ts');
-  // we don't export anything else in the preview package, so always force overwrite
-  await fs.writeFile(subModuleIndex, 'export * as mixins from \'./mixins\';\n');
+  const hasEvents = submodule.files.some(f => f.includes('.events.generated.ts'));
+  const indexContent = hasEvents
+    ? 'export * as mixins from \'./mixins\';\nexport * as events from \'./events\';\n'
+    : 'export * as mixins from \'./mixins\';\n';
+  await fs.writeFile(subModuleIndex, indexContent);
 
   // services/<mod>/mixins.ts
   {
@@ -89,14 +124,40 @@ async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
     }
 
     for (const file of submodule.files) {
-      const f = path.relative(modulePath, path.join(outPath, file));
-      const loc = `./${f.replace('.ts', '')}`;
-      if (!mixinsExports.find(e => e.includes(loc))) {
-        mixinsExports.push(`export * from '${loc}';`);
+      if (!file.includes('.events.generated.ts')) {
+        const f = path.relative(modulePath, path.join(outPath, file));
+        const loc = `./${f.replace('.ts', '')}`;
+        if (!mixinsExports.find(e => e.includes(loc))) {
+          mixinsExports.push(`export * from '${loc}';`);
+        }
       }
     }
 
     await fs.writeFile(mixinsIndex, mixinsExports.sort().join('\n') + '\n');
+  }
+
+  // services/<mod>/events.ts
+  {
+    const eventsIndex = path.join(modulePath, 'events.ts');
+    const eventsExports = new Array<string>();
+
+    if (existsSync(eventsIndex)) {
+      eventsExports.push(...(await fs.readFile(eventsIndex)).toString().split('\n').filter(Boolean));
+    }
+
+    for (const file of submodule.files) {
+      if (file.includes('.events.generated.ts')) {
+        const f = path.relative(modulePath, path.join(outPath, file));
+        const loc = `./${f.replace('.ts', '')}`;
+        if (!eventsExports.find(e => e.includes(loc))) {
+          eventsExports.push(`export * from '${loc}';`);
+        }
+      }
+    }
+
+    if (eventsExports.length > 0) {
+      await fs.writeFile(eventsIndex, eventsExports.sort().join('\n') + '\n');
+    }
   }
 
   // .jsiirc.json

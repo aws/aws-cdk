@@ -48,6 +48,9 @@ export class CdkCore extends ExternalModule {
   public readonly validateNumber = makeCallableExpr(this, 'validateNumber');
   public readonly validateString = makeCallableExpr(this, 'validateString');
 
+  public readonly AWSEventMetadata = Type.fromName(this, 'AWSEventMetadata');
+  public readonly AWSEventMetadataProp = Type.fromName(this, 'AWSEventMetadataProp');
+
   constructor(fqn: string) {
     super(fqn);
   }
