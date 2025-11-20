@@ -677,4 +677,23 @@ describe('alias', () => {
     // THEN
     expect(alias.functionRef.functionArn).toEqual(alias.functionArn);
   });
+
+  test('should throw error when alias has provisioned concurrency and function has tenancy config', () => {
+    // GIVEN
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+    });
+    const version = fn.addVersion('1');
+
+    // WHEN & THEN
+    expect(() => new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version,
+      provisionedConcurrentExecutions: 10,
+    })).toThrow('Provisioned Concurrency is not supported for functions with tenant isolation mode');
+  });
 });

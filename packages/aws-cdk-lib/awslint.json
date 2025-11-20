@@ -1,5 +1,6 @@
 {
   "exclude": [
+    "construct-ctor-props-optional:aws-cdk-lib.aws_dynamodb.Table",
     "integ-return-type:aws-cdk-lib.IBoundStackSynthesizer.bind",
     "integ-return-type:aws-cdk-lib.IReusableStackSynthesizer.bind",
     "integ-return-type:aws-cdk-lib.IStackSynthesizer.bind",
