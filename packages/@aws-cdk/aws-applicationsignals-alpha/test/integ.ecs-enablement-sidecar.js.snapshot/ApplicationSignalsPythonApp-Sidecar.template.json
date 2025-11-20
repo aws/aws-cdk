@@ -63,7 +63,7 @@
        },
        {
         "Name": "OTEL_PROPAGATORS",
-        "Value": "tracecontext,baggage,xray"
+        "Value": "tracecontext,baggage,b3,xray"
        },
        {
         "Name": "OTEL_PYTHON_DISTRO",

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "BedrockAgentCoreBrowser/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-agentcore-browser-1"
+      ],
+      "assertionStack": "BedrockAgentCoreBrowser/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockAgentCoreBrowserDefaultTestDeployAssertB840FB3F"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

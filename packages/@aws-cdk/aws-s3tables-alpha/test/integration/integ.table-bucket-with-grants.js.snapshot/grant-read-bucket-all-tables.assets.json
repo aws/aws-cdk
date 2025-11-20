@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "files": {
     "10495301560d8d740c24f401bdcc76a08c1171a1aa9ed5e55bf83eae78c50c68": {
       "displayName": "grant-read-bucket-all-tables Template",
@@ -8,7 +8,7 @@
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-fef8b4ed": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "10495301560d8d740c24f401bdcc76a08c1171a1aa9ed5e55bf83eae78c50c68.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
