@@ -1154,6 +1154,35 @@ describe('Runtime authentication configuration error cases', () => {
     app.synth();
     expect(runtime.agentRuntimeName).toBe('test_runtime');
   });
+
+  test('does not fail validation if JWT discovery URL is a late-bound value', () => {
+    // WHEN
+    const discoveryUrlParam = new cdk.CfnParameter(stack, 'JWTDiscoveryUrl', {
+      default: 'https://example.com/.well-known/openid-configuration',
+      type: 'String',
+    });
+
+    // THEN
+    expect(() => {
+      RuntimeAuthorizerConfiguration.usingJWT(discoveryUrlParam.valueAsString);
+    }).not.toThrow();
+  });
+
+  test('does not fail validation if OAuth discovery URL is a late-bound value', () => {
+    // WHEN
+    const discoveryUrlParam = new cdk.CfnParameter(stack, 'OAuthDiscoveryUrl', {
+      default: 'https://oauth-provider.com/.well-known/openid-configuration',
+      type: 'String',
+    });
+
+    // THEN
+    expect(() => {
+      RuntimeAuthorizerConfiguration.usingOAuth(
+        discoveryUrlParam.valueAsString,
+        'oauth-client-123',
+      );
+    }).not.toThrow();
+  });
 });
 
 describe('RuntimeNetworkConfiguration tests', () => {
