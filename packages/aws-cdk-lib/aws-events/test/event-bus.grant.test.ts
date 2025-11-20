@@ -365,7 +365,7 @@ describe('EventBus grants', () => {
       // THEN
       assertOnlyResourcePolicy(stack, grant);
       Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBusPolicy', {
-        StatementId: 'cdk-ImportedRoleGrant',
+        StatementId: 'cdkImportedRoleGrant',
         Statement: Match.objectLike({
           Effect: 'Allow',
           Action: 'events:PutEvents',
@@ -388,9 +388,9 @@ describe('EventBus grants', () => {
         const accountPrincipal = new iam.AccountPrincipal('123456789012');
 
         // WHEN
-        const grant1 = eventBus.grantPutEventsTo(servicePrincipal, `${defaultSid}-1`);
-        const grant2 = eventBus.grantPutEventsTo(role, `${defaultSid}-2`);
-        const grant3 = eventBus.grantPutEventsTo(accountPrincipal, `${defaultSid}-3`);
+        const grant1 = eventBus.grantPutEventsTo(servicePrincipal, `${defaultSid}1`);
+        const grant2 = eventBus.grantPutEventsTo(role, `${defaultSid}2`);
+        const grant3 = eventBus.grantPutEventsTo(accountPrincipal, `${defaultSid}3`);
 
         // THEN
         // Count total policies
@@ -422,8 +422,8 @@ describe('EventBus grants', () => {
         });
 
         // WHEN
-        const grant1 = eventBus.grantPutEventsTo(role1, `${defaultSid}-1`);
-        const grant2 = eventBus.grantPutEventsTo(role2, `${defaultSid}-2`);
+        const grant1 = eventBus.grantPutEventsTo(role1, `${defaultSid}1`);
+        const grant2 = eventBus.grantPutEventsTo(role2, `${defaultSid}2`);
 
         // THEN
         Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 2);

@@ -508,7 +508,7 @@ describe('MSK Cluster', () => {
                 Effect: 'Allow',
                 Principal: { AWS: '*' },
                 Resource: '*',
-                Sid: 'Allow access through AWS Secrets Manager for all principals in the account that are authorized to use AWS Secrets Manager',
+                Sid: 'AllowAccountSecretsManagerKMSOperations',
               },
             ],
             'Version': '2012-10-17',
