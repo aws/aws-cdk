@@ -18,6 +18,7 @@ import { ParamsAndSecretsLayerVersion } from './params-and-secrets-layers';
 import { determineLatestNodeRuntime, Runtime, RuntimeFamily } from './runtime';
 import { RuntimeManagementMode } from './runtime-management';
 import { SnapStartConf } from './snapstart-config';
+import { TenancyConfig } from './tenancy-config';
 import { addAlias } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '../../aws-codeguruprofiler';
@@ -552,6 +553,13 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly runtimeManagementMode?: RuntimeManagementMode;
 
   /**
+   * The tenancy configuration for the function.
+   *
+   * @default - Tenant isolation is not enabled
+   */
+  readonly tenancyConfig?: TenancyConfig;
+
+  /**
    * The log group the function sends logs to.
    *
    * By default, Lambda functions send logs to an automatically created default log group named /aws/lambda/\<function name\>.
@@ -653,7 +661,9 @@ export interface FunctionProps extends FunctionOptions {
  * CloudFormation template.
  *
  * The construct includes an associated role with the lambda.
- *
+ */
+
+/**
  * This construct does not yet reproduce all features from the underlying resource
  * library.
  */
@@ -763,6 +773,7 @@ export class Function extends FunctionBase {
     const role = attrs.role;
 
     class Import extends FunctionBase {
+      public readonly tenancyConfig = attrs.tenancyConfig;
       public readonly functionName = functionName;
       public readonly functionArn = functionArn;
       public readonly grantPrincipal: iam.IPrincipal;
@@ -934,6 +945,11 @@ export class Function extends FunctionBase {
   private _architecture?: Architecture;
   private hashMixins = new Array<string>();
 
+  /**
+   * The tenancy configuration for this function.
+   */
+  public readonly tenancyConfig?: TenancyConfig;
+
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id, {
       physicalName: props.functionName,
@@ -971,6 +987,7 @@ export class Function extends FunctionBase {
       managedPolicies,
     });
     this.grantPrincipal = this.role;
+    this.tenancyConfig = props.tenancyConfig;
 
     // add additional managed policies when necessary
     if (props.filesystem) {
@@ -1096,6 +1113,7 @@ export class Function extends FunctionBase {
       codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigRef.codeSigningConfigArn,
       architectures: this._architecture ? [this._architecture.name] : undefined,
       runtimeManagementConfig: props.runtimeManagementMode?.runtimeManagementConfig,
+      tenancyConfig: props.tenancyConfig?.tenancyConfigProperty,
       snapStart: this.configureSnapStart(props),
       loggingConfig: this.getLoggingConfig(props),
       recursiveLoop: props.recursiveLoop,
@@ -1667,6 +1685,10 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
 
     if (!props.runtime.supportsSnapStart) {
       throw new ValidationError(`SnapStart currently not supported by runtime ${props.runtime.name}`, this);
+    }
+
+    if (props.tenancyConfig?.tenancyConfigProperty?.tenantIsolationMode !== undefined) {
+      throw new ValidationError('SnapStart is not supported for functions with tenant isolation mode', this);
     }
 
     if (props.filesystem) {
