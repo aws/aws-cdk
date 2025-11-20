@@ -2,6 +2,7 @@ import { Lazy, Token } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IGateway } from '../gateway-base';
@@ -429,6 +430,8 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
 
   constructor(scope: Construct, id: string, props: GatewayTargetProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     // Validate and assign properties
     this.name = props.gatewayTargetName;
@@ -495,6 +498,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
    * needed for MCP Server targets when you need to refresh the tool catalog after the
    * MCP server's tools have changed.
    */
+  @MethodMetadata()
   public grantSync(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: grantee,
