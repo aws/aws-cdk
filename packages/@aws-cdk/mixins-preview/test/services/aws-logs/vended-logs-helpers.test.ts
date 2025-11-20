@@ -1,209 +1,14 @@
 import { Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
-import { Bucket, BucketPolicy, CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
-import { getOrCreateBucketPolicy, XRayPolicyGenerator } from '../../../lib/services/aws-logs/vended-logs-helpers';
+import { Bucket, BucketPolicy } from 'aws-cdk-lib/aws-s3';
+import { tryFindBucketPolicy, XRayDeliveryDestinationPolicy } from '../../../lib/services/aws-logs/vended-logs-helpers';
 import { AccountRootPrincipal, Effect, PolicyDocument, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
 describe('getOrCreateBucketPolicy', () => {
-  test('creates policy with V1 permissions if specified', () => {
+  test('if a bucket policy exists on a bucket, return it', () => {
     const stack = new Stack();
-    const bucket = new Bucket(stack, 'Destination');
-
-    getOrCreateBucketPolicy(stack, {
-      s3Bucket: bucket,
-      permissionsVersion: 'V1',
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
-      Bucket: {
-        Ref: 'Destination920A3C57',
-      },
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 's3:PutObject',
-            Condition: {
-              StringEquals: {
-                's3:x-amz-acl': 'bucket-owner-full-control',
-                'aws:SourceAccount': {
-                  Ref: 'AWS::AccountId',
-                },
-              },
-              ArnLike: {
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':logs:',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      ':',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':delivery-source:*',
-                    ],
-                  ],
-                },
-              },
-            },
-            Effect: 'Allow',
-            Principal: {
-              Service: 'delivery.logs.amazonaws.com',
-            },
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    'Fn::GetAtt': [
-                      'Destination920A3C57',
-                      'Arn',
-                    ],
-                  },
-                  '/AWSLogs/',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  '/*',
-                ],
-              ],
-            },
-          },
-          {
-            Action: [
-              's3:GetBucketAcl',
-              's3:ListBucket',
-            ],
-            Condition: {
-              StringEquals: {
-                'aws:SourceAccount': {
-                  Ref: 'AWS::AccountId',
-                },
-              },
-              ArnLike: {
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':logs:',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      ':',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':*',
-                    ],
-                  ],
-                },
-              },
-            },
-            Effect: 'Allow',
-            Principal: {
-              Service: 'delivery.logs.amazonaws.com',
-            },
-            Resource: {
-              'Fn::GetAtt': [
-                'Destination920A3C57',
-                'Arn',
-              ],
-            },
-          },
-        ],
-      },
-    });
-  });
-
-  test('creates policy with V2 permissions if specified', () => {
-    const stack = new Stack();
-    const bucket = new Bucket(stack, 'Destination');
-
-    getOrCreateBucketPolicy(stack, {
-      s3Bucket: bucket,
-      permissionsVersion: 'V2',
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
-      Bucket: {
-        Ref: 'Destination920A3C57',
-      },
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 's3:PutObject',
-            Condition: {
-              StringEquals: {
-                's3:x-amz-acl': 'bucket-owner-full-control',
-                'aws:SourceAccount': {
-                  Ref: 'AWS::AccountId',
-                },
-              },
-              ArnLike: {
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':logs:',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      ':',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':delivery-source:*',
-                    ],
-                  ],
-                },
-              },
-            },
-            Effect: 'Allow',
-            Principal: {
-              Service: 'delivery.logs.amazonaws.com',
-            },
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    'Fn::GetAtt': [
-                      'Destination920A3C57',
-                      'Arn',
-                    ],
-                  },
-                  '/AWSLogs/',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  '/*',
-                ],
-              ],
-            },
-          },
-        ],
-      },
-    });
-  });
-
-  test('adds to existing policy if a BucketPolicy already exists', () => {
-    const stack = new Stack();
-    const bucket = new Bucket(stack, 'Destination');
+    const bucket = new Bucket(stack, 'TestBucket');
 
     new BucketPolicy(stack, 'S3BucketPolicy', {
       bucket: bucket,
@@ -217,146 +22,26 @@ describe('getOrCreateBucketPolicy', () => {
       }),
     });
 
-    getOrCreateBucketPolicy(stack, {
-      s3Bucket: bucket,
-      permissionsVersion: 'V2',
-    });
+    const output = tryFindBucketPolicy(bucket);
 
-    Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 1);
+    expect(output).toBeDefined();
   });
 
-  test('adds to existing policy if a CfnBucketPolicy already exists', () => {
+  test('if a bucket policy does not exist on a bucket, return undefined', () => {
     const stack = new Stack();
-    const bucket = new Bucket(stack, 'Destination');
+    const bucket = new Bucket(stack, 'TestBucket');
 
-    new CfnBucketPolicy(stack, 'S3BucketPolicy', {
-      bucket: bucket.bucketName,
-      policyDocument: new PolicyDocument({
-        statements: [new PolicyStatement({
-          effect: Effect.ALLOW,
-          principals: [new AccountRootPrincipal()],
-          actions: ['s3:GetObject'],
-          resources: [bucket.arnForObjects('*')],
-        })],
-      }).toJSON(),
-    });
+    const output = tryFindBucketPolicy(bucket);
 
-    getOrCreateBucketPolicy(stack, {
-      s3Bucket: bucket,
-      permissionsVersion: 'V2',
-    });
-
-    Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 1);
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
-      Bucket: {
-        Ref: 'Destination920A3C57',
-      },
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 's3:GetObject',
-            Effect: 'Allow',
-            Principal: {
-              AWS: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':iam::',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':root',
-                  ],
-                ],
-              },
-            },
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    'Fn::GetAtt': [
-                      'Destination920A3C57',
-                      'Arn',
-                    ],
-                  },
-                  '/*',
-                ],
-              ],
-            },
-          },
-          {
-            Action: 's3:PutObject',
-            Condition: {
-              StringEquals: {
-                's3:x-amz-acl': 'bucket-owner-full-control',
-                'aws:SourceAccount': {
-                  Ref: 'AWS::AccountId',
-                },
-              },
-              ArnLike: {
-                'aws:SourceArn': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':logs:',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      ':',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':delivery-source:*',
-                    ],
-                  ],
-                },
-              },
-            },
-            Effect: 'Allow',
-            Principal: {
-              Service: 'delivery.logs.amazonaws.com',
-            },
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    'Fn::GetAtt': [
-                      'Destination920A3C57',
-                      'Arn',
-                    ],
-                  },
-                  '/AWSLogs/',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  '/*',
-                ],
-              ],
-            },
-          },
-        ],
-        Version: '2012-10-17',
-      },
-    },
-    );
+    expect(output).toBeUndefined();
   });
 });
 
-describe('XRayPolicyGenerator', () => {
+describe('XRayDeliveryDestinationPolicy', () => {
   test('creates an XRay delivery policy', () => {
     const stack = new Stack();
 
-    new XRayPolicyGenerator(stack, 'CDKXRayPolicyGenerator');
+    new XRayDeliveryDestinationPolicy(stack, 'CDKXRayPolicyGenerator');
 
     Template.fromStack(stack).resourceCountIs('AWS::XRay::ResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::XRay::ResourcePolicy', {
@@ -390,7 +75,7 @@ describe('XRayPolicyGenerator', () => {
   test('XRay Delivery resource policy gets updated with log delivery sources', () => {
     const stack = new Stack();
 
-    const xray = new XRayPolicyGenerator(stack, 'CDKXRayPolicyGenerator');
+    const xray = new XRayDeliveryDestinationPolicy(stack, 'CDKXRayPolicyGenerator');
 
     const bucket = new Bucket(stack, 'XRayTestBucket');
     const secret = new Secret(stack, 'XRayTestSecret', {
