@@ -234,7 +234,7 @@ abstract class EventBusBase extends Resource implements IEventBus, iam.IResource
   /**
    * Collection of grant methods for an EventBus
    */
-  public readonly grants = EventBusGrants._fromEventBus(this);
+  public readonly grants = EventBusGrants.fromEventBus(this);
 
   public get eventBusRef(): EventBusReference {
     return {
@@ -382,7 +382,7 @@ export class EventBus extends EventBusBase {
     // FIXME Doing this hack because this method is static, and we don't have an actual instance of
     //  IEventBusRef to use here for the grants.
     const eventBus = EventBus.fromEventBusName(new Stack(), 'dummy', 'dummy');
-    return EventBusGrants._fromEventBus(eventBus).allPutEvents(grantee);
+    return EventBusGrants.fromEventBus(eventBus).allPutEvents(grantee);
   }
 
   private static eventBusProps(defaultEventBusName: string, props: EventBusProps = {}) {

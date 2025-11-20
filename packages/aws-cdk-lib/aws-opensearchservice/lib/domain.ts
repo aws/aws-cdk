@@ -990,7 +990,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Collection of grant methods for a Domain
    */
-  public readonly grants = DomainGrants._fromDomain(this);
+  public readonly grants = DomainGrants.fromDomain(this);
 
   public get domainRef(): DomainReference {
     return {
