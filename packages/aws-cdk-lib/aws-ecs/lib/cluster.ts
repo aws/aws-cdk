@@ -239,7 +239,7 @@ export class Cluster extends Resource implements ICluster {
   /**
    * Collection of grant methods for a Cluster
    */
-  public readonly grants = ClusterGrants._fromCluster(this);
+  public readonly grants = ClusterGrants.fromCluster(this);
 
   /**
    * The names of both ASG and Fargate capacity providers associated with the cluster.
