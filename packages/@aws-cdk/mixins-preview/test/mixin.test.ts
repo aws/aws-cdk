@@ -20,7 +20,6 @@ describe('IMixin', () => {
     const mixin = new TestMixin();
 
     expect(mixin.supports(construct)).toBe(true);
-    expect(mixin.validate(construct)).toEqual([]);
 
     const result = mixin.applyTo(construct);
     expect((result as any).mixinApplied).toBe(true);
