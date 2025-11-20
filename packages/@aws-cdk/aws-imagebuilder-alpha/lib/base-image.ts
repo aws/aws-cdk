@@ -76,7 +76,7 @@ export class ContainerInstanceImage {
    * @param parameter The SSM parameter to use as the container instance image
    */
   public static fromSsmParameter(parameter: ssm.IStringParameter): ContainerInstanceImage {
-    return this.fromSsmParameterName(parameter.parameterArn);
+    return new ContainerInstanceImage(`ssm:${parameter.parameterArn}`);
   }
 
   /**
@@ -89,8 +89,9 @@ export class ContainerInstanceImage {
   }
 
   /**
-   * The string value of the container instance image to use in a container recipe. This can either be an SSM parameter,
-   * or an AMI ID.
+   * The string value of the container instance image to use in a container recipe. This can either be:
+   * - an SSM parameter reference, prefixed with `ssm:` and followed by the parameter name or ARN
+   * - an AMI ID
    *
    * @param containerInstanceImageString The container instance image as a direct string value
    */

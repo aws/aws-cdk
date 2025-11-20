@@ -14,6 +14,12 @@ import { ComponentConfiguration, IRecipeBase } from './recipe-base';
 
 const CONTAINER_RECIPE_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.ContainerRecipe');
 
+/**
+ * Represents the latest version of a container recipe. When using the recipe in a pipeline, the pipeline will use the
+ * latest recipe at the time of execution.
+ *
+ * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/ibhow-semantic-versioning.html
+ */
 const LATEST_VERSION = 'x.x.x';
 
 /**
@@ -66,7 +72,7 @@ export interface ContainerRecipeProps {
   /**
    * The version of the container recipe.
    *
-   * @default 1.0.0
+   * @default 1.0.x
    */
   readonly containerRecipeVersion?: string;
 
@@ -81,7 +87,7 @@ export interface ContainerRecipeProps {
    * The dockerfile template used to build the container image.
    *
    * @default - a standard dockerfile template will be generated to pull the base image, perform environment setup, and
-   *            run all components in the recipe
+   * run all components in the recipe
    */
   readonly dockerfile?: DockerfileData;
 
@@ -103,7 +109,7 @@ export interface ContainerRecipeProps {
    * The working directory for use during build and test workflows.
    *
    * @default - the Image Builder default working directory is used. For Linux and macOS builds, this would be /tmp. For
-   *            Windows builds, this would be C:/
+   * Windows builds, this would be C:/
    */
   readonly workingDirectory?: string;
 
@@ -111,7 +117,7 @@ export interface ContainerRecipeProps {
    * The operating system (OS) version of the base image.
    *
    * @default - Image Builder will determine the OS version of the base image, if sourced from a third-party container
-   *            registry. Otherwise, the OS version of the base image is required.
+   * registry. Otherwise, the OS version of the base image is required.
    */
   readonly osVersion?: OSVersion;
 
@@ -135,6 +141,27 @@ export interface ContainerRecipeProps {
    * @default None
    */
   readonly tags?: { [key: string]: string };
+}
+
+/**
+ * The rendered Dockerfile value, for use in CloudFormation.
+ * - For inline dockerfiles, dockerfileTemplateData is the Dockerfile template text
+ * - For S3-backed dockerfiles, dockerfileTemplateUri is the S3 URL
+ */
+export interface DockerfileTemplateConfig {
+  /**
+   * The rendered Dockerfile data, for use in CloudFormation
+   *
+   * @default - none if dockerfileTemplateUri is set
+   */
+  readonly dockerfileTemplateData?: string;
+
+  /**
+   * The rendered Dockerfile URI, for use in CloudFormation
+   *
+   * @default - none if dockerfileTemplateData is set
+   */
+  readonly dockerfileTemplateUri?: string;
 }
 
 /**
@@ -179,34 +206,32 @@ export abstract class DockerfileData {
   }
 
   /**
-   * Indicates that the provided dockerfile data is an S3 reference
+   * The rendered Dockerfile value, for use in CloudFormation.
+   * - For inline dockerfiles, dockerfileTemplateData is the Dockerfile template text
+   * - For S3-backed dockerfiles, dockerfileTemplateUri is the S3 URL
    */
-  abstract readonly isS3Reference: boolean;
-
-  /**
-   * The resulting inline string or S3 URL which references the dockerfile data
-   */
-  public readonly value: string;
-
-  protected constructor(value: string) {
-    this.value = value;
-  }
+  abstract render(): DockerfileTemplateConfig;
 }
 
 /**
  * Helper class for S3-based dockerfile data references, containing additional permission grant methods on the S3 object
  */
 export abstract class S3DockerfileData extends DockerfileData {
-  public readonly isS3Reference = true;
-
   protected readonly bucket: s3.IBucket;
   protected readonly key: string;
 
   protected constructor(bucket: s3.IBucket, key: string) {
-    super(bucket.s3UrlForObject(key));
+    super();
 
     this.bucket = bucket;
     this.key = key;
+  }
+
+  /**
+   * The rendered Dockerfile S3 URL, for use in CloudFormation
+   */
+  public render(): DockerfileTemplateConfig {
+    return { dockerfileTemplateUri: this.bucket.s3UrlForObject(this.key) };
   }
 
   /**
@@ -229,10 +254,19 @@ export abstract class S3DockerfileData extends DockerfileData {
 }
 
 class InlineDockerfileData extends DockerfileData {
-  public readonly isS3Reference = false;
+  protected readonly data: string;
 
   public constructor(data: string) {
-    super(data);
+    super();
+
+    this.data = data;
+  }
+
+  /**
+   * The rendered Dockerfile text, for use in CloudFormation
+   */
+  public render(): DockerfileTemplateConfig {
+    return { dockerfileTemplateData: this.data };
   }
 }
 
@@ -255,24 +289,22 @@ export interface ContainerRecipeAttributes {
   /**
    * The ARN of the container recipe
    *
-   * @default - the ARN is automatically constructed if a containerRecipeName is provided, otherwise a
-   *            containerRecipeArn is required
+   * @default - derived from containerRecipeName
    */
   readonly containerRecipeArn?: string;
 
   /**
    * The name of the container recipe
    *
-   * @default - the name is automatically constructed if a containerRecipeArn is provided, otherwise a
-   *            containerRecipeName is required
+   * @default - derived from containerRecipeArn
    */
   readonly containerRecipeName?: string;
 
   /**
    * The version of the container recipe
    *
-   * @default - the version is automatically constructed if a containerRecipeArn is provided, otherwise the latest
-   *            version is used.
+   * @default - derived from containerRecipeArn. if a containerRecipeName is provided, the latest version, x.x.x, will
+   * be used.
    */
   readonly containerRecipeVersion?: string;
 }
@@ -468,7 +500,7 @@ export class ContainerRecipe extends ContainerRecipeBase {
         'FROM {{{ imagebuilder:parentImage }}}\n{{{ imagebuilder:environments }}}\n{{{ imagebuilder:components }}}',
       );
 
-    const containerRecipeVersion = props.containerRecipeVersion ?? '1.0.0';
+    const containerRecipeVersion = props.containerRecipeVersion ?? '1.0.x';
     const containerRecipe = new CfnContainerRecipe(this, 'Resource', {
       name: this.physicalName,
       version: containerRecipeVersion,
@@ -485,10 +517,8 @@ export class ContainerRecipe extends ContainerRecipeBase {
       instanceConfiguration: cdk.Lazy.any({ produce: () => this.buildInstanceConfiguration(props) }),
       workingDirectory: props.workingDirectory,
       tags: props.tags,
+      ...dockerfile.render(),
       ...(components?.length && { components }),
-      ...(dockerfile.isS3Reference
-        ? { dockerfileTemplateUri: dockerfile.value }
-        : { dockerfileTemplateData: dockerfile.value }),
     });
 
     this.containerRecipeName = this.getResourceNameAttribute(containerRecipe.attrName);
@@ -499,6 +529,7 @@ export class ContainerRecipe extends ContainerRecipeBase {
     });
     this.containerRecipeVersion = containerRecipe.getAtt('Version').toString();
   }
+
   /**
    * Adds block devices to attach to the instance used for building, testing, and distributing the container image.
    *

@@ -32,9 +32,9 @@ const parameterizedComponent = new imagebuilder.Component(stack, 'ParameterizedC
           {
             name: 'step1',
             action: imagebuilder.ComponentAction.EXECUTE_BASH,
-            inputs: {
+            inputs: imagebuilder.ComponentStepInputs.fromObject({
               commands: ['echo ${{ parameter1 }}', 'echo ${{ parameter2 }}'],
-            },
+            }),
           },
         ],
       },

@@ -345,7 +345,7 @@ CMD ["echo", "Hello, world!"]
           Type: 'AWS::ImageBuilder::ContainerRecipe',
           Properties: {
             Name: 'stack-containerrecipe-fcc21fd4',
-            Version: '1.0.0',
+            Version: '1.0.x',
             ContainerType: 'DOCKER',
             ParentImage: 'amazonlinux:latest',
             DockerfileTemplateData:
@@ -373,7 +373,7 @@ CMD ["echo", "Hello, world!"]
           Type: 'AWS::ImageBuilder::ContainerRecipe',
           Properties: {
             Name: 'stack-containerrecipe-fcc21fd4',
-            Version: '1.0.0',
+            Version: '1.0.x',
             ContainerType: 'DOCKER',
             ParentImage: 'amazonlinux:latest',
             DockerfileTemplateUri:
@@ -402,7 +402,7 @@ CMD ["echo", "Hello, world!"]
           Type: 'AWS::ImageBuilder::ContainerRecipe',
           Properties: {
             Name: 'stack-containerrecipe-fcc21fd4',
-            Version: '1.0.0',
+            Version: '1.0.x',
             ContainerType: 'DOCKER',
             ParentImage: 'amazonlinux:latest',
             DockerfileTemplateUri: 's3://dockerfile-bucket-123456789012-us-east-1/dockerfile/Dockerfile',
