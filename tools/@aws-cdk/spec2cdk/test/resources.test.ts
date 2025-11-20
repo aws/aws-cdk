@@ -1,7 +1,7 @@
 import { Resource, Service, SpecDatabase, emptyDatabase } from '@aws-cdk/service-spec-types';
 import { Plain } from '@cdklabs/tskb';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
-import { AstBuilder, AstBuilderProps } from '../lib/cdk/ast';
+import { AwsCdkLibBuilder, AwsCdkLibBuilderProps } from '../lib/cdk/aws-cdk-lib';
 
 const renderer = new TypeScriptRenderer();
 let db: SpecDatabase;
@@ -286,7 +286,7 @@ test('can generate interface types into a separate module', () => {
   // THEN
   const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
 
-  const ast = new AstBuilder({ db });
+  const ast = new AwsCdkLibBuilder({ db });
   const info = ast.addResource(foundResource);
   const rendered = {
     interfaces: renderer.render(info.interfaces.module),
@@ -297,8 +297,8 @@ test('can generate interface types into a separate module', () => {
   expect(rendered.resources).toMatchSnapshot();
 });
 
-function moduleForResource(resource: Resource, props: AstBuilderProps) {
-  const ast = new AstBuilder(props);
+function moduleForResource(resource: Resource, props: AwsCdkLibBuilderProps) {
+  const ast = new AwsCdkLibBuilder(props);
   const info = ast.addResource(resource);
   return info.resourcesMod.module;
 }

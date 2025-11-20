@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type { ModuleDefinition } from '@aws-cdk/pkglint';
-import { namespaceToModuleDefinition } from './util/jsii';
+import { namespaceToModuleDefinition, PackageBaseNames } from './util/jsii';
 
 /**
  * A data structure holding information about a single scope in a generated module.
@@ -36,16 +36,24 @@ export interface ModuleMap {
   [moduleName: string]: ModuleMapEntry;
 }
 
+export interface ModuleMapLoadingOptions {
+  /**
+   * The package base names used to generate jsii target names
+   * @default - for `aws-cdk-lib`
+   */
+  readonly packageBases?: PackageBaseNames;
+}
+
 /**
  * Reads a module map from a file and transforms it into the type we need.
  */
-export function readModuleMap(filepath: string): ModuleMap {
+export function readModuleMap(filepath: string, opts: ModuleMapLoadingOptions = {}): ModuleMap {
   const theMap: Record<string, { scopes: Array<ModuleMapScope>; targets?: ModuleMapEntry['targets'] }> = JSON.parse(fs.readFileSync(filepath).toString());
   return Object.entries(theMap).reduce((moduleMap, [name, loaded]) => {
     // We load the definition for the first scope
     let definition = undefined;
     if (loaded.scopes[0]?.namespace) {
-      definition = namespaceToModuleDefinition(loaded.scopes[0].namespace);
+      definition = namespaceToModuleDefinition(loaded.scopes[0].namespace, opts.packageBases);
 
       // update definition with values from targets
       if (loaded.targets) {
@@ -78,8 +86,8 @@ const moduleMapPath = path.join(__dirname, '..', '..', '..', '..', 'packages', '
  * Loads the global module map from the `aws-cdk-lib` package.
  * It maps every `aws-cdk-lib` submodule to the AWS service prefix in that submodule.
  */
-export function loadModuleMap(): ModuleMap {
-  return readModuleMap(moduleMapPath);
+export function loadModuleMap(opts: ModuleMapLoadingOptions = {}): ModuleMap {
+  return readModuleMap(moduleMapPath, opts);
 }
 
 /**

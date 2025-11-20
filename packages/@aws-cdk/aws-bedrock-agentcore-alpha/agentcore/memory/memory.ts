@@ -11,7 +11,7 @@
  *  and limitations under the License.
  */
 
-import { Arn, ArnFormat, Duration, IResource, Lazy, Resource } from 'aws-cdk-lib';
+import { Arn, ArnFormat, Duration, IResource, Lazy, Resource, Token } from 'aws-cdk-lib';
 import { IConstruct, Construct } from 'constructs';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import { CfnMemory, CfnMemoryProps } from 'aws-cdk-lib/aws-bedrockagentcore';
@@ -827,6 +827,10 @@ export class Memory extends MemoryBase {
    */
   private _validateMemoryExpirationDays = (expirationDays: number): string[] => {
     let errors: string[] = [];
+
+    if (Token.isUnresolved(expirationDays)) {
+      return errors;
+    }
 
     if (expirationDays < MEMORY_EXPIRATION_DAYS_MIN || expirationDays > MEMORY_EXPIRATION_DAYS_MAX) {
       errors.push(`Memory expiration days must be between ${MEMORY_EXPIRATION_DAYS_MIN} and ${MEMORY_EXPIRATION_DAYS_MAX}`);
