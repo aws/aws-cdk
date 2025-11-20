@@ -134,6 +134,26 @@ export function referenceInterfaceAttributeName(resourceName: string) {
 }
 
 /**
+ * namespace to module name parts (`AWS::S3` -> ['aws-s3', 'AWS', 'S3'])
+ */
+export function modulePartsFromNamespace(namespace: string) {
+  const [moduleFamily, moduleBaseName] = (namespace === 'AWS::Serverless' ? 'AWS::SAM' : namespace).split('::');
+  const moduleName = `${moduleFamily}-${moduleBaseName}`.toLocaleLowerCase();
+  return {
+    moduleName,
+    moduleFamily,
+    moduleBaseName,
+  };
+}
+
+/**
+ * Submodule identifier from name (`aws-s3` -> `aws_s3`)
+ */
+export function submoduleSymbolFromName(name: string) {
+  return name.replace(/-/g, '_');
+}
+
+/**
  * Generate a name for the given declaration so that we can generate helper symbols for it that won't class
  *
  * We assume that the helpers get generated at module level, so we add in the names of the
