@@ -627,7 +627,7 @@ new agentcore.Runtime(this, 'test-runtime', {
   runtimeName: 'test_runtime',
   agentRuntimeArtifact: agentRuntimeArtifact,
   requestHeaderConfiguration: {
-    allowList: ['X-Amzn-Bedrock-AgentCore-Runtime-Custom-H1'],
+    allowlistedHeaders: ['X-Amzn-Bedrock-AgentCore-Runtime-Custom-H1'],
   },
 });
 ```

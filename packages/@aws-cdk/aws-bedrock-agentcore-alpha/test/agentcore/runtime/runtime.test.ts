@@ -1877,7 +1877,7 @@ describe('Runtime request header configuration tests', () => {
       runtimeName: 'test_runtime',
       agentRuntimeArtifact: agentRuntimeArtifact,
       requestHeaderConfiguration: {
-        allowList: ['Authorization', 'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header1'],
+        allowlistedHeaders: ['Authorization', 'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header1'],
       },
     });
 
@@ -1896,7 +1896,7 @@ describe('Runtime request header configuration tests', () => {
       runtimeName: 'test_runtime',
       agentRuntimeArtifact: agentRuntimeArtifact,
       requestHeaderConfiguration: {
-        allowList: ['Authorization'],
+        allowlistedHeaders: ['Authorization'],
       },
     });
 
@@ -1915,7 +1915,7 @@ describe('Runtime request header configuration tests', () => {
       runtimeName: 'test_runtime',
       agentRuntimeArtifact: agentRuntimeArtifact,
       requestHeaderConfiguration: {
-        allowList: [
+        allowlistedHeaders: [
           'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header1',
           'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header2',
           'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header3',
@@ -1943,7 +1943,7 @@ describe('Runtime request header configuration tests', () => {
         runtimeName: 'test_runtime',
         agentRuntimeArtifact: agentRuntimeArtifact,
         requestHeaderConfiguration: {
-          allowList: [],
+          allowlistedHeaders: [],
         },
       });
     }).toThrow(/Request header allow list contain between 1 and 20 headers/);
@@ -1956,7 +1956,7 @@ describe('Runtime request header configuration tests', () => {
         runtimeName: 'test_runtime',
         agentRuntimeArtifact: agentRuntimeArtifact,
         requestHeaderConfiguration: {
-          allowList: longList,
+          allowlistedHeaders: longList,
         },
       });
     }).toThrow(/Request header allow list contain between 1 and 20 headers/);
@@ -1968,7 +1968,7 @@ describe('Runtime request header configuration tests', () => {
         runtimeName: 'test_runtime',
         agentRuntimeArtifact: agentRuntimeArtifact,
         requestHeaderConfiguration: {
-          allowList: ['Invalid-Header@Name'],
+          allowlistedHeaders: ['Invalid-Header@Name'],
         },
       });
     }).toThrow(/Request header must contain only letters, numbers, and hyphens/);
@@ -1980,7 +1980,7 @@ describe('Runtime request header configuration tests', () => {
         runtimeName: 'test_runtime',
         agentRuntimeArtifact: agentRuntimeArtifact,
         requestHeaderConfiguration: {
-          allowList: [''],
+          allowlistedHeaders: [''],
         },
       });
     }).toThrow(/The field Request header is 0 characters long but must be at least 1 characters/);
@@ -2167,7 +2167,7 @@ describe('Runtime fromS3 artifact loading tests', () => {
       runtimeName: 'test_runtime',
       agentRuntimeArtifact: agentRuntimeArtifact,
       requestHeaderConfiguration: {
-        allowList: ['Authorization', 'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header1'],
+        allowlistedHeaders: ['Authorization', 'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header1'],
       },
     });
 

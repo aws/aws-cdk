@@ -467,11 +467,11 @@ export class Runtime extends RuntimeBase {
    * @internal
    */
   private renderRequestHeaderConfiguration(requestHeaderConfiguration?: RequestHeaderConfiguration): any {
-    if (!requestHeaderConfiguration?.allowList) {
+    if (!requestHeaderConfiguration?.allowlistedHeaders) {
       return undefined;
     }
     return {
-      requestHeaderAllowlist: requestHeaderConfiguration.allowList,
+      requestHeaderAllowlist: requestHeaderConfiguration.allowlistedHeaders,
     };
   }
 
@@ -492,12 +492,12 @@ export class Runtime extends RuntimeBase {
    */
   private validateRequestHeaderConfiguration(requestHeaderConfiguration: RequestHeaderConfiguration): void {
     const allErrors: string[] = [];
-    if (requestHeaderConfiguration.allowList) {
-      if (requestHeaderConfiguration.allowList.length < 1 || requestHeaderConfiguration.allowList.length > 20) {
+    if (requestHeaderConfiguration.allowlistedHeaders) {
+      if (requestHeaderConfiguration.allowlistedHeaders.length < 1 || requestHeaderConfiguration.allowlistedHeaders.length > 20) {
         allErrors.push('Request header allow list contain between 1 and 20 headers');
       }
 
-      for (const header of requestHeaderConfiguration.allowList) {
+      for (const header of requestHeaderConfiguration.allowlistedHeaders) {
         // Validate length
         const lengthErrors = validateStringField({
           value: header,

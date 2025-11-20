@@ -169,7 +169,7 @@ class S3Image extends AgentRuntimeArtifact {
         this.s3Location.bucketName,
       );
       // Ensure the policy is applied before the browser resource is created
-      bucket.grantReadWrite(runtime.role);
+      bucket.grantRead(runtime.role);
       this.bound = true;
     }
   }

@@ -33,7 +33,7 @@ export interface RequestHeaderConfiguration {
    * A list of HTTP request headers that are allowed to be passed through to the runtime.
    * @default - No request headers allowed
    */
-  readonly allowList?: string[];
+  readonly allowlistedHeaders?: string[];
 }
 
 /**
