@@ -1,0 +1,232 @@
+{
+ "Resources": {
+  "TableCD117FA1": {
+   "Type": "AWS::DynamoDB::GlobalTable",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "pkey",
+      "AttributeType": "N"
+     },
+     {
+      "AttributeName": "GSIAPK1",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "GSIAPK2",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "GSIASK1",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "GSIASK2",
+      "AttributeType": "N"
+     },
+     {
+      "AttributeName": "PK1",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "PK2",
+      "AttributeType": "N"
+     },
+     {
+      "AttributeName": "SK1",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "SK2",
+      "AttributeType": "N"
+     },
+     {
+      "AttributeName": "baz",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "bar",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "PK3",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "PK4",
+      "AttributeType": "N"
+     },
+     {
+      "AttributeName": "SK3",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "SK4",
+      "AttributeType": "N"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "IndexA",
+      "KeySchema": [
+       {
+        "AttributeName": "GSIAPK1",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "GSIAPK2",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "GSIASK1",
+        "KeyType": "RANGE"
+       },
+       {
+        "AttributeName": "GSIASK2",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     },
+     {
+      "IndexName": "IndexB",
+      "KeySchema": [
+       {
+        "AttributeName": "PK1",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "PK2",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "SK1",
+        "KeyType": "RANGE"
+       },
+       {
+        "AttributeName": "SK2",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "NonKeyAttributes": [
+        "bar"
+       ],
+       "ProjectionType": "INCLUDE"
+      }
+     },
+     {
+      "IndexName": "IndexC",
+      "KeySchema": [
+       {
+        "AttributeName": "baz",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "bar",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "NonKeyAttributes": [
+        "blah"
+       ],
+       "ProjectionType": "INCLUDE"
+      }
+     },
+     {
+      "IndexName": "IndexD",
+      "KeySchema": [
+       {
+        "AttributeName": "PK3",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "PK4",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "SK3",
+        "KeyType": "RANGE"
+       },
+       {
+        "AttributeName": "SK4",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "pkey",
+      "KeyType": "HASH"
+     }
+    ],
+    "Replicas": [
+     {
+      "GlobalSecondaryIndexes": [
+       {
+        "IndexName": "IndexA"
+       },
+       {
+        "IndexName": "IndexB"
+       },
+       {
+        "IndexName": "IndexC"
+       },
+       {
+        "IndexName": "IndexD"
+       }
+      ],
+      "Region": {
+       "Ref": "AWS::Region"
+      }
+     }
+    ],
+    "TableName": "cdk-test-tableV2-compound"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -27,6 +27,7 @@ import {
   InputFormat,
   ApproximateCreationDateTimePrecision,
   ContributorInsightsMode,
+  SchemaOptions,
 } from '../lib';
 import { ReplicaProvider } from '../lib/replica-provider';
 
@@ -53,7 +54,9 @@ const TABLE_SORT_KEY: Attribute = { name: 'sortKey', type: AttributeType.NUMBER 
 // DynamoDB global secondary index parameters
 const GSI_NAME = 'MyGSI';
 const GSI_PARTITION_KEY: Attribute = { name: 'gsiHashKey', type: AttributeType.STRING };
+const GSI_PARTITION_KEY_TWO: Attribute = { name: 'gsiHaskKeyTwo', type: AttributeType.NUMBER };
 const GSI_SORT_KEY: Attribute = { name: 'gsiSortKey', type: AttributeType.BINARY };
+const GSI_SORT_KEY_TWO: Attribute = { name: 'gsiSortKeyTwo', type: AttributeType.STRING };
 const GSI_NON_KEY = 'gsiNonKey';
 function* GSI_GENERATOR(): Generator<GlobalSecondaryIndexProps, never> {
   let n = 0;
@@ -1295,6 +1298,83 @@ describe('schema details', () => {
   test('get schema for unknown secondary index', () => {
     expect(() => table.schema(GSI_NAME))
       .toThrow(/Cannot find schema for index: MyGSI. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index/);
+  });
+
+  describe('schemaV2', () => {
+    test('get normalized schema for table with hash key only', () => {
+      expect(table.schemaV2()).toEqual({
+        partitionKeys: [TABLE_PARTITION_KEY],
+        sortKeys: [],
+      });
+    });
+
+    test('get normalized schema for table with hash key + range key', () => {
+      table = new Table(stack, 'TableB', {
+        tableName: TABLE_NAME,
+        partitionKey: TABLE_PARTITION_KEY,
+        sortKey: TABLE_SORT_KEY,
+      });
+
+      expect(table.schemaV2()).toEqual({
+        partitionKeys: [TABLE_PARTITION_KEY],
+        sortKeys: [TABLE_SORT_KEY],
+      });
+    });
+
+    test('get normalized schema for GSI with single partition key', () => {
+      table.addGlobalSecondaryIndex({
+        indexName: GSI_NAME,
+        partitionKey: GSI_PARTITION_KEY,
+      });
+
+      expect(table.schemaV2(GSI_NAME)).toEqual({
+        partitionKeys: [GSI_PARTITION_KEY],
+        sortKeys: [],
+      });
+    });
+
+    test('get normalized schema for GSI with compound partition keys', () => {
+      const pk1: Attribute = { name: 'pk1', type: AttributeType.STRING };
+      const pk2: Attribute = { name: 'pk2', type: AttributeType.STRING };
+
+      table.addGlobalSecondaryIndex({
+        indexName: GSI_NAME,
+        partitionKeys: [pk1, pk2],
+      });
+
+      expect(table.schemaV2(GSI_NAME)).toEqual({
+        partitionKeys: [pk1, pk2],
+        sortKeys: [],
+      });
+    });
+
+    test('get normalized schema for GSI with compound sort keys', () => {
+      const sk1: Attribute = { name: 'sk1', type: AttributeType.STRING };
+      const sk2: Attribute = { name: 'sk2', type: AttributeType.STRING };
+
+      table.addGlobalSecondaryIndex({
+        indexName: GSI_NAME,
+        partitionKey: GSI_PARTITION_KEY,
+        sortKeys: [sk1, sk2],
+      });
+
+      expect(table.schemaV2(GSI_NAME)).toEqual({
+        partitionKeys: [GSI_PARTITION_KEY],
+        sortKeys: [sk1, sk2],
+      });
+    });
+
+    test('get normalized schema for LSI', () => {
+      table.addLocalSecondaryIndex({
+        indexName: LSI_NAME,
+        sortKey: LSI_SORT_KEY,
+      });
+
+      expect(table.schemaV2(LSI_NAME)).toEqual({
+        partitionKeys: [TABLE_PARTITION_KEY],
+        sortKeys: [LSI_SORT_KEY],
+      });
+    });
   });
 });
 
@@ -4464,4 +4544,157 @@ test('ContributorInsightsSpecification && ContributorInsightsEnabled', () => {
       },
     });
   }).toThrow('`contributorInsightsSpecification` and `contributorInsightsEnabled` are set. Use `contributorInsightsSpecification` only.');
+});
+
+test('Compound partition keys for global secondary index', () => {
+  const stack = new Stack();
+
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    partitionKey: TABLE_PARTITION_KEY,
+    sortKey: TABLE_SORT_KEY,
+  });
+
+  table.addGlobalSecondaryIndex({
+    indexName: GSI_NAME,
+    partitionKeys: [GSI_PARTITION_KEY, GSI_PARTITION_KEY_TWO],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+    {
+      AttributeDefinitions: [
+        { AttributeName: 'hashKey', AttributeType: 'S' },
+        { AttributeName: 'sortKey', AttributeType: 'N' },
+        { AttributeName: 'gsiHashKey', AttributeType: 'S' },
+        { AttributeName: 'gsiHaskKeyTwo', AttributeType: 'N' },
+      ],
+      KeySchema: [
+        { AttributeName: 'hashKey', KeyType: 'HASH' },
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
+      ],
+      ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'MyGSI',
+          KeySchema: [
+            { AttributeName: 'gsiHashKey', KeyType: 'HASH' },
+            { AttributeName: 'gsiHaskKeyTwo', KeyType: 'HASH' },
+          ],
+        },
+      ],
+    },
+  );
+});
+
+test('Compound partition keys and standard sort key for global secondary index', () => {
+  const stack = new Stack();
+
+  const table = new Table(stack, CONSTRUCT_NAME, {
+    partitionKey: TABLE_PARTITION_KEY,
+    sortKey: TABLE_SORT_KEY,
+  });
+
+  table.addGlobalSecondaryIndex({
+    indexName: GSI_NAME,
+    partitionKeys: [GSI_PARTITION_KEY, GSI_PARTITION_KEY_TWO],
+    sortKey: GSI_SORT_KEY,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table',
+    {
+      AttributeDefinitions: [
+        { AttributeName: 'hashKey', AttributeType: 'S' },
+        { AttributeName: 'sortKey', AttributeType: 'N' },
+        { AttributeName: 'gsiHashKey', AttributeType: 'S' },
+        { AttributeName: 'gsiHaskKeyTwo', AttributeType: 'N' },
+        { AttributeName: 'gsiSortKey', AttributeType: 'B' },
+      ],
+      KeySchema: [
+        { AttributeName: 'hashKey', KeyType: 'HASH' },
+        { AttributeName: 'sortKey', KeyType: 'RANGE' },
+      ],
+      ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'MyGSI',
+          KeySchema: [
+            { AttributeName: 'gsiHashKey', KeyType: 'HASH' },
+            { AttributeName: 'gsiHaskKeyTwo', KeyType: 'HASH' },
+            { AttributeName: 'gsiSortKey', KeyType: 'RANGE' },
+          ],
+        },
+      ],
+    },
+  );
+});
+
+test('Throws when compound partitionKeys and partitionKey are specified', () => {
+  const stack = new Stack();
+  expect(() => {
+    const table = new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+    });
+
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKeys: [GSI_PARTITION_KEY, GSI_PARTITION_KEY_TWO],
+      partitionKey: { name: 'gsiHashKeyThree', type: AttributeType.STRING },
+      sortKey: GSI_SORT_KEY,
+    });
+  }).toThrow('Exactly one of \'partitionKey\', \'partitionKeys\' must be specified');
+});
+
+test('Throws when compound sortKeys and sortKey are specified', () => {
+  const stack = new Stack();
+  expect(() => {
+    const table = new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+    });
+
+    const index = table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKeys: [GSI_PARTITION_KEY, GSI_PARTITION_KEY_TWO],
+      sortKey: GSI_SORT_KEY,
+      sortKeys: [GSI_SORT_KEY_TWO, { name: 'gsiSortKeyThree', type: AttributeType.BINARY }],
+    });
+  }).toThrow('At most one of \'sortKey\', \'sortKeys\' may be specified');
+});
+
+test('Throws when more than four compound partition keys are specified', () => {
+  const stack = new Stack();
+  expect(() => {
+    const table = new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+    });
+
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKeys: [GSI_PARTITION_KEY, GSI_PARTITION_KEY_TWO,
+        { name: 'gsiPartitionKeyThree', type: AttributeType.BINARY },
+        { name: 'gsiPartitionKeyFour', type: AttributeType.BINARY },
+        { name: 'gsiPartitionKeyFive', type: AttributeType.BINARY }],
+      sortKeys: [GSI_SORT_KEY, GSI_SORT_KEY_TWO],
+    });
+  }).toThrow('Maximum of 4 partition keys allowed');
+});
+
+test('Throws when more than four compound sort keys are specified', () => {
+  const stack = new Stack();
+  expect(() => {
+    const table = new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+    });
+
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKeys: [GSI_PARTITION_KEY, GSI_PARTITION_KEY_TWO],
+      sortKeys: [GSI_SORT_KEY, GSI_SORT_KEY_TWO,
+        { name: 'gsiSortKeyThree', type: AttributeType.BINARY },
+        { name: 'gsiSortKeyFour', type: AttributeType.BINARY },
+        { name: 'gsiSortKeyFive', type: AttributeType.BINARY }],
+    });
+  }).toThrow('Maximum of 4 sort keys allowed');
 });
