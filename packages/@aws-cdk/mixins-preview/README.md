@@ -112,13 +112,99 @@ Mixins.of(logGroup).apply(new EncryptionAtRest());
 **VendedLogs**: Configures Vended log delivery for supported AWS Resources
 
 ```typescript
+import * as cfnUserpool from '@aws-cdk/mixins-preview/aws-cognito/mixins';
+
 // Works across different resource types
 const bucket = new s3.CfnBucket(scope, "DestBucket");
 const userpool = new cognito.CfnUserPool(scope, "SourceUserpool");
-Mixins.of(userpool).apply(new VendedLogs({
-  destinationService: bucket,
+Mixins.of(userpool).apply(new cfnUserpool.ToBucketLogs({
+  bucket,
   logType: 'APPLICATION_LOGS',
 }));
+
+Mixins.of(userpool).apply(new cfnUserpool.ToFirehoseLogs({
+  stream,
+  logType: 'APPLICATION_LOGS',
+}));
+
+Mixins.of(userpool).apply(new cfnUserpool.ToLogsLogs({
+  logGroup,
+  logType: 'APPLICATION_LOGS',
+}));
+
+const applicationLogs = new cfnUserpool.VendedLogs('APPLICATION_LOGS');
+Mixins.of(userpool).apply(applicationLogs
+  .toS3(bucket)
+  .toFirehose(stream)
+  .toLogGroup(logGroup)
+);
+
+Mixins.of(userpool).apply(cfnUserpool.APPLICATION_LOGS.toS3(bucket).toFirehose(stream).toLogGroup(logGroup));
+
+Mixins.of(userpool).apply(cfnUserpool.VendedLogs.ofType('APPLICATION_LOGS').toS3(bucket).toFirehose(stream).toLogGroup(logGroup));
+Mixins.of(userpool).apply(cfnUserpool.VendedLogs.ofType('TRACES').toXRay());
+
+userpoolVendedLogs.applicationLogs().toS3(bucket).toFirehose(stream);
+UserPoolVendedLogs.fromUserPool(userpool).applicationLogs().toS3(bucket);
+// (eliminated) UserPoolVendedLogs.fromUserPool(userpool).applicationLogs(new S3DeliveryDestination(bucket), new FHDeliveryDestination(stream));
+// (eliminated) UserPoolVendedLogs.fromUserPool(userpool).applicationLogs(DeliveryDestination.s3(bucket));
+// (eliminated) userpool.with(UserPoolVendedLogs.applicationLogs(new S3DeliveryDestination(bucket), new FHDeliveryDestination(stream)));
+// (eliminated) userpool.with(
+//   UserPoolLogs.APPLICATION_LOGS.to(new S3DeliveryDestination(bucket), new FHDeliveryDestination(stream))
+// );
+// ****
+/* winner */userpool.with(UserPoolLogs.APPLICATION_LOGS.toS3(bucket)); // cannot chain log Destinations
+userpool.with(UserPoolLogs.TRACES.toS3(bucket).toFireHose(stream));
+userpool.with(UserPoolLogs.TRACES.toXRay());
+
+const applicationLogs = UserPoolLogs.APPLICATION_LOGS;
+userpool.with(
+  applicationLogs.toS3(bucket), 
+  applicationLogs.toFireHose(stream)
+);
+
+// will have 4 interfaces with Bind (gets the source) implemented -- for each destination, will take over delivery part as well
+
+class UserpoolLogsMixin extends IMixin {
+  public static APPLICATION_LOGS: = new UserpoolApplicationLogs();
+  public static TRACES: = new UserpoolTraces();
+
+  constructor(type: string, logDelivery: interfaceWithBind) {
+
+  }
+  // validates that constuct is userpool
+  public supports(Construct): boolean {
+    isUserpool(construct);
+  }
+  public applyTo(Userpool) {
+    this.supports(Userpool);
+    const source = deliverySource // create the delivery srouce
+    this.logDelivery.bind(source);
+    return Userpool; 
+  } 
+}
+
+// inside bind
+const deliveryDestination = new CfnDeliveryDestination(/*use the source to bind to*/, `CDKXRayDest${Names.uniqueId(this)}`, {
+      name: `${destinationNamePrefix}${Names.uniqueResourceName(this, { maxLength: 60 - destinationNamePrefix.length })}`,
+      deliveryDestinationType: 'XRAY',
+    });
+
+// generated -- helper class 
+class UserpoolApplicationLogs {
+  public toS3(bucket): Mixin {
+    const delivery = new S3LogDelivery(bucket, permissions);
+    return new UserpoolLogsMixin('APPLICATIONLOGS', delivery);
+  };
+  public toFirehose(...);
+  public toLogGroup(...);
+}
+
+class UserpoolTraces {
+  public toXRay() {
+    new XrayLogDelivery();
+  }
+}
 
 // if log destination service is XRay, do not specify a destinationService
 const gateway = new agentCore.CfnGateway(scope, "SourceGateway");
