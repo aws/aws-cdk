@@ -1,5 +1,5 @@
 import { IAlarm, IAlarmRule } from './alarm-base';
-import { UnscopedValidationError } from '../../core';
+import { Token, UnscopedValidationError } from '../../core';
 
 /**
  * Enumeration indicates state of Alarm used in building Alarm Rule.
@@ -37,29 +37,95 @@ enum Operator {
 /**
  * Options to AT_LEAST AlarmRule wrapper function
  */
-export interface HasAtLeastOptions {
+export interface AtLeastOptions {
 
   /**
-   * function to wrap provided AlarmRule in AT_LEAST expression.
+   * operands for AT_LEAST expression
+   *
+   * can specify an array of CloudWatch Alarms or Alarm Rule expressions
    */
   readonly operands: IAlarm[];
 
   /**
-   * minimum number of specified alarms
+   * threshold for AT_LEAST expression
    *
-   * Units: Count
-   *
-   * @default - Exactly one of `count`, `percentage` is required.
+   * threshold can be an absolute number or percentage
    */
-  readonly count?: number;
+  readonly threshold: AtLeastThreshold;
+}
+
+/**
+ * configuration for creating a threshold for AT_LEAST expression
+ */
+export interface AtLeastThresholdConfig {
   /**
-   * minimum percentage of specified alarms
+   * threshold of AT_LEAST expression
    *
-   * Units: Percentage
-   *
-   * @default - Exactly one of `count`, `percentage` is required.
+   * threshold can be an absolute number or percentage
    */
-  readonly percentage?: number;
+  readonly threshold: string;
+}
+
+/**
+ * abstract base class for threshold for AT_LEAST expression
+ */
+export abstract class AtLeastThreshold {
+  /**
+   * Creates count threshold configration for AT_LEAST expression
+   */
+  public static count(count: number): AtLeastThresholdCount {
+    return new AtLeastThresholdCount(count);
+  }
+
+  /**
+   * Creates percentage threshold configration for AT_LEAST expression
+   */
+  public static percentage(percentage: number): AtLeastThresholdPercentage {
+    return new AtLeastThresholdPercentage(percentage);
+  }
+
+  /**
+   * Called when the threshold is initialized to allow this object to bind
+   */
+  public abstract bind(_operands: IAlarm[]): AtLeastThresholdConfig;
+}
+
+/**
+ * count threshold for AT_LEAST expression
+ */
+export class AtLeastThresholdCount extends AtLeastThreshold {
+  constructor(private readonly count: number) {
+    super();
+  }
+
+  bind(_operands: IAlarm[]): AtLeastThresholdConfig {
+    if (this.count !== undefined && !Token.isUnresolved(this.count)
+      && (this.count < 1 || _operands.length < this.count || !Number.isInteger(this.count))) {
+      throw new UnscopedValidationError(`count must be between 1 and alarm length(${_operands.length}) integer, got ${this.count}`);
+    }
+    return {
+      threshold: `${this.count}`,
+    };
+  }
+}
+
+/**
+ * percentage threshold for AT_LEAST expression
+ */
+export class AtLeastThresholdPercentage extends AtLeastThreshold {
+  constructor(private readonly percentage: number) {
+    super();
+  }
+
+  bind(_operands: IAlarm[]): AtLeastThresholdConfig {
+    if (this.percentage !== undefined && !Token.isUnresolved(this.percentage)
+      && (this.percentage < 1 || 100 < this.percentage || !Number.isInteger(this.percentage))) {
+      throw new UnscopedValidationError(`percentage must be between 1 and 100, got ${this.percentage}`);
+    }
+    return {
+      threshold: `${this.percentage}%`,
+    };
+  }
 }
 
 /**
@@ -102,9 +168,9 @@ export class AlarmRule {
    *
    * @param options options for creating a new AlarmRule.
    */
-  public static hasAtLeastAlarm(options: HasAtLeastOptions): IAlarmRule {
+  public static atLeastAlarm(options: AtLeastOptions): IAlarmRule {
     const alarmState = `${AlarmState.ALARM}`;
-    return this.hasAtLeast(alarmState, options);
+    return this.atLeast(alarmState, options);
   }
 
   /**
@@ -112,9 +178,9 @@ export class AlarmRule {
    *
    * @param options options for creating a new AlarmRule.
    */
-  public static hasAtLeastOk(options: HasAtLeastOptions): IAlarmRule {
+  public static atLeastOk(options: AtLeastOptions): IAlarmRule {
     const alarmState = `${AlarmState.OK}`;
-    return this.hasAtLeast(alarmState, options);
+    return this.atLeast(alarmState, options);
   }
 
   /**
@@ -122,9 +188,9 @@ export class AlarmRule {
    *
    * @param options options for creating a new AlarmRule.
    */
-  public static hasAtLeastInsufficient(options: HasAtLeastOptions): IAlarmRule {
+  public static atLeastInsufficient(options: AtLeastOptions): IAlarmRule {
     const alarmState = `${AlarmState.INSUFFICIENT_DATA}`;
-    return this.hasAtLeast(alarmState, options);
+    return this.atLeast(alarmState, options);
   }
 
   /**
@@ -132,9 +198,9 @@ export class AlarmRule {
    *
    * @param options options for creating a new AlarmRule.
    */
-  public static hasAtLeastNotAlarm(options: HasAtLeastOptions): IAlarmRule {
+  public static atLeastNotAlarm(options: AtLeastOptions): IAlarmRule {
     const alarmState = `${Operator.NOT} ${AlarmState.ALARM}`;
-    return this.hasAtLeast(alarmState, options);
+    return this.atLeast(alarmState, options);
   }
 
   /**
@@ -142,9 +208,10 @@ export class AlarmRule {
    *
    * @param options options for creating a new AlarmRule.
    */
-  public static hasAtLeastNotOk(options: HasAtLeastOptions): IAlarmRule {
+  public static atLeastNotOk(options: AtLeastOptions): IAlarmRule {
+    options;
     const alarmState = `${Operator.NOT} ${AlarmState.OK}`;
-    return this.hasAtLeast(alarmState, options);
+    return this.atLeast(alarmState, options);
   }
 
   /**
@@ -152,9 +219,9 @@ export class AlarmRule {
    *
    * @param options options for creating a new AlarmRule.
    */
-  public static hasAtLeastNotInsufficient(options: HasAtLeastOptions): IAlarmRule {
+  public static atLeastNotInsufficient(options: AtLeastOptions): IAlarmRule {
     const alarmState = `${Operator.NOT} ${AlarmState.INSUFFICIENT_DATA}`;
-    return this.hasAtLeast(alarmState, options);
+    return this.atLeast(alarmState, options);
   }
 
   /**
@@ -212,32 +279,19 @@ export class AlarmRule {
     };
   }
 
-  private static hasAtLeast(alarmState: string, options: HasAtLeastOptions): IAlarmRule {
+  private static atLeast(alarmState: string, props: AtLeastOptions): IAlarmRule {
     return new class implements IAlarmRule {
       public renderAlarmRule(): string {
-        if (options.operands.length === 0) {
+        if (props.operands.length === 0) {
           throw new UnscopedValidationError(`Did not detect any operands for AT_LEAST ${alarmState}`);
         }
 
-        if ((options.count !== undefined) === (options.percentage !== undefined)) {
-          throw new UnscopedValidationError('Specify exactly one of \'count\' and \'percentage\'');
-        }
-
-        if (options.count !== undefined && (options.count < 1 || options.operands.length < options.count
-        || !Number.isInteger(options.count))) {
-          throw new UnscopedValidationError(`count must be between 1 and alarm length(${options.operands.length}) integer, got ${options.count}`);
-        }
-
-        if (options.percentage !== undefined && (options.percentage < 1
-        || 100 < options.percentage || !Number.isInteger(options.percentage))) {
-          throw new UnscopedValidationError(`percentage must be between 1 and 100, got ${options.percentage}`);
-        }
-
-        const threshold = options.count || `${options.percentage}%`;
-        const concatAlarms = options.operands
+        const thresholdOptions = props.threshold.bind(props.operands);
+        const concatAlarms = props.operands
           .map(operand => `${operand.alarmArn}`)
           .join(', ');
-        return `AT_LEAST(${threshold}, ${alarmState}, (${concatAlarms}))`;
+
+        return `AT_LEAST(${thresholdOptions.threshold}, ${alarmState}, (${concatAlarms}))`;
       }
     };
   }

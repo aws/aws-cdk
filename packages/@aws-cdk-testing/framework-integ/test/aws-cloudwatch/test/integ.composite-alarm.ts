@@ -1,6 +1,6 @@
 import { App, CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Alarm, AlarmRule, AlarmState, CompositeAlarm, Metric } from 'aws-cdk-lib/aws-cloudwatch';
+import { Alarm, AlarmRule, AlarmState, AtLeastThreshold, CompositeAlarm, Metric } from 'aws-cdk-lib/aws-cloudwatch';
 
 class CompositeAlarmIntegrationTest extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
@@ -51,13 +51,13 @@ class CompositeAlarmIntegrationTest extends Stack {
           alarm5,
         ),
         AlarmRule.not(AlarmRule.fromAlarm(alarm4, AlarmState.INSUFFICIENT_DATA)),
-        AlarmRule.hasAtLeastAlarm({
+        AlarmRule.atLeastAlarm({
           operands: [alarm1, alarm2, alarm3],
-          count: 2,
+          threshold: AtLeastThreshold.count(2),
         }),
-        AlarmRule.hasAtLeastNotOk({
+        AlarmRule.atLeastNotOk({
           operands: [alarm1, alarm2, alarm3],
-          percentage: 60,
+          threshold: AtLeastThreshold.percentage(60),
         }),
       ),
       AlarmRule.fromBoolean(false),

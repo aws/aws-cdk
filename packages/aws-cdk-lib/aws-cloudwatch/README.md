@@ -399,9 +399,9 @@ const alarmRule = cloudwatch.AlarmRule.anyOf(
       alarm1,
       cloudwatch.AlarmRule.fromAlarm(alarm2, cloudwatch.AlarmState.OK),
       alarm3,
-      cloudwatch.AlarmRule.hasAtLeastAlarm({
+      cloudwatch.AlarmRule.atLeastAlarm({
         operands: [alarm1, alarm2, alarm3],
-        count: 1,
+        threshold: cloudwatch.AtLeastThreshold.count(2),
       }),
     ),
     cloudwatch.AlarmRule.not(cloudwatch.AlarmRule.fromAlarm(alarm4, cloudwatch.AlarmState.INSUFFICIENT_DATA)),

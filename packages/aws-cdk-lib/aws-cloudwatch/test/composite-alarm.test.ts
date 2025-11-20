@@ -1,6 +1,6 @@
 import { Template } from '../../assertions';
 import { Duration, Stack } from '../../core';
-import { Alarm, AlarmRule, AlarmState, CompositeAlarm, Metric } from '../lib';
+import { Alarm, AlarmRule, AlarmState, AtLeastThreshold, CompositeAlarm, Metric } from '../lib';
 
 describe('CompositeAlarm', () => {
   test('test alarm rule expression builder', () => {
@@ -51,13 +51,13 @@ describe('CompositeAlarm', () => {
           alarm5,
         ),
         AlarmRule.not(AlarmRule.fromAlarm(alarm4, AlarmState.INSUFFICIENT_DATA)),
-        AlarmRule.hasAtLeastAlarm({
+        AlarmRule.atLeastAlarm({
           operands: [alarm1, alarm2, alarm3],
-          count: 2,
+          threshold: AtLeastThreshold.count(2),
         }),
-        AlarmRule.hasAtLeastNotOk({
+        AlarmRule.atLeastNotOk({
           operands: [alarm1, alarm2, alarm3],
-          percentage: 60,
+          threshold: AtLeastThreshold.percentage(60),
         }),
       ),
       AlarmRule.fromBoolean(false),
@@ -237,13 +237,13 @@ describe('CompositeAlarm', () => {
     })).toThrow('Did not detect any operands for AlarmRule.allOf');
   });
 
-  test('empty operands for hasAtLeast', () => {
+  test('empty operands for atLeast', () => {
     expect(() => new CompositeAlarm(new Stack(), 'alarm', {
-      alarmRule: AlarmRule.hasAtLeastAlarm({ operands: [], percentage: 1 }),
+      alarmRule: AlarmRule.atLeastAlarm({ operands: [], threshold: AtLeastThreshold.count(1) }),
     })).toThrow('Did not detect any operands for AT_LEAST ALARM');
   });
 
-  test.each([{ count: 1, percentage: 1 }, {}])('specify exactly property for hasAtLeast: %s', (threshold) => {
+  test.each([0, 3, 1.5])('count of atLeast: %s', (count: number) => {
     const stack = new Stack();
 
     const testMetric = new Metric({
@@ -258,30 +258,11 @@ describe('CompositeAlarm', () => {
     });
 
     expect(() => new CompositeAlarm(new Stack(), 'alarm', {
-      alarmRule: AlarmRule.hasAtLeastInsufficient({ operands: [alarm], ...threshold }),
-    })).toThrow('Specify exactly one of \'count\' and \'percentage\'');
-  });
-
-  test.each([0, 3, 1.5])('count of hasAtLeast: %s', (count: number) => {
-    const stack = new Stack();
-
-    const testMetric = new Metric({
-      namespace: 'CDK/Test',
-      metricName: 'Metric',
-    });
-
-    const alarm = new Alarm(stack, 'Alarm1', {
-      metric: testMetric,
-      threshold: 100,
-      evaluationPeriods: 3,
-    });
-
-    expect(() => new CompositeAlarm(new Stack(), 'alarm', {
-      alarmRule: AlarmRule.hasAtLeastOk({ operands: [alarm], count }),
+      alarmRule: AlarmRule.atLeastOk({ operands: [alarm], threshold: AtLeastThreshold.count(count) }),
     })).toThrow(`count must be between 1 and alarm length(1) integer, got ${count}`);
   });
 
-  test.each([0, 101, 1.5])('percentage of hasAtLeast: %s%', (percentage: number) => {
+  test.each([0, 101, 1.5])('percentage of atLeast: %s%', (percentage: number) => {
     const stack = new Stack();
 
     const testMetric = new Metric({
@@ -296,7 +277,7 @@ describe('CompositeAlarm', () => {
     });
 
     expect(() => new CompositeAlarm(new Stack(), 'alarm', {
-      alarmRule: AlarmRule.hasAtLeastOk({ operands: [alarm], percentage }),
+      alarmRule: AlarmRule.atLeastOk({ operands: [alarm], threshold: AtLeastThreshold.percentage(percentage) }),
     })).toThrow(`percentage must be between 1 and 100, got ${percentage}`);
   });
 });
