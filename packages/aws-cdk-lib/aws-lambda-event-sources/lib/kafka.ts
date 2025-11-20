@@ -181,7 +181,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
 
     if (props.metricsConfig) {
       if (!props.metricsConfig.metrics || props.metricsConfig.metrics.length === 0) {
-        throw new UnscopedValidationError('MetricsConfig must contain at least one metric type. Specify one or more metrics from lambda.MetricType (EVENT_COUNT, ERROR_COUNT, KAFKA_METRICS)');
+        throw new ValidationError('MetricsConfig must contain at least one metric type. Specify one or more metrics from lambda.MetricType (EVENT_COUNT, ERROR_COUNT, KAFKA_METRICS)', this);
       }
     }
   }
