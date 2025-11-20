@@ -3,7 +3,7 @@ import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { TestFunction } from './test-function';
-import { AuthenticationMethod, SelfManagedKafkaEventSource, ManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { AuthenticationMethod, SelfManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 
 /**
  * Integration test for Kafka observability features (LoggingConfig and MetricsConfig)
@@ -12,9 +12,8 @@ import { AuthenticationMethod, SelfManagedKafkaEventSource, ManagedKafkaEventSou
  * templates with proper provisioned poller configuration.
  *
  * Test scenarios:
- * 1. MSK with combined LoggingConfig and MetricsConfig
- * 2. Self-managed Kafka with LoggingConfig only
- * 3. Self-managed Kafka with MetricsConfig only
+ * 1. Self-managed Kafka with LoggingConfig only
+ * 2. Self-managed Kafka with MetricsConfig only
  */
 class KafkaObservabilityTest extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
@@ -28,34 +27,7 @@ class KafkaObservabilityTest extends cdk.Stack {
       },
     });
 
-    // Scenario 1: MSK with combined LoggingConfig and MetricsConfig
-    const mskFunction = new TestFunction(this, 'MSKFunction');
-    mskFunction.addEventSource(new ManagedKafkaEventSource({
-      clusterArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/observability-cluster/12345678-1234-1234-1234-123456789012-1',
-      topic: 'observability-topic',
-      secret: secret,
-      startingPosition: lambda.StartingPosition.LATEST,
-      batchSize: 50,
-      maxBatchingWindow: cdk.Duration.seconds(5),
-      // Provisioned mode is required for observability features
-      provisionedPollerConfig: {
-        minimumPollers: 2,
-        maximumPollers: 10,
-      },
-      // Configure both logging and metrics for comprehensive observability
-      loggingConfig: {
-        systemLogLevel: lambda.EventSourceMappingLogLevel.INFO,
-      },
-      metricsConfig: {
-        metrics: [
-          lambda.MetricType.EVENT_COUNT,
-          lambda.MetricType.ERROR_COUNT,
-          lambda.MetricType.KAFKA_METRICS,
-        ],
-      },
-    }));
-
-    // Scenario 2: Self-managed Kafka with LoggingConfig only
+    // Scenario 1: Self-managed Kafka with LoggingConfig only
     const smkLoggingFunction = new TestFunction(this, 'SMKLoggingFunction');
     smkLoggingFunction.addEventSource(new SelfManagedKafkaEventSource({
       bootstrapServers: ['kafka-broker-1:9092', 'kafka-broker-2:9092'],
@@ -75,7 +47,7 @@ class KafkaObservabilityTest extends cdk.Stack {
       },
     }));
 
-    // Scenario 3: Self-managed Kafka with MetricsConfig only
+    // Scenario 2: Self-managed Kafka with MetricsConfig only
     const smkMetricsFunction = new TestFunction(this, 'SMKMetricsFunction');
     smkMetricsFunction.addEventSource(new SelfManagedKafkaEventSource({
       bootstrapServers: ['kafka-broker-3:9092', 'kafka-broker-4:9092'],

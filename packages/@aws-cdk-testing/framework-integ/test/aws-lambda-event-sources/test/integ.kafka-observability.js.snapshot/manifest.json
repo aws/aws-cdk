@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9421c18ef53126a33a890a226e397a1b39e9e1d980f3ff04b71aa7333814eb01.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4a8cc500c6884899d0f1b1307c803bc9ed45c284d924a123d5b17a13ea4ff372.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -48,186 +48,6 @@
             "data": "KafkaSecret78EF3770"
           }
         ],
-        "/KafkaObservabilityTest/MSKFunction": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "handler": "*",
-              "code": "*",
-              "runtime": "*"
-            }
-          }
-        ],
-        "/KafkaObservabilityTest/MSKFunction/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addManagedPolicy": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/KafkaObservabilityTest/MSKFunction/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/KafkaObservabilityTest/MSKFunction/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MSKFunctionServiceRole9EBE71E0"
-          }
-        ],
-        "/KafkaObservabilityTest/MSKFunction/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/KafkaObservabilityTest/MSKFunction/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MSKFunctionServiceRoleDefaultPolicy308274EA"
-          }
-        ],
-        "/KafkaObservabilityTest/MSKFunction/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MSKFunction8451C473"
-          }
-        ],
-        "/KafkaObservabilityTest/MSKFunction/KafkaEventSource:KafkaObservabilityTestMSKFunction1206A8C7observability-topic": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "target": "*",
-              "eventSourceArn": "*",
-              "filters": "*",
-              "filterEncryption": "*",
-              "startingPosition": "LATEST",
-              "startingPositionTimestamp": "*",
-              "sourceAccessConfigurations": [
-                {
-                  "type": "*",
-                  "uri": "*"
-                }
-              ],
-              "kafkaTopic": "*",
-              "kafkaConsumerGroupId": "*",
-              "onFailure": "*",
-              "supportS3OnFailureDestination": true,
-              "provisionedPollerConfig": {
-                "minimumPollers": "*",
-                "maximumPollers": "*"
-              },
-              "schemaRegistryConfig": "*",
-              "metricsConfig": {
-                "metrics": [
-                  "EventCount",
-                  "*",
-                  "*"
-                ]
-              },
-              "batchSize": "*",
-              "bisectBatchOnError": "*",
-              "reportBatchItemFailures": "*",
-              "maxBatchingWindow": "*",
-              "maxRecordAge": "*",
-              "retryAttempts": "*",
-              "parallelizationFactor": "*",
-              "tumblingWindow": "*",
-              "enabled": "*"
-            }
-          }
-        ],
-        "/KafkaObservabilityTest/MSKFunction/KafkaEventSource:KafkaObservabilityTestMSKFunction1206A8C7observability-topic/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MSKFunctionKafkaEventSourceKafkaObservabilityTestMSKFunction1206A8C7observabilitytopicA416397F"
-          }
-        ],
         "/KafkaObservabilityTest/SMKLoggingFunction": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -240,18 +60,8 @@
         ],
         "/KafkaObservabilityTest/SMKLoggingFunction/ServiceRole": [
           {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -388,18 +198,8 @@
         ],
         "/KafkaObservabilityTest/SMKMetricsFunction/ServiceRole": [
           {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -541,6 +341,42 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "MSKFunctionServiceRole9EBE71E0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MSKFunctionServiceRole9EBE71E0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MSKFunctionServiceRoleDefaultPolicy308274EA": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MSKFunctionServiceRoleDefaultPolicy308274EA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MSKFunction8451C473": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MSKFunction8451C473",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MSKFunctionKafkaEventSourceKafkaObservabilityTestMSKFunction1206A8C7observabilitytopicA416397F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MSKFunctionKafkaEventSourceKafkaObservabilityTestMSKFunction1206A8C7observabilitytopicA416397F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "KafkaObservabilityTest"
@@ -605,6 +441,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -623,6 +460,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -734,7 +572,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -1093,5 +931,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1031.2"
 }
