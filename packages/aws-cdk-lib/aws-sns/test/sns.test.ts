@@ -312,7 +312,7 @@ describe('Topic', () => {
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    TopicGrants._fromTopic(topic).publish(user);
+    TopicGrants.fromTopic(topic).publish(user);
 
     // THEN
     let template = Template.fromStack(stack);
