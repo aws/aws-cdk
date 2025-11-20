@@ -9,10 +9,8 @@ import { ValidationError } from '../../core';
 export class RoleGrants {
   /**
    * Creates grants for IRoleRef
-   *
-   * @internal
    */
-  public static _fromRole(role: IRoleRef): RoleGrants {
+  public static fromRole(role: IRoleRef): RoleGrants {
     return new RoleGrants(role);
   }
 

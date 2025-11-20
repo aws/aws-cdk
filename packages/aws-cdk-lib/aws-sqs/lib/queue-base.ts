@@ -141,7 +141,7 @@ export abstract class QueueBase extends Resource implements IQueue, IEncryptedRe
   /**
    * Collection of grant methods for a Queue
    */
-  public readonly grants = QueueGrants._fromQueue(this);
+  public readonly grants = QueueGrants.fromQueue(this);
 
   /**
    * Controls automatic creation of policy objects.
