@@ -17,6 +17,13 @@ class TestStack extends Stack {
       autoDeleteObjects: true,
     });
 
+    const bucketViaMethod = new s3.Bucket(this, 'BucketViaMethod', {
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    // Call the public method
+    bucketViaMethod.enableAutoDeleteObjects();
+
     // Put objects in the bucket to ensure auto delete works as expected
     const serviceToken = CustomResourceProvider.getOrCreate(this, PUT_OBJECTS_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'put-objects-handler'),
@@ -24,14 +31,26 @@ class TestStack extends Stack {
       policyStatements: [{
         Effect: 'Allow',
         Action: 's3:PutObject',
-        Resource: bucket.arnForObjects('*'),
+        Resource: [
+          bucket.arnForObjects('*'),
+          bucketViaMethod.arnForObjects('*'),
+        ],
       }],
     });
+
     new CustomResource(this, 'PutObjectsCustomResource', {
       resourceType: PUT_OBJECTS_RESOURCE_TYPE,
       serviceToken,
       properties: {
         BucketName: bucket.bucketName,
+      },
+    });
+
+    new CustomResource(this, 'PutObjectsMethodCustomResource', {
+      resourceType: PUT_OBJECTS_RESOURCE_TYPE,
+      serviceToken,
+      properties: {
+        BucketName: bucketViaMethod.bucketName,
       },
     });
 
