@@ -74,6 +74,20 @@ describe('find bucket policy', () => {
       expect(tryFindBucketPolicyForBucket(bucket)).toBe(policy);
     });
 
+    test('finds cousin bucket policies', () => {
+      const grandparent = new Construct(stack, 'Grandparent');
+      const parent = new Construct(grandparent, 'Parent');
+      const auncle = new Construct(grandparent, 'Auncle');
+
+      const bucket = new s3.CfnBucket(parent, 'Bucket');
+      const policy = new s3.CfnBucketPolicy(auncle, 'Policy', {
+        bucket: bucket.ref,
+        policyDocument: {},
+      });
+
+      expect(tryFindBucketPolicyForBucket(bucket)).toBe(policy);
+    });
+
     test('prefers closest child over parent policy', () => {
       const parent = new Construct(stack, 'Parent');
       const bucket = new s3.CfnBucket(parent, 'Bucket');

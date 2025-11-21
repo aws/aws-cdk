@@ -47,15 +47,15 @@ function findClosestRelatedResource<TPrimary extends IConstruct, TRelated extend
 
   searchChildren(primary, 1);
 
-  // Search ancestors and their children breadth-first
+  // Search ancestors and their descendants breadth-first
   let ancestor = primary.node.scope;
   let ancestorDistance = 1;
 
   // Walk up the tree while we have ancestors and haven't exceeded closest distance
   while (ancestor && ancestorDistance < closestDistance) {
-    // Check all siblings at this ancestor level
+    // Check all siblings and their descendants at this ancestor level
     for (const sibling of ancestor.node.children) {
-      checkCandidate(sibling, ancestorDistance);
+      searchChildren(sibling, ancestorDistance);
     }
     ancestor = ancestor.node.scope;
     ancestorDistance++;
@@ -76,7 +76,7 @@ export function tryFindBucketPolicyForBucket(bucket: IBucketRef): CfnBucketPolic
     bucket,
     'AWS::S3::BucketPolicy',
     (b: any, policy) => {
-      const possibleRefs = new Set([b, b.ref, b.bucketName, b.bucketArn, b.bucketRef?.bucketName, b.bucketRef?.bucketArn].filter(Boolean));
+      const possibleRefs = new Set([b.ref, b.bucketName, b.bucketArn, b.bucketRef?.bucketName, b.bucketRef?.bucketArn].filter(Boolean));
       return possibleRefs.has(policy.bucket) || String(policy.bucket).includes(b.node.id);
     },
   );
