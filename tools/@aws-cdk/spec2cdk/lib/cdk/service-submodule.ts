@@ -106,7 +106,7 @@ export class BaseServiceSubmodule {
       const existingModuleImport = this.findSelectiveImport(theImport);
       if (!existingModuleImport) {
         this.selectiveImports.push(theImport);
-        return;
+        continue;
       }
 
       // We need to avoid importing the same reference multiple times

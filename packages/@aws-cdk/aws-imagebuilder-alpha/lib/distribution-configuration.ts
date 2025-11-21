@@ -5,6 +5,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnDistributionConfiguration } from 'aws-cdk-lib/aws-imagebuilder';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 
@@ -505,6 +506,8 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
             }).toLowerCase(), // Enforce lowercase for the auto-generated fallback
         }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Object.defineProperty(this, DISTRIBUTION_CONFIGURATION_SYMBOL, { value: true });
 
@@ -533,6 +536,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
    *
    * @param amiDistributions The list of AMI distribution settings to apply
    */
+  @MethodMetadata()
   public addAmiDistributions(...amiDistributions: AmiDistribution[]): void {
     amiDistributions.forEach((amiDistribution) => {
       const region = amiDistribution.region ?? cdk.Stack.of(this).region;
@@ -552,6 +556,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
    *
    * @param containerDistributions The list of container distribution settings to apply
    */
+  @MethodMetadata()
   public addContainerDistributions(...containerDistributions: ContainerDistribution[]): void {
     containerDistributions.forEach((containerDistribution) => {
       const region = containerDistribution.region ?? cdk.Stack.of(this).region;
@@ -588,6 +593,17 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
     }
   }
 
+  /**
+   * Renders the AMI and container distributions provided as input to the construct, into the `Distribution[]` structure
+   * that CfnDistributionConfiguration expects to receive. Distributions provided to CfnDistributionConfiguration must
+   * map to a unique region per entry in the list - this render function also handles combining AMI and container
+   * distributions in the same region into a single entry.
+   *
+   * This is rendered at synthesis time, as users can add additional AMI and container distributions with
+   * `addAmiDistributions` and `addContainerDistributions`, after the construct has been instantiated.
+   *
+   * @private
+   */
   private renderDistributions(): CfnDistributionConfiguration.DistributionProperty[] {
     if (
       !Object.keys(this.amiDistributionsByRegion).length &&

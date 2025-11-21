@@ -36,6 +36,181 @@ EC2 Image Builder supports AWS-managed components for common tasks, AWS Marketpl
 that you create. Components run during specific workflow phases: build and validate phases during the build stage, and
 test phase during the test stage.
 
+### Container Recipe
+
+A container recipe is similar to an image recipe but specifically for container images. It defines the base container
+image and components applied to produce the desired configuration for the output container image. Container recipes work
+with Docker images from DockerHub, Amazon ECR, or Amazon-managed container images as starting points.
+
+#### Container Recipe Basic Usage
+
+Create a container recipe with the required base image and target repository:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'MyContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  )
+});
+```
+
+#### Container Recipe Base Images
+
+##### DockerHub Images
+
+Using public Docker Hub images:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'DockerHubContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  )
+});
+```
+
+##### ECR Images
+
+Using images from your own ECR repositories:
+
+```ts
+const sourceRepo = ecr.Repository.fromRepositoryName(this, 'SourceRepo', 'my-base-image');
+const targetRepo = ecr.Repository.fromRepositoryName(this, 'TargetRepo', 'my-container-repo');
+
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'EcrContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromEcr(sourceRepo, '1.0.0'),
+  targetRepository: imagebuilder.Repository.fromEcr(targetRepo)
+});
+```
+
+##### ECR Public Images
+
+Using images from Amazon ECR Public:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'EcrPublicContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromEcrPublic('amazonlinux', 'amazonlinux', '2023'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  )
+});
+```
+
+#### Container Recipe Components
+
+##### Custom Components in Container Recipes
+
+Add your own components to the container recipe:
+
+```ts
+const customComponent = new imagebuilder.Component(this, 'MyComponent', {
+  platform: imagebuilder.Platform.LINUX,
+  data: imagebuilder.ComponentData.fromJsonObject({
+    schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
+    phases: [
+      {
+        name: imagebuilder.ComponentPhaseName.BUILD,
+        steps: [
+          {
+            name: 'install-app',
+            action: imagebuilder.ComponentAction.EXECUTE_BASH,
+            inputs: {
+              commands: ['yum install -y my-container-application']
+            }
+          }
+        ]
+      }
+    ]
+  })
+});
+
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'ComponentContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  ),
+  components: [
+    {
+      component: customComponent
+    }
+  ]
+});
+```
+
+##### AWS-Managed Components in Container Recipes
+
+Use pre-built AWS components:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'AwsManagedContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  ),
+  components: [
+    {
+      component: imagebuilder.AwsManagedComponent.updateOS(this, 'UpdateOS', {
+        platform: imagebuilder.Platform.LINUX
+      })
+    },
+    {
+      component: imagebuilder.AwsManagedComponent.awsCliV2(this, 'AwsCli', {
+        platform: imagebuilder.Platform.LINUX
+      })
+    }
+  ]
+});
+```
+
+#### Container Recipe Configuration
+
+##### Custom Dockerfile
+
+Provide your own Dockerfile template:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'CustomDockerfileContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  ),
+  dockerfile: imagebuilder.DockerfileData.fromInline(`
+FROM {{{ imagebuilder:parentImage }}}
+CMD ["echo", "Hello, world!"]
+{{{ imagebuilder:environments }}}
+{{{ imagebuilder:components }}}
+`)
+});
+```
+
+##### Instance Configuration
+
+Configure the build instance:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'InstanceConfigContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  ),
+  // Custom ECS-optimized AMI for building
+  instanceImage: imagebuilder.ContainerInstanceImage.fromSsmParameterName(
+    '/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id'
+  ),
+  // Additional storage for build process
+  instanceBlockDevices: [
+    {
+      deviceName: '/dev/xvda',
+      volume: ec2.BlockDeviceVolume.ebs(50, {
+        encrypted: true,
+        volumeType: ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3
+      })
+    }
+  ]
+});
+```
+
 ### Component
 
 A component defines the sequence of steps required to customize an instance during image creation (build component) or
@@ -102,6 +277,7 @@ phases:
 Most developer-friendly approach using objects:
 
 ```ts
+
 const component = new imagebuilder.Component(this, 'JsonComponent', {
   platform: imagebuilder.Platform.LINUX,
   data: imagebuilder.ComponentData.fromJsonObject({
@@ -115,19 +291,58 @@ const component = new imagebuilder.Component(this, 'JsonComponent', {
             action: imagebuilder.ComponentAction.CREATE_FILE,
             inputs: {
               path: '/etc/myapp/config.json',
-              content: '{"env": "production"}',
-            },
-          },
-        ],
-      },
-    ],
-  }),
+              content: '{"env": "production"}'
+            }
+          }
+        ]
+      }
+    ]
+  })
 });
 ```
 
 ##### Structured Component Document
 
-For type-safe, CDK-native definitions with enhanced properties like `timeout` and `onFailure`:
+For type-safe, CDK-native definitions with enhanced properties like `timeout` and `onFailure`.
+
+###### Defining a component step
+
+You can define steps in the component which will be executed in order when the component is applied:
+
+```ts
+const step: imagebuilder.ComponentDocumentStep = {
+  name: 'configure-app',
+  action: imagebuilder.ComponentAction.CREATE_FILE,
+  inputs: imagebuilder.ComponentStepInputs.fromObject({
+    path: '/etc/myapp/config.json',
+    content: '{"env": "production"}'
+  })
+};
+```
+
+###### Defining a component phase
+
+Phases group steps together, which run in sequence when building, validating or testing in the component:
+
+```ts
+const phase: imagebuilder.ComponentDocumentPhase = {
+  name: imagebuilder.ComponentPhaseName.BUILD,
+  steps: [
+    {
+      name: 'configure-app',
+      action: imagebuilder.ComponentAction.CREATE_FILE,
+      inputs: imagebuilder.ComponentStepInputs.fromObject({
+        path: '/etc/myapp/config.json',
+        content: '{"env": "production"}'
+      })
+    }
+  ]
+};
+```
+
+###### Defining a component
+
+The component data defines all steps across the provided phases to execute during the build:
 
 ```ts  
 const component = new imagebuilder.Component(this, 'StructuredComponent', {
@@ -143,14 +358,14 @@ const component = new imagebuilder.Component(this, 'StructuredComponent', {
             action: imagebuilder.ComponentAction.EXECUTE_BASH,
             timeout: Duration.minutes(10),
             onFailure: imagebuilder.ComponentOnFailure.CONTINUE,
-            inputs: {
-              commands: ['./install-script.sh'],
-            },
-          },
-        ],
-      },
-    ],
-  }),
+            inputs: imagebuilder.ComponentStepInputs.fromObject({
+              commands: ['./install-script.sh']
+            })
+          }
+        ]
+      }
+    ]
+  })
 });
 ```
 
@@ -305,6 +520,11 @@ launch template configurations. For container images, it specifies the target Am
 A distribution configuration can be associated with an image or an image pipeline to define these distribution settings
 for image builds.
 
+#### AMI Distributions
+
+AMI distributions can be defined to copy and modify AMIs in different accounts and regions, and apply them to launch
+templates, SSM parameters, etc.:
+
 ```ts
 const distributionConfiguration = new imagebuilder.DistributionConfiguration(this, 'DistributionConfiguration', {
   distributionConfigurationName: 'test-distribution-configuration',
@@ -401,5 +621,36 @@ distributionConfiguration.addAmiDistributions({
   licenseConfigurationArns: [
     'arn:aws:license-manager:us-west-2:123456789012:license-configuration:lic-abcdefghijklmnopqrstuvwxyz'
   ]
+});
+```
+
+#### Container Distributions
+
+##### Container repositories
+
+Container distributions can be configured to distribute to ECR repositories:
+
+```ts
+const ecrRepository = ecr.Repository.fromRepositoryName(this, 'ECRRepository', 'my-repo');
+const imageBuilderRepository = imagebuilder.Repository.fromEcr(ecrRepository);
+```
+
+##### Defining a container distribution
+
+You can configure the container repositories as well as the description and tags applied to the distributed container
+images:
+
+```ts
+const ecrRepository = ecr.Repository.fromRepositoryName(this, 'ECRRepository', 'my-repo');
+const containerRepository = imagebuilder.Repository.fromEcr(ecrRepository);
+const containerDistributionConfiguration = new imagebuilder.DistributionConfiguration(
+  this,
+  'ContainerDistributionConfiguration'
+);
+
+containerDistributionConfiguration.addContainerDistributions({
+  containerRepository,
+  containerDescription: 'Test container image',
+  containerTags: ['latest', 'latest-1.0']
 });
 ```
