@@ -1833,6 +1833,31 @@ describe('Runtime lifecycle configuration tests', () => {
       });
     }).toThrow(/Maximum lifetime must be between 60 seconds and 28800 seconds/);
   });
+
+  test('does not fail validation if lifecycle configuration is a late-bound value', () => {
+    // WHEN
+    const idleTimeoutParam = new cdk.CfnParameter(stack, 'IdleTimeout', {
+      default: 600,
+      type: 'Number',
+    });
+
+    const maxLifetimeParam = new cdk.CfnParameter(stack, 'MaxLifetime', {
+      default: 14400,
+      type: 'Number',
+    });
+
+    // THEN
+    expect(() => {
+      new Runtime(stack, 'runtime-late-bound', {
+        runtimeName: 'runtime_late_bound',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        lifecycleConfiguration: {
+          idleRuntimeSessionTimeout: Duration.seconds(idleTimeoutParam.valueAsNumber),
+          maxLifetime: Duration.seconds(maxLifetimeParam.valueAsNumber),
+        },
+      });
+    }).not.toThrow();
+  });
 });
 
 describe('Runtime request header configuration tests', () => {
