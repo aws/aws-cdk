@@ -21,7 +21,7 @@ const runtimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
 
 // Create a single runtime (similar to the working strands example)
 const runtime = new agentcore.Runtime(stack, 'TestRuntime', {
-  runtimeName: 'integ_test_runtime',
+  runtimeName: 'integTest_runtime',
   description: 'Integration test runtime for BedrockAgentCore',
   agentRuntimeArtifact: runtimeArtifact,
   protocolConfiguration: agentcore.ProtocolType.HTTP,
