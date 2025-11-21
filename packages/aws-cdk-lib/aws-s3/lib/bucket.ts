@@ -2499,6 +2499,12 @@ export class Bucket extends BucketBase {
    */
   @MethodMetadata()
   public enableAutoDeleteObjects() {
+    const id = "AutoDeleteObjectsCustomResource"
+
+    if (this.node.tryFindChild(id)) {
+      return;
+    }
+
     if (this._resource.cfnOptions.deletionPolicy !== CfnDeletionPolicy.DELETE || this._resource.cfnOptions.updateReplacePolicy !== CfnDeletionPolicy.DELETE) {
         throw new ValidationError('Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'.', this);
     }
@@ -2524,7 +2530,7 @@ export class Bucket extends BucketBase {
       principals: [new iam.ArnPrincipal(provider.roleArn)],
     }));
 
-    const customResource = new CustomResource(this, 'AutoDeleteObjectsCustomResource', {
+    const customResource = new CustomResource(this, id, {
       resourceType: AUTO_DELETE_OBJECTS_RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       properties: {
