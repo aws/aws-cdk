@@ -1,6 +1,6 @@
 import { Aws, Names, Stack, Tags } from 'aws-cdk-lib';
 import { Effect, PolicyDocument, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import type { DeliveryReference, DeliverySourceReference, ILogGroupRef, LogGroup } from 'aws-cdk-lib/aws-logs';
+import type { CfnDeliverySource, DeliveryReference, ILogGroupRef, LogGroup } from 'aws-cdk-lib/aws-logs';
 import { CfnDelivery, CfnDeliveryDestination, ResourcePolicy } from 'aws-cdk-lib/aws-logs';
 import type { IBucketRef } from 'aws-cdk-lib/aws-s3';
 import { CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
@@ -9,7 +9,7 @@ import { tryFindBucketPolicy, XRayDeliveryDestinationPolicy } from './vended-log
 import type { IDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 
 interface IDestination {
-  bind(scope: IConstruct, deliverySource: DeliverySourceReference, sourceArn?: string): DeliveryReference;
+  bind(scope: IConstruct, deliverySource: CfnDeliverySource, sourceArn?: string): DeliveryReference;
 }
 
 export class S3LogDelivery implements IDestination {
@@ -20,7 +20,7 @@ export class S3LogDelivery implements IDestination {
     this.permissions = permissionsVersion;
   }
 
-  public bind(scope: IConstruct, deliverySource: DeliverySourceReference): DeliveryReference {
+  public bind(scope: IConstruct, deliverySource: CfnDeliverySource): DeliveryReference {
     const bucketPolicy = this.getOrCreateBucketPolicy(scope );
 
     const destinationNamePrefix = 'cdk-s3-dest-';
@@ -33,9 +33,10 @@ export class S3LogDelivery implements IDestination {
 
     const delivery = new CfnDelivery(scope, `CDKS3Delivery${Names.uniqueId(this.bucket)}${Names.uniqueId(scope)}`, {
       deliveryDestinationArn: deliveryDestination.attrArn,
-      deliverySourceName: deliverySource.deliverySourceName,
+      deliverySourceName: deliverySource.name,
     });
     delivery.addDependency(deliveryDestination);
+    delivery.addDependency(deliverySource);
     return delivery.deliveryRef;
   }
 
@@ -108,7 +109,7 @@ export class FirehoseLogDelivery implements IDestination {
     this.deliveryStream = stream;
   }
 
-  public bind(scope: IConstruct, deliverySource: DeliverySourceReference): DeliveryReference {
+  public bind(scope: IConstruct, deliverySource: CfnDeliverySource): DeliveryReference {
     Tags.of(this.deliveryStream).add('LogDeliveryEnabled', 'true');
     const destinationNamePrefix = 'cdk-fh-dest-';
     const deliveryDestination = new CfnDeliveryDestination(scope, `CDKFHDest${Names.uniqueId(this.deliveryStream)}${Names.uniqueId(scope)}`, {
@@ -119,9 +120,10 @@ export class FirehoseLogDelivery implements IDestination {
 
     const delivery = new CfnDelivery(scope, `CDKFHDelivery${Names.uniqueId(this.deliveryStream)}${Names.uniqueId(scope)}`, {
       deliveryDestinationArn: deliveryDestination.attrArn,
-      deliverySourceName: deliverySource.deliverySourceName,
+      deliverySourceName: deliverySource.name,
     });
     delivery.addDependency(deliveryDestination);
+    delivery.addDependency(deliverySource);
     return delivery.deliveryRef;
   }
 }
@@ -132,7 +134,7 @@ export class LogGroupLogDelivery implements IDestination {
     this.logGroup = logGroup;
   }
 
-  public bind(scope: IConstruct, deliverySource: DeliverySourceReference): DeliveryReference {
+  public bind(scope: IConstruct, deliverySource: CfnDeliverySource): DeliveryReference {
     const logGroupPolicy = this.getOrCreateLogsResourcePolicy(scope, this.logGroup);
 
     const destinationNamePrefix = 'cdk-cwl-dest-';
@@ -145,9 +147,10 @@ export class LogGroupLogDelivery implements IDestination {
 
     const delivery = new CfnDelivery(scope, `CDKCWLDelivery${Names.uniqueId(this.logGroup)}${Names.uniqueId(scope)}`, {
       deliveryDestinationArn: deliveryDestination.attrArn,
-      deliverySourceName: deliverySource.deliverySourceName,
+      deliverySourceName: deliverySource.name,
     });
     delivery.addDependency(deliveryDestination);
+    delivery.addDependency(deliverySource);
     return delivery.deliveryRef;
   }
 
@@ -188,7 +191,7 @@ export class LogGroupLogDelivery implements IDestination {
 export class XRayLogDelivery implements IDestination {
   constructor() {}
 
-  public bind(scope: IConstruct, deliverySource: DeliverySourceReference, sourceArn: string): DeliveryReference {
+  public bind(scope: IConstruct, deliverySource: CfnDeliverySource, sourceArn: string): DeliveryReference {
     const xrayResourcePolicy = this.getOrCreateXRayPolicyGenerator(scope);
 
     xrayResourcePolicy.allowSource(sourceArn);
@@ -200,9 +203,10 @@ export class XRayLogDelivery implements IDestination {
 
     const delivery = new CfnDelivery(scope, `CDKXRAYDelivery${Names.uniqueId(scope)}`, {
       deliveryDestinationArn: deliveryDestination.attrArn,
-      deliverySourceName: deliverySource.deliverySourceName,
+      deliverySourceName: deliverySource.name,
     });
     delivery.addDependency(deliveryDestination);
+    delivery.addDependency(deliverySource);
     return delivery.deliveryRef;
   }
 

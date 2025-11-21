@@ -27,7 +27,7 @@ describe('S3 Delivery', () => {
     const bucket = new Bucket(stack, 'Destination');
 
     const s3Logs = new S3LogDelivery(bucket, 'V2');
-    s3Logs.bind(source, deliverySource.deliverySourceRef);
+    s3Logs.bind(source, deliverySource);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
@@ -37,9 +37,7 @@ describe('S3 Delivery', () => {
           'Arn',
         ],
       },
-      DeliverySourceName: {
-        Ref: 'S3DeliverySource',
-      },
+      DeliverySourceName: deliverySource.name,
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
       DeliveryDestinationType: 'S3',
@@ -67,7 +65,7 @@ describe('S3 Delivery', () => {
     const bucket = new Bucket(stack, 'Destination');
 
     const s3Logs = new S3LogDelivery(bucket, 'V1');
-    s3Logs.bind(source, deliverySource.deliverySourceRef);
+    s3Logs.bind(source, deliverySource);
 
     const source1 = new Bucket(stack, 'SourceBucket1');
     const deliverySource1 = new CfnDeliverySource(stack, 'S3DeliverySource1', {
@@ -77,7 +75,7 @@ describe('S3 Delivery', () => {
     });
 
     const s3Logs1 = new S3LogDelivery(bucket, 'V2');
-    s3Logs1.bind(source1, deliverySource1.deliverySourceRef);
+    s3Logs1.bind(source1, deliverySource1);
 
     Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 1);
     Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 2);
@@ -87,7 +85,7 @@ describe('S3 Delivery', () => {
   test('creates policy with V1 permissions if specified', () => {
     const bucket = new Bucket(stack, 'Destination');
     const s3Logs = new S3LogDelivery(bucket, 'V1');
-    s3Logs.bind(source, deliverySource.deliverySourceRef);
+    s3Logs.bind(source, deliverySource);
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
       Bucket: {
@@ -203,7 +201,7 @@ describe('S3 Delivery', () => {
   test('creates policy with V2 permissions if specified', () => {
     const bucket = new Bucket(stack, 'Destination');
     const s3Logs = new S3LogDelivery(bucket, 'V2');
-    s3Logs.bind(source, deliverySource.deliverySourceRef);
+    s3Logs.bind(source, deliverySource);
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
       Bucket: {
@@ -287,7 +285,7 @@ describe('S3 Delivery', () => {
     });
 
     const s3Logs = new S3LogDelivery(bucket, 'V2');
-    s3Logs.bind(source, deliverySource.deliverySourceRef);
+    s3Logs.bind(source, deliverySource);
 
     Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 1);
   });
@@ -308,7 +306,7 @@ describe('S3 Delivery', () => {
     });
 
     const s3Logs = new S3LogDelivery(bucket, 'V2');
-    s3Logs.bind(source, deliverySource.deliverySourceRef);
+    s3Logs.bind(source, deliverySource);
 
     Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
@@ -438,7 +436,7 @@ describe('Cloudwatch Logs Delivery', () => {
     });
 
     const cwlLogs = new LogGroupLogDelivery(logGroup);
-    cwlLogs.bind(source, deliverySource.deliverySourceRef);
+    cwlLogs.bind(source, deliverySource);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
@@ -448,9 +446,7 @@ describe('Cloudwatch Logs Delivery', () => {
           'Arn',
         ],
       },
-      DeliverySourceName: {
-        Ref: 'CWLDeliverySource',
-      },
+      DeliverySourceName: deliverySource.name,
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
       DeliveryDestinationType: 'CWL',
@@ -523,7 +519,7 @@ describe('Cloudwatch Logs Delivery', () => {
     }));
 
     const cwlLogs = new LogGroupLogDelivery(logGroup);
-    cwlLogs.bind(source, deliverySource.deliverySourceRef);
+    cwlLogs.bind(source, deliverySource);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 2);
   });
@@ -539,7 +535,7 @@ describe('Cloudwatch Logs Delivery', () => {
     });
 
     const cwlLogs = new LogGroupLogDelivery(logGroup);
-    cwlLogs.bind(source, deliverySource.deliverySourceRef);
+    cwlLogs.bind(source, deliverySource);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 1);
   });
@@ -556,10 +552,10 @@ describe('Cloudwatch Logs Delivery', () => {
     });
 
     const cwlLogs1 = new LogGroupLogDelivery(logGroup1);
-    cwlLogs1.bind(source, deliverySource.deliverySourceRef);
+    cwlLogs1.bind(source, deliverySource);
 
     const cwlLogs2 = new LogGroupLogDelivery(logGroup2);
-    cwlLogs2.bind(source, deliverySource.deliverySourceRef);
+    cwlLogs2.bind(source, deliverySource);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 1);
   });
@@ -587,7 +583,7 @@ describe('Cloudwatch Logs Delivery', () => {
     }));
 
     const cwlLogs = new LogGroupLogDelivery(logGroup);
-    cwlLogs.bind(source, deliverySource.deliverySourceRef);
+    cwlLogs.bind(source, deliverySource);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 1);
     Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::ResourcePolicy', 1);
@@ -607,10 +603,10 @@ describe('Cloudwatch Logs Delivery', () => {
     });
 
     const cwlLogs1 = new LogGroupLogDelivery(logGroup);
-    cwlLogs1.bind(source, deliverySource.deliverySourceRef);
+    cwlLogs1.bind(source, deliverySource);
 
     const cwlLogs2 = new LogGroupLogDelivery(logGroup);
-    cwlLogs2.bind(source2, deliverySource2.deliverySourceRef);
+    cwlLogs2.bind(source2, deliverySource2);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 1);
     Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 2);
@@ -654,7 +650,7 @@ describe('Firehose Stream Delivery', () => {
     });
 
     const fhLogs = new FirehoseLogDelivery(stream);
-    fhLogs.bind(source, deliverySource.deliverySourceRef);
+    fhLogs.bind(source, deliverySource);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
@@ -664,9 +660,7 @@ describe('Firehose Stream Delivery', () => {
           'Arn',
         ],
       },
-      DeliverySourceName: {
-        Ref: 'FHDeliverySource',
-      },
+      DeliverySourceName: deliverySource.name,
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
       DeliveryDestinationType: 'FH',
@@ -715,10 +709,10 @@ describe('Firehose Stream Delivery', () => {
     });
 
     const fhLogs1 = new FirehoseLogDelivery(stream);
-    fhLogs1.bind(source, deliverySource.deliverySourceRef);
+    fhLogs1.bind(source, deliverySource);
 
     const fhLogs2 = new FirehoseLogDelivery(stream);
-    fhLogs2.bind(source2, deliverySource2.deliverySourceRef);
+    fhLogs2.bind(source2, deliverySource2);
 
     Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 2);
     Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 2);
@@ -741,7 +735,7 @@ describe('XRay Delivery', () => {
 
   test('creates an XRay Delivery Destination and Delivery', () => {
     const xrayLogs = new XRayLogDelivery();
-    xrayLogs.bind(source, deliverySource.deliverySourceRef, source.bucketArn);
+    xrayLogs.bind(source, deliverySource, source.bucketArn);
 
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
       DeliveryDestinationType: 'XRAY',
@@ -751,7 +745,7 @@ describe('XRay Delivery', () => {
 
   test('when multiple XRay Delivery destinations are created on one stack, only create one XRay resource policy', () => {
     const xrayLogs = new XRayLogDelivery();
-    xrayLogs.bind(source, deliverySource.deliverySourceRef, source.bucketArn);
+    xrayLogs.bind(source, deliverySource, source.bucketArn);
 
     const source2 = new Bucket(stack, 'SourceBucket2');
     const deliverySource2 = new CfnDeliverySource(stack, 'XRayDeliverySource2', {
@@ -761,7 +755,7 @@ describe('XRay Delivery', () => {
     });
 
     const xrayLogs2 = new XRayLogDelivery();
-    xrayLogs2.bind(source2, deliverySource2.deliverySourceRef, source2.bucketArn);
+    xrayLogs2.bind(source2, deliverySource2, source2.bucketArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::XRay::ResourcePolicy', 1);
     Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 2);
@@ -772,7 +766,7 @@ describe('XRay Delivery', () => {
     const stack2 = new Stack();
 
     const xrayLogs = new XRayLogDelivery();
-    xrayLogs.bind(source, deliverySource.deliverySourceRef, source.bucketArn);
+    xrayLogs.bind(source, deliverySource, source.bucketArn);
 
     const source2 = new Bucket(stack2, 'SourceBucket2');
     const deliverySource2 = new CfnDeliverySource(stack2, 'XRayDeliverySource2', {
@@ -782,7 +776,7 @@ describe('XRay Delivery', () => {
     });
 
     const xrayLogs2 = new XRayLogDelivery();
-    xrayLogs2.bind(source2, deliverySource2.deliverySourceRef, source2.bucketArn);
+    xrayLogs2.bind(source2, deliverySource2, source2.bucketArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::XRay::ResourcePolicy', 1);
     Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 1);
