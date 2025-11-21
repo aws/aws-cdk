@@ -1,7 +1,52 @@
 import * as cdk from 'aws-cdk-lib';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { BaseContainerImage, ContainerInstanceImage } from '../lib';
+import { BaseContainerImage, BaseImage, ContainerInstanceImage } from '../lib';
+
+describe('Base Image', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
+  });
+
+  test('should return the correct base image for an AMI ID', () => {
+    const baseImage = BaseImage.fromAmiId('ami-12345678');
+    expect(baseImage.image).toEqual('ami-12345678');
+  });
+
+  test('should return the correct base image for a marketplace product ID', () => {
+    const baseImage = BaseImage.fromMarketplaceProductId('prod-1234');
+    expect(baseImage.image).toEqual('prod-1234');
+  });
+
+  test('should return the correct base image for an SSM parameter', () => {
+    const baseImage = BaseImage.fromSsmParameter(
+      ssm.StringParameter.fromStringParameterAttributes(stack, 'Parameter', {
+        parameterName: '/imagebuilder/ami',
+        forceDynamicReference: true,
+      }),
+    );
+    expect(stack.resolve(baseImage.image)).toEqual({
+      'Fn::Join': [
+        '',
+        ['ssm:arn:', { Ref: 'AWS::Partition' }, ':ssm:us-east-1:123456789012:parameter/imagebuilder/ami'],
+      ],
+    });
+  });
+
+  test('should return the correct base image for an SSM parameter name', () => {
+    const baseImage = BaseImage.fromSsmParameterName('/imagebuilder/ami');
+    expect(baseImage.image).toEqual('ssm:/imagebuilder/ami');
+  });
+
+  test('should return the correct base image for a generic string', () => {
+    const baseImage = BaseImage.fromString('base-image');
+    expect(baseImage.image).toEqual('base-image');
+  });
+});
 
 describe('Base Container Image', () => {
   let app: cdk.App;

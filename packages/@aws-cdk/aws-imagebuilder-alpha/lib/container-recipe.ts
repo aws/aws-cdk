@@ -9,6 +9,7 @@ import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { BaseContainerImage, ContainerInstanceImage } from './base-image';
 import { Repository } from './distribution-configuration';
+import { IImageRecipe } from './image-recipe';
 import { OSVersion } from './os-version';
 import { ComponentConfiguration, IRecipeBase } from './recipe-base';
 
@@ -377,6 +378,15 @@ export abstract class ContainerRecipeBase extends cdk.Resource implements IConta
    */
   public _isContainerRecipe(): this is IContainerRecipe {
     return true;
+  }
+
+  /**
+   * Indicates whether the recipe is an Image Recipe
+   *
+   * @internal
+   */
+  public _isImageRecipe(): this is IImageRecipe {
+    return false;
   }
 }
 

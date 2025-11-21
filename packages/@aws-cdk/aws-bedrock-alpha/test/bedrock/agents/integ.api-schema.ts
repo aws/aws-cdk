@@ -10,7 +10,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as bedrock from '../../../bedrock';
-
+import * as path from 'path';
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-bedrock-api-schema-1');
@@ -89,7 +89,7 @@ const inlineActionGroupExecutor = bedrock.ActionGroupExecutor.fromLambda(inlineA
 const s3ActionGroupExecutor = bedrock.ActionGroupExecutor.fromLambda(s3ActionGroupFunction);
 
 // Create an API schema from a local asset file
-const assetApiSchema = bedrock.ApiSchema.fromLocalAsset('test-schema.yaml');
+const assetApiSchema = bedrock.ApiSchema.fromLocalAsset(path.join(__dirname, 'test-schema.yaml'));
 
 // Create a simple inline API schema
 const inlineApiSchema = bedrock.ApiSchema.fromInline(`
