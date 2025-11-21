@@ -151,6 +151,11 @@
       "TITAN_EMBED_TEXT_V2_1024",
       "TITAN_EMBED_TEXT_V2_512",
       "TITAN_EMBED_TEXT_V2_256",
+      "ANTHROPIC_CLAUDE_HAIKU_4_5_V1_0",
+      "ANTHROPIC_CLAUDE_SONNET_4_5_V1_0",
+      "ANTHROPIC_CLAUDE_OPUS_4_1_V1_0",
+      "ANTHROPIC_CLAUDE_OPUS_4_V1_0",
+      "ANTHROPIC_CLAUDE_SONNET_4_V1_0",
       "ANTHROPIC_CLAUDE_3_7_SONNET_V1_0",
       "ANTHROPIC_CLAUDE_3_5_SONNET_V2_0",
       "ANTHROPIC_CLAUDE_3_5_SONNET_V1_0",
@@ -328,6 +333,32 @@
       "ORC",
       "PARQUET",
       "TSV"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/os-version.ts": {
+    "OSVersion": [
+      "LINUX",
+      "MAC_OS",
+      "WINDOWS",
+      "AMAZON_LINUX",
+      "AMAZON_LINUX_2",
+      "AMAZON_LINUX_2023",
+      "MAC_OS_14",
+      "MAC_OS_15",
+      "REDHAT_ENTERPRISE_LINUX",
+      "REDHAT_ENTERPRISE_LINUX_8",
+      "REDHAT_ENTERPRISE_LINUX_9",
+      "REDHAT_ENTERPRISE_LINUX_10",
+      "SLES",
+      "SLES_15",
+      "UBUNTU",
+      "UBUNTU_22_04",
+      "UBUNTU_24_04",
+      "WINDOWS_SERVER",
+      "WINDOWS_SERVER_2016",
+      "WINDOWS_SERVER_2019",
+      "WINDOWS_SERVER_2022",
+      "WINDOWS_SERVER_2025"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-iot-alpha/lib/scheduled-audit.ts": {
@@ -2377,6 +2408,11 @@
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/snapstart-config.ts": {
     "SnapStartConf": [
       "ON_PUBLISHED_VERSIONS"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/tenancy-config.ts": {
+    "TenancyConfig": [
+      "PER_TENANT"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/data-protection-policy.ts": {

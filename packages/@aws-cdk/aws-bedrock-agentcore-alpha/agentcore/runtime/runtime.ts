@@ -20,8 +20,23 @@ import { RuntimeAuthorizerConfiguration } from './runtime-authorizer-configurati
 import { RuntimeBase, IBedrockAgentRuntime, AgentRuntimeAttributes } from './runtime-base';
 import { RuntimeEndpoint } from './runtime-endpoint';
 import { RuntimeNetworkConfiguration } from '../network/network-configuration';
-import { ProtocolType } from './types';
+import { LifecycleConfiguration, ProtocolType, RequestHeaderConfiguration } from './types';
 import { validateStringField, ValidationError, validateFieldPattern } from './validation-helpers';
+
+/******************************************************************************
+ *                                Constants
+ *****************************************************************************/
+/**
+ * Minimum timeout for idle runtime sessions
+ * @internal
+ */
+const LIFECYCLE_MIN_TIMEOUT = Duration.seconds(60);
+
+/**
+ * Maximum lifetime for the instance
+ * @internal
+ */
+const LIFECYCLE_MAX_LIFETIME = Duration.seconds(28800);
 
 /******************************************************************************
  *                                Props
@@ -93,6 +108,18 @@ export interface RuntimeProps {
    * @default {} - no tags
    */
   readonly tags?: { [key: string]: string };
+
+  /**
+   * Configuration for HTTP request headers that will be passed through to the runtime.
+   * @default - No request headers configured
+   */
+  readonly requestHeaderConfiguration?: RequestHeaderConfiguration;
+
+  /**
+   * The life cycle configuration for the AgentCore Runtime.
+   * @default - No lifecycle configuration
+   */
+  readonly lifecycleConfiguration?: LifecycleConfiguration;
 }
 
 /**
@@ -226,6 +253,7 @@ export class Runtime extends RuntimeBase {
   private readonly networkConfiguration: RuntimeNetworkConfiguration ;
   private readonly protocolConfiguration: ProtocolType;
   private readonly authorizerConfiguration?: RuntimeAuthorizerConfiguration;
+  private readonly lifecycleConfiguration?: LifecycleConfiguration;
 
   constructor(scope: Construct, id: string, props: RuntimeProps) {
     super(scope, id);
@@ -248,6 +276,16 @@ export class Runtime extends RuntimeBase {
     if (props.tags) {
       this.validateTags(props.tags);
     }
+
+    if (props.requestHeaderConfiguration) {
+      this.validateRequestHeaderConfiguration(props.requestHeaderConfiguration);
+    }
+
+    this.lifecycleConfiguration = {
+      idleRuntimeSessionTimeout: props.lifecycleConfiguration?.idleRuntimeSessionTimeout ?? LIFECYCLE_MIN_TIMEOUT,
+      maxLifetime: props.lifecycleConfiguration?.maxLifetime ?? LIFECYCLE_MAX_LIFETIME,
+    };
+    this.validateLifecycleConfiguration(this.lifecycleConfiguration);
 
     if (props.executionRole) {
       this.role = props.executionRole;
@@ -292,7 +330,11 @@ export class Runtime extends RuntimeBase {
         produce: () => this.renderEnvironmentVariables(props.environmentVariables),
       }),
       tags: props.tags ?? {},
+      lifecycleConfiguration: this.renderLifecycleConfiguration(),
     };
+    if (props.requestHeaderConfiguration) {
+      cfnProps.requestHeaderConfiguration = this.renderRequestHeaderConfiguration(props.requestHeaderConfiguration);
+    }
     if (props.authorizerConfiguration) {
       cfnProps.authorizerConfiguration = Lazy.any({
         produce: () => this.authorizerConfiguration!._render(),
@@ -398,15 +440,104 @@ export class Runtime extends RuntimeBase {
     // set permission with bind
     this.agentRuntimeArtifact.bind(this, this);
     const config = this.agentRuntimeArtifact._render();
-    const containerUri = (config as any).containerUri;
-    if (containerUri) {
-      this.validateContainerUri(containerUri);
+    if ((config as any).code) { // S3Image
+      return {
+        codeConfiguration: {
+          code: (config as any).code,
+          runtime: (config as any).runtime,
+          entryPoint: (config as any).entryPoint,
+        },
+      };
+    } else {
+      // EcrImage or AssetImage
+      const containerUri = (config as any).containerUri;
+      if (containerUri) {
+        this.validateContainerUri(containerUri);
+      }
+      return {
+        containerConfiguration: {
+          containerUri: containerUri,
+        },
+      };
+    }
+  }
+
+  /**
+   * Renders the request header configuration for CloudFormation
+   * @internal
+   */
+  private renderRequestHeaderConfiguration(requestHeaderConfiguration?: RequestHeaderConfiguration): any {
+    if (!requestHeaderConfiguration?.allowlistedHeaders) {
+      return undefined;
     }
     return {
-      containerConfiguration: {
-        containerUri: containerUri,
-      },
+      requestHeaderAllowlist: requestHeaderConfiguration.allowlistedHeaders,
     };
+  }
+
+  /**
+   * Renders the lifecycle configuration for CloudFormation
+   * @internal
+   */
+  private renderLifecycleConfiguration(): any {
+    return {
+      idleRuntimeSessionTimeout: this.lifecycleConfiguration?.idleRuntimeSessionTimeout?.toSeconds(),
+      maxLifetime: this.lifecycleConfiguration?.maxLifetime?.toSeconds(),
+    };
+  }
+
+  /**
+   * Validates the request header configuration
+   * @throws Error if validation fails
+   */
+  private validateRequestHeaderConfiguration(requestHeaderConfiguration: RequestHeaderConfiguration): void {
+    const allErrors: string[] = [];
+    if (requestHeaderConfiguration.allowlistedHeaders) {
+      if (requestHeaderConfiguration.allowlistedHeaders.length < 1 || requestHeaderConfiguration.allowlistedHeaders.length > 20) {
+        allErrors.push('Request header allow list contain between 1 and 20 headers');
+      }
+
+      for (const header of requestHeaderConfiguration.allowlistedHeaders) {
+        // Validate length
+        const lengthErrors = validateStringField({
+          value: header,
+          fieldName: 'Request header',
+          minLength: 1,
+          maxLength: 256,
+        });
+        allErrors.push(...lengthErrors);
+
+        const patternErrors = validateFieldPattern(
+          header,
+          'Request header',
+          /(Authorization|X-Amzn-Bedrock-AgentCore-Runtime-Custom-[a-zA-Z0-9-]+)/,
+          'Request header must contain only letters, numbers, and hyphens',
+        );
+        allErrors.push(...patternErrors);
+      }
+    }
+    if (allErrors.length > 0) {
+      throw new ValidationError(allErrors.join('\n'));
+    }
+  }
+
+  /**
+   * Validates the lifecycle configuration
+   * @throws Error if validation fails
+   */
+  private validateLifecycleConfiguration(lifecycleConfiguration: LifecycleConfiguration): void {
+    if (lifecycleConfiguration.idleRuntimeSessionTimeout) {
+      if (lifecycleConfiguration.idleRuntimeSessionTimeout.toSeconds() < LIFECYCLE_MIN_TIMEOUT.toSeconds()
+        || lifecycleConfiguration.idleRuntimeSessionTimeout.toSeconds() > LIFECYCLE_MAX_LIFETIME.toSeconds()) {
+        throw new ValidationError(`Idle runtime session timeout must be between ${LIFECYCLE_MIN_TIMEOUT.toSeconds()} seconds and ${LIFECYCLE_MAX_LIFETIME.toSeconds()} seconds`);
+      }
+    }
+    if (lifecycleConfiguration.maxLifetime) {
+      if (lifecycleConfiguration.maxLifetime.toSeconds() < LIFECYCLE_MIN_TIMEOUT.toSeconds()
+        || lifecycleConfiguration.maxLifetime.toSeconds() > LIFECYCLE_MAX_LIFETIME.toSeconds()) {
+        throw new ValidationError(`Maximum lifetime must be between ${LIFECYCLE_MIN_TIMEOUT.toSeconds()} seconds and ${LIFECYCLE_MAX_LIFETIME.toSeconds()} seconds`);
+      }
+    }
   }
 
   /**
