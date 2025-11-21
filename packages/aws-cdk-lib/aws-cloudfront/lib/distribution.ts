@@ -333,7 +333,7 @@ export class Distribution extends Resource implements IDistribution {
         return grant(this, grantee, ...actions);
       }
       public grantCreateInvalidation(grantee: iam.IGrantable): iam.Grant {
-        return DistributionGrants._fromDistribution(this).createInvalidation(grantee);
+        return DistributionGrants.fromDistribution(this).createInvalidation(grantee);
       }
     }();
   }
@@ -346,7 +346,7 @@ export class Distribution extends Resource implements IDistribution {
   /**
    * Collection of grant methods for a Distribution
    */
-  public readonly grants = DistributionGrants._fromDistribution(this);
+  public readonly grants = DistributionGrants.fromDistribution(this);
 
   private readonly httpVersion: HttpVersion;
   private readonly defaultBehavior: CacheBehavior;

@@ -56,7 +56,7 @@ export abstract class RuntimeAuthorizerConfiguration {
    * Validates Cognito-issued JWT tokens.
    *
    * @param userPool The Cognito User Pool
-   * @param userPoolClient The Cognito User Pool App Clients
+   * @param userPoolClients The Cognito User Pool App Clients
    * @param allowedAudience Optional array of allowed audiences
    * @returns RuntimeAuthorizerConfiguration for Cognito authentication
    */
