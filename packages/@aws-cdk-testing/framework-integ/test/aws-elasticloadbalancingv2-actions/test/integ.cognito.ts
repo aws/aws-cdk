@@ -11,6 +11,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as route53targets from 'aws-cdk-lib/aws-route53-targets';
+import * as path from 'path';
 
 interface CognitoUserProps {
   userPool: cognito.UserPool;
@@ -204,7 +205,7 @@ const testUser = new CognitoUser(testCase, 'User', cognitoUserProps);
 // this function signs in to the website and returns text content of the authenticated page body
 const signinFunction = new lambda.Function(testCase, 'Signin', {
   functionName: 'cdk-integ-alb-cognito-signin-handler',
-  code: lambda.Code.fromAsset('alb-cognito-signin-handler', { exclude: ['*.ts'] }),
+  code: lambda.Code.fromAsset(path.join(__dirname, 'alb-cognito-signin-handler'), { exclude: ['*.ts'] }),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_20_X,
   environment: {
