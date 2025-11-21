@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { RuntimeNetworkConfiguration } from '../../../agentcore/network/network-configuration';
+import { RuntimeNetworkConfiguration } from '../../../lib/network/network-configuration';
 
 describe('RuntimeNetworkConfiguration', () => {
   let app: cdk.App;

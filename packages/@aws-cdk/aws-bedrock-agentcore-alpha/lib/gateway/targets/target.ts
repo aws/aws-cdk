@@ -6,7 +6,7 @@ import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metad
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IGateway } from '../gateway-base';
-import { GatewayPerms } from '../perms';
+import { GATEWAY_SYNC_PERMS } from '../perms';
 import { ApiSchema } from './schema/api-schema';
 import { ToolSchema } from './schema/tool-schema';
 import { GatewayTargetBase, GatewayTargetProtocolType, IGatewayTarget, IMcpGatewayTarget, McpTargetType } from './target-base';
@@ -502,7 +502,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
   public grantSync(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: grantee,
-      actions: GatewayPerms.SYNC_PERMS,
+      actions: GATEWAY_SYNC_PERMS,
       resourceArns: [this.gateway.gatewayArn],
     });
   }

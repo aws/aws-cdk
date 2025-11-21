@@ -5,7 +5,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import { Construct } from 'constructs';
 // Internal imports
 import { IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
-import { GatewayPerms } from './perms';
+import { GATEWAY_GET_PERMS, GATEWAY_LIST_PERMS, GATEWAY_MANAGE_PERMS, GATEWAY_INVOKE_PERMS } from './perms';
 import { IGatewayProtocolConfig } from './protocol';
 
 /******************************************************************************
@@ -269,12 +269,12 @@ export abstract class GatewayBase extends Resource implements IGateway {
    * @param grantee The principal to grant read permissions to
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
-    const resourceSpecificGrant = this.grant(grantee, ...GatewayPerms.GET_PERMS);
+    const resourceSpecificGrant = this.grant(grantee, ...GATEWAY_GET_PERMS);
 
     const allResourceGrant = iam.Grant.addToPrincipal({
       grantee: grantee,
       resourceArns: ['*'],
-      actions: [...GatewayPerms.LIST_PERMS],
+      actions: [...GATEWAY_LIST_PERMS],
     });
     // Return combined grant
     return resourceSpecificGrant.combine(allResourceGrant);
@@ -286,7 +286,7 @@ export abstract class GatewayBase extends Resource implements IGateway {
    * @param grantee The principal to grant manage permissions to
    */
   public grantManage(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...GatewayPerms.MANAGE_PERMS);
+    return this.grant(grantee, ...GATEWAY_MANAGE_PERMS);
   }
 
   /**
@@ -295,7 +295,7 @@ export abstract class GatewayBase extends Resource implements IGateway {
    * @param grantee The principal to grant invoke permissions to
    */
   public grantInvoke(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...GatewayPerms.INVOKE_PERMS);
+    return this.grant(grantee, ...GATEWAY_INVOKE_PERMS);
   }
 
   // ------------------------------------------------------

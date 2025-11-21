@@ -11,7 +11,7 @@ import { Construct } from 'constructs';
 import { GatewayBase, GatewayExceptionLevel, IGateway } from './gateway-base';
 import { GatewayAuthorizer, IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
 import { ICredentialProviderConfig } from './outbound-auth/credential-provider';
-import { GatewayPerms } from './perms';
+import { GATEWAY_ASSUME_ROLE, GATEWAY_KMS_KEY_PERMS } from './perms';
 import { IGatewayProtocolConfig, McpGatewaySearchType, McpProtocolConfiguration, MCPProtocolVersion } from './protocol';
 import { ApiSchema } from './targets/schema/api-schema';
 import { ToolSchema } from './targets/schema/tool-schema';
@@ -585,7 +585,7 @@ export class Gateway extends GatewayBase {
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         principals: [new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com')],
-        actions: GatewayPerms.ASSUME_ROLE,
+        actions: GATEWAY_ASSUME_ROLE,
         conditions: {
           StringEquals: {
             'aws:SourceAccount': account,
@@ -600,7 +600,7 @@ export class Gateway extends GatewayBase {
     if (this.kmsKey) {
       role.addToPolicy(new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
-        actions: GatewayPerms.KMS_KEY_PERMS,
+        actions: GATEWAY_KMS_KEY_PERMS,
         resources: [this.kmsKey.keyArn],
       }));
     }

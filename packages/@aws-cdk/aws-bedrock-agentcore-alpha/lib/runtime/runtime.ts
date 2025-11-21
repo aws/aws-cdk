@@ -526,13 +526,13 @@ export class Runtime extends RuntimeBase {
    * @throws Error if validation fails
    */
   private validateLifecycleConfiguration(lifecycleConfiguration: LifecycleConfiguration): void {
-    if (lifecycleConfiguration.idleRuntimeSessionTimeout) {
+    if (lifecycleConfiguration.idleRuntimeSessionTimeout && !lifecycleConfiguration.idleRuntimeSessionTimeout.isUnresolved()) {
       if (lifecycleConfiguration.idleRuntimeSessionTimeout.toSeconds() < LIFECYCLE_MIN_TIMEOUT.toSeconds()
         || lifecycleConfiguration.idleRuntimeSessionTimeout.toSeconds() > LIFECYCLE_MAX_LIFETIME.toSeconds()) {
         throw new ValidationError(`Idle runtime session timeout must be between ${LIFECYCLE_MIN_TIMEOUT.toSeconds()} seconds and ${LIFECYCLE_MAX_LIFETIME.toSeconds()} seconds`);
       }
     }
-    if (lifecycleConfiguration.maxLifetime) {
+    if (lifecycleConfiguration.maxLifetime && !lifecycleConfiguration.maxLifetime.isUnresolved()) {
       if (lifecycleConfiguration.maxLifetime.toSeconds() < LIFECYCLE_MIN_TIMEOUT.toSeconds()
         || lifecycleConfiguration.maxLifetime.toSeconds() > LIFECYCLE_MAX_LIFETIME.toSeconds()) {
         throw new ValidationError(`Maximum lifetime must be between ${LIFECYCLE_MIN_TIMEOUT.toSeconds()} seconds and ${LIFECYCLE_MAX_LIFETIME.toSeconds()} seconds`);
