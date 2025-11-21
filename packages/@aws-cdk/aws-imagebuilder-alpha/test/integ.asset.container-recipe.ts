@@ -19,6 +19,6 @@ new imagebuilder.ContainerRecipe(stack, 'ContainerRecipe', {
   ),
 });
 
-new integ.IntegTest(app, 'ContainerRecipeTest', {
+new integ.IntegTest(app, 'ContainerRecipeTest-Asset', {
   testCases: [stack],
 });

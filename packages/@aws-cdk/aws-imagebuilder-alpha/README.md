@@ -36,6 +36,202 @@ EC2 Image Builder supports AWS-managed components for common tasks, AWS Marketpl
 that you create. Components run during specific workflow phases: build and validate phases during the build stage, and
 test phase during the test stage.
 
+### Image Recipe
+
+#### Image Recipe Basic Usage
+
+Create an image recipe with the required base image:
+
+```ts
+const imageRecipe = new imagebuilder.ImageRecipe(this, 'MyImageRecipe', {
+  baseImage: imagebuilder.BaseImage.fromSsmParameterName(
+    '/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64'
+  )
+});
+```
+
+#### Image Recipe Base Images
+
+To create a recipe, you have to select a base image to build and customize from. This base image can be referenced from
+various sources, such as from SSM parameters, AWS Marketplace products, and AMI IDs directly.
+
+##### SSM Parameters
+
+Using SSM parameter references:
+
+```ts
+const imageRecipe = new imagebuilder.ImageRecipe(this, 'SsmImageRecipe', {
+  baseImage: imagebuilder.BaseImage.fromSsmParameterName(
+    '/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64'
+  )
+});
+
+// Using an SSM parameter construct
+const parameter = ssm.StringParameter.fromStringParameterName(
+  this,
+  'BaseImageParameter',
+  '/aws/service/ami-windows-latest/Windows_Server-2022-English-Full-Base'
+);
+const windowsRecipe = new imagebuilder.ImageRecipe(this, 'WindowsImageRecipe', {
+  baseImage: imagebuilder.BaseImage.fromSsmParameter(parameter)
+});
+```
+
+##### AMI IDs
+
+When you have a specific AMI to use:
+
+```ts
+const imageRecipe = new imagebuilder.ImageRecipe(this, 'AmiImageRecipe', {
+  baseImage: imagebuilder.BaseImage.fromAmiId('ami-12345678')
+});
+```
+
+##### Marketplace Images
+
+For marketplace base images:
+
+```ts
+const imageRecipe = new imagebuilder.ImageRecipe(this, 'MarketplaceImageRecipe', {
+  baseImage: imagebuilder.BaseImage.fromMarketplaceProductId('prod-1234567890abcdef0')
+});
+```
+
+#### Image Recipe Components
+
+Components from various sources, such as custom-owned, AWS-owned, or AWS Marketplace-owned, can optionally be included
+in recipes. For parameterized components, you are able to provide the parameters to use in the recipe, which will be
+applied during the image build when executing components.
+
+##### Custom Components in Image Recipes
+
+Add your own components to the recipe:
+
+```ts
+const customComponent = new imagebuilder.Component(this, 'MyComponent', {
+  platform: imagebuilder.Platform.LINUX,
+  data: imagebuilder.ComponentData.fromJsonObject({
+    schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
+    phases: [
+      {
+        name: imagebuilder.ComponentPhaseName.BUILD,
+        steps: [
+          {
+            name: 'install-app',
+            action: imagebuilder.ComponentAction.EXECUTE_BASH,
+            inputs: {
+              commands: ['yum install -y my-application']
+            }
+          }
+        ]
+      }
+    ]
+  })
+});
+
+const imageRecipe = new imagebuilder.ImageRecipe(this, 'ComponentImageRecipe', {
+  baseImage: imagebuilder.BaseImage.fromSsmParameterName(
+    '/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64'
+  ),
+  components: [
+    {
+      component: customComponent
+    }
+  ]
+});
+```
+
+##### AWS-Managed Components in Image Recipes
+
+Use pre-built AWS components:
+
+```ts
+const imageRecipe = new imagebuilder.ImageRecipe(this, 'AwsManagedImageRecipe', {
+  baseImage: imagebuilder.BaseImage.fromSsmParameterName(
+    '/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64'
+  ),
+  components: [
+    {
+      component: imagebuilder.AwsManagedComponent.updateOS(this, 'UpdateOS', {
+        platform: imagebuilder.Platform.LINUX
+      })
+    },
+    {
+      component: imagebuilder.AwsManagedComponent.awsCliV2(this, 'AwsCli', {
+        platform: imagebuilder.Platform.LINUX
+      })
+    }
+  ]
+});
+```
+
+##### Component Parameters in Image Recipes
+
+Pass parameters to components that accept them:
+
+```ts
+const parameterizedComponent = imagebuilder.Component.fromComponentName(
+  this,
+  'ParameterizedComponent',
+  'my-parameterized-component'
+);
+
+const imageRecipe = new imagebuilder.ImageRecipe(this, 'ParameterizedImageRecipe', {
+  baseImage: imagebuilder.BaseImage.fromSsmParameterName(
+    '/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64'
+  ),
+  components: [
+    {
+      component: parameterizedComponent,
+      parameters: {
+        environment: imagebuilder.ComponentParameterValue.fromString('production'),
+        version: imagebuilder.ComponentParameterValue.fromString('1.0.0')
+      }
+    }
+  ]
+});
+```
+
+#### Image Recipe Configuration
+
+##### Block Device Configuration
+
+Configure storage for the build instance:
+
+```ts
+const imageRecipe = new imagebuilder.ImageRecipe(this, 'BlockDeviceImageRecipe', {
+  baseImage: imagebuilder.BaseImage.fromSsmParameterName(
+    '/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64'
+  ),
+  blockDevices: [
+    {
+      deviceName: '/dev/sda1',
+      volume: ec2.BlockDeviceVolume.ebs(100, {
+        encrypted: true,
+        volumeType: ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3
+      })
+    }
+  ]
+});
+```
+
+##### AMI Tagging
+
+Tag the output AMI:
+
+```ts
+const imageRecipe = new imagebuilder.ImageRecipe(this, 'TaggedImageRecipe', {
+  baseImage: imagebuilder.BaseImage.fromSsmParameterName(
+    '/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64'
+  ),
+  amiTags: {
+    Environment: 'Production',
+    Application: 'WebServer',
+    Owner: 'DevOps Team'
+  }
+});
+```
+
 ### Container Recipe
 
 A container recipe is similar to an image recipe but specifically for container images. It defines the base container
