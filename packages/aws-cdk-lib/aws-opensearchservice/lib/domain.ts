@@ -3,7 +3,8 @@ import { URL } from 'url';
 import { Construct } from 'constructs';
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
 import { OpenSearchAccessPolicy } from './opensearch-access-policy';
-import { CfnDomain } from './opensearchservice.generated';
+import { DomainGrants } from './opensearchservice-grants.generated';
+import { CfnDomain, DomainReference, IDomainRef } from './opensearchservice.generated';
 import * as perms from './perms';
 import { EngineVersion } from './version';
 import * as acm from '../../aws-certificatemanager';
@@ -760,7 +761,7 @@ export interface DomainProps {
 /**
  * An interface that represents an Amazon OpenSearch Service domain - either created with the CDK, or an existing one.
  */
-export interface IDomain extends cdk.IResource {
+export interface IDomain extends cdk.IResource, IDomainRef {
   /**
    * Arn of the Amazon OpenSearch Service domain.
    *
@@ -986,6 +987,17 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   public abstract readonly domainName: string;
   public abstract readonly domainId: string;
   public abstract readonly domainEndpoint: string;
+  /**
+   * Collection of grant methods for a Domain
+   */
+  public readonly grants = DomainGrants.fromDomain(this);
+
+  public get domainRef(): DomainReference {
+    return {
+      domainArn: this.domainArn,
+      domainName: this.domainName,
+    };
+  }
 
   /**
    * Grant read permissions for this domain and its contents to an IAM
@@ -994,12 +1006,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @param identity The principal
    */
   grantRead(identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_READ_ACTIONS,
-      this.domainArn,
-      `${this.domainArn}/*`,
-    );
+    return this.grants.read(identity);
   }
 
   /**
@@ -1009,12 +1016,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @param identity The principal
    */
   grantWrite(identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_WRITE_ACTIONS,
-      this.domainArn,
-      `${this.domainArn}/*`,
-    );
+    return this.grants.write(identity);
   }
 
   /**
@@ -1024,12 +1026,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @param identity The principal
    */
   grantReadWrite(identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_READ_WRITE_ACTIONS,
-      this.domainArn,
-      `${this.domainArn}/*`,
-    );
+    return this.grants.readWrite(identity);
   }
 
   /**

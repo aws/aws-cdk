@@ -104,7 +104,7 @@ export class CdkCloudWatch extends ExternalModule {
 }
 
 export const CDK_INTERFACES_ENVIRONMENT_AWARE = new Interfaces('aws-cdk-lib/interfaces/environment-aware');
-export const CDK_CORE = new CdkCore('aws-cdk-lib');
+export const CDK_CORE = new CdkCore('aws-cdk-lib/core');
 export const CDK_CLOUDWATCH = new CdkCloudWatch('aws-cdk-lib/aws-cloudwatch');
 export const CONSTRUCTS = new Constructs();
 
