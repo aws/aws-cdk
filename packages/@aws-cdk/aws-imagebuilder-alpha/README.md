@@ -36,6 +36,425 @@ EC2 Image Builder supports AWS-managed components for common tasks, AWS Marketpl
 that you create. Components run during specific workflow phases: build and validate phases during the build stage, and
 test phase during the test stage.
 
+### Container Recipe
+
+A container recipe is similar to an image recipe but specifically for container images. It defines the base container
+image and components applied to produce the desired configuration for the output container image. Container recipes work
+with Docker images from DockerHub, Amazon ECR, or Amazon-managed container images as starting points.
+
+#### Container Recipe Basic Usage
+
+Create a container recipe with the required base image and target repository:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'MyContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  )
+});
+```
+
+#### Container Recipe Base Images
+
+##### DockerHub Images
+
+Using public Docker Hub images:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'DockerHubContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  )
+});
+```
+
+##### ECR Images
+
+Using images from your own ECR repositories:
+
+```ts
+const sourceRepo = ecr.Repository.fromRepositoryName(this, 'SourceRepo', 'my-base-image');
+const targetRepo = ecr.Repository.fromRepositoryName(this, 'TargetRepo', 'my-container-repo');
+
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'EcrContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromEcr(sourceRepo, '1.0.0'),
+  targetRepository: imagebuilder.Repository.fromEcr(targetRepo)
+});
+```
+
+##### ECR Public Images
+
+Using images from Amazon ECR Public:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'EcrPublicContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromEcrPublic('amazonlinux', 'amazonlinux', '2023'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  )
+});
+```
+
+#### Container Recipe Components
+
+##### Custom Components in Container Recipes
+
+Add your own components to the container recipe:
+
+```ts
+const customComponent = new imagebuilder.Component(this, 'MyComponent', {
+  platform: imagebuilder.Platform.LINUX,
+  data: imagebuilder.ComponentData.fromJsonObject({
+    schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
+    phases: [
+      {
+        name: imagebuilder.ComponentPhaseName.BUILD,
+        steps: [
+          {
+            name: 'install-app',
+            action: imagebuilder.ComponentAction.EXECUTE_BASH,
+            inputs: {
+              commands: ['yum install -y my-container-application']
+            }
+          }
+        ]
+      }
+    ]
+  })
+});
+
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'ComponentContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  ),
+  components: [
+    {
+      component: customComponent
+    }
+  ]
+});
+```
+
+##### AWS-Managed Components in Container Recipes
+
+Use pre-built AWS components:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'AwsManagedContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  ),
+  components: [
+    {
+      component: imagebuilder.AwsManagedComponent.updateOS(this, 'UpdateOS', {
+        platform: imagebuilder.Platform.LINUX
+      })
+    },
+    {
+      component: imagebuilder.AwsManagedComponent.awsCliV2(this, 'AwsCli', {
+        platform: imagebuilder.Platform.LINUX
+      })
+    }
+  ]
+});
+```
+
+#### Container Recipe Configuration
+
+##### Custom Dockerfile
+
+Provide your own Dockerfile template:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'CustomDockerfileContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  ),
+  dockerfile: imagebuilder.DockerfileData.fromInline(`
+FROM {{{ imagebuilder:parentImage }}}
+CMD ["echo", "Hello, world!"]
+{{{ imagebuilder:environments }}}
+{{{ imagebuilder:components }}}
+`)
+});
+```
+
+##### Instance Configuration
+
+Configure the build instance:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'InstanceConfigContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  ),
+  // Custom ECS-optimized AMI for building
+  instanceImage: imagebuilder.ContainerInstanceImage.fromSsmParameterName(
+    '/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id'
+  ),
+  // Additional storage for build process
+  instanceBlockDevices: [
+    {
+      deviceName: '/dev/xvda',
+      volume: ec2.BlockDeviceVolume.ebs(50, {
+        encrypted: true,
+        volumeType: ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3
+      })
+    }
+  ]
+});
+```
+
+### Component
+
+A component defines the sequence of steps required to customize an instance during image creation (build component) or
+test an instance launched from the created image (test component). Components are created from declarative YAML or JSON
+documents that describe runtime configuration for building, validating, or testing instances. Components are included
+when added to the image recipe or container recipe for an image build.
+
+EC2 Image Builder supports AWS-managed components for common tasks, AWS Marketplace components, and custom components
+that you create. Components run during specific workflow phases: build and validate phases during the build stage, and
+test phase during the test stage.
+
+#### Basic Usage
+
+Create a component with the required properties: platform and component data.
+
+```ts
+const component = new imagebuilder.Component(this, 'MyComponent', {
+  platform: imagebuilder.Platform.LINUX,
+  data: imagebuilder.ComponentData.fromJsonObject({
+    schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
+    phases: [
+      {
+        name: imagebuilder.ComponentPhaseName.BUILD,
+        steps: [
+          {
+            name: 'install-app',
+            action: imagebuilder.ComponentAction.EXECUTE_BASH,
+            inputs: {
+              commands: ['echo "Installing my application..."', 'yum update -y'],
+            },
+          },
+        ],
+      },
+    ],
+  }),
+});
+```
+
+#### Component Data Sources
+
+##### Inline Component Data
+
+Use `ComponentData.fromInline()` for existing YAML/JSON definitions:
+
+```ts
+const component = new imagebuilder.Component(this, 'InlineComponent', {
+  platform: imagebuilder.Platform.LINUX,
+  data: imagebuilder.ComponentData.fromInline(`
+name: my-component
+schemaVersion: 1.0
+phases:
+  - name: build
+    steps:
+      - name: update-os
+        action: ExecuteBash
+        inputs:
+          commands: ['yum update -y']
+`)
+});
+```
+
+##### JSON Object Component Data
+
+Most developer-friendly approach using objects:
+
+```ts
+
+const component = new imagebuilder.Component(this, 'JsonComponent', {
+  platform: imagebuilder.Platform.LINUX,
+  data: imagebuilder.ComponentData.fromJsonObject({
+    schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
+    phases: [
+      {
+        name: imagebuilder.ComponentPhaseName.BUILD,
+        steps: [
+          {
+            name: 'configure-app',
+            action: imagebuilder.ComponentAction.CREATE_FILE,
+            inputs: {
+              path: '/etc/myapp/config.json',
+              content: '{"env": "production"}'
+            }
+          }
+        ]
+      }
+    ]
+  })
+});
+```
+
+##### Structured Component Document
+
+For type-safe, CDK-native definitions with enhanced properties like `timeout` and `onFailure`.
+
+###### Defining a component step
+
+You can define steps in the component which will be executed in order when the component is applied:
+
+```ts
+const step: imagebuilder.ComponentDocumentStep = {
+  name: 'configure-app',
+  action: imagebuilder.ComponentAction.CREATE_FILE,
+  inputs: imagebuilder.ComponentStepInputs.fromObject({
+    path: '/etc/myapp/config.json',
+    content: '{"env": "production"}'
+  })
+};
+```
+
+###### Defining a component phase
+
+Phases group steps together, which run in sequence when building, validating or testing in the component:
+
+```ts
+const phase: imagebuilder.ComponentDocumentPhase = {
+  name: imagebuilder.ComponentPhaseName.BUILD,
+  steps: [
+    {
+      name: 'configure-app',
+      action: imagebuilder.ComponentAction.CREATE_FILE,
+      inputs: imagebuilder.ComponentStepInputs.fromObject({
+        path: '/etc/myapp/config.json',
+        content: '{"env": "production"}'
+      })
+    }
+  ]
+};
+```
+
+###### Defining a component
+
+The component data defines all steps across the provided phases to execute during the build:
+
+```ts  
+const component = new imagebuilder.Component(this, 'StructuredComponent', {
+  platform: imagebuilder.Platform.LINUX,
+  data: imagebuilder.ComponentData.fromComponentDocumentJsonObject({
+    schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
+    phases: [
+      {
+        name: imagebuilder.ComponentPhaseName.BUILD,
+        steps: [
+          {
+            name: 'install-with-timeout',
+            action: imagebuilder.ComponentAction.EXECUTE_BASH,
+            timeout: Duration.minutes(10),
+            onFailure: imagebuilder.ComponentOnFailure.CONTINUE,
+            inputs: imagebuilder.ComponentStepInputs.fromObject({
+              commands: ['./install-script.sh']
+            })
+          }
+        ]
+      }
+    ]
+  })
+});
+```
+
+##### S3 Component Data
+
+For those components you want to upload or have uploaded to S3:
+
+```ts
+// Upload a local file
+const componentFromAsset = new imagebuilder.Component(this, 'AssetComponent', {
+  platform: imagebuilder.Platform.LINUX,
+  data: imagebuilder.ComponentData.fromAsset(this, 'ComponentAsset', './my-component.yml'),
+});
+
+// Reference an existing S3 object
+const bucket = s3.Bucket.fromBucketName(this, 'ComponentBucket', 'my-components-bucket');
+const componentFromS3 = new imagebuilder.Component(this, 'S3Component', {
+  platform: imagebuilder.Platform.LINUX,
+  data: imagebuilder.ComponentData.fromS3(bucket, 'components/my-component.yml'),
+});
+```
+
+#### Encrypt component data with a KMS key
+
+You can encrypt component data with a KMS key, so that only principals with access to decrypt with the key are able to
+access the component data.
+
+```ts
+const component = new imagebuilder.Component(this, 'EncryptedComponent', {
+  platform: imagebuilder.Platform.LINUX,
+  kmsKey: new kms.Key(this, 'ComponentKey'),
+  data: imagebuilder.ComponentData.fromJsonObject({
+    schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
+    phases: [
+      {
+        name: imagebuilder.ComponentPhaseName.BUILD,
+        steps: [
+          {
+            name: 'secure-setup',
+            action: imagebuilder.ComponentAction.EXECUTE_BASH,
+            inputs: {
+              commands: ['echo "This component data is encrypted with KMS"'],
+            },
+          },
+        ],
+      },
+    ],
+  }),
+});
+```
+
+#### AWS-Managed Components
+
+AWS provides a collection of managed components for common tasks:
+
+```ts
+// Install AWS CLI v2
+const awsCliComponent = imagebuilder.AwsManagedComponent.awsCliV2(this, 'AwsCli', {
+  platform: imagebuilder.Platform.LINUX
+});
+
+// Update the operating system
+const updateComponent = imagebuilder.AwsManagedComponent.updateOS(this, 'UpdateOS', {
+  platform: imagebuilder.Platform.LINUX
+});
+
+// Reference any AWS-managed component by name
+const customAwsComponent = imagebuilder.AwsManagedComponent.fromAwsManagedComponentName(
+  this,
+  'CloudWatchAgent',
+  'amazon-cloudwatch-agent-linux'
+);
+```
+
+#### AWS Marketplace Components
+
+You can reference AWS Marketplace components using the marketplace component name and its product ID:
+
+```ts
+const marketplaceComponent = imagebuilder.AwsMarketplaceComponent.fromAwsMarketplaceComponentAttributes(
+  this,
+  'MarketplaceComponent',
+  {
+    componentName: 'my-marketplace-component',
+    marketplaceProductId: 'prod-1234567890abcdef0',
+  }
+);
+```
+
 ### Infrastructure Configuration
 
 Infrastructure configuration defines the compute resources and environment settings used during the image building
@@ -90,5 +509,148 @@ const infrastructureConfiguration = new imagebuilder.InfrastructureConfiguration
   resourceTags: {
     Environment: 'production'
   }
+});
+```
+
+### Distribution Configuration
+
+Distribution configuration defines how and where your built images are distributed after successful creation. For AMIs,
+this includes target AWS Regions, KMS encryption keys, account sharing permissions, License Manager associations, and
+launch template configurations. For container images, it specifies the target Amazon ECR repositories across regions.
+A distribution configuration can be associated with an image or an image pipeline to define these distribution settings
+for image builds.
+
+#### AMI Distributions
+
+AMI distributions can be defined to copy and modify AMIs in different accounts and regions, and apply them to launch
+templates, SSM parameters, etc.:
+
+```ts
+const distributionConfiguration = new imagebuilder.DistributionConfiguration(this, 'DistributionConfiguration', {
+  distributionConfigurationName: 'test-distribution-configuration',
+  description: 'A Distribution Configuration',
+  amiDistributions: [
+    {
+      // Distribute AMI to us-east-2 and publish the AMI ID to an SSM parameter
+      region: 'us-east-2',
+      ssmParameters: [
+        {
+          parameter: ssm.StringParameter.fromStringParameterAttributes(this, 'CrossRegionParameter', {
+            parameterName: '/imagebuilder/ami',
+            forceDynamicReference: true
+          })
+        }
+      ]
+    }
+  ]
+});
+
+// For AMI-based image builds - add an AMI distribution in the current region
+distributionConfiguration.addAmiDistributions({
+  amiName: 'imagebuilder-{{ imagebuilder:buildDate }}',
+  amiDescription: 'Build AMI',
+  amiKmsKey: kms.Key.fromLookup(this, 'ComponentKey', { aliasName: 'alias/distribution-encryption-key' }),
+  // Copy the AMI to different accounts
+  amiTargetAccountIds: ['123456789012', '098765432109'],
+  // Add launch permissions on the AMI
+  amiLaunchPermission: {
+    organizationArns: [
+      this.formatArn({ region: '', service: 'organizations', resource: 'organization', resourceName: 'o-1234567abc' })
+    ],
+    organizationalUnitArns: [
+      this.formatArn({
+        region: '',
+        service: 'organizations',
+        resource: 'ou',
+        resourceName: 'o-1234567abc/ou-a123-b4567890'
+      })
+    ],
+    isPublicUserGroup: true,
+    accountIds: ['234567890123']
+  },
+  // Attach tags to the AMI
+  amiTags: {
+    Environment: 'production',
+    Version: '{{ imagebuilder:buildVersion }}'
+  },
+  // Optional - publish the distributed AMI ID to an SSM parameter
+  ssmParameters: [
+    {
+      parameter: ssm.StringParameter.fromStringParameterAttributes(this, 'Parameter', {
+        parameterName: '/imagebuilder/ami',
+        forceDynamicReference: true
+      })
+    },
+    {
+      amiAccount: '098765432109',
+      dataType: ssm.ParameterDataType.TEXT,
+      parameter: ssm.StringParameter.fromStringParameterAttributes(this, 'CrossAccountParameter', {
+        parameterName: 'imagebuilder-prod-ami',
+        forceDynamicReference: true
+      })
+    }
+  ],
+  // Optional - create a new launch template version with the distributed AMI ID
+  launchTemplates: [
+    {
+      launchTemplate: ec2.LaunchTemplate.fromLaunchTemplateAttributes(this, 'LaunchTemplate', {
+        launchTemplateId: 'lt-1234'
+      }),
+      setDefaultVersion: true
+    },
+    {
+      accountId: '123456789012',
+      launchTemplate: ec2.LaunchTemplate.fromLaunchTemplateAttributes(this, 'CrossAccountLaunchTemplate', {
+        launchTemplateId: 'lt-5678'
+      }),
+      setDefaultVersion: true
+    }
+  ],
+  // Optional - enable Fast Launch on an imported launch template
+  fastLaunchConfigurations: [
+    {
+      enabled: true,
+      launchTemplate: ec2.LaunchTemplate.fromLaunchTemplateAttributes(this, 'FastLaunchLT', {
+        launchTemplateName: 'fast-launch-lt'
+      }),
+      maxParallelLaunches: 10,
+      targetSnapshotCount: 2
+    }
+  ],
+  // Optional - license configurations to apply to the AMI
+  licenseConfigurationArns: [
+    'arn:aws:license-manager:us-west-2:123456789012:license-configuration:lic-abcdefghijklmnopqrstuvwxyz'
+  ]
+});
+```
+
+#### Container Distributions
+
+##### Container repositories
+
+Container distributions can be configured to distribute to ECR repositories:
+
+```ts
+const ecrRepository = ecr.Repository.fromRepositoryName(this, 'ECRRepository', 'my-repo');
+const imageBuilderRepository = imagebuilder.Repository.fromEcr(ecrRepository);
+```
+
+##### Defining a container distribution
+
+You can configure the container repositories as well as the description and tags applied to the distributed container
+images:
+
+```ts
+const ecrRepository = ecr.Repository.fromRepositoryName(this, 'ECRRepository', 'my-repo');
+const containerRepository = imagebuilder.Repository.fromEcr(ecrRepository);
+const containerDistributionConfiguration = new imagebuilder.DistributionConfiguration(
+  this,
+  'ContainerDistributionConfiguration'
+);
+
+containerDistributionConfiguration.addContainerDistributions({
+  containerRepository,
+  containerDescription: 'Test container image',
+  containerTags: ['latest', 'latest-1.0']
 });
 ```
