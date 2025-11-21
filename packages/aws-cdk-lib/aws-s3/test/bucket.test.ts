@@ -3654,6 +3654,28 @@ describe('bucket', () => {
     });
   });
 
+  test('enableAutoDeleteObjects() throws if RemovalPolicy is not DESTROY', () => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    expect(() => bucket.enableAutoDeleteObjects()).toThrow(/Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'/);
+  });
+
+  test('enableAutoDeleteObjects() is idempotent', () => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    bucket.enableAutoDeleteObjects();
+
+    expect(() => {
+      bucket.enableAutoDeleteObjects();
+    }).not.toThrow();
+
+    Template.fromStack(stack).resourceCountIs('Custom::S3AutoDeleteObjects', 1);
+  });
+
   test('bucket with transfer acceleration turned on', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
