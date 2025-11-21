@@ -37,7 +37,9 @@ describe('S3 Delivery', () => {
           'Arn',
         ],
       },
-      DeliverySourceName: deliverySource.name,
+      DeliverySourceName: {
+        Ref: 'S3DeliverySource',
+      },
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
       DeliveryDestinationType: 'S3',
@@ -446,7 +448,9 @@ describe('Cloudwatch Logs Delivery', () => {
           'Arn',
         ],
       },
-      DeliverySourceName: deliverySource.name,
+      DeliverySourceName: {
+        Ref: 'CWLDeliverySource',
+      },
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
       DeliveryDestinationType: 'CWL',
@@ -660,7 +664,9 @@ describe('Firehose Stream Delivery', () => {
           'Arn',
         ],
       },
-      DeliverySourceName: deliverySource.name,
+      DeliverySourceName: {
+        Ref: 'FHDeliverySource',
+      },
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
       DeliveryDestinationType: 'FH',
