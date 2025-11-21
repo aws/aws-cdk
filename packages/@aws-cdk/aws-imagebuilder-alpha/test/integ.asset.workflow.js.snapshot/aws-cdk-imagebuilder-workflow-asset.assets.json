@@ -1,0 +1,34 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "6c2589532cc1551b2029f968e301fcbfc599120cb34cc72f8d59321b025ef594": {
+      "displayName": "WorkflowData",
+      "source": {
+        "path": "asset.6c2589532cc1551b2029f968e301fcbfc599120cb34cc72f8d59321b025ef594.yaml",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-5d15fddb": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6c2589532cc1551b2029f968e301fcbfc599120cb34cc72f8d59321b025ef594.yaml",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "6fa073cf9268a662466992376cb6252054c8d81ae2b4dc9ff4fe644ae60a1280": {
+      "displayName": "aws-cdk-imagebuilder-workflow-asset Template",
+      "source": {
+        "path": "aws-cdk-imagebuilder-workflow-asset.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-f80da22b": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6fa073cf9268a662466992376cb6252054c8d81ae2b4dc9ff4fe644ae60a1280.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

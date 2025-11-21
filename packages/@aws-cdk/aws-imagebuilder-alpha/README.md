@@ -222,7 +222,7 @@ EC2 Image Builder supports AWS-managed components for common tasks, AWS Marketpl
 that you create. Components run during specific workflow phases: build and validate phases during the build stage, and
 test phase during the test stage.
 
-#### Basic Usage
+#### Basic Component Usage
 
 Create a component with the required properties: platform and component data.
 
@@ -407,13 +407,13 @@ const component = new imagebuilder.Component(this, 'EncryptedComponent', {
             name: 'secure-setup',
             action: imagebuilder.ComponentAction.EXECUTE_BASH,
             inputs: {
-              commands: ['echo "This component data is encrypted with KMS"'],
-            },
-          },
-        ],
-      },
-    ],
-  }),
+              commands: ['echo "This component data is encrypted with KMS"']
+            }
+          }
+        ]
+      }
+    ]
+  })
 });
 ```
 
@@ -653,4 +653,228 @@ containerDistributionConfiguration.addContainerDistributions({
   containerDescription: 'Test container image',
   containerTags: ['latest', 'latest-1.0']
 });
+```
+
+### Workflow
+
+Workflows define the sequence of steps that Image Builder performs during image creation. There are three workflow types: BUILD (image building), TEST (testing images), and DISTRIBUTION (distributing container images).
+
+#### Basic Workflow Usage
+
+Create a workflow with the required properties: workflow type and workflow data.
+
+```ts
+const workflow = new imagebuilder.Workflow(this, 'MyWorkflow', {
+  workflowType: imagebuilder.WorkflowType.BUILD,
+  data: imagebuilder.WorkflowData.fromJsonObject({
+    schemaVersion: imagebuilder.WorkflowSchemaVersion.V1_0,
+    steps: [
+      {
+        name: 'LaunchBuildInstance',
+        action: imagebuilder.WorkflowAction.LAUNCH_INSTANCE,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
+        inputs: {
+          waitFor: 'ssmAgent',
+        },
+      },
+      {
+        name: 'ExecuteComponents',
+        action: imagebuilder.WorkflowAction.EXECUTE_COMPONENTS,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
+        inputs: {
+          'instanceId': 'i-123',
+        },
+      },
+      {
+        name: 'CreateImage',
+        action: imagebuilder.WorkflowAction.CREATE_IMAGE,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
+        inputs: {
+          'instanceId': 'i-123',
+        },
+      },
+      {
+        name: 'TerminateInstance',
+        action: imagebuilder.WorkflowAction.TERMINATE_INSTANCE,
+        onFailure: imagebuilder.WorkflowOnFailure.CONTINUE,
+        inputs: {
+          'instanceId': 'i-123',
+        },
+      },
+    ],
+    outputs: [
+      {
+        name: 'ImageId',
+        value: '$.stepOutputs.CreateImage.imageId',
+      },
+    ],
+  }),
+});
+```
+
+#### Workflow Data Sources
+
+##### Inline Workflow Data
+
+Use `WorkflowData.fromInline()` for existing YAML/JSON definitions:
+
+```ts
+const workflow = new imagebuilder.Workflow(this, 'InlineWorkflow', {
+  workflowType: imagebuilder.WorkflowType.TEST,
+  data: imagebuilder.WorkflowData.fromInline(`
+schemaVersion: 1.0
+steps:
+  - name: LaunchTestInstance
+    action: LaunchInstance
+    onFailure: Abort
+    inputs:
+      waitFor: ssmAgent
+  - name: RunTests
+    action: RunCommand
+    onFailure: Abort
+    inputs:
+      instanceId.$: "$.stepOutputs.LaunchTestInstance.instanceId"
+      commands: ['./run-tests.sh']
+  - name: TerminateTestInstance
+    action: TerminateInstance
+    onFailure: Continue
+    inputs:
+      instanceId.$: "$.stepOutputs.LaunchTestInstance.instanceId"
+`),
+});
+```
+
+##### JSON Object Workflow Data
+
+Most developer-friendly approach using JavaScript objects:
+
+```ts
+const workflow = new imagebuilder.Workflow(this, 'JsonWorkflow', {
+  workflowType: imagebuilder.WorkflowType.BUILD,
+  data: imagebuilder.WorkflowData.fromJsonObject({
+    schemaVersion: imagebuilder.WorkflowSchemaVersion.V1_0,
+    steps: [
+      {
+        name: 'LaunchBuildInstance',
+        action: imagebuilder.WorkflowAction.LAUNCH_INSTANCE,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
+        inputs: {
+          waitFor: 'ssmAgent'
+        }
+      },
+      {
+        name: 'ExecuteComponents',
+        action: imagebuilder.WorkflowAction.EXECUTE_COMPONENTS,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
+        inputs: {
+          'instanceId': 'i-123'
+        }
+      },
+      {
+        name: 'CreateImage',
+        action: imagebuilder.WorkflowAction.CREATE_IMAGE,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
+        inputs: {
+          'instanceId': 'i-123'
+        }
+      },
+      {
+        name: 'TerminateInstance',
+        action: imagebuilder.WorkflowAction.TERMINATE_INSTANCE,
+        onFailure: imagebuilder.WorkflowOnFailure.CONTINUE,
+        inputs: {
+          'instanceId': 'i-123'
+        }
+      }
+    ],
+    outputs: [
+      {
+        name: 'ImageId',
+        value: '$.stepOutputs.CreateImage.imageId'
+      }
+    ]
+  })
+});
+```
+
+##### S3 Workflow Data
+
+For those workflows you want to upload or have uploaded to S3:
+
+```ts
+// Upload a local file
+const workflowFromAsset = new imagebuilder.Workflow(this, 'AssetWorkflow', {
+  workflowType: imagebuilder.WorkflowType.BUILD,
+  data: imagebuilder.WorkflowData.fromAsset(this, 'WorkflowAsset', './my-workflow.yml'),
+});
+
+// Reference an existing S3 object
+const bucket = s3.Bucket.fromBucketName(this, 'WorkflowBucket', 'my-workflows-bucket');
+const workflowFromS3 = new imagebuilder.Workflow(this, 'S3Workflow', {
+  workflowType: imagebuilder.WorkflowType.BUILD,
+  data: imagebuilder.WorkflowData.fromS3(bucket, 'workflows/my-workflow.yml'),
+});
+```
+
+#### Encrypt workflow data with a KMS key
+
+You can encrypt workflow data with a KMS key, so that only principals with access to decrypt with the key are able to access the workflow data.
+
+```ts
+const workflow = new imagebuilder.Workflow(this, 'EncryptedWorkflow', {
+  workflowType: imagebuilder.WorkflowType.BUILD,
+  kmsKey: new kms.Key(this, 'WorkflowKey'),
+  data: imagebuilder.WorkflowData.fromJsonObject({
+    schemaVersion: imagebuilder.WorkflowSchemaVersion.V1_0,
+    steps: [
+      {
+        name: 'LaunchBuildInstance',
+        action: imagebuilder.WorkflowAction.LAUNCH_INSTANCE,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
+        inputs: {
+          waitFor: 'ssmAgent',
+        },
+      },
+      {
+        name: 'CreateImage',
+        action: imagebuilder.WorkflowAction.CREATE_IMAGE,
+        onFailure: imagebuilder.WorkflowOnFailure.ABORT,
+        inputs: {
+          'instanceId': 'i-123',
+        },
+      },
+      {
+        name: 'TerminateInstance',
+        action: imagebuilder.WorkflowAction.TERMINATE_INSTANCE,
+        onFailure: imagebuilder.WorkflowOnFailure.CONTINUE,
+        inputs: {
+          'instanceId': 'i-123',
+        },
+      },
+    ],
+    outputs: [
+      {
+        name: 'ImageId',
+        value: '$.stepOutputs.CreateImage.imageId',
+      },
+    ],
+  }),
+});
+```
+
+#### AWS-Managed Workflows
+
+AWS provides a collection of workflows for common scenarios:
+
+```ts
+// Build workflows
+const buildImageWorkflow = imagebuilder.AwsManagedWorkflow.buildImage(this, 'BuildImage');
+const buildContainerWorkflow = imagebuilder.AwsManagedWorkflow.buildContainer(this, 'BuildContainer');
+
+// Test workflows  
+const testImageWorkflow = imagebuilder.AwsManagedWorkflow.testImage(this, 'TestImage');
+const testContainerWorkflow = imagebuilder.AwsManagedWorkflow.testContainer(this, 'TestContainer');
+
+// Distribution workflows
+const distributeContainerWorkflow = imagebuilder.AwsManagedWorkflow.distributeContainer(this, 'DistributeContainer');
 ```
