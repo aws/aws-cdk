@@ -1,6 +1,6 @@
 import { Grant, IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { CredentialProviderType, ICredentialProviderConfig } from './credential-provider';
-import { GatewayPerms } from '../perms';
+import { GatewayPerms } from '../private/perms';
 
 /******************************************************************************
  *                                OAuth
