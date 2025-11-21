@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ImageRecipeTest-MarketplaceBaseImage/DefaultTest": {
+      "stacks": [
+        "aws-cdk-imagebuilder-image-recipe-marketplace-base-image"
+      ],
+      "assertionStack": "ImageRecipeTest-MarketplaceBaseImage/DefaultTest/DeployAssert",
+      "assertionStackName": "ImageRecipeTestMarketplaceBaseImageDefaultTestDeployAssert9DCD2BFD"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
