@@ -12,6 +12,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import {
   Annotations,
+  CfnDeletionPolicy,
   CustomResource,
   Duration,
   FeatureFlags,
@@ -2445,10 +2446,6 @@ export class Bucket extends BucketBase {
     }
 
     if (props.autoDeleteObjects) {
-      if (props.removalPolicy !== RemovalPolicy.DESTROY) {
-        throw new ValidationError('Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'.', this);
-      }
-
       this.enableAutoDeleteObjects();
     }
 
@@ -2502,6 +2499,9 @@ export class Bucket extends BucketBase {
    */
   @MethodMetadata()
   public enableAutoDeleteObjects() {
+    if (this._resource.cfnOptions.deletionPolicy !== CfnDeletionPolicy.DELETE || this._resource.cfnOptions.updateReplacePolicy !== CfnDeletionPolicy.DELETE) {
+        throw new ValidationError('Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'.', this);
+    }
     const provider = AutoDeleteObjectsProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
       useCfnResponseWrapper: false,
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
