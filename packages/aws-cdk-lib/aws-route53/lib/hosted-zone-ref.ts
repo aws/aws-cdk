@@ -1,10 +1,15 @@
 import * as iam from '../../aws-iam';
 import { IResource } from '../../core';
+import { IHostedZoneRef } from '../../interfaces/generated/aws-route53-interfaces.generated';
+
+export interface INamedHostedZoneRef extends IHostedZoneRef {
+  readonly name: string;
+}
 
 /**
  * Imported or created hosted zone
  */
-export interface IHostedZone extends IResource {
+export interface IHostedZone extends IResource, INamedHostedZoneRef {
   /**
    * ID of this hosted zone, such as "Z23ABC4XYZL05B"
    *
