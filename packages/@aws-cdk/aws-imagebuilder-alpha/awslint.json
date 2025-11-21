@@ -1,5 +1,6 @@
 {
   "exclude": [
-    "props-no-arn-refs:@aws-cdk/aws-imagebuilder-alpha.InfrastructureConfigurationProps.ec2InstanceHostResourceGroupArn"
+    "props-no-arn-refs:@aws-cdk/aws-imagebuilder-alpha.InfrastructureConfigurationProps.ec2InstanceHostResourceGroupArn",
+    "no-unused-type:@aws-cdk/aws-imagebuilder-alpha.ContainerType"
   ]
 }
