@@ -11,7 +11,7 @@ import { Construct } from 'constructs';
 import { GatewayBase, GatewayExceptionLevel, IGateway } from './gateway-base';
 import { GatewayAuthorizer, IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
 import { ICredentialProviderConfig } from './outbound-auth/credential-provider';
-import { GatewayPerms } from './perms';
+import { GatewayPerms } from './private/perms';
 import { IGatewayProtocolConfig, McpGatewaySearchType, McpProtocolConfiguration, MCPProtocolVersion } from './protocol';
 import { ApiSchema } from './targets/schema/api-schema';
 import { ToolSchema } from './targets/schema/tool-schema';

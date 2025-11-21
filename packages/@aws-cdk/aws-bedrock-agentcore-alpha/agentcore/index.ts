@@ -28,8 +28,7 @@ export * from './tools/browser';
 // ===================================
 export * from './gateway/gateway-base';
 export * from './gateway/gateway';
-export * from './gateway/perms';
-export * from './gateway/protocol';
+export * from './gateway/private/permscol';
 // validation-helpers contains internal utilities and should not be exported
 
 // ===================================

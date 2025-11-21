@@ -5,7 +5,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import { Construct } from 'constructs';
 // Internal imports
 import { IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
-import { GatewayPerms } from './perms';
+import { GatewayPerms } from './private/perms';
 import { IGatewayProtocolConfig } from './protocol';
 
 /******************************************************************************
