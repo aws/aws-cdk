@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "iam-policy-statement-sid/DefaultTest": {
+      "stacks": [
+        "PolicyStatementSidStack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "iam-policy-statement-sid/DefaultTest/DeployAssert",
+      "assertionStackName": "iampolicystatementsidDefaultTestDeployAssert798739BA"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
