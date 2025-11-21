@@ -18,6 +18,6 @@ new imagebuilder.Workflow(stack, 'S3AssetWorkflow', {
   data: imagebuilder.WorkflowData.fromS3(asset.bucket, asset.s3ObjectKey),
 });
 
-new integ.IntegTest(app, 'WorkflowTest', {
+new integ.IntegTest(app, 'WorkflowTest-S3', {
   testCases: [stack],
 });

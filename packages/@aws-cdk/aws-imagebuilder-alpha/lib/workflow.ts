@@ -9,6 +9,12 @@ import * as yaml from 'yaml';
 
 const WORKFLOW_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.Workflow');
 
+/**
+ * Represents the latest version of a workflow. When using the workflow in a pipeline, the pipeline will use the
+ * latest workflow at the time of execution.
+ *
+ * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/ibhow-semantic-versioning.html
+ */
 const LATEST_VERSION = 'x.x.x';
 
 /**

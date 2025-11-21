@@ -120,6 +120,6 @@ new imagebuilder.Workflow(stack, 'Workflow', {
   }),
 });
 
-new integ.IntegTest(app, 'WorkflowTest', {
+new integ.IntegTest(app, 'WorkflowTest-DefaultParameters', {
   testCases: [stack],
 });

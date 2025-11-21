@@ -861,4 +861,23 @@ steps:
       ),
     ).toThrow(cdk.ValidationError);
   });
+
+  test('throws a validation error when importing AWS-managed workflow with workflow type as an unresolved token', () => {
+    expect(() =>
+      AwsManagedWorkflow.fromAwsManagedWorkflowAttributes(stack, 'BuildImage', {
+        workflowName: 'build-image',
+        workflowType: cdk.Lazy.string({ produce: () => 'BUILD' }) as WorkflowType,
+      }),
+    ).toThrow(cdk.ValidationError);
+  });
+
+  test('throws an error when importing an invalid workflow ARN', () => {
+    expect(() =>
+      Workflow.fromWorkflowArn(
+        stack,
+        'Workflow',
+        'arn:aws:imagebuilder:us-east-1:123456789012:workflow/build/imported-workflow',
+      ),
+    ).toThrow(cdk.ValidationError);
+  });
 });
