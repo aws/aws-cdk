@@ -5,6 +5,7 @@ import { CfnImageRecipe } from 'aws-cdk-lib/aws-imagebuilder';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { BaseImage } from './base-image';
+import { IContainerRecipe } from './container-recipe';
 import { ComponentConfiguration, IRecipeBase } from './recipe-base';
 
 const IMAGE_RECIPE_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.ImageRecipe');
@@ -202,6 +203,15 @@ abstract class ImageRecipeBase extends cdk.Resource implements IImageRecipe {
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, 'imagebuilder:GetImageRecipe');
+  }
+
+  /**
+   * Indicates whether the recipe is a Container Recipe
+   *
+   * @internal
+   */
+  public _isContainerRecipe(): this is IContainerRecipe {
+    return false;
   }
 
   /**

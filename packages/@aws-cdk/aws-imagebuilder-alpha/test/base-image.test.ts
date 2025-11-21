@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { BaseContainerImage, BaseImage, ContainerInstanceImage } from '../lib';
 

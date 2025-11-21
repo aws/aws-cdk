@@ -70,7 +70,7 @@ export interface IRecipeBase extends cdk.IResource {
    * @internal
    */
   _isContainerRecipe(): this is IContainerRecipe;
-  
+
   /**
    * Indicates whether the recipe is an Image Recipe
    *
