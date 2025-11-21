@@ -20,6 +20,9 @@
   "Browser5046F7C9": {
    "Type": "AWS::BedrockAgentCore::BrowserCustom",
    "Properties": {
+    "BrowserSigning": {
+     "Enabled": false
+    },
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
       "BrowserServiceRoleE2CB4014",
@@ -262,6 +265,9 @@
   "BrowserWithRecordingEAD45E5F": {
    "Type": "AWS::BedrockAgentCore::BrowserCustom",
    "Properties": {
+    "BrowserSigning": {
+     "Enabled": true
+    },
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
       "BrowserWithRecordingServiceRole6F12B29B",

@@ -1,14 +1,16 @@
 
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
+import { Duration } from 'aws-cdk-lib';
 import { Annotations, Template, Match } from 'aws-cdk-lib/assertions';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Runtime } from '../../../agentcore/runtime/runtime';
 import { RuntimeEndpoint } from '../../../agentcore/runtime/runtime-endpoint';
-import { AgentRuntimeArtifact } from '../../../agentcore/runtime/runtime-artifact';
+import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../agentcore/runtime/runtime-artifact';
 import { RuntimeAuthorizerConfiguration } from '../../../agentcore/runtime/runtime-authorizer-configuration';
 import { RuntimeNetworkConfiguration } from '../../../agentcore/network/network-configuration';
 import {
@@ -1694,6 +1696,532 @@ describe('Runtime role validation tests', () => {
     expect(annotations.length).toBe(1);
 
     Annotations.fromStack(stack).hasWarning('/test-stack/test-runtime', 'IAM role is from a different account (111111111111) than the stack account (123456789012). Ensure cross-account permissions are properly configured.');
+  });
+});
+
+describe('Runtime lifecycle configuration tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let repository: ecr.Repository;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should use default lifecycle configuration when not specified', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      LifecycleConfiguration: {
+        IdleRuntimeSessionTimeout: 60,
+        MaxLifetime: 28800,
+      },
+    });
+  });
+
+  test('Should set custom lifecycle configuration', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      lifecycleConfiguration: {
+        idleRuntimeSessionTimeout: Duration.minutes(10),
+        maxLifetime: Duration.hours(4),
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      LifecycleConfiguration: {
+        IdleRuntimeSessionTimeout: 600,
+        MaxLifetime: 14400,
+      },
+    });
+  });
+
+  test('Should set only idleRuntimeSessionTimeout', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      lifecycleConfiguration: {
+        idleRuntimeSessionTimeout: Duration.minutes(15),
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      LifecycleConfiguration: {
+        IdleRuntimeSessionTimeout: 900,
+        MaxLifetime: 28800,
+      },
+    });
+  });
+
+  test('Should set only maxLifetime', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      lifecycleConfiguration: {
+        maxLifetime: Duration.hours(6),
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      LifecycleConfiguration: {
+        IdleRuntimeSessionTimeout: 60,
+        MaxLifetime: 21600,
+      },
+    });
+  });
+
+  test('Should throw error for idleRuntimeSessionTimeout below minimum', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        lifecycleConfiguration: {
+          idleRuntimeSessionTimeout: Duration.seconds(30),
+        },
+      });
+    }).toThrow(/Idle runtime session timeout must be between 60 seconds and 28800 seconds/);
+  });
+
+  test('Should throw error for idleRuntimeSessionTimeout above maximum', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        lifecycleConfiguration: {
+          idleRuntimeSessionTimeout: Duration.hours(9),
+        },
+      });
+    }).toThrow(/Idle runtime session timeout must be between 60 seconds and 28800 seconds/);
+  });
+
+  test('Should throw error for maxLifetime below minimum', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        lifecycleConfiguration: {
+          maxLifetime: Duration.seconds(30),
+        },
+      });
+    }).toThrow(/Maximum lifetime must be between 60 seconds and 28800 seconds/);
+  });
+});
+
+describe('Runtime request header configuration tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let repository: ecr.Repository;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should not include request header configuration when not specified', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    const runtimeResource = template.findResources('AWS::BedrockAgentCore::Runtime');
+    const resourceId = Object.keys(runtimeResource)[0];
+    const resource = runtimeResource[resourceId];
+
+    expect(resource.Properties).not.toHaveProperty('RequestHeaderConfiguration');
+  });
+
+  test('Should set request header configuration with allowList', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      requestHeaderConfiguration: {
+        allowlistedHeaders: ['Authorization', 'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header1'],
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      RequestHeaderConfiguration: {
+        RequestHeaderAllowlist: ['Authorization', 'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header1'],
+      },
+    });
+  });
+
+  test('Should set request header configuration with single header', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      requestHeaderConfiguration: {
+        allowlistedHeaders: ['Authorization'],
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      RequestHeaderConfiguration: {
+        RequestHeaderAllowlist: ['Authorization'],
+      },
+    });
+  });
+
+  test('Should set request header configuration with multiple custom headers', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      requestHeaderConfiguration: {
+        allowlistedHeaders: [
+          'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header1',
+          'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header2',
+          'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header3',
+        ],
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      RequestHeaderConfiguration: {
+        RequestHeaderAllowlist: [
+          'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header1',
+          'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header2',
+          'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header3',
+        ],
+      },
+    });
+  });
+
+  test('Should throw error for empty allowList', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: [],
+        },
+      });
+    }).toThrow(/Request header allow list contain between 1 and 20 headers/);
+  });
+
+  test('Should throw error for allowList exceeding 20 headers', () => {
+    const longList = Array.from({ length: 21 }, (_, i) => `X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header${i + 1}`);
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: longList,
+        },
+      });
+    }).toThrow(/Request header allow list contain between 1 and 20 headers/);
+  });
+
+  test('Should throw error for invalid header pattern', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: ['Invalid-Header@Name'],
+        },
+      });
+    }).toThrow(/Request header must contain only letters, numbers, and hyphens/);
+  });
+
+  test('Should throw error for empty header name', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: [''],
+        },
+      });
+    }).toThrow(/The field Request header is 0 characters long but must be at least 1 characters/);
+  });
+});
+
+describe('Runtime fromS3 artifact loading tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let bucket: s3.Bucket;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    bucket = new s3.Bucket(stack, 'CodeBucket', {
+      bucketName: 'test-runtime-code-bucket',
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+  });
+
+  test('Should create runtime with fromS3 artifact', () => {
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromS3(
+      {
+        bucketName: bucket.bucketName,
+        objectKey: 'runtime-code.zip',
+      },
+      AgentCoreRuntime.PYTHON_3_10,
+      ['main.handler'],
+    );
+
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    expect(runtime.agentRuntimeArtifact).toBe(agentRuntimeArtifact);
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      AgentRuntimeArtifact: {
+        CodeConfiguration: {
+          Code: {
+            S3: {
+              Bucket: {
+                Ref: Match.stringLikeRegexp('CodeBucket.*'),
+              },
+              Prefix: 'runtime-code.zip',
+            },
+          },
+          Runtime: 'PYTHON_3_10',
+          EntryPoint: ['main.handler'],
+        },
+      },
+    });
+  });
+
+  test('Should create runtime with fromS3 artifact with object version', () => {
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromS3(
+      {
+        bucketName: bucket.bucketName,
+        objectKey: 'runtime-code.zip',
+        objectVersion: 'version123',
+      },
+      AgentCoreRuntime.PYTHON_3_10,
+      ['index.handler'],
+    );
+
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      AgentRuntimeArtifact: {
+        CodeConfiguration: {
+          Code: {
+            S3: {
+              Bucket: {
+                Ref: Match.stringLikeRegexp('CodeBucket.*'),
+              },
+              Prefix: 'runtime-code.zip',
+              VersionId: 'version123',
+            },
+          },
+          Runtime: 'PYTHON_3_10',
+          EntryPoint: ['index.handler'],
+        },
+      },
+    });
+  });
+
+  test('Should grant S3 permissions to execution role when using fromS3 artifact', () => {
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromS3(
+      {
+        bucketName: bucket.bucketName,
+        objectKey: 'runtime-code.zip',
+      },
+      AgentCoreRuntime.PYTHON_3_10,
+      ['main.handler'],
+    );
+
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    // Check that the execution role has S3 permissions
+    // grantReadWrite grants multiple S3 actions, so we check for at least one S3 action
+    const policies = template.findResources('AWS::IAM::Policy');
+    const hasS3Permissions = Object.values(policies).some((policy: any) => {
+      const statements = policy.Properties?.PolicyDocument?.Statement || [];
+      return statements.some((stmt: any) => {
+        const actions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
+        return actions.some((action: string) => action.startsWith('s3:'));
+      });
+    });
+    expect(hasS3Permissions).toBe(true);
+  });
+
+  test('Should work with fromS3 artifact and lifecycle configuration', () => {
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromS3(
+      {
+        bucketName: bucket.bucketName,
+        objectKey: 'runtime-code.zip',
+      },
+      AgentCoreRuntime.PYTHON_3_10,
+      ['main.handler'],
+    );
+
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      lifecycleConfiguration: {
+        idleRuntimeSessionTimeout: Duration.minutes(15),
+        maxLifetime: Duration.hours(4),
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      AgentRuntimeArtifact: {
+        CodeConfiguration: {
+          Code: {
+            S3: Match.anyValue(),
+          },
+          Runtime: 'PYTHON_3_10',
+          EntryPoint: ['main.handler'],
+        },
+      },
+      LifecycleConfiguration: {
+        IdleRuntimeSessionTimeout: 900,
+        MaxLifetime: 14400,
+      },
+    });
+  });
+
+  test('Should work with fromS3 artifact and request header configuration', () => {
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromS3(
+      {
+        bucketName: bucket.bucketName,
+        objectKey: 'runtime-code.zip',
+      },
+      AgentCoreRuntime.PYTHON_3_10,
+      ['main.handler'],
+    );
+
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      requestHeaderConfiguration: {
+        allowlistedHeaders: ['Authorization', 'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header1'],
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      AgentRuntimeArtifact: {
+        CodeConfiguration: {
+          Code: {
+            S3: Match.anyValue(),
+          },
+          Runtime: 'PYTHON_3_10',
+          EntryPoint: ['main.handler'],
+        },
+      },
+      RequestHeaderConfiguration: {
+        RequestHeaderAllowlist: ['Authorization', 'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header1'],
+      },
+    });
+  });
+
+  test('Should work with fromS3 artifact using string bucket name', () => {
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromS3(
+      {
+        bucketName: 'my-custom-bucket',
+        objectKey: 'runtime-code.zip',
+      },
+      AgentCoreRuntime.PYTHON_3_10,
+      ['com.example.Handler::handleRequest'],
+    );
+
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      AgentRuntimeArtifact: {
+        CodeConfiguration: {
+          Code: {
+            S3: {
+              Bucket: 'my-custom-bucket',
+              Prefix: 'runtime-code.zip',
+            },
+          },
+          Runtime: 'PYTHON_3_10',
+          EntryPoint: ['com.example.Handler::handleRequest'],
+        },
+      },
+    });
   });
 });
 
