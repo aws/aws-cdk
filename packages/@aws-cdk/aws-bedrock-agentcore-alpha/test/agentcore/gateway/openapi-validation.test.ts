@@ -1,4 +1,4 @@
-import { validateOpenApiSchema } from '../../../agentcore/gateway/validation-helpers';
+import { validateOpenApiSchema } from '../../../lib/gateway/validation-helpers';
 
 describe('OpenAPI Schema Validation', () => {
   describe('validateOpenApiSchema', () => {

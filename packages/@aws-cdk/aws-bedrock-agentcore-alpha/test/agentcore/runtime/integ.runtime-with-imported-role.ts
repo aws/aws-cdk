@@ -8,7 +8,7 @@ import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as agentcore from '../../../agentcore';
+import * as agentcore from '../../../lib';
 import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
 
 const app = new cdk.App();

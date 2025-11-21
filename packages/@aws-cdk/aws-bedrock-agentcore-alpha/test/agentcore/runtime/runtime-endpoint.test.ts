@@ -2,7 +2,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import { RuntimeEndpoint } from '../../../agentcore/runtime/runtime-endpoint';
+import { RuntimeEndpoint } from '../../../lib/runtime/runtime-endpoint';
 
 describe('RuntimeEndpoint tests', () => {
   let app: App;
