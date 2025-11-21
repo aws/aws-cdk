@@ -1,6 +1,6 @@
 import { Grant, IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { CredentialProviderType, ICredentialProviderConfig } from './credential-provider';
-import { GatewayPerms } from '../perms';
+import { GATEWAY_API_KEY_PERMS, GATEWAY_WORKLOAD_IDENTITY_PERMS, GATEWAY_SECRETS_PERMS } from '../perms';
 
 /******************************************************************************
  *                                 API KEY
@@ -152,13 +152,13 @@ export class ApiKeyCredentialProviderConfiguration implements ICredentialProvide
     const statements = [
       new PolicyStatement({
         actions: [
-          ...GatewayPerms.GATEWAY_API_KEY_PERMS,
-          ...GatewayPerms.GATEWAY_WORKLOAD_IDENTITY_PERMS,
+          ...GATEWAY_API_KEY_PERMS,
+          ...GATEWAY_WORKLOAD_IDENTITY_PERMS,
         ],
         resources: [this.providerArn],
       }),
       new PolicyStatement({
-        actions: GatewayPerms.SECRETS_PERMS,
+        actions: GATEWAY_SECRETS_PERMS,
         resources: [this.secretArn],
       }),
     ];
