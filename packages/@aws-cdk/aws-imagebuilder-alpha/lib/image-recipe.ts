@@ -257,7 +257,7 @@ export class ImageRecipe extends ImageRecipeBase {
   public static fromImageRecipeAttributes(scope: Construct, id: string, attrs: ImageRecipeAttributes): IImageRecipe {
     if (!attrs.imageRecipeArn && !attrs.imageRecipeName) {
       throw new cdk.ValidationError(
-        'either imageRecipeArn or imageRecipeName must be provided to import a image recipe',
+        'either imageRecipeArn or imageRecipeName must be provided to import an image recipe',
         scope,
       );
     }

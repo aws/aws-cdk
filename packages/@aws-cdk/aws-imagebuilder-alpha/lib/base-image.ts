@@ -29,7 +29,7 @@ export class BaseImage {
    * @param parameter The SSM parameter to use as the base image
    */
   public static fromSsmParameter(parameter: ssm.IParameter): BaseImage {
-    return this.fromSsmParameterName(parameter.parameterArn);
+    return new BaseImage(`ssm:${parameter.parameterArn}`);
   }
 
   /**
@@ -140,7 +140,7 @@ export class ContainerInstanceImage {
   }
 
   /**
-   * The name of the SSM parameter used to launch the instance for building the container image
+   * The ARN of the SSM parameter used to launch the instance for building the container image
    *
    * @param parameterName The name of the SSM parameter used as the container instance image
    */
@@ -168,4 +168,3 @@ export class ContainerInstanceImage {
     this.image = image;
   }
 }
-

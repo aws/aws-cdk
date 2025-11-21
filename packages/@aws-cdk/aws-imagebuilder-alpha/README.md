@@ -232,6 +232,181 @@ const imageRecipe = new imagebuilder.ImageRecipe(this, 'TaggedImageRecipe', {
 });
 ```
 
+### Container Recipe
+
+A container recipe is similar to an image recipe but specifically for container images. It defines the base container
+image and components applied to produce the desired configuration for the output container image. Container recipes work
+with Docker images from DockerHub, Amazon ECR, or Amazon-managed container images as starting points.
+
+#### Container Recipe Basic Usage
+
+Create a container recipe with the required base image and target repository:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'MyContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  )
+});
+```
+
+#### Container Recipe Base Images
+
+##### DockerHub Images
+
+Using public Docker Hub images:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'DockerHubContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  )
+});
+```
+
+##### ECR Images
+
+Using images from your own ECR repositories:
+
+```ts
+const sourceRepo = ecr.Repository.fromRepositoryName(this, 'SourceRepo', 'my-base-image');
+const targetRepo = ecr.Repository.fromRepositoryName(this, 'TargetRepo', 'my-container-repo');
+
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'EcrContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromEcr(sourceRepo, '1.0.0'),
+  targetRepository: imagebuilder.Repository.fromEcr(targetRepo)
+});
+```
+
+##### ECR Public Images
+
+Using images from Amazon ECR Public:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'EcrPublicContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromEcrPublic('amazonlinux', 'amazonlinux', '2023'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  )
+});
+```
+
+#### Container Recipe Components
+
+##### Custom Components in Container Recipes
+
+Add your own components to the container recipe:
+
+```ts
+const customComponent = new imagebuilder.Component(this, 'MyComponent', {
+  platform: imagebuilder.Platform.LINUX,
+  data: imagebuilder.ComponentData.fromJsonObject({
+    schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
+    phases: [
+      {
+        name: imagebuilder.ComponentPhaseName.BUILD,
+        steps: [
+          {
+            name: 'install-app',
+            action: imagebuilder.ComponentAction.EXECUTE_BASH,
+            inputs: {
+              commands: ['yum install -y my-container-application']
+            }
+          }
+        ]
+      }
+    ]
+  })
+});
+
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'ComponentContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  ),
+  components: [
+    {
+      component: customComponent
+    }
+  ]
+});
+```
+
+##### AWS-Managed Components in Container Recipes
+
+Use pre-built AWS components:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'AwsManagedContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  ),
+  components: [
+    {
+      component: imagebuilder.AwsManagedComponent.updateOS(this, 'UpdateOS', {
+        platform: imagebuilder.Platform.LINUX
+      })
+    },
+    {
+      component: imagebuilder.AwsManagedComponent.awsCliV2(this, 'AwsCli', {
+        platform: imagebuilder.Platform.LINUX
+      })
+    }
+  ]
+});
+```
+
+#### Container Recipe Configuration
+
+##### Custom Dockerfile
+
+Provide your own Dockerfile template:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'CustomDockerfileContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  ),
+  dockerfile: imagebuilder.DockerfileData.fromInline(`
+FROM {{{ imagebuilder:parentImage }}}
+CMD ["echo", "Hello, world!"]
+{{{ imagebuilder:environments }}}
+{{{ imagebuilder:components }}}
+`)
+});
+```
+
+##### Instance Configuration
+
+Configure the build instance:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'InstanceConfigContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  ),
+  // Custom ECS-optimized AMI for building
+  instanceImage: imagebuilder.ContainerInstanceImage.fromSsmParameterName(
+    '/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id'
+  ),
+  // Additional storage for build process
+  instanceBlockDevices: [
+    {
+      deviceName: '/dev/xvda',
+      volume: ec2.BlockDeviceVolume.ebs(50, {
+        encrypted: true,
+        volumeType: ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3
+      })
+    }
+  ]
+});
+```
+
 ### Component
 
 A component defines the sequence of steps required to customize an instance during image creation (build component) or
@@ -474,181 +649,6 @@ const marketplaceComponent = imagebuilder.AwsMarketplaceComponent.fromAwsMarketp
     marketplaceProductId: 'prod-1234567890abcdef0',
   }
 );
-```
-
-### Container Recipe
-
-A container recipe is similar to an image recipe but specifically for container images. It defines the base container
-image and components applied to produce the desired configuration for the output container image. Container recipes work
-with Docker images from DockerHub, Amazon ECR, or Amazon-managed container images as starting points.
-
-#### Container Recipe Basic Usage
-
-Create a container recipe with the required base image and target repository:
-
-```ts
-const containerRecipe = new imagebuilder.ContainerRecipe(this, 'MyContainerRecipe', {
-  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
-  targetRepository: imagebuilder.Repository.fromEcr(
-    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
-  )
-});
-```
-
-#### Container Recipe Base Images
-
-##### DockerHub Images
-
-Using public Docker Hub images:
-
-```ts
-const containerRecipe = new imagebuilder.ContainerRecipe(this, 'DockerHubContainerRecipe', {
-  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
-  targetRepository: imagebuilder.Repository.fromEcr(
-    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
-  )
-});
-```
-
-##### ECR Images
-
-Using images from your own ECR repositories:
-
-```ts
-const sourceRepo = ecr.Repository.fromRepositoryName(this, 'SourceRepo', 'my-base-image');
-const targetRepo = ecr.Repository.fromRepositoryName(this, 'TargetRepo', 'my-container-repo');
-
-const containerRecipe = new imagebuilder.ContainerRecipe(this, 'EcrContainerRecipe', {
-  baseImage: imagebuilder.BaseContainerImage.fromEcr(sourceRepo, '1.0.0'),
-  targetRepository: imagebuilder.Repository.fromEcr(targetRepo)
-});
-```
-
-##### ECR Public Images
-
-Using images from Amazon ECR Public:
-
-```ts
-const containerRecipe = new imagebuilder.ContainerRecipe(this, 'EcrPublicContainerRecipe', {
-  baseImage: imagebuilder.BaseContainerImage.fromEcrPublic('amazonlinux', 'amazonlinux', '2023'),
-  targetRepository: imagebuilder.Repository.fromEcr(
-    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
-  )
-});
-```
-
-#### Container Recipe Components
-
-##### Custom Components in Container Recipes
-
-Add your own components to the container recipe:
-
-```ts
-const customComponent = new imagebuilder.Component(this, 'MyComponent', {
-  platform: imagebuilder.Platform.LINUX,
-  data: imagebuilder.ComponentData.fromJsonObject({
-    schemaVersion: imagebuilder.ComponentSchemaVersion.V1_0,
-    phases: [
-      {
-        name: imagebuilder.ComponentPhaseName.BUILD,
-        steps: [
-          {
-            name: 'install-app',
-            action: imagebuilder.ComponentAction.EXECUTE_BASH,
-            inputs: {
-              commands: ['yum install -y my-container-application']
-            }
-          }
-        ]
-      }
-    ]
-  })
-});
-
-const containerRecipe = new imagebuilder.ContainerRecipe(this, 'ComponentContainerRecipe', {
-  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
-  targetRepository: imagebuilder.Repository.fromEcr(
-    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
-  ),
-  components: [
-    {
-      component: customComponent
-    }
-  ]
-});
-```
-
-##### AWS-Managed Components in Container Recipes
-
-Use pre-built AWS components:
-
-```ts
-const containerRecipe = new imagebuilder.ContainerRecipe(this, 'AwsManagedContainerRecipe', {
-  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
-  targetRepository: imagebuilder.Repository.fromEcr(
-    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
-  ),
-  components: [
-    {
-      component: imagebuilder.AwsManagedComponent.updateOS(this, 'UpdateOS', {
-        platform: imagebuilder.Platform.LINUX
-      })
-    },
-    {
-      component: imagebuilder.AwsManagedComponent.awsCliV2(this, 'AwsCli', {
-        platform: imagebuilder.Platform.LINUX
-      })
-    }
-  ]
-});
-```
-
-#### Container Recipe Configuration
-
-##### Custom Dockerfile
-
-Provide your own Dockerfile template:
-
-```ts
-const containerRecipe = new imagebuilder.ContainerRecipe(this, 'CustomDockerfileContainerRecipe', {
-  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
-  targetRepository: imagebuilder.Repository.fromEcr(
-    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
-  ),
-  dockerfile: imagebuilder.DockerfileData.fromInline(`
-FROM {{{ imagebuilder:parentImage }}}
-CMD ["echo", "Hello, world!"]
-{{{ imagebuilder:environments }}}
-{{{ imagebuilder:components }}}
-`)
-});
-```
-
-##### Instance Configuration
-
-Configure the build instance:
-
-```ts
-const containerRecipe = new imagebuilder.ContainerRecipe(this, 'InstanceConfigContainerRecipe', {
-  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
-  targetRepository: imagebuilder.Repository.fromEcr(
-    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
-  ),
-  // Custom ECS-optimized AMI for building
-  instanceImage: imagebuilder.ContainerInstanceImage.fromSsmParameterName(
-    '/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id'
-  ),
-  // Additional storage for build process
-  instanceBlockDevices: [
-    {
-      deviceName: '/dev/xvda',
-      volume: ec2.BlockDeviceVolume.ebs(50, {
-        encrypted: true,
-        volumeType: ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3
-      })
-    }
-  ]
-});
 ```
 
 ### Infrastructure Configuration

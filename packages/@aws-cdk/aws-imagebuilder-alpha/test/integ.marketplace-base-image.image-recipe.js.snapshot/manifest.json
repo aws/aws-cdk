@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bf34c2eae6eeafeeb0a1103cd3d55c1509b06980a3c943d21d30022731672b06.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f3a2598e17b10fe34ff5d1ef8482c668ea518f64e26ccc8fcbe9b4f8eb152aad.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,10 +37,19 @@
         "/aws-cdk-imagebuilder-image-recipe-marketplace-base-image/ImageRecipe/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ImageRecipe8C789631",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ImageRecipe8C789631"
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-recipe-marketplace-base-image/ImageRecipeVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImageRecipeVersion"
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-recipe-marketplace-base-image/ImageRecipeArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImageRecipeArn"
           }
         ],
         "/aws-cdk-imagebuilder-image-recipe-marketplace-base-image/BootstrapVersion": [
@@ -58,19 +67,19 @@
       },
       "displayName": "aws-cdk-imagebuilder-image-recipe-marketplace-base-image"
     },
-    "ImageRecipeTestDefaultTestDeployAssertFD6737FA.assets": {
+    "ImageRecipeTestMarketplaceBaseImageDefaultTestDeployAssert9DCD2BFD.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "ImageRecipeTestDefaultTestDeployAssertFD6737FA.assets.json",
+        "file": "ImageRecipeTestMarketplaceBaseImageDefaultTestDeployAssert9DCD2BFD.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "ImageRecipeTestDefaultTestDeployAssertFD6737FA": {
+    "ImageRecipeTestMarketplaceBaseImageDefaultTestDeployAssert9DCD2BFD": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "ImageRecipeTestDefaultTestDeployAssertFD6737FA.template.json",
+        "templateFile": "ImageRecipeTestMarketplaceBaseImageDefaultTestDeployAssert9DCD2BFD.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -79,7 +88,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "ImageRecipeTestDefaultTestDeployAssertFD6737FA.assets"
+          "ImageRecipeTestMarketplaceBaseImageDefaultTestDeployAssert9DCD2BFD.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -88,23 +97,23 @@
         }
       },
       "dependencies": [
-        "ImageRecipeTestDefaultTestDeployAssertFD6737FA.assets"
+        "ImageRecipeTestMarketplaceBaseImageDefaultTestDeployAssert9DCD2BFD.assets"
       ],
       "metadata": {
-        "/ImageRecipeTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/ImageRecipeTest-MarketplaceBaseImage/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/ImageRecipeTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/ImageRecipeTest-MarketplaceBaseImage/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "ImageRecipeTest/DefaultTest/DeployAssert"
+      "displayName": "ImageRecipeTest-MarketplaceBaseImage/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
