@@ -41,11 +41,11 @@ async function updateExportsAndEntryPoints(modules: ModuleMap, pkgPath: string) 
       serviceIndexExports.push(`export * as ${moduleConfig.submodule} from './${moduleConfig.name}';`);
     }
 
-    // @aws-cdk/mixins-preview/aws-s3/mixins => ./lib/services/aws-s3/index.js
-    const exportName = `./${moduleConfig.name}/mixins`;
-    if (!pkgJson.exports[exportName]) {
-      pkgJson.exports[exportName] = `./lib/services/${moduleConfig.name}/mixins.js`;
-    }
+    // @aws-cdk/mixins-preview/aws-s3 => ./lib/services/aws-s3/index.js
+    pkgJson.exports[`./${moduleConfig.submodule}`] ??= `./lib/services/${moduleConfig.name}/index.js`;
+
+    // @aws-cdk/mixins-preview/aws-s3/mixins => ./lib/services/aws-s3/mixins.js
+    pkgJson.exports[`./${moduleConfig.submodule}/mixins`] ??= `./lib/services/${moduleConfig.name}/mixins.js`;
   }
 
   // sort exports
