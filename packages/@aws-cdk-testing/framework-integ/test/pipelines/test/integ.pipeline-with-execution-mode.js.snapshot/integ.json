@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "PipelineStackIntegWithExecutionMode/DefaultTest": {
+      "stacks": [
+        "PipelineStack"
+      ],
+      "assertionStack": "PipelineStackIntegWithExecutionMode/DefaultTest/DeployAssert",
+      "assertionStackName": "PipelineStackIntegWithExecutionModeDefaultTestDeployAssertFF58F5A8"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}
