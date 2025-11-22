@@ -551,18 +551,7 @@
       ]
      }
     ],
-    "ServiceName": {
-     "Fn::Join": [
-      "",
-      [
-       "com.amazonaws.",
-       {
-        "Ref": "AWS::Region"
-       },
-       ".ecr.dkr"
-      ]
-     ]
-    },
+    "ServiceName": "com.amazonaws.us-west-2.ecr.dkr",
     "SubnetIds": [
      {
       "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
@@ -645,18 +634,90 @@
       ]
      }
     ],
-    "ServiceName": {
-     "Fn::Join": [
-      "",
-      [
-       "com.amazonaws.",
-       {
-        "Ref": "AWS::Region"
-       },
-       ".dynamodb"
+    "ServiceName": "com.amazonaws.us-west-2.dynamodb",
+    "SubnetIds": [
+     {
+      "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
+     },
+     {
+      "Ref": "MyVpcPrivateSubnet2Subnet0040C983"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
+   }
+  },
+  "MyVpcSESEndpointSecurityGroup06F927CE": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-ec2-vpc-endpoint/MyVpc/SESEndpoint/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Fn::GetAtt": [
+        "MyVpcF9F0CA6F",
+        "CidrBlock"
+       ]
+      },
+      "Description": {
+       "Fn::Join": [
+        "",
+        [
+         "from ",
+         {
+          "Fn::GetAtt": [
+           "MyVpcF9F0CA6F",
+           "CidrBlock"
+          ]
+         },
+         ":587"
+        ]
+       ]
+      },
+      "FromPort": 587,
+      "IpProtocol": "tcp",
+      "ToPort": 587
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
+     }
+    ],
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
+   }
+  },
+  "MyVpcSESEndpointA308E10A": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "MyVpcSESEndpointSecurityGroup06F927CE",
+       "GroupId"
       ]
-     ]
-    },
+     }
+    ],
+    "ServiceName": "com.amazonaws.us-west-2.email-smtp",
     "SubnetIds": [
      {
       "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
@@ -743,102 +804,7 @@
       ]
      }
     ],
-    "ServiceName": {
-     "Fn::Join": [
-      "",
-      [
-       "com.amazonaws.",
-       {
-        "Ref": "AWS::Region"
-       },
-       ".logs"
-      ]
-     ]
-    },
-    "SubnetIds": [
-     {
-      "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
-     },
-     {
-      "Ref": "MyVpcPrivateSubnet2Subnet0040C983"
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
-     }
-    ],
-    "VpcEndpointType": "Interface",
-    "VpcId": {
-     "Ref": "MyVpcF9F0CA6F"
-    }
-   }
-  },
-  "MyVpcCrossRegionEndpointSecurityGroup371BDCEC": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "aws-cdk-ec2-vpc-endpoint/MyVpc/CrossRegionEndpoint/SecurityGroup",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": {
-       "Fn::GetAtt": [
-        "MyVpcF9F0CA6F",
-        "CidrBlock"
-       ]
-      },
-      "Description": {
-       "Fn::Join": [
-        "",
-        [
-         "from ",
-         {
-          "Fn::GetAtt": [
-           "MyVpcF9F0CA6F",
-           "CidrBlock"
-          ]
-         },
-         ":443"
-        ]
-       ]
-      },
-      "FromPort": 443,
-      "IpProtocol": "tcp",
-      "ToPort": 443
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
-     }
-    ],
-    "VpcId": {
-     "Ref": "MyVpcF9F0CA6F"
-    }
-   }
-  },
-  "MyVpcCrossRegionEndpoint9A9ABB87": {
-   "Type": "AWS::EC2::VPCEndpoint",
-   "Properties": {
-    "PrivateDnsEnabled": false,
-    "SecurityGroupIds": [
-     {
-      "Fn::GetAtt": [
-       "MyVpcCrossRegionEndpointSecurityGroup371BDCEC",
-       "GroupId"
-      ]
-     }
-    ],
-    "ServiceName": "com.amazonaws.vpce.us-east-1.vpce-svc-123456",
-    "ServiceRegion": "us-east-1",
+    "ServiceName": "com.amazonaws.us-west-2.logs",
     "SubnetIds": [
      {
       "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
