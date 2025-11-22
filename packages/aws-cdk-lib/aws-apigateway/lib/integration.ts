@@ -15,6 +15,8 @@ export enum ResponseTransferMode {
 
   /**
    * API Gateway streams the response back to you as it is received from the integration.
+   *
+   * This is only supported for AWS_PROXY and HTTP_PROXY integration types.
    */
   STREAM = 'STREAM',
 }
@@ -133,6 +135,8 @@ export interface IntegrationOptions {
 
   /**
    * The response transfer mode for the integration.
+   *
+   * To enable response streaming, set this value to `ResponseTransferMode.STREAM`.
    *
    * @default ResponseTransferMode.BUFFERED
    */
