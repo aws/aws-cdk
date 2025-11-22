@@ -50,6 +50,15 @@ export class MixinsBuilder extends LibraryBuilder<MixinsServiceModule> {
     l1PropsMixin.build();
 
     submodule.registerSelectiveImports(...l1PropsMixin.imports);
+
+    if (resource.vendedLogs) {
+      const vendedLogsMixin = new VendedLogsMixin(mixins.module, this.db, resource, submodule.constructLibModule);
+      submodule.registerResource(`${resource.cloudFormationType}VendedLogs`, vendedLogsMixin);
+      
+      vendedLogsMixin.build();
+      
+      submodule.registerSelectiveImports(...vendedLogsMixin.imports);
+    }
   }
 
   private createMixinsModule(submodule: MixinsServiceModule, service: Service): LocatedModule<Module> {
@@ -64,6 +73,9 @@ export class MixinsBuilder extends LibraryBuilder<MixinsServiceModule> {
     MIXINS_COMMON.import(module, 'mixins', { fromLocation: '../../mixins' });
     MIXINS_UTILS.import(module, 'helpers', { fromLocation: '../../util/property-mixins' });
     submodule.constructLibModule.import(module, 'service');
+    // want to add this conditionally if a service has resources which use vended logs
+    const delivery = new ExternalModule('aws-cdk-lib/aws-logs');
+    delivery.import(module, 'delivery');
 
     return { module, filePath };
   }
@@ -274,6 +286,186 @@ class L1PropsMixin extends ClassType {
                 ),
               ),
           ),
+        ),
+      stmt.ret(construct),
+    );
+  }
+}
+
+class VendedLogsMixin extends ClassType {
+  public scope: Module;
+  private readonly decider: ResourceDecider;
+  private readonly relationshipDecider: RelationshipDecider;
+  private readonly converter: TypeConverter;
+  public readonly imports = new Array<SelectiveImport>();
+
+  constructor(
+    scope: Module,
+    public readonly db: SpecDatabase,
+    private readonly resource: Resource,
+    private readonly constructLibModule: ExternalModule,
+  ) {
+    super(scope, {
+      export: true,
+      name: `${naming.classNameFromResource(resource)}LogsMixin`,
+      implements: [MIXINS_CORE.IMixin],
+      extends: MIXINS_CORE.Mixin,
+      docs: {
+        summary: `Mixin to implement vended logs for ${resource.cloudFormationType}`,
+        ...util.splitDocumentation(resource.documentation),
+        stability: Stability.External,
+        docTags: {
+          cloudformationResource: resource.cloudFormationType,
+          mixin: 'true',
+        },
+        see: naming.cloudFormationDocLink({
+          resourceType: resource.cloudFormationType,
+        }),
+      },
+    });
+
+    this.scope = scope;
+    this.relationshipDecider = new RelationshipDecider(this.resource, db, false);
+    this.converter = TypeConverter.forMixin({
+      db: db,
+      resource: this.resource,
+      resourceClass: this,
+      relationshipDecider: this.relationshipDecider,
+    });
+    this.imports = this.relationshipDecider.imports;
+    this.decider = new ResourceDecider(this.resource, this.converter, this.relationshipDecider);
+  }
+
+  /**
+   * Build the elements of the VendedLogsMixin Class
+   */
+  public build() {
+    this.makeConstructor();
+    const supports = this.makeSupportsMethod();
+    this.makeApplyToMethod(supports);
+  }
+
+  private makeConstructor() {
+    // I don't think we need this if statement...
+    if (this.resource.vendedLogs) {
+      for (const logType of this.resource.vendedLogs.logTypes) {
+        // TODO: set up class for the different log types
+        const logClass = new ClassType(this.scope, {
+          name: 
+            `${naming.classNameFromResource(this.resource)}${logType.split('_').map(word => word.charAt(0) + word.slice(1).toLowerCase()).join('')}`,
+        });
+
+        this.addProperty({
+          name: logType,
+          type: logClass,
+          static: true,
+          immutable: true,
+          initializer: expr.directCode(`new ${logClass.name}()`),
+        });
+      }
+    }
+
+    this.addProperty({
+      name: 'logType', 
+      type: Type.STRING,
+      protected: true,
+      immutable: true,
+    });
+
+    this.addProperty({
+      name: 'logDelivery',
+      type: Type.STRING,
+      protected: true,
+      immutable: true,
+    });
+
+    const init = this.addInitializer({
+      docs: {
+        summary: `Create a mixin to enable vended logs for \`${this.resource.cloudFormationType}\`.`,
+      },
+    });
+
+    const logType = init.addParameter({
+      name: 'logType',
+      type: Type.STRING,
+      documentation: 'Type of logs that are getting vended'
+    });
+
+    const delivery = init.addParameter({
+      name: 'logDelivery',
+      type: Type.STRING,
+      documentation: 'Object in charge of setting up the delivery destination and delivery connection',
+    })
+    
+    init.addBody(
+      expr.sym(new ThingSymbol('super', this.scope)).call(),
+      stmt.assign($this.logType, logType),
+      stmt.assign($this.logDelivery, delivery),
+    );
+  }
+
+  private makeSupportsMethod(): Method {
+    const method = this.addMethod({
+      name: 'supports',
+      returnType: Type.ambient(`construct is service.${Type.fromName(this.constructLibModule, naming.classNameFromResource(this.resource)).symbol}`),
+      docs: {
+        summary: 'Check if this mixin supports the given construct (has vendedLogs property)',
+      },
+    });
+
+    const construct = method.addParameter({
+      name: 'construct',
+      type: CONSTRUCTS.IConstruct,
+    });
+
+    // TODO: Add check for vendedLogs property existence and check that the type of construct that was passed in is the same time we are acting on
+    method.addBody(
+      stmt.ret(
+        expr.binOp(
+          $E(expr.sym(CDK_CORE.CfnResource.symbol!)).isCfnResource(construct),
+          '&&',
+          expr.eq($E(construct).cfnResourceType, expr.lit(this.resource.cloudFormationType)),
+        ),
+      ),
+    );
+
+    return method;
+  }
+
+  private makeApplyToMethod(supports: Method) {
+    const method = this.addMethod({
+      name: 'applyTo',
+      returnType: CONSTRUCTS.IConstruct,
+      docs: {
+        summary: 'Apply vended logs configuration to the construct',
+      },
+    });
+
+    const construct = method.addParameter({
+      name: 'construct',
+      type: CONSTRUCTS.IConstruct,
+    });
+   
+    const cfnDeliverySourceType = this.scope.type('delivery.CfnDeliverySource');
+
+    const deliverySourceInstance = cfnDeliverySourceType.newInstance(
+      construct,
+      expr.lit('deliverySourceId'), 
+      expr.object({
+        name: expr.lit('temp-source-name'),
+        resourceArn: expr.lit('idk how we are getting this'),
+        logType: $this.logType,
+      }),
+    );
+
+    // bind to logsDelivery object - can't do that right now
+    method.addBody(
+      stmt
+        .if_(CallableProxy.fromMethod(supports).invoke(construct))
+        .then(
+          stmt.block(
+            stmt.constVar(expr.ident('deliverySource'), deliverySourceInstance),
+          )
         ),
       stmt.ret(construct),
     );
