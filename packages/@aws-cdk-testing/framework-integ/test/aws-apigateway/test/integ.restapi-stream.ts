@@ -42,7 +42,10 @@ const integ = new IntegTest(app, 'rest-api-stream', {
   testCases: [testCase],
 });
 
-const call = integ.assertions.httpApiCall(testCase.api.deploymentStage.urlForPath('/'));
+const call = integ.assertions.httpApiCall(testCase.api.deploymentStage.urlForPath('/'), {
+  method: 'POST',
+});
 call.expect(ExpectedResult.objectLike({
+  status: 200,
   body: 'Hello, streaming world!',
 }));

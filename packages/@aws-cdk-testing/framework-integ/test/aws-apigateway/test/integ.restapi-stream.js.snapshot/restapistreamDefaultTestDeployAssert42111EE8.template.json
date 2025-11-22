@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "HttpApiCalle9670a5cc7ee839b4c4e5de351f53ab7": {
+  "HttpApiCallfd93c3d902b27ae982e03a746e4aadb1": {
    "Type": "Custom::DeployAssert@HttpCall",
    "Properties": {
     "ServiceToken": {
@@ -33,11 +33,14 @@
         "/"
        ]
       ]
+     },
+     "fetchOptions": {
+      "method": "POST"
      }
     },
-    "expected": "{\"$ObjectLike\":{\"body\":\"Hello, streaming world!\"}}",
+    "expected": "{\"$ObjectLike\":{\"status\":200,\"body\":\"Hello, streaming world!\"}}",
     "flattenResponse": "false",
-    "salt": "1763822958170"
+    "salt": "1763824874413"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -86,10 +89,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsHttpApiCalle9670a5cc7ee839b4c4e5de351f53ab7": {
+  "AssertionResultsHttpApiCallfd93c3d902b27ae982e03a746e4aadb1": {
    "Value": {
     "Fn::GetAtt": [
-     "HttpApiCalle9670a5cc7ee839b4c4e5de351f53ab7",
+     "HttpApiCallfd93c3d902b27ae982e03a746e4aadb1",
      "assertion"
     ]
    }

@@ -184,7 +184,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f7081c5c7d1959e91e67923b28665778a93a8b424224eb845b0ed0e0f3614149.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fd5ff6ea6c8d0d62e06c8faea026ab9e5772510453ba65d9d1e46206e72d3045.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -201,7 +201,7 @@
         "restapistreamDefaultTestDeployAssert42111EE8.assets"
       ],
       "metadata": {
-        "/rest-api-stream/DefaultTest/DeployAssert/HttpApiCalle9670a5cc7ee839b4c4e5de351f53ab7/Default": [
+        "/rest-api-stream/DefaultTest/DeployAssert/HttpApiCallfd93c3d902b27ae982e03a746e4aadb1/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -215,16 +215,16 @@
             "data": "*"
           }
         ],
-        "/rest-api-stream/DefaultTest/DeployAssert/HttpApiCalle9670a5cc7ee839b4c4e5de351f53ab7/Default/Default": [
+        "/rest-api-stream/DefaultTest/DeployAssert/HttpApiCallfd93c3d902b27ae982e03a746e4aadb1/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HttpApiCalle9670a5cc7ee839b4c4e5de351f53ab7"
+            "data": "HttpApiCallfd93c3d902b27ae982e03a746e4aadb1"
           }
         ],
-        "/rest-api-stream/DefaultTest/DeployAssert/HttpApiCalle9670a5cc7ee839b4c4e5de351f53ab7/AssertionResults": [
+        "/rest-api-stream/DefaultTest/DeployAssert/HttpApiCallfd93c3d902b27ae982e03a746e4aadb1/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsHttpApiCalle9670a5cc7ee839b4c4e5de351f53ab7"
+            "data": "AssertionResultsHttpApiCallfd93c3d902b27ae982e03a746e4aadb1"
           }
         ],
         "/rest-api-stream/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
