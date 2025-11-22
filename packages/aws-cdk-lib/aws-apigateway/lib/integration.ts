@@ -240,6 +240,13 @@ export class Integration {
     if (props.type !== IntegrationType.MOCK && !props.integrationHttpMethod) {
       throw new UnscopedValidationError('integrationHttpMethod is required for non-mock integration types.');
     }
+
+    if (
+      ![IntegrationType.AWS_PROXY, IntegrationType.HTTP_PROXY].includes(props.type) &&
+      options.responseTransferMode === ResponseTransferMode.STREAM
+    ) {
+      throw new UnscopedValidationError(`ResponseTransferMode STREAM is only supported for AWS_PROXY and HTTP_PROXY integration types, got: ${props.type}`);
+    }
   }
 
   /**
