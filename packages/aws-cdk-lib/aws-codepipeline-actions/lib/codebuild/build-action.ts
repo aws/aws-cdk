@@ -213,11 +213,20 @@ export class CodeBuildAction extends Action {
       }
     }
 
+    // Serialize environment variables early to trigger validation at construct time
+    const serializedEnvVars = this.props.environmentVariables
+      ? codebuild.Project.serializeEnvVariables(
+        this.props.environmentVariables,
+        this.props.checkSecretsInPlainTextEnvVariables ?? true,
+        this.props.project)
+      : undefined;
+
     const configuration: any = {
       ProjectName: this.props.project.projectName,
-      EnvironmentVariables: this.props.environmentVariables &&
-        cdk.Stack.of(scope).toJsonString(codebuild.Project.serializeEnvVariables(this.props.environmentVariables,
-          this.props.checkSecretsInPlainTextEnvVariables ?? true, this.props.project)),
+      EnvironmentVariables: serializedEnvVars &&
+        cdk.Lazy.string({
+          produce: () => JSON.stringify(serializedEnvVars),
+        }),
     };
     if ((this.actionProperties.inputs || []).length > 1) {
       // lazy, because the Artifact name might be generated lazily
