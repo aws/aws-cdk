@@ -247,4 +247,21 @@ describe('lambda version', () => {
     // THEN
     expect(ver.functionRef.functionArn).toEqual(ver.functionArn);
   });
+
+  test('should throw error when version has provisioned concurrency and function has tenancy config', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+    });
+
+    // WHEN & THEN
+    expect(() => new lambda.Version(stack, 'Version', {
+      lambda: fn,
+      provisionedConcurrentExecutions: 10,
+    })).toThrow('Provisioned Concurrency is not supported for functions with tenant isolation mode');
+  });
 });

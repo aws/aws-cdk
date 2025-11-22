@@ -7,12 +7,10 @@ import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import {
-  AccountPrincipal,
   AddToPrincipalPolicyResult,
   ArnPrincipal,
   IPrincipal,
   PrincipalPolicyFragment,
-  ServicePrincipal,
 } from './principals';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { ImmutableRole } from './private/immutable-role';
@@ -20,6 +18,7 @@ import { ImportedRole } from './private/imported-role';
 import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './private/util';
+import { RoleGrants } from './role-grants';
 import * as cxschema from '../../cloud-assembly-schema';
 import {
   Annotations,
@@ -481,6 +480,11 @@ export class Role extends Resource implements IRole {
    */
   public readonly permissionsBoundary?: IManagedPolicy;
 
+  /**
+   * Collection of grant methods for a Role
+   */
+  public readonly grants = RoleGrants.fromRole(this);
+
   private defaultPolicy?: Policy;
   private readonly managedPolicies: IManagedPolicy[] = [];
   private readonly attachedPolicies = new AttachedPolicies();
@@ -687,7 +691,7 @@ export class Role extends Resource implements IRole {
    */
   @MethodMetadata()
   public grantPassRole(identity: IPrincipal) {
-    return this.grant(identity, 'iam:PassRole');
+    return this.grants.passRole(identity);
   }
 
   /**
@@ -695,11 +699,7 @@ export class Role extends Resource implements IRole {
    */
   @MethodMetadata()
   public grantAssumeRole(identity: IPrincipal) {
-    // Service and account principals must use assumeRolePolicy
-    if (identity instanceof ServicePrincipal || identity instanceof AccountPrincipal) {
-      throw new ValidationError('Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.', this);
-    }
-    return this.grant(identity, 'sts:AssumeRole');
+    return this.grants.assumeRole(identity);
   }
 
   /**
