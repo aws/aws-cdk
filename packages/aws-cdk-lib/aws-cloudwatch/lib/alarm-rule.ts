@@ -100,6 +100,11 @@ export class AtLeastThresholdCount extends AtLeastThreshold {
     super();
   }
 
+  /**
+   * Called when the threshold is initialized to allow this object to bind
+   *
+   * @internal
+   */
   _bind(operands: IAlarm[]): AtLeastThresholdConfig {
     if (this.count !== undefined && !Token.isUnresolved(this.count)
       && (this.count < 1 || operands.length < this.count || !Number.isInteger(this.count))) {
@@ -118,7 +123,11 @@ export class AtLeastThresholdPercentage extends AtLeastThreshold {
   constructor(private readonly percentage: number) {
     super();
   }
-
+  /**
+   * Called when the threshold is initialized to allow this object to bind
+   *
+   * @internal
+   */
   _bind(_operands: IAlarm[]): AtLeastThresholdConfig {
     if (this.percentage !== undefined && !Token.isUnresolved(this.percentage)
       && (this.percentage < 1 || 100 < this.percentage || !Number.isInteger(this.percentage))) {
