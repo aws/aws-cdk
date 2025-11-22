@@ -1,0 +1,34 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
+      "displayName": "integ-ec2-instance-metadata-options/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
+      "source": {
+        "path": "asset.a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-4416417b": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "a3fe2657cb183a6d55e6cec6684fde42415e6b72a2ac18e922a401c5ef2fdd49": {
+      "displayName": "integ-ec2-instance-metadata-options Template",
+      "source": {
+        "path": "integ-ec2-instance-metadata-options.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-14ade72e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a3fe2657cb183a6d55e6cec6684fde42415e6b72a2ac18e922a401c5ef2fdd49.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
