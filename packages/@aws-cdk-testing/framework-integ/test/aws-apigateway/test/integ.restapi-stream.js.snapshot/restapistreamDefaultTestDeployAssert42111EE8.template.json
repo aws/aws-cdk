@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "HttpApiCall1ed2f7565a5e4c285520ef465d94718a": {
+  "HttpApiCalle9670a5cc7ee839b4c4e5de351f53ab7": {
    "Type": "Custom::DeployAssert@HttpCall",
    "Properties": {
     "ServiceToken": {
@@ -16,7 +16,7 @@
        [
         "https://",
         {
-         "Fn::ImportValue": "LambdaApiStreamStack:ExportsOutputRefLambdaApi728714DBCB1B920F"
+         "Fn::ImportValue": "RestApiStreamStack:ExportsOutputRefApiF70053CD5653BA4D"
         },
         ".execute-api.",
         {
@@ -28,7 +28,7 @@
         },
         "/",
         {
-         "Fn::ImportValue": "LambdaApiStreamStack:ExportsOutputRefLambdaApiDeploymentStageprod51A299C1C2FADA00"
+         "Fn::ImportValue": "RestApiStreamStack:ExportsOutputRefApiDeploymentStageprod3EB9684E9290AA51"
         },
         "/"
        ]
@@ -37,7 +37,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"body\":\"Hello, streaming world!\"}}",
     "flattenResponse": "false",
-    "salt": "1763819604054"
+    "salt": "1763822958170"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -86,10 +86,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsHttpApiCall1ed2f7565a5e4c285520ef465d94718a": {
+  "AssertionResultsHttpApiCalle9670a5cc7ee839b4c4e5de351f53ab7": {
    "Value": {
     "Fn::GetAtt": [
-     "HttpApiCall1ed2f7565a5e4c285520ef465d94718a",
+     "HttpApiCalle9670a5cc7ee839b4c4e5de351f53ab7",
      "assertion"
     ]
    }

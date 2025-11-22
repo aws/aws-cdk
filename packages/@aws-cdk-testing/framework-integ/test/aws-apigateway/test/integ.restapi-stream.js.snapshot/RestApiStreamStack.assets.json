@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "c5fda1cd037ace15a89753dfb04635da4b8691f40b3396b7528670d414857bf8": {
-      "displayName": "LambdaApiStreamStack Template",
+    "c726f7580509e51b683d2e515eedf2040b1c47b3423245f50f4410bcbc0721aa": {
+      "displayName": "RestApiStreamStack Template",
       "source": {
-        "path": "LambdaApiStreamStack.template.json",
+        "path": "RestApiStreamStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-e1fa92cf": {
+        "current_account-current_region-3bef5a82": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c5fda1cd037ace15a89753dfb04635da4b8691f40b3396b7528670d414857bf8.json",
+          "objectKey": "c726f7580509e51b683d2e515eedf2040b1c47b3423245f50f4410bcbc0721aa.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

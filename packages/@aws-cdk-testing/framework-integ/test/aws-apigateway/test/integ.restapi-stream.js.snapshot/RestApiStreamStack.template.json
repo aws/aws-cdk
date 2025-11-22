@@ -50,57 +50,40 @@
     "myfnServiceRole7822DC24"
    ]
   },
-  "LambdaApi728714DB": {
+  "ApiF70053CD": {
    "Type": "AWS::ApiGateway::RestApi",
    "Properties": {
-    "Name": "LambdaApi"
+    "Name": "Api"
    }
   },
-  "LambdaApiDeployment4158100284229485c0d9d57f80a99fdee8c58e54": {
+  "ApiDeploymentB17BE62D7de2852053d3078d3cd07c9ca6f4d12c": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
-     "Ref": "LambdaApi728714DB"
+     "Ref": "ApiF70053CD"
     }
    },
    "DependsOn": [
-    "LambdaApiproxyANYA8960D55",
-    "LambdaApiproxy7B0AF806",
-    "LambdaApiANY48709101"
+    "ApiPOST9384DEBA"
    ],
    "Metadata": {
     "aws:cdk:do-not-refactor": true
    }
   },
-  "LambdaApiDeploymentStageprod51A299C1": {
+  "ApiDeploymentStageprod3EB9684E": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "LambdaApiDeployment4158100284229485c0d9d57f80a99fdee8c58e54"
+     "Ref": "ApiDeploymentB17BE62D7de2852053d3078d3cd07c9ca6f4d12c"
     },
     "RestApiId": {
-     "Ref": "LambdaApi728714DB"
+     "Ref": "ApiF70053CD"
     },
     "StageName": "prod"
    }
   },
-  "LambdaApiproxy7B0AF806": {
-   "Type": "AWS::ApiGateway::Resource",
-   "Properties": {
-    "ParentId": {
-     "Fn::GetAtt": [
-      "LambdaApi728714DB",
-      "RootResourceId"
-     ]
-    },
-    "PathPart": "{proxy+}",
-    "RestApiId": {
-     "Ref": "LambdaApi728714DB"
-    }
-   }
-  },
-  "LambdaApiproxyANYApiPermissionLambdaApiStreamStackLambdaApi0FF9ACEEANYproxyDA2E437C": {
+  "ApiPOSTApiPermissionRestApiStreamStackApi1C847828POST2283EDE7": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -129,19 +112,19 @@
        },
        ":",
        {
-        "Ref": "LambdaApi728714DB"
+        "Ref": "ApiF70053CD"
        },
        "/",
        {
-        "Ref": "LambdaApiDeploymentStageprod51A299C1"
+        "Ref": "ApiDeploymentStageprod3EB9684E"
        },
-       "/*/*"
+       "/POST/"
       ]
      ]
     }
    }
   },
-  "LambdaApiproxyANYApiPermissionTestLambdaApiStreamStackLambdaApi0FF9ACEEANYproxy5E700C71": {
+  "ApiPOSTApiPermissionTestRestApiStreamStackApi1C847828POST8120A27F": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -170,138 +153,19 @@
        },
        ":",
        {
-        "Ref": "LambdaApi728714DB"
+        "Ref": "ApiF70053CD"
        },
-       "/test-invoke-stage/*/*"
+       "/test-invoke-stage/POST/"
       ]
      ]
     }
    }
   },
-  "LambdaApiproxyANYA8960D55": {
+  "ApiPOST9384DEBA": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
     "AuthorizationType": "NONE",
-    "HttpMethod": "ANY",
-    "Integration": {
-     "IntegrationHttpMethod": "POST",
-     "ResponseTransferMode": "STREAM",
-     "Type": "AWS_PROXY",
-     "Uri": {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":apigateway:",
-        {
-         "Ref": "AWS::Region"
-        },
-        ":lambda:path/2021-11-15/functions/",
-        {
-         "Fn::GetAtt": [
-          "myfn8C66D016",
-          "Arn"
-         ]
-        },
-        "/response-streaming-invocations"
-       ]
-      ]
-     }
-    },
-    "ResourceId": {
-     "Ref": "LambdaApiproxy7B0AF806"
-    },
-    "RestApiId": {
-     "Ref": "LambdaApi728714DB"
-    }
-   }
-  },
-  "LambdaApiANYApiPermissionLambdaApiStreamStackLambdaApi0FF9ACEEANY830D0B4E": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "myfn8C66D016",
-      "Arn"
-     ]
-    },
-    "Principal": "apigateway.amazonaws.com",
-    "SourceArn": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":execute-api:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":",
-       {
-        "Ref": "LambdaApi728714DB"
-       },
-       "/",
-       {
-        "Ref": "LambdaApiDeploymentStageprod51A299C1"
-       },
-       "/*/"
-      ]
-     ]
-    }
-   }
-  },
-  "LambdaApiANYApiPermissionTestLambdaApiStreamStackLambdaApi0FF9ACEEANY852FBC6F": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "myfn8C66D016",
-      "Arn"
-     ]
-    },
-    "Principal": "apigateway.amazonaws.com",
-    "SourceArn": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":execute-api:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":",
-       {
-        "Ref": "LambdaApi728714DB"
-       },
-       "/test-invoke-stage/*/"
-      ]
-     ]
-    }
-   }
-  },
-  "LambdaApiANY48709101": {
-   "Type": "AWS::ApiGateway::Method",
-   "Properties": {
-    "AuthorizationType": "NONE",
-    "HttpMethod": "ANY",
+    "HttpMethod": "POST",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "ResponseTransferMode": "STREAM",
@@ -332,25 +196,25 @@
     },
     "ResourceId": {
      "Fn::GetAtt": [
-      "LambdaApi728714DB",
+      "ApiF70053CD",
       "RootResourceId"
      ]
     },
     "RestApiId": {
-     "Ref": "LambdaApi728714DB"
+     "Ref": "ApiF70053CD"
     }
    }
   }
  },
  "Outputs": {
-  "LambdaApiEndpointB01FF32A": {
+  "ApiEndpoint4F160690": {
    "Value": {
     "Fn::Join": [
      "",
      [
       "https://",
       {
-       "Ref": "LambdaApi728714DB"
+       "Ref": "ApiF70053CD"
       },
       ".execute-api.",
       {
@@ -362,27 +226,27 @@
       },
       "/",
       {
-       "Ref": "LambdaApiDeploymentStageprod51A299C1"
+       "Ref": "ApiDeploymentStageprod3EB9684E"
       },
       "/"
      ]
     ]
    }
   },
-  "ExportsOutputRefLambdaApi728714DBCB1B920F": {
+  "ExportsOutputRefApiF70053CD5653BA4D": {
    "Value": {
-    "Ref": "LambdaApi728714DB"
+    "Ref": "ApiF70053CD"
    },
    "Export": {
-    "Name": "LambdaApiStreamStack:ExportsOutputRefLambdaApi728714DBCB1B920F"
+    "Name": "RestApiStreamStack:ExportsOutputRefApiF70053CD5653BA4D"
    }
   },
-  "ExportsOutputRefLambdaApiDeploymentStageprod51A299C1C2FADA00": {
+  "ExportsOutputRefApiDeploymentStageprod3EB9684E9290AA51": {
    "Value": {
-    "Ref": "LambdaApiDeploymentStageprod51A299C1"
+    "Ref": "ApiDeploymentStageprod3EB9684E"
    },
    "Export": {
-    "Name": "LambdaApiStreamStack:ExportsOutputRefLambdaApiDeploymentStageprod51A299C1C2FADA00"
+    "Name": "RestApiStreamStack:ExportsOutputRefApiDeploymentStageprod3EB9684E9290AA51"
    }
   }
  },

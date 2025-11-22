@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "LambdaApiStreamStack.assets": {
+    "RestApiStreamStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "LambdaApiStreamStack.assets.json",
+        "file": "RestApiStreamStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "LambdaApiStreamStack": {
+    "RestApiStreamStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "LambdaApiStreamStack.template.json",
+        "templateFile": "RestApiStreamStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c5fda1cd037ace15a89753dfb04635da4b8691f40b3396b7528670d414857bf8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c726f7580509e51b683d2e515eedf2040b1c47b3423245f50f4410bcbc0721aa.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "LambdaApiStreamStack.assets"
+          "RestApiStreamStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,108 +31,52 @@
         }
       },
       "dependencies": [
-        "LambdaApiStreamStack.assets"
+        "RestApiStreamStack.assets"
       ],
       "metadata": {
-        "/LambdaApiStreamStack/myfn": [
+        "/RestApiStreamStack/myfn": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/LambdaApiStreamStack/myfn/ServiceRole": [
+        "/RestApiStreamStack/myfn/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/LambdaApiStreamStack/myfn/ServiceRole/ImportServiceRole": [
+        "/RestApiStreamStack/myfn/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/LambdaApiStreamStack/myfn/ServiceRole/Resource": [
+        "/RestApiStreamStack/myfn/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myfnServiceRole7822DC24"
           }
         ],
-        "/LambdaApiStreamStack/myfn/Resource": [
+        "/RestApiStreamStack/myfn/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myfn8C66D016"
           }
         ],
-        "/LambdaApiStreamStack/LambdaApi": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
+        "/RestApiStreamStack/Api": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/LambdaApiStreamStack/LambdaApi/Resource": [
+        "/RestApiStreamStack/Api/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaApi728714DB"
+            "data": "ApiF70053CD"
           }
         ],
-        "/LambdaApiStreamStack/LambdaApi/Deployment": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/LambdaApiStreamStack/LambdaApi/Deployment/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaApiDeployment4158100284229485c0d9d57f80a99fdee8c58e54"
-          }
-        ],
-        "/LambdaApiStreamStack/LambdaApi/DeploymentStage.prod": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/LambdaApiStreamStack/LambdaApi/DeploymentStage.prod/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaApiDeploymentStageprod51A299C1"
-          }
-        ],
-        "/LambdaApiStreamStack/LambdaApi/Endpoint": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaApiEndpointB01FF32A"
-          }
-        ],
-        "/LambdaApiStreamStack/LambdaApi/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/LambdaApiStreamStack/LambdaApi/Default/{proxy+}": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
+        "/RestApiStreamStack/Api/Deployment": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -142,109 +86,109 @@
             "data": "*"
           }
         ],
-        "/LambdaApiStreamStack/LambdaApi/Default/{proxy+}/Resource": [
+        "/RestApiStreamStack/Api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaApiproxy7B0AF806"
+            "data": "ApiDeploymentB17BE62D7de2852053d3078d3cd07c9ca6f4d12c"
           }
         ],
-        "/LambdaApiStreamStack/LambdaApi/Default/{proxy+}/ANY": [
+        "/RestApiStreamStack/Api/DeploymentStage.prod": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/LambdaApiStreamStack/LambdaApi/Default/{proxy+}/ANY/ApiPermission.LambdaApiStreamStackLambdaApi0FF9ACEE.ANY..{proxy+}": [
+        "/RestApiStreamStack/Api/DeploymentStage.prod/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaApiproxyANYApiPermissionLambdaApiStreamStackLambdaApi0FF9ACEEANYproxyDA2E437C"
+            "data": "ApiDeploymentStageprod3EB9684E"
           }
         ],
-        "/LambdaApiStreamStack/LambdaApi/Default/{proxy+}/ANY/ApiPermission.Test.LambdaApiStreamStackLambdaApi0FF9ACEE.ANY..{proxy+}": [
+        "/RestApiStreamStack/Api/Endpoint": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaApiproxyANYApiPermissionTestLambdaApiStreamStackLambdaApi0FF9ACEEANYproxy5E700C71"
+            "data": "ApiEndpoint4F160690"
           }
         ],
-        "/LambdaApiStreamStack/LambdaApi/Default/{proxy+}/ANY/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaApiproxyANYA8960D55"
-          }
-        ],
-        "/LambdaApiStreamStack/LambdaApi/Default/ANY": [
+        "/RestApiStreamStack/Api/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/LambdaApiStreamStack/LambdaApi/Default/ANY/ApiPermission.LambdaApiStreamStackLambdaApi0FF9ACEE.ANY..": [
+        "/RestApiStreamStack/Api/Default/POST": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaApiANYApiPermissionLambdaApiStreamStackLambdaApi0FF9ACEEANY830D0B4E"
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
-        "/LambdaApiStreamStack/LambdaApi/Default/ANY/ApiPermission.Test.LambdaApiStreamStackLambdaApi0FF9ACEE.ANY..": [
+        "/RestApiStreamStack/Api/Default/POST/ApiPermission.RestApiStreamStackApi1C847828.POST..": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaApiANYApiPermissionTestLambdaApiStreamStackLambdaApi0FF9ACEEANY852FBC6F"
+            "data": "ApiPOSTApiPermissionRestApiStreamStackApi1C847828POST2283EDE7"
           }
         ],
-        "/LambdaApiStreamStack/LambdaApi/Default/ANY/Resource": [
+        "/RestApiStreamStack/Api/Default/POST/ApiPermission.Test.RestApiStreamStackApi1C847828.POST..": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaApiANY48709101"
+            "data": "ApiPOSTApiPermissionTestRestApiStreamStackApi1C847828POST8120A27F"
           }
         ],
-        "/LambdaApiStreamStack/Exports/Output{\"Ref\":\"LambdaApi728714DB\"}": [
+        "/RestApiStreamStack/Api/Default/POST/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefLambdaApi728714DBCB1B920F"
+            "data": "ApiPOST9384DEBA"
           }
         ],
-        "/LambdaApiStreamStack/Exports/Output{\"Ref\":\"LambdaApiDeploymentStageprod51A299C1\"}": [
+        "/RestApiStreamStack/Exports/Output{\"Ref\":\"ApiF70053CD\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefLambdaApiDeploymentStageprod51A299C1C2FADA00"
+            "data": "ExportsOutputRefApiF70053CD5653BA4D"
           }
         ],
-        "/LambdaApiStreamStack/BootstrapVersion": [
+        "/RestApiStreamStack/Exports/Output{\"Ref\":\"ApiDeploymentStageprod3EB9684E\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefApiDeploymentStageprod3EB9684E9290AA51"
+          }
+        ],
+        "/RestApiStreamStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/LambdaApiStreamStack/CheckBootstrapVersion": [
+        "/RestApiStreamStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "LambdaApiStreamStack"
+      "displayName": "RestApiStreamStack"
     },
-    "lambdaapistreamDefaultTestDeployAssert4B316F6D.assets": {
+    "restapistreamDefaultTestDeployAssert42111EE8.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "lambdaapistreamDefaultTestDeployAssert4B316F6D.assets.json",
+        "file": "restapistreamDefaultTestDeployAssert42111EE8.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "lambdaapistreamDefaultTestDeployAssert4B316F6D": {
+    "restapistreamDefaultTestDeployAssert42111EE8": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "lambdaapistreamDefaultTestDeployAssert4B316F6D.template.json",
+        "templateFile": "restapistreamDefaultTestDeployAssert42111EE8.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cf30397b7b30975e5589cac6c90836df18866dc5b734a2e4efc75850fd9e8cac.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f7081c5c7d1959e91e67923b28665778a93a8b424224eb845b0ed0e0f3614149.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "lambdaapistreamDefaultTestDeployAssert4B316F6D.assets"
+          "restapistreamDefaultTestDeployAssert42111EE8.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -253,11 +197,11 @@
         }
       },
       "dependencies": [
-        "LambdaApiStreamStack",
-        "lambdaapistreamDefaultTestDeployAssert4B316F6D.assets"
+        "RestApiStreamStack",
+        "restapistreamDefaultTestDeployAssert42111EE8.assets"
       ],
       "metadata": {
-        "/lambda-api-stream/DefaultTest/DeployAssert/HttpApiCall1ed2f7565a5e4c285520ef465d94718a/Default": [
+        "/rest-api-stream/DefaultTest/DeployAssert/HttpApiCalle9670a5cc7ee839b4c4e5de351f53ab7/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -271,44 +215,44 @@
             "data": "*"
           }
         ],
-        "/lambda-api-stream/DefaultTest/DeployAssert/HttpApiCall1ed2f7565a5e4c285520ef465d94718a/Default/Default": [
+        "/rest-api-stream/DefaultTest/DeployAssert/HttpApiCalle9670a5cc7ee839b4c4e5de351f53ab7/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HttpApiCall1ed2f7565a5e4c285520ef465d94718a"
+            "data": "HttpApiCalle9670a5cc7ee839b4c4e5de351f53ab7"
           }
         ],
-        "/lambda-api-stream/DefaultTest/DeployAssert/HttpApiCall1ed2f7565a5e4c285520ef465d94718a/AssertionResults": [
+        "/rest-api-stream/DefaultTest/DeployAssert/HttpApiCalle9670a5cc7ee839b4c4e5de351f53ab7/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsHttpApiCall1ed2f7565a5e4c285520ef465d94718a"
+            "data": "AssertionResultsHttpApiCalle9670a5cc7ee839b4c4e5de351f53ab7"
           }
         ],
-        "/lambda-api-stream/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+        "/rest-api-stream/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
           }
         ],
-        "/lambda-api-stream/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+        "/rest-api-stream/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
-        "/lambda-api-stream/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/rest-api-stream/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/lambda-api-stream/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/rest-api-stream/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "lambda-api-stream/DefaultTest/DeployAssert"
+      "displayName": "rest-api-stream/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

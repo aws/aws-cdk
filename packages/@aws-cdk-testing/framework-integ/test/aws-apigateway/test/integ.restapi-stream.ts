@@ -2,12 +2,12 @@ import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { App, Stack } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
-import { LambdaRestApi, ResponseTransferMode } from 'aws-cdk-lib/aws-apigateway';
+import { LambdaIntegration, ResponseTransferMode, RestApi } from 'aws-cdk-lib/aws-apigateway';
 
-class LambdaApiStreamStack extends Stack {
-  public readonly api: LambdaRestApi;
+class RestApiStreamStack extends Stack {
+  public readonly api: RestApi;
   constructor(scope: Construct) {
-    super(scope, 'LambdaApiStreamStack');
+    super(scope, 'RestApiStreamStack');
 
     const fn = new Function(this, 'myfn', {
       code: Code.fromInline(`exports.handler = awslambda.streamifyResponse(async (event, responseStream, context) => {
@@ -27,12 +27,8 @@ class LambdaApiStreamStack extends Stack {
       handler: 'index.handler',
     });
 
-    this.api = new LambdaRestApi(this, 'LambdaApi', {
-      handler: fn,
-      integrationOptions: {
-        responseTransferMode: ResponseTransferMode.STREAM,
-      },
-    });
+    this.api = new RestApi(this, 'Api');
+    this.api.root.addMethod('POST', new LambdaIntegration(fn, { responseTransferMode: ResponseTransferMode.STREAM }));
   }
 }
 
@@ -41,8 +37,8 @@ const app = new App({
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
 });
-const testCase = new LambdaApiStreamStack(app);
-const integ = new IntegTest(app, 'lambda-api-stream', {
+const testCase = new RestApiStreamStack(app);
+const integ = new IntegTest(app, 'rest-api-stream', {
   testCases: [testCase],
 });
 
