@@ -4,6 +4,21 @@ import * as iam from '../../aws-iam';
 import { Lazy, Duration } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 
+/**
+ * The response transfer mode of the integration
+ */
+export enum ResponseTransferMode {
+  /**
+   * API Gateway waits to receive the complete response before beginning transmission.
+   */
+  BUFFERED = 'BUFFERED',
+
+  /**
+   * API Gateway streams the response back to you as it is received from the integration.
+   */
+  STREAM = 'STREAM',
+}
+
 export interface IntegrationOptions {
   /**
    * A list of request parameters whose values are to be cached. It determines
@@ -115,6 +130,13 @@ export interface IntegrationOptions {
    * Required if connectionType is VPC_LINK
    */
   readonly vpcLink?: IVpcLink;
+
+  /**
+   * The response transfer mode for the integration.
+   *
+   * @default ResponseTransferMode.BUFFERED
+   */
+  readonly responseTransferMode?: ResponseTransferMode;
 }
 
 export interface IntegrationProps {

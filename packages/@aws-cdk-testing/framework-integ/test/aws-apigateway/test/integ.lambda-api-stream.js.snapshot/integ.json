@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "lambda-api-stream/DefaultTest": {
+      "stacks": [
+        "LambdaApiStreamStack"
+      ],
+      "assertionStack": "lambda-api-stream/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdaapistreamDefaultTestDeployAssert4B316F6D"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

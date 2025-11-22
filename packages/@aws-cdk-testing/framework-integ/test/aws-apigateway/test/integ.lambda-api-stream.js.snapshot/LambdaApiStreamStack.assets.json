@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "c5fda1cd037ace15a89753dfb04635da4b8691f40b3396b7528670d414857bf8": {
+      "displayName": "LambdaApiStreamStack Template",
+      "source": {
+        "path": "LambdaApiStreamStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-e1fa92cf": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c5fda1cd037ace15a89753dfb04635da4b8691f40b3396b7528670d414857bf8.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
