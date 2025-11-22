@@ -7,7 +7,7 @@ import { Annotations, FeatureFlags } from '../../../core';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { StateMachineType } from '../state-machine';
-import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, QueryLanguage, RetryProps } from '../types';
+import { CatchProps, ICatchable, IChainable, INextable, ProcessorConfig, ProcessorMode, QueryLanguage, RetryProps } from '../types';
 import { StateBaseProps } from './state';
 import { STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2 } from '../../../cx-api';
 
@@ -134,7 +134,7 @@ export interface DistributedMapProps extends MapBaseProps, DistributedMapBaseOpt
  * This serves to increase concurrency and allows for larger workloads to be run in a single state machine.
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-asl-use-map-state-distributed.html
  */
-export class DistributedMap extends MapBase implements INextable {
+export class DistributedMap extends MapBase implements INextable, ICatchable {
   /**
    * Define a Distributed Mode Map state using JSONPath in the state machine
    *
@@ -293,7 +293,7 @@ export class DistributedMap extends MapBase implements INextable {
    * When a particular error occurs, execution will continue at the error
    * handler instead of failing the state machine execution.
    */
-  public addCatch(handler: IChainable, props: CatchProps = {}): DistributedMap {
+  public addCatch(handler: IChainable, props: CatchProps = {}): this {
     super._addCatch(handler.startState, props);
     return this;
   }
