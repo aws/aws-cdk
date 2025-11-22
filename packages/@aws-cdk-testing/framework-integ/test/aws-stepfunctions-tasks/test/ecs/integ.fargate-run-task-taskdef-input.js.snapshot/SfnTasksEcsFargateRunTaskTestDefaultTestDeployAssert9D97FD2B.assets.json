@@ -1,0 +1,33 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "4cbd7cdb5600b1d8c000087fcff345214c258e0476ef89eb6b39a89b7de1b656": {
+      "source": {
+        "path": "asset.4cbd7cdb5600b1d8c000087fcff345214c258e0476ef89eb6b39a89b7de1b656.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-767d8bdc": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4cbd7cdb5600b1d8c000087fcff345214c258e0476ef89eb6b39a89b7de1b656.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "a6548e99da5b5a3398b799b355becbf64288937f07a17ea7bbdc72a8f0e71ee0": {
+      "displayName": "SfnTasksEcsFargateRunTaskTestDefaultTestDeployAssert9D97FD2B Template",
+      "source": {
+        "path": "SfnTasksEcsFargateRunTaskTestDefaultTestDeployAssert9D97FD2B.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-803c6322": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a6548e99da5b5a3398b799b355becbf64288937f07a17ea7bbdc72a8f0e71ee0.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
