@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "WorkflowTest-AllParameters/DefaultTest": {
+      "stacks": [
+        "aws-cdk-imagebuilder-workflow-all-parameters"
+      ],
+      "assertionStack": "WorkflowTest-AllParameters/DefaultTest/DeployAssert",
+      "assertionStackName": "WorkflowTestAllParametersDefaultTestDeployAssertBA236116"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
