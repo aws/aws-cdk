@@ -85,6 +85,13 @@ export interface OptionGroupProps {
   readonly engine: IInstanceEngine;
 
   /**
+   * The name of this option group.
+   *
+   * @default - CloudFormation-generated name
+   */
+  readonly optionGroupName?: string;
+
+  /**
    * A description of the option group.
    *
    * @default a CDK generated description
@@ -127,6 +134,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
   public readonly optionConnections: { [key: string]: ec2.Connections } = {};
 
   private readonly configurations: OptionConfiguration[] = [];
+  private readonly optionGroupNameProp?: string;
 
   constructor(scope: Construct, id: string, props: OptionGroupProps) {
     super(scope, id);
@@ -140,11 +148,14 @@ export class OptionGroup extends Resource implements IOptionGroup {
 
     props.configurations.forEach(config => this.addConfiguration(config));
 
+    this.optionGroupNameProp = props.optionGroupName;
+
     const optionGroup = new CfnOptionGroup(this, 'Resource', {
       engineName: props.engine.engineType,
       majorEngineVersion,
       optionGroupDescription: props.description || `Option group for ${props.engine.engineType} ${majorEngineVersion}`,
       optionConfigurations: Lazy.any({ produce: () => this.renderConfigurations(this.configurations) }),
+      optionGroupName: this.optionGroupNameProp,
     });
 
     this.optionGroupName = optionGroup.ref;

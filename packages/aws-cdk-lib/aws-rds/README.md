@@ -1245,6 +1245,7 @@ new rds.OptionGroup(this, 'Options', {
   engine: rds.DatabaseInstanceEngine.oracleSe2({
     version: rds.OracleEngineVersion.VER_19,
   }),
+  optionGroupName: 'MyCustomOptionGroup', // Optional - custom name for the option group
   configurations: [
     {
       name: 'OEM',
