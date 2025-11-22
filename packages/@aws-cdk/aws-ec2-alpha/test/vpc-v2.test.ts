@@ -71,7 +71,7 @@ describe('Vpc V2 with full control', () => {
     });
   });
 
-  test('VPC throws error with incorrect cidr range (IPv4)', () => {
+  test('VPC throws error when mixing different RFC 1918 ranges', () => {
     expect(() => {
       new vpc.VpcV2(stack, 'TestVpc', {
         primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
@@ -82,7 +82,133 @@ describe('Vpc V2 with full control', () => {
         enableDnsSupport: true,
       },
       );
-    }).toThrow('CIDR block should be in the same RFC 1918 range in the VPC');
+    }).toThrow('CIDR block is not compatible with the primary CIDR block according to AWS VPC restrictions');
+  });
+
+  test('VPC throws error when mixing 198.19.0.0/16 with RFC 1918 range', () => {
+    expect(() => {
+      new vpc.VpcV2(stack, 'TestVpc', {
+        primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('198.19.0.0/16', {
+          cidrBlockName: 'SecondaryIpv4',
+        })],
+        enableDnsHostnames: true,
+        enableDnsSupport: true,
+      },
+      );
+    }).toThrow('CIDR block is not compatible with the primary CIDR block according to AWS VPC restrictions');
+  });
+
+  test('VPC allows RFC 1918 primary with publicly routable secondary', () => {
+    new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('198.18.0.0/26', {
+        cidrBlockName: 'PublicSecondary',
+      })],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    },
+    );
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCCidrBlock', {
+      VpcId: {
+        'Fn::GetAtt': [
+          'TestVpcE77CE678',
+          'VpcId',
+        ],
+      },
+      CidrBlock: '198.18.0.0/26',
+    });
+  });
+
+  test('VPC allows RFC 1918 primary with 100.64.0.0/10 secondary', () => {
+    new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('100.64.0.0/16', {
+        cidrBlockName: 'CarrierGradeNat',
+      })],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    },
+    );
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCCidrBlock', {
+      VpcId: {
+        'Fn::GetAtt': [
+          'TestVpcE77CE678',
+          'VpcId',
+        ],
+      },
+      CidrBlock: '100.64.0.0/16',
+    });
+  });
+
+  test('VPC allows 192.168.0.0/16 primary with publicly routable secondary', () => {
+    new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('192.168.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('203.0.113.0/24', {
+        cidrBlockName: 'PublicSecondary',
+      })],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    },
+    );
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCCidrBlock', {
+      VpcId: {
+        'Fn::GetAtt': [
+          'TestVpcE77CE678',
+          'VpcId',
+        ],
+      },
+      CidrBlock: '203.0.113.0/24',
+    });
+  });
+
+  test('VPC allows 172.16.0.0/12 primary with publicly routable secondary', () => {
+    new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('172.16.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('198.51.100.0/24', {
+        cidrBlockName: 'PublicSecondary',
+      })],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    },
+    );
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCCidrBlock', {
+      VpcId: {
+        'Fn::GetAtt': [
+          'TestVpcE77CE678',
+          'VpcId',
+        ],
+      },
+      CidrBlock: '198.51.100.0/24',
+    });
+  });
+
+  test('VPC throws error when publicly routable secondary has invalid netmask (< /16)', () => {
+    expect(() => {
+      new vpc.VpcV2(stack, 'TestVpc', {
+        primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('198.18.0.0/15', {
+          cidrBlockName: 'PublicSecondary',
+        })],
+        enableDnsHostnames: true,
+        enableDnsSupport: true,
+      },
+      );
+    }).toThrow('CIDR block is not compatible with the primary CIDR block according to AWS VPC restrictions');
+  });
+
+  test('VPC throws error when publicly routable secondary has invalid netmask (> /28)', () => {
+    expect(() => {
+      new vpc.VpcV2(stack, 'TestVpc', {
+        primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('198.18.0.0/29', {
+          cidrBlockName: 'PublicSecondary',
+        })],
+        enableDnsHostnames: true,
+        enableDnsSupport: true,
+      },
+      );
+    }).toThrow('CIDR block is not compatible with the primary CIDR block according to AWS VPC restrictions');
   });
 
   test('VPC supports secondary Amazon Provided IPv6 address', () => {
