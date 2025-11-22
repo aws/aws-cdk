@@ -242,8 +242,8 @@ export class Integration {
     }
 
     if (
-      ![IntegrationType.AWS_PROXY, IntegrationType.HTTP_PROXY].includes(props.type) &&
-      options.responseTransferMode === ResponseTransferMode.STREAM
+      options.responseTransferMode === ResponseTransferMode.STREAM &&
+      ![IntegrationType.AWS_PROXY, IntegrationType.HTTP_PROXY].includes(props.type)
     ) {
       throw new UnscopedValidationError(`ResponseTransferMode STREAM is only supported for AWS_PROXY and HTTP_PROXY integration types, got: ${props.type}`);
     }
