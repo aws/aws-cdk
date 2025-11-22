@@ -1,41 +1,8 @@
 import { Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
-import { Bucket, BucketPolicy } from 'aws-cdk-lib/aws-s3';
-import { AccountRootPrincipal, Effect, PolicyDocument, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
-import { tryFindBucketPolicy, XRayDeliveryDestinationPolicy } from '../../../lib/services/aws-logs/vended-logs-helper';
-
-describe('getOrCreateBucketPolicy', () => {
-  test('if a bucket policy exists on a bucket, return it', () => {
-    const stack = new Stack();
-    const bucket = new Bucket(stack, 'TestBucket');
-
-    new BucketPolicy(stack, 'S3BucketPolicy', {
-      bucket: bucket,
-      document: new PolicyDocument({
-        statements: [new PolicyStatement({
-          effect: Effect.ALLOW,
-          principals: [new AccountRootPrincipal()],
-          actions: ['s3:GetObject'],
-          resources: [bucket.arnForObjects('*')],
-        })],
-      }),
-    });
-
-    const output = tryFindBucketPolicy(bucket);
-
-    expect(output).toBeDefined();
-  });
-
-  test('if a bucket policy does not exist on a bucket, return undefined', () => {
-    const stack = new Stack();
-    const bucket = new Bucket(stack, 'TestBucket');
-
-    const output = tryFindBucketPolicy(bucket);
-
-    expect(output).toBeUndefined();
-  });
-});
+import { XRayDeliveryDestinationPolicy } from '../../../lib/services/aws-logs/vended-logs-helper';
 
 describe('XRayDeliveryDestinationPolicy', () => {
   test('creates an XRay delivery policy', () => {

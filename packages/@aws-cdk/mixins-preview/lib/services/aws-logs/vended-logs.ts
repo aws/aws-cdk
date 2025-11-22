@@ -5,8 +5,9 @@ import { CfnDelivery, CfnDeliveryDestination, ResourcePolicy } from 'aws-cdk-lib
 import type { IBucketRef } from 'aws-cdk-lib/aws-s3';
 import { CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
 import type { IConstruct } from 'constructs';
-import { tryFindBucketPolicy, XRayDeliveryDestinationPolicy } from './vended-logs-helper';
+import { XRayDeliveryDestinationPolicy } from './vended-logs-helper';
 import type { IDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
+import { tryFindBucketPolicyForBucket } from '../../mixins/private/reflections';
 
 interface IDestination {
   bind(scope: IConstruct, deliverySource: IDeliverySourceRef, sourceArn?: string): DeliveryReference;
@@ -41,7 +42,7 @@ export class S3LogDelivery implements IDestination {
   }
 
   private getOrCreateBucketPolicy(scope: IConstruct): CfnBucketPolicy {
-    const existingPolicy = tryFindBucketPolicy(this.bucket);
+    const existingPolicy = tryFindBucketPolicyForBucket(this.bucket);
     const statements = [];
 
     const bucketStatement = new PolicyStatement({

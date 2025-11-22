@@ -1,21 +1,6 @@
 import { Aws, Names, Resource, Stack } from 'aws-cdk-lib';
-import { CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
-import type { IBucketRef } from 'aws-cdk-lib/aws-s3';
 import { CfnResourcePolicy } from 'aws-cdk-lib/aws-xray';
 import type { IConstruct } from 'constructs';
-
-/**
- * Attempts to find an existing bucket policy for the specified S3 bucket.
- * @param bucket - The S3 bucket reference to search for an associated bucket policy
- * @returns The bucket policy if found, undefined otherwise
- */
-export function tryFindBucketPolicy(bucket: IBucketRef): CfnBucketPolicy | undefined {
-  const allConstructs = Stack.of(bucket).node.findAll();
-  const bucketPolicies = allConstructs.filter(construct => construct instanceof CfnBucketPolicy) as CfnBucketPolicy[];
-  const policiesForCurBucket = bucketPolicies.length > 0 ?
-    bucketPolicies.filter(policy => policy.bucket === bucket.bucketRef.bucketName) : undefined;
-  return policiesForCurBucket ? policiesForCurBucket[0] : policiesForCurBucket;
-}
 
 /**
  * Creates and manages an X-Ray resource policy for log delivery destinations.
