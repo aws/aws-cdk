@@ -933,6 +933,48 @@ const api = new appsync.GraphqlApi(this, 'OwnerContact', {
 });
 ```
 
+### Enhanced Metrics
+
+Enables and controls the enhanced metrics feature. Enhanced metrics emit granular data on API usage and performance such as AppSync request and error counts, latency, and cache hits/misses. All enhanced metric data is sent to your CloudWatch account, and you can configure the types of data that will be sent.
+
+```ts
+const schema = new appsync.SchemaFile({ filePath: 'mySchemaFile' })
+new appsync.GraphqlApi(this, 'api', {
+  name: 'myApi',
+  definition: appsync.Definition.fromSchema(schema),
+  enhancedMetricsConfig: {
+    dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS,
+    operationLevelMetricsConfig: appsync.OperationLevelMetricsConfig.ENABLED,
+    resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.FULL_REQUEST_RESOLVER_METRICS,
+  },
+});
+```
+
+If you wish to enable enhanced monitoring only for subset of data sources or resolvers you are use following configuration
+
+```ts
+const schema = new appsync.SchemaFile({ filePath: 'mySchemaFile' })
+const api = new appsync.GraphqlApi(this, 'api', {
+  name: 'myApi',
+  definition: appsync.Definition.fromSchema(schema),
+  enhancedMetricsConfig: {
+    dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.PER_DATA_SOURCE_METRICS,
+    operationLevelMetricsConfig: appsync.OperationLevelMetricsConfig.ENABLED,
+    resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.PER_RESOLVER_METRICS,
+  },
+});
+
+const noneDS = api.addNoneDataSource('none', {
+  metricsConfig: appsync.DataSourceMetricsConfig.ENABLED,
+});
+
+noneDS.createResolver('noneResolver', {
+  typeName: 'Mutation',
+  fieldName: 'addDemoMetricsConfig',
+  metricsConfig: appsync.ResolverMetricsConfig.ENABLED,
+});
+```
+
 ## Events
 
 ### Example
