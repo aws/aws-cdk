@@ -1,0 +1,15 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "cdk-integ-nodejs-edge-function/DefaultTest": {
+      "stacks": [
+        "integ-nodejs-edge-function"
+      ],
+      "diffAssets": true,
+      "stackUpdateWorkflow": false,
+      "assertionStack": "cdk-integ-nodejs-edge-function/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegnodejsedgefunctionDefaultTestDeployAssert9510BB28"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
