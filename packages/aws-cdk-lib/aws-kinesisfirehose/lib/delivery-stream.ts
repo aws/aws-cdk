@@ -98,7 +98,7 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
   /**
    * Collection of grant methods for a DeliveryStream
    */
-  public readonly grants = DeliveryStreamGrants._fromDeliveryStream(this);
+  public readonly grants = DeliveryStreamGrants.fromDeliveryStream(this);
 
   /**
    * Network connections between Amazon Data Firehose and other resources, i.e. Redshift cluster.

@@ -483,7 +483,7 @@ export class Role extends Resource implements IRole {
   /**
    * Collection of grant methods for a Role
    */
-  public readonly grants = RoleGrants._fromRole(this);
+  public readonly grants = RoleGrants.fromRole(this);
 
   private defaultPolicy?: Policy;
   private readonly managedPolicies: IManagedPolicy[] = [];
