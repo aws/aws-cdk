@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/829fd7ec42ebe3f8001bd298da5f1e2b89e25e21bffb80810048aebeb5b41c15.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dc855bccd68791b459e34c3bb744a8bef754c57061df4e885eea69093eb19698.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -296,12 +296,12 @@
             "data": {
               "engine": {
                 "engineType": "*",
-                "singleUserRotationApplication": "*",
                 "engineVersion": {
                   "fullVersion": "*",
                   "majorVersion": "*"
                 },
                 "parameterGroupFamily": "*",
+                "singleUserRotationApplication": "*",
                 "engineFamily": "*",
                 "supportedLogTypes": "*",
                 "combineImportAndExportRoles": true
@@ -1328,12 +1328,12 @@
               "snapshotCredentials": "*",
               "engine": {
                 "engineType": "*",
-                "singleUserRotationApplication": "*",
                 "engineVersion": {
                   "fullVersion": "*",
                   "majorVersion": "*"
                 },
                 "parameterGroupFamily": "*",
+                "singleUserRotationApplication": "*",
                 "engineFamily": "*",
                 "supportedLogTypes": "*",
                 "combineImportAndExportRoles": true
@@ -1539,6 +1539,32 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "FromSnapshotRotationSingleUserEBCAA50C"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/ReadIOPsAlarm": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "metric": {
+                "warnings": "*",
+                "warningsV2": "*"
+              },
+              "alarmName": "*",
+              "alarmDescription": "*",
+              "comparisonOperator": "*",
+              "datapointsToAlarm": "*",
+              "threshold": "*",
+              "evaluationPeriods": "*",
+              "evaluateLowSampleCountPercentile": "*",
+              "treatMissingData": "*",
+              "actionsEnabled": "*"
+            }
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/ReadIOPsAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReadIOPsAlarmFB02F871"
           }
         ],
         "/cdk-integ-cluster-snapshot/BootstrapVersion": [
@@ -2084,6 +2110,17 @@
             "userValue": false,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           }
         }
       }
