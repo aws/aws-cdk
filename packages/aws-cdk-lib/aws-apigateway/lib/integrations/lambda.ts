@@ -2,7 +2,7 @@ import { AwsIntegration } from './aws';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import { Annotations, Lazy, Names, Token } from '../../../core';
-import { IntegrationConfig, IntegrationOptions } from '../integration';
+import { IntegrationConfig, IntegrationOptions, ResponseTransferMode } from '../integration';
 import { Method } from '../method';
 
 export interface LambdaIntegrationOptions extends IntegrationOptions {
@@ -60,11 +60,14 @@ export class LambdaIntegration extends AwsIntegration {
 
   constructor(handler: lambda.IFunction, options: LambdaIntegrationOptions = { }) {
     const proxy = options.proxy ?? true;
+    const path = options.responseTransferMode === ResponseTransferMode.STREAM
+      ? `2021-11-15/functions/${handler.functionArn}/response-streaming-invocations`
+      : `2015-03-31/functions/${handler.functionArn}/invocations`;
 
     super({
       proxy,
       service: 'lambda',
-      path: `2015-03-31/functions/${handler.functionArn}/invocations`,
+      path,
       options,
     });
 
