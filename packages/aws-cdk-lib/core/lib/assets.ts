@@ -311,6 +311,28 @@ export interface DockerImageAssetSource {
    * @default - The asset hash is used to display the asset
    */
   readonly displayName?: string;
+
+  /**
+   * The tag to use when tagging the Docker image.
+   *
+   * When specified, this tag will be used instead of the default tag (asset hash).
+   * This is useful for creating meaningful tags for container image scanning and management.
+   *
+   * @default - The asset hash is used as the image tag
+   */
+  readonly imageTag?: string;
+
+  /**
+   * The prefix to prepend to the asset hash to create the Docker image tag.
+   *
+   * When specified, the image will be tagged with `${imageTagPrefix}${assetHash}`.
+   * This is useful for adding contextual information to image tags.
+   *
+   * If both `imageTag` and `imageTagPrefix` are specified, `imageTag` takes precedence.
+   *
+   * @default - No prefix is used
+   */
+  readonly imageTagPrefix?: string;
 }
 
 /**
