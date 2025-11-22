@@ -35,10 +35,8 @@ interface TopicGrantsProps {
 export class TopicGrants {
   /**
    * Creates grants for TopicGrants
-   *
-   * @internal
    */
-  public static _fromTopic(resource: sns.ITopicRef): TopicGrants {
+  public static fromTopic(resource: sns.ITopicRef): TopicGrants {
     return new TopicGrants({
       resource: resource,
       encryptedResource: (iam.GrantableResources.isEncryptedResource(resource) ? resource : undefined),

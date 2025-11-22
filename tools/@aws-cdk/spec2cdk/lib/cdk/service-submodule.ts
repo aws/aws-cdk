@@ -65,17 +65,17 @@ export class BaseServiceSubmodule {
   /**
    * The name of the submodule of aws-cdk-lib where these service resources got written
    */
-  readonly submoduleName: string;
+  public readonly submoduleName: string;
 
   /**
    * The service this submodule is for
    */
-  readonly service: Service;
+  public readonly service: Service;
 
   /**
    * Map of CloudFormation resource name to generated type declaration
    */
-  readonly resources: Map<string, TypeDeclaration> = new Map();
+  public readonly resources: Map<string, TypeDeclaration> = new Map();
 
   public get imports(): SelectiveImport[] {
     return this.selectiveImports.sort((a, b) => a.moduleName.localeCompare(b.moduleName));
@@ -106,7 +106,7 @@ export class BaseServiceSubmodule {
       const existingModuleImport = this.findSelectiveImport(theImport);
       if (!existingModuleImport) {
         this.selectiveImports.push(theImport);
-        return;
+        continue;
       }
 
       // We need to avoid importing the same reference multiple times
