@@ -1,4 +1,6 @@
+import * as cdk from '../../core';
 import { Stack } from '../../core';
+import * as cxapi from '../../cx-api';
 import { AnyPrincipal, Group, PolicyDocument, PolicyStatement, Effect } from '../lib';
 
 describe('IAM policy statement', () => {
@@ -259,5 +261,94 @@ describe('IAM policy statement', () => {
     for (const mod of modifications) {
       expect(mod).toThrow(/can no longer be modified/);
     }
+  });
+
+  describe('SID validation', () => {
+    test('does not validate when feature flag is disabled', () => {
+      const app = new cdk.App();
+      const stack = new Stack(app, 'Stack');
+      const doc = new PolicyDocument();
+      doc.addStatements(new PolicyStatement({
+        sid: 'Invalid-SID-With-Dashes',
+        actions: ['s3:GetObject'],
+        resources: ['*'],
+      }));
+
+      expect(() => stack.resolve(doc)).not.toThrow();
+    });
+
+    test('validates alphanumeric SID when feature flag is enabled', () => {
+      const app = new cdk.App({
+        context: { [cxapi.IAM_POLICY_STATEMENT_VALIDATE_SID]: true },
+      });
+      const stack = new Stack(app, 'Stack');
+      const doc = new PolicyDocument();
+      doc.addStatements(new PolicyStatement({
+        sid: 'ValidSID123',
+        actions: ['s3:GetObject'],
+        resources: ['*'],
+      }));
+
+      expect(() => stack.resolve(doc)).not.toThrow();
+    });
+
+    test('throws error for invalid SID when feature flag is enabled', () => {
+      const app = new cdk.App({
+        context: { [cxapi.IAM_POLICY_STATEMENT_VALIDATE_SID]: true },
+      });
+      const stack = new Stack(app, 'Stack');
+      const doc = new PolicyDocument();
+      doc.addStatements(new PolicyStatement({
+        sid: 'Invalid-SID',
+        actions: ['s3:GetObject'],
+        resources: ['*'],
+      }));
+
+      expect(() => stack.resolve(doc)).toThrow(/Statement ID \(sid\) must be alphanumeric/);
+    });
+
+    test('allows empty SID', () => {
+      const app = new cdk.App({
+        context: { [cxapi.IAM_POLICY_STATEMENT_VALIDATE_SID]: true },
+      });
+      const stack = new Stack(app, 'Stack');
+      const doc = new PolicyDocument();
+      doc.addStatements(new PolicyStatement({
+        sid: '',
+        actions: ['s3:GetObject'],
+        resources: ['*'],
+      }));
+
+      expect(() => stack.resolve(doc)).not.toThrow();
+    });
+
+    test('allows undefined SID', () => {
+      const app = new cdk.App({
+        context: { [cxapi.IAM_POLICY_STATEMENT_VALIDATE_SID]: true },
+      });
+      const stack = new Stack(app, 'Stack');
+      const doc = new PolicyDocument();
+      doc.addStatements(new PolicyStatement({
+        actions: ['s3:GetObject'],
+        resources: ['*'],
+      }));
+
+      expect(() => stack.resolve(doc)).not.toThrow();
+    });
+
+    test('allows tokens in SID', () => {
+      const app = new cdk.App({
+        context: { [cxapi.IAM_POLICY_STATEMENT_VALIDATE_SID]: true },
+      });
+      const stack = new Stack(app, 'Stack');
+      const doc = new PolicyDocument();
+      doc.addStatements(new PolicyStatement({
+        sid: cdk.Fn.ref('SomeParameter'),
+        actions: ['s3:GetObject'],
+        resources: ['*'],
+      }));
+
+      expect(() => stack.resolve(doc)).not.toThrow();
+    });
   });
 });

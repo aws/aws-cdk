@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "87f6e236057dc7291d44fafad477e7011b9da3563e84c15051c0617957860d2b": {
+      "displayName": "PolicyStatementSidStack Template",
+      "source": {
+        "path": "PolicyStatementSidStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-f41c3c10": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "87f6e236057dc7291d44fafad477e7011b9da3563e84c15051c0617957860d2b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
