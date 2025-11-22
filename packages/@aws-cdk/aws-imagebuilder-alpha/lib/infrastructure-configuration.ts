@@ -145,7 +145,7 @@ export interface InfrastructureConfigurationProps {
    * Note: You can provide an instanceProfile or a role, but not both.
    *
    * @example
-   * const role = new iam.Role(this, 'MyRole', {
+   * const instanceProfileRole = new iam.Role(this, 'MyRole', {
    *   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
    * });
    *
