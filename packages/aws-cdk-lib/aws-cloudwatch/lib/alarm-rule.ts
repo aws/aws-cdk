@@ -57,7 +57,7 @@ export interface AtLeastOptions {
 /**
  * configuration for creating a threshold for AT_LEAST expression
  */
-export interface AtLeastThresholdConfig {
+interface AtLeastThresholdConfig {
   /**
    * threshold of AT_LEAST expression
    *
@@ -100,10 +100,10 @@ export class AtLeastThresholdCount extends AtLeastThreshold {
     super();
   }
 
-  bind(_operands: IAlarm[]): AtLeastThresholdConfig {
+  _bind(operands: IAlarm[]): AtLeastThresholdConfig {
     if (this.count !== undefined && !Token.isUnresolved(this.count)
-      && (this.count < 1 || _operands.length < this.count || !Number.isInteger(this.count))) {
-      throw new UnscopedValidationError(`count must be between 1 and alarm length(${_operands.length}) integer, got ${this.count}`);
+      && (this.count < 1 || operands.length < this.count || !Number.isInteger(this.count))) {
+      throw new UnscopedValidationError(`count must be between 1 and alarm length(${operands.length}) integer, got ${this.count}`);
     }
     return {
       threshold: `${this.count}`,
@@ -119,7 +119,7 @@ export class AtLeastThresholdPercentage extends AtLeastThreshold {
     super();
   }
 
-  bind(_operands: IAlarm[]): AtLeastThresholdConfig {
+  _bind(_operands: IAlarm[]): AtLeastThresholdConfig {
     if (this.percentage !== undefined && !Token.isUnresolved(this.percentage)
       && (this.percentage < 1 || 100 < this.percentage || !Number.isInteger(this.percentage))) {
       throw new UnscopedValidationError(`percentage must be between 1 and 100, got ${this.percentage}`);
@@ -288,12 +288,12 @@ export class AlarmRule {
           throw new UnscopedValidationError(`Did not detect any operands for AT_LEAST ${alarmState}`);
         }
 
-        const thresholdOptions = props.threshold.bind(props.operands);
+        const thresholdConfig = props.threshold._bind(props.operands);
         const concatAlarms = props.operands
           .map(operand => `${operand.alarmArn}`)
           .join(', ');
 
-        return `AT_LEAST(${thresholdOptions.threshold}, ${alarmState}, (${concatAlarms}))`;
+        return `AT_LEAST(${thresholdConfig.threshold}, ${alarmState}, (${concatAlarms}))`;
       }
     };
   }
