@@ -5,6 +5,7 @@ export * from './container-recipe';
 export * from './distribution-configuration';
 export * from './image-recipe';
 export * from './infrastructure-configuration';
+export * from './lifecycle-policy';
 export * from './workflow';
 
 export * from './base-image';
