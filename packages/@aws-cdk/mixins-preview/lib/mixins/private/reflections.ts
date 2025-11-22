@@ -18,6 +18,7 @@ function findClosestRelatedResource<TPrimary extends IConstruct, TRelated extend
 ): TRelated | undefined {
   let closestMatch: TRelated | undefined;
   let closestDistance = Infinity;
+  const visited = new Set<IConstruct>();
 
   const isRelatedResource = (child: IConstruct): child is TRelated => {
     return CfnResource.isCfnResource(child) && child.cfnResourceType === relatedCfnResourceType;
@@ -40,6 +41,12 @@ function findClosestRelatedResource<TPrimary extends IConstruct, TRelated extend
 
     // Check each child and recursively search its descendants
     for (const child of parent.node.children) {
+      // Skip if already visited
+      if (visited.has(child)) {
+        continue;
+      }
+      visited.add(child);
+
       checkCandidate(child, distance);
       searchChildren(child, distance + 1);
     }
