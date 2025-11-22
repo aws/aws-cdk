@@ -102,13 +102,13 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    *
    * * If the `code` field is specified, then you must include the `handler` property.
    *
-   * @default - the code is bundled by esbuild
+   * @default - the code is bundled by esbuild (or rolldown if specified)
    */
   readonly code?: lambda.Code;
 }
 
 /**
- * A Node.js Lambda function bundled using esbuild
+ * A Node.js Lambda function bundled using esbuild or rolldown
  */
 export class NodejsFunction extends lambda.Function {
   constructor(scope: Construct, id: string, props: NodejsFunctionProps = {}) {
@@ -145,7 +145,7 @@ export class NodejsFunction extends lambda.Function {
         ...props,
         runtime,
         code: Bundling.bundle(scope, {
-          ...props.bundling ?? {},
+          ...(props.bundling || {}),
           entry,
           runtime,
           architecture,
