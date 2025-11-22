@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ContainerRecipeTest-Asset/DefaultTest": {
+      "stacks": [
+        "aws-cdk-imagebuilder-container-recipe-asset"
+      ],
+      "assertionStack": "ContainerRecipeTest-Asset/DefaultTest/DeployAssert",
+      "assertionStackName": "ContainerRecipeTestAssetDefaultTestDeployAssert478F695B"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
