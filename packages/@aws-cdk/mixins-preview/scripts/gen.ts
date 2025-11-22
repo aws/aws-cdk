@@ -1,4 +1,5 @@
-import { generateAll as generateCfnPropsMixins } from './spec2mixins/generate';
+import { generateAll as generateCfnPropsMixins } from './spec2mixins';
+import { generateAll as generateLogsDeliveryMixins } from './spec2logs';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -18,6 +19,7 @@ async function main() {
 
   const moduleMaps = [
     await generateCfnPropsMixins({ outputPath }),
+    await generateLogsDeliveryMixins({ outputPath }),
   ];
 
   const moduleMap = mergeModuleMaps(...moduleMaps);
@@ -123,7 +125,14 @@ async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
   // All it does is re-export the generated file. It can be manually edited so we don't
   // fully overwrite it.
   const mixinsModuleFile = path.join(modulePath, 'mixins.ts');
-  await ensureFileContains(mixinsModuleFile, ['export * from \'./cfn-props-mixins.generated\';']);
+  const mixinsIndexLines: string[] = [];
+  mixinsIndexLines.push('export * from \'./cfn-props-mixins.generated\';');
+
+  if (existsSync(path.join(modulePath, 'logs-delivery-mixins.generated.ts'))) {
+    mixinsIndexLines.push('export * from \'./logs-delivery-mixins.generated\';');
+  }
+
+  await ensureFileContains(mixinsModuleFile, mixinsIndexLines);
   await writeJsiiModuleMetadata(mixinsModuleFile, submodule.definition, 'mixins');
 }
 

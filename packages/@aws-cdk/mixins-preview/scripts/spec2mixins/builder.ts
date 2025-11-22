@@ -5,7 +5,7 @@ import { ResourceDecider } from '@aws-cdk/spec2cdk/lib/cdk/resource-decider';
 import { TypeConverter } from '@aws-cdk/spec2cdk/lib/cdk/type-converter';
 import { RelationshipDecider } from '@aws-cdk/spec2cdk/lib/cdk/relationship-decider';
 import type { Method } from '@cdklabs/typewriter';
-import { ExternalModule, Module, ClassType, Stability, StructType, Type, expr, stmt, $E, $T, ThingSymbol, $this, CallableProxy } from '@cdklabs/typewriter';
+import { ExternalModule, Module, ClassType, Stability, StructType, Type, expr, stmt, $T, ThingSymbol, $this, CallableProxy } from '@cdklabs/typewriter';
 import { MIXINS_COMMON, MIXINS_CORE, MIXINS_UTILS } from './helpers';
 import type { AddServiceProps, LibraryBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
 import { LibraryBuilder } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
@@ -229,9 +229,9 @@ class L1PropsMixin extends ClassType {
     method.addBody(
       stmt.ret(
         expr.binOp(
-          $E(expr.sym(CDK_CORE.CfnResource.symbol!)).isCfnResource(construct),
+          CallableProxy.fromName('CfnResource.isCfnResource', CDK_CORE).invoke(construct),
           '&&',
-          expr.eq($E(construct).cfnResourceType, expr.lit(this.resource.cloudFormationType)),
+          expr.eq(expr.get(construct, 'cfnResourceType'), expr.lit(this.resource.cloudFormationType)),
         ),
       ),
     );
