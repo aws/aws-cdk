@@ -6,8 +6,6 @@ import { getDocTag } from './util';
 import { camelize, pascalize } from '../case';
 import { Linter } from '../linter';
 
-const GRANT_RESULT_FQN = '@aws-cdk/aws-iam.Grant';
-
 export const resourceLinter = new Linter(a => ResourceReflection.findAll(a));
 
 export interface Attribute {
@@ -210,27 +208,6 @@ resourceLinter.add({
   },
 });
 */
-
-resourceLinter.add({
-  code: 'grant-result',
-  message: `"grant" method must return ${GRANT_RESULT_FQN}`,
-  eval: e => {
-    const grantResultType = e.ctx.sys.tryFindFqn(GRANT_RESULT_FQN);
-
-    // this implies that we are at a lower layer (i.e. @aws-cdk/core)
-    if (!grantResultType) {
-      return;
-    }
-
-    const grantMethods = e.ctx.construct.classType.allMethods.filter(m => m.name.startsWith('grant'));
-
-    for (const grantMethod of grantMethods) {
-      e.assertSignature(grantMethod, {
-        returns: grantResultType,
-      });
-    }
-  },
-});
 
 resourceLinter.add({
   code: 'props-physical-name',
