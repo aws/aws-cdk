@@ -1,0 +1,35 @@
+#
+#####################################
+##          SQS GUARD RULES         ##
+#####################################
+# Rule: SQS_NO_WORLD_ACCESSIBLE
+# Service: Amazon Simple Queue Service (SQS)
+# Coverage: World Accessibility
+
+let sqs_queue_policies = Resources.*[
+  Type == 'AWS::SQS::QueuePolicy'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "SQS_NO_WORLD_ACCESSIBLE"
+]
+
+# SQS queues should not be world accessible via queue policies
+rule SQS_NO_WORLD_ACCESSIBLE when %sqs_queue_policies !empty {
+    %sqs_queue_policies {
+        Properties.PolicyDocument.Statement[*] {
+            when Effect == "Allow" {
+                when Principal exists {
+                    when Principal != "*" {
+                        when Principal.AWS exists {
+                            when Principal.AWS is_string {
+                                Principal.AWS != "*"
+                            }
+                            when Principal.AWS is_list {
+                                Principal.AWS[*] != "*"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

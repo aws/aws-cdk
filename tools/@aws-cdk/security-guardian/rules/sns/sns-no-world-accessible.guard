@@ -1,0 +1,35 @@
+#
+#####################################
+##          SNS GUARD RULES         ##
+#####################################
+# Rule: SNS_NO_WORLD_ACCESSIBLE
+# Service: Amazon Simple Notification Service (SNS)
+# Coverage: World Accessibility
+
+let sns_topic_policies = Resources.*[
+  Type == 'AWS::SNS::TopicPolicy'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "SNS_NO_WORLD_ACCESSIBLE"
+]
+
+# SNS topics should not be world accessible
+rule SNS_NO_WORLD_ACCESSIBLE when %sns_topic_policies !empty {
+    %sns_topic_policies {
+        Properties.PolicyDocument.Statement[*] {
+            when Effect == "Allow" {
+                when Principal exists {
+                    when Principal != "*" {
+                        when Principal.AWS exists {
+                            when Principal.AWS is_string {
+                                Principal.AWS != "*"
+                            }
+                            when Principal.AWS is_list {
+                                Principal.AWS[*] != "*"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

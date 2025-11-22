@@ -1,0 +1,22 @@
+#
+#####################################
+##        KINESIS GUARD RULES       ##
+#####################################
+# Rule: KINESIS_FIREHOSE_ENCRYPTION_ENABLED
+# Service: Amazon Kinesis
+# Coverage: Firehose Encryption
+
+let kinesis_firehose = Resources.*[
+  Type == 'AWS::KinesisFirehose::DeliveryStream'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "KINESIS_FIREHOSE_ENCRYPTION_ENABLED"
+]
+
+# Kinesis Firehose delivery stream encryption
+rule KINESIS_FIREHOSE_ENCRYPTION_ENABLED when %kinesis_firehose !empty {
+    %kinesis_firehose {
+        Properties.DeliveryStreamEncryptionConfigurationInput exists
+        Properties.DeliveryStreamEncryptionConfigurationInput.KeyType exists
+        Properties.DeliveryStreamEncryptionConfigurationInput.KeyType in ["AWS_OWNED_CMK", "CUSTOMER_MANAGED_CMK"]
+    }
+}

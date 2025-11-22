@@ -1,0 +1,21 @@
+#
+#####################################
+##          SQS GUARD RULES         ##
+#####################################
+# Rule: SQS_ENCRYPTION_ENABLED
+# Service: Amazon Simple Queue Service (SQS)
+# Coverage: Queue Encryption
+
+let sqs_queues = Resources.*[
+  Type == 'AWS::SQS::Queue'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "SQS_ENCRYPTION_ENABLED"
+]
+
+# SQS queue encryption must be enabled
+rule SQS_ENCRYPTION_ENABLED when %sqs_queues !empty {
+    %sqs_queues {
+        Properties.KmsMasterKeyId exists or
+        Properties.SqsManagedSseEnabled == true
+    }
+}
