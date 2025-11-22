@@ -5,6 +5,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
+import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
@@ -19,6 +20,24 @@ class Fixture extends Stack {
       autoPlacement: 'on',
       availabilityZone: Stack.of(this).availabilityZones[0],
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.STANDARD6_GRAVITON, ec2.InstanceSize.LARGE).toString(),
+    });
+
+    // Example resources for documentation
+    const exampleImageRecipe = new imagebuilder.ImageRecipe(this, 'ImageRecipe', {
+      baseImage: imagebuilder.BaseImage.fromSsmParameterName(
+        '/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64'
+      )
+    });
+
+    const exampleContainerRecipe = new imagebuilder.ContainerRecipe(this, 'ContainerRecipe', {
+      baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+      targetRepository: imagebuilder.Repository.fromEcr(
+        ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+      )
+    });
+
+    const exampleImage = new imagebuilder.Image(this, 'Image', {
+      recipe: exampleImageRecipe
     });
 
     /// here
