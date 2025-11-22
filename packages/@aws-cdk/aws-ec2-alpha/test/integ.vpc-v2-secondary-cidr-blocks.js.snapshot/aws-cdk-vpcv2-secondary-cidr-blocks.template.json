@@ -1,0 +1,500 @@
+{
+ "Resources": {
+  "VpcWithPublicSecondaryBF5A0D37": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-secondary-cidr-blocks/VpcWithPublicSecondary"
+     }
+    ]
+   }
+  },
+  "VpcWithPublicSecondary37F623CC": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "CidrBlock": "198.18.0.0/26",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VpcWithPublicSecondaryBF5A0D37",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "SubnetInPrimary1Subnet5C380FE6": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.0.0.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VpcWithPublicSecondaryBF5A0D37",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VpcWithPublicSecondary37F623CC"
+   ]
+  },
+  "SubnetInPrimary1RouteTable59D20080": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VpcWithPublicSecondaryBF5A0D37",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VpcWithPublicSecondary37F623CC"
+   ]
+  },
+  "SubnetInPrimary1RouteTableAssociation224C6485": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "SubnetInPrimary1RouteTable59D20080",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "SubnetInPrimary1Subnet5C380FE6"
+    }
+   },
+   "DependsOn": [
+    "VpcWithPublicSecondary37F623CC"
+   ]
+  },
+  "SubnetInSecondary1Subnet62C43D82": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "198.18.0.0/28",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VpcWithPublicSecondaryBF5A0D37",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VpcWithPublicSecondary37F623CC"
+   ]
+  },
+  "SubnetInSecondary1RouteTableCF35A59B": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VpcWithPublicSecondaryBF5A0D37",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VpcWithPublicSecondary37F623CC"
+   ]
+  },
+  "SubnetInSecondary1RouteTableAssociation37CAF808": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "SubnetInSecondary1RouteTableCF35A59B",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "SubnetInSecondary1Subnet62C43D82"
+    }
+   },
+   "DependsOn": [
+    "VpcWithPublicSecondary37F623CC"
+   ]
+  },
+  "VpcWithCarrierGradeNat25F9C610": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-secondary-cidr-blocks/VpcWithCarrierGradeNat"
+     }
+    ]
+   }
+  },
+  "VpcWithCarrierGradeNat305AA356": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "CidrBlock": "100.64.0.0/16",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VpcWithCarrierGradeNat25F9C610",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "SubnetInPrimary2SubnetEEEF7613": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.0.1.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VpcWithCarrierGradeNat25F9C610",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VpcWithCarrierGradeNat305AA356"
+   ]
+  },
+  "SubnetInPrimary2RouteTable33F5782D": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VpcWithCarrierGradeNat25F9C610",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VpcWithCarrierGradeNat305AA356"
+   ]
+  },
+  "SubnetInPrimary2RouteTableAssociation7CC84555": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "SubnetInPrimary2RouteTable33F5782D",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "SubnetInPrimary2SubnetEEEF7613"
+    }
+   },
+   "DependsOn": [
+    "VpcWithCarrierGradeNat305AA356"
+   ]
+  },
+  "SubnetInCarrierGradeNatSubnet2F832324": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "100.64.0.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VpcWithCarrierGradeNat25F9C610",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VpcWithCarrierGradeNat305AA356"
+   ]
+  },
+  "SubnetInCarrierGradeNatRouteTable25368D21": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VpcWithCarrierGradeNat25F9C610",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VpcWithCarrierGradeNat305AA356"
+   ]
+  },
+  "SubnetInCarrierGradeNatRouteTableAssociation37723610": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "SubnetInCarrierGradeNatRouteTable25368D21",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "SubnetInCarrierGradeNatSubnet2F832324"
+    }
+   },
+   "DependsOn": [
+    "VpcWithCarrierGradeNat305AA356"
+   ]
+  },
+  "Vpc192WithPublicSecondary78CAABEE": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "192.168.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-secondary-cidr-blocks/Vpc192WithPublicSecondary"
+     }
+    ]
+   }
+  },
+  "Vpc192WithPublicSecondaryPublicSecondary192B3051894": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "CidrBlock": "203.0.113.0/24",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "Vpc192WithPublicSecondary78CAABEE",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "SubnetInSecondary192Subnet2DB1C862": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "203.0.113.0/28",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "Vpc192WithPublicSecondary78CAABEE",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "Vpc192WithPublicSecondaryPublicSecondary192B3051894"
+   ]
+  },
+  "SubnetInSecondary192RouteTable2653E5DB": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "Vpc192WithPublicSecondary78CAABEE",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "Vpc192WithPublicSecondaryPublicSecondary192B3051894"
+   ]
+  },
+  "SubnetInSecondary192RouteTableAssociation600A62D7": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "SubnetInSecondary192RouteTable2653E5DB",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "SubnetInSecondary192Subnet2DB1C862"
+    }
+   },
+   "DependsOn": [
+    "Vpc192WithPublicSecondaryPublicSecondary192B3051894"
+   ]
+  },
+  "Vpc172WithPublicSecondary2C1AA5BA": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "172.16.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpcv2-secondary-cidr-blocks/Vpc172WithPublicSecondary"
+     }
+    ]
+   }
+  },
+  "Vpc172WithPublicSecondaryPublicSecondary1724DC311A4": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "CidrBlock": "198.51.100.0/24",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "Vpc172WithPublicSecondary2C1AA5BA",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "SubnetInSecondary172Subnet41AB8D38": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "198.51.100.0/28",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "Vpc172WithPublicSecondary2C1AA5BA",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "Vpc172WithPublicSecondaryPublicSecondary1724DC311A4"
+   ]
+  },
+  "SubnetInSecondary172RouteTableE469B078": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "Vpc172WithPublicSecondary2C1AA5BA",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "Vpc172WithPublicSecondaryPublicSecondary1724DC311A4"
+   ]
+  },
+  "SubnetInSecondary172RouteTableAssociation9D476A66": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "SubnetInSecondary172RouteTableE469B078",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "SubnetInSecondary172Subnet41AB8D38"
+    }
+   },
+   "DependsOn": [
+    "Vpc172WithPublicSecondaryPublicSecondary1724DC311A4"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

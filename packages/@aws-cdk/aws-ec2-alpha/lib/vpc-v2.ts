@@ -549,11 +549,11 @@ export class VpcV2 extends VpcV2Base {
         if (secondaryVpcOptions.amazonProvided || secondaryVpcOptions.ipv6IpamPool || secondaryVpcOptions.ipv6PoolId) {
           this.useIpv6 = true;
         }
-        // validate CIDR ranges per RFC 1918
+        // validate CIDR ranges per AWS VPC restrictions
         if (secondaryVpcOptions.ipv4CidrBlock!) {
           const ret = validateIpv4address(secondaryVpcOptions.ipv4CidrBlock, this.resource.cidrBlock);
           if (ret === false) {
-            throw new Error('CIDR block should be in the same RFC 1918 range in the VPC');
+            throw new Error('CIDR block is not compatible with the primary CIDR block according to AWS VPC restrictions');
           }
         }
         if (secondaryVpcOptions.ipv4IpamProvisionedCidrs!) {
@@ -874,44 +874,106 @@ class VPCCidrBlock extends Resource implements IVPCCidrBlock {
   }
 }
 
-// @internal First two Octet to verify RFC 1918
-interface IPaddressConfig {
-  octet1: number;
-  octet2: number;
+/**
+ * Determines the IP address range type for a given CIDR block.
+ * @param cidr The CIDR block string (e.g., "10.0.0.0/16")
+ * @returns The range type identifier
+ * @internal
+ */
+function getRangeType(cidr: string): string {
+  // Extract just the IP address part (before the /)
+  const ipPart = cidr.split('/')[0];
+  const octets = ipPart.split('.').map(n => parseInt(n, 10));
+
+  if (octets.length !== 4) {
+    return 'unknown';
+  }
+
+  const first = octets[0];
+  const second = octets[1];
+
+  // RFC 1918 private address ranges
+  if (first === 10) return '10.0.0.0/8';
+  if (first === 172 && second >= 16 && second <= 31) return '172.16.0.0/12';
+  if (first === 192 && second === 168) return '192.168.0.0/16';
+
+  // RFC 6598 shared address space (Carrier-grade NAT)
+  if (first === 100 && second >= 64 && second <= 127) return '100.64.0.0/10';
+
+  // AWS reserved range for testing
+  if (first === 198 && second === 19) return '198.19.0.0/16';
+
+  // Publicly routable (everything else)
+  return 'public';
 }
 
 /**
- * Validates whether a secondary IPv4 address is within the same private IP address range as the primary IPv4 address.
+ * Validates whether a secondary IPv4 address is compatible with the primary IPv4 address
+ * according to AWS VPC CIDR block restrictions.
  *
- * @param cidr1 The secondary IPv4 CIDR block to be validated.
- * @param cidr2 The primary IPv4 CIDR block to validate against.
- * @returns True if the secondary IPv4 CIDR block is within the same private IP address range as the primary IPv4 CIDR block, false otherwise.
+ * @param secondaryCidr The secondary IPv4 CIDR block to be validated.
+ * @param primaryCidr The primary IPv4 CIDR block to validate against.
+ * @returns True if the secondary IPv4 CIDR block is compatible with the primary, false otherwise.
  * @internal
- * The private IP address ranges are defined by RFC 1918 as 10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16.
+ *
+ * AWS VPC CIDR block rules:
+ * - RFC 1918 ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) cannot mix with each other
+ * - RFC 1918 primary can have publicly routable secondary (non-RFC 1918, /16 to /28)
+ * - RFC 1918 primary can have 100.64.0.0/10 secondary (/16 to /28)
+ * - 198.19.0.0/16 cannot mix with RFC 1918 ranges
  */
-function validateIpv4address(cidr1?: string, cidr2?: string): boolean {
-  if (!cidr1 || !cidr2) {
+function validateIpv4address(secondaryCidr?: string, primaryCidr?: string): boolean {
+  if (!secondaryCidr || !primaryCidr) {
     return false; // Handle cases where CIDR ranges are not provided
   }
 
-  const octetsCidr1: number[] = cidr1.split('.').map(octet => parseInt(octet, 10));
-  const octetsCidr2: number[] = cidr2.split('.').map(octet => parseInt(octet, 10));
+  const primaryType = getRangeType(primaryCidr);
+  const secondaryType = getRangeType(secondaryCidr);
 
-  if (octetsCidr1.length !== 4 || octetsCidr2.length !== 4) {
-    return false; // Handle invalid CIDR ranges
+  // RFC 1918 ranges
+  const rfc1918Ranges = ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16'];
+
+  // Rule 1: RFC 1918 ranges cannot mix with each other
+  if (rfc1918Ranges.includes(primaryType) && rfc1918Ranges.includes(secondaryType)) {
+    return primaryType === secondaryType;
   }
 
-  const ip1: IPaddressConfig = {
-    octet1: octetsCidr1[0],
-    octet2: octetsCidr1[1],
-  };
+  // Rule 2: 198.19.0.0/16 cannot mix with RFC 1918 ranges
+  if ((primaryType === '198.19.0.0/16' && rfc1918Ranges.includes(secondaryType)) ||
+      (secondaryType === '198.19.0.0/16' && rfc1918Ranges.includes(primaryType))) {
+    return false;
+  }
 
-  const ip2: IPaddressConfig = {
-    octet1: octetsCidr2[0],
-    octet2: octetsCidr2[1],
-  };
+  // Rule 3: RFC 1918 primary can have publicly routable secondary
+  if (rfc1918Ranges.includes(primaryType) && secondaryType === 'public') {
+    // AWS requires publicly routable blocks to be between /16 and /28
+    const mask = parseInt(secondaryCidr.split('/')[1] || '0', 10);
+    return mask >= 16 && mask <= 28;
+  }
 
-  return (ip1.octet1 === 10 && ip2.octet1 === 10) ||
-    (ip1.octet1 === 192 && ip1.octet2 === 168 && ip2.octet1 === 192 && ip2.octet2 === 168) ||
-    (ip1.octet1 === 172 && ip1.octet2 === 16 && ip2.octet1 === 172 && ip2.octet2 === 16); // CIDR ranges belong to same private IP address ranges
+  // Rule 4: RFC 1918 primary can have 100.64.0.0/10 secondary
+  if (rfc1918Ranges.includes(primaryType) && secondaryType === '100.64.0.0/10') {
+    // AWS requires 100.64.0.0/10 blocks to be between /16 and /28
+    const mask = parseInt(secondaryCidr.split('/')[1] || '0', 10);
+    return mask >= 16 && mask <= 28;
+  }
+
+  // Rule 5: Same range type is always allowed
+  if (primaryType === secondaryType) {
+    return true;
+  }
+
+  // Rule 6: Public + public combinations are allowed (AWS doesn't restrict this)
+  if (primaryType === 'public' && secondaryType === 'public') {
+    return true;
+  }
+
+  // Rule 7: Public primary + 100.64.0.0/10 secondary is allowed
+  if (primaryType === 'public' && secondaryType === '100.64.0.0/10') {
+    const mask = parseInt(secondaryCidr.split('/')[1] || '0', 10);
+    return mask >= 16 && mask <= 28;
+  }
+
+  // All other combinations are not allowed
+  return false;
 }
