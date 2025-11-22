@@ -1,0 +1,54 @@
+{
+  "version": "0.2",
+  "phases": {
+    "install": {
+      "commands": [
+        "npm install -g cdk-assets@latest"
+      ]
+    },
+    "build": {
+      "commands": [
+        "ASSET_MANIFEST='assembly-AssetBuilds-TestStage/AssetBuildsTestStageAppStackBEFB0CAC.assets.json'",
+        "ASSET_ID='8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5'",
+        "DEST_ID='current_account-current_region-3d50c90e'",
+        "",
+        "echo 'Checking if file asset $ASSET_ID exists...'",
+        "BUCKET_NAME=$(node -e 'const m=require('./$ASSET_MANIFEST');const d=m.files[$ASSET_ID].destinations[$DEST_ID];console.log(d.bucketName);' 2>/dev/null || echo '')",
+        "OBJECT_KEY=$(node -e 'const m=require('./$ASSET_MANIFEST');const d=m.files[$ASSET_ID].destinations[$DEST_ID];console.log(d.objectKey);' 2>/dev/null || echo '')",
+        "",
+        "if [ -n '$BUCKET_NAME' ] && [ -n '$OBJECT_KEY' ]; then",
+        "  if aws s3api head-object --bucket '$BUCKET_NAME' --key '$OBJECT_KEY' &>/dev/null; then",
+        "    echo 'Asset $ASSET_ID already exists in S3, skipping publish'",
+        "  else",
+        "    echo 'Asset $ASSET_ID does not exist, publishing...'",
+        "    cdk-assets --path '$ASSET_MANIFEST' --verbose publish '8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5:current_account-current_region-3d50c90e'",
+        "  fi",
+        "else",
+        "  echo 'Could not extract S3 destination from manifest, publishing anyway...'",
+        "  cdk-assets --path '$ASSET_MANIFEST' --verbose publish '8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5:current_account-current_region-3d50c90e'",
+        "fi",
+        "",
+        "ASSET_MANIFEST='assembly-AssetBuilds-TestStage/AssetBuildsTestStageAppStackBEFB0CAC.assets.json'",
+        "ASSET_ID='ac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0e'",
+        "DEST_ID='current_account-current_region-8b0ef02d'",
+        "",
+        "echo 'Checking if file asset $ASSET_ID exists...'",
+        "BUCKET_NAME=$(node -e 'const m=require('./$ASSET_MANIFEST');const d=m.files[$ASSET_ID].destinations[$DEST_ID];console.log(d.bucketName);' 2>/dev/null || echo '')",
+        "OBJECT_KEY=$(node -e 'const m=require('./$ASSET_MANIFEST');const d=m.files[$ASSET_ID].destinations[$DEST_ID];console.log(d.objectKey);' 2>/dev/null || echo '')",
+        "",
+        "if [ -n '$BUCKET_NAME' ] && [ -n '$OBJECT_KEY' ]; then",
+        "  if aws s3api head-object --bucket '$BUCKET_NAME' --key '$OBJECT_KEY' &>/dev/null; then",
+        "    echo 'Asset $ASSET_ID already exists in S3, skipping publish'",
+        "  else",
+        "    echo 'Asset $ASSET_ID does not exist, publishing...'",
+        "    cdk-assets --path '$ASSET_MANIFEST' --verbose publish 'ac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0e:current_account-current_region-8b0ef02d'",
+        "  fi",
+        "else",
+        "  echo 'Could not extract S3 destination from manifest, publishing anyway...'",
+        "  cdk-assets --path '$ASSET_MANIFEST' --verbose publish 'ac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0e:current_account-current_region-8b0ef02d'",
+        "fi",
+        ""
+      ]
+    }
+  }
+}
