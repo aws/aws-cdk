@@ -1,8 +1,9 @@
 import { addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConfig } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
-import { FeatureFlags, ValidationError } from '../../core';
+import { Annotations, FeatureFlags, Resource, ValidationError } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -67,6 +68,11 @@ export class SqsQueue implements events.IRuleTarget {
       };
     }
 
+    // Check if the KMS key is imported and warn the user
+    if (this.queue.encryptionMasterKey) {
+      this.validateKmsKeyPermissions(rule, this.queue.encryptionMasterKey);
+    }
+
     // deduplicated automatically
     this.queue.grantSendMessages(new iam.ServicePrincipal('events.amazonaws.com', { conditions }));
 
@@ -81,5 +87,20 @@ export class SqsQueue implements events.IRuleTarget {
       targetResource: this.queue,
       sqsParameters: this.props.messageGroupId ? { messageGroupId: this.props.messageGroupId } : undefined,
     };
+  }
+
+  private validateKmsKeyPermissions(rule: events.IRule, key: kms.IKey): void {
+    // Check if the key is imported by verifying if it's not an owned resource.
+    // Imported keys cannot have their policies modified by CDK.
+    if (!Resource.isOwnedResource(key)) {
+      Annotations.of(rule).addWarningV2('@aws-cdk/aws-events-targets:importedKmsKey',
+        `This queue is encrypted with an imported KMS key (${key.keyId}). ` +
+        'EventBridge cannot automatically add the required permissions to the key policy. ' +
+        'You must manually add the following permissions to the KMS key policy:\n' +
+        '  - kms:Decrypt\n' +
+        '  - kms:GenerateDataKey\n' +
+        'For the principal: { "Service": "events.amazonaws.com" }',
+      );
+    }
   }
 }
