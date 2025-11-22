@@ -142,6 +142,90 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
+  "BucketViaMethodAF1D9165": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "BucketViaMethodPolicyDC86AE49": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "BucketViaMethodAF1D9165"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "BucketViaMethodAF1D9165",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "BucketViaMethodAF1D9165",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "BucketViaMethodAutoDeleteObjectsCustomResource9AB8AF36": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "BucketViaMethodAF1D9165"
+    }
+   },
+   "DependsOn": [
+    "BucketViaMethodPolicyDC86AE49"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "CustomS3PutObjectsCustomResourceProviderRole40D98C91": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -171,20 +255,36 @@
         {
          "Effect": "Allow",
          "Action": "s3:PutObject",
-         "Resource": {
-          "Fn::Join": [
-           "",
-           [
-            {
-             "Fn::GetAtt": [
-              "Bucket83908E77",
-              "Arn"
-             ]
-            },
-            "/*"
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::GetAtt": [
+               "Bucket83908E77",
+               "Arn"
+              ]
+             },
+             "/*"
+            ]
            ]
-          ]
-         }
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::GetAtt": [
+               "BucketViaMethodAF1D9165",
+               "Arn"
+              ]
+             },
+             "/*"
+            ]
+           ]
+          }
+         ]
         }
        ]
       }
@@ -227,6 +327,22 @@
     },
     "BucketName": {
      "Ref": "Bucket83908E77"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "PutObjectsMethodCustomResource": {
+   "Type": "Custom::S3PutObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3PutObjectsCustomResourceProviderHandler1D33F0A9",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "BucketViaMethodAF1D9165"
     }
    },
    "UpdateReplacePolicy": "Delete",
