@@ -2,6 +2,7 @@ import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
+import { Runtime, Code, Function } from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as apigw from '../lib';
 
@@ -241,5 +242,33 @@ describe('integration', () => {
         timeout: cdk.Duration.seconds(15),
       },
     })).not.toThrow();
+  });
+
+  test.each([
+    [apigw.ResponseTransferMode.STREAM, 'STREAM'],
+    [apigw.ResponseTransferMode.BUFFERED, 'BUFFERED'],
+    [undefined, Match.absent()],
+  ])('responseTransferMode %s sets expected value (%s)', (transferMode, expectedMode) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'my-api');
+
+    // WHEN
+    const integration = new apigw.Integration({
+      type: apigw.IntegrationType.AWS_PROXY,
+      integrationHttpMethod: 'ANY',
+      options: {
+        responseTransferMode: transferMode,
+      },
+    });
+    api.root.addMethod('ANY', integration);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      HttpMethod: 'ANY',
+      Integration: {
+        ResponseTransferMode: expectedMode,
+      },
+    });
   });
 });
