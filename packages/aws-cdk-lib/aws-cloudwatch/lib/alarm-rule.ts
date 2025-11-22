@@ -86,8 +86,10 @@ export abstract class AtLeastThreshold {
 
   /**
    * Called when the threshold is initialized to allow this object to bind
+   *
+   * @internal
    */
-  public abstract bind(_operands: IAlarm[]): AtLeastThresholdConfig;
+  public abstract _bind(operands: IAlarm[]): AtLeastThresholdConfig;
 }
 
 /**
