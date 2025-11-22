@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { Template } from '../../../assertions';
 import * as cxapi from '../../../cx-api';
-import { App, AssetStaging, CustomResourceProvider, DockerImageAssetLocation, DockerImageAssetSource, Duration, FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack, CfnResource, determineLatestNodeRuntimeName, CustomResourceProviderBase, CustomResourceProviderBaseProps, CustomResourceProviderOptions, CustomResourceProviderRuntime } from '../../lib';
+import { App, AssetStaging, CustomResourceProvider, DockerImageAssetLocation, DockerImageAssetSource, Duration, FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack, CfnResource, determineLatestNodeRuntimeName, CustomResourceProviderBase, CustomResourceProviderBaseProps, CustomResourceProviderOptions, CustomResourceProviderRuntime, PERMISSIONS_BOUNDARY_CONTEXT_KEY } from '../../lib';
 import { CUSTOMIZE_ROLES_CONTEXT_KEY } from '../../lib/helpers-internal';
 import { toCloudFormation } from '../util';
 
@@ -12,6 +12,64 @@ const TEST_HANDLER = `${__dirname}/mock-provider`;
 const DEFAULT_PROVIDER_RUNTIME = CustomResourceProviderRuntime.NODEJS_20_X;
 
 describe('custom resource provider', () => {
+  describe('host stack permissions boundary', () => {
+    function expectAllRolesHavePermissionBoundaryWithName(cfn: any, name: string) {
+      const expected = {
+        'Fn::Join': [
+          '',
+          [
+            'arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, `:policy/${name}`,
+          ],
+        ],
+      };
+      Object.values(cfn.Resources).filter((r: any) => r.Type == 'AWS::IAM::Role').forEach((r: any) => {
+        expect(r).toHaveProperty('Properties.PermissionsBoundary');
+        expect(r.Properties.PermissionsBoundary).toEqual(expected);
+      });
+    }
+
+    function expectNoRolesHavePermissionBoundary(cfn: any) {
+      Object.values(cfn.Resources)
+        .filter((r: any) => r.Type == 'AWS::IAM::Role')
+        .forEach(r => expect(r).not.toHaveProperty('Properties.PermissionsBoundary'));
+    }
+
+    test('applied if configured', () => {
+      // GIVEN
+      const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+      const stack = new Stack(app);
+      stack.node.setContext(PERMISSIONS_BOUNDARY_CONTEXT_KEY, {
+        name: 'some-perm-boundary',
+      });
+
+      // WHEN
+      CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
+        codeDirectory: TEST_HANDLER,
+        runtime: DEFAULT_PROVIDER_RUNTIME,
+      });
+
+      // THEN
+      const cfn = toCloudFormation(stack);
+      expectAllRolesHavePermissionBoundaryWithName(cfn, 'some-perm-boundary');
+    });
+
+    test('not applied if not configured', () => {
+      // GIVEN
+      const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+      const stack = new Stack(app);
+
+      // WHEN
+      CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
+        codeDirectory: TEST_HANDLER,
+        runtime: DEFAULT_PROVIDER_RUNTIME,
+      });
+
+      // THEN
+      const cfn = toCloudFormation(stack);
+      expectNoRolesHavePermissionBoundary(cfn);
+    });
+  });
+
   describe('customize roles', () => {
     test('role is not created if preventSynthesis!=false', () => {
       // GIVEN

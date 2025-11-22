@@ -122,6 +122,7 @@ export abstract class CustomResourceProviderBase extends Construct {
             { 'Fn::Sub': managedPolicyArn },
           ],
           Policies: Lazy.any({ produce: () => this.renderPolicies() }),
+          PermissionsBoundary: stack.permissionsBoundaryArn,
         },
       });
       this.roleArn = Token.asString(this.role.getAtt('Arn'));
