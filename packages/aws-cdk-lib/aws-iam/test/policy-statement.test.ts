@@ -260,4 +260,32 @@ describe('IAM policy statement', () => {
       expect(mod).toThrow(/can no longer be modified/);
     }
   });
+
+  test('accepts valid alphanumeric sid', () => {
+    const validSids = ['ValidSid123', 'ALLCAPS', '123456', 'abc123DEF'];
+
+    for (const sid of validSids) {
+      expect(() => new PolicyStatement({ sid })).not.toThrow();
+    }
+  });
+
+  test('validates sid format based on skipSidValidation flag', () => {
+    const invalidSids = ['invalid-sid', 'with space', 'with_underscore', 'with.dot', 'with!special@chars'];
+
+    for (const sid of invalidSids) {
+      // Should throw when skipSidValidation is false (default)
+      expect(() => new PolicyStatement({ sid }))
+        .toThrow(`Statement ID (sid) must be alphanumeric. Got '${sid}'. The Sid element supports ASCII uppercase letters (A-Z), lowercase letters (a-z), and numbers (0-9).`);
+
+      // Should not throw when skipSidValidation is true
+      expect(() => new PolicyStatement({ sid, skipSidValidation: true })).not.toThrow();
+    }
+  });
+
+  test('throws error when setting sid to non-alphanumeric value', () => {
+    const statement = new PolicyStatement();
+
+    expect(() => statement.sid = 'invalid-sid')
+      .toThrow('Statement ID (sid) must be alphanumeric. Got \'invalid-sid\'. The Sid element supports ASCII uppercase letters (A-Z), lowercase letters (a-z), and numbers (0-9).');
+  });
 });
