@@ -20,6 +20,6 @@ new imagebuilder.ContainerRecipe(stack, 'ContainerRecipe', {
   dockerfile: imagebuilder.DockerfileData.fromS3(asset.bucket, asset.s3ObjectKey),
 });
 
-new integ.IntegTest(app, 'ContainerRecipeTest', {
+new integ.IntegTest(app, 'ContainerRecipeTest-S3', {
   testCases: [stack],
 });

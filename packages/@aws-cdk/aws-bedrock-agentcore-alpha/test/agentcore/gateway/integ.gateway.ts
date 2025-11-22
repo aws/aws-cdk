@@ -8,7 +8,8 @@
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as agentcore from '../../../agentcore';
+import * as agentcore from '../../../lib';
+import * as path from 'path';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'BedrockAgentCoreGatewayIntegTest', {
@@ -80,7 +81,7 @@ const lambdaTarget = gateway.addLambdaTarget('LambdaTarget', {
 const smithyTarget = gateway.addSmithyTarget('SmithyTarget', {
   gatewayTargetName: 'smithy-test-target',
   description: 'Smithy target using convenience method',
-  smithyModel: agentcore.ApiSchema.fromLocalAsset('schemas/smithy/basic-service.json'),
+  smithyModel: agentcore.ApiSchema.fromLocalAsset(path.join(__dirname, 'schemas', 'smithy', 'basic-service.json')),
 });
 
 // ===== Outputs =====
