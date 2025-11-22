@@ -1,5 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Annotations, Template } from '../../assertions';
+import { Annotations, Template, Match } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
 import * as origins from '../../aws-cloudfront-origins';
 import * as iam from '../../aws-iam';
@@ -1733,7 +1733,7 @@ describe('record set', () => {
       target: route53.RecordTarget.fromValues('zzz'),
       setIdentifier: 'uniqueId',
       ...props,
-    })).toThrow('Only one of region, weight, multiValueAnswer, geoLocation or cidrRoutingConfig can be defined');
+    })).toThrow('Only one of region, weight, multiValueAnswer, geoLocation, cidrRoutingConfig, or failover can be defined');
   });
 
   test('throw error for the definition of setIdentifier without weight, geoLocation or region', () => {
@@ -1802,5 +1802,155 @@ describe('record set', () => {
       target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
       multiValueAnswer: true,
     })).toThrow('multiValueAnswer cannot be specified for alias record');
+  });
+
+  test('A record with PRIMARY failover and health check', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    const healthCheck = new route53.HealthCheck(stack, 'HealthCheck', {
+      type: route53.HealthCheckType.HTTP,
+      fqdn: 'example.com',
+    });
+
+    // WHEN
+    new route53.ARecord(stack, 'PrimaryFailover', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+      failover: route53.Failover.PRIMARY,
+      healthCheck,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Failover: 'PRIMARY',
+      HealthCheckId: stack.resolve(healthCheck.healthCheckId),
+      SetIdentifier: 'FAILOVER_PRIMARY_ID_PrimaryFailover',
+    });
+  });
+
+  test('A record with SECONDARY failover and no health check', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // WHEN
+    new route53.ARecord(stack, 'SecondaryFailover', {
+      zone,
+      recordName: 'backup',
+      target: route53.RecordTarget.fromIpAddresses('5.6.7.8'),
+      failover: route53.Failover.SECONDARY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Failover: 'SECONDARY',
+      SetIdentifier: 'FAILOVER_SECONDARY_ID_SecondaryFailover',
+    });
+  });
+
+  test('warns when PRIMARY failover has no health check', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // WHEN
+    new route53.ARecord(stack, 'PrimaryFailover', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+      failover: route53.Failover.PRIMARY,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning(
+      '*',
+      Match.stringLikeRegexp('PRIMARY failover record sets should include a health check'),
+    );
+  });
+
+  test('warns when failover alias target does not set EvaluateTargetHealth=true', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    const target: route53.IAliasRecordTarget = {
+      bind: () => ({
+        hostedZoneId: 'Z111',
+        dnsName: 'alias.example.com',
+        evaluateTargetHealth: false,
+      }),
+    };
+
+    // WHEN
+    new route53.ARecord(stack, 'AliasFailover', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromAlias(target),
+      failover: route53.Failover.PRIMARY,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning(
+      '*',
+      Match.stringLikeRegexp('Failover alias record sets should include EvaluateTargetHealth'),
+    );
+  });
+
+  test('does not warn when failover alias target sets EvaluateTargetHealth=true', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    const target: route53.IAliasRecordTarget = {
+      bind: () => ({
+        hostedZoneId: 'Z111',
+        dnsName: 'alias.example.com',
+        evaluateTargetHealth: true,
+      }),
+    };
+
+    // WHEN
+    new route53.ARecord(stack, 'AliasFailover', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromAlias(target),
+      failover: route53.Failover.PRIMARY,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('*', '*');
+  });
+
+  test('throws when failover is combined with another routing policy', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // THEN
+    expect(() => new route53.ARecord(stack, 'InvalidFailover', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+      failover: route53.Failover.PRIMARY,
+      weight: 10,
+    })).toThrow('Only one of region, weight, multiValueAnswer, geoLocation, cidrRoutingConfig, or failover can be defined');
+  });
+
+  test('throws when failover is combined with multiValueAnswer', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // THEN
+    expect(() => new route53.ARecord(stack, 'InvalidFailover', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+      failover: route53.Failover.PRIMARY,
+      multiValueAnswer: true,
+    })).toThrow('Cannot use both failover and multiValueAnswer routing policies');
   });
 });
