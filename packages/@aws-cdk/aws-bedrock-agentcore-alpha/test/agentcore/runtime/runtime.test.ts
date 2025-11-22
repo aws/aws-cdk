@@ -8,14 +8,14 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { Runtime } from '../../../agentcore/runtime/runtime';
-import { RuntimeEndpoint } from '../../../agentcore/runtime/runtime-endpoint';
-import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../agentcore/runtime/runtime-artifact';
-import { RuntimeAuthorizerConfiguration } from '../../../agentcore/runtime/runtime-authorizer-configuration';
-import { RuntimeNetworkConfiguration } from '../../../agentcore/network/network-configuration';
+import { Runtime } from '../../../lib/runtime/runtime';
+import { RuntimeEndpoint } from '../../../lib/runtime/runtime-endpoint';
+import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
+import { RuntimeAuthorizerConfiguration } from '../../../lib/runtime/runtime-authorizer-configuration';
+import { RuntimeNetworkConfiguration } from '../../../lib/network/network-configuration';
 import {
   ProtocolType,
-} from '../../../agentcore/runtime/types';
+} from '../../../lib/runtime/types';
 
 describe('Runtime default tests', () => {
   let template: Template;
@@ -1832,6 +1832,31 @@ describe('Runtime lifecycle configuration tests', () => {
         },
       });
     }).toThrow(/Maximum lifetime must be between 60 seconds and 28800 seconds/);
+  });
+
+  test('does not fail validation if lifecycle configuration is a late-bound value', () => {
+    // WHEN
+    const idleTimeoutParam = new cdk.CfnParameter(stack, 'IdleTimeout', {
+      default: 600,
+      type: 'Number',
+    });
+
+    const maxLifetimeParam = new cdk.CfnParameter(stack, 'MaxLifetime', {
+      default: 14400,
+      type: 'Number',
+    });
+
+    // THEN
+    expect(() => {
+      new Runtime(stack, 'runtime-late-bound', {
+        runtimeName: 'runtime_late_bound',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        lifecycleConfiguration: {
+          idleRuntimeSessionTimeout: Duration.seconds(idleTimeoutParam.valueAsNumber),
+          maxLifetime: Duration.seconds(maxLifetimeParam.valueAsNumber),
+        },
+      });
+    }).not.toThrow();
   });
 });
 
