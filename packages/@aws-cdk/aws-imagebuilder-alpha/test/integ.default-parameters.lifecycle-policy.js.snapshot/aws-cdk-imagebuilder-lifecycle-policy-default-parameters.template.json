@@ -1,0 +1,165 @@
+{
+ "Resources": {
+  "LifecyclePolicyAMIExecutionRoleA4E2A4A6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "imagebuilder.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/EC2ImageBuilderLifecycleExecutionPolicy"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "LifecyclePolicyAMI6BEB436A": {
+   "Type": "AWS::ImageBuilder::LifecyclePolicy",
+   "Properties": {
+    "ExecutionRole": {
+     "Fn::GetAtt": [
+      "LifecyclePolicyAMIExecutionRoleA4E2A4A6",
+      "Arn"
+     ]
+    },
+    "Name": "aws-cdk-imagebuilder-lifecycle-policy-default-parameters-lifecyclepolicy-ami-7c1d694f",
+    "PolicyDetails": [
+     {
+      "Action": {
+       "IncludeResources": {
+        "Amis": true,
+        "Snapshots": true
+       },
+       "Type": "DELETE"
+      },
+      "Filter": {
+       "Type": "COUNT",
+       "Value": 5
+      }
+     }
+    ],
+    "ResourceSelection": {
+     "TagMap": {
+      "Environment": "test"
+     }
+    },
+    "ResourceType": "AMI_IMAGE"
+   }
+  },
+  "LifecyclePolicyContainerExecutionRole55841449": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "imagebuilder.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/EC2ImageBuilderLifecycleExecutionPolicy"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "LifecyclePolicyContainer15B31DB8": {
+   "Type": "AWS::ImageBuilder::LifecyclePolicy",
+   "Properties": {
+    "ExecutionRole": {
+     "Fn::GetAtt": [
+      "LifecyclePolicyContainerExecutionRole55841449",
+      "Arn"
+     ]
+    },
+    "Name": "aws-cdk-imagebuilder-lifecycle-policy-default-parameters-lifecyclepolicy-container-1daf44f5",
+    "PolicyDetails": [
+     {
+      "Action": {
+       "IncludeResources": {
+        "Containers": true
+       },
+       "Type": "DELETE"
+      },
+      "Filter": {
+       "Type": "COUNT",
+       "Value": 5
+      }
+     }
+    ],
+    "ResourceSelection": {
+     "TagMap": {
+      "Environment": "test"
+     }
+    },
+    "ResourceType": "CONTAINER_IMAGE"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
