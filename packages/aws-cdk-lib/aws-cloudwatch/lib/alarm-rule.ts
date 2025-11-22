@@ -35,7 +35,7 @@ enum Operator {
 }
 
 /**
- * Options to AT_LEAST AlarmRule wrapper function
+ * Options for AT_LEAST AlarmRule wrapper function
  */
 export interface AtLeastOptions {
 
