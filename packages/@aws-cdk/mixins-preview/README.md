@@ -55,11 +55,11 @@ The `.with()` method is available after importing `@aws-cdk/mixins-preview/with`
 
 ## Creating Custom Mixins
 
-Mixins are simple classes that implement the `IMixin` interface:
+Mixins are simple classes that implement the `IMixin` interface (usually by extending the abstract `Mixin` class:
 
 ```typescript
 // Simple mixin that enables versioning
-class CustomVersioningMixin implements IMixin {
+class CustomVersioningMixin extends Mixin implements IMixin {
   supports(construct: any): boolean {
     return construct instanceof s3.CfnBucket;
   }
@@ -131,7 +131,7 @@ For every CloudFormation resource, CDK Mixins automatically generates type-safe 
 
 ```typescript
 import '@aws-cdk/mixins-preview/with';
-import { CfnBucketPropsMixin } from '@aws-cdk/mixins-preview/aws-s3/mixins';
+
 
 const bucket = new s3.Bucket(scope, "Bucket")
   .with(new CfnBucketPropsMixin({
@@ -146,6 +146,8 @@ const bucket = new s3.Bucket(scope, "Bucket")
 Property mixins support two merge strategies:
 
 ```typescript
+declare const bucket: s3.CfnBucket;
+
 // MERGE (default): Deep merges properties with existing values
 Mixins.of(bucket).apply(new CfnBucketPropsMixin(
   { versioningConfiguration: { status: "Enabled" } },
@@ -155,16 +157,16 @@ Mixins.of(bucket).apply(new CfnBucketPropsMixin(
 // OVERWRITE: Replaces existing property values
 Mixins.of(bucket).apply(new CfnBucketPropsMixin(
   { versioningConfiguration: { status: "Enabled" } },
-  { strategy: PropertyMergeStrategy.OVERWRITE }
+  { strategy: PropertyMergeStrategy.OVERRIDE }
 ));
 ```
 
 Property mixins are available for all AWS services:
 
 ```typescript
-import { CfnLogGroupMixin } from '@aws-cdk/mixins-preview/aws-logs/mixins';
-import { CfnFunctionMixin } from '@aws-cdk/mixins-preview/aws-lambda/mixins';
-import { CfnTableMixin } from '@aws-cdk/mixins-preview/aws-dynamodb/mixins';
+import { CfnLogGroupPropsMixin } from '@aws-cdk/mixins-preview/aws_logs/mixins';
+import { CfnFunctionPropsMixin } from '@aws-cdk/mixins-preview/aws_lambda/mixins';
+import { CfnTablePropsMixin } from '@aws-cdk/mixins-preview/aws_dynamodb/mixins';
 ```
 
 ## Error Handling
