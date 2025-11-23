@@ -1,12 +1,15 @@
+/* eslint-disable no-console */
 import type { Resource, Service, SpecDatabase, Event } from '@aws-cdk/service-spec-types';
 import { naming } from '@aws-cdk/spec2cdk';
 import { CDK_CORE } from '@aws-cdk/spec2cdk/lib/cdk/cdk';
 import { TypeConverter } from '@aws-cdk/spec2cdk/lib/cdk/type-converter';
-import { ExternalModule, Module, ClassType, InterfaceType, StructType, Type, expr, stmt, MemberVisibility, Splat } from '@cdklabs/typewriter';
+import type { Expression } from '@cdklabs/typewriter';
+import { ExternalModule, Module, ClassType, InterfaceType, StructType, Type, expr, stmt, MemberVisibility, FreeFunction } from '@cdklabs/typewriter';
 import type { AddServiceProps, LibraryBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
 import { LibraryBuilder } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
 import type { LocatedModule, ServiceSubmoduleProps } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 import { BaseServiceSubmodule } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
+import { eventNamespaceName } from '@aws-cdk/spec2cdk/lib/naming';
 
 class EventBridgeServiceModule extends BaseServiceSubmodule {
   public readonly constructLibModule: ExternalModule;
@@ -37,7 +40,7 @@ export class EventBridgeBuilder extends LibraryBuilder<EventBridgeServiceModule>
   }
 
   protected addResourceToSubmodule(submodule: EventBridgeServiceModule, resource: Resource, _props?: AddServiceProps): void {
-    const events = this.db.follow('hasEvent', resource).map((e) => e.entity);
+    const events = this.db.follow('resourceHasEvent', resource).map((e) => e.entity);
     if (events.length === 0) {
       return;
     }
@@ -59,6 +62,9 @@ export class EventBridgeBuilder extends LibraryBuilder<EventBridgeServiceModule>
 
     CDK_CORE.import(module, 'cdk');
     submodule.constructLibModule.import(module, 'service');
+
+    const awsEvents = new ExternalModule('aws-cdk-lib/aws-events');
+    awsEvents.import(module, 'events');
 
     return { module, filePath };
   }
@@ -98,37 +104,101 @@ class EventBridgeEventsClass extends ClassType {
   }
 
   public build() {
-    this.generateEventInterfaces();
     this.addReferenceProperty();
     this.addConstructor();
     this.addFactoryMethod();
-    this.addEventPatternMethods();
+    this.generateEvents();
   }
 
-  private createTypeConverterForNamespace(namespaceScope: ClassType): TypeConverter {
+  /**
+   * Creates a TypeConverter with deduplication for nested type definitions
+   */
+  private createTypeConverterForNamespace(namespaceScope: ClassType, event: Event, eventNsName: string): TypeConverter {
+    const createdTypes = new Map<string, StructType>();
+    const module = Module.of(this);
+
     return new TypeConverter({
       db: this.db,
       resource: this.resource,
       resourceClass: namespaceScope,
+      isEventBridgeType: true,
       typeDefinitionConverter: (typeDef, converter) => {
+        const sanitizedName = naming.sanitizeTypeName(typeDef.name);
+
+        // Check if we already created this type
+        if (createdTypes.has(sanitizedName)) {
+          return { structType: createdTypes.get(sanitizedName)!, build: () => {} };
+        }
+
         const structType = new StructType(namespaceScope, {
           export: true,
-          name: typeDef.name,
+          name: sanitizedName,
           docs: {
             summary: typeDef.documentation || `Type definition for ${typeDef.name}`,
           },
         });
 
+        createdTypes.set(sanitizedName, structType);
+
         const build = () => {
+          const propertyMappings = new Map<string, { original: string; type: Type }>();
+
           for (const [propName, propSpec] of Object.entries(typeDef.properties)) {
+            if (event.resourcesField.some(r => r.type.$ref === typeDef.$id && r.fieldName === propName)) {
+              console.log('Found you');
+            }
+            // Replace colons with dashes before camelCasing (aws:s3:arn -> aws-s3-arn -> awsS3Arn)
+            const camelCaseName = naming.propertyNameFromCloudFormation(propName.replace(/:/g, '-'));
+            const propType = converter.typeFromProperty(propSpec);
+            propertyMappings.set(camelCaseName, { original: propName, type: propType });
+
             structType.addProperty({
-              name: propName,
-              type: converter.typeFromProperty(propSpec),
+              name: camelCaseName,
+              type: propType,
               optional: !propSpec.required,
               docs: {
                 summary: propSpec.documentation || `${propName} property`,
               },
             });
+          }
+
+          // Generate converter function for this nested type
+          if (propertyMappings.size > 0) {
+            const converterFunctionName = `convert${eventNsName}${sanitizedName}ToEventPattern`;
+            const converterFunction = new FreeFunction(module, {
+              name: converterFunctionName,
+              returnType: Type.ANY,
+            });
+
+            converterFunction.addParameter({
+              name: 'obj',
+              type: structType.type,
+            });
+
+            // Build object mapping - recursively call converters for complex types
+            const mappings = Array.from(propertyMappings.entries()).map(([camelCase, { original, type }]) => {
+              const propAccess = expr.ident('obj').prop(camelCase);
+              let valueExpr: Expression = propAccess;
+
+              // If property is a struct, call its converter (with undefined check for optional props)
+              if (type.symbol) {
+                const propStruct = type.symbol.findDeclaration();
+                if (propStruct && propStruct.kind === 'struct') {
+                  const propStructName = naming.sanitizeTypeName(propStruct.name);
+                  const propConverterName = `convert${eventNsName}${propStructName}ToEventPattern`;
+                  // Use conditional: obj.prop ? converter(obj.prop) : undefined
+                  valueExpr = expr.cond(propAccess).then(
+                    expr.ident(propConverterName).call(propAccess),
+                  ).else(expr.UNDEFINED);
+                }
+              }
+
+              return [original, valueExpr] as const;
+            });
+
+            converterFunction.addBody(
+              stmt.ret(expr.object(mappings)),
+            );
           }
         };
 
@@ -137,36 +207,81 @@ class EventBridgeEventsClass extends ClassType {
     });
   }
 
-  private generateEventInterfaces() {
+  /**
+   * Generates event namespaces, interfaces, and pattern methods for each event
+   * Creates: namespace class, detail interface, pattern props, and event pattern method
+   */
+  private generateEvents() {
+    const eventsEventPattern = Type.fromName(new ExternalModule('aws-cdk-lib/aws-events'), 'EventPattern');
+
     for (const event of this.events) {
+      // eslint-disable-next-line no-console
+      console.log('Generating event for', this.resource.cloudFormationType, event.name);
+      const namespaceName = eventNamespaceName(event.name);
+
+      // Create namespace class to hold event types
       const eventNamespace = new ClassType(this, {
-        name: event.name,
+        name: namespaceName,
         export: true,
         docs: {
           summary: `${event.name} event types for ${this.resource.name}`,
         },
       });
 
-      const typeConverter = this.createTypeConverterForNamespace(eventNamespace);
+      const typeConverter = this.createTypeConverterForNamespace(eventNamespace, event, namespaceName);
+      const rootProperty = this.db.get('eventTypeDefinition', event.rootProperty);
 
+      // Create detail interface with event properties
       const detailInterface = new InterfaceType(eventNamespace, {
-        name: 'Detail',
+        name: `${namespaceName}Detail`,
         export: true,
         docs: {
           summary: `Detail type for ${this.resource.name} ${event.name} event`,
         },
       });
 
-      for (const [propName, propDef] of Object.entries(event.properties)) {
+      // Track property mappings for converter function
+      const propertyMappings = new Map<string, string>();
+
+      for (const [propName, propDef] of Object.entries(rootProperty.properties)) {
+        // Replace colons with dashes before camelCasing (aws:s3:arn -> aws-s3-arn -> awsS3Arn)
+        const camelCaseName = naming.propertyNameFromCloudFormation(propName.replace(/:/g, '-'));
+        propertyMappings.set(camelCaseName, propName);
+
         detailInterface.addProperty({
-          name: propName,
-          type: typeConverter.typeFromSpecType((propDef as any).type),
-          optional: true,
+          name: camelCaseName,
+          type: typeConverter.typeFromSpecType(propDef.type),
+          optional: !propDef.required,
+          immutable: true,
           docs: {
             summary: `${propName} property`,
+            default: propDef.required ? undefined : '-',
           },
         });
       }
+
+      // Generate converter function to map camelCase back to original names
+      const converterFunctionName = `convert${namespaceName}DetailToEventPattern`;
+      const module = Module.of(this);
+
+      const converterFunction = new FreeFunction(module, {
+        name: converterFunctionName,
+        returnType: Type.ANY,
+      });
+
+      converterFunction.addParameter({
+        name: 'detail',
+        type: detailInterface.type,
+      });
+
+      // Build object mapping using expr.object
+      const mappings = Array.from(propertyMappings.entries()).map(([camelCase, original]) =>
+        [original, expr.ident('detail').prop(camelCase)] as const,
+      );
+
+      converterFunction.addBody(
+        stmt.ret(expr.object(mappings)),
+      );
 
       const eventPatternInterface = new InterfaceType(eventNamespace, {
         name: 'EventPattern',
@@ -176,13 +291,14 @@ class EventBridgeEventsClass extends ClassType {
           summary: `EventBridge event pattern for ${this.resource.name} ${event.name}`,
         },
       });
-
       eventPatternInterface.addProperty({
         name: 'detail',
         type: detailInterface.type,
         optional: true,
+        immutable: true,
       });
 
+      // Create pattern props interface extending detail with metadata
       const propInterface = new InterfaceType(eventNamespace, {
         name: 'PatternProps',
         export: true,
@@ -191,12 +307,46 @@ class EventBridgeEventsClass extends ClassType {
           summary: `Properties for ${this.resource.name} ${event.name} event pattern`,
         },
       });
-
       propInterface.addProperty({
         name: 'eventMetadata',
         type: CDK_CORE.AWSEventMetadataProp,
         optional: true,
+        immutable: true,
       });
+
+      // Create event pattern method that returns events.EventPattern
+      const methodName = naming.eventPatternMethodName(namespaceName);
+      const eventPatternMethod = this.addMethod({
+        name: methodName,
+        returnType: eventsEventPattern,
+        docs: {
+          summary: `EventBridge event pattern for ${this.resource.name} ${event.detailType}`,
+        },
+      });
+      const eventPatternMethodParam = eventPatternMethod.addParameter({
+        name: 'options',
+        type: propInterface.type,
+        optional: true,
+      });
+
+      const eventMetadata = expr.ident('eventMetadata');
+
+      eventPatternMethod.addBody(
+        stmt.constVar(
+          expr.destructuringObject(eventMetadata, expr.directCode('...detail')),
+          expr.binOp(expr.ident(eventPatternMethodParam.spec.name), '??', expr.UNDEFINED),
+        ),
+        stmt.ret(
+          expr.object({
+            source: expr.list([expr.lit(event.source)]),
+            detailType: expr.list([expr.lit(event.detailType)]),
+            detail: expr.cond(expr.ident('detail')).then(expr.ident(converterFunction.name).call(expr.ident('detail'))).else(expr.UNDEFINED),
+            version: expr.directCode('eventMetadata?.version'),
+            resources: expr.directCode('eventMetadata?.resources'),
+            region: expr.directCode('eventMetadata?.region'),
+          }),
+        ),
+      );
     }
   }
 
@@ -234,49 +384,5 @@ class EventBridgeEventsClass extends ClassType {
       type: this.refInterface,
     });
     factory.addBody(stmt.ret(this.newInstance(expr.ident(refPropertyName))));
-  }
-
-  private addEventPatternMethods() {
-    const module = Module.of(this);
-    for (const event of this.events) {
-      const methodName = naming.eventPatternMethodName(event.name);
-      const returnType = Type.fromName(module, naming.eventPatternTypeName(this.name, event.name));
-      const propType = Type.fromName(module, naming.eventPatternPropsTypeName(this.name, event.name));
-
-      const method = this.addMethod({
-        name: methodName,
-        returnType,
-        docs: {
-          summary: `EventBridge event pattern for ${this.resource.name} ${event.name}`,
-        },
-      });
-
-      method.addParameter({
-        name: 'options',
-        type: propType,
-        optional: true,
-      });
-
-      const eventMetadata = expr.ident('eventMetadata');
-      const detail = expr.ident('detail');
-
-      method.addBody(
-        stmt.constVar(
-          expr.destructuringObject(eventMetadata, expr.directCode('...detail')),
-          expr.binOp(expr.ident('options'), '??', expr.lit({})),
-        ),
-        stmt.ret(
-          expr.object({
-            detail: expr.object({
-              'source': expr.lit(event.source),
-              'detail-type': expr.lit(event.detailType),
-            }, new Splat(detail)),
-            version: expr.directCode('eventMetadata?.version'),
-            resources: expr.directCode('eventMetadata?.resources'),
-            region: expr.directCode('eventMetadata?.region'),
-          }),
-        ),
-      );
-    }
   }
 }

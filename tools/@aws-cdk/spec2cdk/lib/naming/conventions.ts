@@ -154,6 +154,29 @@ export function submoduleSymbolFromName(name: string) {
 }
 
 /**
+ * Get the namespace name from the event name
+ */
+export function eventNamespaceName(eventName: string) {
+  if ((eventName.match(/@/g) || []).length !== 1) {
+    throw new Error('Input must contain exactly one "@" symbol');
+  }
+
+  // Extract the text after the '@'
+  const extracted = eventName.split('@')[1];
+
+  if (!extracted) {
+    throw new Error('No event name found after "@" symbol');
+  }
+
+  // Check if the extracted string contains only alphanumeric characters
+  if (!/^[a-zA-Z0-9]+$/.test(extracted)) {
+    throw new Error('Event name contains invalid characters');
+  }
+
+  return extracted;
+}
+
+/**
  * Convert event name to pattern method name (AcknowledgementCompleted -> acknowledgementCompletedPattern)
  */
 export function eventPatternMethodName(eventName: string) {
@@ -196,4 +219,12 @@ function makeIdentifier(s: string) {
   // If it doesn't start with an alpha char, prefix with _
   s = s.replace(/^([^a-zA-Z_])/, '_$1');
   return s;
+}
+
+/**
+ * Sanitize a type name to be a valid TypeScript identifier
+ * Converts kebab-case and other invalid characters to PascalCase
+ */
+export function sanitizeTypeName(name: string): string {
+  return makeIdentifier(camelcase(name, { pascalCase: true }));
 }

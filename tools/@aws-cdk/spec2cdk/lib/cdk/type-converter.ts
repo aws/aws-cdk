@@ -18,6 +18,11 @@ export interface TypeConverterOptions {
   readonly resource: Resource;
   readonly resourceClass: ClassType;
   readonly typeDefinitionConverter: TypeDefinitionConverter;
+  /**
+   * Special handling for event bridge types, defaults to false
+   * @default false
+   * */
+  readonly isEventBridgeType?: boolean;
 }
 
 /**
@@ -120,6 +125,7 @@ export class TypeConverter {
   public readonly module: Module;
   private readonly typeDefinitionConverter: TypeDefinitionConverter;
   private readonly typeDefCache = new Map<TypeDefinition, StructType>();
+  private readonly isEventBridgeType;
 
   /** Reverse mapping so we can find the original type back for every generated Type */
   private readonly originalTypes = new WeakMap<Type, PropertyType>();
@@ -128,6 +134,7 @@ export class TypeConverter {
     this.db = options.db;
     this.typeDefinitionConverter = options.typeDefinitionConverter;
     this.module = Module.of(options.resourceClass);
+    this.isEventBridgeType = options.isEventBridgeType;
   }
 
   /**
@@ -176,7 +183,9 @@ export class TypeConverter {
         case 'map':
           return Type.mapOf(this.typeFromSpecType(type.element));
         case 'ref':
-          const ref = this.db.get('typeDefinition', type.reference.$ref);
+          const ref = !this.isEventBridgeType ?
+            this.db.get('typeDefinition', type.reference.$ref)
+            : this.db.get('eventTypeDefinition', type.reference.$ref);
           return this.convertTypeDefinitionType(ref).type;
         case 'tag':
           return CDK_CORE.CfnTag;
