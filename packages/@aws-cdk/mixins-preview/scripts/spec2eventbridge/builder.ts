@@ -282,7 +282,6 @@ class EventBridgeEventsClass extends ClassType {
    */
   private createTypeConverterForNamespace(namespaceScope: ClassType, event: Event, eventNsName: string): TypeConverter {
     const createdTypes = new Map<string, StructType>();
-    const module = Module.of(this);
 
     return new TypeConverter({
       db: this.db,
