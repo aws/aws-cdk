@@ -5,6 +5,7 @@ import { CfnContainerRecipe } from 'aws-cdk-lib/aws-imagebuilder';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { BaseContainerImage, ContainerInstanceImage } from './base-image';
@@ -500,6 +501,8 @@ export class ContainerRecipe extends ContainerRecipeBase {
             }).toLowerCase(), // Enforce lowercase for the auto-generated fallback
         }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Object.defineProperty(this, CONTAINER_RECIPE_SYMBOL, { value: true });
 
@@ -562,6 +565,7 @@ export class ContainerRecipe extends ContainerRecipeBase {
    *
    * @param instanceBlockDevices - The list of block devices to attach
    */
+  @MethodMetadata()
   public addInstanceBlockDevice(...instanceBlockDevices: ec2.BlockDevice[]): void {
     this.instanceBlockDevices.push(...instanceBlockDevices);
   }
