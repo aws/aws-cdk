@@ -6,7 +6,7 @@ import type { IBucketRef } from 'aws-cdk-lib/aws-s3';
 import { CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
 import type { IConstruct } from 'constructs';
 import { XRayDeliveryDestinationPolicy } from './vended-logs-helper';
-import type { IDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
+import type { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { tryFindBucketPolicyForBucket } from '../../mixins/private/reflections';
 
 /**
@@ -138,13 +138,13 @@ export class S3LogDelivery implements IDestination {
  * Kinesis Data Firehose log delivery implementation.
  */
 export class FirehoseLogDelivery implements IDestination {
-  private readonly deliveryStream: IDeliveryStream;
+  private readonly deliveryStream: IDeliveryStreamRef;
 
   /**
    * Creates a new Firehose log delivery destination.
    * @param stream - The Kinesis Data Firehose delivery stream
    */
-  constructor(stream: IDeliveryStream) {
+  constructor(stream: IDeliveryStreamRef) {
     this.deliveryStream = stream;
   }
 

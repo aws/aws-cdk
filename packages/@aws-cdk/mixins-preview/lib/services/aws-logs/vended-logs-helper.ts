@@ -20,7 +20,7 @@ export class XRayDeliveryDestinationPolicy extends Resource {
   constructor(scope: IConstruct, id: string) {
     super(scope, id);
     const stack = Stack.of(scope);
-    // PolicyGenerator class is a singleton, so we will only ever make one of these per stack
+    // XRayDeliveryDestinationPolicy class is a singleton, so we will only ever make one of these per stack
     this.XrayResourcePolicy = new CfnResourcePolicy(stack, `CDKXRayPolicy${Names.uniqueId(this)}`, {
       policyName: 'CDKXRayDeliveryDestPolicy',
       policyDocument: this.buildPolicyDocument(),
