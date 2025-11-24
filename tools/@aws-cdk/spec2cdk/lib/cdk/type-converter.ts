@@ -1,3 +1,4 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 import {
   SpecDatabase,
   PropertyType,
@@ -8,7 +9,8 @@ import {
 } from '@aws-cdk/service-spec-types';
 import { ClassType, Module, PrimitiveType, RichScope, StructType, Type, TypeDeclaration } from '@cdklabs/typewriter';
 import { CDK_CORE } from './cdk';
-import { TypeDefinitionStruct } from './typedefinition-struct';
+import { RelationshipDecider } from './relationship-decider';
+import { PartialTypeDefinitionStruct, TypeDefinitionStruct } from './typedefinition-struct';
 import { structNameFromTypeDefinition } from '../naming/conventions';
 
 export interface TypeConverterOptions {
@@ -31,6 +33,7 @@ export type TypeDefinitionConverter = (
 export interface TypeConverterForResourceOptions extends Omit<TypeConverterOptions, 'typeDefinitionConverter'> {
   readonly resource: Resource;
   readonly resourceClass: ClassType;
+  readonly relationshipDecider: RelationshipDecider;
 }
 
 /**
@@ -64,6 +67,45 @@ export class TypeConverter {
           resourceClass: opts.resourceClass,
           converter,
           typeDefinition,
+          relationshipDecider: opts.relationshipDecider,
+        });
+
+        return {
+          structType: structType,
+          build: () => structType.build(),
+        };
+      },
+    });
+  }
+
+  /**
+   * Make a type converter for a resource that uses a default TypeDefinition builder for this resource scope
+   */
+  public static forMixin(opts: TypeConverterForResourceOptions) {
+    return new TypeConverter({
+      ...opts,
+      typeDefinitionConverter: (typeDefinition, converter) => {
+        // Defensive programming: we have some current issues in the database
+        // that would lead to duplicate definitions. Short-circuit that by checking if the
+        // type already exists and return that instead.
+        const existing = new RichScope(opts.resourceClass).tryFindTypeByName(
+          structNameFromTypeDefinition(typeDefinition),
+        );
+        if (existing) {
+          return {
+            structType: existing as StructType,
+            build: () => {},
+          };
+        }
+
+        const structType = new PartialTypeDefinitionStruct({
+          resource: opts.resource,
+          resourceClass: opts.resourceClass,
+          converter,
+          typeDefinition,
+          relationshipDecider: opts.relationshipDecider,
+          cfnProducer: false,
+          cfnParser: false,
         });
 
         return {

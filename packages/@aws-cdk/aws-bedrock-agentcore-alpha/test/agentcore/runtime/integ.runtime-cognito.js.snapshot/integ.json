@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "BedrockAgentCoreRuntimeCognitoTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-agentcore-runtime-cognito"
+      ],
+      "assertionStack": "BedrockAgentCoreRuntimeCognitoTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockAgentCoreRuntimeCognitoTestDefaultTestDeployAssert362339C9"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

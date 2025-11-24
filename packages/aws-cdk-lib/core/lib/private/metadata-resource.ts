@@ -112,6 +112,43 @@ export function formatAnalytics(infos: ConstructInfo[], enableAdditionalTelemtry
 }
 
 /**
+ * Takes an analytics string and converts it back into a readable format.
+ * Useful for debugging.
+ *
+ * @internal
+ */
+export function parseAnalytics(analyticsString: string): ConstructInfo[] {
+  const analyticsData = analyticsString.split(':');
+  if (analyticsData.length >= 3 && analyticsData[0] === 'v2' && analyticsData[1] === 'deflate64') {
+    const buffer = Buffer.from(analyticsData[2], 'base64');
+    const decompressedBuffer = zlib.gunzipSync(buffer);
+    const prefixEncodedList = decompressedBuffer.toString('utf8');
+    const trie = parsePrefixEncodedList(prefixEncodedList);
+    return trieToConstructInfos(trie);
+  } else {
+    throw new AssumptionError(`Invalid analytics string: ${analyticsString}`);
+  }
+}
+
+/**
+ * Converts a Trie back to a list of ConstructInfo objects.
+ */
+function trieToConstructInfos(trie: Trie): ConstructInfo[] {
+  const infos: ConstructInfo[] = [];
+  function traverse(node: Trie, path: string) {
+    if (node.size === 0) {
+      const [version, fqn] = path.split('!');
+      infos.push({ version, fqn });
+    }
+    for (const [key, value] of node.entries()) {
+      traverse(value, path + key);
+    }
+  }
+  traverse(trie, '');
+  return infos;
+}
+
+/**
  * Splits after non-alphanumeric characters (e.g., '.', '/') in the FQN
  * and insert each piece of the FQN in nested map (i.e., simple trie).
  */
@@ -161,6 +198,54 @@ function prefixEncodeTrie(trie: Trie) {
     }
   });
   return prefixEncoded;
+}
+
+/**
+ * Parses a prefix-encoded "trie-ish" structure.
+ * This is the inverse of `prefixEncodeTrie`.
+ *
+ * Example input:
+ * A{B{C,D},EF}
+ *
+ * Becomes:
+ * ABC,ABD,AEF
+ *
+ * Example trie:
+ * A --> B --> C
+ *  |     \--> D
+ *  \--> E --> F
+ */
+function parsePrefixEncodedList(data: string): Trie {
+  const trie = new Trie();
+  let i = 0;
+
+  function parse(currentTrie: Trie, prefix: string) {
+    let token = '';
+    while (i < data.length) {
+      const char = data[i];
+      if (char === '{') {
+        i++;
+        parse(currentTrie, prefix + token);
+        token = '';
+      } else if (char === '}' || char === ',') {
+        if (token) {
+          insertFqnInTrie(prefix + token, trie);
+        }
+        i++;
+        if (char === '}') return;
+        token = '';
+      } else {
+        token += char;
+        i++;
+      }
+    }
+    if (token) {
+      insertFqnInTrie(prefix + token, trie);
+    }
+  }
+
+  parse(trie, '');
+  return trie;
 }
 
 /**

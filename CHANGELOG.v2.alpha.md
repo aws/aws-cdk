@@ -2,6 +2,50 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.228.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.227.0-alpha.0...v2.228.0-alpha.0) (2025-11-24)
+
+## [2.227.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.226.0-alpha.0...v2.227.0-alpha.0) (2025-11-20)
+
+
+### Features
+
+* **bedrock-agentcore-alpha:** agentcore gateway L2 construct ([#35771](https://github.com/aws/aws-cdk/issues/35771)) ([07c4a0d](https://github.com/aws/aws-cdk/commit/07c4a0dfd4f26519f433ec3dc19b4c294ae8d56e))
+* **imagebuilder-alpha:** add support for Component Construct ([#36107](https://github.com/aws/aws-cdk/issues/36107)) ([93a76e4](https://github.com/aws/aws-cdk/commit/93a76e481e79bb7e0df1aabcb158cc9b064345bf)), closes [#36006](https://github.com/aws/aws-cdk/issues/36006) [#36104](https://github.com/aws/aws-cdk/issues/36104)
+* **imagebuilder-alpha:** add support for Distribution Configuration Construct ([#36108](https://github.com/aws/aws-cdk/issues/36108)) ([6051039](https://github.com/aws/aws-cdk/commit/605103939894a785062422f04ee31f5460b18d6f)), closes [#36005](https://github.com/aws/aws-cdk/issues/36005)
+
+
+### Bug Fixes
+
+* **bedrock-agentcore-alpha:** fix unexpected validation error when properties are Token  ([#35978](https://github.com/aws/aws-cdk/issues/35978)) ([084b736](https://github.com/aws/aws-cdk/commit/084b736f80959ee17a28c2d9c355b0dcf1faa393))
+
+
+## [2.226.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.225.0-alpha.0...v2.226.0-alpha.0) (2025-11-20)
+
+## [2.225.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.224.0-alpha.0...v2.225.0-alpha.0) (2025-11-17)
+
+## [2.224.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.223.0-alpha.0...v2.224.0-alpha.0) (2025-11-13)
+
+### Features
+
+* **imagebuilder-alpha:** add support for EC2 Image Builder L2 Constructs - Infrastructure Configuration ([#35882](https://github.com/aws/aws-cdk/issues/35882)) ([db1d964](https://github.com/aws/aws-cdk/commit/db1d964b7775e0609c137b12051bac535094f8cd)), closes [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789) [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789)
+
+## [2.223.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.222.0-alpha.0...v2.223.0-alpha.0) (2025-11-10)
+
+## [2.222.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.221.1-alpha.0...v2.222.0-alpha.0) (2025-11-04)
+
+
+### Features
+
+* **eks-v2-alpha:** eks-v2-alpha is now in developer preview ([#35801](https://github.com/aws/aws-cdk/issues/35801)) ([32afc0f](https://github.com/aws/aws-cdk/commit/32afc0ff940394da737714e599ddc3c25ff738e3))
+
+
+### Bug Fixes
+
+* **bedrock-alpha:** apply permission dependency to existing and non-existing roles ([#35123](https://github.com/aws/aws-cdk/issues/35123)) ([b39ccf3](https://github.com/aws/aws-cdk/commit/b39ccf3a874401c2a0a7ae0806f1be02b9b75d5e)), closes [#35120](https://github.com/aws/aws-cdk/issues/35120)
+* **eks-v2-alpha:** remove hyphen from Go package name ([#35927](https://github.com/aws/aws-cdk/issues/35927)) ([2cdfc8a](https://github.com/aws/aws-cdk/commit/2cdfc8a909ce3752833e46dd2ed0106fee0e785a))
+
+## [2.221.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.221.0-alpha.0...v2.221.1-alpha.0) (2025-10-29)
+
 ## [2.221.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.220.0-alpha.0...v2.221.0-alpha.0) (2025-10-24)
 
 

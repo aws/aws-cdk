@@ -34,29 +34,10 @@ jobs:
 
     steps:
       - name: Checkout HEAD
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
-      
-      - name: Assume Atmosphere Role
-        id: creds
-        run: |
-          # Assume role and capture the JSON output
-          CREDS=$(aws sts assume-role \
-          --role-arn ${{ vars.CDK_ATMOSPHERE_OIDC_ROLE }} \
-          --role-session-name run-tests@aws-cdk-deployment-integ)
-          # Parse the JSON output and set environment variables
-          AWS_ACCESS_KEY_ID=$(echo $CREDS | jq -r '.Credentials.AccessKeyId')
-          AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -r '.Credentials.SecretAccessKey')
-          AWS_SESSION_TOKEN=$(echo $CREDS | jq -r '.Credentials.SessionToken')
-          echo "::add-mask::$AWS_ACCESS_KEY_ID"
-          echo "::add-mask::$AWS_SECRET_ACCESS_KEY"
-          echo "::add-mask::$AWS_SESSION_TOKEN"
-          
-          echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> $GITHUB_ENV
-          echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN" >> $GITHUB_ENV
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -95,19 +76,22 @@ jobs:
           sudo sysctl -w vm.max_map_count=2251954
         
       - name: Install dependencies for Integration Tests
-        run: yarn install 
+        run: yarn install --frozen-lockfile
       
       - name: Build deployment-integ
         run: yarn --cwd tools/@aws-cdk/integration-test-deployment build
         
-      - name: Build Integration Tests
-        run: npx lerna run build --scope=@aws-cdk-testing/framework-integ 
+      # Build integration test packages: @aws-cdk-testing/framework-integ (stable tests) and @aws-cdk/* (alpha tests)
+      - name: Build Integration Test packages 
+        run: npx lerna run build --scope="{@aws-cdk/*,@aws-cdk-testing/framework-integ}"
 
       - name: Run integration tests using integration-test-deployment script
         run: yarn run atmosphere-integ-test
         env:
           CDK_ATMOSPHERE_ENDPOINT: ${{ vars.CDK_ATMOSPHERE_ENDPOINT }}
           CDK_ATMOSPHERE_POOL: ${{ vars.CDK_ATMOSPHERE_POOL}}
+          CDK_ATMOSPHERE_OIDC_ROLE: ${{ vars.CDK_ATMOSPHERE_OIDC_ROLE }}
+          CDK_ATMOSPHERE_BATCH_SIZE: ${{ vars.CDK_ATMOSPHERE_BATCH_SIZE }}
           TARGET_BRANCH_COMMIT: ${{ github.event.pull_request.base.sha }}
           SOURCE_BRANCH_COMMIT: ${{ github.event.pull_request.head.sha }}
           
