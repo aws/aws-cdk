@@ -7,7 +7,7 @@ import { Duration, UnscopedValidationError } from '../../core';
  * The set of properties for streaming event sources shared by
  * Dynamo, Kinesis and Kafka.
  */
-export interface BaseStreamEventSourceProps{
+export interface BaseStreamEventSourceProps {
   /**
    * The largest number of records that AWS Lambda will retrieve from your event
    * source at the time of invoking your function. Your function receives an
@@ -70,6 +70,14 @@ export interface ProvisionedPollerConfig {
    * @default 200
    */
   readonly maximumPollers: number;
+  /**
+   * An optional identifier that groups multiple ESMs to share EPU capacity
+   * and reduce costs. ESMs with the same PollerGroupName share compute
+   * resources.
+   *
+   * @default - not set, dedicated compute resource per event source.
+   */
+  readonly pollerGroupName?: string;
 }
 
 /**
