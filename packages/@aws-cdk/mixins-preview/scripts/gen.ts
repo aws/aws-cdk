@@ -41,11 +41,11 @@ async function updateExportsAndEntryPoints(modules: ModuleMap, pkgPath: string) 
       serviceIndexExports.push(`export * as ${moduleConfig.submodule} from './${moduleConfig.name}';`);
     }
 
-    // @aws-cdk/mixins-preview/aws-s3/mixins => ./lib/services/aws-s3/index.js
-    const exportName = `./${moduleConfig.name}/mixins`;
-    if (!pkgJson.exports[exportName]) {
-      pkgJson.exports[exportName] = `./lib/services/${moduleConfig.name}/mixins.js`;
-    }
+    // @aws-cdk/mixins-preview/aws-s3 => ./lib/services/aws-s3/index.js
+    pkgJson.exports[`./${moduleConfig.submodule}`] ??= `./lib/services/${moduleConfig.name}/index.js`;
+
+    // @aws-cdk/mixins-preview/aws-s3/mixins => ./lib/services/aws-s3/mixins.js
+    pkgJson.exports[`./${moduleConfig.submodule}/mixins`] ??= `./lib/services/${moduleConfig.name}/mixins.js`;
   }
 
   // sort exports
@@ -113,9 +113,9 @@ async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
         python: {
           module: submodule.definition.pythonModuleName,
         },
-        go: {
-          packageName: `mixins${submodule.definition.moduleName}`.replace(/[^a-z0-9.]/gi, ''),
-        },
+        // go: {
+        //   packageName: `mixins${submodule.definition.moduleName}`.replace(/[^a-z0-9.]/gi, ''),
+        // },
       },
     };
     await fs.writeFile(subModuleJsiiRc, JSON.stringify(jsiirc, null, 2) + '\n');}
@@ -133,6 +133,9 @@ async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
         },
         python: {
           module: `${submodule.definition.pythonModuleName}.mixins`,
+        },
+        go: {
+          packageName: `mixins${submodule.definition.moduleName}`.replace(/[^a-z0-9.]/gi, ''),
         },
       },
     };
