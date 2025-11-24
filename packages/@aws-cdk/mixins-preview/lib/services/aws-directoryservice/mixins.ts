@@ -1,1 +1,1 @@
-export * from './directoryservice.generated';
+export * from './mixins.generated';

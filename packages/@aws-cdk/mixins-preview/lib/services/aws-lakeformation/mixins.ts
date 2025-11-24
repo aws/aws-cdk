@@ -1,1 +1,1 @@
-export * from './lakeformation.generated';
+export * from './mixins.generated';

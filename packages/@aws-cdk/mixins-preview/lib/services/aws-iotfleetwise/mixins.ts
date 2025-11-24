@@ -1,1 +1,1 @@
-export * from './iotfleetwise.generated';
+export * from './mixins.generated';

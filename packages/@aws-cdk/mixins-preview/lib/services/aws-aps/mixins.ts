@@ -1,1 +1,1 @@
-export * from './aps.generated';
+export * from './mixins.generated';

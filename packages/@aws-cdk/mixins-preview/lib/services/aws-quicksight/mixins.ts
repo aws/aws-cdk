@@ -1,1 +1,1 @@
-export * from './quicksight.generated';
+export * from './mixins.generated';

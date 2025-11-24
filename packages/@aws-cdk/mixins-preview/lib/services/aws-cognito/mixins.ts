@@ -1,1 +1,1 @@
-export * from './cognito.generated';
+export * from './mixins.generated';

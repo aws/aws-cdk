@@ -1,1 +1,1 @@
-export * from './vpclattice.generated';
+export * from './mixins.generated';

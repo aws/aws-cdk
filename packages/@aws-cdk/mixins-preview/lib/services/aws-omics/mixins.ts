@@ -1,1 +1,1 @@
-export * from './omics.generated';
+export * from './mixins.generated';

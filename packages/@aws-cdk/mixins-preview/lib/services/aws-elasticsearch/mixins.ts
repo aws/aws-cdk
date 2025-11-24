@@ -1,1 +1,1 @@
-export * from './elasticsearch.generated';
+export * from './mixins.generated';

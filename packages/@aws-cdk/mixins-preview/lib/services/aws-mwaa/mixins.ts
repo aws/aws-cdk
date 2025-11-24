@@ -1,1 +1,1 @@
-export * from './mwaa.generated';
+export * from './mixins.generated';

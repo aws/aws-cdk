@@ -1,1 +1,1 @@
-export * from './glue.generated';
+export * from './mixins.generated';

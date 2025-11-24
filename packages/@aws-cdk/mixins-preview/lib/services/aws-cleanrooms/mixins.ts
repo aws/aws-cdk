@@ -1,1 +1,1 @@
-export * from './cleanrooms.generated';
+export * from './mixins.generated';

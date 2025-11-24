@@ -1,1 +1,1 @@
-export * from './pcaconnectorad.generated';
+export * from './mixins.generated';

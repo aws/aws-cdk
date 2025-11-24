@@ -1,1 +1,1 @@
-export * from './neptunegraph.generated';
+export * from './mixins.generated';

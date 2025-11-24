@@ -1,1 +1,1 @@
-export * from './pinpointemail.generated';
+export * from './mixins.generated';

@@ -1,1 +1,1 @@
-export * from './resiliencehub.generated';
+export * from './mixins.generated';

@@ -1,1 +1,1 @@
-export * from './timestream.generated';
+export * from './mixins.generated';

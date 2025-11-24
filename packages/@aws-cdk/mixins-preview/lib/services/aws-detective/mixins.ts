@@ -1,1 +1,1 @@
-export * from './detective.generated';
+export * from './mixins.generated';

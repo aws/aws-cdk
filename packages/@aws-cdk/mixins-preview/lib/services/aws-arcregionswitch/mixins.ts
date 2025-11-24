@@ -1,1 +1,1 @@
-export * from './arcregionswitch.generated';
+export * from './mixins.generated';

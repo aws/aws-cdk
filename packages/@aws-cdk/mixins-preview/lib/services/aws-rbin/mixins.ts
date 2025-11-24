@@ -1,1 +1,1 @@
-export * from './rbin.generated';
+export * from './mixins.generated';

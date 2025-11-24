@@ -1,1 +1,1 @@
-export * from './gameliftstreams.generated';
+export * from './mixins.generated';

@@ -1,1 +1,1 @@
-export * from './amplify.generated';
+export * from './mixins.generated';

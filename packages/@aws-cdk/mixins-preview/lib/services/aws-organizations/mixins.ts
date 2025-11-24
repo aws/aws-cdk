@@ -1,1 +1,1 @@
-export * from './organizations.generated';
+export * from './mixins.generated';

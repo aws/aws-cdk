@@ -1,1 +1,1 @@
-export * from './evidently.generated';
+export * from './mixins.generated';

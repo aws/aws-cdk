@@ -1,1 +1,1 @@
-export * from './iotanalytics.generated';
+export * from './mixins.generated';

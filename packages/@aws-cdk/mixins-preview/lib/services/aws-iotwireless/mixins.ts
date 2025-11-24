@@ -1,1 +1,1 @@
-export * from './iotwireless.generated';
+export * from './mixins.generated';

@@ -1,1 +1,1 @@
-export * from './launchwizard.generated';
+export * from './mixins.generated';

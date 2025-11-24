@@ -1,1 +1,1 @@
-export * from './personalize.generated';
+export * from './mixins.generated';

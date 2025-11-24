@@ -1,1 +1,1 @@
-export * from './iotevents.generated';
+export * from './mixins.generated';

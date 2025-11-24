@@ -1,1 +1,1 @@
-export * from './pinpoint.generated';
+export * from './mixins.generated';

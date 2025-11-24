@@ -1,1 +1,1 @@
-export * from './imagebuilder.generated';
+export * from './mixins.generated';

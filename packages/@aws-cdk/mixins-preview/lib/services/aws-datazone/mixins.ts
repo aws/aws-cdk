@@ -1,1 +1,1 @@
-export * from './datazone.generated';
+export * from './mixins.generated';

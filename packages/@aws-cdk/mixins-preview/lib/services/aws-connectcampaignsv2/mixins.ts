@@ -1,1 +1,1 @@
-export * from './connectcampaignsv2.generated';
+export * from './mixins.generated';

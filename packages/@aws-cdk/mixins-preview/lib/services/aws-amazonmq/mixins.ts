@@ -1,1 +1,1 @@
-export * from './amazonmq.generated';
+export * from './mixins.generated';

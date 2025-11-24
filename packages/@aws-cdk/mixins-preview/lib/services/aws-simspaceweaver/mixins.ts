@@ -1,1 +1,1 @@
-export * from './simspaceweaver.generated';
+export * from './mixins.generated';

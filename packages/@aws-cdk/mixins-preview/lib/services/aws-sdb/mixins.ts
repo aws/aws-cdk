@@ -1,1 +1,1 @@
-export * from './sdb.generated';
+export * from './mixins.generated';

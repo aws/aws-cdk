@@ -1,1 +1,1 @@
-export * from './networkmanager.generated';
+export * from './mixins.generated';

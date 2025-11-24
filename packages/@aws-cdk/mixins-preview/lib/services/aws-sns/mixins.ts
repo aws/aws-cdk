@@ -1,1 +1,1 @@
-export * from './sns.generated';
+export * from './mixins.generated';

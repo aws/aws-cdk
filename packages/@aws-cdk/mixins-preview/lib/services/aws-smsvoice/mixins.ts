@@ -1,1 +1,1 @@
-export * from './smsvoice.generated';
+export * from './mixins.generated';

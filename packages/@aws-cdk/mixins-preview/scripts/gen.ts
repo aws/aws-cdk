@@ -4,6 +4,7 @@ import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import type { ModuleMap, ModuleMapEntry } from '@aws-cdk/spec2cdk/lib/module-topology';
+import type { ModuleDefinition } from '@aws-cdk/pkglint';
 
 main().catch(e => {
   // eslint-disable-next-line no-console
@@ -105,99 +106,89 @@ async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
   }
 
   // services/<mod>/index.ts
+  // These exports make submodules out of 'mixins.ts', 'events.ts'
   const subModuleIndex = path.join(modulePath, 'index.ts');
-  const hasEvents = submodule.files.some(f => f.includes('.events.generated.ts'));
-  const indexContent = hasEvents
-    ? 'export * as mixins from \'./mixins\';\nexport * as events from \'./events\';\n'
-    : 'export * as mixins from \'./mixins\';\n';
-  await fs.writeFile(subModuleIndex, indexContent);
+  const indexLines: string[] = [];
+
+  indexLines.push('export * as mixins from \'./mixins\';');
+
+  const hasEvents = submodule.files.some(f => f.includes('events.generated.ts'));
+  if (hasEvents) {
+    indexLines.push('export * as events from \'./events\';');
+  }
+  await fs.writeFile(subModuleIndex, indexLines.map(x => `${x}\n`).join(''));
+  await writeJsiiModuleMetadata(subModuleIndex, submodule.definition);
 
   // services/<mod>/mixins.ts
-  {
-    const mixinsIndex = path.join(modulePath, 'mixins.ts');
-    const mixinsExports= new Array<string>();
+  // This file exists so people can import it directly in JavaScript with a reasonable name:
+  //
+  // ```
+  // import { X } from '@aws-cdk/mixins-preview/aws-s3/mixins';
+  // ```
+  // All it does is re-export the generated file. It can be manually edited so we don't
+  // fully overwrite it.
+  const mixinsModuleFile = path.join(modulePath, 'mixins.ts');
+  await ensureFileContains(mixinsModuleFile, ['export * from \'./mixins.generated\';']);
+  await writeJsiiModuleMetadata(mixinsModuleFile, submodule.definition, 'mixins');
 
-    // This index might contain hand-written mixins => ensure they are preserved
-    if (existsSync(mixinsIndex)) {
-    // load lines from file
-      mixinsExports.push(...(await fs.readFile(mixinsIndex)).toString().split('\n').filter(Boolean));
-    }
-
-    for (const file of submodule.files) {
-      if (!file.includes('.events.generated.ts')) {
-        const f = path.relative(modulePath, path.join(outPath, file));
-        const loc = `./${f.replace('.ts', '')}`;
-        if (!mixinsExports.find(e => e.includes(loc))) {
-          mixinsExports.push(`export * from '${loc}';`);
-        }
-      }
-    }
-
-    await fs.writeFile(mixinsIndex, mixinsExports.sort().join('\n') + '\n');
-  }
-
-  // services/<mod>/events.ts
-  {
-    const eventsIndex = path.join(modulePath, 'events.ts');
-    const eventsExports = new Array<string>();
-
-    if (existsSync(eventsIndex)) {
-      eventsExports.push(...(await fs.readFile(eventsIndex)).toString().split('\n').filter(Boolean));
-    }
-
-    for (const file of submodule.files) {
-      if (file.includes('.events.generated.ts')) {
-        const f = path.relative(modulePath, path.join(outPath, file));
-        const loc = `./${f.replace('.ts', '')}`;
-        if (!eventsExports.find(e => e.includes(loc))) {
-          eventsExports.push(`export * from '${loc}';`);
-        }
-      }
-    }
-
-    if (eventsExports.length > 0) {
-      await fs.writeFile(eventsIndex, eventsExports.sort().join('\n') + '\n');
-    }
-  }
-
-  // .jsiirc.json
-  {
-    const subModuleJsiiRc = path.join(modulePath, '.jsiirc.json');
-    const jsiirc = {
-      targets: {
-        java: {
-          package: submodule.definition.javaPackage,
-        },
-        dotnet: {
-          package: submodule.definition.dotnetPackage,
-        },
-        python: {
-          module: submodule.definition.pythonModuleName,
-        },
-        go: {
-          packageName: `mixins${submodule.definition.moduleName}`.replace(/[^a-z0-9.]/gi, ''),
-        },
-      },
-    };
-    await fs.writeFile(subModuleJsiiRc, JSON.stringify(jsiirc, null, 2) + '\n');}
-
-  // .mixins.jsiirc.json
-  {
-    const mixinsJsiiRc = path.join(modulePath, '.mixins.jsiirc.json');
-    const mixinsJsiirc = {
-      targets: {
-        java: {
-          package: `${submodule.definition.javaPackage}.mixins`,
-        },
-        dotnet: {
-          package: `${submodule.definition.dotnetPackage}.Mixins`,
-        },
-        python: {
-          module: `${submodule.definition.pythonModuleName}.mixins`,
-        },
-      },
-    };
-    await fs.writeFile(mixinsJsiiRc, JSON.stringify(mixinsJsiirc, null, 2) + '\n');
+  if (hasEvents) {
+    // services/<mod>/events.ts
+    // See mixins.ts for the motivation.
+    const eventsModuleFile = path.join(modulePath, 'events.ts');
+    await fs.writeFile(eventsModuleFile, 'export * from \'./events.generated\';\n');
+    await writeJsiiModuleMetadata(eventsModuleFile, submodule.definition, 'events');
   }
 }
 
+async function writeJsiiModuleMetadata(moduleFile: string, moduleDef: ModuleDefinition, namespaceLc: string = '') {
+  const base = path.basename(moduleFile, '.ts');
+  const rcFile = base === 'index'
+    ? path.join(path.dirname(moduleFile), '.jsiirc.json')
+    : path.join(path.dirname(moduleFile), `.${base}.jsiirc.json`);
+
+  const namespaceUc = ucfirst(namespaceLc ?? '');
+
+  const mixinsJsiirc = {
+    targets: {
+      java: {
+        package: join(moduleDef.javaPackage, '.', namespaceLc),
+      },
+      dotnet: {
+        package: join(moduleDef.dotnetPackage, '.', namespaceUc),
+      },
+      python: {
+        module: join(moduleDef.pythonModuleName, '.', namespaceLc),
+      },
+      go: {
+        packageName: `preview${moduleDef.moduleName}${namespaceLc}`.replace(/[^a-z0-9.]/gi, ''),
+      },
+    },
+  };
+  await fs.writeFile(rcFile, JSON.stringify(mixinsJsiirc, null, 2) + '\n');
+}
+
+function ucfirst(x: string) {
+  return x.charAt(0).toUpperCase() + x.slice(1);
+}
+
+function join(a: string, sep: string, b: string) {
+  return b ? `${a}${sep}${b}` : a;
+}
+
+async function ensureFileContains(fileName: string, lines: string[]) {
+  let currentLines = new Array<string>();
+
+  // This index might contain hand-written mixins => ensure they are preserved
+  if (existsSync(fileName)) {
+  // load lines from file
+    currentLines.push(...(await fs.readFile(fileName, 'utf-8')).split('\n').filter(Boolean));
+  }
+
+  for (const line of lines) {
+    if (!currentLines.includes(line)) {
+      currentLines.push(line);
+    }
+  }
+
+  await fs.writeFile(fileName, currentLines.sort().join('\n') + '\n');
+}

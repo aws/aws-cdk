@@ -1,1 +1,1 @@
-export * from './systemsmanagersap.generated';
+export * from './mixins.generated';

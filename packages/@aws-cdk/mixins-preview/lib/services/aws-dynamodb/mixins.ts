@@ -1,1 +1,1 @@
-export * from './dynamodb.generated';
+export * from './mixins.generated';

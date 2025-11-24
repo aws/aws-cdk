@@ -1,1 +1,1 @@
-export * from './customerprofiles.generated';
+export * from './mixins.generated';

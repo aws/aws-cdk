@@ -1,1 +1,1 @@
-export * from './route53recoverycontrol.generated';
+export * from './mixins.generated';

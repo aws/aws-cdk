@@ -1,1 +1,1 @@
-export * from './appintegrations.generated';
+export * from './mixins.generated';

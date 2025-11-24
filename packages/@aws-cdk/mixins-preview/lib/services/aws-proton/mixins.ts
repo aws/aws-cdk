@@ -1,1 +1,1 @@
-export * from './proton.generated';
+export * from './mixins.generated';

@@ -1,1 +1,1 @@
-export * from './ecr.generated';
+export * from './mixins.generated';

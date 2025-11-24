@@ -1,1 +1,1 @@
-export * from './internetmonitor.generated';
+export * from './mixins.generated';

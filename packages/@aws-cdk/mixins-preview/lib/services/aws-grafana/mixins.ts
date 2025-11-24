@@ -1,1 +1,1 @@
-export * from './grafana.generated';
+export * from './mixins.generated';

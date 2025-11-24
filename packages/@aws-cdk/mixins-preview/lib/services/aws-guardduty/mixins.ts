@@ -1,1 +1,1 @@
-export * from './guardduty.generated';
+export * from './mixins.generated';

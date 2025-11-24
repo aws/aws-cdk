@@ -1,1 +1,1 @@
-export * from './iotfleethub.generated';
+export * from './mixins.generated';

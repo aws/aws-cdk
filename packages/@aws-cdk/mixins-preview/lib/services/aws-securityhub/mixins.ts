@@ -1,1 +1,1 @@
-export * from './securityhub.generated';
+export * from './mixins.generated';

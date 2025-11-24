@@ -1,1 +1,1 @@
-export * from './batch.generated';
+export * from './mixins.generated';

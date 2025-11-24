@@ -1,1 +1,1 @@
-export * from './cloudwatch.generated';
+export * from './mixins.generated';

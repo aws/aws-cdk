@@ -1,1 +1,1 @@
-export * from './ask.generated';
+export * from './mixins.generated';

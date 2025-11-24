@@ -1,1 +1,1 @@
-export * from './sagemaker.generated';
+export * from './mixins.generated';

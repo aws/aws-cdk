@@ -1,1 +1,1 @@
-export * from './lookoutmetrics.generated';
+export * from './mixins.generated';

@@ -1,1 +1,1 @@
-export * from './deadline.generated';
+export * from './mixins.generated';

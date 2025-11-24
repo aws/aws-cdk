@@ -1,1 +1,1 @@
-export * from './kms.generated';
+export * from './mixins.generated';

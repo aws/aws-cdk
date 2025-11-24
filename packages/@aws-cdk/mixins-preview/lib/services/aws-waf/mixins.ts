@@ -1,1 +1,1 @@
-export * from './waf.generated';
+export * from './mixins.generated';

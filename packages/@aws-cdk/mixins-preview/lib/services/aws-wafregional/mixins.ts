@@ -1,1 +1,1 @@
-export * from './wafregional.generated';
+export * from './mixins.generated';

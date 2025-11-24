@@ -1,1 +1,1 @@
-export * from './panorama.generated';
+export * from './mixins.generated';

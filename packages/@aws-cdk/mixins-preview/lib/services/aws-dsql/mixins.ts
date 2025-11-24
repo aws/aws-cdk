@@ -1,1 +1,1 @@
-export * from './dsql.generated';
+export * from './mixins.generated';

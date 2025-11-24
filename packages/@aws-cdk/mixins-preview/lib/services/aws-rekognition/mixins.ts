@@ -1,1 +1,1 @@
-export * from './rekognition.generated';
+export * from './mixins.generated';

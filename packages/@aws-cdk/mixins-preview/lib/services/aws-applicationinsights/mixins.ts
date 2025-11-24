@@ -1,1 +1,1 @@
-export * from './applicationinsights.generated';
+export * from './mixins.generated';

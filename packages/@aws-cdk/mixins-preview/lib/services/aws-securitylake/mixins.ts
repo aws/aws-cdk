@@ -1,1 +1,1 @@
-export * from './securitylake.generated';
+export * from './mixins.generated';

@@ -1,1 +1,1 @@
-export * from './xray.generated';
+export * from './mixins.generated';

@@ -1,1 +1,1 @@
-export * from './voiceid.generated';
+export * from './mixins.generated';

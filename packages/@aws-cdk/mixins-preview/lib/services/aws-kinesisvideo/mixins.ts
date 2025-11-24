@@ -1,1 +1,1 @@
-export * from './kinesisvideo.generated';
+export * from './mixins.generated';

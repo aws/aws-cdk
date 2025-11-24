@@ -1,1 +1,1 @@
-export * from './docdb.generated';
+export * from './mixins.generated';

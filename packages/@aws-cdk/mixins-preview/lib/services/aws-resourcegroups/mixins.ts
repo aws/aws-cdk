@@ -1,1 +1,1 @@
-export * from './resourcegroups.generated';
+export * from './mixins.generated';

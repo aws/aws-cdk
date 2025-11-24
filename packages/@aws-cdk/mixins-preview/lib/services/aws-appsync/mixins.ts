@@ -1,1 +1,1 @@
-export * from './appsync.generated';
+export * from './mixins.generated';

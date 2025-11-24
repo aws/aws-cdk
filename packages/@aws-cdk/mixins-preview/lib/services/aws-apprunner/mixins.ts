@@ -1,1 +1,1 @@
-export * from './apprunner.generated';
+export * from './mixins.generated';

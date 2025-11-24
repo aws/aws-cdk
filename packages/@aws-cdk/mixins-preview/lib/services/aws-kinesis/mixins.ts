@@ -1,1 +1,1 @@
-export * from './kinesis.generated';
+export * from './mixins.generated';

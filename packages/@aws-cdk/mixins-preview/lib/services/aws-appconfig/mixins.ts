@@ -1,1 +1,1 @@
-export * from './appconfig.generated';
+export * from './mixins.generated';

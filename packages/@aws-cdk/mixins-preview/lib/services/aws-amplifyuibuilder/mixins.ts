@@ -1,1 +1,1 @@
-export * from './amplifyuibuilder.generated';
+export * from './mixins.generated';

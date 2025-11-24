@@ -27,7 +27,7 @@ export async function generateAll(options: GenerateOptions): Promise<ModuleMap> 
     db,
     astBuilder: EventBridgeBuilder,
     builderProps: {
-      filePattern: '%moduleName%/%serviceShortName%.events.generated.ts',
+      filePattern: '%moduleName%/events.generated.ts',
     },
   });
 

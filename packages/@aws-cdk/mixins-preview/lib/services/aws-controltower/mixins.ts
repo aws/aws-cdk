@@ -1,1 +1,1 @@
-export * from './controltower.generated';
+export * from './mixins.generated';

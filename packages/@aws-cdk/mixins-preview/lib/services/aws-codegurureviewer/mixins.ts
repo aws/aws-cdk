@@ -1,1 +1,1 @@
-export * from './codegurureviewer.generated';
+export * from './mixins.generated';

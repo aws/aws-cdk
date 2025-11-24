@@ -1,1 +1,1 @@
-export * from './location.generated';
+export * from './mixins.generated';

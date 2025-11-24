@@ -1,1 +1,1 @@
-export * from './refactorspaces.generated';
+export * from './mixins.generated';

@@ -1,1 +1,1 @@
-export * from './accessanalyzer.generated';
+export * from './mixins.generated';

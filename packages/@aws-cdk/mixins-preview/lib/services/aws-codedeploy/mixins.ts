@@ -1,1 +1,1 @@
-export * from './codedeploy.generated';
+export * from './mixins.generated';

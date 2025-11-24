@@ -1,1 +1,1 @@
-export * from './mpa.generated';
+export * from './mixins.generated';

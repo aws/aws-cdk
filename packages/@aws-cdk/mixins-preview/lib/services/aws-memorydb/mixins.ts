@@ -1,1 +1,1 @@
-export * from './memorydb.generated';
+export * from './mixins.generated';

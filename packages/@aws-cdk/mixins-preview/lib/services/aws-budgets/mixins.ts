@@ -1,1 +1,1 @@
-export * from './budgets.generated';
+export * from './mixins.generated';

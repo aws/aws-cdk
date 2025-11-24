@@ -1,1 +1,1 @@
-export * from './opsworkscm.generated';
+export * from './mixins.generated';

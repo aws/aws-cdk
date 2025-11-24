@@ -1,1 +1,1 @@
-export * from './ivschat.generated';
+export * from './mixins.generated';

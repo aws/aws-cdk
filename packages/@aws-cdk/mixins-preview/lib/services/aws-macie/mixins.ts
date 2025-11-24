@@ -1,1 +1,1 @@
-export * from './macie.generated';
+export * from './mixins.generated';

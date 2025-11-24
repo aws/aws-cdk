@@ -1,1 +1,1 @@
-export * from './odb.generated';
+export * from './mixins.generated';

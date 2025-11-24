@@ -1,1 +1,1 @@
-export * from './docdbelastic.generated';
+export * from './mixins.generated';

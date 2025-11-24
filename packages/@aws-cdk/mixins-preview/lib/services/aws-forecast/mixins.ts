@@ -1,1 +1,1 @@
-export * from './forecast.generated';
+export * from './mixins.generated';

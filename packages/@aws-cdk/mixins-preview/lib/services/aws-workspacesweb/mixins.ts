@@ -1,1 +1,1 @@
-export * from './workspacesweb.generated';
+export * from './mixins.generated';

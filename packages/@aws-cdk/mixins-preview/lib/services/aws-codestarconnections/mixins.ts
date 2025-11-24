@@ -1,1 +1,1 @@
-export * from './codestarconnections.generated';
+export * from './mixins.generated';
