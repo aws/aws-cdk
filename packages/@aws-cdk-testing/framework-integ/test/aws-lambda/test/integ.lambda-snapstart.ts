@@ -33,7 +33,7 @@ new Function(stack, 'Python313SnapstartLambda', {
 });
 
 new Function(stack, 'DotnetSnapstartLambda', {
-  code: Code.fromAsset('dotnet-handler'),
+  code: Code.fromAsset(path.join(__dirname, 'dotnet-handler')),
   handler: 'Handler',
   runtime: Runtime.DOTNET_8,
   snapStart: SnapStartConf.ON_PUBLISHED_VERSIONS,

@@ -21,6 +21,7 @@ import {
   RolloutStrategy,
   SourcedConfiguration,
 } from 'aws-cdk-lib/aws-appconfig';
+import * as path from 'path';
 
 const SCHEMA_STR =
 `{
@@ -58,7 +59,7 @@ const deploymentStrategy = new DeploymentStrategy(stack, 'MyDeployStrategy', {
 // hosted config from file
 new HostedConfiguration(stack, 'MyHostedConfigFromFile', {
   application: appConfigApp,
-  content: ConfigurationContent.fromFile('config.json'),
+  content: ConfigurationContent.fromFile(path.join(__dirname, 'config.json')),
   deletionProtectionCheck: DeletionProtectionCheck.BYPASS,
 });
 
@@ -70,7 +71,7 @@ new HostedConfiguration(stack, 'MyHostedConfig', {
   deployTo: [hostedEnv],
   validators: [
     JsonSchemaValidator.fromInline(SCHEMA_STR),
-    JsonSchemaValidator.fromFile('schema.json'),
+    JsonSchemaValidator.fromFile(path.join(__dirname, 'schema.json')),
   ],
   deploymentStrategy,
 });

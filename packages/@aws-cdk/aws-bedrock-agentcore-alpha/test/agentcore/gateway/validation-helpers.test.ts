@@ -1,4 +1,4 @@
-import { validateFieldPattern, validateStringField } from '../../../agentcore/gateway/validation-helpers';
+import { validateFieldPattern, validateStringField } from '../../../lib/gateway/validation-helpers';
 
 describe('Validation Helpers Tests', () => {
   describe('validateFieldPattern', () => {

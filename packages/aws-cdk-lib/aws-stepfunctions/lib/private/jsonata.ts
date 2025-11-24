@@ -1,4 +1,4 @@
-export const isValidJsonataExpression = (expression: string) => /^{%(.*)%}$/.test(expression);
+export const isValidJsonataExpression = (expression: string) => /^{%(.*)%}$/s.test(expression);
 
 export const findJsonataExpressions = (value: any): Set<string> => {
   const recursive = (v: any): string[] => {
