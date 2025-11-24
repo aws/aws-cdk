@@ -155,7 +155,7 @@ class EventBridgeEventsClass extends ClassType {
             structType.addProperty({
               name: camelCaseName,
               type: propType,
-              optional: !propSpec.required,
+              optional: true,
               docs: {
                 summary: propSpec.documentation || `${propName} property`,
               },
@@ -251,11 +251,11 @@ class EventBridgeEventsClass extends ClassType {
         detailInterface.addProperty({
           name: camelCaseName,
           type: typeConverter.typeFromSpecType(propDef.type),
-          optional: !propDef.required,
+          optional: true,
           immutable: true,
           docs: {
             summary: `${propName} property`,
-            default: propDef.required ? undefined : '-',
+            default: '-',
           },
         });
       }
@@ -297,6 +297,10 @@ class EventBridgeEventsClass extends ClassType {
         type: CDK_CORE.AWSEventMetadataProp,
         optional: true,
         immutable: true,
+        docs: {
+          summary: 'EventBridge event metadata',
+          default: '-',
+        },
       });
 
       // Create event pattern method that returns events.EventPattern
@@ -350,6 +354,9 @@ class EventBridgeEventsClass extends ClassType {
       name: refPropertyName,
       type: this.refInterface,
       immutable: true,
+      docs: {
+        summary: `Reference to the ${this.resource.name} construct`,
+      },
     });
   }
 
