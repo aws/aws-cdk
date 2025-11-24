@@ -520,16 +520,15 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       sslPolicy: props.sslPolicy,
     });
 
-    // Generate unique target group ID to prevent conflicts during load balancer replacement
-    let targetGroupId: string;
-    if (FeatureFlags.of(this).isEnabled(ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID)) {
-      // Include both internetFacing and loadBalancerName in target group ID
-      targetGroupId = `ECS${props.loadBalancerName ?? ''}${internetFacing ? '' : 'Private'}`;
-    } else {
-      // Legacy behavior: only include internetFacing
-      targetGroupId = internetFacing ? 'ECS' : 'ECSPrivate';
-    }
-
+    // Existing (2.221.x) behavior: private ALBs use a different group ID
+    const defaultTargetGroupId = internetFacing ? 'ECSGroup' : 'ECSPrivateGroup';
+    // Feature flag gate:
+    // - OFF  → always use legacy 'ECSGroup' (no TG rename when upgrading)
+    // - ON   → use the new, more specific ID (current 2.221.x behavior)
+    const targetGroupId = FeatureFlags.of(this).isEnabled(ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID)
+      ? defaultTargetGroupId
+      : 'ECSGroup';
+    
     this.targetGroup = this.listener.addTargets(targetGroupId, targetProps);
 
     if (protocol === ApplicationProtocol.HTTPS) {
