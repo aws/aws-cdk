@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.228.1](https://github.com/aws/aws-cdk/compare/v2.228.0...v2.228.1) (2025-11-24)
+
+
+### Bug Fixes
+
+* **scheduler:** wrong ARN generated in `ScheduleGroup.grant*` methods ([#36175](https://github.com/aws/aws-cdk/issues/36175)) ([35d4972](https://github.com/aws/aws-cdk/commit/35d49723279e6145e32324853869d833932c8312))
+
 ## [2.228.0](https://github.com/aws/aws-cdk/compare/v2.227.0...v2.228.0) (2025-11-24)
 
 
