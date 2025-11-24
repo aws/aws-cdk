@@ -274,7 +274,7 @@ class EventBridgeEventsClass extends ClassType {
         type: detailInterface.type,
       });
 
-      // Build object mapping using expr.object
+      // Build object mapping
       const mappings = Array.from(propertyMappings.entries()).map(([camelCase, original]) =>
         [original, expr.ident('detail').prop(camelCase)] as const,
       );
@@ -282,21 +282,6 @@ class EventBridgeEventsClass extends ClassType {
       converterFunction.addBody(
         stmt.ret(expr.object(mappings)),
       );
-
-      const eventPatternInterface = new InterfaceType(eventNamespace, {
-        name: 'EventPattern',
-        export: true,
-        extends: [CDK_CORE.AWSEventMetadata],
-        docs: {
-          summary: `EventBridge event pattern for ${this.resource.name} ${event.name}`,
-        },
-      });
-      eventPatternInterface.addProperty({
-        name: 'detail',
-        type: detailInterface.type,
-        optional: true,
-        immutable: true,
-      });
 
       // Create pattern props interface extending detail with metadata
       const propInterface = new InterfaceType(eventNamespace, {
@@ -332,9 +317,18 @@ class EventBridgeEventsClass extends ClassType {
       const eventMetadata = expr.ident('eventMetadata');
 
       eventPatternMethod.addBody(
+        stmt.if_(expr.not(expr.ident(eventPatternMethodParam.spec.name)))
+          .then(
+            stmt.ret(
+              expr.object({
+                source: expr.list([expr.lit(event.source)]),
+                detailType: expr.list([expr.lit(event.detailType)]),
+              }),
+            ),
+          ),
         stmt.constVar(
           expr.destructuringObject(eventMetadata, expr.directCode('...detail')),
-          expr.binOp(expr.ident(eventPatternMethodParam.spec.name), '??', expr.UNDEFINED),
+          expr.ident(eventPatternMethodParam.spec.name),
         ),
         stmt.ret(
           expr.object({
