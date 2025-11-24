@@ -1,1 +1,1 @@
-export * from './entityresolution.generated';
+export * from './mixins.generated';

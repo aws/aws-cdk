@@ -1,1 +1,1 @@
-export * from './wisdom.generated';
+export * from './mixins.generated';

@@ -1,1 +1,1 @@
-export * from './lookoutequipment.generated';
+export * from './mixins.generated';

@@ -1,1 +1,1 @@
-export * from './redshift.generated';
+export * from './mixins.generated';

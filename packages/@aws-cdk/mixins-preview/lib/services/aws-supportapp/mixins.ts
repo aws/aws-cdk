@@ -1,1 +1,1 @@
-export * from './supportapp.generated';
+export * from './mixins.generated';

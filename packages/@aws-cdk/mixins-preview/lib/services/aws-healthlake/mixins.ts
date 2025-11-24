@@ -1,1 +1,1 @@
-export * from './healthlake.generated';
+export * from './mixins.generated';

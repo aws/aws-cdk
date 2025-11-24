@@ -1,1 +1,1 @@
-export * from './applicationautoscaling.generated';
+export * from './mixins.generated';

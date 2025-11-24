@@ -1,1 +1,1 @@
-export * from './ssmcontacts.generated';
+export * from './mixins.generated';

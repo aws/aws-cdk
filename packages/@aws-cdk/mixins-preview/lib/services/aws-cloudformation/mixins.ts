@@ -1,1 +1,1 @@
-export * from './cloudformation.generated';
+export * from './mixins.generated';

@@ -1,1 +1,1 @@
-export * from './stepfunctions.generated';
+export * from './mixins.generated';

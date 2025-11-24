@@ -1,1 +1,1 @@
-export * from './opensearchservice.generated';
+export * from './mixins.generated';

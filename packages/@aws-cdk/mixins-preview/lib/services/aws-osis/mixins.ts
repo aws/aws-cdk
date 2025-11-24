@@ -1,1 +1,1 @@
-export * from './osis.generated';
+export * from './mixins.generated';

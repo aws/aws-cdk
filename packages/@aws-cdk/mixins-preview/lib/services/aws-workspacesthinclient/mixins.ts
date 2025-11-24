@@ -1,1 +1,1 @@
-export * from './workspacesthinclient.generated';
+export * from './mixins.generated';

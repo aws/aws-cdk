@@ -1,1 +1,1 @@
-export * from './ssmquicksetup.generated';
+export * from './mixins.generated';

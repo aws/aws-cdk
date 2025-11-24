@@ -1,1 +1,1 @@
-export * from './athena.generated';
+export * from './mixins.generated';

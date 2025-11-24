@@ -1,1 +1,1 @@
-export * from './dax.generated';
+export * from './mixins.generated';

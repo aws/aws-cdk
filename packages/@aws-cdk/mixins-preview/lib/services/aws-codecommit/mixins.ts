@@ -1,1 +1,1 @@
-export * from './codecommit.generated';
+export * from './mixins.generated';

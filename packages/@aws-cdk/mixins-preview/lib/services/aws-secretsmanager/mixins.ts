@@ -1,1 +1,1 @@
-export * from './secretsmanager.generated';
+export * from './mixins.generated';

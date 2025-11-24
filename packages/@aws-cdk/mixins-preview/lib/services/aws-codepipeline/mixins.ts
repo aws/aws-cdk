@@ -1,1 +1,1 @@
-export * from './codepipeline.generated';
+export * from './mixins.generated';

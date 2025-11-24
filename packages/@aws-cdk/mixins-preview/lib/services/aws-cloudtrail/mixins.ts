@@ -1,1 +1,1 @@
-export * from './cloudtrail.generated';
+export * from './mixins.generated';

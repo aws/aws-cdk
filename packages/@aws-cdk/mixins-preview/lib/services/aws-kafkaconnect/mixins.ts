@@ -1,1 +1,1 @@
-export * from './kafkaconnect.generated';
+export * from './mixins.generated';

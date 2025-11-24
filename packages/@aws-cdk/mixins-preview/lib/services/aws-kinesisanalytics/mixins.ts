@@ -1,1 +1,1 @@
-export * from './kinesisanalytics.generated';
+export * from './mixins.generated';

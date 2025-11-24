@@ -1,1 +1,1 @@
-export * from './globalaccelerator.generated';
+export * from './mixins.generated';

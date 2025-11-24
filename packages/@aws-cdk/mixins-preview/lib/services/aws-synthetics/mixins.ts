@@ -1,1 +1,1 @@
-export * from './synthetics.generated';
+export * from './mixins.generated';

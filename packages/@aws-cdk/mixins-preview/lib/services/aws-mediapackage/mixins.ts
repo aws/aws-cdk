@@ -1,1 +1,1 @@
-export * from './mediapackage.generated';
+export * from './mixins.generated';

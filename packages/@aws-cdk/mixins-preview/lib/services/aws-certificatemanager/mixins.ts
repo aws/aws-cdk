@@ -1,1 +1,1 @@
-export * from './certificatemanager.generated';
+export * from './mixins.generated';

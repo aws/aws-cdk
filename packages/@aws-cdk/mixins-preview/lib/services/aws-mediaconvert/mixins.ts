@@ -1,1 +1,1 @@
-export * from './mediaconvert.generated';
+export * from './mixins.generated';

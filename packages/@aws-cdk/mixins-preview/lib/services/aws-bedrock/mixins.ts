@@ -1,1 +1,1 @@
-export * from './bedrock.generated';
+export * from './mixins.generated';

@@ -1,1 +1,1 @@
-export * from './mediatailor.generated';
+export * from './mixins.generated';

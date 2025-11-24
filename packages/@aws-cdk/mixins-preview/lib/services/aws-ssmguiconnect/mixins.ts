@@ -1,1 +1,1 @@
-export * from './ssmguiconnect.generated';
+export * from './mixins.generated';

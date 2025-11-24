@@ -1,1 +1,1 @@
-export * from './s3tables.generated';
+export * from './mixins.generated';

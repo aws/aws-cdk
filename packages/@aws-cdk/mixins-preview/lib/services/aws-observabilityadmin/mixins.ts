@@ -1,1 +1,1 @@
-export * from './observabilityadmin.generated';
+export * from './mixins.generated';

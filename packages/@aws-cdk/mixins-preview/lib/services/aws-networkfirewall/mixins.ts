@@ -1,1 +1,1 @@
-export * from './networkfirewall.generated';
+export * from './mixins.generated';

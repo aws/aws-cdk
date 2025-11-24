@@ -1,1 +1,1 @@
-export * from './verifiedpermissions.generated';
+export * from './mixins.generated';

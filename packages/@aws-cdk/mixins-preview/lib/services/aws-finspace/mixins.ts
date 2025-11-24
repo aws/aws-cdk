@@ -1,1 +1,1 @@
-export * from './finspace.generated';
+export * from './mixins.generated';

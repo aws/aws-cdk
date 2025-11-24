@@ -1,1 +1,1 @@
-export * from './qbusiness.generated';
+export * from './mixins.generated';

@@ -1,1 +1,1 @@
-export * from './licensemanager.generated';
+export * from './mixins.generated';

@@ -1,1 +1,1 @@
-export * from './mediastore.generated';
+export * from './mixins.generated';

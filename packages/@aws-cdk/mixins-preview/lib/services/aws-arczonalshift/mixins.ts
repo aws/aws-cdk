@@ -1,1 +1,1 @@
-export * from './arczonalshift.generated';
+export * from './mixins.generated';

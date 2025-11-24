@@ -1,1 +1,1 @@
-export * from './servicecatalogappregistry.generated';
+export * from './mixins.generated';

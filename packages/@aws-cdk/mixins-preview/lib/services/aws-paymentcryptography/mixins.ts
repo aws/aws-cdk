@@ -1,1 +1,1 @@
-export * from './paymentcryptography.generated';
+export * from './mixins.generated';

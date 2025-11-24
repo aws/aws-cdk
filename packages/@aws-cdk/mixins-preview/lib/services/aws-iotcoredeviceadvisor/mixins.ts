@@ -1,1 +1,1 @@
-export * from './iotcoredeviceadvisor.generated';
+export * from './mixins.generated';

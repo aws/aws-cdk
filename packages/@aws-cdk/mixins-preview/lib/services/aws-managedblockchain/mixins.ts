@@ -1,1 +1,1 @@
-export * from './managedblockchain.generated';
+export * from './mixins.generated';

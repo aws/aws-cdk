@@ -1,1 +1,1 @@
-export * from './billing.generated';
+export * from './mixins.generated';

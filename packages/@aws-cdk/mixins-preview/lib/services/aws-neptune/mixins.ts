@@ -1,1 +1,1 @@
-export * from './neptune.generated';
+export * from './mixins.generated';

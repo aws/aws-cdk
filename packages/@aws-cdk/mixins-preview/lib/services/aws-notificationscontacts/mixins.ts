@@ -1,1 +1,1 @@
-export * from './notificationscontacts.generated';
+export * from './mixins.generated';

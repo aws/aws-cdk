@@ -1,1 +1,1 @@
-export * from './healthimaging.generated';
+export * from './mixins.generated';

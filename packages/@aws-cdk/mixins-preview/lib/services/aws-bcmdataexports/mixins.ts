@@ -1,1 +1,1 @@
-export * from './bcmdataexports.generated';
+export * from './mixins.generated';

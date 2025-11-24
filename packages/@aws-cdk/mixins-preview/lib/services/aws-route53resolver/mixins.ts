@@ -1,1 +1,1 @@
-export * from './route53resolver.generated';
+export * from './mixins.generated';

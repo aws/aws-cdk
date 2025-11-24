@@ -1,1 +1,1 @@
-export * from './b2bi.generated';
+export * from './mixins.generated';

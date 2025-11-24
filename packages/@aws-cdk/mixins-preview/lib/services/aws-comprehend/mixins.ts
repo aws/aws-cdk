@@ -1,1 +1,1 @@
-export * from './comprehend.generated';
+export * from './mixins.generated';

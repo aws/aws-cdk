@@ -1,1 +1,1 @@
-export * from './backupgateway.generated';
+export * from './mixins.generated';

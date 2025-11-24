@@ -1,1 +1,1 @@
-export * from './rolesanywhere.generated';
+export * from './mixins.generated';

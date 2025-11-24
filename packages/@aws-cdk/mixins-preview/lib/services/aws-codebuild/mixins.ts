@@ -1,1 +1,1 @@
-export * from './codebuild.generated';
+export * from './mixins.generated';

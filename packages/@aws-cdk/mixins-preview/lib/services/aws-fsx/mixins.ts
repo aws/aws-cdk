@@ -1,1 +1,1 @@
-export * from './fsx.generated';
+export * from './mixins.generated';

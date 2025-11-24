@@ -1,1 +1,1 @@
-export * from './medialive.generated';
+export * from './mixins.generated';

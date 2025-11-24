@@ -1,1 +1,1 @@
-export * from './elasticloadbalancing.generated';
+export * from './mixins.generated';

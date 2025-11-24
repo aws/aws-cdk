@@ -1,1 +1,1 @@
-export * from './lookoutvision.generated';
+export * from './mixins.generated';

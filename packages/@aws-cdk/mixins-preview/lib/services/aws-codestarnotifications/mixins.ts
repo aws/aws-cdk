@@ -1,1 +1,1 @@
-export * from './codestarnotifications.generated';
+export * from './mixins.generated';

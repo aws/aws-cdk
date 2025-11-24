@@ -1,1 +1,1 @@
-export * from './route53.generated';
+export * from './mixins.generated';

@@ -1,1 +1,1 @@
-export * from './devopsguru.generated';
+export * from './mixins.generated';

@@ -1,1 +1,1 @@
-export * from './acmpca.generated';
+export * from './mixins.generated';

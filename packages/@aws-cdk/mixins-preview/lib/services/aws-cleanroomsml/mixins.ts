@@ -1,1 +1,1 @@
-export * from './cleanroomsml.generated';
+export * from './mixins.generated';

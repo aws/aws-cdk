@@ -1,1 +1,1 @@
-export * from './kendraranking.generated';
+export * from './mixins.generated';

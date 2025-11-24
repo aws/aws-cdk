@@ -1,1 +1,1 @@
-export * from './greengrassv2.generated';
+export * from './mixins.generated';

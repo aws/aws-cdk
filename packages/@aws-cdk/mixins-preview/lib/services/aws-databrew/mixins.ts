@@ -1,1 +1,1 @@
-export * from './databrew.generated';
+export * from './mixins.generated';

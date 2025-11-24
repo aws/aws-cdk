@@ -1,1 +1,1 @@
-export * from './rds.generated';
+export * from './mixins.generated';

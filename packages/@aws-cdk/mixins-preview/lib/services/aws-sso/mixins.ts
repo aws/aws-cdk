@@ -1,1 +1,1 @@
-export * from './sso.generated';
+export * from './mixins.generated';

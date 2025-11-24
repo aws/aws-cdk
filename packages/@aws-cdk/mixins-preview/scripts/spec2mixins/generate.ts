@@ -28,7 +28,7 @@ export async function generateAll(options: GenerateOptions): Promise<ModuleMap> 
     db,
     astBuilder: MixinsBuilder,
     builderProps: {
-      filePattern: '%moduleName%/%serviceShortName%.generated.ts',
+      filePattern: '%moduleName%/mixins.generated.ts',
     },
   });
 

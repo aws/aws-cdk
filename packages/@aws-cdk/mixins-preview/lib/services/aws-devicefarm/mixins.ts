@@ -1,1 +1,1 @@
-export * from './devicefarm.generated';
+export * from './mixins.generated';

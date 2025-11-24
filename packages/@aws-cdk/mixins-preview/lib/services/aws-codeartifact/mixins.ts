@@ -1,1 +1,1 @@
-export * from './codeartifact.generated';
+export * from './mixins.generated';

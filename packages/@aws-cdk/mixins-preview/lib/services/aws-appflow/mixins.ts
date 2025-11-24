@@ -1,1 +1,1 @@
-export * from './appflow.generated';
+export * from './mixins.generated';

@@ -1,1 +1,1 @@
-export * from './rtbfabric.generated';
+export * from './mixins.generated';

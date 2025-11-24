@@ -1,1 +1,1 @@
-export * from './groundstation.generated';
+export * from './mixins.generated';

@@ -1,1 +1,1 @@
-export * from './frauddetector.generated';
+export * from './mixins.generated';
