@@ -9,18 +9,43 @@ import { XRayDeliveryDestinationPolicy } from './vended-logs-helper';
 import type { IDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { tryFindBucketPolicyForBucket } from '../../mixins/private/reflections';
 
+/**
+ * Interface for log deliveries.
+ */
 interface IDestination {
+  /**
+   * Binds the destination to a delivery source and creates a delivery connection between the source and destination.
+   * @param scope - The construct scope
+   * @param deliverySource - The delivery source reference
+   * @param sourceArn - Optional source ARN
+   * @returns The delivery reference
+   */
   bind(scope: IConstruct, deliverySource: IDeliverySourceRef, sourceArn?: string): DeliveryReference;
 }
 
+/**
+ * S3 log delivery implementation.
+ */
 export class S3LogDelivery implements IDestination {
   private readonly bucket: IBucketRef;
   private readonly permissions: 'V1' | 'V2';
+
+  /**
+   * Creates a new S3 log delivery destination.
+   * @param bucket - The S3 bucket reference
+   * @param permissionsVersion - The permissions version ('V1' or 'V2')
+   */
   constructor(bucket: IBucketRef, permissionsVersion: 'V1' | 'V2') {
     this.bucket = bucket;
     this.permissions = permissionsVersion;
   }
 
+  /**
+   * Binds the S3 destination to a delivery source and creates a delivery connection between them.
+   * @param scope - The construct scope
+   * @param deliverySource - The delivery source reference
+   * @returns The delivery reference
+   */
   public bind(scope: IConstruct, deliverySource: IDeliverySourceRef): DeliveryReference {
     const bucketPolicy = this.getOrCreateBucketPolicy(scope );
 
@@ -41,6 +66,11 @@ export class S3LogDelivery implements IDestination {
     return delivery.deliveryRef;
   }
 
+  /**
+   * Gets or creates a bucket policy for the S3 bucket destination.
+   * @param scope - The construct scope
+   * @returns The bucket policy
+   */
   private getOrCreateBucketPolicy(scope: IConstruct): CfnBucketPolicy {
     const existingPolicy = tryFindBucketPolicyForBucket(this.bucket);
     const statements = [];
@@ -104,12 +134,26 @@ export class S3LogDelivery implements IDestination {
   }
 }
 
+/**
+ * Kinesis Data Firehose log delivery implementation.
+ */
 export class FirehoseLogDelivery implements IDestination {
   private readonly deliveryStream: IDeliveryStream;
+
+  /**
+   * Creates a new Firehose log delivery destination.
+   * @param stream - The Kinesis Data Firehose delivery stream
+   */
   constructor(stream: IDeliveryStream) {
     this.deliveryStream = stream;
   }
 
+  /**
+   * Binds the Firehose destination to a delivery source and creates a delivery connection between them.
+   * @param scope - The construct scope
+   * @param deliverySource - The delivery source reference
+   * @returns The delivery reference
+   */
   public bind(scope: IConstruct, deliverySource: IDeliverySourceRef): DeliveryReference {
     Tags.of(this.deliveryStream).add('LogDeliveryEnabled', 'true');
     const destinationNamePrefix = 'cdk-fh-dest-';
@@ -129,12 +173,26 @@ export class FirehoseLogDelivery implements IDestination {
   }
 }
 
+/**
+ * CloudWatch Log group delivery implementation.
+ */
 export class LogGroupLogDelivery implements IDestination {
   private readonly logGroup: ILogGroupRef;
+
+  /**
+   * Creates a new log group delivery destination.
+   * @param logGroup - The CloudWatch Logs log group reference
+   */
   constructor(logGroup: ILogGroupRef) {
     this.logGroup = logGroup;
   }
 
+  /**
+   * Binds the log group destination to a delivery source and creates a delivery connection between them.
+   * @param scope - The construct scope
+   * @param deliverySource - The delivery source reference
+   * @returns The delivery reference
+   */
   public bind(scope: IConstruct, deliverySource: IDeliverySourceRef): DeliveryReference {
     const logGroupPolicy = this.getOrCreateLogsResourcePolicy(scope, this.logGroup);
 
@@ -155,6 +213,12 @@ export class LogGroupLogDelivery implements IDestination {
     return delivery.deliveryRef;
   }
 
+  /**
+   * Gets or creates a singleton CloudWatch Logs resource policy.
+   * @param scope - The construct scope
+   * @param logGroup - The log group reference
+   * @returns The resource policy
+   */
   private getOrCreateLogsResourcePolicy(scope: IConstruct, logGroup: ILogGroupRef) {
     const stack = Stack.of(scope);
     const policyId = 'CDKCWLLogDestDeliveryPolicy';
@@ -189,9 +253,22 @@ export class LogGroupLogDelivery implements IDestination {
   }
 }
 
+/**
+ * AWS X-Ray log delivery implementation.
+ */
 export class XRayLogDelivery implements IDestination {
+  /**
+   * Creates a new X-Ray log delivery destination.
+   */
   constructor() {}
 
+  /**
+   * Binds the X-Ray destination to a delivery source and creates a delivery connection between them.
+   * @param scope - The construct scope
+   * @param deliverySource - The delivery source reference
+   * @param sourceArn - The source ARN
+   * @returns The delivery reference
+   */
   public bind(scope: IConstruct, deliverySource: IDeliverySourceRef, sourceArn: string): DeliveryReference {
     const xrayResourcePolicy = this.getOrCreateXRayPolicyGenerator(scope);
 
@@ -211,6 +288,11 @@ export class XRayLogDelivery implements IDestination {
     return delivery.deliveryRef;
   }
 
+  /**
+   * Gets or creates a singleton X-Ray policy generator.
+   * @param scope - The construct scope
+   * @returns The X-Ray delivery destination policy
+   */
   private getOrCreateXRayPolicyGenerator(scope: IConstruct) {
     const stack = Stack.of(scope);
     const poliyGeneratorId = 'CDKXRayPolicyGenerator';
