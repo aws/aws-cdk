@@ -528,7 +528,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     const targetGroupId = FeatureFlags.of(this).isEnabled(ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID)
       ? defaultTargetGroupId
       : 'ECSGroup';
-    
+
     this.targetGroup = this.listener.addTargets(targetGroupId, targetProps);
 
     if (protocol === ApplicationProtocol.HTTPS) {
