@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "d5208d085bc15afbc2c9b20250dec7590c6ba7130989c3ad0dbdddea542b0a2d": {
+      "displayName": "aws-cdk-imagebuilder-lifecycle-policy-ami-all-parameters Template",
+      "source": {
+        "path": "aws-cdk-imagebuilder-lifecycle-policy-ami-all-parameters.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-29592273": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d5208d085bc15afbc2c9b20250dec7590c6ba7130989c3ad0dbdddea542b0a2d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

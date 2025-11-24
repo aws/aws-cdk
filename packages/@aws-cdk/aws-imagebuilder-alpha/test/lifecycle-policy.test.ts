@@ -1074,65 +1074,68 @@ describe('Lifecycle Policy', () => {
     );
   });
 
-  test('grants default execution role permissions to IAM roles', () => {
-    const lifecyclePolicy = new LifecyclePolicy(stack, 'LifecyclePolicy', {
-      resourceType: LifecyclePolicyResourceType.AMI_IMAGE,
-      details: [
-        {
-          action: { type: LifecyclePolicyActionType.DELETE },
-          filter: { count: 5 },
-        },
-      ],
-      resourceSelection: { tags: { Environment: 'test' } },
-    });
-
-    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountPrincipal('123456789012') });
-
-    lifecyclePolicy.grantDefaultExecutionRolePermissions(role);
-
-    const template = Template.fromStack(stack);
-
-    template.resourceCountIs('AWS::IAM::Role', 2);
-    template.resourceCountIs('AWS::ImageBuilder::LifecyclePolicy', 1);
-    expect(Object.keys(template.toJSON().Resources)).toHaveLength(3);
-
-    template.hasResourceProperties(
-      'AWS::IAM::Role',
-      Match.objectEquals({
-        AssumeRolePolicyDocument: {
-          Statement: [
-            {
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: {
-                AWS: {
-                  'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::123456789012:root']],
-                },
-              },
-            },
-          ],
-          Version: '2012-10-17',
-        },
-        ManagedPolicyArns: [
+  test('throws a validation error when the resource name is too long', () => {
+    expect(() => {
+      new LifecyclePolicy(stack, 'LifecyclePolicy', {
+        lifecyclePolicyName: 'a'.repeat(129),
+        resourceType: LifecyclePolicyResourceType.AMI_IMAGE,
+        details: [
           {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':iam::aws:policy/service-role/EC2ImageBuilderLifecycleExecutionPolicy',
-              ],
-            ],
+            action: { type: LifecyclePolicyActionType.DELETE },
+            filter: { age: cdk.Duration.days(1) },
           },
         ],
-      }),
-    );
+        resourceSelection: { tags: { Environment: 'test' } },
+      });
+    }).toThrow(cdk.ValidationError);
   });
 
-  test('throws an error when providing both recipe and tag selections', () => {
-    // TODO
+  test('throws a validation error when the resource name contains spaces', () => {
+    expect(() => {
+      new LifecyclePolicy(stack, 'LifecyclePolicy', {
+        lifecyclePolicyName: 'a lifecycle policy',
+        resourceType: LifecyclePolicyResourceType.AMI_IMAGE,
+        details: [
+          {
+            action: { type: LifecyclePolicyActionType.DELETE },
+            filter: { age: cdk.Duration.days(1) },
+          },
+        ],
+        resourceSelection: { tags: { Environment: 'test' } },
+      });
+    }).toThrow(cdk.ValidationError);
+  });
+
+  test('throws a validation error when the resource name contains underscores', () => {
+    expect(() => {
+      new LifecyclePolicy(stack, 'LifecyclePolicy', {
+        lifecyclePolicyName: 'a_lifecycle_policy',
+        resourceType: LifecyclePolicyResourceType.AMI_IMAGE,
+        details: [
+          {
+            action: { type: LifecyclePolicyActionType.DELETE },
+            filter: { age: cdk.Duration.days(1) },
+          },
+        ],
+        resourceSelection: { tags: { Environment: 'test' } },
+      });
+    }).toThrow(cdk.ValidationError);
+  });
+
+  test('throws a validation error when the resource name contains uppercase characters', () => {
+    expect(() => {
+      new LifecyclePolicy(stack, 'LifecyclePolicy', {
+        lifecyclePolicyName: 'ALifecyclePolicy',
+        resourceType: LifecyclePolicyResourceType.AMI_IMAGE,
+        details: [
+          {
+            action: { type: LifecyclePolicyActionType.DELETE },
+            filter: { age: cdk.Duration.days(1) },
+          },
+        ],
+        resourceSelection: { tags: { Environment: 'test' } },
+      });
+    }).toThrow(cdk.ValidationError);
   });
 
   test('throws an error when no recipe or tag selections are provided', () => {
@@ -1411,7 +1414,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { age: cdk.Duration.days(365 * 1000 + 1) },
+            filter: { age: cdk.Duration.days(1) },
           },
         ],
         resourceSelection: { recipes: [new BadRecipe(stack, 'BadRecipe')] },
@@ -1459,6 +1462,51 @@ describe('Lifecycle Policy', () => {
             }),
           ],
         },
+      });
+    }).toThrow(cdk.ValidationError);
+  });
+
+  test('throws an error when providing an age filter below 1 day', () => {
+    expect(() => {
+      new LifecyclePolicy(stack, 'LifecyclePolicy', {
+        resourceType: LifecyclePolicyResourceType.AMI_IMAGE,
+        details: [
+          {
+            action: { type: LifecyclePolicyActionType.DELETE },
+            filter: { age: cdk.Duration.hours(0) },
+          },
+        ],
+        resourceSelection: { tags: { Environment: 'test' } },
+      });
+    }).toThrow(cdk.ValidationError);
+  });
+
+  test('throws an error when providing retainAtLeast below the minimum', () => {
+    expect(() => {
+      new LifecyclePolicy(stack, 'LifecyclePolicy', {
+        resourceType: LifecyclePolicyResourceType.AMI_IMAGE,
+        details: [
+          {
+            action: { type: LifecyclePolicyActionType.DELETE },
+            filter: { age: cdk.Duration.days(1), retainAtLeast: -1 },
+          },
+        ],
+        resourceSelection: { tags: { Environment: 'test' } },
+      });
+    }).toThrow(cdk.ValidationError);
+  });
+
+  test('throws an error when providing retainAtLeast above the maximum', () => {
+    expect(() => {
+      new LifecyclePolicy(stack, 'LifecyclePolicy', {
+        resourceType: LifecyclePolicyResourceType.AMI_IMAGE,
+        details: [
+          {
+            action: { type: LifecyclePolicyActionType.DELETE },
+            filter: { age: cdk.Duration.days(1), retainAtLeast: 11 },
+          },
+        ],
+        resourceSelection: { tags: { Environment: 'test' } },
       });
     }).toThrow(cdk.ValidationError);
   });

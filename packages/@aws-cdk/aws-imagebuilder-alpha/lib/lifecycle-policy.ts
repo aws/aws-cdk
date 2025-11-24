@@ -34,13 +34,6 @@ export interface ILifecyclePolicy extends cdk.IResource {
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
-   * Grants the default permissions for executing a lifecycle policy to the provided execution role.
-   *
-   * @param role - The execution role used for the lifecycle policy
-   */
-  grantDefaultExecutionRolePermissions(role: iam.IRole): void;
-
-  /**
    * Grant read permissions to the given grantee for the lifecycle policy
    *
    * @param grantee - The principal
@@ -108,21 +101,21 @@ export interface LifecyclePolicyAction {
   /**
    * Whether to include AMIs in the scope of the lifecycle rule
    *
-   * @default true for AMI-based policies, false otherwise
+   * @default - true for AMI-based policies, false otherwise
    */
   readonly includeAmis?: boolean;
 
   /**
    * Whether to include containers in the scope of the lifecycle rule
    *
-   * @default true for container-based policies, false otherwise
+   * @default - true for container-based policies, false otherwise
    */
   readonly includeContainers?: boolean;
 
   /**
    * Whether to include snapshots in the scope of the lifecycle rule
    *
-   * @default true for AMI-based policies, false otherwise
+   * @default - true for AMI-based policies, false otherwise
    */
   readonly includeSnapshots?: boolean;
 }
@@ -142,12 +135,13 @@ export interface LifecyclePolicyFilter {
   /**
    * For count-based filters, the minimum number of resources to keep on hand
    *
-   * @default None if an age filter is provided. Otherwise, at least one age or count filter must be provided
+   * @default - none if an age filter is provided. Otherwise, at least one age or count filter must be provided
    */
   readonly count?: number;
 
   /**
-   * For age-based filters, the number of EC2 Image Builder images to keep on hand once the rule is applied.
+   * For age-based filters, the number of EC2 Image Builder images to keep on hand once the rule is applied. The value
+   * must be between 1 and 10.
    *
    * @default 0
    */
@@ -221,14 +215,14 @@ export interface LifecyclePolicyDetail {
   /**
    * The rules to apply for excluding EC2 Image Builder images from the lifecycle policy rule
    *
-   * @default No exclusion rules are applied on the image
+   * @default - no exclusion rules are applied on the image
    */
   readonly imageExclusionRules?: LifecyclePolicyImageExclusionRules;
 
   /**
    * The rules to apply for excluding AMIs from the lifecycle policy rule
    *
-   * @default No exclusion rules are applied on the AMI
+   * @default - no exclusion rules are applied on the AMI
    */
   readonly amiExclusionRules?: LifecyclePolicyAmiExclusionRules;
 }
@@ -240,14 +234,14 @@ export interface LifecyclePolicyResourceSelection {
   /**
    * The list of image recipes or container recipes to apply the lifecycle policy to
    *
-   * @default None if tag selections are provided. Otherwise, at least one recipe or tag selection must be provided
+   * @default - none if tag selections are provided. Otherwise, at least one recipe or tag selection must be provided
    */
   readonly recipes?: IRecipeBase[];
 
   /**
    * Selects EC2 Image Builder images containing any of the provided tags
    *
-   * @default None if recipe selections are provided. Otherwise, at least one recipe or tag selection must be provided
+   * @default - none if recipe selections are provided. Otherwise, at least one recipe or tag selection must be provided
    */
   readonly tags?: { [key: string]: string };
 }
@@ -274,7 +268,7 @@ export interface LifecyclePolicyProps {
   /**
    * The name of the lifecycle policy.
    *
-   * @default A name is generated
+   * @default - a name is generated
    */
   readonly lifecyclePolicyName?: string;
 
@@ -298,14 +292,14 @@ export interface LifecyclePolicyProps {
    * By default, an execution role will be created with the minimal permissions needed to execute the lifecycle policy
    * actions.
    *
-   * @default An execution role will be generated
+   * @default - an execution role will be generated
    */
   readonly executionRole?: iam.IRole;
 
   /**
    * The tags to apply to the lifecycle policy
    *
-   * @default None
+   * @default - none
    */
   readonly tags?: { [key: string]: string };
 }
@@ -323,27 +317,20 @@ abstract class LifecyclePolicyBase extends cdk.Resource implements ILifecyclePol
     });
   }
 
-  public grantDefaultExecutionRolePermissions(role: iam.IRole): void {
-    const lifecycleExecutionPolicy = iam.ManagedPolicy.fromAwsManagedPolicyName(
-      'service-role/EC2ImageBuilderLifecycleExecutionPolicy',
-    );
-    role.addManagedPolicy(lifecycleExecutionPolicy);
-  }
-
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, 'imagebuilder:GetLifecyclePolicy');
   }
 }
 
 /**
- * Represents an EC2 Image Builder Infrastructure Configuration.
+ * Represents an EC2 Image Builder Lifecycle Policy.
  *
  * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/manage-image-lifecycles.html
  */
 @propertyInjectable
 export class LifecyclePolicy extends LifecyclePolicyBase {
   /** Uniquely identifies this class. */
-  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-imagebuilder-alpha.InfrastructureConfiguration';
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-imagebuilder-alpha.LifecyclePolicy';
 
   /**
    * Import an existing lifecycle policy given its ARN.
@@ -416,57 +403,17 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
 
     Object.defineProperty(this, LIFECYCLE_POLICY_SYMBOL, { value: true });
 
+    this.validateLifecyclePolicyName();
     this.validatePolicy(props);
 
-    this.executionRole = (() => {
-      if (props.executionRole !== undefined) {
-        return props.executionRole;
-      }
-
-      const role = new iam.Role(this, 'ExecutionRole', {
+    this.executionRole =
+      props.executionRole ??
+      new iam.Role(this, 'ExecutionRole', {
         assumedBy: new iam.ServicePrincipal('imagebuilder.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/EC2ImageBuilderLifecycleExecutionPolicy'),
+        ],
       });
-      this.grantDefaultExecutionRolePermissions(role);
-
-      return role;
-    })();
-
-    const recipes: CfnLifecyclePolicy.RecipeSelectionProperty[] | undefined = props.resourceSelection.recipes?.map(
-      (recipe): CfnLifecyclePolicy.RecipeSelectionProperty => {
-        if (recipe._isImageRecipe()) {
-          if (props.resourceType === LifecyclePolicyResourceType.CONTAINER_IMAGE) {
-            throw new cdk.ValidationError(
-              `recipes in the resource selection must all be container recipes for policy type ${LifecyclePolicyResourceType.CONTAINER_IMAGE}`,
-              this,
-            );
-          }
-
-          return {
-            name: recipe.imageRecipeName,
-            semanticVersion: recipe.imageRecipeVersion,
-          };
-        }
-
-        if (recipe._isContainerRecipe()) {
-          if (props.resourceType === LifecyclePolicyResourceType.AMI_IMAGE) {
-            throw new cdk.ValidationError(
-              `recipes in the resource selection must all be image recipes for policy type ${LifecyclePolicyResourceType.CONTAINER_IMAGE}`,
-              this,
-            );
-          }
-
-          return {
-            name: recipe.containerRecipeName,
-            semanticVersion: recipe.containerRecipeVersion,
-          };
-        }
-
-        throw new cdk.ValidationError(
-          'recipes in the resource selection must either be an IImageRecipe or IContainerRecipe',
-          this,
-        );
-      },
-    );
 
     const lifecyclePolicy = new CfnLifecyclePolicy(this, 'Resource', {
       name: this.physicalName,
@@ -475,7 +422,7 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
       executionRole: this.executionRole.roleArn,
       policyDetails: this.buildPolicyDetails(props),
       resourceSelection: {
-        recipes: recipes,
+        recipes: this.buildRecipes(props),
         tagMap: props.resourceSelection.tags,
       },
       status: props.status,
@@ -519,6 +466,50 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
   }
 
   /**
+   * Generates the recipes property in the resource selection into the `RecipeSelection` type in the CloudFormation L1
+   * definition.
+   *
+   * @param props The props passed as input to the construct
+   * @private
+   */
+  private buildRecipes(props: LifecyclePolicyProps): CfnLifecyclePolicy.RecipeSelectionProperty[] | undefined {
+    return props.resourceSelection.recipes?.map((recipe): CfnLifecyclePolicy.RecipeSelectionProperty => {
+      if (recipe._isImageRecipe()) {
+        if (props.resourceType === LifecyclePolicyResourceType.CONTAINER_IMAGE) {
+          throw new cdk.ValidationError(
+            `recipes in the resource selection must all be container recipes for policy type ${LifecyclePolicyResourceType.CONTAINER_IMAGE}`,
+            this,
+          );
+        }
+
+        return {
+          name: recipe.imageRecipeName,
+          semanticVersion: recipe.imageRecipeVersion,
+        };
+      }
+
+      if (recipe._isContainerRecipe()) {
+        if (props.resourceType === LifecyclePolicyResourceType.AMI_IMAGE) {
+          throw new cdk.ValidationError(
+            `recipes in the resource selection must all be image recipes for policy type ${LifecyclePolicyResourceType.CONTAINER_IMAGE}`,
+            this,
+          );
+        }
+
+        return {
+          name: recipe.containerRecipeName,
+          semanticVersion: recipe.containerRecipeVersion,
+        };
+      }
+
+      throw new cdk.ValidationError(
+        'recipes in the resource selection must either be an IImageRecipe or IContainerRecipe',
+        this,
+      );
+    });
+  }
+
+  /**
    * Generates the exclusion rules property into the `ExclusionRules` type in the CloudFormation L1 definition.
    *
    * @param detail The lifecycle policy detail where the exclusion rules are
@@ -534,7 +525,7 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
       ...(detail.amiExclusionRules?.sharedAccounts?.length && {
         sharedAccounts: detail.amiExclusionRules.sharedAccounts,
       }),
-      ...(Object.keys(detail.amiExclusionRules?.tags ?? {}).length && { tagMap: detail.amiExclusionRules!.tags }),
+      ...(detail.amiExclusionRules?.tags && { tagMap: detail.amiExclusionRules.tags }),
     };
 
     const exclusionRules: CfnLifecyclePolicy.ExclusionRulesProperty = {
@@ -558,15 +549,18 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
     const isAmiPolicy =
       !cdk.Token.isUnresolved(props.resourceType) && props.resourceType === LifecyclePolicyResourceType.AMI_IMAGE;
 
+    const amis = detail.action.includeAmis ?? (isAmiPolicy ? true : undefined);
+    const snapshots = detail.action.includeSnapshots ?? (isAmiPolicy ? true : undefined);
+    const containers = detail.action.includeContainers ?? (isContainerPolicy ? true : undefined);
     const includeResources: CfnLifecyclePolicy.IncludeResourcesProperty = {
-      amis: detail.action.includeAmis ?? (isAmiPolicy ? true : undefined),
-      snapshots: detail.action.includeSnapshots ?? (isAmiPolicy ? true : undefined),
-      containers: detail.action.includeContainers ?? (isContainerPolicy ? true : undefined),
+      ...(amis !== undefined && { amis }),
+      ...(snapshots !== undefined && { snapshots }),
+      ...(containers !== undefined && { containers }),
     };
 
     return {
       type: detail.action.type,
-      ...(Object.entries(includeResources).some(([_, value]) => value !== undefined) && { includeResources }),
+      ...(Object.keys(includeResources).length && { includeResources }),
     };
   }
 
@@ -660,6 +654,14 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
     if (filter.retainAtLeast !== undefined && filter.age === undefined) {
       throw new cdk.ValidationError('you can only specify a retainAtLeast filter when using an age filter', this);
     }
+
+    if (filter.retainAtLeast !== undefined && filter.retainAtLeast < 1) {
+      throw new cdk.ValidationError('the retainAtLeast filter must be at least 1', this);
+    }
+
+    if (filter.retainAtLeast !== undefined && filter.retainAtLeast > 10) {
+      throw new cdk.ValidationError('the retainAtLeast filter must be at most 10', this);
+    }
   }
 
   /**
@@ -674,26 +676,56 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
     duration: cdk.Duration,
     valueLimit: number = 1000,
   ): { value: number; unit: 'DAYS' | 'WEEKS' | 'MONTHS' | 'YEARS' } {
+    const DAYS_PER_WEEK = 7;
+    const DAYS_PER_MONTH = 30;
+    const DAYS_PER_YEAR = 365;
+
     const valueInDays = Math.ceil(duration.toDays());
+    if (valueInDays < 1) {
+      throw new cdk.ValidationError('the provided duration must be at least 1 day', this);
+    }
+
     if (valueInDays <= valueLimit) {
       return { value: valueInDays, unit: 'DAYS' };
     }
 
-    const valueInWeeks = Math.ceil(valueInDays / 7);
+    const valueInWeeks = Math.ceil(valueInDays / DAYS_PER_WEEK);
     if (valueInWeeks <= valueLimit) {
       return { value: valueInWeeks, unit: 'WEEKS' };
     }
 
-    const valueInMonths = Math.ceil(valueInDays / 30);
+    const valueInMonths = Math.ceil(valueInDays / DAYS_PER_MONTH);
     if (valueInMonths <= valueLimit) {
       return { value: valueInMonths, unit: 'MONTHS' };
     }
 
-    const valueInYears = Math.ceil(valueInDays / 365);
+    const valueInYears = Math.ceil(valueInDays / DAYS_PER_YEAR);
     if (valueInYears <= valueLimit) {
       return { value: valueInYears, unit: 'YEARS' };
     }
 
     throw new cdk.ValidationError(`the provided duration must be less than ${valueLimit} years`, this);
+  }
+
+  private validateLifecyclePolicyName() {
+    if (cdk.Token.isUnresolved(this.physicalName)) {
+      return; // Cannot validate unresolved tokens, given their actual value is rendered at deployment time
+    }
+
+    if (this.physicalName.length > 128) {
+      throw new cdk.ValidationError('The lifecyclePolicyName cannot be longer than 128 characters', this);
+    }
+
+    if (this.physicalName.includes(' ')) {
+      throw new cdk.ValidationError('The lifecyclePolicyName cannot contain spaces', this);
+    }
+
+    if (this.physicalName.includes('_')) {
+      throw new cdk.ValidationError('The lifecyclePolicyName cannot contain underscores', this);
+    }
+
+    if (this.physicalName !== this.physicalName.toLowerCase()) {
+      throw new cdk.ValidationError('The lifecyclePolicyName must be lowercase', this);
+    }
   }
 }

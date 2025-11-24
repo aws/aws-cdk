@@ -4,11 +4,14 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as imagebuilder from '../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-lifecycle-policy-all-parameters');
+const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-lifecycle-policy-ami-all-parameters');
 
-const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('imagebuilder.amazonaws.com') });
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('imagebuilder.amazonaws.com'),
+  managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/EC2ImageBuilderLifecycleExecutionPolicy')],
+});
 
-const lifecyclePolicy = new imagebuilder.LifecyclePolicy(stack, 'LifecyclePolicy-AMI', {
+new imagebuilder.LifecyclePolicy(stack, 'LifecyclePolicy-AMI', {
   lifecyclePolicyName: 'test-ami-lifecycle-policy',
   description: 'This is a test lifecycle policy',
   status: imagebuilder.LifecyclePolicyStatus.DISABLED,
@@ -83,30 +86,6 @@ const lifecyclePolicy = new imagebuilder.LifecyclePolicy(stack, 'LifecyclePolicy
   },
 });
 
-new imagebuilder.LifecyclePolicy(stack, 'LifecyclePolicy-Container', {
-  lifecyclePolicyName: 'test-container-lifecycle-policy',
-  description: 'This is a test lifecycle policy',
-  status: imagebuilder.LifecyclePolicyStatus.DISABLED,
-  resourceType: imagebuilder.LifecyclePolicyResourceType.CONTAINER_IMAGE,
-  executionRole: role,
-  details: [
-    {
-      action: {
-        type: imagebuilder.LifecyclePolicyActionType.DELETE,
-        includeContainers: false,
-      },
-      filter: {
-        age: cdk.Duration.days(30),
-        retainAtLeast: 5,
-      },
-      imageExclusionRules: { tags: { Environment: 'test' } },
-    },
-  ],
-  resourceSelection: { tags: { Environment: 'test' } },
-});
-
-lifecyclePolicy.grantDefaultExecutionRolePermissions(role);
-
-new integ.IntegTest(app, 'LifecyclePolicyTest-AllParameters', {
+new integ.IntegTest(app, 'LifecyclePolicyTest-AMI-AllParameters', {
   testCases: [stack],
 });
