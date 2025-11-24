@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ComponentTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-imagebuilder-component-s3-data"
+      ],
+      "assertionStack": "ComponentTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ComponentTestDefaultTestDeployAssert990A2773"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

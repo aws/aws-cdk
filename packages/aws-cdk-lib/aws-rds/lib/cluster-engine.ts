@@ -174,7 +174,12 @@ interface MysqlClusterEngineBaseProps {
 
 abstract class MySqlClusterEngineBase extends ClusterEngineBase {
   public readonly engineFamily = 'MYSQL';
-  public readonly supportedLogTypes: string[] = ['error', 'general', 'slowquery', 'audit'];
+
+  /**
+   * Log types supported by this engine. See EnableCloudwatchLogsExports of CreateDBCluster API
+   * for reference: https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_CreateDBCluster.html
+   */
+  public readonly supportedLogTypes: string[] = ['error', 'general', 'slowquery', 'audit', 'instance', 'iam-db-auth-error'];
   public readonly combineImportAndExportRoles?: boolean;
 
   constructor(props: MysqlClusterEngineBaseProps) {
@@ -706,6 +711,8 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_3_10_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.10.0');
   /** Version "8.0.mysql_aurora.3.10.1". */
   public static readonly VER_3_10_1 = AuroraMysqlEngineVersion.builtIn_8_0('3.10.1');
+  /** Version "8.0.mysql_aurora.3.10.2". */
+  public static readonly VER_3_10_2 = AuroraMysqlEngineVersion.builtIn_8_0('3.10.2');
   /** Version "8.0.mysql_aurora.3.11.0". */
   public static readonly VER_3_11_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.11.0');
 
@@ -1385,7 +1392,12 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
 
   public readonly engineFamily = 'POSTGRESQL';
   public readonly defaultUsername = 'postgres';
-  public readonly supportedLogTypes: string[] = ['postgresql'];
+
+  /**
+   * Log types supported by this engine. See EnableCloudwatchLogsExports of CreateDBCluster API
+   * for reference: https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_CreateDBCluster.html
+   */
+  public readonly supportedLogTypes: string[] = ['postgresql', 'iam-db-auth-error', 'instance'];
 
   constructor(version?: AuroraPostgresEngineVersion) {
     super({

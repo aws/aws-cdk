@@ -3,6 +3,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { CfnResource, CustomResource, Tags } from 'aws-cdk-lib/core';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/aws-s3/auto-delete-objects-provider';
 import type { IMixin } from '../../core';
+import { tryFindBucketPolicyForBucket } from '../../mixins/private/reflections';
 
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
 const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
@@ -29,7 +30,7 @@ export class AutoDeleteObjects implements IMixin {
     });
 
     // Get or create bucket policy
-    let policy = construct.node.tryFindChild('Policy') as s3.CfnBucketPolicy | undefined;
+    let policy = tryFindBucketPolicyForBucket(construct);
     if (!policy) {
       policy = new s3.CfnBucketPolicy(construct, 'Policy', {
         bucket: ref.bucketName,
