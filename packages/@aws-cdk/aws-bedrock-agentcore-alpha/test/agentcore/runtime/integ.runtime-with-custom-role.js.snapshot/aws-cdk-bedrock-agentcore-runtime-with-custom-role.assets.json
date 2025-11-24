@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "0a8c5c25cfe8e1272b4bffcf46837c224b8d9a23013b6de06ef3d4db1116f8d3": {
+    "bcde386892b4bb6865aaafdfa20dabe95fc18dcce629b653b5183caa5eabf782": {
       "displayName": "aws-cdk-bedrock-agentcore-runtime-with-custom-role Template",
       "source": {
         "path": "aws-cdk-bedrock-agentcore-runtime-with-custom-role.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-09599a85": {
+        "current_account-current_region-bd435cc2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0a8c5c25cfe8e1272b4bffcf46837c224b8d9a23013b6de06ef3d4db1116f8d3.json",
+          "objectKey": "bcde386892b4bb6865aaafdfa20dabe95fc18dcce629b653b5183caa5eabf782.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

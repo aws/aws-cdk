@@ -231,6 +231,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ARM64",
     "Neuron"
   ],
+  "ApiKeyCredentialLocationType": [
+    "HEADER",
+    "QUERY_PARAMETER"
+  ],
   "ApiKeySourceType": [
     "HEADER",
     "AUTHORIZER"
@@ -798,6 +802,55 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     6,
     7
   ],
+  "ComponentAction": [
+    "AppendFile",
+    "Assert",
+    "CopyFile",
+    "CopyFolder",
+    "CreateFile",
+    "CreateFolder",
+    "CreateSymlink",
+    "DeleteFile",
+    "DeleteFolder",
+    "ExecuteBash",
+    "ExecuteBinary",
+    "ExecuteDocument",
+    "ExecutePowerShell",
+    "InstallMSI",
+    "ListFiles",
+    "MoveFile",
+    "MoveFolder",
+    "ReadFile",
+    "Reboot",
+    "SetFileEncoding",
+    "SetFileOwner",
+    "SetFolderOwner",
+    "SetFilePermissions",
+    "SetFolderPermissions",
+    "SetRegistry",
+    "S3Download",
+    "S3Upload",
+    "UninstallMSI",
+    "UpdateOS",
+    "WebDownload"
+  ],
+  "ComponentOnFailure": [
+    "Abort",
+    "Continue",
+    "Ignore"
+  ],
+  "ComponentParameterType": [
+    "string"
+  ],
+  "ComponentPhaseName": [
+    "build",
+    "container-host-test",
+    "test",
+    "validate"
+  ],
+  "ComponentSchemaVersion": [
+    "1.0"
+  ],
   "ComponentType": [
     "Function",
     "SingletonFunction",
@@ -956,10 +1009,19 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "FAILED",
     "ERROR"
   ],
+  "CredentialProviderType": [
+    "API_KEY",
+    "OAUTH",
+    "GATEWAY_IAM_ROLE"
+  ],
   "CrossRegionInferenceProfileRegion": [
+    "global",
     "eu",
     "us",
-    "apac"
+    "us-gov",
+    "apac",
+    "jp",
+    "au"
   ],
   "CsvDelimiter": [
     "COMMA",
@@ -1489,6 +1551,19 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "FunctionUrlAuthType": [
     "AWS_IAM",
     "NONE"
+  ],
+  "GatewayAuthorizerType": [
+    "CUSTOM_JWT",
+    "AWS_IAM"
+  ],
+  "GatewayExceptionLevel": [
+    "DEBUG"
+  ],
+  "GatewayProtocolType": [
+    "MCP"
+  ],
+  "GatewayTargetProtocolType": [
+    "MCP"
   ],
   "GelfCompressionType": [
     "gzip",
@@ -2496,6 +2571,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "PERSISTENT_1",
     "PERSISTENT_2"
   ],
+  "MCPProtocolVersion": [
+    "2025-06-18",
+    "2025-03-26"
+  ],
   "MachineImageType": [
     0,
     1
@@ -2538,6 +2617,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "FULL_HD",
     "HD",
     "SD"
+  ],
+  "McpGatewaySearchType": [
+    "SEMANTIC"
+  ],
+  "McpTargetType": [
+    "OPENAPI_SCHEMA",
+    "SMITHY_MODEL",
+    "LAMBDA",
+    "MCP_SERVER"
   ],
   "MemoryStrategyType": [
     "SUMMARIZATION",
@@ -3072,6 +3160,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TASK_DEFINITION",
     "NONE"
   ],
+  "PropertyMergeStrategy": [
+    "override",
+    "merge"
+  ],
   "Protocol": [
     "HTTP",
     "HTTPS",
@@ -3217,6 +3309,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "codecommit-repository-branches-and-tags-created",
     "codecommit-repository-branches-and-tags-deleted",
     "codecommit-repository-branches-and-tags-updated"
+  ],
+  "RepositoryService": [
+    "ECR"
   ],
   "RepositoryVisibility": [
     0,
@@ -3378,6 +3473,14 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ScheduledActions",
     "AddToLoadBalancer",
     "InstanceRefresh"
+  ],
+  "SchemaDefinitionType": [
+    "string",
+    "number",
+    "object",
+    "array",
+    "boolean",
+    "integer"
   ],
   "Scope": [
     "task",

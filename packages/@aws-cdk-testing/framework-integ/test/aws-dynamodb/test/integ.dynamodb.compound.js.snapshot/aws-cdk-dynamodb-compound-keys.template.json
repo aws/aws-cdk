@@ -1,0 +1,150 @@
+{
+ "Resources": {
+  "TableCD117FA1": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "pkey",
+      "AttributeType": "N"
+     },
+     {
+      "AttributeName": "PK1",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "PK2",
+      "AttributeType": "N"
+     },
+     {
+      "AttributeName": "SK1",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "SK2",
+      "AttributeType": "N"
+     },
+     {
+      "AttributeName": "baz",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "bar",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "foo",
+      "AttributeType": "N"
+     }
+    ],
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "IndexA",
+      "KeySchema": [
+       {
+        "AttributeName": "PK1",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "PK2",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "SK1",
+        "KeyType": "RANGE"
+       },
+       {
+        "AttributeName": "SK2",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "NonKeyAttributes": [
+        "bar"
+       ],
+       "ProjectionType": "INCLUDE"
+      },
+      "ProvisionedThroughput": {
+       "ReadCapacityUnits": 5,
+       "WriteCapacityUnits": 5
+      }
+     },
+     {
+      "IndexName": "IndexB",
+      "KeySchema": [
+       {
+        "AttributeName": "baz",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "bar",
+        "KeyType": "RANGE"
+       },
+       {
+        "AttributeName": "foo",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "NonKeyAttributes": [
+        "blah"
+       ],
+       "ProjectionType": "INCLUDE"
+      },
+      "ProvisionedThroughput": {
+       "ReadCapacityUnits": 5,
+       "WriteCapacityUnits": 5
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "pkey",
+      "KeyType": "HASH"
+     }
+    ],
+    "ProvisionedThroughput": {
+     "ReadCapacityUnits": 5,
+     "WriteCapacityUnits": 5
+    },
+    "TableName": "cdk-test-compound"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
