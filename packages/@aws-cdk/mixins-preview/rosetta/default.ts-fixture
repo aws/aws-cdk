@@ -3,21 +3,21 @@ import { Stack, App } from 'aws-cdk-lib/core';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
-import { 
-  Mixins, 
-  ConstructSelector, 
-  IMixin
-} from '@aws-cdk/mixins-preview/core';
-import { 
-  EncryptionAtRest, 
-  AutoDeleteObjects, 
-  EnableVersioning,
-  CfnPropertiesMixin
-} from '@aws-cdk/mixins-preview/mixins';
+import '@aws-cdk/mixins-preview/with';
+// for testing purposes, ensure this import works
+import { mixins as alexa_mixins } from '@aws-cdk/mixins-preview/alexa_ask';
+import { ConstructSelector, Mixins, Mixin, IMixin } from '@aws-cdk/mixins-preview/core';
+import { PropertyMergeStrategy } from '@aws-cdk/mixins-preview/mixins';
+import { AutoDeleteObjects, EnableVersioning, CfnBucketPropsMixin } from '@aws-cdk/mixins-preview/aws_s3/mixins';
 
 declare const scope: Construct;
 
-class ProductionSecurityMixin implements IMixin {
+class ProductionSecurityMixin extends Mixins {
+  supports(_construct: any): boolean { return true; }
+  applyTo(construct: any): any { return construct; }
+}
+
+class EncryptionAtRest extends Mixins {
   supports(_construct: any): boolean { return true; }
   applyTo(construct: any): any { return construct; }
 }

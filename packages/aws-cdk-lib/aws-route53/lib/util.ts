@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { GrantDelegationOptions, IHostedZone } from './hosted-zone-ref';
+import { GrantDelegationOptions, IHostedZone, INamedHostedZoneRef } from './hosted-zone-ref';
 import * as iam from '../../aws-iam';
 import { Stack, Token, UnscopedValidationError } from '../../core';
 
@@ -137,15 +137,15 @@ function validateDelegatedZoneName(parentZoneName: string, delegatedZoneName: st
   }
 }
 
-export function makeGrantDelegation(grantee: iam.IGrantable, hostedZone: IHostedZone, delegationOptions?: GrantDelegationOptions): iam.Grant {
+export function makeGrantDelegation(grantee: iam.IGrantable, hostedZone: INamedHostedZoneRef, delegationOptions?: GrantDelegationOptions): iam.Grant {
   const delegatedZoneNames = delegationOptions?.delegatedZoneNames?.map(delegatedZoneName => {
-    validateDelegatedZoneName(hostedZone.zoneName, delegatedZoneName);
+    validateDelegatedZoneName(hostedZone.name, delegatedZoneName);
     return octalEncodeDelegatedZoneName(delegatedZoneName);
   });
   const g1 = iam.Grant.addToPrincipal({
     grantee,
     actions: ['route53:ChangeResourceRecordSets'],
-    resourceArns: [hostedZone.hostedZoneArn],
+    resourceArns: [makeHostedZoneArn(hostedZone, hostedZone.hostedZoneRef.hostedZoneId)],
     conditions: {
       'ForAllValues:StringEquals': {
         'route53:ChangeResourceRecordSetsRecordTypes': ['NS'],
