@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "LambdaEventSourceKafkaErrorHandlingTest/DefaultTest": {
+      "stacks": [
+        "lambda-event-source-kafka-error-handling"
+      ],
+      "assertionStack": "LambdaEventSourceKafkaErrorHandlingTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaEventSourceKafkaErrorHandlingTestDefaultTestDeployAssert6CB171EE"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.228.0](https://github.com/aws/aws-cdk/compare/v2.227.0...v2.228.0) (2025-11-24)
+
+
+### Features
+
+* **lambda:** add new lambda/kafka esm properties and on failure desitination ([65f9c35](https://github.com/aws/aws-cdk/commit/65f9c357e9a463ead608fa1d0118312b3c2cd09c))
+
+
+### Bug Fixes
+
+* **cloudformation-include:** `TypeError` when including template with intrinsic functions ([#36157](https://github.com/aws/aws-cdk/issues/36157)) ([f2a384b](https://github.com/aws/aws-cdk/commit/f2a384ba0092ccd76ff06b9a2e2e0a7eef7e0bfd)), closes [#36140](https://github.com/aws/aws-cdk/issues/36140) [#35838](https://github.com/aws/aws-cdk/issues/35838)
+
 ## [2.227.0](https://github.com/aws/aws-cdk/compare/v2.226.0...v2.227.0) (2025-11-20)
 
 **CHANGES TO L1 RESOURCES:** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
