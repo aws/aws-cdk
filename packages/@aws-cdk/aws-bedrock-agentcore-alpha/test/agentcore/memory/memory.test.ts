@@ -8,8 +8,8 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import {
   Memory,
-} from '../../../agentcore/memory/memory';
-import { MemoryStrategy } from '../../../agentcore/memory/memory-strategy';
+} from '../../../lib/memory/memory';
+import { MemoryStrategy } from '../../../lib/memory/memory-strategy';
 
 describe('Memory default tests', () => {
   let template: Template;

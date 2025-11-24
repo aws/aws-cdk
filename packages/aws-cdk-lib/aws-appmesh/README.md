@@ -913,8 +913,8 @@ appmesh.Mesh.fromMeshName(this, 'imported-mesh', 'abc');
 
 ## IAM Grants
 
-`VirtualNode` and `VirtualGateway` provide `grantStreamAggregatedResources` methods that grant identities that are running
-Envoy access to stream generated config from App Mesh.
+`VirtualNode` and `VirtualGateway` have a `grants` property that provides a `streamAggregatedResources` 
+methods that grant identities that are running Envoy access to stream generated config from App Mesh.
 
 ```ts
 declare const mesh: appmesh.Mesh;
@@ -922,9 +922,9 @@ const gateway = new appmesh.VirtualGateway(this, 'testGateway', { mesh });
 const envoyUser = new iam.User(this, 'envoyUser');
 
 /**
- * This will grant `grantStreamAggregatedResources` ONLY for this gateway.
+ * This will grant `appmesh:StreamAggregatedResources` ONLY for this gateway.
  */
-gateway.grantStreamAggregatedResources(envoyUser)
+gateway.grants.streamAggregatedResources(envoyUser)
 ```
 
 ## Adding Resources to shared meshes
