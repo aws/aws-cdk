@@ -8,7 +8,7 @@
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as agentcore from '../../../agentcore';
+import * as agentcore from '../../../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-bedrock-agentcore-runtime');
@@ -21,7 +21,7 @@ const runtimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
 
 // Create a single runtime (similar to the working strands example)
 const runtime = new agentcore.Runtime(stack, 'TestRuntime', {
-  runtimeName: 'integTest_runtime',
+  runtimeName: 'integ_test_runtime',
   description: 'Integration test runtime for BedrockAgentCore',
   agentRuntimeArtifact: runtimeArtifact,
   protocolConfiguration: agentcore.ProtocolType.HTTP,
