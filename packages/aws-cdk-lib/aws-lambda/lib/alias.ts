@@ -166,6 +166,10 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     this.version = props.version;
     this.architecture = this.lambda.architecture;
 
+    if (props.provisionedConcurrentExecutions && this.version.lambda.tenancyConfig?.tenancyConfigProperty?.tenantIsolationMode !== undefined) {
+      throw new ValidationError('Provisioned Concurrency is not supported for functions with tenant isolation mode', this);
+    }
+
     const alias = new CfnAlias(this, 'Resource', {
       name: this.aliasName,
       description: props.description,
