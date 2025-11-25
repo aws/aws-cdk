@@ -173,7 +173,9 @@ export class ResourceClass extends ClassType implements Referenceable {
    */
   public build() {
     // Build the props type
-    const cfnMapping = new CloudFormationMapping(this.module, this.converter);
+    const cfnMapping = new CloudFormationMapping(this.module, this.converter, {
+      resourceType: this.resource.cloudFormationType,
+    });
 
     for (const prop of this.decider.propsProperties) {
       this.propsType.addProperty(prop.propertySpec);
