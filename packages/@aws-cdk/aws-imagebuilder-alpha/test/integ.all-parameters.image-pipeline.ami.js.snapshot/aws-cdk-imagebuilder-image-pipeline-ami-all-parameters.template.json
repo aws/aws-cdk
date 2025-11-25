@@ -24,50 +24,53 @@
      "Statement": [
       {
        "Action": "ec2:RegisterImage",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":ec2:*::image/*"
-          ]
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":ec2:*::snapshot/*"
-          ]
-         ]
+       "Condition": {
+        "StringEquals": {
+         "aws:RequestTag/CreatedBy": "EC2 Image Builder"
         }
-       ]
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ec2:*::image/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "ec2:ModifySnapshotAttribute",
+        "ec2:RegisterImage"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "ec2:ResourceTag/CreatedBy": "EC2 Image Builder"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ec2:*::snapshot/*"
+         ]
+        ]
+       }
       },
       {
        "Action": "ec2:RunInstances",
        "Effect": "Allow",
        "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":ec2:*:*:instance/*"
-          ]
-         ]
-        },
         {
          "Fn::Join": [
           "",
@@ -136,18 +139,6 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":ec2:*:*:volume/*"
-          ]
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
            ":ec2:*::image/*"
           ]
          ]
@@ -179,12 +170,77 @@
        ]
       },
       {
+       "Action": "ec2:RunInstances",
+       "Condition": {
+        "StringEquals": {
+         "aws:RequestTag/CreatedBy": [
+          "EC2 Image Builder",
+          "EC2 Fast Launch"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ec2:*:*:instance/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ec2:*:*:volume/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "iam:PassRole",
+       "Condition": {
+        "StringEquals": {
+         "iam:PassedToService": [
+          "ec2.amazonaws.com",
+          "ec2.amazonaws.com.cn",
+          "vmie.amazonaws.com"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "ec2:StartInstances",
+        "ec2:StopInstances",
+        "ec2:TerminateInstances"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "ec2:ResourceTag/CreatedBy": "EC2 Image Builder"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
        "Action": [
         "ec2:CopyImage",
         "ec2:CreateImage",
         "ec2:CreateLaunchTemplate",
         "ec2:CreateLaunchTemplateVersion",
-        "ec2:CreateTags",
         "ec2:DeregisterImage",
         "ec2:DescribeExportImageTasks",
         "ec2:DescribeHosts",
@@ -202,18 +258,6 @@
         "ec2:DescribeTags",
         "ec2:ModifyImageAttribute",
         "ec2:ModifyLaunchTemplate",
-        "ec2:StartInstances",
-        "ec2:StopInstances",
-        "ec2:TerminateInstances",
-        "iam:CreateServiceLinkedRole",
-        "iam:PassRole",
-        "kms:CreateGrant",
-        "kms:Decrypt",
-        "kms:DescribeKey",
-        "kms:Encrypt",
-        "kms:GenerateDataKeyWithoutPlaintext",
-        "kms:ReEncryptFrom",
-        "kms:ReEncryptTo",
         "license-manager:UpdateLicenseSpecificationsForResource",
         "sns:Publish",
         "ssm:AddTagsToResource",
@@ -229,20 +273,21 @@
        "Resource": "*"
       },
       {
-       "Action": "ec2:ModifySnapshotAttribute",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":ec2:*::snapshot/*"
+       "Action": "ec2:CreateTags",
+       "Condition": {
+        "StringEquals": {
+         "ec2:CreateAction": [
+          "RunInstances",
+          "CreateImage"
+         ],
+         "aws:RequestTag/CreatedBy": [
+          "EC2 Image Builder",
+          "EC2 Fast Launch"
          ]
-        ]
-       }
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
       },
       {
        "Action": "ec2:CreateTags",
@@ -268,10 +313,24 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":ec2:*:*:launch-template/*"
+           ":ec2:*::image/*"
           ]
          ]
-        },
+        }
+       ]
+      },
+      {
+       "Action": "ec2:CreateTags",
+       "Condition": {
+        "StringEquals": {
+         "aws:RequestTag/CreatedBy": [
+          "EC2 Image Builder",
+          "EC2 Fast Launch"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": [
         {
          "Fn::Join": [
           "",
@@ -280,7 +339,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":ec2:*::image/*"
+           ":ec2:*:*:launch-template/*"
           ]
          ]
         },
@@ -302,18 +361,6 @@
        "Action": "ssm:SendCommand",
        "Effect": "Allow",
        "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":ec2:*:*:instance/*"
-          ]
-         ]
-        },
         {
          "Fn::Join": [
           "",
@@ -365,6 +412,29 @@
        ]
       },
       {
+       "Action": "ssm:SendCommand",
+       "Condition": {
+        "StringEquals": {
+         "ssm:resourceTag/CreatedBy": [
+          "EC2 Image Builder"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ec2:*:*:instance/*"
+         ]
+        ]
+       }
+      },
+      {
        "Action": [
         "ssm:CreateAssociation",
         "ssm:DeleteAssociation"
@@ -411,6 +481,56 @@
       },
       {
        "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:GenerateDataKeyWithoutPlaintext",
+        "kms:ReEncryptFrom",
+        "kms:ReEncryptTo"
+       ],
+       "Condition": {
+        "ForAllValues:StringEquals": {
+         "kms:EncryptionContextKeys": [
+          "aws:ebs:id"
+         ]
+        },
+        "StringLike": {
+         "kms:ViaService": [
+          "ec2.*.amazonaws.com"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "kms:DescribeKey",
+       "Condition": {
+        "StringLike": {
+         "kms:ViaService": [
+          "ec2.*.amazonaws.com"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "kms:CreateGrant",
+       "Condition": {
+        "Bool": {
+         "kms:GrantIsForAWSResource": true
+        },
+        "StringLike": {
+         "kms:ViaService": [
+          "ec2.*.amazonaws.com"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
         "logs:CreateLogGroup",
         "logs:CreateLogStream",
         "logs:PutLogEvents"
@@ -428,6 +548,18 @@
          ]
         ]
        }
+      },
+      {
+       "Action": "iam:CreateServiceLinkedRole",
+       "Condition": {
+        "StringEquals": {
+         "iam:AWSServiceName": [
+          "ssm.amazonaws.com"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
       },
       {
        "Action": [
@@ -504,36 +636,27 @@
       },
       {
        "Action": "ec2:ExportImage",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":ec2:*:*:export-image-task/*"
-          ]
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":ec2:*::image/*"
-          ]
-         ]
+       "Condition": {
+        "StringEquals": {
+         "ec2:ResourceTag/CreatedBy": "EC2 Image Builder"
         }
-       ]
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ec2:*::image/*"
+         ]
+        ]
+       }
       },
       {
-       "Action": "ec2:CancelExportTask",
+       "Action": "ec2:ExportImage",
        "Effect": "Allow",
        "Resource": {
         "Fn::Join": [
@@ -549,7 +672,45 @@
        }
       },
       {
+       "Action": "ec2:CancelExportTask",
+       "Condition": {
+        "StringEquals": {
+         "ec2:ResourceTag/CreatedBy": "EC2 Image Builder"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ec2:*:*:export-image-task/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "iam:CreateServiceLinkedRole",
+       "Condition": {
+        "StringEquals": {
+         "iam:AWSServiceName": [
+          "ec2fastlaunch.amazonaws.com"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
        "Action": "ec2:EnableFastLaunch",
+       "Condition": {
+        "StringEquals": {
+         "ec2:ResourceTag/CreatedBy": "EC2 Image Builder"
+        }
+       },
        "Effect": "Allow",
        "Resource": [
         {

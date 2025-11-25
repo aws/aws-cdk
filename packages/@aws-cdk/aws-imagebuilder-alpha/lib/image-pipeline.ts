@@ -334,6 +334,7 @@ abstract class ImagePipelineBase extends cdk.Resource implements IImagePipeline 
         grantee: grantee,
         resourceArns: policy.resources,
         actions: policy.actions,
+        conditions: policy.conditions,
         scope: this,
       }),
     );
@@ -561,6 +562,7 @@ export class ImagePipeline extends ImagePipelineBase {
         grantee: grantee,
         resourceArns: policy.resources,
         actions: policy.actions,
+        conditions: policy.conditions,
         scope: this,
       }),
     );
