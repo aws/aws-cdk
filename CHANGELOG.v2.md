@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.229.1](https://github.com/aws/aws-cdk/compare/v2.229.0...v2.229.1) (2025-11-25)
+
+
+### Bug Fixes
+
+* **scheduler:** wrong ARN generated in `ScheduleGroup.grant*` methods ([#36175](https://github.com/aws/aws-cdk/issues/36175)) ([ca9fbdd](https://github.com/aws/aws-cdk/commit/ca9fbdd4c7d9551e18abe4967f0b8649302aaa56))
+
+## [2.229.0](https://github.com/aws/aws-cdk/compare/v2.228.0...v2.229.0) (2025-11-24)
+
+
+### Features
+
+* **agentcore:** add new properties for runtime, browser ([#36003](https://github.com/aws/aws-cdk/issues/36003)) ([439495f](https://github.com/aws/aws-cdk/commit/439495fd2c60b5a9b1e413c089e6e5cb822cba90))
+* **route53:** add `HostedZoneGrants` ([#36109](https://github.com/aws/aws-cdk/issues/36109)) ([d24305c](https://github.com/aws/aws-cdk/commit/d24305c29d1e2968fbdbccbcd087ad7ac8d67332))
+
+
+### Bug Fixes
+
+* **stepfunctions:** allow multiline jsonata strings ([#35985](https://github.com/aws/aws-cdk/issues/35985)) ([8805e13](https://github.com/aws/aws-cdk/commit/8805e138a1a885dc068b984af838656ae5f384bc)), closes [#35912](https://github.com/aws/aws-cdk/issues/35912) [#35912](https://github.com/aws/aws-cdk/issues/35912)
+
+## [2.228.0](https://github.com/aws/aws-cdk/compare/v2.227.0...v2.228.0) (2025-11-24)
+
+
+### Features
+
+* **lambda:** add new lambda/kafka esm properties and on failure desitination ([65f9c35](https://github.com/aws/aws-cdk/commit/65f9c357e9a463ead608fa1d0118312b3c2cd09c))
+
+
+### Bug Fixes
+
+* **cloudformation-include:** `TypeError` when including template with intrinsic functions ([#36157](https://github.com/aws/aws-cdk/issues/36157)) ([f2a384b](https://github.com/aws/aws-cdk/commit/f2a384ba0092ccd76ff06b9a2e2e0a7eef7e0bfd)), closes [#36140](https://github.com/aws/aws-cdk/issues/36140) [#35838](https://github.com/aws/aws-cdk/issues/35838)
+
 ## [2.227.0](https://github.com/aws/aws-cdk/compare/v2.226.0...v2.227.0) (2025-11-20)
 
 **CHANGES TO L1 RESOURCES:** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:

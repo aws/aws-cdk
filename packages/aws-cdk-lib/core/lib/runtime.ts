@@ -21,6 +21,26 @@ export const objectToCloudFormation: Mapper = identity;
 export const numberToCloudFormation: Mapper = identity;
 
 /**
+ * Convert an L2 event pattern to CloudFormation
+ *
+ * This is for usability: the types are mostly the same except for `detail-type`
+ * (which is rendered in the L2 as `detailType`).
+ *
+ * By doing that conversion here, we can make the L2 EventPattern type work at
+ * the L1 level automatically.
+ */
+export function eventPatternToCloudFormation(x: any) {
+  if (x && typeof x === 'object' && 'detailType' in x) {
+    const ret = { ...x };
+    ret['detail-type'] = ret.detailType;
+    delete ret.detailType;
+    return ret;
+  }
+
+  return x;
+}
+
+/**
  * The date needs to be formatted as an ISO date in UTC
  *
  * Some usage sites require a date, some require a timestamp. We'll

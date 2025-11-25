@@ -136,6 +136,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "DISABLED",
     "SUPERVISOR_ROUTER"
   ],
+  "AgentCoreRuntime": [
+    "PYTHON_3_10",
+    "PYTHON_3_11",
+    "PYTHON_3_12",
+    "PYTHON_3_13"
+  ],
   "AgentStepType": [
     "PRE_PROCESSING",
     "ORCHESTRATION",
@@ -463,6 +469,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "BrokerType": [
     "STANDARD",
     "EXPRESS"
+  ],
+  "BrowserSigning": [
+    "ENABLED",
+    "DISABLED"
   ],
   "BrowserType": [
     "CHROME",
@@ -926,6 +936,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "ContainerProviderTypes": [
     "EKS"
+  ],
+  "ContainerType": [
+    "DOCKER"
   ],
   "ContentFilterStrength": [
     "NONE",
@@ -4657,6 +4670,43 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "G.4X",
     "G.8X",
     "Z.2X"
+  ],
+  "WorkflowAction": [
+    "ApplyImageConfigurations",
+    "BootstrapInstanceForContainer",
+    "CollectImageMetadata",
+    "CollectImageScanFindings",
+    "CreateImage",
+    "DistributeImage",
+    "ExecuteComponents",
+    "ExecuteStateMachine",
+    "LaunchInstance",
+    "ModifyImageAttributes",
+    "RunCommand",
+    "RegisterImage",
+    "RunSysPrep",
+    "SanitizeInstance",
+    "TerminateInstance",
+    "WaitForAction",
+    "WaitForSSMAgent"
+  ],
+  "WorkflowOnFailure": [
+    "Abort",
+    "Continue"
+  ],
+  "WorkflowParameterType": [
+    "boolean",
+    "integer",
+    "string",
+    "stringList"
+  ],
+  "WorkflowSchemaVersion": [
+    "1.0"
+  ],
+  "WorkflowType": [
+    "BUILD",
+    "TEST",
+    "DISTRIBUTION"
   ],
   "WriteParallel": [
     "on",

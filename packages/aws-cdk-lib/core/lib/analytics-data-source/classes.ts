@@ -1995,6 +1995,54 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'supportedOsVersions': '*',
       'tags': '*'
     },
+    'ContainerRecipe': {
+      'baseImage': '*',
+      'targetRepository': '*',
+      'containerRecipeName': '*',
+      'containerRecipeVersion': '*',
+      'description': '*',
+      'dockerfile': '*',
+      'components': {
+        'component': {
+          'componentArn': '*',
+          'componentName': '*',
+          'componentVersion': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'parameters': '*'
+      },
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'workingDirectory': '*',
+      'osVersion': '*',
+      'instanceBlockDevices': {
+        'deviceName': '*',
+        'volume': '*',
+        'mappingEnabled': 'boolean'
+      },
+      'instanceImage': '*',
+      'tags': '*',
+      'addInstanceBlockDevice': [
+        {
+          'deviceName': '*',
+          'volume': '*',
+          'mappingEnabled': 'boolean'
+        }
+      ]
+    },
     'DistributionConfiguration': {
       'amiDistributions': {
         'region': '*',
@@ -2109,6 +2157,43 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'containerRepository': '*',
           'containerDescription': '*',
           'containerTags': '*'
+        }
+      ]
+    },
+    'ImageRecipe': {
+      'baseImage': '*',
+      'imageRecipeName': '*',
+      'imageRecipeVersion': '*',
+      'description': '*',
+      'components': {
+        'component': {
+          'componentArn': '*',
+          'componentName': '*',
+          'componentVersion': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'parameters': '*'
+      },
+      'amiTags': '*',
+      'blockDevices': {
+        'deviceName': '*',
+        'volume': '*',
+        'mappingEnabled': 'boolean'
+      },
+      'workingDirectory': '*',
+      'uninstallSsmAgentAfterBuild': 'boolean',
+      'userDataOverride': '*',
+      'tags': '*',
+      'addBlockDevice': [
+        {
+          'deviceName': '*',
+          'volume': '*',
+          'mappingEnabled': 'boolean'
         }
       ]
     },
@@ -2277,6 +2362,25 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'isContainerBuild': 'boolean'
         }
       ]
+    },
+    'Workflow': {
+      'data': '*',
+      'workflowType': 'WorkflowType',
+      'workflowName': '*',
+      'workflowVersion': '*',
+      'description': '*',
+      'changeDescription': '*',
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'tags': '*'
     }
   },
   '@aws-cdk.aws-iot-alpha': {
@@ -9782,7 +9886,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'env': {
           'account': '*',
           'region': '*'
-        }
+        },
+        'name': '*'
       },
       'region': '*',
       'route53Endpoint': '*',
@@ -16086,7 +16191,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'hostedZoneId': '*',
           'zoneName': '*',
           'hostedZoneArn': '*',
-          'hostedZoneNameServers': '*'
+          'hostedZoneNameServers': '*',
+          'name': '*'
         }
       },
       'addAccessPolicies': [
@@ -17286,7 +17392,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'supportS3OnFailureDestination': 'boolean',
       'provisionedPollerConfig': {
         'minimumPollers': '*',
-        'maximumPollers': '*'
+        'maximumPollers': '*',
+        'pollerGroupName': '*'
       },
       'metricsConfig': {
         'metrics': 'MetricType'
@@ -18905,7 +19012,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'hostedZoneId': '*',
           'zoneName': '*',
           'hostedZoneArn': '*',
-          'hostedZoneNameServers': '*'
+          'hostedZoneNameServers': '*',
+          'name': '*'
         }
       },
       'offPeakWindowEnabled': 'boolean',
@@ -21440,7 +21548,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'env': {
             'account': '*',
             'region': '*'
-          }
+          },
+          'name': '*'
         },
         {
           'comment': '*',
@@ -21487,7 +21596,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'env': {
           'account': '*',
           'region': '*'
-        }
+        },
+        'name': '*'
       },
       'kmsKey': {
         'keyArn': '*',
@@ -21515,7 +21625,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'env': {
           'account': '*',
           'region': '*'
-        }
+        },
+        'name': '*'
       },
       'geoLocation': '*',
       'recordName': '*',
@@ -21549,7 +21660,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'env': {
           'account': '*',
           'region': '*'
-        }
+        },
+        'name': '*'
       },
       'geoLocation': '*',
       'recordName': '*',
@@ -21583,7 +21695,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'env': {
           'account': '*',
           'region': '*'
-        }
+        },
+        'name': '*'
       },
       'geoLocation': '*',
       'recordName': '*',
@@ -21617,7 +21730,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'env': {
           'account': '*',
           'region': '*'
-        }
+        },
+        'name': '*'
       },
       'geoLocation': '*',
       'recordName': '*',
@@ -21651,7 +21765,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'env': {
           'account': '*',
           'region': '*'
-        }
+        },
+        'name': '*'
       },
       'geoLocation': '*',
       'recordName': '*',
@@ -21690,7 +21805,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'env': {
           'account': '*',
           'region': '*'
-        }
+        },
+        'name': '*'
       },
       'geoLocation': '*',
       'recordName': '*',
@@ -21728,7 +21844,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'env': {
           'account': '*',
           'region': '*'
-        }
+        },
+        'name': '*'
       },
       'geoLocation': '*',
       'recordName': '*',
@@ -21761,7 +21878,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'env': {
           'account': '*',
           'region': '*'
-        }
+        },
+        'name': '*'
       },
       'geoLocation': '*',
       'recordName': '*',
@@ -21798,7 +21916,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'env': {
           'account': '*',
           'region': '*'
-        }
+        },
+        'name': '*'
       },
       'geoLocation': '*',
       'recordName': '*',
@@ -21832,7 +21951,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'env': {
           'account': '*',
           'region': '*'
-        }
+        },
+        'name': '*'
       },
       'geoLocation': '*',
       'recordName': '*',
@@ -21866,7 +21986,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'env': {
           'account': '*',
           'region': '*'
-        }
+        },
+        'name': '*'
       },
       'geoLocation': '*',
       'recordName': '*',
@@ -21900,7 +22021,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'env': {
           'account': '*',
           'region': '*'
-        }
+        },
+        'name': '*'
       },
       'geoLocation': '*',
       'recordName': '*',
@@ -21935,7 +22057,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'env': {
           'account': '*',
           'region': '*'
-        }
+        },
+        'name': '*'
       },
       'geoLocation': '*',
       'recordName': '*',
@@ -21969,7 +22092,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'env': {
           'account': '*',
           'region': '*'
-        }
+        },
+        'name': '*'
       },
       'geoLocation': '*',
       'recordName': '*',
@@ -23844,7 +23968,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'executeOnHandlerChange': 'boolean'
     }
   },
-  'aws-bedrock-agentcore-alpha.agentcore': {
+  'aws-bedrock-agentcore-alpha.lib': {
     'Gateway': {
       'gatewayName': '*',
       'description': '*',
@@ -24041,6 +24165,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'environmentVariables': '*',
       'authorizerConfiguration': '*',
       'tags': '*',
+      'requestHeaderConfiguration': {
+        'allowlistedHeaders': '*'
+      },
+      'lifecycleConfiguration': {
+        'idleRuntimeSessionTimeout': '*'
+      },
       'addEndpoint': [
         '*',
         {
@@ -24078,7 +24208,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'tags': '*'
+      'tags': '*',
+      'browserSigning': 'BrowserSigning'
     },
     'CodeInterpreterCustom': {
       'codeInterpreterCustomName': '*',
@@ -26268,7 +26399,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'supportS3OnFailureDestination': 'boolean',
           'provisionedPollerConfig': {
             'minimumPollers': '*',
-            'maximumPollers': '*'
+            'maximumPollers': '*',
+            'pollerGroupName': '*'
           },
           'metricsConfig': {
             'metrics': 'MetricType'
@@ -29964,7 +30096,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ]
     }
   },
-  'agentcore.gateway': {
+  'lib.gateway': {
     'GatewayTarget': {
       'gateway': {
         'gatewayArn': '*',
