@@ -252,7 +252,7 @@ class EventBridgeEventsClass extends ClassType {
     const mappings = Array.from(propertyMappings.entries()).map(([camelCase, { original, type, resolver }]) => {
       // Use optional chaining for safe property access since obj can be undefined
       const propAccess = expr.directCode(`${paramName}?.${camelCase}`);
-      let valueExpr: Expression = expr.binOp(propAccess, '??', expr.lit([]));
+      let valueExpr: Expression = propAccess;
 
       // If property is a struct, call its converter recursively (passing iRef)
       // Always call converter even if property is undefined, so resolvers can inject values
@@ -275,9 +275,17 @@ class EventBridgeEventsClass extends ClassType {
     if (event.resourcesField.some(r => r.type.$ref === typeDef.$id) && nonUndefinedResolvers !== 1) {
       throw new SkipEventError(`Event ${event.name} has ${nonUndefinedResolvers} non-undefined resolvers for ${typeDef.name}`);
     }
-
+    // TODO: do better
     converterFunction.addBody(
-      stmt.ret(expr.object(mappings)),
+      stmt.constVar(
+        expr.ident('ret'),
+        expr.binOp(expr.object(mappings), 'as', expr.ident('any')),
+      ),
+      stmt.forConst(expr.destructuringArray(expr.ident('key'), expr.ident('value')), expr.ident('Object.entries(ret)'), stmt.block(
+        stmt.if_(expr.eq(expr.ident('value'), expr.UNDEFINED)).then(stmt.directCode('delete ret[key]')),
+      )),
+      stmt.directCode('if (Object.keys(ret).length === 0) return undefined;'),
+      stmt.ret(expr.ident('ret')),
     );
 
     return converterFunction;
