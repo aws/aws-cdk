@@ -230,9 +230,9 @@ export class App extends Stage {
    * - Throw an error to fail synthesis
    *
    * @example
-   * // Example 1: Validate resources
-   * app.addTemplateTransform({
-   *   transformTemplate: (stack, template) => {
+   * // Validate that all S3 buckets have public access blocking
+   * class BucketValidator implements ITemplateTransform {
+   *   public transformTemplate(stack: Stack, template: any) {
    *     for (const [id, resource] of Object.entries(template.Resources || {})) {
    *       if ((resource as any).Type === 'AWS::S3::Bucket') {
    *         const props = (resource as any).Properties || {};
@@ -242,28 +242,18 @@ export class App extends Stage {
    *       }
    *     }
    *   }
-   * });
+   * }
+   * app.addTemplateTransform(new BucketValidator());
    *
    * @example
-   * // Example 2: Chain multiple transforms (executed in order added)
-   * // First transform: inject metadata
-   * app.addTemplateTransform({
-   *   transformTemplate: (stack, template) => {
+   * // Inject metadata into all templates
+   * class MetadataInjector implements ITemplateTransform {
+   *   public transformTemplate(stack: Stack, template: any) {
    *     template.Metadata = template.Metadata || {};
-   *     template.Metadata.GeneratedAt = new Date().toISOString();
+   *     template.Metadata.GeneratedBy = 'CDK';
    *   }
-   * });
-   * // Second transform: add tags (sees metadata from first transform)
-   * app.addTemplateTransform({
-   *   transformTemplate: (stack, template) => {
-   *     for (const resource of Object.values(template.Resources || {})) {
-   *       const res = resource as any;
-   *       res.Properties = res.Properties || {};
-   *       res.Properties.Tags = res.Properties.Tags || [];
-   *       res.Properties.Tags.push({ Key: 'Environment', Value: 'Production' });
-   *     }
-   *   }
-   * });
+   * }
+   * app.addTemplateTransform(new MetadataInjector());
    */
   public addTemplateTransform(transform: ITemplateTransform): void {
     TemplateTransforms.of(this).add(transform);

@@ -7,16 +7,16 @@ const TEMPLATE_TRANSFORMS_SYMBOL = Symbol.for('@aws-cdk/core.TemplateTransforms'
  * Represents a template transform that can inspect or modify
  * the final CloudFormation template during synthesis.
  *
- * Implement this interface by providing an object with a `transformTemplate` method:
+ * Implement this interface as a class with a `transformTemplate` method:
  *
  * @example
- * const myTransform: ITemplateTransform = {
- *   transformTemplate: (stack, template) => {
+ * class MyTransform implements ITemplateTransform {
+ *   public transformTemplate(stack: Stack, template: any) {
  *     // Inspect or modify template here
  *     template.Metadata = { CustomKey: 'CustomValue' };
  *   }
- * };
- * app.addTemplateTransform(myTransform);
+ * }
+ * app.addTemplateTransform(new MyTransform());
  */
 export interface ITemplateTransform {
   /**
@@ -46,6 +46,22 @@ export interface ITemplateTransform {
  * before it is written to disk.
  */
 export class TemplateTransforms {
+  /**
+   * Returns true if any template transforms have been registered on the
+   * given scope's root construct.
+   *
+   * This method does not create the TemplateTransforms singleton if it
+   * doesn't exist, making it suitable for checking before invoking transforms.
+   *
+   * @param scope The scope to check for transforms.
+   * @returns true if transforms have been registered, false otherwise.
+   */
+  public static hasAny(scope: IConstruct): boolean {
+    const root = scope.node.root;
+    const transforms = (root as any)[TEMPLATE_TRANSFORMS_SYMBOL] as TemplateTransforms | undefined;
+    return transforms !== undefined && transforms._transforms.length > 0;
+  }
+
   /**
    * Returns the `TemplateTransforms` object associated with a construct scope.
    *

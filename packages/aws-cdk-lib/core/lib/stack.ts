@@ -1436,12 +1436,13 @@ export class Stack extends Construct implements ITaggable {
     // resolve all tokens and remove all empties
     let ret = this.resolve(template) || {};
 
-    // Apply template transforms registered on the app
-    const templateTransforms = TemplateTransforms.of(this).all;
-    for (const templateTransform of templateTransforms) {
-      const result = templateTransform.transformTemplate(this, ret);
-      if (result != null) {
-        ret = result;
+    // Apply template transforms registered on the app (opt-in: only if any exist)
+    if (TemplateTransforms.hasAny(this)) {
+      for (const templateTransform of TemplateTransforms.of(this).all) {
+        const result = templateTransform.transformTemplate(this, ret);
+        if (result != null) {
+          ret = result;
+        }
       }
     }
 
