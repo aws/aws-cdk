@@ -5,6 +5,7 @@ import { addCustomSynthesis, ICustomSynthesis } from './private/synthesis';
 import { IPropertyInjector, PropertyInjectors } from './prop-injectors';
 import { IReusableStackSynthesizer } from './stack-synthesizers';
 import { Stage } from './stage';
+import { ITemplateTransform, TemplateTransforms } from './template-transform';
 import { IPolicyValidationPluginBeta1 } from './validation/validation';
 import * as cxapi from '../../cx-api';
 
@@ -208,6 +209,64 @@ export class App extends Stage {
     }
 
     this._treeMetadata = props.treeMetadata ?? true;
+  }
+
+  /**
+   * Adds a template transform that will be applied to all stacks in this app.
+   *
+   * Template transforms are invoked during synthesis after the CloudFormation
+   * template has been fully resolved, but before it is written to disk. This
+   * allows inspection or modification of the final template.
+   *
+   * Transforms are invoked in the order they were added (first-added, first-run).
+   * Each transform receives the template as modified by previous transforms.
+   * If a transform throws an error, synthesis will fail immediately.
+   *
+   * @param transform An object implementing `ITemplateTransform`. Must have a
+   * `transformTemplate(stack, template)` method that receives the Stack and
+   * the resolved CloudFormation template object. The method can:
+   * - Mutate the template in place (return void/undefined)
+   * - Return a new template object to replace the original
+   * - Throw an error to fail synthesis
+   *
+   * @example
+   * // Example 1: Validate resources
+   * app.addTemplateTransform({
+   *   transformTemplate: (stack, template) => {
+   *     for (const [id, resource] of Object.entries(template.Resources || {})) {
+   *       if ((resource as any).Type === 'AWS::S3::Bucket') {
+   *         const props = (resource as any).Properties || {};
+   *         if (!props.PublicAccessBlockConfiguration) {
+   *           throw new Error(`Bucket ${id} must have PublicAccessBlockConfiguration`);
+   *         }
+   *       }
+   *     }
+   *   }
+   * });
+   *
+   * @example
+   * // Example 2: Chain multiple transforms (executed in order added)
+   * // First transform: inject metadata
+   * app.addTemplateTransform({
+   *   transformTemplate: (stack, template) => {
+   *     template.Metadata = template.Metadata || {};
+   *     template.Metadata.GeneratedAt = new Date().toISOString();
+   *   }
+   * });
+   * // Second transform: add tags (sees metadata from first transform)
+   * app.addTemplateTransform({
+   *   transformTemplate: (stack, template) => {
+   *     for (const resource of Object.values(template.Resources || {})) {
+   *       const res = resource as any;
+   *       res.Properties = res.Properties || {};
+   *       res.Properties.Tags = res.Properties.Tags || [];
+   *       res.Properties.Tags.push({ Key: 'Environment', Value: 'Production' });
+   *     }
+   *   }
+   * });
+   */
+  public addTemplateTransform(transform: ITemplateTransform): void {
+    TemplateTransforms.of(this).add(transform);
   }
 
   private loadContext(defaults: { [key: string]: string } = { }, final: { [key: string]: string } = {}) {

@@ -1,5 +1,6 @@
 export * from './aspect';
 export * from './tag-aspect';
+export * from './template-transform';
 
 export * from './token';
 export * from './resolvable';

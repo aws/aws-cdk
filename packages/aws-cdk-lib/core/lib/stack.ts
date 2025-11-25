@@ -1434,7 +1434,16 @@ export class Stack extends Construct implements ITaggable {
     }
 
     // resolve all tokens and remove all empties
-    const ret = this.resolve(template) || {};
+    let ret = this.resolve(template) || {};
+
+    // Apply template transforms registered on the app
+    const templateTransforms = TemplateTransforms.of(this).all;
+    for (const templateTransform of templateTransforms) {
+      const result = templateTransform.transformTemplate(this, ret);
+      if (result != null) {
+        ret = result;
+      }
+    }
 
     this._logicalIds.assertAllRenamesApplied();
 
@@ -1869,6 +1878,7 @@ import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacySt
 import { StringSpecializer } from './helpers-internal/string-specializer';
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
+import { TemplateTransforms } from './template-transform';
 import { Token, Tokenization } from './token';
 import { getExportable, STRING_LIST_REFERENCE_DELIMITER } from './private/refs';
 import { Fact, RegionInfo } from '../../region-info';
