@@ -30,7 +30,7 @@ export class MixinsBuilder extends LibraryBuilder<MixinsServiceModule> {
 
   public constructor(props: MixinsBuilderProps) {
     super(props);
-    this.filePattern = props.filePattern ?? '%moduleName%/%serviceShortName%.generated.ts';
+    this.filePattern = props.filePattern ?? '%moduleName%/mixins.generated.ts';
   }
 
   protected createServiceSubmodule(service: Service, submoduleName: string): MixinsServiceModule {

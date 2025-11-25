@@ -29,7 +29,7 @@ export class EventBridgeBuilder extends LibraryBuilder<EventBridgeServiceModule>
 
   public constructor(props: EventBridgeBuilderProps) {
     super(props);
-    this.filePattern = props.filePattern ?? '%moduleName%/%serviceShortName%.events.generated.ts';
+    this.filePattern = props.filePattern ?? '%moduleName%/events.generated.ts';
   }
 
   protected createServiceSubmodule(service: Service, submoduleName: string): EventBridgeServiceModule {

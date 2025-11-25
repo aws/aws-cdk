@@ -27,9 +27,6 @@ export async function generateAll(options: GenerateOptions): Promise<ModuleMap> 
     ...options,
     db,
     astBuilder: MixinsBuilder,
-    builderProps: {
-      filePattern: '%moduleName%/mixins.generated.ts',
-    },
   });
 
   return Object.fromEntries(Object.entries(generated.modules).map(([moduleName, moduleInfo]) => [

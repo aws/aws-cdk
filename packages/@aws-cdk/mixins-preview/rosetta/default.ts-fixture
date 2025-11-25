@@ -3,17 +3,17 @@ import { Stack, App } from 'aws-cdk-lib/core';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
-import { 
-  Mixins, 
-  ConstructSelector, 
+import {
+  Mixins,
+  ConstructSelector,
   IMixin
 } from '@aws-cdk/mixins-preview/core';
-import { 
-  EncryptionAtRest, 
-  AutoDeleteObjects, 
+import {
+  EncryptionAtRest,
+  AutoDeleteObjects,
   EnableVersioning,
   CfnPropertiesMixin
-} from '@aws-cdk/mixins-preview/mixins';
+} from '@aws-cdk/mixins-preview/aws-s3/mixins';
 
 declare const scope: Construct;
 

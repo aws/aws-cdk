@@ -26,9 +26,6 @@ export async function generateAll(options: GenerateOptions): Promise<ModuleMap> 
     ...options,
     db,
     astBuilder: EventBridgeBuilder,
-    builderProps: {
-      filePattern: '%moduleName%/events.generated.ts',
-    },
   });
 
   return Object.fromEntries(Object.entries(generated.modules).map(([moduleName, moduleInfo]) => [
