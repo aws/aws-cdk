@@ -17,7 +17,10 @@ export const defaultExecutionRolePolicy = <PropsT extends ImagePipelineProps>(
   scope: Construct,
   props?: PropsT,
 ): iam.PolicyStatement[] => {
-  const partition = cdk.Stack.of(scope).partition;
+  const stack = cdk.Stack.of(scope);
+  const partition = stack.partition;
+  const region = stack.region;
+  const account = stack.account;
 
   // Permissions are identical to https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AWSServiceRoleForImageBuilder.html
   // SLR policies cannot be attached to roles, and no managed policy exists for these permissions yet
@@ -147,7 +150,7 @@ export const defaultExecutionRolePolicy = <PropsT extends ImagePipelineProps>(
     new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['sns:Publish'],
-      resources: ['*'],
+      resources: [`arn:${partition}:sns:${region}:${account}:*`],
     }),
     new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
@@ -285,7 +288,7 @@ export const defaultExecutionRolePolicy = <PropsT extends ImagePipelineProps>(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['license-manager:UpdateLicenseSpecificationsForResource'],
-        resources: ['*'],
+        resources: [`arn:${partition}:license-manager:*:${account}:license-configuration:*`],
       }),
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
@@ -294,13 +297,13 @@ export const defaultExecutionRolePolicy = <PropsT extends ImagePipelineProps>(
       }),
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
-        actions: [
-          'ec2:CreateLaunchTemplateVersion',
-          'ec2:DescribeLaunchTemplates',
-          'ec2:ModifyLaunchTemplate',
-          'ec2:DescribeLaunchTemplateVersions',
-        ],
+        actions: ['ec2:DescribeLaunchTemplates', 'ec2:DescribeLaunchTemplateVersions'],
         resources: ['*'],
+      }),
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['ec2:CreateLaunchTemplateVersion', 'ec2:ModifyLaunchTemplate'],
+        resources: [`arn:${partition}:ec2:${region}:${account}:launch-template/*`],
       }),
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,

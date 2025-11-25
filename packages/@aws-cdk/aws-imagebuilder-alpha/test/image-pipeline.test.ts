@@ -127,12 +127,25 @@ describe('ImagePipeline', () => {
       imageTestsEnabled: false,
       imageScanningEnabled: true,
     });
-    imagePipeline.grantDefaultExecutionRolePermissions(executionRole);
+    const grants = imagePipeline.grantDefaultExecutionRolePermissions(executionRole);
+
+    expect(grants.length).toBeGreaterThanOrEqual(1);
 
     expect(ImagePipeline.isImagePipeline(imagePipeline as unknown)).toBeTruthy();
     expect(ImagePipeline.isImagePipeline('ImagePipeline')).toBeFalsy();
 
-    Template.fromStack(stack).templateMatches({
+    const template = Template.fromStack(stack);
+
+    // Validate that default permissions were added - check presence of ec2:CreateImage
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          { Action: Match.arrayWith(['ec2:CreateImage']), Effect: 'Allow', Resource: Match.anyValue() },
+        ]),
+      },
+    });
+
+    template.templateMatches({
       Resources: {
         ImagePipeline7DDDE57F: Match.objectEquals({
           Type: 'AWS::ImageBuilder::ImagePipeline',
@@ -775,10 +788,7 @@ describe('ImagePipeline', () => {
     imagePipeline.onEvent('PipelineRule');
 
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-      EventPattern: {
-        source: ['aws.imagebuilder'],
-        resources: [{ 'Fn::GetAtt': ['ImagePipeline7DDDE57F', 'Arn'] }],
-      },
+      EventPattern: { source: ['aws.imagebuilder'] },
       State: 'ENABLED',
     });
   });
@@ -800,6 +810,73 @@ describe('ImagePipeline', () => {
     });
   });
 
+  test('creates a rule from onImageBuildStateChange', () => {
+    const imagePipeline = new ImagePipeline(stack, 'ImagePipeline', {
+      recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
+    });
+
+    imagePipeline.onImageBuildStateChange('ImageBuildStateChangeRule');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      EventPattern: {
+        source: ['aws.imagebuilder'],
+        'detail-type': ['EC2 Image Builder Image State Change'],
+      },
+      State: 'ENABLED',
+    });
+  });
+
+  test('creates a rule from onImageBuildCompleted', () => {
+    const imagePipeline = new ImagePipeline(stack, 'ImagePipeline', {
+      recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
+    });
+
+    imagePipeline.onImageBuildCompleted('ImageBuildCompletedRule');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      EventPattern: {
+        source: ['aws.imagebuilder'],
+        'detail-type': ['EC2 Image Builder Image State Change'],
+        detail: { state: { status: ['AVAILABLE', 'CANCELLED', 'FAILED'] } },
+      },
+      State: 'ENABLED',
+    });
+  });
+
+  test('creates a rule from onImageBuildFailed', () => {
+    const imagePipeline = new ImagePipeline(stack, 'ImagePipeline', {
+      recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
+    });
+
+    imagePipeline.onImageBuildFailed('ImageBuildFailedRule');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      EventPattern: {
+        source: ['aws.imagebuilder'],
+        'detail-type': ['EC2 Image Builder Image State Change'],
+        detail: { state: { status: ['FAILED'] } },
+      },
+      State: 'ENABLED',
+    });
+  });
+
+  test('creates a rule from onImageBuildSucceeded', () => {
+    const imagePipeline = new ImagePipeline(stack, 'ImagePipeline', {
+      recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
+    });
+
+    imagePipeline.onImageBuildSucceeded('ImageBuildSuccessRule');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      EventPattern: {
+        source: ['aws.imagebuilder'],
+        'detail-type': ['EC2 Image Builder Image State Change'],
+        detail: { state: { status: ['AVAILABLE'] } },
+      },
+      State: 'ENABLED',
+    });
+  });
+
   test('creates a rule from onImagePipelineAutoDisabled', () => {
     const imagePipeline = new ImagePipeline(stack, 'ImagePipeline', {
       recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
@@ -812,6 +889,22 @@ describe('ImagePipeline', () => {
         source: ['aws.imagebuilder'],
         resources: [{ 'Fn::GetAtt': ['ImagePipeline7DDDE57F', 'Arn'] }],
         'detail-type': ['EC2 Image Builder Image Pipeline Automatically Disabled'],
+      },
+      State: 'ENABLED',
+    });
+  });
+
+  test('creates a rule from onWaitForAction', () => {
+    const imagePipeline = new ImagePipeline(stack, 'ImagePipeline', {
+      recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
+    });
+
+    imagePipeline.onWaitForAction('ImageBuildWaitingRule');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      EventPattern: {
+        source: ['aws.imagebuilder'],
+        'detail-type': ['EC2 Image Builder Workflow Step Waiting'],
       },
       State: 'ENABLED',
     });
@@ -869,6 +962,18 @@ describe('ImagePipeline', () => {
         recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
       });
     }).toThrow(cdk.ValidationError);
+  });
+
+  test('does not throw a validation error when the auto disable failure count is an unresolved token', () => {
+    expect(() => {
+      new ImagePipeline(stack, 'ImagePipeline', {
+        schedule: {
+          expression: events.Schedule.rate(cdk.Duration.days(7)),
+          autoDisableFailureCount: cdk.Lazy.number({ produce: () => 100 }),
+        },
+        recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
+      });
+    }).not.toThrow(cdk.ValidationError);
   });
 
   test('throws a validation error when an image scanning ECR repository is provided for an AMI pipeline', () => {

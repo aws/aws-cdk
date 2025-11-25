@@ -10,6 +10,9 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-image-pipeline-container-all-parameters');
 
 const repository = new ecr.Repository(stack, 'Repository', { removalPolicy: cdk.RemovalPolicy.DESTROY });
+const scanningRepository = new ecr.Repository(stack, 'ScanningRepository', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
 const executionRole = new iam.Role(stack, 'ExecutionRole', {
   assumedBy: new iam.ServicePrincipal('imagebuilder.amazonaws.com'),
 });
@@ -53,11 +56,14 @@ const containerImagePipeline = new imagebuilder.ImagePipeline(stack, 'ImagePipel
   imageLogGroup,
   imagePipelineLogGroup,
   enhancedImageMetadataEnabled: true,
-  imageTestsEnabled: false,
-  imageScanningEnabled: false,
+  imageTestsEnabled: true,
+  imageScanningEnabled: true,
+  imageScanningEcrRepository: scanningRepository,
+  imageScanningEcrTags: ['latest-scan'],
 });
 containerImagePipeline.grantDefaultExecutionRolePermissions(executionRole);
 containerImagePipeline.onEvent('ImageBuildSuccessTriggerRule');
+containerImagePipeline.onImagePipelineAutoDisabled('ImagePipelineAutoDisabledTriggerRule');
 
 new integ.IntegTest(app, 'ImagePipelineTest-Container-AllParameters', {
   testCases: [stack],

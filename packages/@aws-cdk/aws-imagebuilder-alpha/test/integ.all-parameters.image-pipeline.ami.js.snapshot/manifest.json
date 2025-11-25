@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5a90bc741e846f2c1535c5db111c53ec22531f8ceacf256c1ffe267cfd2ec2c9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/93718d4fe6ed18ae76f3e0deb0941adc935c78da7a05c506b63ef3375d28b67e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -65,6 +65,22 @@
             "data": {
               "attachInlinePolicy": [
                 "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           },
@@ -621,12 +637,54 @@
                 {}
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-imagebuilder-image-pipeline-ami-all-parameters/ExecutionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExecutionRoleDefaultPolicyA5B92313"
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-pipeline-ami-all-parameters/ExecutionRole/OverflowPolicy1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "document": "*",
+              "roles": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-pipeline-ami-all-parameters/ExecutionRole/OverflowPolicy1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExecutionRoleOverflowPolicy19707E3D1"
           }
         ],
         "/aws-cdk-imagebuilder-image-pipeline-ami-all-parameters/ImageLogGroup": [
@@ -773,8 +831,7 @@
             "data": {
               "addEventPattern": [
                 {
-                  "source": "*",
-                  "resources": "*"
+                  "source": "*"
                 }
               ]
             }
@@ -784,6 +841,54 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ImagePipelineAMIImageBuildSuccessTriggerRuleA11584AD"
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-pipeline-ami-all-parameters/ImagePipeline-AMI/ImageBuildCVEDetectedTriggerRule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "eventPattern": {
+                "detailType": "*",
+                "resources": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "detailType": "*",
+                  "resources": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addTarget": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "source": "*",
+                  "resources": "*",
+                  "detailType": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-pipeline-ami-all-parameters/ImagePipeline-AMI/ImageBuildCVEDetectedTriggerRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImagePipelineAMIImageBuildCVEDetectedTriggerRule84FC4210"
           }
         ],
         "/aws-cdk-imagebuilder-image-pipeline-ami-all-parameters/BootstrapVersion": [

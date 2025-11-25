@@ -43,12 +43,13 @@ const imagePipeline = new imagebuilder.ImagePipeline(stack, 'ImagePipeline-AMI',
   imageLogGroup,
   imagePipelineLogGroup,
   enhancedImageMetadataEnabled: true,
-  imageTestsEnabled: false,
-  imageScanningEnabled: false,
+  imageTestsEnabled: true,
+  imageScanningEnabled: true,
 });
 
 imagePipeline.grantDefaultExecutionRolePermissions(executionRole);
 imagePipeline.onEvent('ImageBuildSuccessTriggerRule');
+imagePipeline.onCVEDetected('ImageBuildCVEDetectedTriggerRule');
 
 new integ.IntegTest(app, 'ImagePipelineTest-AMI-AllParameters', {
   testCases: [stack],

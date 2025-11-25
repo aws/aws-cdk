@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f550ba9c4ced4f146467d19091dfee97c819590bcc1fd017617183a5f1f04984.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/362dd503d4f2a2cbe795b8f6d500d82162fe73a642e142c7edbb91e89a5e8226.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -46,6 +46,20 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Repository22E53BBD"
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ScanningRepository": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ScanningRepository/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScanningRepositoryB9C9B705"
           }
         ],
         "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ExecutionRole": [
@@ -79,6 +93,38 @@
             "data": {
               "attachInlinePolicy": [
                 "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           },
@@ -491,6 +537,38 @@
                 {}
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ExecutionRole/DefaultPolicy/Resource": [
@@ -647,8 +725,7 @@
             "data": {
               "addEventPattern": [
                 {
-                  "source": "*",
-                  "resources": "*"
+                  "source": "*"
                 }
               ]
             }
@@ -658,6 +735,54 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ImagePipelineContainerImageBuildSuccessTriggerRuleFC549F96"
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipeline-Container/ImagePipelineAutoDisabledTriggerRule": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "eventPattern": {
+                "detailType": "*",
+                "resources": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "detailType": "*",
+                  "resources": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addTarget": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "source": "*",
+                  "resources": "*",
+                  "detailType": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipeline-Container/ImagePipelineAutoDisabledTriggerRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImagePipelineContainerImagePipelineAutoDisabledTriggerRule567551D9"
           }
         ],
         "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/BootstrapVersion": [

@@ -87,6 +87,46 @@ export interface IImagePipeline extends cdk.IResource {
   onCVEDetected(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
+   * Creates an EventBridge rule for Image Builder image state change events.
+   *
+   * @param id Unique identifier for the rule
+   * @param options Configuration options for the event rule
+   *
+   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/integ-eventbridge.html
+   */
+  onImageBuildStateChange(id: string, options?: events.OnEventOptions): events.Rule;
+
+  /**
+   * Creates an EventBridge rule for Image Builder image build completion events.
+   *
+   * @param id Unique identifier for the rule
+   * @param options Configuration options for the event rule
+   *
+   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/integ-eventbridge.html
+   */
+  onImageBuildCompleted(id: string, options?: events.OnEventOptions): events.Rule;
+
+  /**
+   * Creates an EventBridge rule for Image Builder image build failure events.
+   *
+   * @param id Unique identifier for the rule
+   * @param options Configuration options for the event rule
+   *
+   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/integ-eventbridge.html
+   */
+  onImageBuildFailed(id: string, options?: events.OnEventOptions): events.Rule;
+
+  /**
+   * Creates an EventBridge rule for Image Builder image success events.
+   *
+   * @param id Unique identifier for the rule
+   * @param options Configuration options for the event rule
+   *
+   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/integ-eventbridge.html
+   */
+  onImageBuildSucceeded(id: string, options?: events.OnEventOptions): events.Rule;
+
+  /**
    * Creates an EventBridge rule for Image Builder image pipeline automatically disabled events.
    *
    * @param id Unique identifier for the rule
@@ -95,6 +135,16 @@ export interface IImagePipeline extends cdk.IResource {
    * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/integ-eventbridge.html
    */
   onImagePipelineAutoDisabled(id: string, options?: events.OnEventOptions): events.Rule;
+
+  /**
+   * Creates an EventBridge rule for Image Builder wait for action events
+   *
+   * @param id Unique identifier for the rule
+   * @param options Configuration options for the event rule
+   *
+   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/integ-eventbridge.html
+   */
+  onWaitForAction(id: string, options?: events.OnEventOptions): events.Rule;
 }
 
 /**
@@ -371,7 +421,7 @@ abstract class ImagePipelineBase extends cdk.Resource implements IImagePipeline 
     rule.addTarget(options.target);
     rule.addEventPattern({
       source: ['aws.imagebuilder'],
-      resources: [this.imagePipelineArn],
+      ...(options.eventPattern?.resources?.length && { resources: options.eventPattern.resources }),
       ...(options.eventPattern?.detailType?.length && { detailType: options.eventPattern.detailType }),
       ...(options.eventPattern?.detail !== undefined && { detail: options.eventPattern.detail }),
     });
@@ -387,7 +437,83 @@ abstract class ImagePipelineBase extends cdk.Resource implements IImagePipeline 
    * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/integ-eventbridge.html
    */
   public onCVEDetected(id: string, options: events.OnEventOptions = {}): events.Rule {
-    return this.onEvent(id, { ...options, eventPattern: { detailType: ['EC2 Image Builder CVE Detected'] } });
+    return this.onEvent(id, {
+      ...options,
+      eventPattern: {
+        ...options.eventPattern,
+        detailType: ['EC2 Image Builder CVE Detected'],
+        resources: [this.imagePipelineArn],
+      },
+    });
+  }
+
+  /**
+   * Creates an EventBridge rule for Image Builder image state change events.
+   *
+   * @param id Unique identifier for the rule
+   * @param options Configuration options for the event rule
+   *
+   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/integ-eventbridge.html
+   */
+  public onImageBuildStateChange(id: string, options: events.OnEventOptions = {}): events.Rule {
+    return this.onEvent(id, {
+      ...options,
+      eventPattern: { ...options.eventPattern, detailType: ['EC2 Image Builder Image State Change'] },
+    });
+  }
+
+  /**
+   * Creates an EventBridge rule for Image Builder image build completion events.
+   *
+   * @param id Unique identifier for the rule
+   * @param options Configuration options for the event rule
+   *
+   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/integ-eventbridge.html
+   */
+  public onImageBuildCompleted(id: string, options: events.OnEventOptions = {}): events.Rule {
+    return this.onImageBuildStateChange(id, {
+      ...options,
+      eventPattern: {
+        ...options.eventPattern,
+        detail: { ...options.eventPattern?.detail, state: { status: ['AVAILABLE', 'CANCELLED', 'FAILED'] } },
+      },
+    });
+  }
+
+  /**
+   * Creates an EventBridge rule for Image Builder image build failure events.
+   *
+   * @param id Unique identifier for the rule
+   * @param options Configuration options for the event rule
+   *
+   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/integ-eventbridge.html
+   */
+  public onImageBuildFailed(id: string, options: events.OnEventOptions = {}): events.Rule {
+    return this.onImageBuildStateChange(id, {
+      ...options,
+      eventPattern: {
+        ...options.eventPattern,
+        detail: { ...options.eventPattern?.detail, state: { status: ['FAILED'] } },
+      },
+    });
+  }
+
+  /**
+   * Creates an EventBridge rule for Image Builder image success events.
+   *
+   * @param id Unique identifier for the rule
+   * @param options Configuration options for the event rule
+   *
+   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/integ-eventbridge.html
+   */
+  public onImageBuildSucceeded(id: string, options: events.OnEventOptions = {}): events.Rule {
+    return this.onImageBuildStateChange(id, {
+      ...options,
+      eventPattern: {
+        ...options.eventPattern,
+        detail: { ...options.eventPattern?.detail, state: { status: ['AVAILABLE'] } },
+      },
+    });
   }
 
   /**
@@ -401,7 +527,25 @@ abstract class ImagePipelineBase extends cdk.Resource implements IImagePipeline 
   public onImagePipelineAutoDisabled(id: string, options: events.OnEventOptions = {}): events.Rule {
     return this.onEvent(id, {
       ...options,
-      eventPattern: { detailType: ['EC2 Image Builder Image Pipeline Automatically Disabled'] },
+      eventPattern: {
+        detailType: ['EC2 Image Builder Image Pipeline Automatically Disabled'],
+        resources: [this.imagePipelineArn],
+      },
+    });
+  }
+
+  /**
+   * Creates an EventBridge rule for Image Builder wait for action events
+   *
+   * @param id Unique identifier for the rule
+   * @param options Configuration options for the event rule
+   *
+   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/integ-eventbridge.html
+   */
+  public onWaitForAction(id: string, options: events.OnEventOptions = {}): events.Rule {
+    return this.onEvent(id, {
+      ...options,
+      eventPattern: { ...options.eventPattern, detailType: ['EC2 Image Builder Workflow Step Waiting'] },
     });
   }
 }
@@ -511,7 +655,7 @@ export class ImagePipeline extends ImagePipelineBase {
     }
 
     if (props.recipe._isImageRecipe() && props.recipe._isContainerRecipe()) {
-      throw new cdk.ValidationError('the recipe must either be an IImageRecipe or IContainerRecipe', this);
+      throw new cdk.ValidationError('the recipe cannot be both an IImageRecipe and an IContainerRecipe', this);
     }
 
     if (!props.recipe._isImageRecipe() && !props.recipe._isContainerRecipe()) {

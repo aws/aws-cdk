@@ -240,7 +240,6 @@
         "ec2:CopyImage",
         "ec2:CreateImage",
         "ec2:CreateLaunchTemplate",
-        "ec2:CreateLaunchTemplateVersion",
         "ec2:DeregisterImage",
         "ec2:DescribeExportImageTasks",
         "ec2:DescribeHosts",
@@ -257,9 +256,8 @@
         "ec2:DescribeSubnets",
         "ec2:DescribeTags",
         "ec2:ModifyImageAttribute",
-        "ec2:ModifyLaunchTemplate",
-        "license-manager:UpdateLicenseSpecificationsForResource",
-        "sns:Publish",
+        "inspector2:ListCoverage",
+        "inspector2:ListFindings",
         "ssm:AddTagsToResource",
         "ssm:DescribeAssociationExecutions",
         "ssm:DescribeInstanceAssociationsStatus",
@@ -356,6 +354,30 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":sns:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":*"
+         ]
+        ]
+       }
       },
       {
        "Action": "ssm:SendCommand",
@@ -619,6 +641,26 @@
        }
       },
       {
+       "Action": "license-manager:UpdateLicenseSpecificationsForResource",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":license-manager:*:",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":license-configuration:*"
+         ]
+        ]
+       }
+      },
+      {
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Resource": {
@@ -630,6 +672,33 @@
            "Ref": "AWS::Partition"
           },
           ":iam::*:role/EC2ImageBuilderDistributionCrossAccountRole"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "ec2:CreateLaunchTemplateVersion",
+        "ec2:ModifyLaunchTemplate"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ec2:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":launch-template/*"
          ]
         ]
        }
@@ -703,7 +772,25 @@
        },
        "Effect": "Allow",
        "Resource": "*"
-      },
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ExecutionRoleDefaultPolicyA5B92313",
+    "Roles": [
+     {
+      "Ref": "ExecutionRole605A040B"
+     }
+    ]
+   }
+  },
+  "ExecutionRoleOverflowPolicy19707E3D1": {
+   "Type": "AWS::IAM::ManagedPolicy",
+   "Properties": {
+    "Description": "Part of the policies for aws-cdk-imagebuilder-image-pipeline-ami-all-parameters/ExecutionRole",
+    "Path": "/",
+    "PolicyDocument": {
+     "Statement": [
       {
        "Action": "ec2:EnableFastLaunch",
        "Condition": {
@@ -742,7 +829,6 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "ExecutionRoleDefaultPolicyA5B92313",
     "Roles": [
      {
       "Ref": "ExecutionRole605A040B"
@@ -880,10 +966,10 @@
      ]
     },
     "ImageScanningConfiguration": {
-     "ImageScanningEnabled": false
+     "ImageScanningEnabled": true
     },
     "ImageTestsConfiguration": {
-     "ImageTestsEnabled": false
+     "ImageTestsEnabled": true
     },
     "InfrastructureConfigurationArn": {
      "Fn::GetAtt": [
@@ -936,6 +1022,17 @@
     "EventPattern": {
      "source": [
       "aws.imagebuilder"
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "ImagePipelineAMIImageBuildCVEDetectedTriggerRule84FC4210": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "detail-type": [
+      "EC2 Image Builder CVE Detected"
      ],
      "resources": [
       {
@@ -944,6 +1041,9 @@
         "Arn"
        ]
       }
+     ],
+     "source": [
+      "aws.imagebuilder"
      ]
     },
     "State": "ENABLED"
