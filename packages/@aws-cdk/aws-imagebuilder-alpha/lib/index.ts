@@ -13,6 +13,7 @@ export * from './infrastructure-configuration';
 export * from './lifecycle-policy';
 export * from './workflow';
 
+export * from './aws-managed-image';
 export * from './base-image';
 export * from './os-version';
 export * from './recipe-base';
