@@ -1,6 +1,7 @@
 /* eslint-disable @cdklabs/no-throw-default-error */
-import { Stack } from 'aws-cdk-lib';
-import { CfnRule, Rule, type EventPattern } from 'aws-cdk-lib/aws-events';
+import { App, Stack } from 'aws-cdk-lib';
+import { CfnRule, Rule } from 'aws-cdk-lib/aws-events';
+import type { EventPattern } from 'aws-cdk-lib/aws-events';
 import { Construct } from 'constructs';
 import { BucketEvents } from '../../lib/services/aws-s3/events';
 import { Template } from 'aws-cdk-lib/assertions';
@@ -75,4 +76,55 @@ describe.each([
       },
     });
   });
+
+  test('can override bucket in the detail', () => {
+    // GIVEN
+    const bucketEvents = BucketEvents.fromBucket(new class extends Construct {
+      public readonly bucketRef = {
+        bucketArn: 'arn',
+        bucketName: 'the-bucket',
+      };
+      public readonly env = { account: '11111111111', region: 'us-east-1' };
+    }(stack, 'Bucket'));
+
+    // WHEN
+    newRule(stack, bucketEvents.objectCreatedPattern({
+      bucket: { name: ['anotherBucketName'] },
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      EventPattern: {
+        'detail-type': ['Object Created'],
+        'source': ['aws.s3'],
+        'detail': {
+          bucket: { name: ['anotherBucketName'] },
+        },
+      },
+    });
+  });
+});
+
+test('creates multiple rules for different event types', () => {
+  const app = new App();
+  const stack = new Stack(app);
+  // GIVEN
+  const bucketEvents = BucketEvents.fromBucket(new class extends Construct {
+    public readonly bucketRef = {
+      bucketArn: 'arn',
+      bucketName: 'the-bucket',
+    };
+    public readonly env = { account: '11111111111', region: 'us-east-1' };
+  }(stack, 'Bucket'));
+
+  // WHEN
+  new Rule(stack, 'CreatedRule', {
+    eventPattern: bucketEvents.objectCreatedPattern(),
+  });
+  new Rule(stack, 'DeletedRule', {
+    eventPattern: bucketEvents.objectDeletedPattern(),
+  });
+
+  // THEN
+  Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 2);
 });

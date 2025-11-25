@@ -180,6 +180,9 @@ export function eventNamespaceName(eventName: string) {
  * Convert event name to pattern method name (AcknowledgementCompleted -> acknowledgementCompletedPattern)
  */
 export function eventPatternMethodName(eventName: string) {
+  if (eventName.startsWith('AWS')) {
+    return `aws${eventName.slice(3)}Pattern`;
+  }
   return `${eventName.charAt(0).toLowerCase()}${eventName.slice(1)}Pattern`;
 }
 
