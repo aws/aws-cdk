@@ -440,7 +440,7 @@ class EventBridgeEventsClass extends ClassType {
         this.successfulEventCount++;
       } catch (error) {
         if (error instanceof SkipEventError) {
-          log.info(`Skipping event ${event.name} for ${this.resource.name}: ${error.message}`);
+          log.debug(`Skipping event ${event.name} for ${this.resource.name}: ${error.message}`);
           // Event generation is skipped, all generated code for this event is discarded
           continue;
         }
