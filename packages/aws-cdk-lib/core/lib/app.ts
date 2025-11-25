@@ -230,22 +230,6 @@ export class App extends Stage {
    * - Throw an error to fail synthesis
    *
    * @example
-   * // Validate that all S3 buckets have public access blocking
-   * class BucketValidator implements ITemplateTransform {
-   *   public transformTemplate(stack: Stack, template: any) {
-   *     for (const [id, resource] of Object.entries(template.Resources || {})) {
-   *       if ((resource as any).Type === 'AWS::S3::Bucket') {
-   *         const props = (resource as any).Properties || {};
-   *         if (!props.PublicAccessBlockConfiguration) {
-   *           throw new Error(`Bucket ${id} must have PublicAccessBlockConfiguration`);
-   *         }
-   *       }
-   *     }
-   *   }
-   * }
-   * app.addTemplateTransform(new BucketValidator());
-   *
-   * @example
    * // Inject metadata into all templates
    * class MetadataInjector implements ITemplateTransform {
    *   public transformTemplate(stack: Stack, template: any) {

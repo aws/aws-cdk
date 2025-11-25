@@ -1896,6 +1896,81 @@ for (const aspectApplication of aspectApplications) {
 }
 ```
 
+## Template Transforms
+
+Template Transforms allow you to inspect or modify the final CloudFormation template during synthesis,
+after all tokens have been resolved but before the template is written to disk. This is useful for:
+
+- **Template validation**: Enforce security policies or compliance rules on the final template
+- **Metadata injection**: Add audit information, timestamps, or custom annotations
+- **Resource modification**: Add tags or modify properties across all resources
+- **Governance**: Implement organization-wide template standards
+
+Unlike [Aspects](#aspects) which operate on the construct tree before synthesis, Template Transforms
+operate on the fully resolved CloudFormation template, giving you access to the actual values that
+will be deployed.
+
+### Basic Usage
+
+Register a transform on your `App` to apply it to all stacks:
+
+```ts
+class MetadataInjector implements ITemplateTransform {
+  public transformTemplate(stack: Stack, template: any) {
+    // Add metadata to track when the template was generated
+    template.Metadata = template.Metadata || {};
+    template.Metadata.GeneratedBy = 'CDK';
+  }
+}
+
+const app = new App();
+app.addTemplateTransform(new MetadataInjector());
+```
+
+### Validation Example
+
+Add warnings for S3 buckets that lack public access blocking:
+
+```ts
+class BucketPolicyValidator implements ITemplateTransform {
+  public transformTemplate(stack: Stack, template: any) {
+    for (const [id, resource] of Object.entries(template.Resources || {})) {
+      const res = resource as any;
+      if (res.Type === 'AWS::S3::Bucket') {
+        if (!res.Properties?.PublicAccessBlockConfiguration) {
+          Annotations.of(stack).addWarningV2(
+            `@aws-cdk/bucket-policy:${id}`,
+            `Bucket ${id} should have PublicAccessBlockConfiguration`,
+          );
+        }
+      }
+    }
+  }
+}
+
+const app = new App();
+app.addTemplateTransform(new BucketPolicyValidator());
+```
+
+> **Note:** To fail synthesis on validation errors, the `transformTemplate` method can throw an `Error`.
+> This stops synthesis immediately with a clear error message.
+
+### Transform Behavior
+
+- Transforms are invoked in registration order (first registered, first executed)
+- Transforms can mutate the template in place (return `void`) or return a new template object
+- If a transform throws an error, synthesis fails immediately
+- Transforms apply to all stacks in the app, including nested stacks
+- Use `stack.nested` to check if the current stack is a nested stack
+
+### Comparison with Other Extension Points
+
+| Extension Point | When It Runs | What It Sees | Can Modify? |
+|-----------------|--------------|--------------|-------------|
+| [Aspects](#aspects) | Before synthesis | Construct tree | Yes (constructs) |
+| Template Transforms | During synthesis | Final template | Yes (template) |
+| [Policy Validation](#policy-validation) | After synthesis | Final template | No (read-only) |
+
 ## Blueprint Property Injection
 
 The goal of Blueprint Property Injection is to provide builders an automatic way to set default property values.
