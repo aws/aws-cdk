@@ -2,9 +2,9 @@
   "version": "48.0.0",
   "files": {
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
-      "displayName": "ImagePipelineTestDefaultParametersDefaultTestDeployAssert47FC7A44 Template",
+      "displayName": "ImagePipelineTestAMIDefaultParametersDefaultTestDeployAssert1F773E9C Template",
       "source": {
-        "path": "ImagePipelineTestDefaultParametersDefaultTestDeployAssert47FC7A44.template.json",
+        "path": "ImagePipelineTestAMIDefaultParametersDefaultTestDeployAssert1F773E9C.template.json",
         "packaging": "file"
       },
       "destinations": {

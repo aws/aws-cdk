@@ -5,21 +5,13 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ImageRecipe8C789631": {
-   "Type": "AWS::ImageBuilder::ImageRecipe",
-   "Properties": {
-    "Name": "aws-cdk-imagebuilder-image-pipeline-required-parameters-imagerecipe-9eda8631",
-    "ParentImage": "ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64",
-    "Version": "1.0.x"
-   }
-  },
   "ContainerRecipe8A7CC9ED": {
    "Type": "AWS::ImageBuilder::ContainerRecipe",
    "Properties": {
     "ContainerType": "DOCKER",
     "DockerfileTemplateData": "FROM {{{ imagebuilder:parentImage }}}\n{{{ imagebuilder:environments }}}\n{{{ imagebuilder:components }}}",
     "ImageOsVersionOverride": "Amazon Linux 2023",
-    "Name": "aws-cdk-imagebuilder-image-pipeline-required-parameters-containerrecipe-3e585beb",
+    "Name": "aws-cdk-imagebuilder-image-pipeline-container-required-parameters-containerrecipe-d3a4c120",
     "ParentImage": "public.ecr.aws/amazonlinux/amazonlinux:latest",
     "PlatformOverride": "Linux",
     "TargetRepository": {
@@ -29,90 +21,6 @@
      "Service": "ECR"
     },
     "Version": "1.0.x"
-   }
-  },
-  "ImagePipelineAMIInfrastructureConfigurationInstanceProfileRole507BD514": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "ec2.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/AmazonSSMManagedInstanceCore"
-       ]
-      ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/EC2InstanceProfileForImageBuilder"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "ImagePipelineAMIInfrastructureConfigurationInstanceProfile43042B10": {
-   "Type": "AWS::IAM::InstanceProfile",
-   "Properties": {
-    "Roles": [
-     {
-      "Ref": "ImagePipelineAMIInfrastructureConfigurationInstanceProfileRole507BD514"
-     }
-    ]
-   }
-  },
-  "ImagePipelineAMIInfrastructureConfiguration8BB437DC": {
-   "Type": "AWS::ImageBuilder::InfrastructureConfiguration",
-   "Properties": {
-    "InstanceMetadataOptions": {
-     "HttpPutResponseHopLimit": 2,
-     "HttpTokens": "required"
-    },
-    "InstanceProfileName": {
-     "Ref": "ImagePipelineAMIInfrastructureConfigurationInstanceProfile43042B10"
-    },
-    "Name": "aws-cdk-imagebuilder-image-pipeline-required-parameters-imagepipeline-ami-infrastructureconfiguration-e8122d12"
-   }
-  },
-  "ImagePipelineAMI7635ECE0": {
-   "Type": "AWS::ImageBuilder::ImagePipeline",
-   "Properties": {
-    "ImageRecipeArn": {
-     "Fn::GetAtt": [
-      "ImageRecipe8C789631",
-      "Arn"
-     ]
-    },
-    "InfrastructureConfigurationArn": {
-     "Fn::GetAtt": [
-      "ImagePipelineAMIInfrastructureConfiguration8BB437DC",
-      "Arn"
-     ]
-    },
-    "Name": "aws-cdk-imagebuilder-image-pipeline-required-parameters-imagepipeline-ami-a53edcfb"
    }
   },
   "ImagePipelineContainerInfrastructureConfigurationInstanceProfileRole55E1213B": {
@@ -190,7 +98,7 @@
     "InstanceProfileName": {
      "Ref": "ImagePipelineContainerInfrastructureConfigurationInstanceProfileCB9700ED"
     },
-    "Name": "aws-cdk-imagebuilder-image-pipeline-required-parameters-imagepipeline-container-infrastructureconfiguration-e3d2b7b6"
+    "Name": "aws-cdk-imagebuilder-image-pipeline-container-required-parameters-imagepipeline-container-infrastructureconfiguration-1c74b770"
    }
   },
   "ImagePipelineContainer507B5032": {
@@ -208,7 +116,7 @@
       "Arn"
      ]
     },
-    "Name": "aws-cdk-imagebuilder-image-pipeline-required-parameters-imagepipeline-container-a57ecb6c"
+    "Name": "aws-cdk-imagebuilder-image-pipeline-container-required-parameters-imagepipeline-container-c642ca08"
    }
   }
  },

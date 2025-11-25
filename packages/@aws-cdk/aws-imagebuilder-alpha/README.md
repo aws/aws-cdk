@@ -42,7 +42,7 @@ An image pipeline provides the automation framework for building secure AMIs and
 
 #### Image Pipeline Basic Usage
 
-Create a simple AMI pipeline with just a recipe:
+Create a simple AMI pipeline with just an image recipe:
 
 ```ts
 const imageRecipe = new imagebuilder.ImageRecipe(this, 'MyImageRecipe', {
@@ -56,7 +56,7 @@ const imagePipeline = new imagebuilder.ImagePipeline(this, 'MyImagePipeline', {
 });
 ```
 
-Create a simple container pipeline:
+Create a simple container pipeline with just a container recipe:
 
 ```ts
 const containerRecipe = new imagebuilder.ContainerRecipe(this, 'MyContainerRecipe', {
@@ -98,12 +98,11 @@ const weeklyPipeline = new imagebuilder.ImagePipeline(this, 'WeeklyPipeline', {
   imagePipelineName: 'weekly-build-pipeline',
   recipe: exampleImageRecipe,
   schedule: {
-    expression: events.Schedule.cron({ 
-      minute: '0', 
-      hour: '6', 
-      weekDay: 'MON' 
-    }),
-    timezone: TimeZone.AMERICA_NEW_YORK
+    expression: events.Schedule.cron({
+      minute: '0',
+      hour: '6',
+      weekDay: 'MON'
+    })
   }
 });
 ```
@@ -128,7 +127,6 @@ const advancedSchedulePipeline = new imagebuilder.ImagePipeline(this, 'AdvancedS
   recipe: exampleImageRecipe,
   schedule: {
     expression: events.Schedule.rate(Duration.days(7)),
-    timezone: TimeZone.PST8PDT,
     // Only trigger when dependencies are updated (new base images, components, etc.)
     startCondition: imagebuilder.ScheduleStartCondition.EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE,
     // Automatically disable after 3 consecutive failures
@@ -244,38 +242,11 @@ const controlledPipeline = new imagebuilder.ImagePipeline(this, 'ControlledPipel
 
 #### Image Pipeline Events
 
-##### Build State Monitoring
-
-Monitor pipeline execution with EventBridge rules:
-
-```ts
-// Monitor all pipeline events
-examplePipeline.onEvent('AllPipelineEvents', {
-  target: new targets.LambdaFunction(lambdaFunction)
-});
-
-// Monitor build state changes
-examplePipeline.onImageBuildStateChange('BuildStateChanges', {
-  target: new targets.SnsTopic(topic)
-});
-
-// Monitor build failures for alerts
-examplePipeline.onImageBuildFailed('BuildFailureAlert', {
-  target: new targets.SqsQueue(queue)
-});
-```
-
 ##### Pipeline Event Handling
 
 Handle specific pipeline events:
 
 ```ts
-// React to successful builds
-examplePipeline.onImageBuildSuccess('BuildSuccessHandler', {
-  target: new targets.LambdaFunction(lambdaFunction),
-  description: 'Trigger deployment after successful build'
-});
-
 // Monitor CVE detection
 examplePipeline.onCVEDetected('CVEAlert', {
   target: new targets.SnsTopic(topic)
@@ -289,7 +260,7 @@ examplePipeline.onImagePipelineAutoDisabled('PipelineDisabledAlert', {
 
 #### Importing Image Pipelines
 
-Reference existing pipelines created outside of CDK:
+Reference existing pipelines created outside CDK:
 
 ```ts
 // Import by name

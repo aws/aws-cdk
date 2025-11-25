@@ -12,6 +12,8 @@ import {
   ImageRecipe,
   InfrastructureConfiguration,
   ScheduleStartCondition,
+  WorkflowOnFailure,
+  WorkflowParameterValue,
 } from '../lib';
 
 /* eslint-disable quote-props */
@@ -99,11 +101,17 @@ describe('ImagePipeline', () => {
       executionRole: iam.Role.fromRoleName(stack, 'ExecutionRole', 'imagebuilder-execution-role'),
       schedule: {
         expression: events.Schedule.cron({ minute: '0', hour: '0', weekDay: '0' }),
-        timezone: cdk.TimeZone.PST8PDT,
         startCondition: ScheduleStartCondition.EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE,
         autoDisableFailureCount: 5,
       },
-      workflows: [{ workflow: AwsManagedWorkflow.buildImage(stack, 'BuildImage') }],
+      workflows: [
+        {
+          workflow: AwsManagedWorkflow.buildImage(stack, 'BuildImage'),
+          onFailure: WorkflowOnFailure.ABORT,
+          parallelGroup: 'group-1',
+          parameters: { parameterName: WorkflowParameterValue.fromString('parameterValue') },
+        },
+      ],
       imageLogGroup: logs.LogGroup.fromLogGroupName(stack, 'ImageLogGroup', '/aws/imagebuilder/test'),
       imagePipelineLogGroup: logs.LogGroup.fromLogGroupName(
         stack,
@@ -173,6 +181,20 @@ describe('ImagePipeline', () => {
               PipelineExecutionStartCondition: 'EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE',
               ScheduleExpression: 'cron(0 0 ? * 0 *)',
             },
+            Status: 'ENABLED',
+            Workflows: [
+              {
+                OnFailure: 'Abort',
+                ParallelGroup: 'group-1',
+                Parameters: [{ Name: 'parameterName', Value: ['parameterValue'] }],
+                WorkflowArn: {
+                  'Fn::Join': [
+                    '',
+                    ['arn:', { Ref: 'AWS::Partition' }, ':imagebuilder:us-east-1:aws:workflow/build/build-image/x.x.x'],
+                  ],
+                },
+              },
+            ],
           },
         }),
       },
@@ -200,7 +222,14 @@ describe('ImagePipeline', () => {
         expression: events.Schedule.rate(cdk.Duration.days(7)),
         startCondition: ScheduleStartCondition.EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE,
       },
-      workflows: [{ workflow: AwsManagedWorkflow.buildImage(stack, 'BuildImage') }],
+      workflows: [
+        {
+          workflow: AwsManagedWorkflow.buildContainer(stack, 'BuildContainer'),
+          onFailure: WorkflowOnFailure.ABORT,
+          parallelGroup: 'group-1',
+          parameters: { parameterName: WorkflowParameterValue.fromString('parameterValue') },
+        },
+      ],
       imageLogGroup: logs.LogGroup.fromLogGroupName(stack, 'ImageLogGroup', '/aws/imagebuilder/test'),
       imagePipelineLogGroup: logs.LogGroup.fromLogGroupName(
         stack,
@@ -251,7 +280,10 @@ describe('ImagePipeline', () => {
               ],
             },
             ImageScanningConfiguration: {
-              EcrConfiguration: { RepositoryName: 'scanning-repo', ContainerTags: ['latest-scan'] },
+              EcrConfiguration: {
+                ContainerTags: ['latest-scan'],
+                RepositoryName: 'scanning-repo',
+              },
               ImageScanningEnabled: false,
             },
             ImageTestsConfiguration: { ImageTestsEnabled: true },
@@ -274,6 +306,24 @@ describe('ImagePipeline', () => {
               PipelineExecutionStartCondition: 'EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE',
               ScheduleExpression: 'rate(7 days)',
             },
+            Status: 'DISABLED',
+            Workflows: [
+              {
+                OnFailure: 'Abort',
+                ParallelGroup: 'group-1',
+                Parameters: [{ Name: 'parameterName', Value: ['parameterValue'] }],
+                WorkflowArn: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':imagebuilder:us-east-1:aws:workflow/build/build-container/x.x.x',
+                    ],
+                  ],
+                },
+              },
+            ],
           },
         }),
       },
@@ -742,77 +792,6 @@ describe('ImagePipeline', () => {
     });
   });
 
-  test('creates a rule from onImageBuildStateChange', () => {
-    const imagePipeline = new ImagePipeline(stack, 'ImagePipeline', {
-      recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
-    });
-
-    imagePipeline.onImageBuildStateChange('ImageBuildStateChangeRule');
-
-    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-      EventPattern: {
-        source: ['aws.imagebuilder'],
-        resources: [{ 'Fn::GetAtt': ['ImagePipeline7DDDE57F', 'Arn'] }],
-        'detail-type': ['EC2 Image Builder Image State Change'],
-      },
-      State: 'ENABLED',
-    });
-  });
-
-  test('creates a rule from onImageBuildCompleted', () => {
-    const imagePipeline = new ImagePipeline(stack, 'ImagePipeline', {
-      recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
-    });
-
-    imagePipeline.onImageBuildCompleted('ImageBuildCompletedRule');
-
-    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-      EventPattern: {
-        source: ['aws.imagebuilder'],
-        resources: [{ 'Fn::GetAtt': ['ImagePipeline7DDDE57F', 'Arn'] }],
-        'detail-type': ['EC2 Image Builder Image State Change'],
-        detail: { state: { status: ['AVAILABLE', 'CANCELLED', 'FAILED'] } },
-      },
-      State: 'ENABLED',
-    });
-  });
-
-  test('creates a rule from onImageBuildFailed', () => {
-    const imagePipeline = new ImagePipeline(stack, 'ImagePipeline', {
-      recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
-    });
-
-    imagePipeline.onImageBuildFailed('ImageBuildFailedRule');
-
-    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-      EventPattern: {
-        source: ['aws.imagebuilder'],
-        resources: [{ 'Fn::GetAtt': ['ImagePipeline7DDDE57F', 'Arn'] }],
-        'detail-type': ['EC2 Image Builder Image State Change'],
-        detail: { state: { status: ['FAILED'] } },
-      },
-      State: 'ENABLED',
-    });
-  });
-
-  test('creates a rule from onImageBuildSuccess', () => {
-    const imagePipeline = new ImagePipeline(stack, 'ImagePipeline', {
-      recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
-    });
-
-    imagePipeline.onImageBuildSuccess('ImageBuildSuccessRule');
-
-    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-      EventPattern: {
-        source: ['aws.imagebuilder'],
-        resources: [{ 'Fn::GetAtt': ['ImagePipeline7DDDE57F', 'Arn'] }],
-        'detail-type': ['EC2 Image Builder Image State Change'],
-        detail: { state: { status: ['AVAILABLE'] } },
-      },
-      State: 'ENABLED',
-    });
-  });
-
   test('creates a rule from onImagePipelineAutoDisabled', () => {
     const imagePipeline = new ImagePipeline(stack, 'ImagePipeline', {
       recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
@@ -825,23 +804,6 @@ describe('ImagePipeline', () => {
         source: ['aws.imagebuilder'],
         resources: [{ 'Fn::GetAtt': ['ImagePipeline7DDDE57F', 'Arn'] }],
         'detail-type': ['EC2 Image Builder Image Pipeline Automatically Disabled'],
-      },
-      State: 'ENABLED',
-    });
-  });
-
-  test('creates a rule from onWaitForAction', () => {
-    const imagePipeline = new ImagePipeline(stack, 'ImagePipeline', {
-      recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
-    });
-
-    imagePipeline.onWaitForAction('ImageBuildWaitingRule');
-
-    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-      EventPattern: {
-        source: ['aws.imagebuilder'],
-        resources: [{ 'Fn::GetAtt': ['ImagePipeline7DDDE57F', 'Arn'] }],
-        'detail-type': ['EC2 Image Builder Workflow Step Waiting'],
       },
       State: 'ENABLED',
     });
