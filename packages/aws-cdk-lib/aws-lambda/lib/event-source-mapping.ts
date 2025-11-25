@@ -105,6 +105,14 @@ export interface ProvisionedPollerConfig {
    * @default - 200
    */
   readonly maximumPollers?: number;
+  /**
+   * An optional identifier that groups multiple ESMs to share EPU capacity
+   * and reduce costs. ESMs with the same PollerGroupName share compute
+   * resources.
+   *
+   * @default - not set, dedicated compute resource per event source.
+   */
+  readonly pollerGroupName?: string;
 }
 
 export interface EventSourceMappingOptions {

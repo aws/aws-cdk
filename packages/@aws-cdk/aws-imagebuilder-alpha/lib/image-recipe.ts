@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnImageRecipe } from 'aws-cdk-lib/aws-imagebuilder';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { BaseImage } from './base-image';
@@ -330,6 +331,8 @@ export class ImageRecipe extends ImageRecipeBase {
             }).toLowerCase(), // Enforce lowercase for the auto-generated fallback
         }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Object.defineProperty(this, IMAGE_RECIPE_SYMBOL, { value: true });
 
@@ -379,6 +382,7 @@ export class ImageRecipe extends ImageRecipeBase {
    *
    * @param blockDevices The list of block devices to attach
    */
+  @MethodMetadata()
   public addBlockDevice(...blockDevices: ec2.BlockDevice[]): void {
     this.blockDevices.push(...blockDevices);
   }
