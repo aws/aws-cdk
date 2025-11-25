@@ -2451,7 +2451,13 @@ describe('NetworkLoadBalancedFargateService', () => {
   });
 
   test('target group has different logical ID for public vs private load balancer', () => {
-    // GIVEN
+    // 
+    const app = new cdk.App({
+      context: {
+        // Enable the new unique target group ID behavior
+        '@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId': true,
+      },
+    });
     const stack1 = new cdk.Stack();
     const stack2 = new cdk.Stack();
 

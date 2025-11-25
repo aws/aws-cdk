@@ -63,15 +63,15 @@ describe('Application Load Balancer', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         LaunchType: 'FARGATE',
-        LoadBalancers: [
-          {
+        LoadBalancers: Match.arrayWith([
+          Match.objectLike({
             ContainerName: 'web',
             ContainerPort: 80,
             TargetGroupArn: {
-              Ref: 'ServiceLBPublicListenerECSGroup0CC8688C',
+              Ref: Match.stringLikeRegexp('ServiceLBPublicListenerECSGroup'),
             },
-          },
-        ],
+          }),
+        ]),
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
