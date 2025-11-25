@@ -45,31 +45,31 @@
       "DUAL_STACK"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/gateway/gateway-base.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway-base.ts": {
     "GatewayExceptionLevel": [
       "DEBUG"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/gateway/inbound-auth/authorizer.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/inbound-auth/authorizer.ts": {
     "GatewayAuthorizerType": [
       "CUSTOM_JWT",
       "AWS_IAM"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/gateway/outbound-auth/api-key.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/outbound-auth/api-key.ts": {
     "ApiKeyCredentialLocationType": [
       "HEADER",
       "QUERY_PARAMETER"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/gateway/outbound-auth/credential-provider.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/outbound-auth/credential-provider.ts": {
     "CredentialProviderType": [
       "API_KEY",
       "OAUTH",
       "GATEWAY_IAM_ROLE"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/gateway/protocol.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/protocol.ts": {
     "GatewayProtocolType": [
       "MCP"
     ],
@@ -81,7 +81,7 @@
       "SEMANTIC"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/gateway/targets/schema/tool-schema.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/targets/schema/tool-schema.ts": {
     "SchemaDefinitionType": [
       "string",
       "number",
@@ -91,7 +91,7 @@
       "integer"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/gateway/targets/target-base.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/targets/target-base.ts": {
     "GatewayTargetProtocolType": [
       "MCP"
     ],
@@ -102,7 +102,7 @@
       "MCP_SERVER"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/memory/memory-strategy.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/memory/memory-strategy.ts": {
     "MemoryStrategyType": [
       "SUMMARIZATION",
       "SEMANTIC",
@@ -110,11 +110,25 @@
       "CUSTOM"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/agentcore/runtime/types.ts": {
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/runtime-artifact.ts": {
+    "AgentCoreRuntime": [
+      "PYTHON_3_10",
+      "PYTHON_3_11",
+      "PYTHON_3_12",
+      "PYTHON_3_13"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/types.ts": {
     "ProtocolType": [
       "MCP",
       "HTTP",
       "A2A"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/tools/browser.ts": {
+    "BrowserSigning": [
+      "ENABLED",
+      "DISABLED"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent-collaborator.ts": {
@@ -663,6 +677,11 @@
       "1.0"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/container-recipe.ts": {
+    "ContainerType": [
+      "DOCKER"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/distribution-configuration.ts": {
     "RepositoryService": [
       "ECR"
@@ -684,6 +703,45 @@
       "Linux",
       "Windows",
       "macOS"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/workflow.ts": {
+    "WorkflowAction": [
+      "ApplyImageConfigurations",
+      "BootstrapInstanceForContainer",
+      "CollectImageMetadata",
+      "CollectImageScanFindings",
+      "CreateImage",
+      "DistributeImage",
+      "ExecuteComponents",
+      "ExecuteStateMachine",
+      "LaunchInstance",
+      "ModifyImageAttributes",
+      "RunCommand",
+      "RegisterImage",
+      "RunSysPrep",
+      "SanitizeInstance",
+      "TerminateInstance",
+      "WaitForAction",
+      "WaitForSSMAgent"
+    ],
+    "WorkflowOnFailure": [
+      "Abort",
+      "Continue"
+    ],
+    "WorkflowParameterType": [
+      "boolean",
+      "integer",
+      "string",
+      "stringList"
+    ],
+    "WorkflowSchemaVersion": [
+      "1.0"
+    ],
+    "WorkflowType": [
+      "BUILD",
+      "TEST",
+      "DISTRIBUTION"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/firehose-put-record-action.ts": {
