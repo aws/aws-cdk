@@ -116,7 +116,9 @@ async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
   if (hasEvents) {
     indexLines.push('export * as events from \'./events\';');
   }
-  await fs.writeFile(subModuleIndex, indexLines.map(x => `${x}\n`).join(''));
+
+  // This file may contain handwritten lines, preserve.
+  await ensureFileContains(subModuleIndex, indexLines);
   await writeJsiiModuleMetadata(subModuleIndex, submodule.definition);
 
   // services/<mod>/mixins.ts
