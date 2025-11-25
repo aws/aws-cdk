@@ -294,10 +294,8 @@ class EventBridgeEventsClass extends ClassType {
       typeDefinitionConverter: (typeDef, converter) => {
         const sanitizedName = naming.sanitizeTypeName(typeDef.name);
 
-        // Check if we already created this type
         if (createdTypes.has(sanitizedName)) {
-          // TODO: throw error this should not happen anymore
-          return { structType: createdTypes.get(sanitizedName)!, build: () => {} };
+          throw Error('Type with the same name are being generated multiple times in the same namespace');
         }
 
         const structType = new StructType(namespaceScope, {
