@@ -42,6 +42,20 @@ export interface ILogsDelivery {
 }
 
 /**
+ * S3 Vended Logs Permissions version.
+ */
+export enum S3LogsDeliveryPermissionsVersion {
+  /**
+   * V1
+   */
+  V1 = 'V1',
+  /**
+   * V2
+   */
+  V2 = 'V2',
+}
+
+/**
  * Props for S3LogsDelivery
  */
 export interface S3LogsDeliveryProps {
@@ -51,7 +65,7 @@ export interface S3LogsDeliveryProps {
    *
    * @default "V2
    */
-  readonly permissionsVersion?: 'V1' | 'V2';
+  readonly permissionsVersion?: S3LogsDeliveryPermissionsVersion;
 }
 
 /**
