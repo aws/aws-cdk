@@ -452,7 +452,7 @@ class EventBridgeEventsClass extends ClassType {
       name: refPropertyName,
       type: this.refInterface,
       immutable: true,
-      protected: true, // Actually want this private
+      visibility: MemberVisibility.Private,
       docs: {
         summary: `Reference to the ${this.resource.name} construct`,
       },
