@@ -1583,6 +1583,35 @@ const integration = new apigateway.Integration({
   },
 });
 ```
+```
+
+The following code sets up a private integration with a `VpcLinkV2` -
+
+```ts
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import { VpcLink as VpcLinkV2 } from aws-cdk-lib/aws-apigatewayv2'; 
+
+const vpc = new ec2.Vpc(this, 'VPC');
+
+
+const alb = new elbv2.ApplicationLoadBalancer(this, 'ALB', {
+  vpc,
+});
+
+const vpcLink = new VpcLinkV2(this, 'VpcLink', {
+      vpc,
+    });
+
+const integration = new apigateway.Integration({
+  type: apigateway.IntegrationType.HTTP_PROXY,
+  integrationHttpMethod: 'ANY',
+  uri:  `http://${alb.loadBalancerDnsName}`,
+  options: {
+    connectionType: apigateway.ConnectionType.VPC_LINK,
+    vpcLink: link,
+  },
+});
+```
 
 The uri for the private integration, in the case of a VpcLink, will be set to the DNS name of
 the VPC Link's NLB. If the VPC Link has multiple NLBs or the VPC Link is imported or the DNS
