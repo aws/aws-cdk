@@ -220,7 +220,8 @@ class EventBridgeEventsClass extends ClassType {
         immutable: true,
         docs: {
           summary: propSpec.documentation || `${propName} property`,
-          default: '-',
+          remarks: `Specify an array of string values to match this event if the actual value of ${propName} is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.`,
+          default: 'Do not filter on this field',
         },
       });
     }
@@ -452,7 +453,7 @@ class EventBridgeEventsClass extends ClassType {
       name: refPropertyName,
       type: this.refInterface,
       immutable: true,
-      protected: true, // Actually want this private
+      visibility: MemberVisibility.Private,
       docs: {
         summary: `Reference to the ${this.resource.name} construct`,
       },
