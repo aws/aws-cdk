@@ -38,7 +38,7 @@ const containerImagePipeline = new imagebuilder.ImagePipeline(stack, 'ImagePipel
   recipe: containerRecipe,
   infrastructureConfiguration,
   distributionConfiguration: containerDistributionConfiguration,
-  enabled: true,
+  status: imagebuilder.ImagePipelineStatus.DISABLED,
   executionRole,
   schedule: {
     expression: events.Schedule.rate(cdk.Duration.days(7)),

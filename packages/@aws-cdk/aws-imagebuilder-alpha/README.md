@@ -133,7 +133,7 @@ const advancedSchedulePipeline = new imagebuilder.ImagePipeline(this, 'AdvancedS
     autoDisableFailureCount: 3
   },
   // Start enabled
-  enabled: true
+  status: imagebuilder.ImagePipelineStatus.ENABLED
 });
 ```
 

@@ -799,7 +799,7 @@
      "PipelineExecutionStartCondition": "EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE",
      "ScheduleExpression": "rate(7 days)"
     },
-    "Status": "ENABLED",
+    "Status": "DISABLED",
     "Workflows": [
      {
       "WorkflowArn": {

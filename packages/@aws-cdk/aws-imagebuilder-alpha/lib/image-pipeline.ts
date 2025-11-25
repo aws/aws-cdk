@@ -132,9 +132,9 @@ export interface ImagePipelineProps {
   /**
    * Indicates whether the pipeline is enabled to be triggered by the provided schedule
    *
-   * @default true
+   * @default ImagePipelineStatus.ENABLED
    */
-  readonly enabled?: boolean;
+  readonly status?: ImagePipelineStatus;
 
   /**
    * The infrastructure configuration used for building the image.
@@ -276,6 +276,21 @@ export enum ScheduleStartCondition {
    * such as new versions of components or images to use in the pipeline build.
    */
   EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE = 'EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE',
+}
+
+/**
+ * Indicates whether the pipeline is enabled to be triggered by the provided schedule
+ */
+export enum ImagePipelineStatus {
+  /**
+   * Indicates that the pipeline is enabled for scheduling
+   */
+  ENABLED = 'ENABLED',
+
+  /**
+   * Indicates that the pipeline is disabled and will not be triggered on the schedule
+   */
+  DISABLED = 'DISABLED',
 }
 
 /**
@@ -491,21 +506,35 @@ export class ImagePipeline extends ImagePipelineBase {
       this.infrastructureConfiguration._bind({ isContainerBuild: props.recipe._isContainerRecipe() });
     }
 
+    if (props.recipe._isImageRecipe() && props.recipe._isContainerRecipe()) {
+      throw new cdk.ValidationError('the recipe must either be an IImageRecipe or IContainerRecipe', this);
+    }
+
+    if (!props.recipe._isImageRecipe() && !props.recipe._isContainerRecipe()) {
+      throw new cdk.ValidationError('the recipe must either be an IImageRecipe or IContainerRecipe', this);
+    }
+
     const imagePipeline = new CfnImagePipeline(this, 'Resource', {
       name: this.physicalName,
       description: props.description,
       ...(props.recipe._isImageRecipe() && { imageRecipeArn: props.recipe.imageRecipeArn }),
       ...(props.recipe._isContainerRecipe() && { containerRecipeArn: props.recipe.containerRecipeArn }),
-      ...(props.enabled !== undefined && { status: props.enabled ? 'ENABLED' : 'DISABLED' }),
+      ...(props.status !== undefined && { status: props.status }),
       infrastructureConfigurationArn: this.infrastructureConfiguration.infrastructureConfigurationArn,
       distributionConfigurationArn: props.distributionConfiguration?.distributionConfigurationArn,
       enhancedImageMetadataEnabled: props.enhancedImageMetadataEnabled,
       executionRole: this.executionRole?.roleArn,
       schedule: this.buildSchedule(props),
       loggingConfiguration: this.buildLoggingConfiguration(props),
-      imageTestsConfiguration: buildImageTestsConfiguration(props),
-      imageScanningConfiguration: buildImageScanningConfiguration(scope, props),
-      workflows: buildWorkflows(props),
+      imageTestsConfiguration: buildImageTestsConfiguration<
+        ImagePipelineProps,
+        CfnImagePipeline.ImageTestsConfigurationProperty
+      >(props),
+      imageScanningConfiguration: buildImageScanningConfiguration<
+        ImagePipelineProps,
+        CfnImagePipeline.ImageScanningConfigurationProperty
+      >(this, props),
+      workflows: buildWorkflows<ImagePipelineProps, CfnImagePipeline.WorkflowConfigurationProperty[]>(props),
       tags: props.tags,
     });
 

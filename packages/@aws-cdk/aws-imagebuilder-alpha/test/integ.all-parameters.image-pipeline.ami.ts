@@ -32,7 +32,7 @@ const imagePipeline = new imagebuilder.ImagePipeline(stack, 'ImagePipeline-AMI',
   recipe: imageRecipe,
   infrastructureConfiguration,
   distributionConfiguration: amiDistributionConfiguration,
-  enabled: true,
+  status: imagebuilder.ImagePipelineStatus.ENABLED,
   executionRole,
   schedule: {
     expression: events.Schedule.expression('cron(0 7 ? * mon *)'),

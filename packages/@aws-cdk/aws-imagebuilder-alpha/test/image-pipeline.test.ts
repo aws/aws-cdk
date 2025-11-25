@@ -8,9 +8,13 @@ import {
   AwsManagedWorkflow,
   ContainerRecipe,
   DistributionConfiguration,
+  IContainerRecipe,
+  IImageRecipe,
   ImagePipeline,
+  ImagePipelineStatus,
   ImageRecipe,
   InfrastructureConfiguration,
+  IRecipeBase,
   ScheduleStartCondition,
   WorkflowOnFailure,
   WorkflowParameterValue,
@@ -97,7 +101,7 @@ describe('ImagePipeline', () => {
         'DistributionConfiguration',
         'imported-distribution-configuration',
       ),
-      enabled: true,
+      status: ImagePipelineStatus.ENABLED,
       executionRole: iam.Role.fromRoleName(stack, 'ExecutionRole', 'imagebuilder-execution-role'),
       schedule: {
         expression: events.Schedule.cron({ minute: '0', hour: '0', weekDay: '0' }),
@@ -217,7 +221,7 @@ describe('ImagePipeline', () => {
         'imported-distribution-configuration',
       ),
       executionRole: iam.Role.fromRoleName(stack, 'ExecutionRole', 'imagebuilder-execution-role'),
-      enabled: false,
+      status: ImagePipelineStatus.DISABLED,
       schedule: {
         expression: events.Schedule.rate(cdk.Duration.days(7)),
         startCondition: ScheduleStartCondition.EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE,
@@ -879,5 +883,63 @@ describe('ImagePipeline', () => {
         imageScanningEcrTags: ['latest-scan'],
       });
     }).toThrow(cdk.ValidationError);
+  });
+
+  test('throws a validation error when the recipe is neither an IImageRecipe or IContainerRecipe', () => {
+    class BadRecipe extends cdk.Resource implements IRecipeBase {
+      public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+        return iam.Grant.addToPrincipal({
+          grantee,
+          actions,
+          resourceArns: ['*'],
+          scope: stack,
+        });
+      }
+
+      public grantRead(grantee: iam.IGrantable): iam.Grant {
+        return this.grant(grantee, 'imagebuilder:GetBadRecipe');
+      }
+
+      public _isContainerRecipe(): this is IContainerRecipe {
+        return false;
+      }
+
+      public _isImageRecipe(): this is IImageRecipe {
+        return false;
+      }
+    }
+
+    expect(() => new ImagePipeline(stack, 'ImagePipeline', { recipe: new BadRecipe(stack, 'BadRecipe') })).toThrow(
+      cdk.ValidationError,
+    );
+  });
+
+  test('throws a validation error when the recipe is both an IImageRecipe and IContainerRecipe', () => {
+    class BadRecipe extends cdk.Resource implements IRecipeBase {
+      public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+        return iam.Grant.addToPrincipal({
+          grantee,
+          actions,
+          resourceArns: ['*'],
+          scope: stack,
+        });
+      }
+
+      public grantRead(grantee: iam.IGrantable): iam.Grant {
+        return this.grant(grantee, 'imagebuilder:GetBadRecipe');
+      }
+
+      public _isContainerRecipe(): this is IContainerRecipe {
+        return true;
+      }
+
+      public _isImageRecipe(): this is IImageRecipe {
+        return true;
+      }
+    }
+
+    expect(() => new ImagePipeline(stack, 'ImagePipeline', { recipe: new BadRecipe(stack, 'BadRecipe') })).toThrow(
+      cdk.ValidationError,
+    );
   });
 });
