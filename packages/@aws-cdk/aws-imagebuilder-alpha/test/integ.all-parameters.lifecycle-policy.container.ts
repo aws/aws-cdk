@@ -23,11 +23,13 @@ new imagebuilder.LifecyclePolicy(stack, 'LifecyclePolicy-Container', {
         type: imagebuilder.LifecyclePolicyActionType.DELETE,
         includeContainers: false,
       },
-      ageFilter: {
-        age: cdk.Duration.days(30),
-        retainAtLeast: 5,
+      filter: {
+        ageFilter: {
+          age: cdk.Duration.days(30),
+          retainAtLeast: 5,
+        },
       },
-      imageExclusionRules: { tags: { Environment: 'test' } },
+      exclusionRules: { imageExclusionRules: { tags: { Environment: 'test' } } },
     },
   ],
   resourceSelection: { tags: { Environment: 'test' } },

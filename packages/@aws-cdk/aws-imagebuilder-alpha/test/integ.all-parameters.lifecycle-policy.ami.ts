@@ -24,15 +24,17 @@ new imagebuilder.LifecyclePolicy(stack, 'LifecyclePolicy-AMI', {
         includeAmis: true,
         includeSnapshots: true,
       },
-      countFilter: { count: 5 },
-      amiExclusionRules: {
-        isPublic: true,
-        lastLaunched: cdk.Duration.days(20),
-        regions: ['us-west-2', 'us-east-2'],
-        sharedAccounts: ['098765432109'],
-        tags: { Environment: 'test' },
+      filter: { countFilter: { count: 5 } },
+      exclusionRules: {
+        amiExclusionRules: {
+          isPublic: true,
+          lastLaunched: cdk.Duration.days(20),
+          regions: ['us-west-2', 'us-east-2'],
+          sharedAccounts: ['098765432109'],
+          tags: { Environment: 'test' },
+        },
+        imageExclusionRules: { tags: { Environment: 'test' } },
       },
-      imageExclusionRules: { tags: { Environment: 'test' } },
     },
     {
       action: {
@@ -40,18 +42,22 @@ new imagebuilder.LifecyclePolicy(stack, 'LifecyclePolicy-AMI', {
         includeAmis: false,
         includeSnapshots: false,
       },
-      ageFilter: {
-        age: cdk.Duration.days(10),
-        retainAtLeast: 5,
+      filter: {
+        ageFilter: {
+          age: cdk.Duration.days(10),
+          retainAtLeast: 5,
+        },
       },
-      amiExclusionRules: {
-        isPublic: true,
-        lastLaunched: cdk.Duration.days(10),
-        regions: ['us-west-2', 'us-east-2'],
-        sharedAccounts: ['098765432109'],
-        tags: { Environment: 'test' },
+      exclusionRules: {
+        amiExclusionRules: {
+          isPublic: true,
+          lastLaunched: cdk.Duration.days(10),
+          regions: ['us-west-2', 'us-east-2'],
+          sharedAccounts: ['098765432109'],
+          tags: { Environment: 'test' },
+        },
+        imageExclusionRules: { tags: { Environment: 'test' } },
       },
-      imageExclusionRules: { tags: { Environment: 'test' } },
     },
     {
       action: {
@@ -59,18 +65,22 @@ new imagebuilder.LifecyclePolicy(stack, 'LifecyclePolicy-AMI', {
         includeAmis: false,
         includeSnapshots: false,
       },
-      ageFilter: {
-        age: cdk.Duration.days(10),
-        retainAtLeast: 5,
+      filter: {
+        ageFilter: {
+          age: cdk.Duration.days(10),
+          retainAtLeast: 5,
+        },
       },
-      amiExclusionRules: {
-        isPublic: true,
-        lastLaunched: cdk.Duration.days(1),
-        regions: ['us-west-2', 'us-east-2'],
-        sharedAccounts: ['098765432109'],
-        tags: { Environment: 'test' },
+      exclusionRules: {
+        amiExclusionRules: {
+          isPublic: true,
+          lastLaunched: cdk.Duration.days(1),
+          regions: ['us-west-2', 'us-east-2'],
+          sharedAccounts: ['098765432109'],
+          tags: { Environment: 'test' },
+        },
+        imageExclusionRules: { tags: { Environment: 'test' } },
       },
-      imageExclusionRules: { tags: { Environment: 'test' } },
     },
   ],
   resourceSelection: {

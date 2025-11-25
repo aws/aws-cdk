@@ -121,6 +121,25 @@ export interface LifecyclePolicyAction {
 }
 
 /**
+ * The resource filtering to apply in the lifecycle policy rule
+ */
+export interface LifecyclePolicyFilter {
+  /**
+   * The resource age filter to apply in the lifecycle policy rule
+   *
+   * @default - none if a count filter is provided. Otherwise, an age filter is required.
+   */
+  readonly ageFilter?: LifecyclePolicyAgeFilter;
+
+  /**
+   * The resource count filter to apply in the lifecycle policy rule
+   *
+   * @default - none if an age filter is provided. Otherwise, a count filter is required.
+   */
+  readonly countFilter?: LifecyclePolicyCountFilter;
+}
+
+/**
  * The count-based filtering to apply in a lifecycle policy rule
  */
 export interface LifecyclePolicyCountFilter {
@@ -200,28 +219,9 @@ export interface LifecyclePolicyAmiExclusionRules {
 }
 
 /**
- * Configuration details for the lifecycle policy rules
+ * The rules to apply for excluding resources from the lifecycle policy rule
  */
-export interface LifecyclePolicyDetail {
-  /**
-   * The action to perform in the lifecycle policy rule
-   */
-  readonly action: LifecyclePolicyAction;
-
-  /**
-   * The resource age filter to apply in the lifecycle policy rule
-   *
-   * @default - none if a count filter is provided. Otherwise, an age filter is required.
-   */
-  readonly ageFilter?: LifecyclePolicyAgeFilter;
-
-  /**
-   * The resource count filter to apply in the lifecycle policy rule
-   *
-   * @default - none if an age filter is provided. Otherwise, a count filter is required.
-   */
-  readonly countFilter?: LifecyclePolicyCountFilter;
-
+export interface LifecyclePolicyExclusionRules {
   /**
    * The rules to apply for excluding EC2 Image Builder images from the lifecycle policy rule
    *
@@ -235,6 +235,28 @@ export interface LifecyclePolicyDetail {
    * @default - no exclusion rules are applied on the AMI
    */
   readonly amiExclusionRules?: LifecyclePolicyAmiExclusionRules;
+}
+
+/**
+ * Configuration details for the lifecycle policy rules
+ */
+export interface LifecyclePolicyDetail {
+  /**
+   * The action to perform in the lifecycle policy rule
+   */
+  readonly action: LifecyclePolicyAction;
+
+  /**
+   * The resource filtering to apply in the lifecycle policy rule
+   */
+  readonly filter: LifecyclePolicyFilter;
+
+  /**
+   * The rules to apply for excluding resources from the lifecycle policy rule
+   *
+   * @default - no exclusion rules are applied on any resource
+   */
+  readonly exclusionRules?: LifecyclePolicyExclusionRules;
 }
 
 /**
@@ -430,9 +452,11 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
       description: props.description,
       resourceType: props.resourceType,
       executionRole: this.executionRole.roleArn,
-      policyDetails: this.buildPolicyDetails(props),
+      policyDetails: this.buildPolicyDetails(props.resourceType, props.details),
       resourceSelection: {
-        recipes: this.buildRecipes(props),
+        ...(props.resourceSelection.recipes !== undefined && {
+          recipes: this.buildRecipes(props.resourceType, props.resourceSelection.recipes),
+        }),
         tagMap: props.resourceSelection.tags,
       },
       status: props.status,
@@ -450,25 +474,30 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
   /**
    * Generates the policy details property into the `PolicyDetail` type in the CloudFormation L1 definition.
    *
-   * @param props The props passed as input to the construct
+   * @param resourceType The resource type of the lifecycle policy
+   * @param details The lifecycle policy rules
    * @private
    */
-  private buildPolicyDetails(props: LifecyclePolicyProps): CfnLifecyclePolicy.PolicyDetailProperty[] {
-    return props.details.map((detail): CfnLifecyclePolicy.PolicyDetailProperty => {
-      const action = this.buildAction(props, detail);
-      const exclusionRules = this.buildExclusionRules(detail);
+  private buildPolicyDetails(
+    resourceType: LifecyclePolicyResourceType,
+    details: LifecyclePolicyDetail[],
+  ): CfnLifecyclePolicy.PolicyDetailProperty[] {
+    return details.map((detail): CfnLifecyclePolicy.PolicyDetailProperty => {
+      const action = this.buildAction(resourceType, detail.action);
+      const exclusionRules =
+        detail.exclusionRules !== undefined ? this.buildExclusionRules(detail.exclusionRules) : undefined;
 
-      this.validatePolicyDetailAction(props, detail.action, exclusionRules?.amis);
-      this.validatePolicyDetailFilter(detail);
+      this.validatePolicyDetailAction(resourceType, detail.action, exclusionRules?.amis);
+      this.validatePolicyDetailFilter(detail.filter);
 
       return {
         action: action,
         filter: {
-          retainAtLeast: detail.ageFilter?.retainAtLeast,
-          type: detail.ageFilter !== undefined ? 'AGE' : 'COUNT',
-          ...(detail.ageFilter !== undefined
-            ? this.convertDurationToTimeUnitValue(detail.ageFilter.age)
-            : { value: detail.countFilter!.count }),
+          retainAtLeast: detail.filter.ageFilter?.retainAtLeast,
+          type: detail.filter.ageFilter !== undefined ? 'AGE' : 'COUNT',
+          ...(detail.filter.ageFilter !== undefined
+            ? this.convertDurationToTimeUnitValue(detail.filter.ageFilter.age)
+            : { value: detail.filter.countFilter!.count }),
         },
         ...(exclusionRules !== undefined && { exclusionRules }),
       };
@@ -479,13 +508,17 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
    * Generates the recipes property in the resource selection into the `RecipeSelection` type in the CloudFormation L1
    * definition.
    *
-   * @param props The props passed as input to the construct
+   * @param resourceType The resource type of the lifecycle policy
+   * @param recipes The recipes passed in the props
    * @private
    */
-  private buildRecipes(props: LifecyclePolicyProps): CfnLifecyclePolicy.RecipeSelectionProperty[] | undefined {
-    return props.resourceSelection.recipes?.map((recipe): CfnLifecyclePolicy.RecipeSelectionProperty => {
+  private buildRecipes(
+    resourceType: LifecyclePolicyResourceType,
+    recipes: IRecipeBase[],
+  ): CfnLifecyclePolicy.RecipeSelectionProperty[] | undefined {
+    return recipes?.map((recipe): CfnLifecyclePolicy.RecipeSelectionProperty => {
       if (recipe._isImageRecipe()) {
-        if (props.resourceType === LifecyclePolicyResourceType.CONTAINER_IMAGE) {
+        if (resourceType === LifecyclePolicyResourceType.CONTAINER_IMAGE) {
           throw new cdk.ValidationError(
             `recipes in the resource selection must all be container recipes for policy type ${LifecyclePolicyResourceType.CONTAINER_IMAGE}`,
             this,
@@ -499,7 +532,7 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
       }
 
       if (recipe._isContainerRecipe()) {
-        if (props.resourceType === LifecyclePolicyResourceType.AMI_IMAGE) {
+        if (resourceType === LifecyclePolicyResourceType.AMI_IMAGE) {
           throw new cdk.ValidationError(
             `recipes in the resource selection must all be image recipes for policy type ${LifecyclePolicyResourceType.AMI_IMAGE}`,
             this,
@@ -522,28 +555,30 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
   /**
    * Generates the exclusion rules property into the `ExclusionRules` type in the CloudFormation L1 definition.
    *
-   * @param detail The lifecycle policy detail where the exclusion rules are
+   * @param exclusionRules The exclusion rules for resources applied in the lifecycle policy rule
    * @private
    */
-  private buildExclusionRules(detail: LifecyclePolicyDetail): CfnLifecyclePolicy.ExclusionRulesProperty | undefined {
+  private buildExclusionRules(
+    exclusionRules: LifecyclePolicyExclusionRules,
+  ): CfnLifecyclePolicy.ExclusionRulesProperty | undefined {
     const amiExclusionRules: CfnLifecyclePolicy.AmiExclusionRulesProperty = {
-      ...(detail.amiExclusionRules?.isPublic && { isPublic: detail.amiExclusionRules.isPublic }),
-      ...(detail.amiExclusionRules?.lastLaunched !== undefined && {
-        lastLaunched: this.convertDurationToTimeUnitValue(detail.amiExclusionRules.lastLaunched, 365),
+      ...(exclusionRules.amiExclusionRules?.isPublic && { isPublic: exclusionRules.amiExclusionRules.isPublic }),
+      ...(exclusionRules.amiExclusionRules?.lastLaunched !== undefined && {
+        lastLaunched: this.convertDurationToTimeUnitValue(exclusionRules.amiExclusionRules.lastLaunched, 365),
       }),
-      ...(detail.amiExclusionRules?.regions?.length && { regions: detail.amiExclusionRules.regions }),
-      ...(detail.amiExclusionRules?.sharedAccounts?.length && {
-        sharedAccounts: detail.amiExclusionRules.sharedAccounts,
+      ...(exclusionRules.amiExclusionRules?.regions?.length && { regions: exclusionRules.amiExclusionRules.regions }),
+      ...(exclusionRules.amiExclusionRules?.sharedAccounts?.length && {
+        sharedAccounts: exclusionRules.amiExclusionRules.sharedAccounts,
       }),
-      ...(detail.amiExclusionRules?.tags && { tagMap: detail.amiExclusionRules.tags }),
+      ...(exclusionRules.amiExclusionRules?.tags && { tagMap: exclusionRules.amiExclusionRules.tags }),
     };
 
-    const exclusionRules: CfnLifecyclePolicy.ExclusionRulesProperty = {
+    const cfnExclusionRules: CfnLifecyclePolicy.ExclusionRulesProperty = {
       ...(Object.keys(amiExclusionRules).length && { amis: amiExclusionRules }),
-      ...(detail.imageExclusionRules !== undefined && { tagMap: detail.imageExclusionRules.tags }),
+      ...(exclusionRules.imageExclusionRules !== undefined && { tagMap: exclusionRules.imageExclusionRules.tags }),
     };
 
-    return Object.keys(exclusionRules).length ? exclusionRules : undefined;
+    return Object.keys(exclusionRules).length ? cfnExclusionRules : undefined;
   }
 
   /**
@@ -553,15 +588,17 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
    * @param detail The lifecycle policy detail where the exclusion rules are
    * @private
    */
-  private buildAction(props: LifecyclePolicyProps, detail: LifecyclePolicyDetail): CfnLifecyclePolicy.ActionProperty {
+  private buildAction(
+    resourceType: LifecyclePolicyResourceType,
+    action: LifecyclePolicyAction,
+  ): CfnLifecyclePolicy.ActionProperty {
     const isContainerPolicy =
-      !cdk.Token.isUnresolved(props.resourceType) && props.resourceType === LifecyclePolicyResourceType.CONTAINER_IMAGE;
-    const isAmiPolicy =
-      !cdk.Token.isUnresolved(props.resourceType) && props.resourceType === LifecyclePolicyResourceType.AMI_IMAGE;
+      !cdk.Token.isUnresolved(resourceType) && resourceType === LifecyclePolicyResourceType.CONTAINER_IMAGE;
+    const isAmiPolicy = !cdk.Token.isUnresolved(resourceType) && resourceType === LifecyclePolicyResourceType.AMI_IMAGE;
 
-    const amis = detail.action.includeAmis ?? (isAmiPolicy ? true : undefined);
-    const snapshots = detail.action.includeSnapshots ?? (isAmiPolicy ? true : undefined);
-    const containers = detail.action.includeContainers ?? (isContainerPolicy ? true : undefined);
+    const amis = action.includeAmis ?? (isAmiPolicy ? true : undefined);
+    const snapshots = action.includeSnapshots ?? (isAmiPolicy ? true : undefined);
+    const containers = action.includeContainers ?? (isContainerPolicy ? true : undefined);
     const includeResources: CfnLifecyclePolicy.IncludeResourcesProperty = {
       ...(amis !== undefined && { amis }),
       ...(snapshots !== undefined && { snapshots }),
@@ -569,7 +606,7 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
     };
 
     return {
-      type: detail.action.type,
+      type: action.type,
       ...(Object.keys(includeResources).length && { includeResources }),
     };
   }
@@ -606,20 +643,17 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
   /**
    * Validates a policy detail filter within a lifecycle policy rule
    *
-   * @param props The props passed as input to the construct
+   * @param resourceType The resource type of the lifecycle policy
    * @param action The action being taken in the lifecycle policy rule
    * @param amiExclusionRules The AMI exclusion rules in the lifecycle policy rule
    * @private
    */
   private validatePolicyDetailAction(
-    props: LifecyclePolicyProps,
+    resourceType: LifecyclePolicyResourceType,
     action: LifecyclePolicyAction,
     amiExclusionRules: CfnLifecyclePolicy.AmiExclusionRulesProperty | cdk.IResolvable | undefined,
   ) {
-    if (
-      !cdk.Token.isUnresolved(props.resourceType) &&
-      props.resourceType === LifecyclePolicyResourceType.CONTAINER_IMAGE
-    ) {
+    if (!cdk.Token.isUnresolved(resourceType) && resourceType === LifecyclePolicyResourceType.CONTAINER_IMAGE) {
       if (!cdk.Token.isUnresolved(action.type) && action.type !== LifecyclePolicyActionType.DELETE) {
         throw new cdk.ValidationError('you may only specify DELETE rules for container policies', this);
       }
@@ -638,8 +672,8 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
     }
 
     if (
-      !cdk.Token.isUnresolved(props.resourceType) &&
-      props.resourceType === LifecyclePolicyResourceType.AMI_IMAGE &&
+      !cdk.Token.isUnresolved(resourceType) &&
+      resourceType === LifecyclePolicyResourceType.AMI_IMAGE &&
       action.includeContainers
     ) {
       throw new cdk.ValidationError('you cannot include containers in an AMI policy', this);
@@ -652,21 +686,23 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
    * @param detail The lifecycle policy detail to validate filters for
    * @private
    */
-  private validatePolicyDetailFilter(detail: LifecyclePolicyDetail) {
-    if (detail.ageFilter !== undefined && detail.countFilter !== undefined) {
+  private validatePolicyDetailFilter(filter: LifecyclePolicyFilter) {
+    if (filter.ageFilter !== undefined && filter.countFilter !== undefined) {
       throw new cdk.ValidationError('either age count can be specified in a policy filter, but not both', this);
     }
 
-    if (detail.ageFilter === undefined && detail.countFilter === undefined) {
+    if (filter.ageFilter === undefined && filter.countFilter === undefined) {
       throw new cdk.ValidationError('you must provide an age or count filter in the policy', this);
     }
 
-    if (detail.ageFilter?.retainAtLeast !== undefined && detail.ageFilter.retainAtLeast < 1) {
-      throw new cdk.ValidationError('the retainAtLeast filter value must be at least 1', this);
-    }
-
-    if (detail.ageFilter?.retainAtLeast !== undefined && detail.ageFilter.retainAtLeast > 10) {
-      throw new cdk.ValidationError('the retainAtLeast filter value must be at most 10', this);
+    const retainAtLeast = filter.ageFilter?.retainAtLeast;
+    if (retainAtLeast !== undefined) {
+      if (retainAtLeast < 1) {
+        throw new cdk.ValidationError('the retainAtLeast filter value must be at least 1', this);
+      }
+      if (retainAtLeast > 10) {
+        throw new cdk.ValidationError('the retainAtLeast filter value must be at most 10', this);
+      }
     }
   }
 
