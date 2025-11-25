@@ -29,6 +29,19 @@ describe('Mixin Extensions', () => {
       });
     });
 
+    test('can apply multiple mixins', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket')
+        .with(new s3Mixins.EnableVersioning(), new s3Mixins.AutoDeleteObjects());
+
+      const versionConfig = bucket.versioningConfiguration as any;
+      expect(versionConfig?.status).toBe('Enabled');
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('Custom::S3AutoDeleteObjects', {
+        BucketName: { Ref: 'Bucket' },
+      });
+    });
+
     test('returns the same construct', () => {
       const bucket = new s3.CfnBucket(stack, 'Bucket');
       const result = bucket.with(new s3Mixins.EnableVersioning());
