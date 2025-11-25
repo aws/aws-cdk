@@ -412,15 +412,6 @@ class EventBridgeEventsClass extends ClassType {
         const eventMetadata = expr.ident('eventMetadata');
 
         eventPatternMethod.addBody(
-          // stmt.if_(expr.not(expr.ident(eventPatternMethodParam.spec.name)))
-          //   .then(
-          //     stmt.ret(
-          //       expr.object({
-          //         source: expr.list([expr.lit(event.source)]),
-          //         detailType: expr.list([expr.lit(event.detailType)]),
-          //       }),
-          //     ),
-          //   ),
           stmt.constVar(
             expr.destructuringObject(eventMetadata, expr.directCode('...obj')),
             expr.binOp(expr.ident(eventPatternMethodParam.spec.name), '||', expr.lit({})),
