@@ -201,15 +201,16 @@ CDK Mixins automatically generates typed EventBridge event patterns for AWS reso
 ### Event Patterns Basic Usage
 
 ```typescript
-import { BucketEvents } from '@aws-cdk/mixins-preview/aws-s3/events';
+import { BucketEvents } from '@aws-cdk/mixins-preview/aws_s3/events';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 
 // Works with L2 constructs
-const bucket = new s3.Bucket(stack, 'Bucket');
+const bucket = new s3.Bucket(scope, 'Bucket');
 const bucketEvents = BucketEvents.fromBucket(bucket);
+declare const fn: lambda.Function;
 
-new events.Rule(stack, 'Rule', {
+new events.Rule(scope, 'Rule', {
   eventPattern: bucketEvents.objectCreatedPattern({
     object: { key: ['uploads/*'] }
   }),
@@ -217,10 +218,10 @@ new events.Rule(stack, 'Rule', {
 });
 
 // Also works with L1 constructs
-const cfnBucket = new s3.CfnBucket(stack, 'CfnBucket');
+const cfnBucket = new s3.CfnBucket(scope, 'CfnBucket');
 const cfnBucketEvents = BucketEvents.fromBucket(cfnBucket);
 
-new events.CfnRule(stack, 'CfnRule', {
+new events.CfnRule(scope, 'CfnRule', {
   state: 'ENABLED',
   eventPattern: cfnBucketEvents.objectCreatedPattern({
     object: { key: ['uploads/*'] }
@@ -234,6 +235,9 @@ new events.CfnRule(stack, 'CfnRule', {
 **Automatic Resource Injection**: Resource identifiers are automatically included in patterns
 
 ```typescript
+import { BucketEvents } from '@aws-cdk/mixins-preview/aws_s3/events';
+
+declare const bucket: s3.Bucket;
 const bucketEvents = BucketEvents.fromBucket(bucket);
 
 // Bucket name is automatically injected from the bucket reference
@@ -244,6 +248,11 @@ const pattern = bucketEvents.objectCreatedPattern();
 **Event Metadata Support**: Control EventBridge pattern metadata
 
 ```typescript
+import { BucketEvents } from '@aws-cdk/mixins-preview/aws_s3/events';
+
+declare const bucket: s3.Bucket;
+const bucketEvents = BucketEvents.fromBucket(bucket);
+
 const pattern = bucketEvents.objectCreatedPattern({
   eventMetadata: {
     region: ['us-east-1', 'us-west-2'],
@@ -266,5 +275,5 @@ Event patterns are generated for EventBridge events available in the AWS Event S
 Import events from service-specific modules:
 
 ```typescript
-import { BucketEvents } from '@aws-cdk/mixins-preview/aws-s3/events';
+import { BucketEvents } from '@aws-cdk/mixins-preview/aws_s3/events';
 ```
