@@ -42,6 +42,15 @@ export interface ModuleMapLoadingOptions {
    * @default - for `aws-cdk-lib`
    */
   readonly packageBases?: PackageBaseNames;
+
+  /**
+   * Read namespaces from the current module map
+   *
+   * If false, ignore the existing values and always synthesize new ones.
+   *
+   * @default true
+   */
+  readonly respectOverrides?: boolean;
 }
 
 /**
@@ -56,7 +65,7 @@ export function readModuleMap(filepath: string, opts: ModuleMapLoadingOptions = 
       definition = namespaceToModuleDefinition(loaded.scopes[0].namespace, opts.packageBases);
 
       // update definition with values from targets
-      if (loaded.targets) {
+      if (loaded.targets && (opts.respectOverrides ?? true)) {
         definition = {
           ...definition,
           dotnetPackage: loaded.targets.dotnet?.namespace ?? definition.dotnetPackage,
