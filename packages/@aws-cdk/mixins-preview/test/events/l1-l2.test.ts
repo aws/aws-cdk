@@ -1,11 +1,12 @@
 /* eslint-disable @cdklabs/no-throw-default-error */
 import { Stack } from 'aws-cdk-lib';
-import { CfnRule, Rule, type EventPattern } from 'aws-cdk-lib/aws-events';
+import { CfnRule, Rule } from 'aws-cdk-lib/aws-events';
+import type { EventPattern } from 'aws-cdk-lib/aws-events';
 import { Construct } from 'constructs';
 import { BucketEvents } from '../../lib/services/aws-s3/events';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AutoScalingGroupEvents } from '../../lib/services/aws-autoscaling/events.generated';
-import { AutoScalingGroupReference } from 'aws-cdk-lib/aws-autoscaling';
+import type { AutoScalingGroupReference } from 'aws-cdk-lib/aws-autoscaling';
 
 describe.each([
   ['CfnRule', (scope: Construct, eventPattern: EventPattern) => {
