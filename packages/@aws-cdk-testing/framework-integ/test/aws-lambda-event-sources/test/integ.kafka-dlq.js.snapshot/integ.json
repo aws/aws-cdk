@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "LambdaEventSourceKafkaDlqTest/DefaultTest": {
+      "stacks": [
+        "lambda-event-source-self-managed-kafka-dlq"
+      ],
+      "assertionStack": "LambdaEventSourceKafkaDlqTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaEventSourceKafkaDlqTestDefaultTestDeployAssert0E9E64FD"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
