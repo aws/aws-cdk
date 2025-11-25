@@ -65,14 +65,18 @@ async function updateExportsAndEntryPoints(modules: ModuleMap, pkgPath: string) 
       submodule: moduleName.replace(/-/g, '_'),
     };
 
+    // @aws-cdk/mixins-preview/aws_s3 => ./lib/services/aws-s3/index.js
+    const indexExportName = `./${moduleConfig.submodule}`;
+    newExports[indexExportName] = `./lib/services/${moduleConfig.name}/index.js`;
+
     // @aws-cdk/mixins-preview/aws-s3 => `export * as aws_s3 from './aws-s3';`
     if (!serviceIndexExports.find(e => e.includes(moduleConfig.name))) {
       serviceIndexExports.push(`export * as ${moduleConfig.submodule} from './${moduleConfig.name}';`);
     }
 
-    // @aws-cdk/mixins-preview/aws_s3/mixins => ./lib/services/aws-s3/index.js
-    const exportName = `./${moduleConfig.submodule}/mixins`;
-    newExports[exportName] = `./lib/services/${moduleConfig.name}/mixins.js`;
+    // @aws-cdk/mixins-preview/aws_s3/mixins => ./lib/services/aws-s3/mixins.js
+    const mixinsExportName = `./${moduleConfig.submodule}/mixins`;
+    newExports[mixinsExportName] = `./lib/services/${moduleConfig.name}/mixins.js`;
 
     // @aws-cdk/mixins-preview/aws_s3/events => ./lib/services/aws-s3/events.js
     const eventsFilePath = path.join(pkgPath, 'lib', 'services', moduleConfig.name, 'events.ts');
