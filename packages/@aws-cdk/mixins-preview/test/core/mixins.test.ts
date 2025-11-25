@@ -64,7 +64,6 @@ describe('Core Mixins Framework', () => {
       const mixin = new TestMixin();
 
       expect(mixin.supports(construct)).toBe(true);
-      expect(mixin.validate(construct)).toEqual([]);
 
       const result = mixin.applyTo(construct);
       expect((result as any).mixinApplied).toBe(true);
@@ -128,25 +127,14 @@ describe('Core Mixins Framework', () => {
       }).toThrow();
     });
 
-    test('validation errors cause exceptions', () => {
-      const construct = new TestConstruct(stack, 'test');
-      const mixin = new ValidatingMixin();
-
-      expect(() => {
-        Mixins.of(construct).apply(mixin);
-      }).toThrow();
-    });
-
-    test('mustApply succeeds when at least one construct matches', () => {
-      const bucket = new s3.CfnBucket(stack, 'Bucket');
+    test('mustApply throws when some constructs match', () => {
+      new s3.CfnBucket(stack, 'Bucket');
       new logs.CfnLogGroup(stack, 'LogGroup');
       const mixin = new SelectiveMixin();
 
       expect(() => {
         Mixins.of(stack).mustApply(mixin);
-      }).not.toThrow();
-
-      expect((bucket as any).selectiveMixinApplied).toBe(true);
+      }).toThrow();
     });
   });
 
@@ -162,7 +150,6 @@ describe('Core Mixins Framework', () => {
       const construct = new TestConstruct(stack, 'test');
 
       expect(mixin.supports(construct)).toBe(true);
-      expect(mixin.validate(construct)).toEqual([]);
       expect(mixin.applyTo(construct)).toBe(construct);
     });
   });

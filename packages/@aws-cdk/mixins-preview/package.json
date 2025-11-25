@@ -1,11 +1,11 @@
 {
   "name": "@aws-cdk/mixins-preview",
-  "private": true,
   "version": "0.0.0",
   "description": "Preview of CDK Mixins - composable, reusable abstractions that can be applied to any construct (L1, L2 or custom).",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "exports": {
+    ".": "./lib/index.js",
     "./.jsii": "./.jsii",
     "./.warnings.jsii.js": "./.warnings.jsii.js",
     "./alexa-ask/mixins": "./lib/services/alexa-ask/mixins.js",
@@ -383,7 +383,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
-    "@aws-cdk/service-spec-types": "^0.0.187",
+    "@aws-cdk/service-spec-types": "^0.0.188",
     "@aws-cdk/spec2cdk": "0.0.0",
     "@cdklabs/tskb": "^0.0.4",
     "@cdklabs/typewriter": "^0.0.10",
