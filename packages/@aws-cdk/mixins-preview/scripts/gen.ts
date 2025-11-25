@@ -73,18 +73,28 @@ async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
   }
 
   // services/<mod>/index.ts
-  const subModuleIndex = path.join(modulePath, 'index.ts');
-  // we don't export anything else in the preview package, so always force overwrite
-  await fs.writeFile(subModuleIndex, 'export * as mixins from \'./mixins\';\n');
+  // This index might contain hand-written exports => ensure they are preserved
+  {
+    const subModuleIndex = path.join(modulePath, 'index.ts');
+    const subModuleIndexExports = new Array<string>();
+    if (existsSync(subModuleIndex)) {
+      subModuleIndexExports.push(...(await fs.readFile(subModuleIndex)).toString().split('\n').filter(Boolean));
+    }
+
+    const mixinsExportStmt = 'export * as mixins from \'./mixins\';';
+    if (!subModuleIndexExports.find(e => e.includes(mixinsExportStmt))) {
+      subModuleIndexExports.push(mixinsExportStmt);
+    }
+
+    await fs.writeFile(subModuleIndex, subModuleIndexExports.sort().join('\n') + '\n');
+  }
 
   // services/<mod>/mixins.ts
+  // This index might contain hand-written mixins => ensure they are preserved
   {
     const mixinsIndex = path.join(modulePath, 'mixins.ts');
-    const mixinsExports= new Array<string>();
-
-    // This index might contain hand-written mixins => ensure they are preserved
+    const mixinsExports = new Array<string>();
     if (existsSync(mixinsIndex)) {
-    // load lines from file
       mixinsExports.push(...(await fs.readFile(mixinsIndex)).toString().split('\n').filter(Boolean));
     }
 

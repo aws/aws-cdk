@@ -20,6 +20,13 @@ export abstract class ConstructSelector {
   }
 
   /**
+   * Selects only the provided construct.
+   */
+  static onlyItself(): ConstructSelector {
+    return new OnlyItselfSelector();
+  }
+
+  /**
    * Selects constructs of a specific type.
    */
   static resourcesOfType(type: string | any): ConstructSelector {
@@ -105,5 +112,11 @@ class IdPatternSelector extends ConstructSelector {
     };
     visit(scope);
     return result;
+  }
+}
+
+class OnlyItselfSelector extends ConstructSelector {
+  select(scope: IConstruct): IConstruct[] {
+    return [scope];
   }
 }
