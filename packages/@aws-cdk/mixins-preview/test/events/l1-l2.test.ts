@@ -103,6 +103,56 @@ describe.each([
       },
     });
   });
+
+  test('should always have a bucketRef when no props is passed', () => {
+    // GIVEN
+    const bucketEvents = BucketEvents.fromBucket(new class extends Construct {
+      public readonly bucketRef = {
+        bucketArn: 'arn',
+        bucketName: 'the-bucket',
+      };
+      public readonly env = { account: '11111111111', region: 'us-east-1' };
+    }(stack, 'Bucket'));
+
+    // WHEN
+    newRule(stack, bucketEvents.objectCreatedPattern());
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      EventPattern: {
+        'detail-type': ['Object Created'],
+        'source': ['aws.s3'],
+        'detail': {
+          bucket: { name: ['the-bucket'] },
+        },
+      },
+    });
+  });
+
+  test('should always have a bucketRef when empty props is passed', () => {
+    // GIVEN
+    const bucketEvents = BucketEvents.fromBucket(new class extends Construct {
+      public readonly bucketRef = {
+        bucketArn: 'arn',
+        bucketName: 'the-bucket',
+      };
+      public readonly env = { account: '11111111111', region: 'us-east-1' };
+    }(stack, 'Bucket'));
+
+    // WHEN
+    newRule(stack, bucketEvents.objectCreatedPattern({}));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      EventPattern: {
+        'detail-type': ['Object Created'],
+        'source': ['aws.s3'],
+        'detail': {
+          bucket: { name: ['the-bucket'] },
+        },
+      },
+    });
+  });
 });
 
 test('creates multiple rules for different event types', () => {
