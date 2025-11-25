@@ -70,13 +70,14 @@ async function updateExportsAndEntryPoints(modules: ModuleMap, pkgPath: string) 
       serviceIndexExports.push(`export * as ${moduleConfig.submodule} from './${moduleConfig.name}';`);
     }
 
-    // @aws-cdk/mixins-preview/aws-s3/mixins => ./lib/services/aws-s3/index.js
-    const exportName = `./${moduleConfig.name}/mixins`;
+    // @aws-cdk/mixins-preview/aws_s3/mixins => ./lib/services/aws-s3/index.js
+    const exportName = `./${moduleConfig.submodule}/mixins`;
     newExports[exportName] = `./lib/services/${moduleConfig.name}/mixins.js`;
 
+    // @aws-cdk/mixins-preview/aws_s3/events => ./lib/services/aws-s3/events.js
     const eventsFilePath = path.join(pkgPath, 'lib', 'services', moduleConfig.name, 'events.ts');
     if (existsSync(eventsFilePath)) {
-      const eventsExportName = `./${moduleConfig.name}/events`;
+      const eventsExportName = `./${moduleConfig.submodule}/events`;
       newExports[eventsExportName] = `./lib/services/${moduleConfig.name}/events.js`;
     }
   }
