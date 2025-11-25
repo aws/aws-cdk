@@ -4,7 +4,8 @@ import { CfnRule, Rule, type EventPattern } from 'aws-cdk-lib/aws-events';
 import { Construct } from 'constructs';
 import { BucketEvents } from '../../lib/services/aws-s3/events';
 import { Template } from 'aws-cdk-lib/assertions';
-// import { GroupEvents } from '../../lib/services/aws-xray/events';
+import { AutoScalingGroupEvents } from '../../lib/services/aws-autoscaling/events.generated';
+import { AutoScalingGroupReference } from 'aws-cdk-lib/aws-autoscaling';
 
 describe.each([
   ['CfnRule', (scope: Construct, eventPattern: EventPattern) => {
@@ -49,29 +50,29 @@ describe.each([
     });
   });
 
-  // TODOtest('can render event with uppercase props', () => {
-  //   // GIVEN
-  //   const xrayEvents = GroupEvents.fromGroup(new class extends Construct {
-  //     public readonly groupRef = {
-  //       groupArn: 'arn',
-  //     };
-  //     public readonly env = { account: '11111111111', region: 'us-east-1' };
-  //   }(stack, 'Group'));
+  test('can render event with uppercase props', () => {
+    // GIVEN
+    const asgEvents = AutoScalingGroupEvents.fromAutoScalingGroup(new class extends Construct {
+      public readonly autoScalingGroupRef: AutoScalingGroupReference = {
+        autoScalingGroupName: 'asdf',
+      };
+      public readonly env = { account: '11111111111', region: 'us-east-1' };
+    }(stack, 'Group'));
 
-  //   // WHEN
-  //   newRule(stack, xrayEvents.aWSXRayInsightUpdatePattern({
-  //     summary: 'asdf',
-  //   } as any)); // Cast away requiredness of this field
+    // WHEN
+    newRule(stack, asgEvents.eC2InstanceLaunchUnsuccessfulPattern({
+      cause: ['explosion'],
+    }));
 
-  //   // THEN
-  //   Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
-  //     EventPattern: {
-  //       'detail-type': ['AWS X-Ray Insight Update'],
-  //       'source': ['aws.xray'],
-  //       'detail': {
-  //         Summary: 'asdf',
-  //       },
-  //     },
-  //   });
-  // });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      EventPattern: {
+        'detail-type': ['EC2 Instance Launch Unsuccessful'],
+        'source': ['aws.autoscaling'],
+        'detail': {
+          Cause: ['explosion'],
+        },
+      },
+    });
+  });
 });
