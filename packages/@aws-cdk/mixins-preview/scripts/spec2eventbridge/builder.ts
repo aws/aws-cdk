@@ -381,7 +381,7 @@ class EventBridgeEventsClass extends ClassType {
         });
         propInterface.addProperty({
           name: 'eventMetadata',
-          type: CDK_CORE.AWSEventMetadataProp,
+          type: CDK_CORE.AWSEventMetadataProps,
           optional: true,
           immutable: true,
           docs: {
@@ -452,6 +452,7 @@ class EventBridgeEventsClass extends ClassType {
       name: refPropertyName,
       type: this.refInterface,
       immutable: true,
+      protected: true, // Actually want this private
       docs: {
         summary: `Reference to the ${this.resource.name} construct`,
       },

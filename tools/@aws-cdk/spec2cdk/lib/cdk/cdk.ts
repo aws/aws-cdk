@@ -20,6 +20,7 @@ export class CdkCore extends ExternalModule {
   public readonly Stack = Type.fromName(this, 'Stack');
 
   public readonly objectToCloudFormation = makeCallableExpr(this, 'objectToCloudFormation');
+  public readonly eventPatternToCloudFormation = makeCallableExpr(this, 'eventPatternToCloudFormation');
   public readonly stringToCloudFormation = makeCallableExpr(this, 'stringToCloudFormation');
   public readonly dateToCloudFormation = makeCallableExpr(this, 'dateToCloudFormation');
   public readonly booleanToCloudFormation = makeCallableExpr(this, 'booleanToCloudFormation');
@@ -49,7 +50,7 @@ export class CdkCore extends ExternalModule {
   public readonly validateString = makeCallableExpr(this, 'validateString');
 
   public readonly AWSEventMetadata = Type.fromName(this, 'AWSEventMetadata');
-  public readonly AWSEventMetadataProp = Type.fromName(this, 'AWSEventMetadataProp');
+  public readonly AWSEventMetadataProps = Type.fromName(this, 'AWSEventMetadataProps');
 
   constructor(fqn: string) {
     super(fqn);

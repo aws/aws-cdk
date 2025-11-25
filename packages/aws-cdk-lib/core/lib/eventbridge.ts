@@ -1,7 +1,7 @@
 /**
  * Properties for AWS EventBridge event metadata
  */
-export interface AWSEventMetadataProp {
+export interface AWSEventMetadataProps {
   /**
    * By default, this is set to 0 (zero) in all events.
    *
