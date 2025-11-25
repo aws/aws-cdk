@@ -480,12 +480,12 @@ new cognito.UserPool(this, 'myuserpool', {
 
 ### Threat Protection
 
-This feature is only available if your Feature Plan is set to PLUS. 
-
 Threat Protection can be set to configure enforcement levels and automatic responses for users in password-based and custom-challenge authentication flows.
 For configuration, there are 2 options for standard authentication and custom authentication.
 These are represented with properties `standardThreatProtectionMode` and `customThreatProtectionMode`.
 See the [documentation on Threat Protection](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-threat-protection.html)
+
+**Note**: Threat Protection requires the PLUS feature plan for new user pools. CDK allows you to configure threat protection settings at synthesis time, and CloudFormation will validate feature plan requirements at deployment time. Existing user pools that are grandfathered on LITE plans with threat protection enabled will continue to work.
 
 
 ### Emails

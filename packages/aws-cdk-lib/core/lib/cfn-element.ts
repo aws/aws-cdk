@@ -177,14 +177,14 @@ export abstract class CfnElement extends Construct {
 }
 
 /**
- * Base class for referencable CloudFormation constructs which are not Resources
+ * Base class for referenceable CloudFormation constructs which are not Resources
  *
  * These constructs are things like Conditions and Parameters, can be
  * referenced by taking the `.ref` attribute.
  *
  * Resource constructs do not inherit from CfnRefElement because they have their
  * own, more specific types returned from the .ref attribute. Also, some
- * resources aren't referencable at all (such as BucketPolicies or GatewayAttachments).
+ * resources aren't referenceable at all (such as BucketPolicies or GatewayAttachments).
  */
 export abstract class CfnRefElement extends CfnElement {
   /**

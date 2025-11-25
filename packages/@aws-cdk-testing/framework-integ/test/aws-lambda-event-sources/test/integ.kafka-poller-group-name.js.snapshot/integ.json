@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "LambdaEventSourceKafkaPollerGroupNameTest/DefaultTest": {
+      "stacks": [
+        "lambda-event-source-kafka-poller-group-name"
+      ],
+      "assertionStack": "LambdaEventSourceKafkaPollerGroupNameTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaEventSourceKafkaPollerGroupNameTestDefaultTestDeployAssertF412EA4A"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

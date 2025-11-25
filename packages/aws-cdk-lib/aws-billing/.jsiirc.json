@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.billing"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.Billing"
+      "namespace": "Amazon.CDK.AWS.Billing"
     },
     "python": {
       "module": "aws_cdk.aws_billing"

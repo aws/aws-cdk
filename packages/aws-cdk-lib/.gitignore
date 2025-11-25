@@ -1,5 +1,5 @@
 *.d.ts
-*.generated.ts
+*.generated.*
 *.js
 *.js.map
 *.snk

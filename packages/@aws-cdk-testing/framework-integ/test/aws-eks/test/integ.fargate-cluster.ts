@@ -17,7 +17,7 @@ class EksFargateClusterStack extends Stack {
     this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
     this.vpc = props?.vpc ?? this.createDummyVpc();
     new eks.FargateCluster(this, 'FargateCluster', {
-      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_33),
+      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_34),
       prune: false,
       authenticationMode: props?.authMode,
       vpc: this.vpc,

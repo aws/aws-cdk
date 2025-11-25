@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ContainerRecipeTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-imagebuilder-container-recipe-s3"
+      ],
+      "assertionStack": "ContainerRecipeTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ContainerRecipeTestDefaultTestDeployAssertB3A3E9AE"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

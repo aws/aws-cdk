@@ -4,7 +4,7 @@ import {
   validateFieldPattern,
   throwIfInvalid,
   ValidationError,
-} from '../../../agentcore/runtime/validation-helpers';
+} from '../../../lib/runtime/validation-helpers';
 
 describe('validation-helpers tests', () => {
   describe('validateStringField', () => {

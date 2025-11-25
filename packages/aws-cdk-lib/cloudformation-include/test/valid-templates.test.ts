@@ -262,6 +262,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can ingest a template with Lambda Layers defined with Fn::If condition', () => {
+    includeTestTemplate(stack, 'lambda-layers-with-condition.json');
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('lambda-layers-with-condition.json'),
+    );
+  });
+
   test('can ingest a template with fn:: intrinsic function used in deletion policy', () => {
     includeTestTemplate(stack, 'intrinsic-deletion-policy.json');
 

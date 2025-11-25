@@ -1661,9 +1661,9 @@ new ecs.Ec2Service(this, 'EC2Service', {
 
 ### Managed Instances Capacity Providers
 
-Managed Instances Capacity Providers allow you to use AWS-managed EC2 instances for your ECS tasks while providing more control over instance selection than standard Fargate. AWS handles the instance lifecycle, patching, and maintenance while you can specify detailed instance requirements.
+Managed Instances Capacity Providers allow you to use AWS-managed EC2 instances for your ECS tasks while providing more control over instance selection than standard Fargate. AWS handles the instance lifecycle, patching, and maintenance while you can specify detailed instance requirements. You can  define detailed instance requirements to control which types of instances are used for your workloads.
 
-To create a Managed Instances Capacity Provider, you need to specify the required EC2 instance profile, and networking configuration. You can also define detailed instance requirements to control which types of instances are used for your workloads.
+See [ECS documentation for Managed Instances Capacity Provider](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-instances-capacity-providers-concept.html) for more documentation.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -1693,14 +1693,19 @@ miCapacityProvider.connections.allowFrom(ec2.Peer.ipv4(vpc.vpcCidrBlock), ec2.Po
 // Add the capacity provider to the cluster
 cluster.addManagedInstancesCapacityProvider(miCapacityProvider);
 
-const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
+  memoryMiB: '512',
+  cpu: '256',
+  networkMode: ecs.NetworkMode.AWS_VPC,
+  compatibility: ecs.Compatibility.MANAGED_INSTANCES,
+});
 
 taskDefinition.addContainer('web', {
   image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   memoryReservationMiB: 256,
 });
 
-new ecs.Ec2Service(this, 'EC2Service', {
+new ecs.FargateService(this, 'FargateService', {
   cluster,
   taskDefinition,
   minHealthyPercent: 100,
@@ -1761,6 +1766,41 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICap
     onDemandMaxPricePercentageOverLowestPrice: 10,
   },
 });
+
+```
+#### Note: Service Replacement When Migrating from LaunchType to CapacityProviderStrategy
+
+**Understanding the Limitation**
+
+The ECS [CreateService API](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html#ECS-CreateService-request-launchType) does not allow specifying both `launchType` and `capacityProviderStrategies` simultaneously. When you specify `capacityProviderStrategies`, the CDK uses those capacity providers instead of a launch type. This is a limitation of the ECS API and CloudFormation, not a CDK bug.
+
+**Impact on Updates**
+
+Because `launchType` is immutable during updates, switching from `launchType` to `capacityProviderStrategies` requires CloudFormation to replace the service. This means your existing service will be deleted and recreated with the new configuration. This behavior is expected and reflects the underlying API constraints.
+
+**Workaround**
+
+While we work on a long-term solution, you can use the following [escape hatch](https://docs.aws.amazon.com/cdk/v2/guide/cfn-layer.html) to preserve your service during the migration:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const miCapacityProvider: ecs.ManagedInstancesCapacityProvider;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  capacityProviderStrategies: [
+    {
+      capacityProvider: miCapacityProvider.capacityProviderName,
+      weight: 1,
+    },
+  ],
+});
+
+// Escape hatch: Force launchType at the CloudFormation level to prevent service replacement
+const cfnService = service.node.defaultChild as ecs.CfnService;
+cfnService.launchType = 'FARGATE'; // or 'FARGATE_SPOT' depending on your capacity provider
 ```
 
 ### Cluster Default Provider Strategy

@@ -8,7 +8,7 @@ import { FieldUtils } from '../fields';
 import { noEmptyObject } from '../private/util';
 import { StateGraph } from '../state-graph';
 import { IStepFunctionsTask, StepFunctionsTaskConfig } from '../step-functions-task';
-import { CatchProps, IChainable, INextable, RetryProps } from '../types';
+import { CatchProps, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
 
 /**
  * Props that are common to all tasks
@@ -162,7 +162,7 @@ export class Task extends State implements INextable {
   /**
    * Return the Amazon States Language object for this state
    */
-  public toStateJson(): object {
+  public toStateJson(_?: QueryLanguage): object {
     return {
       ...this.renderNextEnd(),
       ...this.renderRetryCatch(),

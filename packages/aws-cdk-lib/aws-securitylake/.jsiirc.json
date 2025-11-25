@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.securitylake"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.SecurityLake"
+      "namespace": "Amazon.CDK.AWS.SecurityLake"
     },
     "python": {
       "module": "aws_cdk.aws_securitylake"

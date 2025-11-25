@@ -3,7 +3,7 @@ import { App, Stack, StackProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as eks from '../lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 
 interface EksFargateClusterStackProps extends StackProps {
   vpc?: ec2.IVpc;
@@ -14,10 +14,10 @@ class EksFargateClusterStack extends Stack {
 
     new eks.FargateCluster(this, 'FargateTestCluster', {
       vpc: props?.vpc,
-      version: eks.KubernetesVersion.V1_33,
+      version: eks.KubernetesVersion.V1_34,
       prune: false,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV33Layer(this, 'kubectlLayer'),
+        kubectlLayer: new KubectlV34Layer(this, 'kubectlLayer'),
       },
     });
   }

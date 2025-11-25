@@ -408,7 +408,7 @@ describe('LaunchTemplate', () => {
       },
     });
   });
-  test.each([124, 1001])('throws if throughput is set less than 125 or more than 1000', (throughput) => {
+  test.each([124, 2001])('throws if throughput is set less than 125 or more than 2000', (throughput) => {
     expect(() => {
       new LaunchTemplate(stack, 'LaunchTemplate', {
         blockDevices: [{
@@ -419,7 +419,7 @@ describe('LaunchTemplate', () => {
           }),
         }],
       });
-    }).toThrow(/'throughput' must be between 125 and 1000, got/);
+    }).toThrow(/'throughput' must be between 125 and 2000, got/);
   });
   test('throws if throughput is not an integer', () => {
     expect(() => {

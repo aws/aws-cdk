@@ -4,7 +4,8 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
-import { HostedZone, PrivateHostedZone, PublicHostedZone, ZoneSigningOptions } from '../lib';
+import { CfnHostedZone, HostedZone, PrivateHostedZone, PublicHostedZone } from '../lib';
+import { HostedZoneGrants } from '../lib/hosted-zone-grants';
 
 describe('hosted zone', () => {
   describe('Hosted Zone', () => {
@@ -268,6 +269,63 @@ test('grantDelegation', () => {
                 ':route53:::hostedzone/',
                 {
                   Ref: 'ZoneA5DE4B68',
+                },
+              ],
+            ],
+          },
+          Condition: {
+            'ForAllValues:StringEquals': {
+              'route53:ChangeResourceRecordSetsRecordTypes': ['NS'],
+              'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
+            },
+          },
+        },
+        {
+          Action: 'route53:ListHostedZonesByName',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ],
+    },
+  });
+});
+
+test('grantDelegation on L1s', () => {
+  // GIVEN
+  const stack = new cdk.Stack(undefined, 'TestStack', {
+    env: { account: '123456789012', region: 'us-east-1' },
+  });
+
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.AccountPrincipal('22222222222222'),
+  });
+
+  const zone = new CfnHostedZone(stack, 'Zone', {
+    name: 'banana.com',
+  });
+
+  // WHEN
+  HostedZoneGrants.fromHostedZone(zone).delegation(role);
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'route53:ChangeResourceRecordSets',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':route53:::hostedzone/',
+                {
+                  Ref: 'Zone',
                 },
               ],
             ],

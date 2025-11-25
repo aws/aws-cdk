@@ -6,7 +6,7 @@
 
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as agentcore from '../../../agentcore';
+import * as agentcore from '../../../lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 
 const app = new cdk.App();
@@ -24,10 +24,11 @@ const recordingBucket = new s3.Bucket(stack, 'RecordingBucket', {
   autoDeleteObjects: true,
 });
 
-// Create a browser with recording configuration
+// Create a browser with recording configuration and browser signing
 new agentcore.BrowserCustom(stack, 'BrowserWithRecording', {
   browserCustomName: 'browser_recording',
   networkConfiguration: agentcore.BrowserNetworkConfiguration.usingPublicNetwork(),
+  browserSigning: agentcore.BrowserSigning.ENABLED,
   recordingConfig: {
     enabled: true,
     s3Location: {

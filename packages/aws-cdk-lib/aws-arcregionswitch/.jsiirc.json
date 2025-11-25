@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.arcregionswitch"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.ARCRegionSwitch"
+      "namespace": "Amazon.CDK.AWS.ARCRegionSwitch"
     },
     "python": {
       "module": "aws_cdk.aws_arcregionswitch"

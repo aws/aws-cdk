@@ -435,6 +435,10 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
         grantee,
         actions: options.tableActions,
         resourceArns,
+        // Use wildcard for resource policy to avoid circular dependency when grantee is a resource principal
+        // (e.g., AccountRootPrincipal). This follows the same pattern as KMS (aws-kms/lib/key.ts).
+        // resourceArns is used for principal policies, resourceSelfArns is used for resource policies.
+        resourceSelfArns: ['*'],
         resource: this,
       });
     }

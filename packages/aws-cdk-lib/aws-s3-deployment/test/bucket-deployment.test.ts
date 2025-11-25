@@ -1125,6 +1125,43 @@ test('deployment allows vpc and subnets to be implicitly supplied to lambda', ()
   });
 });
 
+test('deployment allows security groups to be implicitly supplied to lambda', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const vpc: ec2.IVpc = new ec2.Vpc(stack, 'SomeVpc', {});
+  const securityGroups: ec2.SecurityGroup = new ec2.SecurityGroup(stack, 'SomeSecurityGroup', {
+    vpc: vpc,
+    securityGroupName: 'SomeSecurityGroup',
+  });
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc1', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    vpc,
+    securityGroups: [securityGroups],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            Match.stringLikeRegexp('SomeSecurityGroup'),
+            'GroupId',
+          ],
+        },
+      ],
+      SubnetIds: Match.arrayWith([
+        { Ref: Match.stringLikeRegexp('SomeVpc.*Subnet.*') },
+        { Ref: Match.stringLikeRegexp('SomeVpc.*Subnet.*') },
+      ]),
+    },
+  });
+});
+
 test('s3 deployment bucket is identical to destination bucket', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -1392,6 +1429,7 @@ test('Source.jsonData() can be used to create a file with a JSON object', () => 
 
   const config = {
     foo: 'bar',
+    baz: null,
     sub: {
       hello: bucket.bucketArn,
     },
@@ -1404,7 +1442,7 @@ test('Source.jsonData() can be used to create a file with a JSON object', () => 
   });
 
   const result = app.synth();
-  expect(readDataFile(result, 'app-config.json')).toBe('{"foo":"bar","sub":{"hello":<<marker:0xbaba:0>>},"<<marker:0xbaba:1>>":"Token can be a key as well!"}');
+  expect(readDataFile(result, 'app-config.json')).toBe('{"foo":"bar","baz":null,"sub":{"hello":<<marker:0xbaba:0>>},"<<marker:0xbaba:1>>":"Token can be a key as well!"}');
 
   // verify marker is mapped to the bucket ARN in the resource props
   Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {

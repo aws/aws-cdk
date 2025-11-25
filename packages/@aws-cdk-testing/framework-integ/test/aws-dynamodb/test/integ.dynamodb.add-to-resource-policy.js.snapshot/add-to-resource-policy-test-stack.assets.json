@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "cd9c63111d91fd1b2f1428793fbb64374db7c9eddb53b1a96feea5933be52faa": {
+    "019e0f51822d9c9e1aada862a833552ee7eb827445e8ce29c651ade96b5c5943": {
       "displayName": "add-to-resource-policy-test-stack Template",
       "source": {
         "path": "add-to-resource-policy-test-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-7305eab0": {
+        "current_account-current_region-62013bdf": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "cd9c63111d91fd1b2f1428793fbb64374db7c9eddb53b1a96feea5933be52faa.json",
+          "objectKey": "019e0f51822d9c9e1aada862a833552ee7eb827445e8ce29c651ade96b5c5943.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

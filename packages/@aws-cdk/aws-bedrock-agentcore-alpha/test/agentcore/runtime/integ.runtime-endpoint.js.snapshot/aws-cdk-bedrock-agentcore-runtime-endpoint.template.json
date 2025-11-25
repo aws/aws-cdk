@@ -237,6 +237,10 @@
     },
     "AgentRuntimeName": "endpoint_test_runtime",
     "Description": "Runtime for endpoint integration test",
+    "LifecycleConfiguration": {
+     "IdleRuntimeSessionTimeout": 60,
+     "MaxLifetime": 28800
+    },
     "NetworkConfiguration": {
      "NetworkMode": "PUBLIC"
     },

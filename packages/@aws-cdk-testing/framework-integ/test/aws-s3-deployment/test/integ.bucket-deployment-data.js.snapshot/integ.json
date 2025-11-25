@@ -3,7 +3,7 @@
   "testCases": {
     "integ-test-bucket-deployment-data/DefaultTest": {
       "stacks": [
-        "TestBucketDeploymentContent"
+        "test-bucket-deployment-data"
       ],
       "assertionStack": "integ-test-bucket-deployment-data/DefaultTest/DeployAssert",
       "assertionStackName": "integtestbucketdeploymentdataDefaultTestDeployAssert6FF3075D"

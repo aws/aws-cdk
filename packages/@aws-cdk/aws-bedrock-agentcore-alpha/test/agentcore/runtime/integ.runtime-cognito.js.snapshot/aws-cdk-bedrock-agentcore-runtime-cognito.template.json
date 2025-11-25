@@ -355,6 +355,10 @@
       }
      }
     },
+    "LifecycleConfiguration": {
+     "IdleRuntimeSessionTimeout": 60,
+     "MaxLifetime": 28800
+    },
     "NetworkConfiguration": {
      "NetworkMode": "PUBLIC"
     },

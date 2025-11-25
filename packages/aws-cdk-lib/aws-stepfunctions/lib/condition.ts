@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from '../../core';
+import { isValidJsonataExpression } from './private/jsonata';
 
 /**
  * A Condition for use in a Choice state branch
@@ -467,8 +468,8 @@ class NotCondition extends Condition {
 class JsonataCondition extends Condition {
   constructor(private readonly condition: string) {
     super();
-    if (!/^{%(.*)%}$/.test(condition)) {
-      throw new UnscopedValidationError(`JSONata expression must be start with '{%' and end with '%}', got '${condition}'`);
+    if (!isValidJsonataExpression(condition)) {
+      throw new UnscopedValidationError(`JSONata expression must start with '{%' and end with '%}', got '${condition}'`);
     }
   }
 

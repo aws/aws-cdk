@@ -297,4 +297,79 @@ describe('lambda', () => {
     // should be a literal string.
     expect(bindResult?.deploymentToken).toEqual(JSON.stringify({ functionName: 'myfunc' }));
   });
+
+  test('scopePermissionToMethod set to false creates API-scoped permission', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'my-api');
+    const handler = new lambda.Function(stack, 'Handler', {
+      runtime: lambda.Runtime.PYTHON_3_9,
+      handler: 'boom',
+      code: lambda.Code.fromInline('foo'),
+    });
+
+    // WHEN
+    const integ = new apigateway.LambdaIntegration(handler, { scopePermissionToMethod: false });
+    api.root.addMethod('GET', integ);
+
+    // THEN
+    // Should have a single API-scoped permission
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      SourceArn: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':execute-api:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':',
+            { Ref: 'myapi4C7BF186' },
+            '/*/*/*',
+          ],
+        ],
+      },
+    });
+  });
+
+  test('scopePermissionToMethod set to false reuses permission for multiple integrations', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'my-api');
+    const handler = new lambda.Function(stack, 'Handler', {
+      runtime: lambda.Runtime.PYTHON_3_9,
+      handler: 'boom',
+      code: lambda.Code.fromInline('foo'),
+    });
+
+    // WHEN
+    const integ = new apigateway.LambdaIntegration(handler, { scopePermissionToMethod: false });
+    api.root.addMethod('GET', integ);
+    api.root.addMethod('POST', integ);
+
+    // THEN
+    // Should have only a single API-scoped permission (reused for both methods)
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      SourceArn: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':execute-api:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':',
+            { Ref: 'myapi4C7BF186' },
+            '/*/*/*',
+          ],
+        ],
+      },
+    });
+  });
 });

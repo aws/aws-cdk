@@ -1,4 +1,5 @@
 export * from './bucket';
+export * from './bucket-grants';
 export * from './bucket-policy';
 export * from './destination';
 export * from './location';

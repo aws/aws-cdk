@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ-test-bucket-deployment-vpc-subnet-selection/DefaultTest": {
+      "stacks": [
+        "test-bucket-deployment-vpc-subnet-selection"
+      ],
+      "diffAssets": false,
+      "assertionStack": "integ-test-bucket-deployment-vpc-subnet-selection/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentvpcsubnetselectionDefaultTestDeployAssert4282280B"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

@@ -3,10 +3,18 @@
   "settings": {
     "files.insertFinalNewline": true,
     "jest.jestCommandLine": "node_modules/.bin/jest",
-    "jest.autoRun": "off",
+    "jest.runMode": {
+      "type": "on-demand"
+    },
     "jest.virtualFolders": [
-      { "name": "aws-cdk", "rootPath": "packages/aws-cdk" },
-      { "name": "aws-cdk-lib", "rootPath": "packages/aws-cdk-lib" },
+      {
+        "name": "aws-cdk",
+        "rootPath": "packages/aws-cdk"
+      },
+      {
+        "name": "aws-cdk-lib",
+        "rootPath": "packages/aws-cdk-lib"
+      },
       {
         "name": "cli-lib-alpha",
         "rootPath": "packages/@aws-cdk/cli-lib-alpha"
@@ -31,8 +39,18 @@
         "name": "aws-custom-resource-sdk-adapter",
         "rootPath": "packages/@aws-cdk/aws-custom-resource-sdk-adapter"
       },
-      { "name": "toolkit", "rootPath": "packages/@aws-cdk/toolkit" },
-      { "name": "user-input-gen", "rootPath": "tools/@aws-cdk/user-input-gen" }
+      {
+        "name": "toolkit",
+        "rootPath": "packages/@aws-cdk/toolkit"
+      },
+      {
+        "name": "user-input-gen",
+        "rootPath": "tools/@aws-cdk/user-input-gen"
+      },
+      {
+        "name": "mixins",
+        "rootPath": "packages/@aws-cdk/mixins-preview"
+      }
     ]
   },
   "extensions": {

@@ -5,6 +5,7 @@ import { App, Duration, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as triggers from 'aws-cdk-lib/triggers';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
+import * as path from 'path';
 
 const app = new App({
   postCliContext: {
@@ -45,7 +46,7 @@ const funcWithAssertion = new lambda.Function(stack, 'MyAssertionLambdaFunction'
   runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   timeout: Duration.minutes(15),
-  code: lambda.Code.fromAsset('lib'),
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lib')),
   environment: {
     QUEUE_URL: assertionQueue.queueUrl,
   },

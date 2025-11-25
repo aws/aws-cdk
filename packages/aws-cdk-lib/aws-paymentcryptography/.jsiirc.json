@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.paymentcryptography"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.PaymentCryptography"
+      "namespace": "Amazon.CDK.AWS.PaymentCryptography"
     },
     "python": {
       "module": "aws_cdk.aws_paymentcryptography"

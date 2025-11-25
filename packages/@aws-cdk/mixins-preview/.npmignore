@@ -6,6 +6,7 @@ coverage
 *.tgz
 
 dist
+!lib/custom-resource-handlers/dist
 .LAST_PACKAGE
 .LAST_BUILD
 !*.js
@@ -26,3 +27,5 @@ jest.config.js
 junit.xml
 !*.lit.ts
 **/*.snapshot
+
+test/

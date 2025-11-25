@@ -77,6 +77,7 @@ export const VERSION_LOCKED: { [key: string]: boolean } = {
   CodeSigningConfigArn: false,
   ReservedConcurrentExecutions: false,
   Tags: false,
+  TenancyConfig: false,
 };
 
 function filterUsefulKeys(properties: any, fn: LambdaFunction) {

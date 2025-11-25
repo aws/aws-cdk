@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
-import { CfnProfilingGroup } from './codeguruprofiler.generated';
+import { ProfilingGroupGrants } from './codeguruprofiler-grants.generated';
+import { CfnProfilingGroup, IProfilingGroupRef, ProfilingGroupReference } from './codeguruprofiler.generated';
 import { Grant, IGrantable } from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -24,7 +25,7 @@ export enum ComputePlatform {
 /**
  * IResource represents a Profiling Group.
  */
-export interface IProfilingGroup extends IResource {
+export interface IProfilingGroup extends IResource, IProfilingGroupRef {
 
   /**
    * The name of the profiling group.
@@ -72,6 +73,18 @@ abstract class ProfilingGroupBase extends Resource implements IProfilingGroup {
   public abstract readonly profilingGroupArn: string;
 
   /**
+   * Collection of grant methods for a ProfilingGroup
+   */
+  public readonly grants = ProfilingGroupGrants.fromProfilingGroup(this);
+
+  public get profilingGroupRef(): ProfilingGroupReference {
+    return {
+      profilingGroupArn: this.profilingGroupArn,
+      profilingGroupName: this.profilingGroupName,
+    };
+  }
+
+  /**
    * Grant access to publish profiling information to the Profiling Group to the given identity.
    *
    * This will grant the following permissions:
@@ -82,12 +95,7 @@ abstract class ProfilingGroupBase extends Resource implements IProfilingGroup {
    * @param grantee Principal to grant publish rights to
    */
   public grantPublish(grantee: IGrantable) {
-    // https://docs.aws.amazon.com/codeguru/latest/profiler-ug/security-iam.html#security-iam-access-control
-    return Grant.addToPrincipal({
-      grantee,
-      actions: ['codeguru-profiler:ConfigureAgent', 'codeguru-profiler:PostAgentProfile'],
-      resourceArns: [this.profilingGroupArn],
-    });
+    return this.grants.publish(grantee);
   }
 
   /**
@@ -101,12 +109,7 @@ abstract class ProfilingGroupBase extends Resource implements IProfilingGroup {
    * @param grantee Principal to grant read rights to
    */
   public grantRead(grantee: IGrantable) {
-    // https://docs.aws.amazon.com/codeguru/latest/profiler-ug/security-iam.html#security-iam-access-control
-    return Grant.addToPrincipal({
-      grantee,
-      actions: ['codeguru-profiler:GetProfile', 'codeguru-profiler:DescribeProfilingGroup'],
-      resourceArns: [this.profilingGroupArn],
-    });
+    return this.grants.read(grantee);
   }
 }
 

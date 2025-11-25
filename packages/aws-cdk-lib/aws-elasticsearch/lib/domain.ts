@@ -2,7 +2,8 @@ import { URL } from 'url';
 
 import { Construct } from 'constructs';
 import { ElasticsearchAccessPolicy } from './elasticsearch-access-policy';
-import { CfnDomain } from './elasticsearch.generated';
+import { DomainGrants } from './elasticsearch-grants.generated';
+import { CfnDomain, DomainReference, IDomainRef } from './elasticsearch.generated';
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
 import * as perms from './perms';
 import * as acm from '../../aws-certificatemanager';
@@ -705,7 +706,7 @@ export interface DomainProps {
  *
  * @deprecated use opensearchservice module instead
  */
-export interface IDomain extends cdk.IResource {
+export interface IDomain extends cdk.IResource, IDomainRef {
   /**
    * Arn of the Elasticsearch domain.
    *
@@ -954,6 +955,18 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   public abstract readonly domainEndpoint: string;
 
   /**
+   * Collection of grant methods for a Domain
+   */
+  public readonly grants = DomainGrants.fromDomain(this);
+
+  public get domainRef(): DomainReference {
+    return {
+      domainId: this.domainName,
+      domainArn: this.domainArn,
+    };
+  }
+
+  /**
    * Grant read permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
    *
@@ -961,12 +974,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @deprecated use opensearchservice module instead
    */
   grantRead(identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_READ_ACTIONS,
-      this.domainArn,
-      `${this.domainArn}/*`,
-    );
+    return this.grants.read(identity);
   }
 
   /**
@@ -977,12 +985,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @deprecated use opensearchservice module instead
    */
   grantWrite(identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_WRITE_ACTIONS,
-      this.domainArn,
-      `${this.domainArn}/*`,
-    );
+    return this.grants.write(identity);
   }
 
   /**
@@ -993,12 +996,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @deprecated use opensearchservice module instead
    */
   grantReadWrite(identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_READ_WRITE_ACTIONS,
-      this.domainArn,
-      `${this.domainArn}/*`,
-    );
+    return this.grants.readWrite(identity);
   }
 
   /**

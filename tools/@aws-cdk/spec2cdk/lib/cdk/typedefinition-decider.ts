@@ -38,7 +38,7 @@ export class TypeDefinitionDecider {
   private handlePropertyDefault(cfnName: string, prop: Property) {
     const optional = !prop.required;
 
-    const resolverResult = this.resolverBuilder.buildResolver(prop, cfnName);
+    const resolverResult = this.resolverBuilder.buildResolver(prop, cfnName, true);
 
     this.properties.push({
       propertySpec: {

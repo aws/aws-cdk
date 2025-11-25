@@ -53,3 +53,4 @@ export * from './alternate-target-configuration';
 // AWS::ECS CloudFormation Resources:
 //
 export * from './ecs.generated';
+export * from './ecs-grants.generated';
