@@ -1,1 +1,1 @@
-export * from './kafkaconnect.generated';
+export * from './cfn-props-mixins.generated';

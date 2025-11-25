@@ -1,1 +1,1 @@
-export * from './networkfirewall.generated';
+export * from './cfn-props-mixins.generated';

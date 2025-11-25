@@ -1,1 +1,1 @@
-export * from './cognito.generated';
+export * from './cfn-props-mixins.generated';

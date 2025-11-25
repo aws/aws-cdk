@@ -22,7 +22,6 @@ class MixinsServiceModule extends BaseServiceSubmodule {
 }
 
 export interface MixinsBuilderProps extends LibraryBuilderProps {
-  filePattern?: string;
 }
 
 export class MixinsBuilder extends LibraryBuilder<MixinsServiceModule> {
@@ -30,7 +29,7 @@ export class MixinsBuilder extends LibraryBuilder<MixinsServiceModule> {
 
   public constructor(props: MixinsBuilderProps) {
     super(props);
-    this.filePattern = props.filePattern ?? '%moduleName%/%serviceShortName%.generated.ts';
+    this.filePattern = '%moduleName%/cfn-props-mixins.generated.ts';
   }
 
   protected createServiceSubmodule(service: Service, submoduleName: string): MixinsServiceModule {

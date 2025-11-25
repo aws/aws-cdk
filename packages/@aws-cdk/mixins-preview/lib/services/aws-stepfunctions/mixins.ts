@@ -1,1 +1,1 @@
-export * from './stepfunctions.generated';
+export * from './cfn-props-mixins.generated';

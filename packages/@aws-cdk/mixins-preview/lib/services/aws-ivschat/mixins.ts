@@ -1,1 +1,1 @@
-export * from './ivschat.generated';
+export * from './cfn-props-mixins.generated';

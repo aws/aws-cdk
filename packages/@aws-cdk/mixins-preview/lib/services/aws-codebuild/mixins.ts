@@ -1,1 +1,1 @@
-export * from './codebuild.generated';
+export * from './cfn-props-mixins.generated';

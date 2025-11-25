@@ -1,1 +1,1 @@
-export * from './entityresolution.generated';
+export * from './cfn-props-mixins.generated';

@@ -1,1 +1,1 @@
-export * from './vpclattice.generated';
+export * from './cfn-props-mixins.generated';

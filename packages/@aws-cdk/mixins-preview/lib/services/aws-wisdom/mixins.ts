@@ -1,1 +1,1 @@
-export * from './wisdom.generated';
+export * from './cfn-props-mixins.generated';

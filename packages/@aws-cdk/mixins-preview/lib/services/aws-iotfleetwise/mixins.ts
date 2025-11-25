@@ -1,1 +1,1 @@
-export * from './iotfleetwise.generated';
+export * from './cfn-props-mixins.generated';

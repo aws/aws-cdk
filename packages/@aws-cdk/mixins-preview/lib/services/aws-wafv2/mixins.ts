@@ -1,1 +1,1 @@
-export * from './wafv2.generated';
+export * from './cfn-props-mixins.generated';

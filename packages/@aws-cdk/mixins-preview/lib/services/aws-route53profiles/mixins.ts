@@ -1,1 +1,1 @@
-export * from './route53profiles.generated';
+export * from './cfn-props-mixins.generated';

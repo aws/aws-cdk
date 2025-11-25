@@ -1,1 +1,1 @@
-export * from './events.generated';
+export * from './cfn-props-mixins.generated';

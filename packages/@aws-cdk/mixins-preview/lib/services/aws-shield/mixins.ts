@@ -1,1 +1,1 @@
-export * from './shield.generated';
+export * from './cfn-props-mixins.generated';

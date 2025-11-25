@@ -1,1 +1,1 @@
-export * from './bedrockagentcore.generated';
+export * from './cfn-props-mixins.generated';

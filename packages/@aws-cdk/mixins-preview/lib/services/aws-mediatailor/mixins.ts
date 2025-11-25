@@ -1,1 +1,1 @@
-export * from './mediatailor.generated';
+export * from './cfn-props-mixins.generated';

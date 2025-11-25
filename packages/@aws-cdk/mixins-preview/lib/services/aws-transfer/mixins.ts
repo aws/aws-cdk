@@ -1,1 +1,1 @@
-export * from './transfer.generated';
+export * from './cfn-props-mixins.generated';
