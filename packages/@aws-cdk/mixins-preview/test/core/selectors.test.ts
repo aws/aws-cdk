@@ -66,4 +66,13 @@ describe('ConstructSelector', () => {
     const selectedFromL2 = ConstructSelector.cfnResource().select(l2Bucket);
     expect(selectedFromL2.length).toBeGreaterThan(0);
   });
+
+  test('onlyItself() selects only the provided construct', () => {
+    const construct1 = new TestConstruct(stack, 'test1');
+    new TestConstruct(construct1, 'child');
+
+    const selected = ConstructSelector.onlyItself().select(construct1);
+    expect(selected).toEqual([construct1]);
+    expect(selected.length).toBe(1);
+  });
 });
