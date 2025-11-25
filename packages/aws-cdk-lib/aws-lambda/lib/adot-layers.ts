@@ -39,6 +39,26 @@ enum AdotLambdaLayerType {
    * use cases (such as Go or DotNet runtimes).
    */
   GENERIC = 'GENERIC',
+
+  /**
+   * The Lambda layer for Application Signals with Python runtime.
+   */
+  APPLICATION_SIGNALS_PYTHON = 'APPLICATION_SIGNALS_PYTHON',
+
+  /**
+   * The Lambda layer for Application Signals with Node.js runtime.
+   */
+  APPLICATION_SIGNALS_NODEJS = 'APPLICATION_SIGNALS_NODEJS',
+
+  /**
+   * The Lambda layer for Application Signals with .NET runtime.
+   */
+  APPLICATION_SIGNALS_DOTNET = 'APPLICATION_SIGNALS_DOTNET',
+
+  /**
+   * The Lambda layer for Application Signals with Java runtime.
+   */
+  APPLICATION_SIGNALS_JAVA = 'APPLICATION_SIGNALS_JAVA',
 }
 
 /**
@@ -49,6 +69,68 @@ interface AdotLambdaLayerBindConfig {
    * ARN of the ADOT Lambda layer version
    */
   readonly arn: string;
+
+  /**
+   * Whether this is an Application Signals layer
+   * @default false
+   * @internal
+   */
+  readonly _isApplicationSignals?: boolean;
+}
+
+/**
+ * Map Application Signals layer type to runtime name
+ */
+const APPLICATION_SIGNALS_RUNTIME_MAP: { [key: string]: string } = {
+  APPLICATION_SIGNALS_PYTHON: 'python',
+  APPLICATION_SIGNALS_NODEJS: 'nodejs',
+  APPLICATION_SIGNALS_JAVA: 'java',
+  APPLICATION_SIGNALS_DOTNET: 'dotnet',
+};
+
+/**
+ * Get the ARN for an Application Signals Lambda layer
+ */
+function getApplicationSignalsLayerArn(scope: IConstruct, type: string): string {
+  const scopeStack = Stack.of(scope);
+  const region = scopeStack.region;
+  const runtime = APPLICATION_SIGNALS_RUNTIME_MAP[type];
+
+  if (region !== undefined && !Token.isUnresolved(region)) {
+    const arn = RegionInfo.get(region).applicationSignalsLambdaLayerArn(runtime);
+    if (arn === undefined) {
+      throw new ValidationError(
+        `Could not find the ARN information for the Application Signals Lambda Layer for ${runtime} runtime in ${region}`,
+        scope,
+      );
+    }
+    return arn;
+  }
+
+  // Generate a CloudFormation mapping for deployment-time lookup
+  return scopeStack.regionalFact(FactName.applicationSignalsLambdaLayer(runtime));
+}
+
+/**
+ * Get the ARN for a standard ADOT Lambda layer
+ */
+function getAdotLayerArn(scope: IConstruct, type: string, version: string, architecture: string): string {
+  const scopeStack = Stack.of(scope);
+  const region = scopeStack.region;
+
+  if (region !== undefined && !Token.isUnresolved(region)) {
+    const arn = RegionInfo.get(region).adotLambdaLayerArn(type, version, architecture);
+    if (arn === undefined) {
+      throw new ValidationError(
+        `Could not find the ARN information for the ADOT Lambda Layer of type ${type} and version ${version} in ${region}`,
+        scope,
+      );
+    }
+    return arn;
+  }
+
+  // Generate a CloudFormation mapping for deployment-time lookup
+  return scopeStack.regionalFact(FactName.adotLambdaLayer(type, version, architecture));
 }
 
 /**
@@ -58,26 +140,13 @@ interface AdotLambdaLayerBindConfig {
  *
  * @param scope the parent Construct that will use the imported layer.
  * @param type the type of the ADOT Lambda layer
- * @param version The version of the ADOT Lambda layer
- * @param architecture the architecture of the Lambda layer ('amd64' or 'arm64')
+ * @param version The version of the ADOT Lambda layer (ignored for Application Signals layers)
+ * @param architecture the architecture of the Lambda layer (ignored for Application Signals layers as they are architecture-agnostic)
  */
 function getLayerArn(scope: IConstruct, type: string, version: string, architecture: string): string {
-  const scopeStack = Stack.of(scope);
-  const region = scopeStack.region;
-
-  // Region is defined, look up the arn, or throw an error if the version isn't supported by a region
-  if (region !== undefined && !Token.isUnresolved(region)) {
-    const arn = RegionInfo.get(region).adotLambdaLayerArn(type, version, architecture);
-    if (arn === undefined) {
-      throw new ValidationError(
-        `Could not find the ARN information for the ADOT Lambda Layer of type ${type} and version ${version} in ${region}`, scope,
-      );
-    }
-    return arn;
-  }
-
-  // Otherwise, need to add a mapping to be looked up at deployment time
-  return scopeStack.regionalFact(FactName.adotLambdaLayer(type, version, architecture));
+  return type.startsWith('APPLICATION_SIGNALS_')
+    ? getApplicationSignalsLayerArn(scope, type)
+    : getAdotLayerArn(scope, type, version, architecture);
 }
 
 /**
@@ -146,11 +215,56 @@ export abstract class AdotLayerVersion {
     return AdotLayerVersion.fromAdotVersion(version);
   }
 
+  /**
+   * The Application Signals Lambda layer for Python
+   *
+   * @param version The version of the Lambda layer to use
+   */
+  public static fromApplicationSignalsPythonLayerVersion(
+    version: ApplicationSignalsLambdaLayerPythonVersion,
+  ): AdotLayerVersion {
+    return AdotLayerVersion.fromAdotVersion(version);
+  }
+
+  /**
+   * The Application Signals Lambda layer for Node.js
+   *
+   * @param version The version of the Lambda layer to use
+   */
+  public static fromApplicationSignalsNodeJsLayerVersion(
+    version: ApplicationSignalsLambdaLayerNodeJsVersion,
+  ): AdotLayerVersion {
+    return AdotLayerVersion.fromAdotVersion(version);
+  }
+
+  /**
+   * The Application Signals Lambda layer for .NET
+   *
+   * @param version The version of the Lambda layer to use
+   */
+  public static fromApplicationSignalsDotNetLayerVersion(
+    version: ApplicationSignalsLambdaLayerDotNetVersion,
+  ): AdotLayerVersion {
+    return AdotLayerVersion.fromAdotVersion(version);
+  }
+
+  /**
+   * The Application Signals Lambda layer for Java
+   *
+   * @param version The version of the Lambda layer to use
+   */
+  public static fromApplicationSignalsJavaLayerVersion(
+    version: ApplicationSignalsLambdaLayerJavaVersion,
+  ): AdotLayerVersion {
+    return AdotLayerVersion.fromAdotVersion(version);
+  }
+
   private static fromAdotVersion(adotVersion: AdotLambdaLayerVersion): AdotLayerVersion {
     return new (class extends AdotLayerVersion {
       _bind(_function: IFunction): AdotLambdaLayerBindConfig {
         return {
           arn: adotVersion.layerArn(_function.stack, _function.architecture),
+          _isApplicationSignals: adotVersion._isApplicationSignals,
         };
       }
     })();
@@ -197,6 +311,21 @@ export enum AdotLambdaExecWrapper {
   SQS_HANDLER = '/opt/otel-sqs-handler',
 }
 
+/**
+ * Namespace for Application Signals specific wrapper constants.
+ */
+export namespace AdotLambdaExecWrapper {
+  /**
+   * Wrapping Lambda handlers for Application Signals. This is the recommended wrapper for
+   * CloudWatch Application Signals monitoring.
+   *
+   * This uses the same underlying wrapper path as INSTRUMENT_HANDLER.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Application-Signals-Enable-LambdaMain.html
+   */
+  export const APPLICATION_SIGNALS: AdotLambdaExecWrapper.INSTRUMENT_HANDLER = AdotLambdaExecWrapper.INSTRUMENT_HANDLER;
+}
+
 abstract class AdotLambdaLayerVersion {
   protected constructor(protected readonly type: AdotLambdaLayerType, protected readonly version: string) {}
 
@@ -208,6 +337,14 @@ abstract class AdotLambdaLayerVersion {
    */
   public layerArn(scope: IConstruct, architecture: Architecture): string {
     return getLayerArn(scope, this.type, this.version, architecture.name);
+  }
+
+  /**
+   * Whether this is an Application Signals layer
+   * @internal
+   */
+  public get _isApplicationSignals(): boolean {
+    return this.type.startsWith('APPLICATION_SIGNALS_');
   }
 }
 
@@ -478,5 +615,77 @@ export class AdotLambdaLayerGenericVersion extends AdotLambdaLayerVersion {
 
   private constructor(protected readonly layerVersion: string) {
     super(AdotLambdaLayerType.GENERIC, layerVersion);
+  }
+}
+
+/**
+ * Application Signals Lambda Layer for Python.
+ *
+ * Application Signals layers are architecture-agnostic and automatically use the latest
+ * available build for each region. Simply use LATEST to get Application Signals monitoring.
+ */
+export class ApplicationSignalsLambdaLayerPythonVersion extends AdotLambdaLayerVersion {
+  /**
+   * The latest Application Signals layer for Python. This automatically resolves to the
+   * most recent layer build available in each AWS region.
+   */
+  public static readonly LATEST = new ApplicationSignalsLambdaLayerPythonVersion('latest');
+
+  private constructor(protected readonly layerVersion: string) {
+    super(AdotLambdaLayerType.APPLICATION_SIGNALS_PYTHON, layerVersion);
+  }
+}
+
+/**
+ * Application Signals Lambda Layer for Node.js.
+ *
+ * Application Signals layers are architecture-agnostic and automatically use the latest
+ * available build for each region. Simply use LATEST to get Application Signals monitoring.
+ */
+export class ApplicationSignalsLambdaLayerNodeJsVersion extends AdotLambdaLayerVersion {
+  /**
+   * The latest Application Signals layer for Node.js. This automatically resolves to the
+   * most recent layer build available in each AWS region.
+   */
+  public static readonly LATEST = new ApplicationSignalsLambdaLayerNodeJsVersion('latest');
+
+  private constructor(protected readonly layerVersion: string) {
+    super(AdotLambdaLayerType.APPLICATION_SIGNALS_NODEJS, layerVersion);
+  }
+}
+
+/**
+ * Application Signals Lambda Layer for .NET.
+ *
+ * Application Signals layers are architecture-agnostic and automatically use the latest
+ * available build for each region. Simply use LATEST to get Application Signals monitoring.
+ */
+export class ApplicationSignalsLambdaLayerDotNetVersion extends AdotLambdaLayerVersion {
+  /**
+   * The latest Application Signals layer for .NET. This automatically resolves to the
+   * most recent layer build available in each AWS region.
+   */
+  public static readonly LATEST = new ApplicationSignalsLambdaLayerDotNetVersion('latest');
+
+  private constructor(protected readonly layerVersion: string) {
+    super(AdotLambdaLayerType.APPLICATION_SIGNALS_DOTNET, layerVersion);
+  }
+}
+
+/**
+ * Application Signals Lambda Layer for Java.
+ *
+ * Application Signals layers are architecture-agnostic and automatically use the latest
+ * available build for each region. Simply use LATEST to get Application Signals monitoring.
+ */
+export class ApplicationSignalsLambdaLayerJavaVersion extends AdotLambdaLayerVersion {
+  /**
+   * The latest Application Signals layer for Java. This automatically resolves to the
+   * most recent layer build available in each AWS region.
+   */
+  public static readonly LATEST = new ApplicationSignalsLambdaLayerJavaVersion('latest');
+
+  private constructor(protected readonly layerVersion: string) {
+    super(AdotLambdaLayerType.APPLICATION_SIGNALS_JAVA, layerVersion);
   }
 }

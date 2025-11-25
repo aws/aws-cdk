@@ -10,6 +10,7 @@ import {
   ROUTE_53_BUCKET_WEBSITE_ZONE_IDS,
   EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS,
   ADOT_LAMBDA_LAYER_ARNS,
+  APPLICATION_SIGNALS_LAMBDA_LAYER_ARNS,
   PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS,
   APPCONFIG_LAMBDA_LAYER_ARNS,
   PARTITION_SAML_SIGN_ON_URL,
@@ -31,6 +32,10 @@ export async function main(): Promise<void> {
   checkRegions(ROUTE_53_BUCKET_WEBSITE_ZONE_IDS);
   checkRegionsSubMap(CLOUDWATCH_LAMBDA_INSIGHTS_ARNS);
   checkRegionsSubMap(APPCONFIG_LAMBDA_LAYER_ARNS);
+
+  for (const runtime of Object.keys(APPLICATION_SIGNALS_LAMBDA_LAYER_ARNS)) {
+    checkRegions(APPLICATION_SIGNALS_LAMBDA_LAYER_ARNS[runtime]);
+  }
 
   const lines = [
     "import { Fact, FactName } from './fact';",
@@ -118,6 +123,14 @@ export async function main(): Promise<void> {
           );
         }
       }
+    }
+
+    for (const runtime in APPLICATION_SIGNALS_LAMBDA_LAYER_ARNS) {
+      registerFact(
+        region,
+        ['applicationSignalsLambdaLayer', runtime],
+        APPLICATION_SIGNALS_LAMBDA_LAYER_ARNS[runtime][region],
+      );
     }
 
     for (const version in PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS) {

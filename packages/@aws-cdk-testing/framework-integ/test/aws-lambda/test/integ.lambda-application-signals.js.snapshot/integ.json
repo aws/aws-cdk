@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ApplicationSignalsIntegTest/DefaultTest": {
+      "stacks": [
+        "ApplicationSignalsStack1",
+        "ApplicationSignalsStack2"
+      ],
+      "assertionStack": "ApplicationSignalsIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ApplicationSignalsIntegTestDefaultTestDeployAssert2F510CD9"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
