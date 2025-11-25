@@ -3,7 +3,7 @@ import { ArnPrincipal, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import * as iam from '../../aws-iam';
 import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
-import { CfnDeletionPolicy, Fn, Lazy, RemovalPolicy, Stack, Tags } from '../../core';
+import { App, CfnDeletionPolicy, Fn, Lazy, RemovalPolicy, Stack, Tags } from '../../core';
 import {
   AttributeType, Billing, Capacity, GlobalSecondaryIndexPropsV2, TableV2,
   LocalSecondaryIndexProps, ProjectionType, StreamViewType, TableClass, TableEncryptionV2,
@@ -1272,6 +1272,7 @@ describe('grants', () => {
     table.grantReadData(new iam.AccountRootPrincipal());
 
     // THEN - Should create resource policy with wildcard to avoid circular dependency
+    // Same-account grants include all actions (no filtering needed)
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
       Replicas: Match.arrayWith([
         Match.objectLike({
@@ -1292,6 +1293,231 @@ describe('grants', () => {
                   Effect: 'Allow',
                   Resource: '*', // Wildcard to avoid circular dependency
                   Principal: Match.anyValue(), // AccountRootPrincipal
+                }),
+              ]),
+            },
+          },
+        }),
+      ]),
+    });
+  });
+
+  test('grantReadData cross-account filters invalid actions from resource policy', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', {
+      env: { account: '111111111111', region: 'us-east-1' },
+    });
+
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+    
+    // Use ArnPrincipal from different account
+    const principal = new iam.ArnPrincipal('arn:aws:iam::222222222222:role/MyRole');
+
+    // WHEN
+    table.grantReadData(principal);
+
+    // THEN - Resource policy should only contain valid actions (no DescribeTable or stream actions)
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: Match.arrayWith([
+        Match.objectLike({
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: Match.arrayWith([
+                Match.objectLike({
+                  Action: [
+                    'dynamodb:BatchGetItem',
+                    'dynamodb:Query',
+                    'dynamodb:GetItem',
+                    'dynamodb:Scan',
+                    'dynamodb:ConditionCheckItem',
+                  ],
+                  Effect: 'Allow',
+                  Resource: '*',
+                  Principal: {
+                    AWS: 'arn:aws:iam::222222222222:role/MyRole',
+                  },
+                }),
+              ]),
+            },
+          },
+        }),
+      ]),
+    });
+  });
+
+  test('grantWriteData cross-account filters invalid actions from resource policy', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', {
+      env: { account: '111111111111', region: 'us-east-1' },
+    });
+
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+    
+    // Use ArnPrincipal from different account
+    const principal = new iam.ArnPrincipal('arn:aws:iam::222222222222:role/MyRole');
+
+    // WHEN
+    table.grantWriteData(principal);
+
+    // THEN - Resource policy should only contain valid actions (no DescribeTable)
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: Match.arrayWith([
+        Match.objectLike({
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: Match.arrayWith([
+                Match.objectLike({
+                  Action: [
+                    'dynamodb:BatchWriteItem',
+                    'dynamodb:PutItem',
+                    'dynamodb:UpdateItem',
+                    'dynamodb:DeleteItem',
+                  ],
+                  Effect: 'Allow',
+                  Resource: '*',
+                  Principal: {
+                    AWS: 'arn:aws:iam::222222222222:role/MyRole',
+                  },
+                }),
+              ]),
+            },
+          },
+        }),
+      ]),
+    });
+  });
+
+  test('grantReadWriteData cross-account filters invalid actions from resource policy', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', {
+      env: { account: '111111111111', region: 'us-east-1' },
+    });
+
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+    
+    // Use ArnPrincipal from different account
+    const principal = new iam.ArnPrincipal('arn:aws:iam::222222222222:role/MyRole');
+
+    // WHEN
+    table.grantReadWriteData(principal);
+
+    // THEN - Resource policy should only contain valid actions (no DescribeTable or stream actions)
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: Match.arrayWith([
+        Match.objectLike({
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: Match.arrayWith([
+                Match.objectLike({
+                  Action: [
+                    'dynamodb:BatchGetItem',
+                    'dynamodb:Query',
+                    'dynamodb:GetItem',
+                    'dynamodb:Scan',
+                    'dynamodb:ConditionCheckItem',
+                    'dynamodb:BatchWriteItem',
+                    'dynamodb:PutItem',
+                    'dynamodb:UpdateItem',
+                    'dynamodb:DeleteItem',
+                  ],
+                  Effect: 'Allow',
+                  Resource: '*',
+                  Principal: {
+                    AWS: 'arn:aws:iam::222222222222:role/MyRole',
+                  },
+                }),
+              ]),
+            },
+          },
+        }),
+      ]),
+    });
+  });
+
+  test('grantReadData same-account includes all actions in principal policy', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', {
+      env: { account: '111111111111', region: 'us-east-1' },
+    });
+
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    table.grantReadData(user);
+
+    // THEN - Principal policy should contain all actions including DescribeTable and stream actions
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+          }),
+        ]),
+      },
+    });
+
+    // Should NOT create a resource policy for same-account grants
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: Match.arrayWith([
+        Match.objectLike({
+          ResourcePolicy: Match.absent(),
+        }),
+      ]),
+    });
+  });
+
+  test('cross-account grant with GSI uses wildcard for resource policy', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', {
+      env: { account: '111111111111', region: 'us-east-1' },
+    });
+
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      globalSecondaryIndexes: [{
+        indexName: 'gsi1',
+        partitionKey: { name: 'gsi-pk', type: AttributeType.STRING },
+      }],
+    });
+    
+    // Use ArnPrincipal from different account
+    const principal = new iam.ArnPrincipal('arn:aws:iam::222222222222:role/MyRole');
+
+    // WHEN
+    table.grantReadData(principal);
+
+    // THEN - Resource policy uses wildcard (covers table and indexes)
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: Match.arrayWith([
+        Match.objectLike({
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: Match.arrayWith([
+                Match.objectLike({
+                  Effect: 'Allow',
+                  Resource: '*',
+                  Principal: {
+                    AWS: 'arn:aws:iam::222222222222:role/MyRole',
+                  },
                 }),
               ]),
             },
