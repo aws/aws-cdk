@@ -708,7 +708,8 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
 
     this.instanceTypes = props.instanceTypes ?? [];
     this.instanceClasses = props.instanceClasses ?? [];
-    if (this.images?.find(image => image.imageType === EcsMachineImageType.ECS_AL2023 || image.imageType === EcsMachineImageType.ECS_AL2023_NVIDIA) &&
+    if (this.images?.find(image => image.imageType !== undefined &&
+      [EcsMachineImageType.ECS_AL2023, EcsMachineImageType.ECS_AL2023_NVIDIA].includes(image.imageType)) &&
       (this.instanceClasses.includes(ec2.InstanceClass.A1) ||
         this.instanceTypes.find(instanceType => instanceType.sameInstanceClassAs(ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.LARGE))))
     ) {
