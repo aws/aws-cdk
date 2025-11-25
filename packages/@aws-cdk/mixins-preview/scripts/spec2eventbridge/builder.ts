@@ -252,7 +252,7 @@ class EventBridgeEventsClass extends ClassType {
     const mappings = Array.from(propertyMappings.entries()).map(([camelCase, { original, type, resolver }]) => {
       // Use optional chaining for safe property access since obj can be undefined
       const propAccess = expr.directCode(`${paramName}?.${camelCase}`);
-      let valueExpr: Expression = propAccess;
+      let valueExpr: Expression = expr.binOp(propAccess, '??', expr.lit([]));
 
       // If property is a struct, call its converter recursively (passing iRef)
       // Always call converter even if property is undefined, so resolvers can inject values
@@ -267,7 +267,7 @@ class EventBridgeEventsClass extends ClassType {
 
       // If property has a resolver, use it as fallback: property ?? resolver
       if (resolver) {
-        valueExpr = expr.binOp(valueExpr, '??', resolver);
+        valueExpr = expr.binOp(propAccess, '??', resolver);
       }
 
       return [original, valueExpr] as const;
@@ -412,18 +412,9 @@ class EventBridgeEventsClass extends ClassType {
         const eventMetadata = expr.ident('eventMetadata');
 
         eventPatternMethod.addBody(
-          stmt.if_(expr.not(expr.ident(eventPatternMethodParam.spec.name)))
-            .then(
-              stmt.ret(
-                expr.object({
-                  source: expr.list([expr.lit(event.source)]),
-                  detailType: expr.list([expr.lit(event.detailType)]),
-                }),
-              ),
-            ),
           stmt.constVar(
             expr.destructuringObject(eventMetadata, expr.directCode('...obj')),
-            expr.ident(eventPatternMethodParam.spec.name),
+            expr.binOp(expr.ident(eventPatternMethodParam.spec.name), '||', expr.lit({})),
           ),
           stmt.ret(
             expr.object({
