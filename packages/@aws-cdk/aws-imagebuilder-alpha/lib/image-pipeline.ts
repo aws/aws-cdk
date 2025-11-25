@@ -476,6 +476,8 @@ export class ImagePipeline extends ImagePipelineBase {
    */
   public readonly executionRole?: iam.IRole;
 
+  private readonly props: ImagePipelineProps;
+
   public constructor(scope: Construct, id: string, props: ImagePipelineProps) {
     super(scope, id, {
       physicalName:
@@ -494,6 +496,7 @@ export class ImagePipeline extends ImagePipelineBase {
 
     this.validateImagePipelineName();
 
+    this.props = props;
     this.infrastructureConfiguration =
       props.infrastructureConfiguration ?? new InfrastructureConfiguration(this, 'InfrastructureConfiguration');
     this.executionRole = getExecutionRole(
@@ -544,6 +547,23 @@ export class ImagePipeline extends ImagePipelineBase {
       resource: 'image-pipeline',
       resourceName: this.physicalName,
     });
+  }
+
+  /**
+   * Grants the default permissions for building an image to the provided execution role.
+   *
+   * @param grantee The execution role used for the image build.
+   */
+  public grantDefaultExecutionRolePermissions(grantee: iam.IGrantable): iam.Grant[] {
+    const policies = defaultExecutionRolePolicy(this, this.props);
+    return policies.map((policy) =>
+      iam.Grant.addToPrincipal({
+        grantee: grantee,
+        resourceArns: policy.resources,
+        actions: policy.actions,
+        scope: this,
+      }),
+    );
   }
 
   private validateImagePipelineName() {

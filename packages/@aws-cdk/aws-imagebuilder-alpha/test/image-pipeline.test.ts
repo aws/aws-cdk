@@ -87,6 +87,7 @@ describe('ImagePipeline', () => {
   });
 
   test('with all parameters - AMI pipeline', () => {
+    const executionRole = iam.Role.fromRoleName(stack, 'ExecutionRole', 'imagebuilder-execution-role');
     const imagePipeline = new ImagePipeline(stack, 'ImagePipeline', {
       imagePipelineName: 'test-image-pipeline',
       description: 'this is an image pipeline description.',
@@ -102,7 +103,7 @@ describe('ImagePipeline', () => {
         'imported-distribution-configuration',
       ),
       status: ImagePipelineStatus.ENABLED,
-      executionRole: iam.Role.fromRoleName(stack, 'ExecutionRole', 'imagebuilder-execution-role'),
+      executionRole,
       schedule: {
         expression: events.Schedule.cron({ minute: '0', hour: '0', weekDay: '0' }),
         startCondition: ScheduleStartCondition.EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE,
@@ -126,6 +127,7 @@ describe('ImagePipeline', () => {
       imageTestsEnabled: false,
       imageScanningEnabled: true,
     });
+    imagePipeline.grantDefaultExecutionRolePermissions(executionRole);
 
     expect(ImagePipeline.isImagePipeline(imagePipeline as unknown)).toBeTruthy();
     expect(ImagePipeline.isImagePipeline('ImagePipeline')).toBeFalsy();
@@ -206,6 +208,7 @@ describe('ImagePipeline', () => {
   });
 
   test('with all parameters - container pipeline', () => {
+    const executionRole = iam.Role.fromRoleName(stack, 'ExecutionRole', 'imagebuilder-execution-role');
     const imagePipeline = new ImagePipeline(stack, 'ImagePipeline', {
       imagePipelineName: 'test-image-pipeline',
       description: 'this is an image pipeline description.',
@@ -220,7 +223,7 @@ describe('ImagePipeline', () => {
         'DistributionConfiguration',
         'imported-distribution-configuration',
       ),
-      executionRole: iam.Role.fromRoleName(stack, 'ExecutionRole', 'imagebuilder-execution-role'),
+      executionRole,
       status: ImagePipelineStatus.DISABLED,
       schedule: {
         expression: events.Schedule.rate(cdk.Duration.days(7)),
@@ -242,10 +245,11 @@ describe('ImagePipeline', () => {
       ),
       enhancedImageMetadataEnabled: false,
       imageTestsEnabled: true,
-      imageScanningEnabled: false,
+      imageScanningEnabled: true,
       imageScanningEcrRepository: ecr.Repository.fromRepositoryName(stack, 'Repository', 'scanning-repo'),
       imageScanningEcrTags: ['latest-scan'],
     });
+    imagePipeline.grantDefaultExecutionRolePermissions(executionRole);
 
     expect(ImagePipeline.isImagePipeline(imagePipeline as unknown)).toBeTruthy();
     expect(ImagePipeline.isImagePipeline('ImagePipeline')).toBeFalsy();
@@ -288,7 +292,7 @@ describe('ImagePipeline', () => {
                 ContainerTags: ['latest-scan'],
                 RepositoryName: 'scanning-repo',
               },
-              ImageScanningEnabled: false,
+              ImageScanningEnabled: true,
             },
             ImageTestsConfiguration: { ImageTestsEnabled: true },
             InfrastructureConfigurationArn: {

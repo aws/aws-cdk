@@ -188,10 +188,8 @@
         "ec2:CopyImage",
         "ec2:CreateImage",
         "ec2:CreateLaunchTemplate",
-        "ec2:CreateLaunchTemplateVersion",
         "ec2:CreateTags",
         "ec2:DeregisterImage",
-        "ec2:DescribeExportImageTasks",
         "ec2:DescribeHosts",
         "ec2:DescribeImages",
         "ec2:DescribeImportImageTasks",
@@ -200,21 +198,15 @@
         "ec2:DescribeInstanceTypeOfferings",
         "ec2:DescribeInstanceTypes",
         "ec2:DescribeInstances",
-        "ec2:DescribeLaunchTemplateVersions",
-        "ec2:DescribeLaunchTemplates",
         "ec2:DescribeSnapshots",
         "ec2:DescribeSubnets",
         "ec2:DescribeTags",
         "ec2:ModifyImageAttribute",
-        "ec2:ModifyLaunchTemplate",
         "ec2:StartInstances",
         "ec2:StopInstances",
         "ec2:TerminateInstances",
-        "ecr:CreateRepository",
         "iam:CreateServiceLinkedRole",
         "iam:PassRole",
-        "inspector2:ListCoverage",
-        "inspector2:ListFindings",
         "kms:CreateGrant",
         "kms:Decrypt",
         "kms:DescribeKey",
@@ -222,7 +214,6 @@
         "kms:GenerateDataKeyWithoutPlaintext",
         "kms:ReEncryptFrom",
         "kms:ReEncryptTo",
-        "license-manager:UpdateLicenseSpecificationsForResource",
         "sns:Publish",
         "ssm:AddTagsToResource",
         "ssm:DescribeAssociationExecutions",
@@ -418,22 +409,6 @@
        ]
       },
       {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":iam::*:role/EC2ImageBuilderDistributionCrossAccountRole"
-         ]
-        ]
-       }
-      },
-      {
        "Action": [
         "logs:CreateLogGroup",
         "logs:CreateLogStream",
@@ -449,101 +424,6 @@
            "Ref": "AWS::Partition"
           },
           ":logs:*:*:log-group:/aws/imagebuilder/*"
-         ]
-        ]
-       }
-      },
-      {
-       "Action": "ec2:ExportImage",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":ec2:*:*:export-image-task/*"
-          ]
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":ec2:*::image/*"
-          ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "ec2:CancelExportTask",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":ec2:*:*:export-image-task/*"
-         ]
-        ]
-       }
-      },
-      {
-       "Action": "ec2:EnableFastLaunch",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":ec2:*:*:launch-template/*"
-          ]
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":ec2:*::image/*"
-          ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": [
-        "ecr:BatchDeleteImage",
-        "ecr:TagResource"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":ecr:*:*:repository/image-builder-*"
          ]
         ]
        }

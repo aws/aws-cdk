@@ -205,11 +205,8 @@
         "ec2:StartInstances",
         "ec2:StopInstances",
         "ec2:TerminateInstances",
-        "ecr:CreateRepository",
         "iam:CreateServiceLinkedRole",
         "iam:PassRole",
-        "inspector2:ListCoverage",
-        "inspector2:ListFindings",
         "kms:CreateGrant",
         "kms:Decrypt",
         "kms:DescribeKey",
@@ -413,22 +410,6 @@
        ]
       },
       {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":iam::*:role/EC2ImageBuilderDistributionCrossAccountRole"
-         ]
-        ]
-       }
-      },
-      {
        "Action": [
         "logs:CreateLogGroup",
         "logs:CreateLogStream",
@@ -444,6 +425,79 @@
            "Ref": "AWS::Partition"
           },
           ":logs:*:*:log-group:/aws/imagebuilder/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "events:DeleteRule",
+        "events:DescribeRule",
+        "events:PutRule",
+        "events:PutTargets",
+        "events:RemoveTargets"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":events:*:*:rule/ImageBuilder-*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "ssm:GetParameter",
+        "ssm:PutParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:*:*:parameter/imagebuilder/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ssm:GetParameter",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:*::parameter/aws/service/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":iam::*:role/EC2ImageBuilderDistributionCrossAccountRole"
          ]
         ]
        }
@@ -523,82 +577,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": [
-        "ecr:BatchDeleteImage",
-        "ecr:TagResource"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":ecr:*:*:repository/image-builder-*"
-         ]
-        ]
-       }
-      },
-      {
-       "Action": [
-        "events:DeleteRule",
-        "events:DescribeRule",
-        "events:PutRule",
-        "events:PutTargets",
-        "events:RemoveTargets"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":events:*:*:rule/ImageBuilder-*"
-         ]
-        ]
-       }
-      },
-      {
-       "Action": [
-        "ssm:GetParameter",
-        "ssm:PutParameter"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":ssm:*:*:parameter/imagebuilder/*"
-         ]
-        ]
-       }
-      },
-      {
-       "Action": "ssm:GetParameter",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":ssm:*::parameter/aws/service/*"
-         ]
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"

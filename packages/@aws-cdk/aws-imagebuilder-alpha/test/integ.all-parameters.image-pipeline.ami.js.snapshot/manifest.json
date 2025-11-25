@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d65bfb48cd12465d7e13a7d639c2a62ee42919a72390076954fbdbd1a24bde39.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ca95c4b34cc98000e9d2ab8c43c161be3b66eabf704d1384ec49b808bffb576f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -65,22 +65,6 @@
             "data": {
               "attachInlinePolicy": [
                 "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
               ]
             }
           },
@@ -637,22 +621,6 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
         "/aws-cdk-imagebuilder-image-pipeline-ami-all-parameters/ExecutionRole/DefaultPolicy/Resource": [
@@ -731,6 +699,16 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "InfrastructureConfiguration86C7777D"
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-pipeline-ami-all-parameters/ImageRecipe": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/aws-cdk-imagebuilder-image-pipeline-ami-all-parameters/ImageRecipe/Resource": [

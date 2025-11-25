@@ -2,21 +2,26 @@ import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
+import { ImagePipelineProps } from '../image-pipeline';
 import { WorkflowConfiguration } from '../workflow';
 
 /**
  * Returns the default execution role policy, for auto-generated execution roles.
  *
  * @param scope The construct scope
+ * @param props Props input for the construct
  *
  * @see https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AWSServiceRoleForImageBuilder.html
  */
-export const defaultExecutionRolePolicy = (scope: Construct): iam.PolicyStatement[] => {
+export const defaultExecutionRolePolicy = <PropsT extends ImagePipelineProps>(
+  scope: Construct,
+  props?: PropsT,
+): iam.PolicyStatement[] => {
   const partition = cdk.Stack.of(scope).partition;
 
   // Permissions are identical to https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AWSServiceRoleForImageBuilder.html
   // SLR policies cannot be attached to roles, and no managed policy exists for these permissions yet
-  return [
+  const policies = [
     new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['ec2:RegisterImage'],
@@ -98,7 +103,6 @@ export const defaultExecutionRolePolicy = (scope: Construct): iam.PolicyStatemen
         'ec2:DescribeTags',
         'ec2:ModifyImageAttribute',
         'ec2:DescribeImportImageTasks',
-        'ec2:DescribeExportImageTasks',
         'ec2:DescribeSnapshots',
         'ec2:DescribeHosts',
       ],
@@ -139,11 +143,6 @@ export const defaultExecutionRolePolicy = (scope: Construct): iam.PolicyStatemen
           'aws:RequestTag/CreatedBy': ['EC2 Image Builder', 'EC2 Fast Launch'],
         },
       },
-    }),
-    new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: ['license-manager:UpdateLicenseSpecificationsForResource'],
-      resources: ['*'],
     }),
     new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
@@ -237,48 +236,8 @@ export const defaultExecutionRolePolicy = (scope: Construct): iam.PolicyStatemen
     }),
     new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
-      actions: ['sts:AssumeRole'],
-      resources: [`arn:${partition}:iam::*:role/EC2ImageBuilderDistributionCrossAccountRole`],
-    }),
-    new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
       actions: ['logs:CreateLogStream', 'logs:CreateLogGroup', 'logs:PutLogEvents'],
       resources: [`arn:${partition}:logs:*:*:log-group:/aws/imagebuilder/*`],
-    }),
-    new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: [
-        'ec2:CreateLaunchTemplateVersion',
-        'ec2:DescribeLaunchTemplates',
-        'ec2:ModifyLaunchTemplate',
-        'ec2:DescribeLaunchTemplateVersions',
-      ],
-      resources: ['*'],
-    }),
-    new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: ['ec2:ExportImage'],
-      resources: [`arn:${partition}:ec2:*::image/*`],
-      conditions: {
-        StringEquals: {
-          'ec2:ResourceTag/CreatedBy': 'EC2 Image Builder',
-        },
-      },
-    }),
-    new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: ['ec2:ExportImage'],
-      resources: [`arn:${partition}:ec2:*:*:export-image-task/*`],
-    }),
-    new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: ['ec2:CancelExportTask'],
-      resources: [`arn:${partition}:ec2:*:*:export-image-task/*`],
-      conditions: {
-        StringEquals: {
-          'ec2:ResourceTag/CreatedBy': 'EC2 Image Builder',
-        },
-      },
     }),
     new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
@@ -286,52 +245,7 @@ export const defaultExecutionRolePolicy = (scope: Construct): iam.PolicyStatemen
       resources: ['*'],
       conditions: {
         StringEquals: {
-          'iam:AWSServiceName': ['ssm.amazonaws.com', 'ec2fastlaunch.amazonaws.com'],
-        },
-      },
-    }),
-    new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: ['ec2:EnableFastLaunch'],
-      resources: [`arn:${partition}:ec2:*::image/*`, `arn:${partition}:ec2:*:*:launch-template/*`],
-      conditions: {
-        StringEquals: {
-          'ec2:ResourceTag/CreatedBy': 'EC2 Image Builder',
-        },
-      },
-    }),
-    new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: ['inspector2:ListCoverage', 'inspector2:ListFindings'],
-      resources: ['*'],
-    }),
-    new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: ['ecr:CreateRepository'],
-      resources: ['*'],
-      conditions: {
-        StringEquals: {
-          'aws:RequestTag/CreatedBy': 'EC2 Image Builder',
-        },
-      },
-    }),
-    new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: ['ecr:TagResource'],
-      resources: [`arn:${partition}:ecr:*:*:repository/image-builder-*`],
-      conditions: {
-        StringEquals: {
-          'aws:RequestTag/CreatedBy': 'EC2 Image Builder',
-        },
-      },
-    }),
-    new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
-      actions: ['ecr:BatchDeleteImage'],
-      resources: [`arn:${partition}:ecr:*:*:repository/image-builder-*`],
-      conditions: {
-        StringEquals: {
-          'ecr:ResourceTag/CreatedBy': 'EC2 Image Builder',
+          'iam:AWSServiceName': ['ssm.amazonaws.com'],
         },
       },
     }),
@@ -357,6 +271,133 @@ export const defaultExecutionRolePolicy = (scope: Construct): iam.PolicyStatemen
       resources: [`arn:${partition}:ssm:*::parameter/aws/service/*`],
     }),
   ];
+
+  const hasProps = props !== undefined;
+  if (!hasProps || (props.recipe._isImageRecipe() && props.distributionConfiguration !== undefined)) {
+    // Distribution-specific permissions if distribution settings are provided. All permissions here are for AMI builds
+    // specifically.
+    policies.push(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['ec2:DescribeExportImageTasks'],
+        resources: ['*'],
+      }),
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['license-manager:UpdateLicenseSpecificationsForResource'],
+        resources: ['*'],
+      }),
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['sts:AssumeRole'],
+        resources: [`arn:${partition}:iam::*:role/EC2ImageBuilderDistributionCrossAccountRole`],
+      }),
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: [
+          'ec2:CreateLaunchTemplateVersion',
+          'ec2:DescribeLaunchTemplates',
+          'ec2:ModifyLaunchTemplate',
+          'ec2:DescribeLaunchTemplateVersions',
+        ],
+        resources: ['*'],
+      }),
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['ec2:ExportImage'],
+        resources: [`arn:${partition}:ec2:*::image/*`],
+        conditions: {
+          StringEquals: {
+            'ec2:ResourceTag/CreatedBy': 'EC2 Image Builder',
+          },
+        },
+      }),
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['ec2:ExportImage'],
+        resources: [`arn:${partition}:ec2:*:*:export-image-task/*`],
+      }),
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['ec2:CancelExportTask'],
+        resources: [`arn:${partition}:ec2:*:*:export-image-task/*`],
+        conditions: {
+          StringEquals: {
+            'ec2:ResourceTag/CreatedBy': 'EC2 Image Builder',
+          },
+        },
+      }),
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['iam:CreateServiceLinkedRole'],
+        resources: ['*'],
+        conditions: {
+          StringEquals: {
+            'iam:AWSServiceName': ['ec2fastlaunch.amazonaws.com'],
+          },
+        },
+      }),
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['ec2:EnableFastLaunch'],
+        resources: [`arn:${partition}:ec2:*::image/*`, `arn:${partition}:ec2:*:*:launch-template/*`],
+        conditions: {
+          StringEquals: {
+            'ec2:ResourceTag/CreatedBy': 'EC2 Image Builder',
+          },
+        },
+      }),
+    );
+  }
+
+  if (!hasProps || props.imageScanningEnabled !== false) {
+    // Add Inspector permissions if scanning is enabled
+    policies.push(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['inspector2:ListCoverage', 'inspector2:ListFindings'],
+        resources: ['*'],
+      }),
+    );
+
+    // Add image scanning ECR permissions for container builds
+    if (!hasProps || props.recipe._isContainerRecipe()) {
+      policies.push(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['ecr:CreateRepository'],
+          resources: ['*'],
+          conditions: {
+            StringEquals: {
+              'aws:RequestTag/CreatedBy': 'EC2 Image Builder',
+            },
+          },
+        }),
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['ecr:TagResource'],
+          resources: [`arn:${partition}:ecr:*:*:repository/image-builder-*`],
+          conditions: {
+            StringEquals: {
+              'aws:RequestTag/CreatedBy': 'EC2 Image Builder',
+            },
+          },
+        }),
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['ecr:BatchDeleteImage'],
+          resources: [`arn:${partition}:ecr:*:*:repository/image-builder-*`],
+          conditions: {
+            StringEquals: {
+              'ecr:ResourceTag/CreatedBy': 'EC2 Image Builder',
+            },
+          },
+        }),
+      );
+    }
+  }
+
+  return policies;
 };
 
 export const getExecutionRole = (
