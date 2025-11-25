@@ -1,5 +1,6 @@
 import { Method } from './method';
 import { IVpcLink, VpcLink } from './vpc-link';
+import { IVpcLink as IVpcLinkV2 } from '../../aws-apigatewayv2'; 
 import * as iam from '../../aws-iam';
 import { Lazy, Duration } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
@@ -114,7 +115,7 @@ export interface IntegrationOptions {
    * The VpcLink used for the integration.
    * Required if connectionType is VPC_LINK
    */
-  readonly vpcLink?: IVpcLink;
+  readonly vpcLink?: IVpcLink | IVpcLinkV2;
 }
 
 export interface IntegrationProps {
