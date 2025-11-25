@@ -4,6 +4,8 @@ import { CfnWorkflow } from 'aws-cdk-lib/aws-imagebuilder';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import * as yaml from 'yaml';
 
@@ -640,7 +642,11 @@ abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
  *
  * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/manage-image-workflows.html
  */
+@propertyInjectable
 export class Workflow extends WorkflowBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-imagebuilder-alpha.Workflow';
+
   /**
    * Import an existing workflow given its ARN.
    */
@@ -767,6 +773,8 @@ export class Workflow extends WorkflowBase {
             }).toLowerCase(), // Enforce lowercase for the auto-generated fallback
         }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Object.defineProperty(this, WORKFLOW_SYMBOL, { value: true });
 
