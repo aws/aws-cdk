@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import type { Resource, Service, SpecDatabase, Event, TypeDefinition, Property } from '@aws-cdk/service-spec-types';
 import { naming } from '@aws-cdk/spec2cdk';
 import { CDK_CORE } from '@aws-cdk/spec2cdk/lib/cdk/cdk';
@@ -207,9 +206,12 @@ class EventBridgeEventsClass extends ClassType {
 
       // Replace colons with dashes before camelCasing (aws:s3:arn -> aws-s3-arn -> awsS3Arn)
       const camelCaseName = naming.propertyNameFromCloudFormation(propName.replace(/:/g, '-'));
-      const propType = typeConverter.typeFromProperty(propSpec);
+      let propType = typeConverter.typeFromProperty(propSpec);
       propertyMappings.set(camelCaseName, { original: propName, type: propType, resolver });
 
+      if (propType.primitive) {
+        propType = Type.arrayOf(Type.STRING);
+      }
       // Always add property to interface (even if it has a resolver)
       target.addProperty({
         name: camelCaseName,
@@ -514,6 +516,6 @@ class EventBridgeEventsClass extends ClassType {
     if (prop.type.type !== 'string') {
       throw Error(`${event.name} ${propName} is not a string, but ${prop.type.type}`);
     }
-    return expr.ident('iRef').prop(this.referenceName).prop(targetProp.declaration.name);
+    return expr.list([expr.ident('iRef').prop(this.referenceName).prop(targetProp.declaration.name)]);
   }
 }
