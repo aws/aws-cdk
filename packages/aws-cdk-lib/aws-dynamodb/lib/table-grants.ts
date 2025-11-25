@@ -107,9 +107,45 @@ export class TableGrants {
    * @param grantee The principal to grant access to
    */
   public readData(grantee: iam.IGrantable): iam.Grant {
-    const actions = [...perms.READ_DATA_ACTIONS, perms.DESCRIBE_TABLE];
+    let actions = [...perms.READ_DATA_ACTIONS, perms.DESCRIBE_TABLE];
     this.encryptedResource?.grantOnKey(grantee, ...perms.KEY_READ_ACTIONS);
-    const result = this.policyResource ? iam.Grant.addToPrincipalOrResource({
+
+    if (!this.policyResource) {
+      return iam.Grant.addToPrincipal({
+        grantee,
+        actions,
+        resourceArns: this.arns,
+      });
+    }
+
+    // Detect if this will be a cross-account grant that requires resource policy
+    const principalAccount = grantee.grantPrincipal.principalAccount;
+    const resourceAccount = this.policyResource.env.account;
+
+    let willUseResourcePolicy = false;
+    if (principalAccount && resourceAccount) {
+      // Use Token.compareStrings for proper token comparison
+      const stack = Stack.of(this.table);
+      const resolvedPrincipal = stack.resolve(principalAccount);
+      const resolvedResource = stack.resolve(resourceAccount);
+      // Only treat as cross-account if we can definitively determine they're different
+      willUseResourcePolicy = typeof resolvedPrincipal === 'string' &&
+                              typeof resolvedResource === 'string' &&
+                              resolvedPrincipal !== resolvedResource;
+    } else if (!principalAccount && resourceAccount) {
+      // Principal has no account (e.g., service principal) but resource has account - will use resource policy
+      willUseResourcePolicy = true;
+    }
+
+    // If using resource policy, filter to only include actions supported in resource policies
+    if (willUseResourcePolicy) {
+      // Use whitelist approach: only include actions that are known to be valid in resource policies
+      actions = actions.filter(action =>
+        perms.RESOURCE_POLICY_ACTIONS.includes(action),
+      );
+    }
+
+    return iam.Grant.addToPrincipalOrResource({
       grantee,
       actions,
       resourceArns: this.arns,
@@ -117,12 +153,7 @@ export class TableGrants {
       // Use wildcard for resource policy to avoid circular dependency when grantee is a resource principal
       // (e.g., AccountRootPrincipal). This follows the same pattern as KMS (aws-kms/lib/key.ts).      // resourceArns is used for principal policies, resourceSelfArns is used for resource policies.
       resourceSelfArns: ['*'],
-    }) : iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: this.arns,
     });
-    return result;
   }
 
   /**
@@ -135,22 +166,54 @@ export class TableGrants {
    * @param grantee The principal to grant access to
    */
   public writeData(grantee: iam.IGrantable): iam.Grant {
-    const actions = [...perms.WRITE_DATA_ACTIONS, perms.DESCRIBE_TABLE];
-    const result = this.policyResource ? iam.Grant.addToPrincipalOrResource({
+    let actions = [...perms.WRITE_DATA_ACTIONS, perms.DESCRIBE_TABLE];
+
+    if (!this.policyResource) {
+      this.encryptedResource?.grantOnKey(grantee, ...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS);
+      return iam.Grant.addToPrincipal({
+        grantee,
+        actions,
+        resourceArns: this.arns,
+      });
+    }
+
+    // Detect if this will be a cross-account grant that requires resource policy
+    const principalAccount = grantee.grantPrincipal.principalAccount;
+    const resourceAccount = this.policyResource.env.account;
+
+    let willUseResourcePolicy = false;
+    if (principalAccount && resourceAccount) {
+      // Use Token.compareStrings for proper token comparison
+      const stack = Stack.of(this.table);
+      const resolvedPrincipal = stack.resolve(principalAccount);
+      const resolvedResource = stack.resolve(resourceAccount);
+      // Only treat as cross-account if we can definitively determine they're different
+      willUseResourcePolicy = typeof resolvedPrincipal === 'string' &&
+                              typeof resolvedResource === 'string' &&
+                              resolvedPrincipal !== resolvedResource;
+    } else if (!principalAccount && resourceAccount) {
+      // Principal has no account (e.g., service principal) but resource has account - will use resource policy
+      willUseResourcePolicy = true;
+    }
+
+    // If using resource policy, filter to only include actions supported in resource policies
+    if (willUseResourcePolicy) {
+      // Use whitelist approach: only include actions that are known to be valid in resource policies
+      actions = actions.filter(action =>
+        perms.RESOURCE_POLICY_ACTIONS.includes(action),
+      );
+    }
+
+    this.encryptedResource?.grantOnKey(grantee, ...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS);
+    return iam.Grant.addToPrincipalOrResource({
       grantee,
       actions,
       resourceArns: this.arns,
       resource: this.policyResource,
-      // Use wildcard for resource policy to avoid circular dependency when grantee is a resource principal
+      // Use wildelist for resource policy to avoid circular dependency when grantee is a resource principal
       // (e.g., AccountRootPrincipal). This follows the same pattern as KMS (aws-kms/lib/key.ts).      // resourceArns is used for principal policies, resourceSelfArns is used for resource policies.
       resourceSelfArns: ['*'],
-    }) : iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: this.arns,
     });
-    this.encryptedResource?.grantOnKey(grantee, ...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS);
-    return result;
   }
 
   /**
@@ -164,24 +227,55 @@ export class TableGrants {
    * @param grantee The principal to grant access to
    */
   public readWriteData(grantee: iam.IGrantable): iam.Grant {
-    const actions = [...perms.READ_DATA_ACTIONS, ...perms.WRITE_DATA_ACTIONS, perms.DESCRIBE_TABLE];
-    const result = this.policyResource ? iam.Grant.addToPrincipalOrResource({
+    let actions = [...perms.READ_DATA_ACTIONS, ...perms.WRITE_DATA_ACTIONS, perms.DESCRIBE_TABLE];
+
+    if (!this.policyResource) {
+      this.encryptedResource?.grantOnKey(grantee, ...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS);
+      return iam.Grant.addToPrincipal({
+        grantee,
+        actions,
+        resourceArns: this.arns,
+      });
+    }
+
+    // Detect if this will be a cross-account grant that requires resource policy
+    const principalAccount = grantee.grantPrincipal.principalAccount;
+    const resourceAccount = this.policyResource.env.account;
+
+    let willUseResourcePolicy = false;
+    if (principalAccount && resourceAccount) {
+      // Use Token.compareStrings for proper token comparison
+      const stack = Stack.of(this.table);
+      const resolvedPrincipal = stack.resolve(principalAccount);
+      const resolvedResource = stack.resolve(resourceAccount);
+      // Only treat as cross-account if we can definitively determine they're different
+      willUseResourcePolicy = typeof resolvedPrincipal === 'string' &&
+                              typeof resolvedResource === 'string' &&
+                              resolvedPrincipal !== resolvedResource;
+    } else if (!principalAccount && resourceAccount) {
+      // Principal has no account (e.g., service principal) but resource has account - will use resource policy
+      willUseResourcePolicy = true;
+    }
+
+    // If using resource policy, filter to only include actions supported in resource policies
+    if (willUseResourcePolicy) {
+      // Use whitelist approach: only include actions that are known to be valid in resource policies
+      actions = actions.filter(action =>
+        perms.RESOURCE_POLICY_ACTIONS.includes(action),
+      );
+    }
+
+    this.encryptedResource?.grantOnKey(grantee, ...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS);
+
+    return iam.Grant.addToPrincipalOrResource({
       grantee,
       actions,
       resourceArns: this.arns,
       resource: this.policyResource,
-      // Use wildcard for resource policy to avoid circular dependency when grantee is a resource principal
+      // Use whitelist for resource policy to avoid circular dependency when grantee is a resource principal
       // (e.g., AccountRootPrincipal). This follows the same pattern as KMS (aws-kms/lib/key.ts).      // resourceArns is used for principal policies, resourceSelfArns is used for resource policies.
       resourceSelfArns: ['*'],
-    }) : iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: this.arns,
     });
-
-    this.encryptedResource?.grantOnKey(grantee, ...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS);
-
-    return result;
   }
 
   /**

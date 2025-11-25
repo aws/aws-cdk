@@ -4,7 +4,7 @@ import { Operation, SystemErrorsForOperationsMetricOptions, OperationsMetricOpti
 import { IMetric, MathExpression, Metric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
 import { AddToResourcePolicyResult, Grant, IGrantable, IResourceWithPolicy, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
-import { Resource, ValidationError } from '../../core';
+import { Resource, Token, TokenComparison, ValidationError } from '../../core';
 
 /**
  * Represents an instance of a DynamoDB table.
@@ -431,9 +431,35 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
     if (options.tableActions) {
       const resourceArns = [this.tableArn];
       this.hasIndex && resourceArns.push(`${this.tableArn}/index/*`);
+
+      // Detect if this will be a cross-account grant that requires resource policy
+      // by checking if principal has an account and if it matches the table's account
+      const principalAccount = grantee.grantPrincipal.principalAccount;
+      const resourceAccount = this.env.account;
+
+      let willUseResourcePolicy = false;
+      if (principalAccount && resourceAccount) {
+        // Both accounts are defined - compare them
+        const comparison = Token.compareStrings(resourceAccount, principalAccount);
+        // Only treat as cross-account if we're SURE they're different (not if unresolved)
+        willUseResourcePolicy = comparison === TokenComparison.DIFFERENT;
+      } else if (!principalAccount && resourceAccount) {
+        // Principal has no account (e.g., service principal) but resource has account - will use resource policy
+        willUseResourcePolicy = true;
+      }
+
+      // If using resource policy, filter to only include actions supported in resource policies
+      let actionsToGrant = options.tableActions;
+      if (willUseResourcePolicy) {
+        // Use whitelist approach: only include actions that are known to be valid in resource policies
+        actionsToGrant = options.tableActions.filter(action =>
+          perms.RESOURCE_POLICY_ACTIONS.includes(action),
+        );
+      }
+
       return Grant.addToPrincipalOrResource({
         grantee,
-        actions: options.tableActions,
+        actions: actionsToGrant,
         resourceArns,
         // Use wildcard for resource policy to avoid circular dependency when grantee is a resource principal
         // (e.g., AccountRootPrincipal). This follows the same pattern as KMS (aws-kms/lib/key.ts).
