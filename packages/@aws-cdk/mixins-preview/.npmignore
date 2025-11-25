@@ -6,6 +6,7 @@ coverage
 *.tgz
 
 dist
+!lib/custom-resource-handlers/dist
 .LAST_PACKAGE
 .LAST_BUILD
 !*.js
