@@ -23,7 +23,7 @@ new imagebuilder.LifecyclePolicy(stack, 'LifecyclePolicy-Container', {
         type: imagebuilder.LifecyclePolicyActionType.DELETE,
         includeContainers: false,
       },
-      filter: {
+      ageFilter: {
         age: cdk.Duration.days(30),
         retainAtLeast: 5,
       },

@@ -74,10 +74,8 @@
        }
       },
       "Filter": {
-       "RetainAtLeast": 5,
-       "Type": "AGE",
-       "Unit": "DAYS",
-       "Value": 30
+       "Type": "COUNT",
+       "Value": 5
       }
      },
      {
@@ -114,7 +112,7 @@
        "RetainAtLeast": 5,
        "Type": "AGE",
        "Unit": "DAYS",
-       "Value": 20
+       "Value": 10
       }
      },
      {
@@ -164,47 +162,6 @@
      ]
     },
     "ResourceType": "AMI_IMAGE",
-    "Status": "DISABLED"
-   }
-  },
-  "LifecyclePolicyContainer15B31DB8": {
-   "Type": "AWS::ImageBuilder::LifecyclePolicy",
-   "Properties": {
-    "Description": "This is a test lifecycle policy",
-    "ExecutionRole": {
-     "Fn::GetAtt": [
-      "Role1ABCC5F0",
-      "Arn"
-     ]
-    },
-    "Name": "test-container-lifecycle-policy",
-    "PolicyDetails": [
-     {
-      "Action": {
-       "IncludeResources": {
-        "Containers": false
-       },
-       "Type": "DELETE"
-      },
-      "ExclusionRules": {
-       "TagMap": {
-        "Environment": "test"
-       }
-      },
-      "Filter": {
-       "RetainAtLeast": 5,
-       "Type": "AGE",
-       "Unit": "DAYS",
-       "Value": 30
-      }
-     }
-    ],
-    "ResourceSelection": {
-     "TagMap": {
-      "Environment": "test"
-     }
-    },
-    "ResourceType": "CONTAINER_IMAGE",
     "Status": "DISABLED"
    }
   }

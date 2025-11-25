@@ -3,7 +3,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnLifecyclePolicy } from 'aws-cdk-lib/aws-imagebuilder';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
-import { IRecipeBase } from '../lib';
+import { IRecipeBase } from './recipe-base';
 
 const LIFECYCLE_POLICY_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.LifecyclePolicy');
 
@@ -121,23 +121,24 @@ export interface LifecyclePolicyAction {
 }
 
 /**
- * The resource filter to apply in the lifecycle policy rule
+ * The count-based filtering to apply in a lifecycle policy rule
  */
-export interface LifecyclePolicyFilter {
+export interface LifecyclePolicyCountFilter {
   /**
-   * For age-based filters, the minimum age of the resource. The provided duration will be rounded up to the nearest
-   * day/week/month/year value.
-   *
-   * @default None if a count filter is provided. Otherwise, at least one age or count filter must be provided
+   * The minimum number of resources to keep on hand as part of resource filtering
    */
-  readonly age?: cdk.Duration;
+  readonly count: number;
+}
 
+/**
+ * The age-based filtering to apply in a lifecycle policy rule
+ */
+export interface LifecyclePolicyAgeFilter {
   /**
-   * For count-based filters, the minimum number of resources to keep on hand
-   *
-   * @default - none if an age filter is provided. Otherwise, at least one age or count filter must be provided
+   * The minimum age of the resource to filter. The provided duration will be rounded up to the nearest
+   * day/week/month/year value.
    */
-  readonly count?: number;
+  readonly age: cdk.Duration;
 
   /**
    * For age-based filters, the number of EC2 Image Builder images to keep on hand once the rule is applied. The value
@@ -208,9 +209,18 @@ export interface LifecyclePolicyDetail {
   readonly action: LifecyclePolicyAction;
 
   /**
-   * The resource filter to apply in the lifecycle policy rule
+   * The resource age filter to apply in the lifecycle policy rule
+   *
+   * @default - none if a count filter is provided. Otherwise, an age filter is required.
    */
-  readonly filter: LifecyclePolicyFilter;
+  readonly ageFilter?: LifecyclePolicyAgeFilter;
+
+  /**
+   * The resource count filter to apply in the lifecycle policy rule
+   *
+   * @default - none if an age filter is provided. Otherwise, a count filter is required.
+   */
+  readonly countFilter?: LifecyclePolicyCountFilter;
 
   /**
    * The rules to apply for excluding EC2 Image Builder images from the lifecycle policy rule
@@ -449,16 +459,16 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
       const exclusionRules = this.buildExclusionRules(detail);
 
       this.validatePolicyDetailAction(props, detail.action, exclusionRules?.amis);
-      this.validatePolicyDetailFilter(detail.filter);
+      this.validatePolicyDetailFilter(detail);
 
       return {
         action: action,
         filter: {
-          retainAtLeast: detail.filter.retainAtLeast,
-          type: detail.filter.age !== undefined ? 'AGE' : 'COUNT',
-          ...(detail.filter.age !== undefined
-            ? this.convertDurationToTimeUnitValue(detail.filter.age)
-            : { value: detail.filter.count! }),
+          retainAtLeast: detail.ageFilter?.retainAtLeast,
+          type: detail.ageFilter !== undefined ? 'AGE' : 'COUNT',
+          ...(detail.ageFilter !== undefined
+            ? this.convertDurationToTimeUnitValue(detail.ageFilter.age)
+            : { value: detail.countFilter!.count }),
         },
         ...(exclusionRules !== undefined && { exclusionRules }),
       };
@@ -491,7 +501,7 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
       if (recipe._isContainerRecipe()) {
         if (props.resourceType === LifecyclePolicyResourceType.AMI_IMAGE) {
           throw new cdk.ValidationError(
-            `recipes in the resource selection must all be image recipes for policy type ${LifecyclePolicyResourceType.CONTAINER_IMAGE}`,
+            `recipes in the resource selection must all be image recipes for policy type ${LifecyclePolicyResourceType.AMI_IMAGE}`,
             this,
           );
         }
@@ -639,28 +649,24 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
   /**
    * Validates a policy detail filter
    *
-   * @param filter The lifecycle policy filter to validate
+   * @param detail The lifecycle policy detail to validate filters for
    * @private
    */
-  private validatePolicyDetailFilter(filter: LifecyclePolicyFilter) {
-    if (filter.age !== undefined && filter.count !== undefined) {
+  private validatePolicyDetailFilter(detail: LifecyclePolicyDetail) {
+    if (detail.ageFilter !== undefined && detail.countFilter !== undefined) {
       throw new cdk.ValidationError('either age count can be specified in a policy filter, but not both', this);
     }
 
-    if (filter.age === undefined && filter.count === undefined) {
+    if (detail.ageFilter === undefined && detail.countFilter === undefined) {
       throw new cdk.ValidationError('you must provide an age or count filter in the policy', this);
     }
 
-    if (filter.retainAtLeast !== undefined && filter.age === undefined) {
-      throw new cdk.ValidationError('you can only specify a retainAtLeast filter when using an age filter', this);
+    if (detail.ageFilter?.retainAtLeast !== undefined && detail.ageFilter.retainAtLeast < 1) {
+      throw new cdk.ValidationError('the retainAtLeast filter value must be at least 1', this);
     }
 
-    if (filter.retainAtLeast !== undefined && filter.retainAtLeast < 1) {
-      throw new cdk.ValidationError('the retainAtLeast filter must be at least 1', this);
-    }
-
-    if (filter.retainAtLeast !== undefined && filter.retainAtLeast > 10) {
-      throw new cdk.ValidationError('the retainAtLeast filter must be at most 10', this);
+    if (detail.ageFilter?.retainAtLeast !== undefined && detail.ageFilter.retainAtLeast > 10) {
+      throw new cdk.ValidationError('the retainAtLeast filter value must be at most 10', this);
     }
   }
 

@@ -1339,7 +1339,7 @@ const lifecyclePolicy = new imagebuilder.LifecyclePolicy(this, 'MyLifecyclePolic
   details: [
     {
       action: { type: imagebuilder.LifecyclePolicyActionType.DELETE },
-      filter: { age: Duration.days(30) }
+      ageFilter: { age: Duration.days(30) }
     }
   ],
   resourceSelection: { 
@@ -1356,7 +1356,7 @@ const containerLifecyclePolicy = new imagebuilder.LifecyclePolicy(this, 'Contain
   details: [
     {
       action: { type: imagebuilder.LifecyclePolicyActionType.DELETE },
-      filter: { count: 10 }
+      countFilter: { count: 10 }
     }
   ],
   resourceSelection: {
@@ -1377,7 +1377,7 @@ const tagBasedPolicy = new imagebuilder.LifecyclePolicy(this, 'TagBasedPolicy', 
   details: [
     {
       action: { type: imagebuilder.LifecyclePolicyActionType.DELETE },
-      filter: { age: Duration.days(90) }
+      ageFilter: { age: Duration.days(90) }
     }
   ],
   resourceSelection: {
@@ -1412,7 +1412,7 @@ const recipeBasedPolicy = new imagebuilder.LifecyclePolicy(this, 'RecipeBasedPol
   details: [
     {
       action: { type: imagebuilder.LifecyclePolicyActionType.DELETE },
-      filter: { count: 5 }
+      countFilter: { count: 5 }
     }
   ],
   resourceSelection: {
@@ -1437,7 +1437,7 @@ const ageBasedPolicy = new imagebuilder.LifecyclePolicy(this, 'AgeBasedPolicy', 
         includeAmis: true,
         includeSnapshots: true
       },
-      filter: { 
+      ageFilter: { 
         age: Duration.days(60),
         retainAtLeast: 3  // Always keep at least 3 images
       }
@@ -1459,7 +1459,7 @@ const countBasedPolicy = new imagebuilder.LifecyclePolicy(this, 'CountBasedPolic
   details: [
     {
       action: { type: imagebuilder.LifecyclePolicyActionType.DELETE },
-      filter: { count: 15 }  // Keep only the 15 most recent images
+      countFilter: { count: 15 }  // Keep only the 15 most recent images
     }
   ],
   resourceSelection: {
@@ -1482,7 +1482,7 @@ const graduatedPolicy = new imagebuilder.LifecyclePolicy(this, 'GraduatedPolicy'
         type: imagebuilder.LifecyclePolicyActionType.DEPRECATE,
         includeAmis: true
       },
-      filter: { 
+      ageFilter: { 
         age: Duration.days(30),
         retainAtLeast: 5
       }
@@ -1493,7 +1493,7 @@ const graduatedPolicy = new imagebuilder.LifecyclePolicy(this, 'GraduatedPolicy'
         type: imagebuilder.LifecyclePolicyActionType.DISABLE,
         includeAmis: true
       },
-      filter: { 
+      ageFilter: { 
         age: Duration.days(60),
         retainAtLeast: 3
       }
@@ -1505,7 +1505,7 @@ const graduatedPolicy = new imagebuilder.LifecyclePolicy(this, 'GraduatedPolicy'
         includeAmis: true,
         includeSnapshots: true
       },
-      filter: { 
+      ageFilter: { 
         age: Duration.days(90),
         retainAtLeast: 1
       }
@@ -1529,7 +1529,7 @@ const excludeAmisPolicy = new imagebuilder.LifecyclePolicy(this, 'ExcludeAmisPol
   details: [
     {
       action: { type: imagebuilder.LifecyclePolicyActionType.DELETE },
-      filter: { age: Duration.days(30) },
+      ageFilter: { age: Duration.days(30) },
       amiExclusionRules: {
         isPublic: true,  // Exclude public AMIs
         lastLaunched: Duration.days(7),  // Exclude AMIs launched in last 7 days
@@ -1558,7 +1558,7 @@ const excludeImagesPolicy = new imagebuilder.LifecyclePolicy(this, 'ExcludeImage
   details: [
     {
       action: { type: imagebuilder.LifecyclePolicyActionType.DELETE },
-      filter: { count: 20 },
+      countFilter: { count: 20 },
       imageExclusionRules: {
         tags: {
           DoNotDelete: 'true',
@@ -1593,7 +1593,7 @@ const customRolePolicy = new imagebuilder.LifecyclePolicy(this, 'CustomRolePolic
   details: [
     {
       action: { type: imagebuilder.LifecyclePolicyActionType.DELETE },
-      filter: { age: Duration.days(45) }
+      ageFilter: { age: Duration.days(45) }
     }
   ],
   resourceSelection: {
@@ -1615,7 +1615,7 @@ const disabledPolicy = new imagebuilder.LifecyclePolicy(this, 'DisabledPolicy', 
   details: [
     {
       action: { type: imagebuilder.LifecyclePolicyActionType.DELETE },
-      filter: { age: Duration.days(30) }
+      ageFilter: { age: Duration.days(30) }
     }
   ],
   resourceSelection: {

@@ -101,7 +101,7 @@ describe('Lifecycle Policy', () => {
             includeAmis: true,
             includeSnapshots: true,
           },
-          filter: {
+          ageFilter: {
             age: cdk.Duration.days(30),
             retainAtLeast: 5,
           },
@@ -120,7 +120,7 @@ describe('Lifecycle Policy', () => {
             includeAmis: false,
             includeSnapshots: false,
           },
-          filter: {
+          ageFilter: {
             age: cdk.Duration.days(20),
             retainAtLeast: 5,
           },
@@ -139,7 +139,7 @@ describe('Lifecycle Policy', () => {
             includeAmis: false,
             includeSnapshots: false,
           },
-          filter: {
+          ageFilter: {
             age: cdk.Duration.days(10),
             retainAtLeast: 5,
           },
@@ -327,7 +327,7 @@ describe('Lifecycle Policy', () => {
             type: LifecyclePolicyActionType.DELETE,
             includeContainers: false,
           },
-          filter: {
+          ageFilter: {
             age: cdk.Duration.days(30),
             retainAtLeast: 5,
           },
@@ -429,7 +429,7 @@ describe('Lifecycle Policy', () => {
             includeAmis: true,
             includeSnapshots: true,
           },
-          filter: {
+          ageFilter: {
             age: cdk.Duration.days(30),
             retainAtLeast: 5,
           },
@@ -448,7 +448,7 @@ describe('Lifecycle Policy', () => {
             includeAmis: false,
             includeSnapshots: false,
           },
-          filter: {
+          ageFilter: {
             age: cdk.Duration.days(20),
             retainAtLeast: 5,
           },
@@ -467,7 +467,7 @@ describe('Lifecycle Policy', () => {
             includeAmis: false,
             includeSnapshots: false,
           },
-          filter: {
+          ageFilter: {
             age: cdk.Duration.days(10),
             retainAtLeast: 5,
           },
@@ -644,7 +644,7 @@ describe('Lifecycle Policy', () => {
       details: [
         {
           action: { type: LifecyclePolicyActionType.DELETE },
-          filter: { count: 5 },
+          countFilter: { count: 5 },
         },
       ],
       resourceSelection: { tags: { Environment: 'test' } },
@@ -706,7 +706,7 @@ describe('Lifecycle Policy', () => {
       details: [
         {
           action: { type: LifecyclePolicyActionType.DELETE },
-          filter: { count: 5 },
+          countFilter: { count: 5 },
         },
       ],
       resourceSelection: {
@@ -775,7 +775,7 @@ describe('Lifecycle Policy', () => {
       details: [
         {
           action: { type: LifecyclePolicyActionType.DELETE },
-          filter: { count: 5 },
+          countFilter: { count: 5 },
         },
       ],
       resourceSelection: {
@@ -844,7 +844,7 @@ describe('Lifecycle Policy', () => {
       details: [
         {
           action: { type: LifecyclePolicyActionType.DELETE },
-          filter: { age: cdk.Duration.days(1) },
+          ageFilter: { age: cdk.Duration.days(1) },
         },
       ],
       resourceSelection: { tags: { Environment: 'test' } },
@@ -879,7 +879,7 @@ describe('Lifecycle Policy', () => {
       details: [
         {
           action: { type: LifecyclePolicyActionType.DELETE },
-          filter: { age: cdk.Duration.days(1001) },
+          ageFilter: { age: cdk.Duration.days(1001) },
         },
       ],
       resourceSelection: { tags: { Environment: 'test' } },
@@ -914,7 +914,7 @@ describe('Lifecycle Policy', () => {
       details: [
         {
           action: { type: LifecyclePolicyActionType.DELETE },
-          filter: { age: cdk.Duration.days(7 * 1000 + 1) },
+          ageFilter: { age: cdk.Duration.days(7 * 1000 + 1) },
         },
       ],
       resourceSelection: { tags: { Environment: 'test' } },
@@ -949,7 +949,7 @@ describe('Lifecycle Policy', () => {
       details: [
         {
           action: { type: LifecyclePolicyActionType.DELETE },
-          filter: { age: cdk.Duration.days(30 * 1000 + 1) },
+          ageFilter: { age: cdk.Duration.days(30 * 1000 + 1) },
         },
       ],
       resourceSelection: { tags: { Environment: 'test' } },
@@ -984,7 +984,7 @@ describe('Lifecycle Policy', () => {
       details: [
         {
           action: { type: LifecyclePolicyActionType.DELETE },
-          filter: { count: 5 },
+          countFilter: { count: 5 },
         },
       ],
       resourceSelection: { tags: { Environment: 'test' } },
@@ -1032,7 +1032,7 @@ describe('Lifecycle Policy', () => {
       details: [
         {
           action: { type: LifecyclePolicyActionType.DELETE },
-          filter: { count: 5 },
+          countFilter: { count: 5 },
         },
       ],
       resourceSelection: { tags: { Environment: 'test' } },
@@ -1082,7 +1082,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { age: cdk.Duration.days(1) },
+            ageFilter: { age: cdk.Duration.days(1) },
           },
         ],
         resourceSelection: { tags: { Environment: 'test' } },
@@ -1098,7 +1098,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { age: cdk.Duration.days(1) },
+            ageFilter: { age: cdk.Duration.days(1) },
           },
         ],
         resourceSelection: { tags: { Environment: 'test' } },
@@ -1114,7 +1114,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { age: cdk.Duration.days(1) },
+            ageFilter: { age: cdk.Duration.days(1) },
           },
         ],
         resourceSelection: { tags: { Environment: 'test' } },
@@ -1130,7 +1130,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { age: cdk.Duration.days(1) },
+            ageFilter: { age: cdk.Duration.days(1) },
           },
         ],
         resourceSelection: { tags: { Environment: 'test' } },
@@ -1145,7 +1145,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { count: 5 },
+            countFilter: { count: 5 },
           },
         ],
         resourceSelection: {},
@@ -1170,19 +1170,19 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { count: 5 },
+            countFilter: { count: 5 },
           },
           {
             action: { type: LifecyclePolicyActionType.DISABLE },
-            filter: { count: 5 },
+            countFilter: { count: 5 },
           },
           {
             action: { type: LifecyclePolicyActionType.DEPRECATE },
-            filter: { count: 5 },
+            countFilter: { count: 5 },
           },
           {
             action: { type: 'NonExistentAction' as LifecyclePolicyActionType },
-            filter: { count: 5 },
+            countFilter: { count: 5 },
           },
         ],
         resourceSelection: { tags: { Environment: 'test' } },
@@ -1197,11 +1197,11 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { count: 5 },
+            countFilter: { count: 5 },
           },
           {
             action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { count: 5 },
+            countFilter: { count: 5 },
           },
         ],
         resourceSelection: { tags: { Environment: 'test' } },
@@ -1216,7 +1216,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DISABLE },
-            filter: { count: 5 },
+            countFilter: { count: 5 },
           },
         ],
         resourceSelection: { tags: { Environment: 'test' } },
@@ -1231,7 +1231,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DEPRECATE },
-            filter: { count: 5 },
+            countFilter: { count: 5 },
           },
         ],
         resourceSelection: { tags: { Environment: 'test' } },
@@ -1246,7 +1246,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE, includeAmis: true },
-            filter: { count: 5 },
+            countFilter: { count: 5 },
           },
         ],
         resourceSelection: { tags: { Environment: 'test' } },
@@ -1261,7 +1261,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE, includeSnapshots: true },
-            filter: { count: 5 },
+            countFilter: { count: 5 },
           },
         ],
         resourceSelection: { tags: { Environment: 'test' } },
@@ -1276,7 +1276,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { count: 5 },
+            countFilter: { count: 5 },
             amiExclusionRules: { tags: { Environment: 'test' } },
           },
         ],
@@ -1292,7 +1292,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE, includeContainers: true },
-            filter: { count: 5 },
+            countFilter: { count: 5 },
           },
         ],
         resourceSelection: { tags: { Environment: 'test' } },
@@ -1307,7 +1307,8 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { age: cdk.Duration.days(10), count: 5 },
+            ageFilter: { age: cdk.Duration.days(10) },
+            countFilter: { count: 5 },
           },
         ],
         resourceSelection: { tags: { Environment: 'test' } },
@@ -1319,27 +1320,7 @@ describe('Lifecycle Policy', () => {
     expect(() => {
       new LifecyclePolicy(stack, 'LifecyclePolicy', {
         resourceType: LifecyclePolicyResourceType.AMI_IMAGE,
-        details: [
-          {
-            action: { type: LifecyclePolicyActionType.DELETE },
-            filter: {},
-          },
-        ],
-        resourceSelection: { tags: { Environment: 'test' } },
-      });
-    }).toThrow(cdk.ValidationError);
-  });
-
-  test('throws an error when rule filter has retainAtLeast with a count filter', () => {
-    expect(() => {
-      new LifecyclePolicy(stack, 'LifecyclePolicy', {
-        resourceType: LifecyclePolicyResourceType.AMI_IMAGE,
-        details: [
-          {
-            action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { count: 5, retainAtLeast: 2 },
-          },
-        ],
+        details: [{ action: { type: LifecyclePolicyActionType.DELETE } }],
         resourceSelection: { tags: { Environment: 'test' } },
       });
     }).toThrow(cdk.ValidationError);
@@ -1352,7 +1333,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { age: cdk.Duration.days(365 * 1000 + 1) },
+            ageFilter: { age: cdk.Duration.days(365 * 1000 + 1) },
           },
         ],
         resourceSelection: { tags: { Environment: 'test' } },
@@ -1367,7 +1348,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { count: 5 },
+            countFilter: { count: 5 },
           },
         ],
         resourceSelection: {
@@ -1414,7 +1395,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { age: cdk.Duration.days(1) },
+            ageFilter: { age: cdk.Duration.days(1) },
           },
         ],
         resourceSelection: { recipes: [new BadRecipe(stack, 'BadRecipe')] },
@@ -1429,7 +1410,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { age: cdk.Duration.days(45) },
+            ageFilter: { age: cdk.Duration.days(45) },
           },
         ],
         resourceSelection: {
@@ -1451,7 +1432,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { age: cdk.Duration.days(45) },
+            ageFilter: { age: cdk.Duration.days(45) },
           },
         ],
         resourceSelection: {
@@ -1473,7 +1454,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { age: cdk.Duration.hours(0) },
+            ageFilter: { age: cdk.Duration.hours(0) },
           },
         ],
         resourceSelection: { tags: { Environment: 'test' } },
@@ -1488,7 +1469,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { age: cdk.Duration.days(1), retainAtLeast: -1 },
+            ageFilter: { age: cdk.Duration.days(1), retainAtLeast: -1 },
           },
         ],
         resourceSelection: { tags: { Environment: 'test' } },
@@ -1503,7 +1484,7 @@ describe('Lifecycle Policy', () => {
         details: [
           {
             action: { type: LifecyclePolicyActionType.DELETE },
-            filter: { age: cdk.Duration.days(1), retainAtLeast: 11 },
+            ageFilter: { age: cdk.Duration.days(1), retainAtLeast: 11 },
           },
         ],
         resourceSelection: { tags: { Environment: 'test' } },

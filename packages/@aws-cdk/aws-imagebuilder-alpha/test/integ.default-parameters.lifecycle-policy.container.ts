@@ -10,7 +10,7 @@ new imagebuilder.LifecyclePolicy(stack, 'LifecyclePolicy-AMI', {
   details: [
     {
       action: { type: imagebuilder.LifecyclePolicyActionType.DELETE },
-      filter: { count: 5 },
+      countFilter: { count: 5 },
     },
   ],
   resourceSelection: { tags: { Environment: 'test' } },

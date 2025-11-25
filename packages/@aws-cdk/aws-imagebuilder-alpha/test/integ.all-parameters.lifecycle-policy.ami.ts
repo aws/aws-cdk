@@ -24,10 +24,7 @@ new imagebuilder.LifecyclePolicy(stack, 'LifecyclePolicy-AMI', {
         includeAmis: true,
         includeSnapshots: true,
       },
-      filter: {
-        age: cdk.Duration.days(30),
-        retainAtLeast: 5,
-      },
+      countFilter: { count: 5 },
       amiExclusionRules: {
         isPublic: true,
         lastLaunched: cdk.Duration.days(20),
@@ -43,8 +40,8 @@ new imagebuilder.LifecyclePolicy(stack, 'LifecyclePolicy-AMI', {
         includeAmis: false,
         includeSnapshots: false,
       },
-      filter: {
-        age: cdk.Duration.days(20),
+      ageFilter: {
+        age: cdk.Duration.days(10),
         retainAtLeast: 5,
       },
       amiExclusionRules: {
@@ -62,7 +59,7 @@ new imagebuilder.LifecyclePolicy(stack, 'LifecyclePolicy-AMI', {
         includeAmis: false,
         includeSnapshots: false,
       },
-      filter: {
+      ageFilter: {
         age: cdk.Duration.days(10),
         retainAtLeast: 5,
       },
