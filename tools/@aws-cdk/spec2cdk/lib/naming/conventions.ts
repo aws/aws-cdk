@@ -227,7 +227,14 @@ function makeIdentifier(s: string) {
 /**
  * Sanitize a type name to be a valid TypeScript identifier
  * Converts kebab-case and other invalid characters to PascalCase
+ *
+ * Also has a list of identifiers we need to avoid because they might cause
+ * problems in some languages.
  */
 export function sanitizeTypeName(name: string): string {
-  return makeIdentifier(camelcase(name, { pascalCase: true }));
+  const id = makeIdentifier(camelcase(name, { pascalCase: true }));
+
+  return RESERVED_NAMES_LIST.has(id) ? `${id}_` : id;
 }
+
+const RESERVED_NAMES_LIST = new Set(['Object']);
