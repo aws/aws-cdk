@@ -143,7 +143,26 @@ describe('serverless cache base', () => {
                 'elasticache:Connect',
                 'elasticache:DescribeServerlessCaches',
               ],
-              Resource: { 'Fn::GetAtt': ['Cache18F6EE16', 'ARN'] },
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':elasticache:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':serverlesscache:Cache',
+                  ],
+                ],
+              },
             },
           ]),
         },

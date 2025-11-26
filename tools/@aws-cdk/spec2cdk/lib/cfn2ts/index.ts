@@ -37,11 +37,13 @@ export interface GenerateAllOptions {
  * Code-generates all L1s, and writes the necessary index files.
  *
  * @param outPath The root directory to generate L1s in
+ * @param alphaRootDir The root directory to generate grant modules for grants configured in alpha packages
  * @param param1  Options
  * @returns       A ModuleMap containing the ModuleDefinition and CFN scopes for each generated module.
  */
 export async function generateAll(
   outPath: string,
+  alphaRootDir: string,
   { scopeMapPath, skippedServices }: GenerateAllOptions,
 ): Promise<ModuleMap> {
   const db = await loadAwsServiceSpec();
@@ -81,6 +83,7 @@ export async function generateAll(
     moduleGenerationRequests,
     {
       outputPath: outPath,
+      alphaOutputPath: alphaRootDir,
       clearOutput: false,
       builderProps: {
         inCdkLib: true,

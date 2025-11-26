@@ -48,6 +48,19 @@ class AwsCdkLibServiceSubmodule extends BaseServiceSubmodule {
   }
 }
 
+export interface GrantsProps {
+  /**
+   * The JSON string to configure the grants for the service
+   */
+  config: string;
+
+  /**
+   * Whether the generated grants should be considered as stable or experimental.
+   * This has implications on where the generated file is placed.
+   */
+  stable: boolean;
+}
+
 export interface AwsCdkLibFilePatterns {
   /**
    * The pattern used to name resource files.
@@ -133,14 +146,14 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
     });
   }
 
-  protected createServiceSubmodule(service: Service, submoduleName: string, grantsConfig?: string): AwsCdkLibServiceSubmodule {
+  protected createServiceSubmodule(service: Service, submoduleName: string, grantsProps?: GrantsProps): AwsCdkLibServiceSubmodule {
     const resourcesMod = this.rememberModule(this.createResourceModule(submoduleName, service));
     const augmentations = this.rememberModule(this.createAugmentationsModule(submoduleName, service));
     const cannedMetrics = this.rememberModule(this.createCannedMetricsModule(submoduleName, service));
     const [interfaces, didCreateInterfaceModule] = this.obtainInterfaceModule(service);
 
-    const grants = grantsConfig != null
-      ? this.rememberModule(this.createGrantsModule(submoduleName, service, grantsConfig))
+    const grants = grantsProps != null
+      ? this.rememberModule(this.createGrantsModule(submoduleName, service, grantsProps))
       : undefined;
 
     const createdSubmod: AwsCdkLibServiceSubmodule = new AwsCdkLibServiceSubmodule({
@@ -157,10 +170,10 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
     return createdSubmod;
   }
 
-  private createGrantsModule(moduleName: string, service: Service, grantsConfig: string): LocatedModule<GrantsModule> {
+  private createGrantsModule(moduleName: string, service: Service, grantsProps: GrantsProps): LocatedModule<GrantsModule> {
     const filePath = this.pathsFor(moduleName, service).grants;
     return {
-      module: new GrantsModule(service, this.db, JSON.parse(grantsConfig)),
+      module: new GrantsModule(service, this.db, JSON.parse(grantsProps.config), grantsProps.stable),
       filePath,
     };
   }

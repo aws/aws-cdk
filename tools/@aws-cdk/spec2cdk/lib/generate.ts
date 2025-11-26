@@ -4,7 +4,8 @@ import { DatabaseBuilder } from '@aws-cdk/service-spec-importers';
 import { Service, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
-import { AwsCdkLibBuilder } from './cdk/aws-cdk-lib';
+import { AwsCdkLibBuilder, GrantsProps } from './cdk/aws-cdk-lib';
+import { GrantsModule } from './cdk/grants-module';
 import { LibraryBuilder } from './cdk/library-builder';
 import { queryDb, log, TsFileWriter } from './util';
 
@@ -55,6 +56,11 @@ export interface GenerateOptions<Builder extends LBC>{
    * @default - current working directory
    */
   readonly outputPath: string;
+
+  /**
+   * Base path for generated alpha files
+   */
+  readonly alphaOutputPath?: string;
 
   /**
    * Should the location be deleted before generating new files
@@ -202,7 +208,7 @@ async function generator<Builder extends LBC = typeof AwsCdkLibBuilder>(
         destinationSubmodule: moduleName,
         nameSuffix: req.suffix,
         deprecated: req.deprecated,
-        grantsConfig: readGrantsConfig(moduleName, options.outputPath),
+        grantsProps: grantsPropsForModule(moduleName, outputPath, options.alphaOutputPath),
       });
 
       servicesPerModule[moduleName] ??= [];
@@ -218,8 +224,20 @@ async function generator<Builder extends LBC = typeof AwsCdkLibBuilder>(
 
   const moduleOutputFiles = ast.filesBySubmodule();
 
-  const writer = new TsFileWriter(outputPath, renderer);
-  ast.writeAll(writer);
+  const writer = new TsFileWriter(renderer);
+
+  // Write all modules into their respective files
+  for (const [fileName, module] of ast.modules.entries()) {
+    if (!module.isEmpty()) {
+      // Decide the full path based on whether this is a stable or alpha module
+      // Stable modules go into `outputPath`, alpha modules into `alphaOutputPath` (with the "-alpha" suffix)
+      // At the moment, only GrantsModules can be alpha
+      const isStable = module instanceof GrantsModule ? module.stable : true;
+      const rootDir = isStable ? outputPath : options.alphaOutputPath ?? outputPath;
+      const fullPath = path.join(rootDir, isStable ? fileName : toAlphaPackage(fileName));
+      writer.write(module, fullPath);
+    }
+  }
 
   const allResources = Object.values(resourcesPerModule).flat().reduce(mergeObjects, {});
   log.info('Summary:');
@@ -248,14 +266,32 @@ function mergeObjects<T>(all: T, res: T) {
   };
 }
 
-function readGrantsConfig(moduleName: string, rootDir: string): string | undefined {
-  const filename = `${moduleName}/grants.json`;
+function grantsPropsForModule(moduleName: string, stablePath: string, alphaPath?: string): GrantsProps | undefined {
+  let stable = true;
+  let grantsFileLocation = path.join(stablePath, moduleName);
+  if (alphaPath != null) {
+    const alpha = path.join(alphaPath, `${moduleName}-alpha`);
+    if (fs.existsSync(path.join(alpha, 'grants.json'))) {
+      grantsFileLocation = alpha;
+      stable = false;
+    }
+  }
+
+  const config = readGrantsConfig(grantsFileLocation);
+  return config == null ? undefined : { stable, config };
+}
+
+function readGrantsConfig(dir: string): string | undefined {
   try {
-    return fs.readFileSync(path.join(rootDir, filename), 'utf-8');
+    return fs.readFileSync(path.join(dir, 'grants.json'), 'utf-8');
   } catch (e: any) {
     if (e.code === 'ENOENT') {
       return undefined;
     }
     throw e;
   }
+}
+
+function toAlphaPackage(s: string) {
+  return s.replace(/^(aws-[^/]+)/, '$1-alpha');
 }
