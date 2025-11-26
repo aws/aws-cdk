@@ -86,7 +86,7 @@ const manualPipeline = new imagebuilder.ImagePipeline(this, 'ManualPipeline', {
 });
 
 // Grant Lambda function permission to trigger the pipeline
-manualPipeline.grantStartExecution(role);
+manualPipeline.grantStartExecution(lambdaRole);
 ```
 
 ##### Automated Pipeline Scheduling
@@ -283,7 +283,7 @@ const automationRole = new iam.Role(this, 'AutomationRole', {
 });
 
 existingPipelineByName.grantStartExecution(automationRole);
-existingPipelineByArn.grantRead(role);
+existingPipelineByArn.grantRead(lambdaRole);
 ```
 
 ### Image Recipe
@@ -1323,4 +1323,342 @@ const testContainerWorkflow = imagebuilder.AwsManagedWorkflow.testContainer(this
 
 // Distribution workflows
 const distributeContainerWorkflow = imagebuilder.AwsManagedWorkflow.distributeContainer(this, 'DistributeContainer');
+```
+
+### Lifecycle Policy
+
+Lifecycle policies help you manage the retention and cleanup of Image Builder resources automatically. These policies define rules for deprecating or deleting old image versions, managing AMI snapshots, and controlling resource costs by removing unused images based on age, count, or other criteria.
+
+#### Lifecycle Policy Basic Usage
+
+Create a lifecycle policy to automatically delete old AMI images after 30 days:
+
+```ts
+const lifecyclePolicy = new imagebuilder.LifecyclePolicy(this, 'MyLifecyclePolicy', {
+  resourceType: imagebuilder.LifecyclePolicyResourceType.AMI_IMAGE,
+  details: [
+    {
+      action: { type: imagebuilder.LifecyclePolicyActionType.DELETE },
+      filter: { ageFilter: { age: Duration.days(30) } }
+    }
+  ],
+  resourceSelection: {
+    tags: { Environment: 'development' }
+  }
+});
+```
+
+Create a lifecycle policy to keep only the 10 most recent container images:
+
+```ts
+const containerLifecyclePolicy = new imagebuilder.LifecyclePolicy(this, 'ContainerLifecyclePolicy', {
+  resourceType: imagebuilder.LifecyclePolicyResourceType.CONTAINER_IMAGE,
+  details: [
+    {
+      action: { type: imagebuilder.LifecyclePolicyActionType.DELETE },
+      filter: { countFilter: { count: 10 } }
+    }
+  ],
+  resourceSelection: {
+    tags: { Application: 'web-app' }
+  }
+});
+```
+
+#### Lifecycle Policy Resource Selection
+
+##### Tag-Based Resource Selection
+
+Apply lifecycle policies to images with specific tags:
+
+```ts
+const tagBasedPolicy = new imagebuilder.LifecyclePolicy(this, 'TagBasedPolicy', {
+  resourceType: imagebuilder.LifecyclePolicyResourceType.AMI_IMAGE,
+  details: [
+    {
+      action: { type: imagebuilder.LifecyclePolicyActionType.DELETE },
+      filter: { ageFilter: { age: Duration.days(90) } }
+    }
+  ],
+  resourceSelection: {
+    tags: {
+      Environment: 'staging',
+      Team: 'backend'
+    }
+  }
+});
+```
+
+##### Recipe-Based Resource Selection
+
+Apply lifecycle policies to specific image or container recipes:
+
+```ts
+const imageRecipe = new imagebuilder.ImageRecipe(this, 'MyImageRecipe', {
+  baseImage: imagebuilder.BaseImage.fromSsmParameterName(
+    '/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64'
+  )
+});
+
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'MyContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  )
+});
+
+const recipeBasedPolicy = new imagebuilder.LifecyclePolicy(this, 'RecipeBasedPolicy', {
+  resourceType: imagebuilder.LifecyclePolicyResourceType.AMI_IMAGE,
+  details: [
+    {
+      action: { type: imagebuilder.LifecyclePolicyActionType.DELETE },
+      filter: { countFilter: { count: 5 } }
+    }
+  ],
+  resourceSelection: {
+    recipes: [imageRecipe, containerRecipe]
+  }
+});
+```
+
+#### Lifecycle Policy Rules
+
+##### Age-Based Rules
+
+Delete images older than a specific time period:
+
+```ts
+const ageBasedPolicy = new imagebuilder.LifecyclePolicy(this, 'AgeBasedPolicy', {
+  resourceType: imagebuilder.LifecyclePolicyResourceType.AMI_IMAGE,
+  details: [
+    {
+      action: {
+        type: imagebuilder.LifecyclePolicyActionType.DELETE,
+        includeAmis: true,
+        includeSnapshots: true
+      },
+      filter: {
+        ageFilter: {
+          age: Duration.days(60),
+          retainAtLeast: 3  // Always keep at least 3 images
+        }
+      }
+    }
+  ],
+  resourceSelection: {
+    tags: { Environment: 'testing' }
+  }
+});
+```
+
+##### Count-Based Rules
+
+Keep only a specific number of the most recent images:
+
+```ts
+const countBasedPolicy = new imagebuilder.LifecyclePolicy(this, 'CountBasedPolicy', {
+  resourceType: imagebuilder.LifecyclePolicyResourceType.CONTAINER_IMAGE,
+  details: [
+    {
+      action: { type: imagebuilder.LifecyclePolicyActionType.DELETE },
+      filter: { countFilter: { count: 15 } }  // Keep only the 15 most recent images
+    }
+  ],
+  resourceSelection: {
+    tags: { Application: 'microservice' }
+  }
+});
+```
+
+##### Multiple Lifecycle Rules
+
+Implement a graduated approach with multiple actions:
+
+```ts
+const graduatedPolicy = new imagebuilder.LifecyclePolicy(this, 'GraduatedPolicy', {
+  resourceType: imagebuilder.LifecyclePolicyResourceType.AMI_IMAGE,
+  details: [
+    {
+      // First: Deprecate images after 30 days
+      action: {
+        type: imagebuilder.LifecyclePolicyActionType.DEPRECATE,
+        includeAmis: true
+      },
+      filter: {
+        ageFilter: {
+          age: Duration.days(30),
+          retainAtLeast: 5
+        }
+      }
+    },
+    {
+      // Second: Disable images after 60 days  
+      action: {
+        type: imagebuilder.LifecyclePolicyActionType.DISABLE,
+        includeAmis: true
+      },
+      filter: {
+        ageFilter: {
+          age: Duration.days(60),
+          retainAtLeast: 3
+        }
+      }
+    },
+    {
+      // Finally: Delete images after 90 days
+      action: {
+        type: imagebuilder.LifecyclePolicyActionType.DELETE,
+        includeAmis: true,
+        includeSnapshots: true
+      },
+      filter: {
+        ageFilter: {
+          age: Duration.days(90),
+          retainAtLeast: 1
+        }
+      }
+    }
+  ],
+  resourceSelection: {
+    tags: { Environment: 'production' }
+  }
+});
+```
+
+#### Lifecycle Policy Exclusion Rules
+
+##### AMI Exclusion Rules
+
+Exclude specific AMIs from lifecycle actions based on various criteria:
+
+```ts
+const excludeAmisPolicy = new imagebuilder.LifecyclePolicy(this, 'ExcludeAmisPolicy', {
+  resourceType: imagebuilder.LifecyclePolicyResourceType.AMI_IMAGE,
+  details: [
+    {
+      action: { type: imagebuilder.LifecyclePolicyActionType.DELETE },
+      filter: { ageFilter: { age: Duration.days(30) } },
+      exclusionRules: {
+        amiExclusionRules: {
+          isPublic: true,  // Exclude public AMIs
+          lastLaunched: Duration.days(7),  // Exclude AMIs launched in last 7 days
+          regions: ['us-west-2', 'eu-west-1'],  // Exclude AMIs in specific regions
+          sharedAccounts: ['123456789012'],  // Exclude AMIs shared with specific accounts
+          tags: {
+            Protected: 'true',
+            Environment: 'production'
+          }
+        }
+      }
+    }
+  ],
+  resourceSelection: {
+    tags: { Team: 'infrastructure' }
+  }
+});
+```
+
+##### Image Exclusion Rules
+
+Exclude Image Builder images with protective tags:
+
+```ts
+const excludeImagesPolicy = new imagebuilder.LifecyclePolicy(this, 'ExcludeImagesPolicy', {
+  resourceType: imagebuilder.LifecyclePolicyResourceType.CONTAINER_IMAGE,
+  details: [
+    {
+      action: { type: imagebuilder.LifecyclePolicyActionType.DELETE },
+      filter: { countFilter: { count: 20 } },
+      exclusionRules: {
+        imageExclusionRules: {
+          tags: {
+            DoNotDelete: 'true',
+            Critical: 'baseline'
+          }
+        }
+      }
+    }
+  ],
+  resourceSelection: {
+    tags: { Application: 'frontend' }
+  }
+});
+```
+
+#### Advanced Lifecycle Configuration
+
+##### Custom Execution Roles
+
+Provide your own IAM execution role with specific permissions:
+
+```ts
+const executionRole = new iam.Role(this, 'LifecycleExecutionRole', {
+  assumedBy: new iam.ServicePrincipal('imagebuilder.amazonaws.com'),
+  managedPolicies: [
+    iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/EC2ImageBuilderLifecycleExecutionPolicy')
+  ]
+});
+
+const customRolePolicy = new imagebuilder.LifecyclePolicy(this, 'CustomRolePolicy', {
+  resourceType: imagebuilder.LifecyclePolicyResourceType.AMI_IMAGE,
+  executionRole: executionRole,
+  details: [
+    {
+      action: { type: imagebuilder.LifecyclePolicyActionType.DELETE },
+      filter: { ageFilter: { age: Duration.days(45) } }
+    }
+  ],
+  resourceSelection: {
+    tags: { Environment: 'development' }
+  }
+});
+```
+
+##### Lifecycle Policy Status
+
+Control whether the lifecycle policy is active:
+
+```ts
+const disabledPolicy = new imagebuilder.LifecyclePolicy(this, 'DisabledPolicy', {
+  lifecyclePolicyName: 'my-disabled-policy',
+  description: 'A lifecycle policy that is temporarily disabled',
+  status: imagebuilder.LifecyclePolicyStatus.DISABLED,
+  resourceType: imagebuilder.LifecyclePolicyResourceType.AMI_IMAGE,
+  details: [
+    {
+      action: { type: imagebuilder.LifecyclePolicyActionType.DELETE },
+      filter: { ageFilter: { age: Duration.days(30) } }
+    }
+  ],
+  resourceSelection: {
+    tags: { Environment: 'testing' }
+  },
+  tags: {
+    Owner: 'DevOps',
+    CostCenter: 'Engineering'
+  }
+});
+```
+
+##### Importing Lifecycle Policies
+
+Reference lifecycle policies created outside of CDK:
+
+```ts
+// Import by name
+const importedByName = imagebuilder.LifecyclePolicy.fromLifecyclePolicyName(
+  this,
+  'ImportedByName',
+  'existing-lifecycle-policy'
+);
+
+// Import by ARN
+const importedByArn = imagebuilder.LifecyclePolicy.fromLifecyclePolicyArn(
+  this,
+  'ImportedByArn',
+  'arn:aws:imagebuilder:us-east-1:123456789012:lifecycle-policy/my-policy'
+);
+
+importedByName.grantRead(lambdaRole);
+importedByArn.grant(lambdaRole, 'imagebuilder:PutLifecyclePolicy');
 ```

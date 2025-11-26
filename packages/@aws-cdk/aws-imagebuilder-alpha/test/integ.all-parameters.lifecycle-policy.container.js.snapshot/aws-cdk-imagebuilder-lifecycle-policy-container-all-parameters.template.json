@@ -1,0 +1,110 @@
+{
+ "Resources": {
+  "Role1ABCC5F0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "imagebuilder.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/EC2ImageBuilderLifecycleExecutionPolicy"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "LifecyclePolicyContainer15B31DB8": {
+   "Type": "AWS::ImageBuilder::LifecyclePolicy",
+   "Properties": {
+    "Description": "This is a test lifecycle policy",
+    "ExecutionRole": {
+     "Fn::GetAtt": [
+      "Role1ABCC5F0",
+      "Arn"
+     ]
+    },
+    "Name": "test-container-lifecycle-policy",
+    "PolicyDetails": [
+     {
+      "Action": {
+       "IncludeResources": {
+        "Containers": false
+       },
+       "Type": "DELETE"
+      },
+      "ExclusionRules": {
+       "TagMap": {
+        "Environment": "test"
+       }
+      },
+      "Filter": {
+       "RetainAtLeast": 5,
+       "Type": "AGE",
+       "Unit": "DAYS",
+       "Value": 30
+      }
+     }
+    ],
+    "ResourceSelection": {
+     "TagMap": {
+      "Environment": "test"
+     }
+    },
+    "ResourceType": "CONTAINER_IMAGE",
+    "Status": "DISABLED"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
