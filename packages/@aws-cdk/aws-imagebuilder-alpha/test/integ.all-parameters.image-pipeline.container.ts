@@ -30,7 +30,7 @@ imagePipelineLogGroup.grantWrite(executionRole);
 
 const infrastructureConfiguration = new imagebuilder.InfrastructureConfiguration(stack, 'InfrastructureConfiguration');
 const containerRecipe = new imagebuilder.ContainerRecipe(stack, 'ContainerRecipe', {
-  baseImage: imagebuilder.AwsManagedImage.amazonLinux2023(stack, 'AL2023-Container', {
+  baseImage: imagebuilder.AmazonManagedImage.amazonLinux2023(stack, 'AL2023-Container', {
     imageType: ImageType.DOCKER,
     imageArchitecture: ImageArchitecture.X86_64,
   }).toContainerBaseImage(),

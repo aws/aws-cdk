@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import {
-  AwsManagedImage,
+  AmazonManagedImage,
   BaseContainerImage,
   BaseImage,
   ContainerInstanceImage,
@@ -25,7 +25,7 @@ describe('Base Image', () => {
   });
 
   test('should return the correct base image for an IImage', () => {
-    const baseImage = AwsManagedImage.amazonLinux2023(stack, 'AL2023', {
+    const baseImage = AmazonManagedImage.amazonLinux2023(stack, 'AL2023', {
       imageArchitecture: ImageArchitecture.ARM64,
       imageType: ImageType.AMI,
     }).toBaseImage();
@@ -99,7 +99,7 @@ describe('Base Container Image', () => {
   });
 
   test('should return the correct container base image for an IImage', () => {
-    const baseImage = AwsManagedImage.amazonLinux2023(stack, 'AL2023', {
+    const baseImage = AmazonManagedImage.amazonLinux2023(stack, 'AL2023', {
       imageArchitecture: ImageArchitecture.X86_64,
       imageType: ImageType.DOCKER,
     }).toContainerBaseImage();

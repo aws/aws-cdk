@@ -20,7 +20,7 @@ logGroup.grantWrite(executionRole);
 
 const infrastructureConfiguration = new imagebuilder.InfrastructureConfiguration(stack, 'InfrastructureConfiguration');
 const imageRecipe = new imagebuilder.ImageRecipe(stack, 'ImageRecipe', {
-  baseImage: imagebuilder.AwsManagedImage.amazonLinux2023(stack, 'AL2023-AMI', {
+  baseImage: imagebuilder.AmazonManagedImage.amazonLinux2023(stack, 'AL2023-AMI', {
     imageType: ImageType.AMI,
     imageArchitecture: ImageArchitecture.ARM64,
   }).toBaseImage(),

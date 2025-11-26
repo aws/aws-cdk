@@ -341,19 +341,19 @@ Use AWS-managed images for common operating systems:
 
 ```ts
 // Amazon Linux 2023 AMI for x86_64
-const amazonLinux2023Ami = imagebuilder.AwsManagedImage.amazonLinux2023(this, 'AmazonLinux2023', {
+const amazonLinux2023Ami = imagebuilder.AmazonManagedImage.amazonLinux2023(this, 'AmazonLinux2023', {
   imageType: imagebuilder.ImageType.AMI,
   imageArchitecture: imagebuilder.ImageArchitecture.X86_64
 });
 
 // Ubuntu 22.04 AMI for ARM64
-const ubuntu2204Ami = imagebuilder.AwsManagedImage.ubuntuServer2204(this, 'Ubuntu2204', {
+const ubuntu2204Ami = imagebuilder.AmazonManagedImage.ubuntuServer2204(this, 'Ubuntu2204', {
   imageType: imagebuilder.ImageType.AMI,
   imageArchitecture: imagebuilder.ImageArchitecture.ARM64
 });
 
 // Windows Server 2022 Full AMI
-const windows2022Ami = imagebuilder.AwsManagedImage.windowsServer2022Full(this, 'Windows2022', {
+const windows2022Ami = imagebuilder.AmazonManagedImage.windowsServer2022Full(this, 'Windows2022', {
   imageType: imagebuilder.ImageType.AMI,
   imageArchitecture: imagebuilder.ImageArchitecture.X86_64
 });
@@ -370,14 +370,14 @@ Import AWS-managed images by name or attributes:
 
 ```ts
 // Import by name
-const managedImageByName = imagebuilder.AwsManagedImage.fromAwsManagedImageName(
+const managedImageByName = imagebuilder.AmazonManagedImage.fromAmazonManagedImageName(
   this,
   'ManagedImageByName',
   'amazon-linux-2023-x86'
 );
 
 // Import by attributes with specific version
-const managedImageByAttributes = imagebuilder.AwsManagedImage.fromAwsManagedImageAttributes(this, 'ManagedImageByAttributes', {
+const managedImageByAttributes = imagebuilder.AmazonManagedImage.fromAmazonManagedImageAttributes(this, 'ManagedImageByAttributes', {
   imageName: 'ubuntu-server-22-lts-x86',
   imageVersion: '2024.11.25'
 });
@@ -603,7 +603,7 @@ const imageRecipe = new imagebuilder.ImageRecipe(this, 'ComponentImageRecipe', {
 Use pre-built AWS components:
 
 ```ts
-const imageRecipe = new imagebuilder.ImageRecipe(this, 'AwsManagedImageRecipe', {
+const imageRecipe = new imagebuilder.ImageRecipe(this, 'AmazonManagedImageRecipe', {
   baseImage: imagebuilder.BaseImage.fromSsmParameterName(
     '/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64'
   ),
