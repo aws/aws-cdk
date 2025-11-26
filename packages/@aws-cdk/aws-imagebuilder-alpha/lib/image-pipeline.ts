@@ -4,6 +4,7 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnImagePipeline } from 'aws-cdk-lib/aws-imagebuilder';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IDistributionConfiguration } from './distribution-configuration';
@@ -636,6 +637,8 @@ export class ImagePipeline extends ImagePipelineBase {
             }).toLowerCase(), // Enforce lowercase for the auto-generated fallback
         }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Object.defineProperty(this, IMAGE_PIPELINE_SYMBOL, { value: true });
 
@@ -699,6 +702,7 @@ export class ImagePipeline extends ImagePipelineBase {
    *
    * @param grantee The execution role used for the image build.
    */
+  @MethodMetadata()
   public grantDefaultExecutionRolePermissions(grantee: iam.IGrantable): iam.Grant[] {
     const policies = defaultExecutionRolePolicy(this, this.props);
     return policies.map((policy) =>

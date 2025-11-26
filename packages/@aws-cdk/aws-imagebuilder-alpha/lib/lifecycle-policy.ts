@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnLifecyclePolicy } from 'aws-cdk-lib/aws-imagebuilder';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IRecipeBase } from './recipe-base';
@@ -432,6 +433,8 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
             }).toLowerCase(),
         }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Object.defineProperty(this, LIFECYCLE_POLICY_SYMBOL, { value: true });
 
