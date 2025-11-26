@@ -49,7 +49,10 @@ export class ResourcePolicy extends Resource {
 
     const l1 = new CfnResourcePolicy(this, 'ResourcePolicy', {
       policyName: Lazy.string({
-        produce: () => props?.resourcePolicyName ?? Names.uniqueId(this),
+        produce: () => props?.resourcePolicyName ?? Names.uniqueResourceName(this, {
+          maxLength: 128,
+          allowedSpecialCharacters: '+=,.@-',
+        }),
       }),
       policyDocument: Lazy.string({
         produce: () => JSON.stringify(this.document),
