@@ -1,1 +1,1 @@
-export * from './scheduler.generated';
+export * from './cfn-props-mixins.generated';
