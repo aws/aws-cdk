@@ -229,12 +229,13 @@ function makeIdentifier(s: string) {
  * Converts kebab-case and other invalid characters to PascalCase
  *
  * Also has a list of identifiers we need to avoid because they might cause
- * problems in some languages.
+ * problems in some languages. The "Object" one is fixed separately in jsii
+ * but we want to push this out now.
  */
 export function sanitizeTypeName(name: string): string {
   const id = makeIdentifier(camelcase(name, { pascalCase: true }));
 
-  return RESERVED_NAMES_LIST.has(id) ? `${id}_` : id;
+  return RESERVED_NAMES_LIST.has(id) ? `${id}Type` : id;
 }
 
 const RESERVED_NAMES_LIST = new Set(['Object']);
