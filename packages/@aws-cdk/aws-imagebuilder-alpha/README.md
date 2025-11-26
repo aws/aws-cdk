@@ -267,43 +267,6 @@ Pipelines can be started programmatically to trigger image builds on-demand, in 
 is useful for integrating pipelines with CI/CD workflows, triggering builds based on custom conditions, or creating
 images in response to events.
 
-##### Basic Pipeline Start
-
-Start a pipeline execution without additional configuration:
-
-```ts
-const builtImage = examplePipeline.start({});
-```
-
-##### Tagged Pipeline Builds
-
-Apply custom tags to images created from pipeline executions:
-
-```ts
-const taggedImage = examplePipeline.start({
-  tags: {
-    BuildNumber: '456',
-    Environment: 'Production'
-  }
-});
-```
-
-##### Triggering on Pipeline Updates
-
-Configure the pipeline to automatically trigger a new build whenever the pipeline itself is updated:
-
-```ts
-const triggeredImage = examplePipeline.start({
-  onUpdate: true,
-  tags: {
-    AutoBuild: 'true'
-  }
-});
-```
-
-The `start()` method returns an `Image` construct representing the pipeline execution, which can be referenced for
-additional operations or outputs.
-
 #### Importing Image Pipelines
 
 Reference existing pipelines created outside CDK:
@@ -1573,7 +1536,9 @@ const distributeContainerWorkflow = imagebuilder.AwsManagedWorkflow.distributeCo
 
 ### Lifecycle Policy
 
-Lifecycle policies help you manage the retention and cleanup of Image Builder resources automatically. These policies define rules for deprecating or deleting old image versions, managing AMI snapshots, and controlling resource costs by removing unused images based on age, count, or other criteria.
+Lifecycle policies help you manage the retention and cleanup of Image Builder resources automatically. These policies
+define rules for deprecating or deleting old image versions, managing AMI snapshots, and controlling resource costs by
+removing unused images based on age, count, or other criteria.
 
 #### Lifecycle Policy Basic Usage
 

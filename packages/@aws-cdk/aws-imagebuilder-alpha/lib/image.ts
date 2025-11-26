@@ -7,7 +7,6 @@ import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { BaseContainerImage, BaseImage } from './base-image';
 import { IDistributionConfiguration } from './distribution-configuration';
-import { ImagePipeline } from './image-pipeline';
 import { IInfrastructureConfiguration, InfrastructureConfiguration } from './infrastructure-configuration';
 import { LATEST_VERSION } from './private/constants';
 import {
@@ -90,16 +89,7 @@ export interface ImageProps {
    * @default - none if the image is created from an image pipeline with `imagePipelineExecutionSettings`. Otherwise,
    * a recipe is required.
    */
-  readonly recipe?: IRecipeBase;
-
-  /**
-   * The image pipeline execution settings of the image, used to create an image by invoking the provided image
-   * pipeline. You may only specify the `tags` property in conjunction with `imagePipelineExecutionSettings`.
-   *
-   * @default - none if the image is created directly using a recipe. Otherwise, the image pipeline execution setting is
-   * required.
-   */
-  readonly imagePipelineExecutionSettings?: ImagePipelineExecutionSettings;
+  readonly recipe: IRecipeBase;
 
   /**
    * The infrastructure configuration used for building the image.
@@ -203,23 +193,6 @@ export interface ImageProps {
    * @default None
    */
   readonly tags?: { [key: string]: string };
-}
-
-/**
- * The image pipeline execution settings of the image, used to create an image by invoking the provided image pipeline.
- */
-export interface ImagePipelineExecutionSettings {
-  /**
-   * The image pipeline to start an image build from
-   */
-  readonly imagePipeline: ImagePipeline;
-
-  /**
-   * Indicates whether to trigger a new image build when an update is made to the image pipeline
-   *
-   * @default false
-   */
-  readonly onUpdate?: boolean;
 }
 
 /**
@@ -462,26 +435,21 @@ export class Image extends ImageBase {
 
     Object.defineProperty(this, IMAGE_SYMBOL, { value: true });
 
-    this.validateImageProps(props);
-
     this.props = props;
 
-    const hasImagePipelineExecutionSettings = props.imagePipelineExecutionSettings !== undefined;
+    this.infrastructureConfiguration =
+      props.infrastructureConfiguration ?? new InfrastructureConfiguration(this, 'InfrastructureConfiguration');
 
-    this.infrastructureConfiguration = hasImagePipelineExecutionSettings
-      ? props.imagePipelineExecutionSettings.imagePipeline.infrastructureConfiguration
-      : (props.infrastructureConfiguration ?? new InfrastructureConfiguration(this, 'InfrastructureConfiguration'));
-
-    this.executionRole = hasImagePipelineExecutionSettings
-      ? props.imagePipelineExecutionSettings.imagePipeline.executionRole
-      : getExecutionRole(this, (grantee: iam.IGrantable) => this.grantDefaultExecutionRolePermissions(grantee), {
+    this.executionRole = getExecutionRole(
+      this,
+      (grantee: iam.IGrantable) => this.grantDefaultExecutionRolePermissions(grantee),
+      {
         ...props,
         imageLogGroup: props.logGroup,
-      });
+      },
+    );
 
-    const [image, recipe] = hasImagePipelineExecutionSettings
-      ? this.createImageFromPipelineExecutionSettings(props)
-      : this.createImageFromRecipe(props);
+    const [image, recipe] = this.createImageFromRecipe(props);
 
     this.imageName = this.getResourceNameAttribute(image.attrName);
     this.imageArn = image.attrArn;
@@ -523,7 +491,7 @@ export class Image extends ImageBase {
    * @private
    */
   private createImageFromRecipe(props: ImageProps): [CfnImage, IRecipeBase] {
-    const recipe = props.recipe!;
+    const recipe = props.recipe;
     if (InfrastructureConfiguration.isInfrastructureConfiguration(this.infrastructureConfiguration)) {
       this.infrastructureConfiguration._bind({ isContainerBuild: recipe._isContainerRecipe() });
     }
@@ -560,27 +528,6 @@ export class Image extends ImageBase {
   }
 
   /**
-   * Creates a CfnImage resource from the image pipeline execution settings provided. This allows creation of images
-   * by starting an image pipeline.
-   *
-   * @param props Props input for the construct
-   * @private
-   */
-  private createImageFromPipelineExecutionSettings(props: ImageProps): [CfnImage, IRecipeBase] {
-    const imagePipelineExecutionSettings = props.imagePipelineExecutionSettings!;
-
-    const image = new CfnImage(this, 'Resource', {
-      imagePipelineExecutionSettings: {
-        deploymentId: imagePipelineExecutionSettings.imagePipeline.imagePipelineDeploymentId,
-        onUpdate: imagePipelineExecutionSettings.onUpdate,
-      },
-      tags: props.tags,
-    });
-
-    return [image, imagePipelineExecutionSettings.imagePipeline._recipe];
-  }
-
-  /**
    * Generates the loggingConfiguration property into the `LoggingConfiguration` type in the CloudFormation L1
    * definition.
    *
@@ -605,22 +552,5 @@ export class Image extends ImageBase {
     }
 
     return { executionRole: props.deletionExecutionRole.roleArn };
-  }
-
-  /**
-   * Validates the top-level properties of the image construct. Ensures that the Image gets created from either a recipe
-   * or an image pipeline.
-   *
-   * @param props Props input for the construct
-   * @private
-   */
-  private validateImageProps(props: ImageProps): void {
-    if (props.recipe === undefined && props.imagePipelineExecutionSettings === undefined) {
-      throw new cdk.ValidationError('either recipe or imagePipelineExecutionSettings is required', this);
-    }
-
-    if (props.recipe !== undefined && props.imagePipelineExecutionSettings !== undefined) {
-      throw new cdk.ValidationError('only one of recipe and imagePipelineExecutionSettings can be provided', this);
-    }
   }
 }

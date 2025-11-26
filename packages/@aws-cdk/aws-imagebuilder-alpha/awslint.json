@@ -2,8 +2,6 @@
   "exclude": [
     "props-no-arn-refs:@aws-cdk/aws-imagebuilder-alpha.InfrastructureConfigurationProps.ec2InstanceHostResourceGroupArn",
     "props-physical-name:@aws-cdk/aws-imagebuilder-alpha.ImageProps",
-    "construct-ctor-props-optional:@aws-cdk/aws-imagebuilder-alpha.Image",
-    "ref-via-interface:@aws-cdk/aws-imagebuilder-alpha.ImagePipelineExecutionSettings.imagePipeline",
     "no-unused-type:@aws-cdk/aws-imagebuilder-alpha.ContainerType",
     "no-unused-type:@aws-cdk/aws-imagebuilder-alpha.WorkflowAction",
     "no-unused-type:@aws-cdk/aws-imagebuilder-alpha.WorkflowOnFailure",

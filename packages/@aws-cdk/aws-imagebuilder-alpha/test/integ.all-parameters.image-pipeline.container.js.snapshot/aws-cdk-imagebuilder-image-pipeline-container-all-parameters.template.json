@@ -1020,24 +1020,6 @@
     },
     "State": "ENABLED"
    }
-  },
-  "ImagePipelineContainerImageF8CBEC27": {
-   "Type": "AWS::ImageBuilder::Image",
-   "Properties": {
-    "ImagePipelineExecutionSettings": {
-     "DeploymentId": {
-      "Fn::GetAtt": [
-       "ImagePipelineContainer507B5032",
-       "DeploymentId"
-      ]
-     },
-     "OnUpdate": true
-    },
-    "Tags": {
-     "key1": "value1",
-     "key2": "value2"
-    }
-   }
   }
  },
  "Parameters": {

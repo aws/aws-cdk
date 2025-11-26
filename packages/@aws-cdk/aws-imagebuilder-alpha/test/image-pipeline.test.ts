@@ -427,37 +427,6 @@ describe('ImagePipeline', () => {
     });
   });
 
-  test('creates an image when starting a pipeline', () => {
-    const imagePipeline = new ImagePipeline(stack, 'ImagePipeline', {
-      recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
-    });
-    imagePipeline.start({ onUpdate: true, tags: { key1: 'value1', key2: 'value2' } });
-
-    const template = Template.fromStack(stack);
-
-    template.resourceCountIs('AWS::IAM::Role', 1);
-    template.resourceCountIs('AWS::IAM::InstanceProfile', 1);
-    template.resourceCountIs('AWS::ImageBuilder::InfrastructureConfiguration', 1);
-    template.resourceCountIs('AWS::ImageBuilder::ImagePipeline', 1);
-    template.resourceCountIs('AWS::ImageBuilder::Image', 1);
-    expect(Object.keys(template.toJSON().Resources)).toHaveLength(5);
-
-    template.templateMatches({
-      Resources: {
-        ImagePipelineImage364D5BF8: Match.objectEquals({
-          Type: 'AWS::ImageBuilder::Image',
-          Properties: {
-            ImagePipelineExecutionSettings: {
-              DeploymentId: { 'Fn::GetAtt': ['ImagePipeline7DDDE57F', 'DeploymentId'] },
-              OnUpdate: true,
-            },
-            Tags: { key1: 'value1', key2: 'value2' },
-          },
-        }),
-      },
-    });
-  });
-
   test('generates an execution role when workflows are provided', () => {
     const imagePipeline = new ImagePipeline(stack, 'ImagePipeline', {
       recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),

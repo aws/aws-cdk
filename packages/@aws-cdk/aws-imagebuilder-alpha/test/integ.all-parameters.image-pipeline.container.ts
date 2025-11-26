@@ -78,8 +78,6 @@ containerImagePipeline.grantDefaultExecutionRolePermissions(executionRole);
 containerImagePipeline.onEvent('ImageBuildSuccessTriggerRule');
 containerImagePipeline.onImagePipelineAutoDisabled('ImagePipelineAutoDisabledTriggerRule');
 
-containerImagePipeline.start({ onUpdate: true, tags: { key1: 'value1', key2: 'value2' } });
-
 new integ.IntegTest(app, 'ImagePipelineTest-Container-AllParameters', {
   testCases: [stack],
 });
