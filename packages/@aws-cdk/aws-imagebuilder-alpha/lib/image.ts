@@ -21,7 +21,7 @@ import { WorkflowConfiguration } from './workflow';
 const IMAGE_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.Image');
 
 /**
- * Properties for creating an Image resource
+ * An EC2 Image Builder Image
  */
 export interface IImage extends cdk.IResource {
   /**
@@ -85,9 +85,6 @@ export interface ImageProps {
   /**
    * The recipe that defines the base image, components, and customizations used to build the image. This can either be
    * an image recipe, or a container recipe.
-   *
-   * @default - none if the image is created from an image pipeline with `imagePipelineExecutionSettings`. Otherwise,
-   * a recipe is required.
    */
   readonly recipe: IRecipeBase;
 
@@ -453,7 +450,6 @@ export class Image extends ImageBase {
 
     this.imageName = this.getResourceNameAttribute(image.attrName);
     this.imageArn = image.attrArn;
-    this.imageId = image.attrImageId;
 
     if (recipe._isImageRecipe()) {
       this.imageId = image.attrImageId;

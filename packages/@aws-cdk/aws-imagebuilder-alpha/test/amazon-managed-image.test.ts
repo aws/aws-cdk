@@ -428,6 +428,21 @@ describe('Amazon-managed Image', () => {
     ).toThrow(cdk.ValidationError);
   });
 
+  test('Amazon-managed image pre-defined method import with an image version', () => {
+    const amazonLinux2023X86Ami = AmazonManagedImage.amazonLinux2023(stack, 'AmazonLinux2023-x86-AMI', {
+      imageType: ImageType.AMI,
+      imageArchitecture: ImageArchitecture.X86_64,
+      imageVersion: '2025.x.x',
+    });
+
+    expect(stack.resolve(amazonLinux2023X86Ami.imageArn)).toEqual({
+      'Fn::Join': [
+        '',
+        ['arn:', { Ref: 'AWS::Partition' }, ':imagebuilder:us-east-1:aws:image/amazon-linux-2023-x86/2025.x.x'],
+      ],
+    });
+  });
+
   test('throws a validation error when importing a pre-defined Amazon-managed image with an unresolved imageArchitecture', () => {
     expect(() =>
       AmazonManagedImage.amazonLinux2023(stack, 'Image', {

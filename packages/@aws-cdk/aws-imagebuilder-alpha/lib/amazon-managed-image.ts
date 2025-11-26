@@ -4,9 +4,9 @@ import { IImage, Image, ImageArchitecture, ImageType } from './image';
 import { LATEST_VERSION } from './private/constants';
 
 /**
- * Properties for an EC2 Image Builder Amazon-managed image
+ * Attributes for importing an Amazon-managed image by name (and optionally a version)
  */
-export interface AmazonManagedImageNameAttributes {
+export interface AmazonManagedImageAttributes {
   /**
    * The name of the Amazon-managed image. The provided name must be normalized by converting all alphabetical
    * characters to lowercase, and replacing all spaces and underscores with hyphens.
@@ -22,7 +22,7 @@ export interface AmazonManagedImageNameAttributes {
 }
 
 /**
- * Properties for an EC2 Image Builder Amazon-managed image
+ * Options for selecting a predefined Amazon-managed image
  */
 export interface AmazonManagedImageOptions {
   /**
@@ -43,6 +43,11 @@ export interface AmazonManagedImageOptions {
   readonly imageVersion?: string;
 }
 
+interface AmazonManagedImageConfig {
+  readonly image: string;
+  readonly supportedCombinations: { [combo: string]: string };
+}
+
 /**
  * Helper class for working with Amazon-managed images
  */
@@ -58,31 +63,7 @@ export class AmazonManagedImage {
    * @see https://gallery.ecr.aws/amazonlinux/amazonlinux
    */
   public static amazonLinux2(scope: Construct, id: string, opts: AmazonManagedImageOptions): IImage {
-    const image = 'Amazon Linux 2';
-    this.validatePredefinedManagedImageMethodAttributes(scope, opts, image);
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'amazon-linux-2-x86',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.ARM64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'amazon-linux-2-arm64',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    if (opts.imageType === ImageType.DOCKER && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'amazon-linux-x86-2',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    throw this.defaultValidationError(scope, opts, image);
+    return this.predefinedManagedImage(scope, id, opts, this.AMAZON_LINUX_2_CONFIG);
   }
 
   /**
@@ -96,31 +77,7 @@ export class AmazonManagedImage {
    * @see https://gallery.ecr.aws/amazonlinux/amazonlinux
    */
   public static amazonLinux2023(scope: Construct, id: string, opts: AmazonManagedImageOptions): IImage {
-    const image = 'Amazon Linux 2023';
-    this.validatePredefinedManagedImageMethodAttributes(scope, opts, image);
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'amazon-linux-2023-x86',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.ARM64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'amazon-linux-2023-arm64',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    if (opts.imageType === ImageType.DOCKER && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'amazon-linux-2023-x86-2023',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    throw this.defaultValidationError(scope, opts, image);
+    return this.predefinedManagedImage(scope, id, opts, this.AMAZON_LINUX_2023_CONFIG);
   }
 
   /**
@@ -133,24 +90,7 @@ export class AmazonManagedImage {
    * @see https://aws.amazon.com/partners/redhat/faqs
    */
   public static redHatEnterpriseLinux10(scope: Construct, id: string, opts: AmazonManagedImageOptions): IImage {
-    const image = 'Red Hat Enterprise Linux 10';
-    this.validatePredefinedManagedImageMethodAttributes(scope, opts, image);
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'red-hat-enterprise-linux-10-x86',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.ARM64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'red-hat-enterprise-linux-10-arm64',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    throw this.defaultValidationError(scope, opts, image);
+    return this.predefinedManagedImage(scope, id, opts, this.RED_HAT_ENTERPRISE_LINUX_10_CONFIG);
   }
 
   /**
@@ -163,24 +103,7 @@ export class AmazonManagedImage {
    * @see https://aws.amazon.com/linux/commercial-linux/faqs/
    */
   public static suseLinuxEnterpriseServer15(scope: Construct, id: string, opts: AmazonManagedImageOptions): IImage {
-    const image = 'SUSE Linux Enterprise Server 15';
-    this.validatePredefinedManagedImageMethodAttributes(scope, opts, image);
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'suse-linux-enterprise-server-15-x86',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.ARM64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'suse-linux-enterprise-server-15-arm64',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    throw this.defaultValidationError(scope, opts, image);
+    return this.predefinedManagedImage(scope, id, opts, this.SUSE_LINUX_ENTERPRISE_SERVER_15_CONFIG);
   }
 
   /**
@@ -194,31 +117,7 @@ export class AmazonManagedImage {
    * @see https://hub.docker.com/_/ubuntu
    */
   public static ubuntuServer2204(scope: Construct, id: string, opts: AmazonManagedImageOptions): IImage {
-    const image = 'Ubuntu 22.04';
-    this.validatePredefinedManagedImageMethodAttributes(scope, opts, image);
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'ubuntu-server-22-lts-x86',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.ARM64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'ubuntu-server-22-lts-arm64',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    if (opts.imageType === ImageType.DOCKER && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'ubuntu-22-x86-22-04',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    throw this.defaultValidationError(scope, opts, image);
+    return this.predefinedManagedImage(scope, id, opts, this.UBUNTU_SERVER_22_04_CONFIG);
   }
 
   /**
@@ -232,31 +131,7 @@ export class AmazonManagedImage {
    * @see https://hub.docker.com/_/ubuntu
    */
   public static ubuntuServer2404(scope: Construct, id: string, opts: AmazonManagedImageOptions): IImage {
-    const image = 'Ubuntu 24.04';
-    this.validatePredefinedManagedImageMethodAttributes(scope, opts, image);
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'ubuntu-server-24-lts-x86',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.ARM64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'ubuntu-server-24-lts-arm64',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    if (opts.imageType === ImageType.DOCKER && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'ubuntu-24-x86-24-04',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    throw this.defaultValidationError(scope, opts, image);
+    return this.predefinedManagedImage(scope, id, opts, this.UBUNTU_SERVER_24_04_CONFIG);
   }
 
   /**
@@ -270,24 +145,7 @@ export class AmazonManagedImage {
    * @see https://hub.docker.com/r/microsoft/windows-servercore
    */
   public static windowsServer2016Core(scope: Construct, id: string, opts: AmazonManagedImageOptions): IImage {
-    const image = 'Windows Server 2016 Core';
-    this.validatePredefinedManagedImageMethodAttributes(scope, opts, image);
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'windows-server-2016-english-core-base-x86',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    if (opts.imageType === ImageType.DOCKER && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'windows-server-2016-x86-core-ltsc2016-amd64',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    throw this.defaultValidationError(scope, opts, image);
+    return this.predefinedManagedImage(scope, id, opts, this.WINDOWS_SERVER_2016_CORE_CONFIG);
   }
 
   /**
@@ -300,17 +158,7 @@ export class AmazonManagedImage {
    * @see https://docs.aws.amazon.com/ec2/latest/windows-ami-reference/index.html
    */
   public static windowsServer2016Full(scope: Construct, id: string, opts: AmazonManagedImageOptions): IImage {
-    const image = 'Windows Server 2016 Full';
-    this.validatePredefinedManagedImageMethodAttributes(scope, opts, image);
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'windows-server-2016-english-full-base-x86',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    throw this.defaultValidationError(scope, opts, image);
+    return this.predefinedManagedImage(scope, id, opts, this.WINDOWS_SERVER_2016_FULL_CONFIG);
   }
 
   /**
@@ -324,24 +172,7 @@ export class AmazonManagedImage {
    * @see https://hub.docker.com/r/microsoft/windows-servercore
    */
   public static windowsServer2019Core(scope: Construct, id: string, opts: AmazonManagedImageOptions): IImage {
-    const image = 'Windows Server 2019 Core';
-    this.validatePredefinedManagedImageMethodAttributes(scope, opts, image);
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'windows-server-2019-english-core-base-x86',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    if (opts.imageType === ImageType.DOCKER && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'windows-server-2019-x86-core-ltsc2019-amd64',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    throw this.defaultValidationError(scope, opts, image);
+    return this.predefinedManagedImage(scope, id, opts, this.WINDOWS_SERVER_2019_CORE_CONFIG);
   }
 
   /**
@@ -354,17 +185,7 @@ export class AmazonManagedImage {
    * @see https://docs.aws.amazon.com/ec2/latest/windows-ami-reference/index.html
    */
   public static windowsServer2019Full(scope: Construct, id: string, opts: AmazonManagedImageOptions): IImage {
-    const image = 'Windows Server 2019 Full';
-    this.validatePredefinedManagedImageMethodAttributes(scope, opts, image);
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'windows-server-2019-english-full-base-x86',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    throw this.defaultValidationError(scope, opts, image);
+    return this.predefinedManagedImage(scope, id, opts, this.WINDOWS_SERVER_2019_FULL_CONFIG);
   }
 
   /**
@@ -377,17 +198,7 @@ export class AmazonManagedImage {
    * @see https://docs.aws.amazon.com/ec2/latest/windows-ami-reference/index.html
    */
   public static windowsServer2022Core(scope: Construct, id: string, opts: AmazonManagedImageOptions): IImage {
-    const image = 'Windows Server 2022 Core';
-    this.validatePredefinedManagedImageMethodAttributes(scope, opts, image);
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'windows-server-2022-english-core-base-x86',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    throw this.defaultValidationError(scope, opts, image);
+    return this.predefinedManagedImage(scope, id, opts, this.WINDOWS_SERVER_2022_CORE_CONFIG);
   }
 
   /**
@@ -400,17 +211,7 @@ export class AmazonManagedImage {
    * @see https://docs.aws.amazon.com/ec2/latest/windows-ami-reference/index.html
    */
   public static windowsServer2022Full(scope: Construct, id: string, opts: AmazonManagedImageOptions): IImage {
-    const image = 'Windows Server 2022 Full';
-    this.validatePredefinedManagedImageMethodAttributes(scope, opts, image);
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'windows-server-2022-english-full-base-x86',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    throw this.defaultValidationError(scope, opts, image);
+    return this.predefinedManagedImage(scope, id, opts, this.WINDOWS_SERVER_2022_FULL_CONFIG);
   }
 
   /**
@@ -423,17 +224,7 @@ export class AmazonManagedImage {
    * @see https://docs.aws.amazon.com/ec2/latest/windows-ami-reference/index.html
    */
   public static windowsServer2025Core(scope: Construct, id: string, opts: AmazonManagedImageOptions): IImage {
-    const image = 'Windows Server 2025 Core';
-    this.validatePredefinedManagedImageMethodAttributes(scope, opts, image);
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'windows-server-2025-english-core-base-x86',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    throw this.defaultValidationError(scope, opts, image);
+    return this.predefinedManagedImage(scope, id, opts, this.WINDOWS_SERVER_2025_CORE_CONFIG);
   }
 
   /**
@@ -446,17 +237,7 @@ export class AmazonManagedImage {
    * @see https://docs.aws.amazon.com/ec2/latest/windows-ami-reference/index.html
    */
   public static windowsServer2025Full(scope: Construct, id: string, opts: AmazonManagedImageOptions): IImage {
-    const image = 'Windows Server 2025 Full';
-    this.validatePredefinedManagedImageMethodAttributes(scope, opts, image);
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'windows-server-2025-english-full-base-x86',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    throw this.defaultValidationError(scope, opts, image);
+    return this.predefinedManagedImage(scope, id, opts, this.WINDOWS_SERVER_2025_FULL_CONFIG);
   }
 
   /**
@@ -469,24 +250,7 @@ export class AmazonManagedImage {
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-mac-instances.html
    */
   public static macOS14(scope: Construct, id: string, opts: AmazonManagedImageOptions): IImage {
-    const image = 'macOS 14';
-    this.validatePredefinedManagedImageMethodAttributes(scope, opts, image);
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'macos-sonoma-x86',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.ARM64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'macos-sonoma-arm64',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    throw this.defaultValidationError(scope, opts, image);
+    return this.predefinedManagedImage(scope, id, opts, this.MACOS_14_CONFIG);
   }
 
   /**
@@ -499,24 +263,7 @@ export class AmazonManagedImage {
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-mac-instances.html
    */
   public static macOS15(scope: Construct, id: string, opts: AmazonManagedImageOptions): IImage {
-    const image = 'macOS 15';
-    this.validatePredefinedManagedImageMethodAttributes(scope, opts, image);
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.X86_64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'macos-sequoia-x86',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    if (opts.imageType === ImageType.AMI && opts.imageArchitecture === ImageArchitecture.ARM64) {
-      return this.fromAmazonManagedImageAttributes(scope, id, {
-        imageName: 'macos-sequoia-arm64',
-        imageVersion: opts.imageVersion,
-      });
-    }
-
-    throw this.defaultValidationError(scope, opts, image);
+    return this.predefinedManagedImage(scope, id, opts, this.MACOS_15_CONFIG);
   }
 
   /**
@@ -529,7 +276,7 @@ export class AmazonManagedImage {
   public static fromAmazonManagedImageAttributes(
     scope: Construct,
     id: string,
-    attrs: AmazonManagedImageNameAttributes,
+    attrs: AmazonManagedImageAttributes,
   ): IImage {
     return Image.fromImageArn(
       scope,
@@ -554,7 +301,133 @@ export class AmazonManagedImage {
     return this.fromAmazonManagedImageAttributes(scope, id, { imageName: amazonManagedImageName });
   }
 
-  private static validatePredefinedManagedImageMethodAttributes(
+  private static readonly AMAZON_LINUX_2_CONFIG: AmazonManagedImageConfig = {
+    image: 'Amazon Linux 2',
+    supportedCombinations: {
+      [`${ImageType.AMI}-${ImageArchitecture.X86_64}`]: 'amazon-linux-2-x86',
+      [`${ImageType.AMI}-${ImageArchitecture.ARM64}`]: 'amazon-linux-2-arm64',
+      [`${ImageType.DOCKER}-${ImageArchitecture.X86_64}`]: 'amazon-linux-x86-2',
+    },
+  };
+
+  private static readonly AMAZON_LINUX_2023_CONFIG: AmazonManagedImageConfig = {
+    image: 'Amazon Linux 2023',
+    supportedCombinations: {
+      [`${ImageType.AMI}-${ImageArchitecture.X86_64}`]: 'amazon-linux-2023-x86',
+      [`${ImageType.AMI}-${ImageArchitecture.ARM64}`]: 'amazon-linux-2023-arm64',
+      [`${ImageType.DOCKER}-${ImageArchitecture.X86_64}`]: 'amazon-linux-2023-x86-2023',
+    },
+  };
+
+  private static readonly RED_HAT_ENTERPRISE_LINUX_10_CONFIG: AmazonManagedImageConfig = {
+    image: 'Red Hat Enterprise Linux 10',
+    supportedCombinations: {
+      [`${ImageType.AMI}-${ImageArchitecture.X86_64}`]: 'red-hat-enterprise-linux-10-x86',
+      [`${ImageType.AMI}-${ImageArchitecture.ARM64}`]: 'red-hat-enterprise-linux-10-arm64',
+    },
+  };
+
+  private static readonly SUSE_LINUX_ENTERPRISE_SERVER_15_CONFIG: AmazonManagedImageConfig = {
+    image: 'SUSE Linux Enterprise Server 15',
+    supportedCombinations: {
+      [`${ImageType.AMI}-${ImageArchitecture.X86_64}`]: 'suse-linux-enterprise-server-15-x86',
+      [`${ImageType.AMI}-${ImageArchitecture.ARM64}`]: 'suse-linux-enterprise-server-15-arm64',
+    },
+  };
+
+  private static readonly UBUNTU_SERVER_22_04_CONFIG: AmazonManagedImageConfig = {
+    image: 'Ubuntu 22.04',
+    supportedCombinations: {
+      [`${ImageType.AMI}-${ImageArchitecture.X86_64}`]: 'ubuntu-server-22-lts-x86',
+      [`${ImageType.AMI}-${ImageArchitecture.ARM64}`]: 'ubuntu-server-22-lts-arm64',
+      [`${ImageType.DOCKER}-${ImageArchitecture.X86_64}`]: 'ubuntu-22-x86-22-04',
+    },
+  };
+
+  private static readonly UBUNTU_SERVER_24_04_CONFIG: AmazonManagedImageConfig = {
+    image: 'Ubuntu 24.04',
+    supportedCombinations: {
+      [`${ImageType.AMI}-${ImageArchitecture.X86_64}`]: 'ubuntu-server-24-lts-x86',
+      [`${ImageType.AMI}-${ImageArchitecture.ARM64}`]: 'ubuntu-server-24-lts-arm64',
+      [`${ImageType.DOCKER}-${ImageArchitecture.X86_64}`]: 'ubuntu-24-x86-24-04',
+    },
+  };
+
+  private static readonly WINDOWS_SERVER_2016_CORE_CONFIG: AmazonManagedImageConfig = {
+    image: 'Windows Server 2016 Core',
+    supportedCombinations: {
+      [`${ImageType.AMI}-${ImageArchitecture.X86_64}`]: 'windows-server-2016-english-core-base-x86',
+      [`${ImageType.DOCKER}-${ImageArchitecture.X86_64}`]: 'windows-server-2016-x86-core-ltsc2016-amd64',
+    },
+  };
+
+  private static readonly WINDOWS_SERVER_2016_FULL_CONFIG: AmazonManagedImageConfig = {
+    image: 'Windows Server 2016 Full',
+    supportedCombinations: {
+      [`${ImageType.AMI}-${ImageArchitecture.X86_64}`]: 'windows-server-2016-english-full-base-x86',
+    },
+  };
+
+  private static readonly WINDOWS_SERVER_2019_CORE_CONFIG: AmazonManagedImageConfig = {
+    image: 'Windows Server 2019 Core',
+    supportedCombinations: {
+      [`${ImageType.AMI}-${ImageArchitecture.X86_64}`]: 'windows-server-2019-english-core-base-x86',
+      [`${ImageType.DOCKER}-${ImageArchitecture.X86_64}`]: 'windows-server-2019-x86-core-ltsc2019-amd64',
+    },
+  };
+
+  private static readonly WINDOWS_SERVER_2019_FULL_CONFIG: AmazonManagedImageConfig = {
+    image: 'Windows Server 2019 Full',
+    supportedCombinations: {
+      [`${ImageType.AMI}-${ImageArchitecture.X86_64}`]: 'windows-server-2019-english-full-base-x86',
+    },
+  };
+
+  private static readonly WINDOWS_SERVER_2022_CORE_CONFIG: AmazonManagedImageConfig = {
+    image: 'Windows Server 2022 Core',
+    supportedCombinations: {
+      [`${ImageType.AMI}-${ImageArchitecture.X86_64}`]: 'windows-server-2022-english-core-base-x86',
+    },
+  };
+
+  private static readonly WINDOWS_SERVER_2022_FULL_CONFIG: AmazonManagedImageConfig = {
+    image: 'Windows Server 2022 Full',
+    supportedCombinations: {
+      [`${ImageType.AMI}-${ImageArchitecture.X86_64}`]: 'windows-server-2022-english-full-base-x86',
+    },
+  };
+
+  private static readonly WINDOWS_SERVER_2025_CORE_CONFIG: AmazonManagedImageConfig = {
+    image: 'Windows Server 2025 Core',
+    supportedCombinations: {
+      [`${ImageType.AMI}-${ImageArchitecture.X86_64}`]: 'windows-server-2025-english-core-base-x86',
+    },
+  };
+
+  private static readonly WINDOWS_SERVER_2025_FULL_CONFIG: AmazonManagedImageConfig = {
+    image: 'Windows Server 2025 Full',
+    supportedCombinations: {
+      [`${ImageType.AMI}-${ImageArchitecture.X86_64}`]: 'windows-server-2025-english-full-base-x86',
+    },
+  };
+
+  private static readonly MACOS_14_CONFIG: AmazonManagedImageConfig = {
+    image: 'macOS 14',
+    supportedCombinations: {
+      [`${ImageType.AMI}-${ImageArchitecture.X86_64}`]: 'macos-sonoma-x86',
+      [`${ImageType.AMI}-${ImageArchitecture.ARM64}`]: 'macos-sonoma-arm64',
+    },
+  };
+
+  private static readonly MACOS_15_CONFIG: AmazonManagedImageConfig = {
+    image: 'macOS 15',
+    supportedCombinations: {
+      [`${ImageType.AMI}-${ImageArchitecture.X86_64}`]: 'macos-sequoia-x86',
+      [`${ImageType.AMI}-${ImageArchitecture.ARM64}`]: 'macos-sequoia-arm64',
+    },
+  };
+
+  private static validatePredefinedManagedImageOptions(
     scope: Construct,
     opts: AmazonManagedImageOptions,
     image: string,
@@ -568,14 +441,27 @@ export class AmazonManagedImage {
     }
   }
 
-  private static defaultValidationError(
+  private static predefinedManagedImage(
     scope: Construct,
+    id: string,
     opts: AmazonManagedImageOptions,
-    image: string,
-  ): cdk.ValidationError {
-    return new cdk.ValidationError(
-      `architecture ${opts.imageArchitecture} with type ${opts.imageType} is not a supported architecture and type for ${image}`,
-      scope,
-    );
+    config: AmazonManagedImageConfig,
+  ): IImage {
+    this.validatePredefinedManagedImageOptions(scope, opts, config.image);
+
+    const key = `${opts.imageType}-${opts.imageArchitecture}`;
+    const imageName = config.supportedCombinations[key];
+
+    if (!imageName) {
+      throw new cdk.ValidationError(
+        `architecture ${opts.imageArchitecture} with type ${opts.imageType} is not a supported architecture and type for ${config.image}`,
+        scope,
+      );
+    }
+
+    return this.fromAmazonManagedImageAttributes(scope, id, {
+      imageName,
+      imageVersion: opts.imageVersion,
+    });
   }
 }
