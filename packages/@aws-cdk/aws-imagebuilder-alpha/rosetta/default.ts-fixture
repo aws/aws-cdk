@@ -26,7 +26,7 @@ class Fixture extends Stack {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.STANDARD6_GRAVITON, ec2.InstanceSize.LARGE).toString(),
     });
 
-    const role = new iam.Role(this, 'Role', {
+    const lambdaRole = new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
     });
 
