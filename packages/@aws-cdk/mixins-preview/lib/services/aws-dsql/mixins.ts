@@ -1,1 +1,1 @@
-export * from './dsql.generated';
+export * from './cfn-props-mixins.generated';

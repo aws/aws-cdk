@@ -1,1 +1,1 @@
-export * from './lambda.generated';
+export * from './cfn-props-mixins.generated';

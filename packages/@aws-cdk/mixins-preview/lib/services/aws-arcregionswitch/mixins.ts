@@ -1,1 +1,1 @@
-export * from './arcregionswitch.generated';
+export * from './cfn-props-mixins.generated';

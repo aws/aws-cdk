@@ -1,1 +1,1 @@
-export * from './cloudtrail.generated';
+export * from './cfn-props-mixins.generated';

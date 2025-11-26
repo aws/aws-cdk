@@ -1,1 +1,1 @@
-export * from './quicksight.generated';
+export * from './cfn-props-mixins.generated';

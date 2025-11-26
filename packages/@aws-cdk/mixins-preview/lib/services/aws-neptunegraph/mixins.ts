@@ -1,1 +1,1 @@
-export * from './neptunegraph.generated';
+export * from './cfn-props-mixins.generated';

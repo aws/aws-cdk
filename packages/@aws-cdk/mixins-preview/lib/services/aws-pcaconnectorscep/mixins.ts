@@ -1,1 +1,1 @@
-export * from './pcaconnectorscep.generated';
+export * from './cfn-props-mixins.generated';

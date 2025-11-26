@@ -1,1 +1,1 @@
-export * from './athena.generated';
+export * from './cfn-props-mixins.generated';

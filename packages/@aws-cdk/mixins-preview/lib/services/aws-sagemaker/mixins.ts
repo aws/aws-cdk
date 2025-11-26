@@ -1,1 +1,1 @@
-export * from './sagemaker.generated';
+export * from './cfn-props-mixins.generated';

@@ -1,1 +1,1 @@
-export * from './aiops.generated';
+export * from './cfn-props-mixins.generated';

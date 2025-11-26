@@ -1,1 +1,1 @@
-export * from './auditmanager.generated';
+export * from './cfn-props-mixins.generated';

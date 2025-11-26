@@ -1,1 +1,1 @@
-export * from './glue.generated';
+export * from './cfn-props-mixins.generated';

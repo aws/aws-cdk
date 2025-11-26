@@ -1,1 +1,1 @@
-export * from './rtbfabric.generated';
+export * from './cfn-props-mixins.generated';

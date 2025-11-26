@@ -13,6 +13,8 @@ dist
 
 # Include .jsii
 !.jsii
+!.jsii.gz
+!rosetta/_generated.ts-fixture
 
 *.snk
 

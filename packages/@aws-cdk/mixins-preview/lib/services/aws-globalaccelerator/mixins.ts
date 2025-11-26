@@ -1,1 +1,1 @@
-export * from './globalaccelerator.generated';
+export * from './cfn-props-mixins.generated';

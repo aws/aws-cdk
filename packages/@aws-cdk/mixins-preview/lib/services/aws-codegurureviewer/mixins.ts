@@ -1,1 +1,1 @@
-export * from './codegurureviewer.generated';
+export * from './cfn-props-mixins.generated';

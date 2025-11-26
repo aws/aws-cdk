@@ -18,6 +18,8 @@ export class CdkCore extends ExternalModule {
   public readonly ITaggableV2 = Type.fromName(this, 'ITaggableV2');
   public readonly IResolvable = Type.fromName(this, 'IResolvable');
   public readonly Stack = Type.fromName(this, 'Stack');
+  public readonly Names = $T(Type.fromName(this, 'Names'));
+  public readonly Arn = $T(Type.fromName(this, 'Arn'));
 
   public readonly objectToCloudFormation = makeCallableExpr(this, 'objectToCloudFormation');
   public readonly eventPatternToCloudFormation = makeCallableExpr(this, 'eventPatternToCloudFormation');
@@ -63,6 +65,18 @@ export class CdkCore extends ExternalModule {
 
   public tokenAsList(arg: Expression) {
     return this.Token.asList(arg);
+  }
+
+  public uniqueId(arg: Expression) {
+    return this.Names.uniqueId(arg);
+  }
+
+  public uniqueResourceName(...args: Expression[]) {
+    return this.Names.uniqueResourceName(...args);
+  }
+
+  public arnFormat(...args: Expression[]) {
+    return this.Arn.format(...args);
   }
 }
 

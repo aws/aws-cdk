@@ -1,1 +1,1 @@
-export * from './licensemanager.generated';
+export * from './cfn-props-mixins.generated';

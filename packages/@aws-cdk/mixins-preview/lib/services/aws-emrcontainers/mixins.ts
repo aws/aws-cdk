@@ -1,1 +1,1 @@
-export * from './emrcontainers.generated';
+export * from './cfn-props-mixins.generated';

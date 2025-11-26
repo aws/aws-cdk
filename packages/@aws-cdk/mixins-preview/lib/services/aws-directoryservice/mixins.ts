@@ -1,1 +1,1 @@
-export * from './directoryservice.generated';
+export * from './cfn-props-mixins.generated';

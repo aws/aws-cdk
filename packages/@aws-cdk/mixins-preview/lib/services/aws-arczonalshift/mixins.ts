@@ -1,1 +1,1 @@
-export * from './arczonalshift.generated';
+export * from './cfn-props-mixins.generated';

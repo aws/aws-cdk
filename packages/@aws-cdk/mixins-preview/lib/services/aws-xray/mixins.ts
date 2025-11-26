@@ -1,1 +1,1 @@
-export * from './xray.generated';
+export * from './cfn-props-mixins.generated';

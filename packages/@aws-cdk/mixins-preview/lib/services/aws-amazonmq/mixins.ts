@@ -1,1 +1,1 @@
-export * from './amazonmq.generated';
+export * from './cfn-props-mixins.generated';

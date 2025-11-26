@@ -1,1 +1,1 @@
-export * from './route53recoveryreadiness.generated';
+export * from './cfn-props-mixins.generated';

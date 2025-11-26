@@ -1,1 +1,1 @@
-export * from './elasticache.generated';
+export * from './cfn-props-mixins.generated';
