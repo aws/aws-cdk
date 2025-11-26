@@ -3,11 +3,8 @@
 export * from './component';
 export * from './container-recipe';
 export * from './distribution-configuration';
-<<<<<<< HEAD
-export * from './image-pipeline';
-=======
 export * from './image';
->>>>>>> a5bb30e46a (feat(imagebuilder-alpha): add support for Image Construct)
+export * from './image-pipeline';
 export * from './image-recipe';
 export * from './infrastructure-configuration';
 export * from './lifecycle-policy';

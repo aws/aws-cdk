@@ -20,6 +20,10 @@ const scanningRepository = new ecr.Repository(stack, 'ScanningRepository', {
 const executionRole = new iam.Role(stack, 'ExecutionRole', {
   assumedBy: new iam.ServicePrincipal('imagebuilder.amazonaws.com'),
 });
+const deletionExecutionRole = new iam.Role(stack, 'LifecycleExecutionRole', {
+  assumedBy: new iam.ServicePrincipal('imagebuilder.amazonaws.com'),
+  managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/EC2ImageBuilderLifecycleExecutionPolicy')],
+});
 const logGroup = new logs.LogGroup(stack, 'ImageLogGroup', { removalPolicy: cdk.RemovalPolicy.DESTROY });
 logGroup.grantWrite(executionRole);
 
@@ -59,6 +63,8 @@ const image = new imagebuilder.Image(stack, 'Image-Container', {
   imageScanningEnabled: true,
   imageScanningEcrRepository: scanningRepository,
   imageScanningEcrTags: ['latest-scan'],
+  deletionExecutionRole,
+  tags: { key1: 'value1', key2: 'value2' },
 });
 image.grantDefaultExecutionRolePermissions(executionRole);
 

@@ -11,6 +11,10 @@ const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-image-ami-all-parameters'
 const executionRole = new iam.Role(stack, 'ExecutionRole', {
   assumedBy: new iam.ServicePrincipal('imagebuilder.amazonaws.com'),
 });
+const deletionExecutionRole = new iam.Role(stack, 'LifecycleExecutionRole', {
+  assumedBy: new iam.ServicePrincipal('imagebuilder.amazonaws.com'),
+  managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/EC2ImageBuilderLifecycleExecutionPolicy')],
+});
 const logGroup = new logs.LogGroup(stack, 'ImageLogGroup', { removalPolicy: cdk.RemovalPolicy.DESTROY });
 logGroup.grantWrite(executionRole);
 
@@ -44,6 +48,8 @@ const image = new imagebuilder.Image(stack, 'Image-AMI', {
   enhancedImageMetadataEnabled: true,
   imageTestsEnabled: true,
   imageScanningEnabled: true,
+  deletionExecutionRole,
+  tags: { key1: 'value1', key2: 'value2' },
 });
 image.grantDefaultExecutionRolePermissions(executionRole);
 

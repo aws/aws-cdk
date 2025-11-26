@@ -1,14 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { AwsManagedImageAttributes, IImage, Image, ImageArchitecture, ImageType } from './image';
-
-/**
- * Represents the latest version of an image. When using the image as the base image in a recipe, the recipe will use
- * the latest version at the time of execution.
- *
- * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/ibhow-semantic-versioning.html
- */
-const LATEST_VERSION = 'x.x.x';
+import { LATEST_VERSION } from './private/constants';
 
 /**
  * Helper class for working with AWS-managed images
@@ -421,7 +414,7 @@ export class AwsManagedImage {
   }
 
   /**
-   * Imports the macOS 14 AWS-managed image
+   * Imports the macOS 15 AWS-managed image
    *
    * @param scope The construct scope
    * @param id Identifier of the construct

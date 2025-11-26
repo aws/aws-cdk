@@ -8,6 +8,7 @@ import { Construct } from 'constructs';
 import { BaseContainerImage, BaseImage } from './base-image';
 import { IDistributionConfiguration } from './distribution-configuration';
 import { IInfrastructureConfiguration, InfrastructureConfiguration } from './infrastructure-configuration';
+import { LATEST_VERSION } from './private/constants';
 import {
   buildImageScanningConfiguration,
   buildImageTestsConfiguration,
@@ -18,14 +19,6 @@ import { IRecipeBase } from './recipe-base';
 import { WorkflowConfiguration } from './workflow';
 
 const IMAGE_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.Image');
-
-/**
- * Represents the latest version of an image. When using the image as the base image in a recipe, the recipe will use
- * the latest version at the time of execution.
- *
- * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/ibhow-semantic-versioning.html
- */
-const LATEST_VERSION = 'x.x.x';
 
 /**
  * Properties for creating an Image resource
@@ -181,6 +174,15 @@ export interface ImageProps {
    * @default true
    */
   readonly imageTestsEnabled?: boolean;
+
+  /**
+   * The execution role to use for deleting the image as well as the underlying resources, such as the AMIs, snapshots,
+   * and containers. This role should contain resource lifecycle permissions required to delete the underlying
+   * AMIs/containers.
+   *
+   * @default - no execution role. Only the Image Builder image will be deleted.
+   */
+  readonly deletionExecutionRole?: iam.IRole;
 
   /**
    * The tags to apply to the image
@@ -368,7 +370,7 @@ export class Image extends ImageBase {
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-imagebuilder-alpha.Image';
 
   /**
-   * Import an existing image pipeline given its ARN.
+   * Import an existing image given its ARN
    */
   public static fromImageArn(scope: Construct, id: string, imageArn: string): IImage {
     return this.fromImageAttributes(scope, id, { imageArn });
@@ -506,6 +508,7 @@ export class Image extends ImageBase {
         CfnImage.ImageScanningConfigurationProperty
       >(this, props),
       workflows: buildWorkflows<ImageProps, CfnImage.WorkflowConfigurationProperty[]>(props),
+      deletionSettings: this.buildDeletionSettings(props),
       tags: props.tags,
     });
 
@@ -549,8 +552,23 @@ export class Image extends ImageBase {
    * @param props Props input for the construct
    */
   private buildLoggingConfiguration = (props: ImageProps): CfnImage.ImageLoggingConfigurationProperty | undefined => {
-    const loggingConfiguration = { ...(props.logGroup && { logGroupName: props.logGroup.logGroupName }) };
+    if (!props.logGroup) {
+      return undefined;
+    }
 
-    return Object.keys(loggingConfiguration).length ? loggingConfiguration : undefined;
+    return { logGroupName: props.logGroup.logGroupName };
+  };
+
+  /**
+   * Generates the deletionSettings property into the `DeletionSettings` type in the CloudFormation L1 definition.
+   *
+   * @param props Props input for the construct
+   */
+  private buildDeletionSettings = (props: ImageProps): CfnImage.DeletionSettingsProperty | undefined => {
+    if (props.deletionExecutionRole === undefined) {
+      return undefined;
+    }
+
+    return { executionRole: props.deletionExecutionRole.roleArn };
   };
 }

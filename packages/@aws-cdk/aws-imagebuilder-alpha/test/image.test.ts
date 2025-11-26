@@ -133,6 +133,7 @@ describe('Image', () => {
   });
 
   test('with all parameters - image recipe', () => {
+    const deletionExecutionRole = iam.Role.fromRoleName(stack, 'DeletionExecutionRole', 'imagebuilder-lifecycle-role');
     const executionRole = iam.Role.fromRoleName(stack, 'ExecutionRole', 'imagebuilder-execution-role');
     const image = new Image(stack, 'Image', {
       recipe: ImageRecipe.fromImageRecipeAttributes(stack, 'ImageRecipe', { imageRecipeName: 'test-image-recipe' }),
@@ -159,6 +160,7 @@ describe('Image', () => {
       imageTestsEnabled: true,
       imageScanningEnabled: true,
       enhancedImageMetadataEnabled: true,
+      deletionExecutionRole,
       tags: { key1: 'value1', key2: 'value2' },
     });
     const grants = image.grantDefaultExecutionRolePermissions(executionRole);
@@ -187,6 +189,14 @@ describe('Image', () => {
         Image9D742C96: Match.objectEquals({
           Type: 'AWS::ImageBuilder::Image',
           Properties: {
+            DeletionSettings: {
+              ExecutionRole: {
+                'Fn::Join': [
+                  '',
+                  ['arn:', { Ref: 'AWS::Partition' }, ':iam::123456789012:role/imagebuilder-lifecycle-role'],
+                ],
+              },
+            },
             DistributionConfigurationArn: {
               'Fn::Join': [
                 '',
@@ -248,6 +258,7 @@ describe('Image', () => {
   });
 
   test('with all parameters - container recipe', () => {
+    const deletionExecutionRole = iam.Role.fromRoleName(stack, 'DeletionExecutionRole', 'imagebuilder-lifecycle-role');
     const image = new Image(stack, 'Image', {
       recipe: ContainerRecipe.fromContainerRecipeAttributes(stack, 'ContainerRecipe', {
         containerRecipeName: 'test-container-recipe',
@@ -281,6 +292,7 @@ describe('Image', () => {
       ),
       imageScanningEcrTags: ['latest-scan'],
       enhancedImageMetadataEnabled: true,
+      deletionExecutionRole,
       tags: { key1: 'value1', key2: 'value2' },
     });
 
@@ -292,6 +304,14 @@ describe('Image', () => {
         Image9D742C96: Match.objectEquals({
           Type: 'AWS::ImageBuilder::Image',
           Properties: {
+            DeletionSettings: {
+              ExecutionRole: {
+                'Fn::Join': [
+                  '',
+                  ['arn:', { Ref: 'AWS::Partition' }, ':iam::123456789012:role/imagebuilder-lifecycle-role'],
+                ],
+              },
+            },
             DistributionConfigurationArn: {
               'Fn::Join': [
                 '',
