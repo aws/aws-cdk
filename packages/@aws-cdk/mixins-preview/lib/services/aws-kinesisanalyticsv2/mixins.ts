@@ -1,1 +1,1 @@
-export * from './kinesisanalyticsv2.generated';
+export * from './cfn-props-mixins.generated';

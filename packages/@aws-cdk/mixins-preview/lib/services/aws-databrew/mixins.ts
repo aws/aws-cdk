@@ -1,1 +1,1 @@
-export * from './databrew.generated';
+export * from './cfn-props-mixins.generated';

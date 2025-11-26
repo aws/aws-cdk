@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "DeliveryTest/DefaultTest": {
+      "stacks": [
+        "VendedLogsTest"
+      ],
+      "assertionStack": "DeliveryTest/DefaultTest/DeployAssert",
+      "assertionStackName": "DeliveryTestDefaultTestDeployAssert48416031"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
