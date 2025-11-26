@@ -41,11 +41,11 @@ async function updateExportsAndEntryPoints(modules: ModuleMap, pkgPath: string) 
       serviceIndexExports.push(`export * as ${moduleConfig.submodule} from './${moduleConfig.name}';`);
     }
 
-    // @aws-cdk/mixins-preview/aws-s3/mixins => ./lib/services/aws-s3/index.js
-    const exportName = `./${moduleConfig.name}/mixins`;
-    if (!pkgJson.exports[exportName]) {
-      pkgJson.exports[exportName] = `./lib/services/${moduleConfig.name}/mixins.js`;
-    }
+    // @aws-cdk/mixins-preview/aws-s3 => ./lib/services/aws-s3/index.js
+    pkgJson.exports[`./${moduleConfig.submodule}`] ??= `./lib/services/${moduleConfig.name}/index.js`;
+
+    // @aws-cdk/mixins-preview/aws-s3/mixins => ./lib/services/aws-s3/mixins.js
+    pkgJson.exports[`./${moduleConfig.submodule}/mixins`] ??= `./lib/services/${moduleConfig.name}/mixins.js`;
   }
 
   // sort exports
@@ -73,18 +73,28 @@ async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
   }
 
   // services/<mod>/index.ts
-  const subModuleIndex = path.join(modulePath, 'index.ts');
-  // we don't export anything else in the preview package, so always force overwrite
-  await fs.writeFile(subModuleIndex, 'export * as mixins from \'./mixins\';\n');
+  // This index might contain hand-written exports => ensure they are preserved
+  {
+    const subModuleIndex = path.join(modulePath, 'index.ts');
+    const subModuleIndexExports = new Array<string>();
+    if (existsSync(subModuleIndex)) {
+      subModuleIndexExports.push(...(await fs.readFile(subModuleIndex)).toString().split('\n').filter(Boolean));
+    }
+
+    const mixinsExportStmt = 'export * as mixins from \'./mixins\';';
+    if (!subModuleIndexExports.find(e => e.includes(mixinsExportStmt))) {
+      subModuleIndexExports.push(mixinsExportStmt);
+    }
+
+    await fs.writeFile(subModuleIndex, subModuleIndexExports.sort().join('\n') + '\n');
+  }
 
   // services/<mod>/mixins.ts
+  // This index might contain hand-written mixins => ensure they are preserved
   {
     const mixinsIndex = path.join(modulePath, 'mixins.ts');
-    const mixinsExports= new Array<string>();
-
-    // This index might contain hand-written mixins => ensure they are preserved
+    const mixinsExports = new Array<string>();
     if (existsSync(mixinsIndex)) {
-    // load lines from file
       mixinsExports.push(...(await fs.readFile(mixinsIndex)).toString().split('\n').filter(Boolean));
     }
 
@@ -113,9 +123,9 @@ async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
         python: {
           module: submodule.definition.pythonModuleName,
         },
-        go: {
-          packageName: `mixins${submodule.definition.moduleName}`.replace(/[^a-z0-9.]/gi, ''),
-        },
+        // go: {
+        //   packageName: `mixins${submodule.definition.moduleName}`.replace(/[^a-z0-9.]/gi, ''),
+        // },
       },
     };
     await fs.writeFile(subModuleJsiiRc, JSON.stringify(jsiirc, null, 2) + '\n');}
@@ -133,6 +143,9 @@ async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
         },
         python: {
           module: `${submodule.definition.pythonModuleName}.mixins`,
+        },
+        go: {
+          packageName: `mixins${submodule.definition.moduleName}`.replace(/[^a-z0-9.]/gi, ''),
         },
       },
     };

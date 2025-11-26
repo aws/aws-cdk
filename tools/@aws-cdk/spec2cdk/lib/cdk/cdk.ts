@@ -20,6 +20,7 @@ export class CdkCore extends ExternalModule {
   public readonly Stack = Type.fromName(this, 'Stack');
 
   public readonly objectToCloudFormation = makeCallableExpr(this, 'objectToCloudFormation');
+  public readonly eventPatternToCloudFormation = makeCallableExpr(this, 'eventPatternToCloudFormation');
   public readonly stringToCloudFormation = makeCallableExpr(this, 'stringToCloudFormation');
   public readonly dateToCloudFormation = makeCallableExpr(this, 'dateToCloudFormation');
   public readonly booleanToCloudFormation = makeCallableExpr(this, 'booleanToCloudFormation');

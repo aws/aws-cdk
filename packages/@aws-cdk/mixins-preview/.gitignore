@@ -22,5 +22,4 @@ junit.xml
 !**/*.snapshot/**/asset.*/**
 
 # we ignore generated files that cannot contain hand-written info
-lib/services/*/index.ts
 lib/services/**/*.jsiirc.json
