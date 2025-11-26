@@ -86,7 +86,7 @@ const manualPipeline = new imagebuilder.ImagePipeline(this, 'ManualPipeline', {
 });
 
 // Grant Lambda function permission to trigger the pipeline
-manualPipeline.grantStartExecution(role);
+manualPipeline.grantStartExecution(lambdaRole);
 ```
 
 ##### Automated Pipeline Scheduling
@@ -283,7 +283,7 @@ const automationRole = new iam.Role(this, 'AutomationRole', {
 });
 
 existingPipelineByName.grantStartExecution(automationRole);
-existingPipelineByArn.grantRead(role);
+existingPipelineByArn.grantRead(lambdaRole);
 ```
 
 ### Image Recipe
@@ -1659,11 +1659,6 @@ const importedByArn = imagebuilder.LifecyclePolicy.fromLifecyclePolicyArn(
   'arn:aws:imagebuilder:us-east-1:123456789012:lifecycle-policy/my-policy'
 );
 
-// Grant permissions to imported policies
-const role = new iam.Role(this, 'Role', {
-  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
-});
-
-importedByName.grantRead(role);
-importedByArn.grant(role, 'imagebuilder:PutLifecyclePolicy');
+importedByName.grantRead(lambdaRole);
+importedByArn.grant(lambdaRole, 'imagebuilder:PutLifecyclePolicy');
 ```
