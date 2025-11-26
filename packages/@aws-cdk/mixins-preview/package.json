@@ -597,6 +597,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
+    "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -623,9 +624,11 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
-    "@aws-cdk/service-spec-types": "^0.0.188",
+    "@aws-cdk/integ-runner": "^2.192.2",
+    "@aws-cdk/integ-tests-alpha": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@aws-cdk/service-spec-types": "^0.0.189",
     "@aws-cdk/spec2cdk": "0.0.0",
     "@cdklabs/tskb": "^0.0.4",
     "@cdklabs/typewriter": "^0.0.10",
@@ -650,6 +653,7 @@
     "announce": false
   },
   "cdk-build": {
+    "compressAssembly": true,
     "pre": [
       "./scripts/airlift-custom-resource-handlers.sh"
     ]
