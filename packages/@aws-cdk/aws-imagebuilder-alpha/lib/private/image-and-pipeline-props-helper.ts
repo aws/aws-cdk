@@ -37,11 +37,11 @@ export const buildImageScanningConfiguration = <
   scope: Construct,
   props: PropsT,
 ): OutputT | undefined => {
-  if (!props.recipe._isContainerRecipe() && props.imageScanningEcrRepository !== undefined) {
+  if (!props.recipe!._isContainerRecipe() && props.imageScanningEcrRepository !== undefined) {
     throw new cdk.ValidationError('imageScanningEcrRepository is only supported for container recipe builds', scope);
   }
 
-  if (!props.recipe._isContainerRecipe() && props.imageScanningEcrTags !== undefined) {
+  if (!props.recipe!._isContainerRecipe() && props.imageScanningEcrTags !== undefined) {
     throw new cdk.ValidationError('imageScanningEcrTags is only supported for container recipe builds', scope);
   }
 

@@ -1048,6 +1048,24 @@
     },
     "State": "ENABLED"
    }
+  },
+  "ImagePipelineAMIImage2B4B0347": {
+   "Type": "AWS::ImageBuilder::Image",
+   "Properties": {
+    "ImagePipelineExecutionSettings": {
+     "DeploymentId": {
+      "Fn::GetAtt": [
+       "ImagePipelineAMI7635ECE0",
+       "DeploymentId"
+      ]
+     },
+     "OnUpdate": true
+    },
+    "Tags": {
+     "key1": "value1",
+     "key2": "value2"
+    }
+   }
   }
  },
  "Parameters": {

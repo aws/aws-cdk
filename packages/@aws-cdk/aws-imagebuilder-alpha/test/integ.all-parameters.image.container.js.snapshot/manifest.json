@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/556f3877a9427127208a645a2a020b68b498d70ccaafa417002054b7603128d2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1739d134cc12c2bfacb3f33271be30269b14b61f8ff44318abb3e3a0db0877e8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -593,6 +593,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ExecutionRoleDefaultPolicyA5B92313"
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-container-all-parameters/LifecycleExecutionRole": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [LifecycleExecutionRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-container-all-parameters/LifecycleExecutionRole/ImportLifecycleExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-container-all-parameters/LifecycleExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LifecycleExecutionRole4719EA2F"
           }
         ],
         "/aws-cdk-imagebuilder-image-container-all-parameters/ImageLogGroup": [

@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "aws-cdk-imagebuilder-image-pipeline-container-all-parameters.assets": {
+    "aws-cdk-imagebuilder-image-start-pipeline-default-parameters.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-imagebuilder-image-pipeline-container-all-parameters.assets.json",
+        "file": "aws-cdk-imagebuilder-image-start-pipeline-default-parameters.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-imagebuilder-image-pipeline-container-all-parameters": {
+    "aws-cdk-imagebuilder-image-start-pipeline-default-parameters": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-imagebuilder-image-pipeline-container-all-parameters.template.json",
+        "templateFile": "aws-cdk-imagebuilder-image-start-pipeline-default-parameters.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a65b8cf1b3b121eb0aa6e9497bb73a0ad6e7caebec9f789658be96ceb1a2d03f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/117822cd8d1c1d0701555ce4d9b8787a86e318c0a9d0726fe95328c77b1f43dc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-imagebuilder-image-pipeline-container-all-parameters.assets"
+          "aws-cdk-imagebuilder-image-start-pipeline-default-parameters.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,643 +31,50 @@
         }
       },
       "dependencies": [
-        "aws-cdk-imagebuilder-image-pipeline-container-all-parameters.assets"
+        "aws-cdk-imagebuilder-image-start-pipeline-default-parameters.assets"
       ],
       "metadata": {
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/Repository": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "emptyOnDelete": true,
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/Repository/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Repository22E53BBD"
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ScanningRepository": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "emptyOnDelete": true,
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ScanningRepository/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ScanningRepositoryB9C9B705"
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ExecutionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ExecutionRole/ImportExecutionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ExecutionRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExecutionRole605A040B"
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ExecutionRole/DefaultPolicy": [
+        "/aws-cdk-imagebuilder-image-start-pipeline-default-parameters/ImageRecipe": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
+            "data": "*"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ExecutionRole/DefaultPolicy/Resource": [
+        "/aws-cdk-imagebuilder-image-start-pipeline-default-parameters/ImageRecipe/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExecutionRoleDefaultPolicyA5B92313"
+            "data": "ImageRecipe8C789631"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImageLogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImageLogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImageLogGroupD34F5836"
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipelineLogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipelineLogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImagePipelineLogGroup7E475C9B"
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/InfrastructureConfiguration": [
+        "/aws-cdk-imagebuilder-image-start-pipeline-default-parameters/ImagePipeline/InfrastructureConfiguration": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/InfrastructureConfiguration/InstanceProfileRole": [
+        "/aws-cdk-imagebuilder-image-start-pipeline-default-parameters/ImagePipeline/InfrastructureConfiguration/InstanceProfileRole": [
           {
             "type": "aws:cdk:warning",
             "data": "Failed to add construct metadata for node [InstanceProfileRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add method metadata for node [InstanceProfileRole], method name addManagedPolicy. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addMethodMetadataFailed]"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/InfrastructureConfiguration/InstanceProfileRole/ImportInstanceProfileRole": [
+        "/aws-cdk-imagebuilder-image-start-pipeline-default-parameters/ImagePipeline/InfrastructureConfiguration/InstanceProfileRole/ImportInstanceProfileRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/InfrastructureConfiguration/InstanceProfileRole/Resource": [
+        "/aws-cdk-imagebuilder-image-start-pipeline-default-parameters/ImagePipeline/InfrastructureConfiguration/InstanceProfileRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InfrastructureConfigurationInstanceProfileRole3AFA1533"
+            "data": "ImagePipelineInfrastructureConfigurationInstanceProfileRoleB353B1C5"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/InfrastructureConfiguration/InstanceProfile": [
+        "/aws-cdk-imagebuilder-image-start-pipeline-default-parameters/ImagePipeline/InfrastructureConfiguration/InstanceProfile": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -675,184 +82,58 @@
             }
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/InfrastructureConfiguration/InstanceProfile/Resource": [
+        "/aws-cdk-imagebuilder-image-start-pipeline-default-parameters/ImagePipeline/InfrastructureConfiguration/InstanceProfile/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InfrastructureConfigurationInstanceProfile8FD9235B"
+            "data": "ImagePipelineInfrastructureConfigurationInstanceProfileAD6309CF"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/InfrastructureConfiguration/Resource": [
+        "/aws-cdk-imagebuilder-image-start-pipeline-default-parameters/ImagePipeline/InfrastructureConfiguration/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InfrastructureConfiguration86C7777D"
+            "data": "ImagePipelineInfrastructureConfiguration70CB8806"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ContainerRecipe": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ContainerRecipe/Resource": [
+        "/aws-cdk-imagebuilder-image-start-pipeline-default-parameters/ImagePipeline/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ContainerRecipe8A7CC9ED"
+            "data": "ImagePipeline7DDDE57F"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ContainerDistributionConfiguration": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ContainerDistributionConfiguration/Resource": [
+        "/aws-cdk-imagebuilder-image-start-pipeline-default-parameters/Image-StartPipeline/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ContainerDistributionConfiguration18609EDB"
+            "data": "ImageStartPipelineA563EA5A"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipeline-Container/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImagePipelineContainer507B5032"
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipeline-Container/ImageBuildSuccessTriggerRule": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventPattern": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addTarget": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventPattern": [
-                {
-                  "source": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipeline-Container/ImageBuildSuccessTriggerRule/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImagePipelineContainerImageBuildSuccessTriggerRuleFC549F96"
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipeline-Container/ImagePipelineAutoDisabledTriggerRule": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "eventPattern": {
-                "detailType": "*",
-                "resources": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventPattern": [
-                {
-                  "detailType": "*",
-                  "resources": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addTarget": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventPattern": [
-                {
-                  "source": "*",
-                  "resources": "*",
-                  "detailType": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipeline-Container/ImagePipelineAutoDisabledTriggerRule/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImagePipelineContainerImagePipelineAutoDisabledTriggerRule567551D9"
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipeline-Container/Image/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImagePipelineContainerImageF8CBEC27"
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/BootstrapVersion": [
+        "/aws-cdk-imagebuilder-image-start-pipeline-default-parameters/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/CheckBootstrapVersion": [
+        "/aws-cdk-imagebuilder-image-start-pipeline-default-parameters/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-imagebuilder-image-pipeline-container-all-parameters"
+      "displayName": "aws-cdk-imagebuilder-image-start-pipeline-default-parameters"
     },
-    "ImagePipelineTestContainerAllParametersDefaultTestDeployAssert1B190D7C.assets": {
+    "ImageTestStartPipelineDefaultParametersDefaultTestDeployAssertDD3EEFF6.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "ImagePipelineTestContainerAllParametersDefaultTestDeployAssert1B190D7C.assets.json",
+        "file": "ImageTestStartPipelineDefaultParametersDefaultTestDeployAssertDD3EEFF6.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "ImagePipelineTestContainerAllParametersDefaultTestDeployAssert1B190D7C": {
+    "ImageTestStartPipelineDefaultParametersDefaultTestDeployAssertDD3EEFF6": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "ImagePipelineTestContainerAllParametersDefaultTestDeployAssert1B190D7C.template.json",
+        "templateFile": "ImageTestStartPipelineDefaultParametersDefaultTestDeployAssertDD3EEFF6.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -861,7 +142,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "ImagePipelineTestContainerAllParametersDefaultTestDeployAssert1B190D7C.assets"
+          "ImageTestStartPipelineDefaultParametersDefaultTestDeployAssertDD3EEFF6.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -870,23 +151,23 @@
         }
       },
       "dependencies": [
-        "ImagePipelineTestContainerAllParametersDefaultTestDeployAssert1B190D7C.assets"
+        "ImageTestStartPipelineDefaultParametersDefaultTestDeployAssertDD3EEFF6.assets"
       ],
       "metadata": {
-        "/ImagePipelineTest-Container-AllParameters/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/ImageTest-StartPipeline-DefaultParameters/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/ImagePipelineTest-Container-AllParameters/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/ImageTest-StartPipeline-DefaultParameters/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "ImagePipelineTest-Container-AllParameters/DefaultTest/DeployAssert"
+      "displayName": "ImageTest-StartPipeline-DefaultParameters/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

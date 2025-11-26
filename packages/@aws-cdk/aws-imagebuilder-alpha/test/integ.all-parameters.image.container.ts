@@ -13,6 +13,8 @@ const repository = new ecr.Repository(stack, 'Repository', {
   emptyOnDelete: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
+cdk.Tags.of(repository).add('LifecycleExecutionAccess', 'EC2 Image Builder');
+
 const scanningRepository = new ecr.Repository(stack, 'ScanningRepository', {
   emptyOnDelete: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,

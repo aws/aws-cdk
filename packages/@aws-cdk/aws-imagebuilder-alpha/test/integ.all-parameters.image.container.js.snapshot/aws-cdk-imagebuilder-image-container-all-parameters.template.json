@@ -3,7 +3,13 @@
   "Repository22E53BBD": {
    "Type": "AWS::ECR::Repository",
    "Properties": {
-    "EmptyOnDelete": true
+    "EmptyOnDelete": true,
+    "Tags": [
+     {
+      "Key": "LifecycleExecutionAccess",
+      "Value": "EC2 Image Builder"
+     }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -729,6 +735,37 @@
     ]
    }
   },
+  "LifecycleExecutionRole4719EA2F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "imagebuilder.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/EC2ImageBuilderLifecycleExecutionPolicy"
+       ]
+      ]
+     }
+    ]
+   }
+  },
   "ImageLogGroupD34F5836": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
@@ -896,6 +933,14 @@
       "Arn"
      ]
     },
+    "DeletionSettings": {
+     "ExecutionRole": {
+      "Fn::GetAtt": [
+       "LifecycleExecutionRole4719EA2F",
+       "Arn"
+      ]
+     }
+    },
     "DistributionConfigurationArn": {
      "Fn::GetAtt": [
       "ContainerDistributionConfiguration18609EDB",
@@ -933,6 +978,10 @@
      "LogGroupName": {
       "Ref": "ImageLogGroupD34F5836"
      }
+    },
+    "Tags": {
+     "key1": "value1",
+     "key2": "value2"
     },
     "Workflows": [
      {

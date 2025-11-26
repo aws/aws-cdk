@@ -277,7 +277,7 @@ export const defaultExecutionRolePolicy = <PropsT extends ImagePipelineProps | I
   ];
 
   const hasProps = props !== undefined;
-  if (!hasProps || (props.recipe._isImageRecipe() && props.distributionConfiguration !== undefined)) {
+  if (!hasProps || (props.recipe!._isImageRecipe() && props.distributionConfiguration !== undefined)) {
     // Distribution-specific permissions if distribution settings are provided. All permissions here are for AMI builds
     // specifically.
     policies.push(
@@ -365,7 +365,7 @@ export const defaultExecutionRolePolicy = <PropsT extends ImagePipelineProps | I
     );
 
     // Add image scanning ECR permissions for container builds
-    if (!hasProps || props.recipe._isContainerRecipe()) {
+    if (!hasProps || props.recipe!._isContainerRecipe()) {
       policies.push(
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,

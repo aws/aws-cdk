@@ -51,6 +51,8 @@ imagePipeline.grantDefaultExecutionRolePermissions(executionRole);
 imagePipeline.onEvent('ImageBuildSuccessTriggerRule');
 imagePipeline.onCVEDetected('ImageBuildCVEDetectedTriggerRule');
 
+imagePipeline.start({ onUpdate: true, tags: { key1: 'value1', key2: 'value2' } });
+
 new integ.IntegTest(app, 'ImagePipelineTest-AMI-AllParameters', {
   testCases: [stack],
 });

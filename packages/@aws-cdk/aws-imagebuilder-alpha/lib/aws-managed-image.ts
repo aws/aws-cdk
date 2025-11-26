@@ -1,7 +1,43 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { AwsManagedImageAttributes, IImage, Image, ImageArchitecture, ImageType } from './image';
+import { IImage, Image, ImageArchitecture, ImageType } from './image';
 import { LATEST_VERSION } from './private/constants';
+
+/**
+ * Properties for an EC2 Image Builder AWS-managed image
+ */
+export interface AwsManagedImageAttributes {
+  /**
+   * The architecture of the AWS-managed image
+   *
+   * @default - derived automatically if referencing a managed image by name, otherwise an architecture is required when
+   * using the pre-defined managed image methods
+   */
+  readonly imageArchitecture?: ImageArchitecture;
+
+  /**
+   * The name of the AWS-managed image. The provided name must be normalized by converting all alphabetical characters
+   * to lowercase, and replacing all spaces and underscores with hyphens.
+   *
+   * @default - none if using the pre-defined managed image methods, otherwise this is required
+   */
+  readonly imageName?: string;
+
+  /**
+   * The type of the AWS-managed image
+   *
+   * @default - derived automatically if referencing a managed image by name, otherwise an image type is required when
+   * using the pre-defined managed image methods
+   */
+  readonly imageType?: ImageType;
+
+  /**
+   * The version of the AWS-managed image
+   *
+   * @default x.x.x
+   */
+  readonly imageVersion?: string;
+}
 
 /**
  * Helper class for working with AWS-managed images

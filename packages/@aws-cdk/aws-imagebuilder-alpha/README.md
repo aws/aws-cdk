@@ -38,7 +38,10 @@ test phase during the test stage.
 
 ### Image Pipeline
 
-An image pipeline provides the automation framework for building secure AMIs and container images. The pipeline orchestrates the entire image creation process by combining an image recipe or container recipe with infrastructure configuration and distribution configuration. Pipelines can run on a schedule or be triggered manually, and they manage the build, test, and distribution phases automatically.
+An image pipeline provides the automation framework for building secure AMIs and container images. The pipeline
+orchestrates the entire image creation process by combining an image recipe or container recipe with infrastructure
+configuration and distribution configuration. Pipelines can run on a schedule or be triggered manually, and they manage
+the build, test, and distribution phases automatically.
 
 #### Image Pipeline Basic Usage
 
@@ -139,7 +142,7 @@ const advancedSchedulePipeline = new imagebuilder.ImagePipeline(this, 'AdvancedS
 
 #### Image Pipeline Configuration
 
-##### Infrastructure and Distribution
+##### Infrastructure and Distribution in Image Pipelines
 
 Configure custom infrastructure and distribution settings:
 
@@ -177,7 +180,7 @@ const pipelineLogGroup = new logs.LogGroup(this, 'PipelineLogGroup', {
 });
 
 const imageLogGroup = new logs.LogGroup(this, 'ImageLogGroup', {
-  logGroupName: '/custom/imagebuilder/image/logs', 
+  logGroupName: '/custom/imagebuilder/image/logs',
   retention: logs.RetentionDays.ONE_WEEK
 });
 
@@ -188,7 +191,7 @@ const loggedPipeline = new imagebuilder.ImagePipeline(this, 'LoggedPipeline', {
 });
 ```
 
-##### Workflow Integration
+##### Workflow Integration in Image Pipelines
 
 Use AWS-managed workflows for common pipeline phases:
 
@@ -215,7 +218,7 @@ const containerWorkflowPipeline = new imagebuilder.ImagePipeline(this, 'Containe
 });
 ```
 
-##### Advanced Features
+##### Advanced Features in Image Pipelines
 
 Configure image scanning for container pipelines:
 
@@ -257,6 +260,49 @@ examplePipeline.onImagePipelineAutoDisabled('PipelineDisabledAlert', {
   target: new targets.LambdaFunction(lambdaFunction)
 });
 ```
+
+#### Starting Image Pipelines
+
+Pipelines can be started programmatically to trigger image builds on-demand, in addition to scheduled executions. This
+is useful for integrating pipelines with CI/CD workflows, triggering builds based on custom conditions, or creating
+images in response to events.
+
+##### Basic Pipeline Start
+
+Start a pipeline execution without additional configuration:
+
+```ts
+const builtImage = examplePipeline.start({});
+```
+
+##### Tagged Pipeline Builds
+
+Apply custom tags to images created from pipeline executions:
+
+```ts
+const taggedImage = examplePipeline.start({
+  tags: {
+    BuildNumber: '456',
+    Environment: 'Production'
+  }
+});
+```
+
+##### Triggering on Pipeline Updates
+
+Configure the pipeline to automatically trigger a new build whenever the pipeline itself is updated:
+
+```ts
+const triggeredImage = examplePipeline.start({
+  onUpdate: true,
+  tags: {
+    AutoBuild: 'true'
+  }
+});
+```
+
+The `start()` method returns an `Image` construct representing the pipeline execution, which can be referenced for
+additional operations or outputs.
 
 #### Importing Image Pipelines
 
@@ -376,7 +422,7 @@ const managedImageByAttributes = imagebuilder.AwsManagedImage.fromAwsManagedImag
 
 #### Image Configuration
 
-##### Infrastructure and Distribution
+##### Infrastructure and Distribution in Images
 
 Configure custom infrastructure and distribution settings:
 
@@ -419,7 +465,7 @@ const loggedImage = new imagebuilder.Image(this, 'LoggedImage', {
 });
 ```
 
-##### Workflow Integration
+##### Workflow Integration in Images
 
 Use workflows for custom build, test, and distribution processes:
 
@@ -433,7 +479,7 @@ const imageWithWorkflows = new imagebuilder.Image(this, 'ImageWithWorkflows', {
 });
 ```
 
-##### Advanced Features
+##### Advanced Features in Images
 
 Configure image scanning, metadata collection, and testing:
 
@@ -452,7 +498,7 @@ const advancedContainerImage = new imagebuilder.Image(this, 'AdvancedContainerIm
 
 #### Importing Images
 
-Reference existing images created outside of CDK:
+Reference existing images created outside CDK:
 
 ```ts
 // Import by name
@@ -1842,7 +1888,7 @@ const disabledPolicy = new imagebuilder.LifecyclePolicy(this, 'DisabledPolicy', 
 
 ##### Importing Lifecycle Policies
 
-Reference lifecycle policies created outside of CDK:
+Reference lifecycle policies created outside CDK:
 
 ```ts
 // Import by name
@@ -1860,5 +1906,5 @@ const importedByArn = imagebuilder.LifecyclePolicy.fromLifecyclePolicyArn(
 );
 
 importedByName.grantRead(lambdaRole);
-importedByArn.grant(lambdaRole, 'imagebuilder:PutLifecyclePolicy');
+importedByArn.grant(lambdaRole, 'imagebuilder:UpdateLifecyclePolicy');
 ```
