@@ -5,7 +5,7 @@ import { AccountRootPrincipal, Effect, PolicyDocument, PolicyStatement, Role, Se
 import { DeliveryStream, S3Bucket } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { CfnDeliverySource, LogGroup, ResourcePolicy, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
-import { FirehoseLogsDelivery, LogGroupLogsDelivery, S3LogsDelivery, XRayLogsDelivery } from '../../../lib/services/aws-logs';
+import { FirehoseLogsDelivery, LogGroupLogsDelivery, S3LogsDelivery, S3LogsDeliveryPermissionsVersion, XRayLogsDelivery } from '../../../lib/services/aws-logs';
 
 // at the time of creating this test file S3 does not support Vended Logs on Buckets but this test pretends they do to make writing tests easier
 describe('S3 Delivery', () => {
@@ -33,7 +33,7 @@ describe('S3 Delivery', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
       DeliveryDestinationArn: {
         'Fn::GetAtt': [
-          'SourceBucketCDKS3DestDestinationSourceBucket0822B3EE',
+          'SourceBucketCdkS3DeliverySourceBucketDestinationDest500948E7',
           'Arn',
         ],
       },
@@ -77,7 +77,7 @@ describe('S3 Delivery', () => {
     });
 
     const s3Logs1 = new S3LogsDelivery(bucket, {
-      permissionsVersion: 'V2',
+      permissionsVersion: S3LogsDeliveryPermissionsVersion.V2,
     });
     s3Logs1.bind(source1, deliverySource1, source1.bucketArn);
 
@@ -89,7 +89,7 @@ describe('S3 Delivery', () => {
   test('creates policy with V1 permissions if specified', () => {
     const bucket = new Bucket(stack, 'Destination');
     const s3Logs = new S3LogsDelivery(bucket, {
-      permissionsVersion: 'V1',
+      permissionsVersion: S3LogsDeliveryPermissionsVersion.V1,
     });
     s3Logs.bind(source, deliverySource, source.bucketArn);
 
@@ -207,7 +207,7 @@ describe('S3 Delivery', () => {
   test('creates policy with V2 permissions if specified', () => {
     const bucket = new Bucket(stack, 'Destination');
     const s3Logs = new S3LogsDelivery(bucket, {
-      permissionsVersion: 'V2',
+      permissionsVersion: S3LogsDeliveryPermissionsVersion.V2,
     });
     s3Logs.bind(source, deliverySource, source.bucketArn);
 
@@ -450,7 +450,7 @@ describe('Cloudwatch Logs Delivery', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
       DeliveryDestinationArn: {
         'Fn::GetAtt': [
-          'SourceBucketCDKCWLDestLogGroupDeliverySourceBucketD33E7410',
+          'SourceBucketCdkLogGroupDeliverySourceBucketLogGroupDeliveryDestCC8D47E3',
           'Arn',
         ],
       },
@@ -501,7 +501,7 @@ describe('Cloudwatch Logs Delivery', () => {
           ],
         ],
       },
-      PolicyName: 'LogGroupLogsDeliveryPolicy',
+      PolicyName: 'SourceBucketCdkLogGroupDeliverySourceBucketLogGroupDeliveryDAEA34A7',
     });
 
     // Validate that DeliveryDestination depends on the Cloudwatch resource policy
@@ -535,7 +535,7 @@ describe('Cloudwatch Logs Delivery', () => {
   });
 
   test('if there is an existing Cloudwatch resource policy at the root of the stack, update it', () => {
-    new ResourcePolicy(stack, 'CDKCWLDestPolicy', {
+    new ResourcePolicy(stack, 'CdkLogGroupLogsDeliveryPolicy', {
       resourcePolicyName: 'singletonPolicy',
       policyStatements: [],
     });
@@ -666,7 +666,7 @@ describe('Firehose Stream Delivery', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
       DeliveryDestinationArn: {
         'Fn::GetAtt': [
-          'SourceBucketCDKFHDestFirehoseSourceBucketCAC47E76',
+          'SourceBucketCdkFirehoseDeliverySourceBucketFirehoseDestB16933AF',
           'Arn',
         ],
       },
@@ -804,7 +804,7 @@ describe('XRay Delivery', () => {
 
     Template.fromStack(stack).resourceCountIs('AWS::XRay::ResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::XRay::ResourcePolicy', {
-      PolicyName: 'XRayLogsDeliveryPolicy',
+      PolicyName: 'CdkXRayLogsDeliveryPolicy',
       PolicyDocument: {
         'Fn::Join': [
           '',
