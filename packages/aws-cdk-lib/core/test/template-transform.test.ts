@@ -58,6 +58,41 @@ describe('TemplateTransforms', () => {
     });
   });
 
+  describe('hasAny', () => {
+    test('returns false when no transforms registered', () => {
+      const app = new App();
+
+      expect(TemplateTransforms.hasAny(app)).toBe(false);
+    });
+
+    test('returns true when transforms are registered', () => {
+      const app = new App();
+      app.addTemplateTransform({ transformTemplate: jest.fn() });
+
+      expect(TemplateTransforms.hasAny(app)).toBe(true);
+    });
+
+    test('does not create singleton when checking empty app', () => {
+      const app = new App();
+
+      // hasAny should not create the singleton
+      TemplateTransforms.hasAny(app);
+
+      // Verify singleton was not created by checking that of() creates a new one with empty array
+      // If hasAny had created it, all would still be empty, but we verify the symbol isn't set
+      const TEMPLATE_TRANSFORMS_SYMBOL = Symbol.for('@aws-cdk/core.TemplateTransforms');
+      expect((app as any)[TEMPLATE_TRANSFORMS_SYMBOL]).toBeUndefined();
+    });
+
+    test('works when called on stack scope', () => {
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      app.addTemplateTransform({ transformTemplate: jest.fn() });
+
+      expect(TemplateTransforms.hasAny(stack)).toBe(true);
+    });
+  });
+
   describe('invocation', () => {
     test('transforms are invoked during synthesis', () => {
       const app = new App();
@@ -223,8 +258,8 @@ describe('TemplateTransforms', () => {
 
       app.synth();
 
-      expect(stacks.some(s => !s.nested)).toBe(true); // parent stack
-      expect(stacks.some(s => s.nested)).toBe(true); // nested stack
+      expect(stacks).toContainEqual({ stack: parentStack, nested: false });
+      expect(stacks).toContainEqual({ stack: nestedStack, nested: true });
     });
 
     test('transform can distinguish nested stacks', () => {
