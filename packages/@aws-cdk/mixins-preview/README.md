@@ -178,7 +178,7 @@ Mixins.of(bucket).apply(new CfnBucketPropsMixin(
   { strategy: PropertyMergeStrategy.MERGE }
 ));
 
-// OVERWRITE: Replaces existing property values
+// OVERRIDE: Replaces existing property values
 Mixins.of(bucket).apply(new CfnBucketPropsMixin(
   { versioningConfiguration: { status: "Enabled" } },
   { strategy: PropertyMergeStrategy.OVERRIDE }
