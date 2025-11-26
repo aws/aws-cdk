@@ -13,29 +13,25 @@ class TestStack extends cdk.Stack {
       natGateways: 1,
     });
 
-    // Test instance with comprehensive MetadataOptions
+    // Test instance with comprehensive metadata options
     new ec2.Instance(this, 'InstanceWithMetadataOptions', {
       vpc,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.NANO),
       machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
-      metadataOptions: {
-        httpEndpoint: true,
-        httpProtocolIpv6: false,
-        httpPutResponseHopLimit: 2,
-        httpTokens: ec2.HttpTokens.REQUIRED,
-        instanceMetadataTags: true,
-      },
+      httpEndpoint: true,
+      httpProtocolIpv6: false,
+      httpPutResponseHopLimit: 2,
+      httpTokens: ec2.HttpTokens.REQUIRED,
+      instanceMetadataTags: true,
     });
 
-    // Test instance with partial MetadataOptions
+    // Test instance with partial metadata options
     new ec2.Instance(this, 'InstanceWithPartialMetadataOptions', {
       vpc,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.NANO),
       machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
-      metadataOptions: {
-        httpTokens: ec2.HttpTokens.REQUIRED,
-        instanceMetadataTags: true,
-      },
+      httpTokens: ec2.HttpTokens.REQUIRED,
+      instanceMetadataTags: true,
     });
 
     // Test instance with backward compatibility (requireImdsv2)

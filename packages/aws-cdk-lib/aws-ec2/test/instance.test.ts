@@ -1296,13 +1296,11 @@ describe('metadataOptions', () => {
       vpc,
       machineImage: new AmazonLinuxImage(),
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-      metadataOptions: {
-        httpEndpoint: true,
-        httpProtocolIpv6: false,
-        httpPutResponseHopLimit: 2,
-        httpTokens: HttpTokens.REQUIRED,
-        instanceMetadataTags: true,
-      },
+      httpEndpoint: true,
+      httpProtocolIpv6: false,
+      httpPutResponseHopLimit: 2,
+      httpTokens: HttpTokens.REQUIRED,
+      instanceMetadataTags: true,
     });
 
     // THEN
@@ -1326,9 +1324,7 @@ describe('metadataOptions', () => {
       vpc,
       machineImage: new AmazonLinuxImage(),
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-      metadataOptions: {
-        httpEndpoint: input,
-      },
+      httpEndpoint: input,
     });
 
     // THEN
@@ -1348,9 +1344,7 @@ describe('metadataOptions', () => {
       vpc,
       machineImage: new AmazonLinuxImage(),
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-      metadataOptions: {
-        httpProtocolIpv6: input,
-      },
+      httpProtocolIpv6: input,
     });
 
     // THEN
@@ -1370,9 +1364,7 @@ describe('metadataOptions', () => {
       vpc,
       machineImage: new AmazonLinuxImage(),
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-      metadataOptions: {
-        instanceMetadataTags: input,
-      },
+      instanceMetadataTags: input,
     });
 
     // THEN
@@ -1392,9 +1384,7 @@ describe('metadataOptions', () => {
       vpc,
       machineImage: new AmazonLinuxImage(),
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-      metadataOptions: {
-        httpTokens: input,
-      },
+      httpTokens: input,
     });
 
     // THEN
@@ -1411,9 +1401,7 @@ describe('metadataOptions', () => {
       vpc,
       machineImage: new AmazonLinuxImage(),
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-      metadataOptions: {
-        httpPutResponseHopLimit: hopLimit,
-      },
+      httpPutResponseHopLimit: hopLimit,
     });
 
     // THEN
@@ -1431,9 +1419,7 @@ describe('metadataOptions', () => {
         vpc,
         machineImage: new AmazonLinuxImage(),
         instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-        metadataOptions: {
-          httpPutResponseHopLimit: hopLimit,
-        },
+        httpPutResponseHopLimit: hopLimit,
       });
     }).toThrow('httpPutResponseHopLimit must be between 1 and 64');
   });
@@ -1458,38 +1444,14 @@ describe('metadataOptions', () => {
     expect(instanceProps.MetadataOptions).toBeUndefined();
   });
 
-  test('empty metadata options opts into CloudFormation defaults', () => {
-    // WHEN
-    new Instance(stack, 'Instance', {
-      vpc,
-      machineImage: new AmazonLinuxImage(),
-      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-      metadataOptions: {},
-    });
-
-    // THEN - Should render MetadataOptions property (opts into CloudFormation behavior)
-    // but with undefined values for all properties (letting CloudFormation apply its defaults)
-    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
-      MetadataOptions: {
-        HttpEndpoint: Match.absent(),
-        HttpProtocolIpv6: Match.absent(),
-        HttpPutResponseHopLimit: Match.absent(),
-        HttpTokens: Match.absent(),
-        InstanceMetadataTags: Match.absent(),
-      },
-    });
-  });
-
   test('partial metadata options only render specified properties', () => {
     // WHEN
     new Instance(stack, 'Instance', {
       vpc,
       machineImage: new AmazonLinuxImage(),
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-      metadataOptions: {
-        httpTokens: HttpTokens.REQUIRED,
-        httpPutResponseHopLimit: 10,
-      },
+      httpTokens: HttpTokens.REQUIRED,
+      httpPutResponseHopLimit: 10,
     });
 
     // THEN
@@ -1509,7 +1471,7 @@ describe('metadataOptions', () => {
     expect(metadataOptions.InstanceMetadataTags).toBeUndefined();
   });
 
-  test('metadataOptions conflicts with requireImdsv2', () => {
+  test('metadata options conflict with requireImdsv2', () => {
     // WHEN/THEN - Should throw validation error when both are used together
     expect(() => {
       new Instance(stack, 'Instance', {
@@ -1517,15 +1479,13 @@ describe('metadataOptions', () => {
         machineImage: new AmazonLinuxImage(),
         instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
         requireImdsv2: true,
-        metadataOptions: {
-          httpEndpoint: true,
-          instanceMetadataTags: true,
-        },
+        httpEndpoint: true,
+        instanceMetadataTags: true,
       });
-    }).toThrow('Cannot use both requireImdsv2 and metadataOptions. Use requireImdsv2 for simple IMDSv2 enforcement or metadataOptions for advanced configuration, but not both.');
+    }).toThrow('Cannot use both requireImdsv2 and metadata options');
   });
 
-  test('requireImdsv2 works without metadataOptions', () => {
+  test('requireImdsv2 works without metadata options', () => {
     // WHEN
     new Instance(stack, 'Instance', {
       vpc,
@@ -1553,40 +1513,36 @@ describe('metadataOptions', () => {
     expect(instanceProps.MetadataOptions).toBeUndefined();
   });
 
-  test('metadataOptions with empty object opts into CloudFormation behavior', () => {
+  test('metadata options with only undefined values does not render MetadataOptions', () => {
     // WHEN
     new Instance(stack, 'Instance', {
       vpc,
       machineImage: new AmazonLinuxImage(),
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-      metadataOptions: {},
+      httpEndpoint: undefined,
+      httpProtocolIpv6: undefined,
+      httpPutResponseHopLimit: undefined,
+      httpTokens: undefined,
+      instanceMetadataTags: undefined,
     });
 
-    // THEN - Should render MetadataOptions property (opts into metadata options)
-    // but leaves all properties undefined so CloudFormation applies its own defaults
+    // THEN - Should not render MetadataOptions property (matches LaunchTemplate behavior)
     const template = Template.fromStack(stack);
     const instances = template.findResources('AWS::EC2::Instance');
     const instanceProps = Object.values(instances)[0].Properties;
 
-    // MetadataOptions should be present but with all undefined values
-    expect(instanceProps.MetadataOptions).toBeDefined();
-    expect(instanceProps.MetadataOptions.HttpEndpoint).toBeUndefined();
-    expect(instanceProps.MetadataOptions.HttpProtocolIpv6).toBeUndefined();
-    expect(instanceProps.MetadataOptions.HttpPutResponseHopLimit).toBeUndefined();
-    expect(instanceProps.MetadataOptions.HttpTokens).toBeUndefined();
-    expect(instanceProps.MetadataOptions.InstanceMetadataTags).toBeUndefined();
+    // MetadataOptions should not be present when all properties are undefined
+    expect(instanceProps.MetadataOptions).toBeUndefined();
   });
 
-  test('metadataOptions with partial configuration leaves unspecified properties undefined', () => {
+  test('metadata options with partial configuration leaves unspecified properties undefined', () => {
     // WHEN
     new Instance(stack, 'Instance', {
       vpc,
       machineImage: new AmazonLinuxImage(),
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-      metadataOptions: {
-        httpEndpoint: false,
-        httpTokens: HttpTokens.REQUIRED,
-      },
+      httpEndpoint: false,
+      httpTokens: HttpTokens.REQUIRED,
     });
 
     // THEN
@@ -1606,4 +1562,5 @@ describe('metadataOptions', () => {
     expect(metadataOptions.HttpPutResponseHopLimit).toBeUndefined();
     expect(metadataOptions.InstanceMetadataTags).toBeUndefined();
   });
+
 });

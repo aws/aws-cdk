@@ -1941,7 +1941,7 @@ The `volumeInitializationRate` must be:
 
 #### Comprehensive Metadata Options
 
-You can configure [EC2 Instance Metadata Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) options using the `metadataOptions` property. This provides comprehensive control over all metadata service settings:
+You can configure [EC2 Instance Metadata Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) options using individual properties. This provides comprehensive control over all metadata service settings:
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -1953,42 +1953,19 @@ new ec2.Instance(this, 'Instance', {
   vpc,
   instanceType,
   machineImage,
-
-  metadataOptions: {
-    // Enable the metadata endpoint
-    httpEndpoint: true,
-    // Disable IPv6 endpoint for metadata service
-    httpProtocolIpv6: false,
-    // Allow 2 hops for metadata requests
-    httpPutResponseHopLimit: 2,
-    // Require IMDSv2 tokens (secure)
-    httpTokens: ec2.HttpTokens.REQUIRED,
-    // Enable access to instance tags from metadata
-    instanceMetadataTags: true,
-  },
+  httpEndpoint: true,
+  httpProtocolIpv6: false,
+  httpPutResponseHopLimit: 2,
+  httpTokens: ec2.HttpTokens.REQUIRED,
+  instanceMetadataTags: true,
 });
 
-// Example 2: Use CloudFormation defaults with selective overrides
-new ec2.Instance(this, 'DefaultsInstance', {
+// Example 2: Enforce IMDSv2 with minimal configuration
+new ec2.Instance(this, 'SecureInstance', {
   vpc,
   instanceType,
   machineImage,
-
-  metadataOptions: {
-    // Only specify what you want to override
-    // Unspecified properties use CloudFormation defaults
-    httpTokens: ec2.HttpTokens.REQUIRED,
-  },
-});
-
-// Example 3: Opt into metadata options with all CloudFormation defaults
-new ec2.Instance(this, 'AllDefaultsInstance', {
-  vpc,
-  instanceType,
-  machineImage,
-
-  // Empty object opts into metadata options with CloudFormation defaults
-  metadataOptions: {},
+  httpTokens: ec2.HttpTokens.REQUIRED,
 });
 ```
 
