@@ -36,6 +36,256 @@ EC2 Image Builder supports AWS-managed components for common tasks, AWS Marketpl
 that you create. Components run during specific workflow phases: build and validate phases during the build stage, and
 test phase during the test stage.
 
+### Image Pipeline
+
+An image pipeline provides the automation framework for building secure AMIs and container images. The pipeline orchestrates the entire image creation process by combining an image recipe or container recipe with infrastructure configuration and distribution configuration. Pipelines can run on a schedule or be triggered manually, and they manage the build, test, and distribution phases automatically.
+
+#### Image Pipeline Basic Usage
+
+Create a simple AMI pipeline with just an image recipe:
+
+```ts
+const imageRecipe = new imagebuilder.ImageRecipe(this, 'MyImageRecipe', {
+  baseImage: imagebuilder.BaseImage.fromSsmParameterName(
+    '/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64'
+  )
+});
+
+const imagePipeline = new imagebuilder.ImagePipeline(this, 'MyImagePipeline', {
+  recipe: exampleImageRecipe
+});
+```
+
+Create a simple container pipeline with just a container recipe:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'MyContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  )
+});
+
+const containerPipeline = new imagebuilder.ImagePipeline(this, 'MyContainerPipeline', {
+  recipe: exampleContainerRecipe
+});
+```
+
+#### Image Pipeline Scheduling
+
+##### Manual Pipeline Execution
+
+Create a pipeline that runs only when manually triggered:
+
+```ts
+const manualPipeline = new imagebuilder.ImagePipeline(this, 'ManualPipeline', {
+  imagePipelineName: 'my-manual-pipeline',
+  description: 'Pipeline triggered manually for production builds',
+  recipe: exampleImageRecipe
+  // No schedule property - manual execution only
+});
+
+// Grant Lambda function permission to trigger the pipeline
+manualPipeline.grantStartExecution(role);
+```
+
+##### Automated Pipeline Scheduling
+
+Schedule a pipeline to run automatically using cron expressions:
+
+```ts
+const weeklyPipeline = new imagebuilder.ImagePipeline(this, 'WeeklyPipeline', {
+  imagePipelineName: 'weekly-build-pipeline',
+  recipe: exampleImageRecipe,
+  schedule: {
+    expression: events.Schedule.cron({
+      minute: '0',
+      hour: '6',
+      weekDay: 'MON'
+    })
+  }
+});
+```
+
+Use rate expressions for regular intervals:
+
+```ts
+const dailyPipeline = new imagebuilder.ImagePipeline(this, 'DailyPipeline', {
+  recipe: exampleContainerRecipe,
+  schedule: {
+    expression: events.Schedule.rate(Duration.days(1))
+  }
+});
+```
+
+##### Pipeline Schedule Configuration
+
+Configure advanced scheduling options:
+
+```ts
+const advancedSchedulePipeline = new imagebuilder.ImagePipeline(this, 'AdvancedSchedulePipeline', {
+  recipe: exampleImageRecipe,
+  schedule: {
+    expression: events.Schedule.rate(Duration.days(7)),
+    // Only trigger when dependencies are updated (new base images, components, etc.)
+    startCondition: imagebuilder.ScheduleStartCondition.EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE,
+    // Automatically disable after 3 consecutive failures
+    autoDisableFailureCount: 3
+  },
+  // Start enabled
+  status: imagebuilder.ImagePipelineStatus.ENABLED
+});
+```
+
+#### Image Pipeline Configuration
+
+##### Infrastructure and Distribution
+
+Configure custom infrastructure and distribution settings:
+
+```ts
+const infrastructureConfiguration = new imagebuilder.InfrastructureConfiguration(this, 'Infrastructure', {
+  infrastructureConfigurationName: 'production-infrastructure',
+  instanceTypes: [
+    ec2.InstanceType.of(ec2.InstanceClass.COMPUTE7_INTEL, ec2.InstanceSize.LARGE)
+  ],
+  vpc: vpc,
+  subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }
+});
+
+const distributionConfiguration = new imagebuilder.DistributionConfiguration(this, 'Distribution');
+distributionConfiguration.addAmiDistributions({
+  amiName: 'production-ami-{{ imagebuilder:buildDate }}',
+  amiTargetAccountIds: ['123456789012', '098765432109']
+});
+
+const productionPipeline = new imagebuilder.ImagePipeline(this, 'ProductionPipeline', {
+  recipe: exampleImageRecipe,
+  infrastructureConfiguration: infrastructureConfiguration,
+  distributionConfiguration: distributionConfiguration
+});
+```
+
+##### Pipeline Logging Configuration
+
+Configure custom CloudWatch log groups for pipeline and image logs:
+
+```ts
+const pipelineLogGroup = new logs.LogGroup(this, 'PipelineLogGroup', {
+  logGroupName: '/custom/imagebuilder/pipeline/logs',
+  retention: logs.RetentionDays.ONE_MONTH
+});
+
+const imageLogGroup = new logs.LogGroup(this, 'ImageLogGroup', {
+  logGroupName: '/custom/imagebuilder/image/logs', 
+  retention: logs.RetentionDays.ONE_WEEK
+});
+
+const loggedPipeline = new imagebuilder.ImagePipeline(this, 'LoggedPipeline', {
+  recipe: exampleImageRecipe,
+  imagePipelineLogGroup: pipelineLogGroup,
+  imageLogGroup: imageLogGroup
+});
+```
+
+##### Workflow Integration
+
+Use AWS-managed workflows for common pipeline phases:
+
+```ts
+const workflowPipeline = new imagebuilder.ImagePipeline(this, 'WorkflowPipeline', {
+  recipe: exampleImageRecipe,
+  workflows: [
+    { workflow: imagebuilder.AwsManagedWorkflow.buildImage(this, 'BuildWorkflow') },
+    { workflow: imagebuilder.AwsManagedWorkflow.testImage(this, 'TestWorkflow') }
+  ]
+});
+```
+
+For container pipelines, use container-specific workflows:
+
+```ts
+const containerWorkflowPipeline = new imagebuilder.ImagePipeline(this, 'ContainerWorkflowPipeline', {
+  recipe: exampleContainerRecipe,
+  workflows: [
+    { workflow: imagebuilder.AwsManagedWorkflow.buildContainer(this, 'BuildContainer') },
+    { workflow: imagebuilder.AwsManagedWorkflow.testContainer(this, 'TestContainer') },
+    { workflow: imagebuilder.AwsManagedWorkflow.distributeContainer(this, 'DistributeContainer') }
+  ]
+});
+```
+
+##### Advanced Features
+
+Configure image scanning for container pipelines:
+
+```ts
+const scanningRepository = new ecr.Repository(this, 'ScanningRepo');
+
+const scannedContainerPipeline = new imagebuilder.ImagePipeline(this, 'ScannedContainerPipeline', {
+  recipe: exampleContainerRecipe,
+  imageScanningEnabled: true,
+  imageScanningEcrRepository: scanningRepository,
+  imageScanningEcrTags: ['security-scan', 'latest']
+});
+```
+
+Control metadata collection and testing:
+
+```ts
+const controlledPipeline = new imagebuilder.ImagePipeline(this, 'ControlledPipeline', {
+  recipe: exampleImageRecipe,
+  enhancedImageMetadataEnabled: true,  // Collect detailed OS and package info
+  imageTestsEnabled: false  // Skip testing phase for faster builds
+});
+```
+
+#### Image Pipeline Events
+
+##### Pipeline Event Handling
+
+Handle specific pipeline events:
+
+```ts
+// Monitor CVE detection
+examplePipeline.onCVEDetected('CVEAlert', {
+  target: new targets.SnsTopic(topic)
+});
+
+// Handle pipeline auto-disable events
+examplePipeline.onImagePipelineAutoDisabled('PipelineDisabledAlert', {
+  target: new targets.LambdaFunction(lambdaFunction)
+});
+```
+
+#### Importing Image Pipelines
+
+Reference existing pipelines created outside CDK:
+
+```ts
+// Import by name
+const existingPipelineByName = imagebuilder.ImagePipeline.fromImagePipelineName(
+  this,
+  'ExistingPipelineByName',
+  'my-existing-pipeline'
+);
+
+// Import by ARN
+const existingPipelineByArn = imagebuilder.ImagePipeline.fromImagePipelineArn(
+  this,
+  'ExistingPipelineByArn',
+  'arn:aws:imagebuilder:us-east-1:123456789012:image-pipeline/imported-pipeline'
+);
+
+// Grant permissions to imported pipelines
+const automationRole = new iam.Role(this, 'AutomationRole', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
+});
+
+existingPipelineByName.grantStartExecution(automationRole);
+existingPipelineByArn.grantRead(role);
+```
+
 ### Image Recipe
 
 #### Image Recipe Basic Usage
