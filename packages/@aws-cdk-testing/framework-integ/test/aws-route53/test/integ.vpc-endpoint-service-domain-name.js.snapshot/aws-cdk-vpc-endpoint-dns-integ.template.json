@@ -481,7 +481,10 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "ec2:ModifyVpcEndpointServiceConfiguration",
+       "Action": [
+        "ec2:ModifyVpcEndpointServiceConfiguration",
+        "vpce:AllowMultiRegion"
+       ],
        "Effect": "Allow",
        "Resource": {
         "Fn::Join": [
