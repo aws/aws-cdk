@@ -33,7 +33,7 @@ describe('S3 Delivery', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
       DeliveryDestinationArn: {
         'Fn::GetAtt': [
-          'SourceBucketCDKS3DestDestinationSourceBucket0822B3EE',
+          'SourceBucketCdkS3DeliverySourceBucketDestinationDest500948E7',
           'Arn',
         ],
       },
@@ -450,7 +450,7 @@ describe('Cloudwatch Logs Delivery', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
       DeliveryDestinationArn: {
         'Fn::GetAtt': [
-          'SourceBucketCDKCWLDestLogGroupDeliverySourceBucketD33E7410',
+          'SourceBucketCdkLogGroupDeliverySourceBucketLogGroupDeliveryDestCC8D47E3',
           'Arn',
         ],
       },
@@ -501,7 +501,7 @@ describe('Cloudwatch Logs Delivery', () => {
           ],
         ],
       },
-      PolicyName: 'LogGroupLogsDeliveryPolicy',
+      PolicyName: 'SourceBucketCdkLogGroupDeliverySourceBucketLogGroupDeliveryDAEA34A7',
     });
 
     // Validate that DeliveryDestination depends on the Cloudwatch resource policy
@@ -535,7 +535,7 @@ describe('Cloudwatch Logs Delivery', () => {
   });
 
   test('if there is an existing Cloudwatch resource policy at the root of the stack, update it', () => {
-    new ResourcePolicy(stack, 'CDKCWLDestPolicy', {
+    new ResourcePolicy(stack, 'CdkLogGroupLogsDeliveryPolicy', {
       resourcePolicyName: 'singletonPolicy',
       policyStatements: [],
     });
@@ -666,7 +666,7 @@ describe('Firehose Stream Delivery', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
       DeliveryDestinationArn: {
         'Fn::GetAtt': [
-          'SourceBucketCDKFHDestFirehoseSourceBucketCAC47E76',
+          'SourceBucketCdkFirehoseDeliverySourceBucketFirehoseDestB16933AF',
           'Arn',
         ],
       },
@@ -804,7 +804,7 @@ describe('XRay Delivery', () => {
 
     Template.fromStack(stack).resourceCountIs('AWS::XRay::ResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::XRay::ResourcePolicy', {
-      PolicyName: 'XRayLogsDeliveryPolicy',
+      PolicyName: 'CdkXRayLogsDeliveryPolicy',
       PolicyDocument: {
         'Fn::Join': [
           '',
