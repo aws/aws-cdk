@@ -1,1 +1,1 @@
-export * from './iotwireless.generated';
+export * from './cfn-props-mixins.generated';

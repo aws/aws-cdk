@@ -1,1 +1,1 @@
-export * from './dax.generated';
+export * from './cfn-props-mixins.generated';

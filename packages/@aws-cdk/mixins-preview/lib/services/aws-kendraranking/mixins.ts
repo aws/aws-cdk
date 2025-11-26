@@ -1,1 +1,1 @@
-export * from './kendraranking.generated';
+export * from './cfn-props-mixins.generated';

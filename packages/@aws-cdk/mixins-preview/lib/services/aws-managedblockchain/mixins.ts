@@ -1,1 +1,1 @@
-export * from './managedblockchain.generated';
+export * from './cfn-props-mixins.generated';

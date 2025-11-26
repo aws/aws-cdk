@@ -1,1 +1,1 @@
-export * from './nimblestudio.generated';
+export * from './cfn-props-mixins.generated';

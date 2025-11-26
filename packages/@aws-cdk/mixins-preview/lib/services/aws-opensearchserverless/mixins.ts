@@ -1,1 +1,1 @@
-export * from './opensearchserverless.generated';
+export * from './cfn-props-mixins.generated';

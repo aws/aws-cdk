@@ -1,1 +1,1 @@
-export * from './elasticbeanstalk.generated';
+export * from './cfn-props-mixins.generated';

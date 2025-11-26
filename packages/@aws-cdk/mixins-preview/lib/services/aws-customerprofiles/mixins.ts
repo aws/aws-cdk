@@ -1,1 +1,1 @@
-export * from './customerprofiles.generated';
+export * from './cfn-props-mixins.generated';

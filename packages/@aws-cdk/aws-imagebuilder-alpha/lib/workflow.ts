@@ -491,6 +491,87 @@ class S3WorkflowDataFromAsset extends S3WorkflowData {
 }
 
 /**
+ * The parameter value for a workflow parameter
+ */
+export class WorkflowParameterValue {
+  /**
+   * The value of the parameter as a boolean
+   *
+   * @param value The boolean value of the parameter
+   */
+  public static fromBoolean(value: boolean): WorkflowParameterValue {
+    return new WorkflowParameterValue([value.toString()]);
+  }
+
+  /**
+   * The value of the parameter as an integer
+   *
+   * @param value The integer value of the parameter
+   */
+  public static fromInteger(value: number): WorkflowParameterValue {
+    return new WorkflowParameterValue([value.toString()]);
+  }
+
+  /**
+   * The value of the parameter as a string
+   * @param value The string value of the parameter
+   */
+  public static fromString(value: string): WorkflowParameterValue {
+    return new WorkflowParameterValue([value]);
+  }
+
+  /**
+   * The value of the parameter as a string list
+   *
+   * @param values The string list value of the parameter
+   */
+  public static fromStringList(values: string[]): WorkflowParameterValue {
+    return new WorkflowParameterValue(values);
+  }
+
+  /**
+   * The rendered parameter value
+   */
+  public readonly value: string[];
+
+  protected constructor(value: string[]) {
+    this.value = value;
+  }
+}
+
+/**
+ * Configuration details for a workflow
+ */
+export interface WorkflowConfiguration {
+  /**
+   * The workflow to execute in the image build
+   */
+  readonly workflow: IWorkflow;
+
+  /**
+   * The action to take if the workflow fails
+   *
+   * @default WorkflowOnFailure.ABORT
+   */
+  readonly onFailure?: WorkflowOnFailure;
+
+  /**
+   * The named parallel group to include this workflow in. Workflows in the same parallel group run in parallel of each
+   * other.
+   *
+   * @default None
+   */
+  readonly parallelGroup?: string;
+
+  /**
+   * The parameters to pass to the workflow at execution time
+   *
+   * @default - none if the workflow has no parameters, otherwise the default parameter values are used
+   */
+  readonly parameters?: { [name: string]: WorkflowParameterValue };
+}
+
+/**
  * Helper class for working with AWS-managed workflows
  */
 export class AwsManagedWorkflow {

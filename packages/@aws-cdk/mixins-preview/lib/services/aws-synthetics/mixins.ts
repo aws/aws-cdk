@@ -1,1 +1,1 @@
-export * from './synthetics.generated';
+export * from './cfn-props-mixins.generated';

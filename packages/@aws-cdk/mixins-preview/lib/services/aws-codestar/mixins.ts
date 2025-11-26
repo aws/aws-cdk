@@ -1,1 +1,1 @@
-export * from './codestar.generated';
+export * from './cfn-props-mixins.generated';

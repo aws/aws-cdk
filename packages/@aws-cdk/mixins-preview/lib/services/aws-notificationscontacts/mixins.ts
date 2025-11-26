@@ -1,1 +1,1 @@
-export * from './notificationscontacts.generated';
+export * from './cfn-props-mixins.generated';

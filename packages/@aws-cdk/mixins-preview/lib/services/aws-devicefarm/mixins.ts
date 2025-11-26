@@ -1,1 +1,1 @@
-export * from './devicefarm.generated';
+export * from './cfn-props-mixins.generated';

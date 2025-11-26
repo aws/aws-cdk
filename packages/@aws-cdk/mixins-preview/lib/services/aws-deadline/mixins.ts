@@ -1,1 +1,1 @@
-export * from './deadline.generated';
+export * from './cfn-props-mixins.generated';

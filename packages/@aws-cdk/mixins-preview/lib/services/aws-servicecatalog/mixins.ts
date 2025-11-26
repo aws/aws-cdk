@@ -1,1 +1,1 @@
-export * from './servicecatalog.generated';
+export * from './cfn-props-mixins.generated';

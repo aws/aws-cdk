@@ -1,1 +1,1 @@
-export * from './comprehend.generated';
+export * from './cfn-props-mixins.generated';

@@ -1,1 +1,1 @@
-export * from './secretsmanager.generated';
+export * from './cfn-props-mixins.generated';

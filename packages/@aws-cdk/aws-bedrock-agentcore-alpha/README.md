@@ -580,6 +580,54 @@ runtime.connections.allowTo(databaseSecurityGroup, ec2.Port.tcp(5432), 'Allow Po
 runtime.connections.allowToAnyIpv4(ec2.Port.tcp(443), 'Allow HTTPS outbound');
 ```
 
+### Runtime IAM Permissions
+
+The Runtime construct provides convenient methods for granting IAM permissions to principals that need to invoke the runtime or manage its execution role.
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+// Create a runtime
+const runtime = new agentcore.Runtime(this, "MyRuntime", {
+  runtimeName: "my_runtime",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+});
+
+// Create a Lambda function that needs to invoke the runtime
+const invokerFunction = new lambda.Function(this, "InvokerFunction", {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+import boto3
+def handler(event, context):
+    client = boto3.client('bedrock-agentcore')
+    # Invoke the runtime...
+  `),
+});
+
+// Grant permission to invoke the runtime directly
+runtime.grantInvokeRuntime(invokerFunction);
+
+// Grant permission to invoke the runtime on behalf of a user
+// (requires X-Amzn-Bedrock-AgentCore-Runtime-User-Id header)
+runtime.grantInvokeRuntimeForUser(invokerFunction);
+
+// Grant both invoke permissions (most common use case)
+runtime.grantInvoke(invokerFunction);
+
+// Grant specific custom permissions to the runtime's execution role
+runtime.grant(['bedrock:InvokeModel'], ['arn:aws:bedrock:*:*:*']);
+
+// Add a policy statement to the runtime's execution role
+runtime.addToRolePolicy(new iam.PolicyStatement({
+  actions: ['s3:GetObject'],
+  resources: ['arn:aws:s3:::my-bucket/*'],
+}));
+```
+
 ### Other configuration
 
 #### Lifecycle configuration

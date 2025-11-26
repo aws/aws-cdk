@@ -1,1 +1,1 @@
-export * from './apprunner.generated';
+export * from './cfn-props-mixins.generated';

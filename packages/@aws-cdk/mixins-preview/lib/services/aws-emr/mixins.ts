@@ -1,1 +1,1 @@
-export * from './emr.generated';
+export * from './cfn-props-mixins.generated';

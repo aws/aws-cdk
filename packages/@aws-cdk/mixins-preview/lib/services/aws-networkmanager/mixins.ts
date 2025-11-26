@@ -1,1 +1,1 @@
-export * from './networkmanager.generated';
+export * from './cfn-props-mixins.generated';

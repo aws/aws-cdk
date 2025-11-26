@@ -1,1 +1,1 @@
-export * from './redshiftserverless.generated';
+export * from './cfn-props-mixins.generated';

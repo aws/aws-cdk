@@ -1,1 +1,1 @@
-export * from './greengrass.generated';
+export * from './cfn-props-mixins.generated';

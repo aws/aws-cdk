@@ -1,1 +1,1 @@
-export * from './cassandra.generated';
+export * from './cfn-props-mixins.generated';

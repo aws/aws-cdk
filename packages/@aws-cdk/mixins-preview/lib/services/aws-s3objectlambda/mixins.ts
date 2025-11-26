@@ -1,1 +1,1 @@
-export * from './s3objectlambda.generated';
+export * from './cfn-props-mixins.generated';

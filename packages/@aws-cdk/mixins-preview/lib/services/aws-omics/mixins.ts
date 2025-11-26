@@ -1,1 +1,1 @@
-export * from './omics.generated';
+export * from './cfn-props-mixins.generated';
