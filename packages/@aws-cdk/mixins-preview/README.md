@@ -15,17 +15,26 @@
 
 <!--END STABILITY BANNER-->
 
+This package provides two main features:
+
+1. **Mixins** - Composable abstractions for adding functionality to constructs
+2. **EventBridge Event Patterns** - Type-safe event patterns for AWS resources
+
+---
+
+## CDK Mixins
+
 CDK Mixins provide a new, advanced way to add functionality through composable abstractions.
 Unlike traditional L2 constructs that bundle all features together, Mixins allow you to pick and choose exactly the capabilities you need for constructs.
 
-## Key Benefits
+### Key Benefits
 
 * **Universal Compatibility**: Apply the same abstractions to L1 constructs, L2 constructs, or custom constructs
 * **Composable Design**: Mix and match features without being locked into specific implementations  
 * **Cross-Service Abstractions**: Use common patterns like encryption across different AWS services
 * **Escape Hatch Freedom**: Customize resources in a safe, typed way while keeping the abstractions you want
 
-## Basic Usage
+### Basic Usage
 
 Mixins use `Mixins.of()` as the fundamental API for applying abstractions to constructs:
 
@@ -37,7 +46,7 @@ Mixins.of(bucket)
   .apply(new AutoDeleteObjects());
 ```
 
-### Fluent Syntax with `.with()`
+#### Fluent Syntax with `.with()`
 
 For convenience, you can use the `.with()` method for a more fluent syntax:
 
@@ -53,7 +62,7 @@ The `.with()` method is available after importing `@aws-cdk/mixins-preview/with`
 
 > **Note**: The `.with()` fluent syntax is only available in JavaScript and TypeScript. Other jsii languages (Python, Java, C#, and Go) should use the `Mixins.of(...).mustApply()` syntax instead. The import requirement is temporary during the preview phase. Once the API is stable, the `.with()` method will be available by default on all constructs and in all languages.
 
-## Creating Custom Mixins
+### Creating Custom Mixins
 
 Mixins are simple classes that implement the `IMixin` interface (usually by extending the abstract `Mixin` class:
 
@@ -77,7 +86,7 @@ const bucket = new s3.CfnBucket(scope, "MyBucket");
 Mixins.of(bucket).apply(new CustomVersioningMixin());
 ```
 
-## Construct Selection
+### Construct Selection
 
 Mixins operate on construct trees and can be applied selectively:
 
@@ -94,9 +103,9 @@ Mixins.of(scope, ConstructSelector.byId(/.*-prod-.*/))
   .apply(new ProductionSecurityMixin());
 ```
 
-## Built-in Mixins
+### Built-in Mixins
 
-### Cross-Service Mixins
+#### Cross-Service Mixins
 
 **EncryptionAtRest**: Applies encryption to supported AWS resources
 
@@ -109,7 +118,7 @@ const logGroup = new logs.CfnLogGroup(scope, "LogGroup");
 Mixins.of(logGroup).apply(new EncryptionAtRest());
 ```
 
-### S3-Specific Mixins
+#### S3-Specific Mixins
 
 **AutoDeleteObjects**: Configures automatic object deletion for S3 buckets
 
@@ -193,7 +202,7 @@ import { CfnFunctionPropsMixin } from '@aws-cdk/mixins-preview/aws_lambda/mixins
 import { CfnTablePropsMixin } from '@aws-cdk/mixins-preview/aws_dynamodb/mixins';
 ```
 
-## Error Handling
+### Error Handling
 
 Mixins provide comprehensive error handling:
 
@@ -205,4 +214,90 @@ Mixins.of(scope)
 // Strict application that requires all constructs to match
 Mixins.of(scope)
   .mustApply(new EncryptionAtRest()); // Throws if no constructs support the mixin
+```
+
+---
+
+## EventBridge Event Patterns
+
+CDK Mixins automatically generates typed EventBridge event patterns for AWS resources. These patterns work with both L1 and L2 constructs, providing a consistent interface for creating EventBridge rules.
+
+### Event Patterns Basic Usage
+
+```typescript
+import { BucketEvents } from '@aws-cdk/mixins-preview/aws_s3/events';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as targets from 'aws-cdk-lib/aws-events-targets';
+
+// Works with L2 constructs
+const bucket = new s3.Bucket(scope, 'Bucket');
+const bucketEvents = BucketEvents.fromBucket(bucket);
+declare const fn: lambda.Function;
+
+new events.Rule(scope, 'Rule', {
+  eventPattern: bucketEvents.objectCreatedPattern({
+    object: { key: ['uploads/*'] }
+  }),
+  targets: [new targets.LambdaFunction(fn)]
+});
+
+// Also works with L1 constructs
+const cfnBucket = new s3.CfnBucket(scope, 'CfnBucket');
+const cfnBucketEvents = BucketEvents.fromBucket(cfnBucket);
+
+new events.CfnRule(scope, 'CfnRule', {
+  state: 'ENABLED',
+  eventPattern: cfnBucketEvents.objectCreatedPattern({
+    object: { key: ['uploads/*'] }
+  }),
+  targets: [{ arn: fn.functionArn, id: 'L1' }]
+});
+```
+
+### Event Pattern Features
+
+**Automatic Resource Injection**: Resource identifiers are automatically included in patterns
+
+```typescript
+import { BucketEvents } from '@aws-cdk/mixins-preview/aws_s3/events';
+
+declare const bucket: s3.Bucket;
+const bucketEvents = BucketEvents.fromBucket(bucket);
+
+// Bucket name is automatically injected from the bucket reference
+const pattern = bucketEvents.objectCreatedPattern();
+// pattern.detail.bucket.name === bucket.bucketName
+```
+
+**Event Metadata Support**: Control EventBridge pattern metadata
+
+```typescript
+import { BucketEvents } from '@aws-cdk/mixins-preview/aws_s3/events';
+
+declare const bucket: s3.Bucket;
+const bucketEvents = BucketEvents.fromBucket(bucket);
+
+const pattern = bucketEvents.objectCreatedPattern({
+  eventMetadata: {
+    region: ['us-east-1', 'us-west-2'],
+    version: ['0']
+  }
+});
+```
+
+### Available Events
+
+Event patterns are generated for EventBridge events available in the AWS Event Schema Registry. Common examples:
+
+**S3 Events**:
+
+* `objectCreatedPattern()` - Object creation events
+* `objectDeletedPattern()` - Object deletion events
+* `objectTagsAddedPattern()` - Object tagging events
+* `awsAPICallViaCloudTrailPattern()` - CloudTrail API calls
+
+Import events from service-specific modules:
+
+```typescript
+import { BucketEvents } from '@aws-cdk/mixins-preview/aws_s3/events';
 ```
