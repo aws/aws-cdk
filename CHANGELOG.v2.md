@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.230.0](https://github.com/aws/aws-cdk/compare/v2.229.1...v2.230.0) (2025-11-26)
+
+
+### Features
+
+* **apigateway:** support response streaming with response transfer mode ([#36155](https://github.com/aws/aws-cdk/issues/36155)) ([f431021](https://github.com/aws/aws-cdk/commit/f4310219ae134a03693330cb55da5fa1cb789c48)), closes [#36156](https://github.com/aws/aws-cdk/issues/36156)
+* update L1 CloudFormation resource definitions ([f203b8e](https://github.com/aws/aws-cdk/commit/f203b8e2d1af592b70bfe8d1cafc496c5a28b0df))
+* update L1 CloudFormation resource definitions ([#36193](https://github.com/aws/aws-cdk/issues/36193)) ([d074024](https://github.com/aws/aws-cdk/commit/d0740240d4dc52524faa8328467c92c360f52cc8))
+* **events:** the L2 `EventPattern` interfaces can be used with `CfnRule` ([#36191](https://github.com/aws/aws-cdk/issues/36191)) ([efc135e](https://github.com/aws/aws-cdk/commit/efc135e60cacc55ccdf3b347c08fb78e5b735d3d))
+* update L1 CloudFormation resource definitions ([#36180](https://github.com/aws/aws-cdk/issues/36180)) ([5cddd7e](https://github.com/aws/aws-cdk/commit/5cddd7ec34392198436710635bcee1921ce35d10))
+
+
+### Bug Fixes
+
+* **ecs:** wrong ARN generated in `Cluster.grantTaskProtection` method ([#36207](https://github.com/aws/aws-cdk/issues/36207)) ([9b337df](https://github.com/aws/aws-cdk/commit/9b337dfe2ca0a3920f9542802da73b670915fe01))
+* **ecs-patterns:** target group ID changes without setting feature flag ([#36199](https://github.com/aws/aws-cdk/issues/36199)) ([b7ca082](https://github.com/aws/aws-cdk/commit/b7ca082ec460db7eccd96661623fb7f7cb26c34e)), closes [#36149](https://github.com/aws/aws-cdk/issues/36149)
+* **scheduler:** wrong ARN generated in `ScheduleGroup.grant*` methods ([#36175](https://github.com/aws/aws-cdk/issues/36175)) ([eae8838](https://github.com/aws/aws-cdk/commit/eae88380aa71bd841279fdfa37120ed244dd5eae))
+
 ## [2.229.1](https://github.com/aws/aws-cdk/compare/v2.229.0...v2.229.1) (2025-11-25)
 
 

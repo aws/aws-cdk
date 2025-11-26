@@ -1788,6 +1788,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ubuntu-18.04-x86_64",
     "ubuntu-22.04-x86_64"
   ],
+  "ImagePipelineStatus": [
+    "ENABLED",
+    "DISABLED"
+  ],
   "ImagePullPolicy": [
     "Always",
     "IfNotPresent",
@@ -2481,6 +2485,19 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "AFTER_180_DAYS",
     "AFTER_270_DAYS",
     "AFTER_365_DAYS"
+  ],
+  "LifecyclePolicyActionType": [
+    "DELETE",
+    "DEPRECATE",
+    "DISABLE"
+  ],
+  "LifecyclePolicyResourceType": [
+    "AMI_IMAGE",
+    "CONTAINER_IMAGE"
+  ],
+  "LifecyclePolicyStatus": [
+    "ENABLED",
+    "DISABLED"
   ],
   "LifecycleTransition": [
     "autoscaling:EC2_INSTANCE_LAUNCHING",
@@ -3353,6 +3370,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "ResourceToReplicateTags": [
     "lambda-function"
   ],
+  "ResponseTransferMode": [
+    "BUFFERED",
+    "STREAM"
+  ],
   "RestApiMode": [
     "overwrite",
     "merge"
@@ -3450,6 +3471,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SSE-S3",
     "SSE-KMS"
   ],
+  "S3LogsDeliveryPermissionsVersion": [
+    "V1",
+    "V2"
+  ],
   "S3OutputFormat": [
     "plain",
     "json",
@@ -3486,6 +3511,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ScheduledActions",
     "AddToLoadBalancer",
     "InstanceRefresh"
+  ],
+  "ScheduleStartCondition": [
+    "EXPRESSION_MATCH_ONLY",
+    "EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE"
   ],
   "SchemaDefinitionType": [
     "string",
