@@ -5,8 +5,8 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import {
   Mixins,
   ConstructSelector,
-} from '../lib/core';
-import * as s3Mixins from '../lib/services/aws-s3/mixins';
+} from '../../lib/core';
+import * as s3Mixins from '../../lib/services/aws-s3/mixins';
 
 describe('Integration Tests', () => {
   let app: App;
