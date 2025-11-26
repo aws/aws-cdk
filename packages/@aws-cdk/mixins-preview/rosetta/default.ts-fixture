@@ -2,7 +2,10 @@ import { Construct } from 'constructs';
 import { Stack, App } from 'aws-cdk-lib/core';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import '@aws-cdk/mixins-preview/with';
 // for testing purposes, ensure this import works
 import { mixins as alexa_mixins } from '@aws-cdk/mixins-preview/alexa_ask';

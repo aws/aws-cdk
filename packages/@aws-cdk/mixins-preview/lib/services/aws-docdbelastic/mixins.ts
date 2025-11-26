@@ -1,1 +1,1 @@
-export * from './docdbelastic.generated';
+export * from './cfn-props-mixins.generated';

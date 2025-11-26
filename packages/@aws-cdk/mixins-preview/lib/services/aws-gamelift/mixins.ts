@@ -1,1 +1,1 @@
-export * from './gamelift.generated';
+export * from './cfn-props-mixins.generated';
