@@ -10,8 +10,8 @@ export interface AwsManagedImageAttributes {
   /**
    * The architecture of the AWS-managed image
    *
-   * @default - derived automatically if referencing a managed image by name, otherwise an architecture is required when
-   * using the pre-defined managed image methods
+   * @default - none if referencing a managed image by name, otherwise an architecture is required when using the
+   * pre-defined managed image methods
    */
   readonly imageArchitecture?: ImageArchitecture;
 
@@ -26,8 +26,8 @@ export interface AwsManagedImageAttributes {
   /**
    * The type of the AWS-managed image
    *
-   * @default - derived automatically if referencing a managed image by name, otherwise an image type is required when
-   * using the pre-defined managed image methods
+   * @default - none if referencing a managed image by name, otherwise an image type is required when using the
+   * pre-defined managed image methods
    */
   readonly imageType?: ImageType;
 
