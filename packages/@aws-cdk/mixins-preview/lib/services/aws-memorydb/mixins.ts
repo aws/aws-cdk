@@ -1,1 +1,1 @@
-export * from './memorydb.generated';
+export * from './cfn-props-mixins.generated';

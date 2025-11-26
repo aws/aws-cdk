@@ -1,1 +1,1 @@
-export * from './frauddetector.generated';
+export * from './cfn-props-mixins.generated';

@@ -1,1 +1,1 @@
-export * from './grafana.generated';
+export * from './cfn-props-mixins.generated';

@@ -1,1 +1,1 @@
-export * from './lightsail.generated';
+export * from './cfn-props-mixins.generated';

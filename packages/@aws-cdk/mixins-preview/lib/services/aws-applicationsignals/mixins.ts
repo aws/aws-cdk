@@ -1,1 +1,1 @@
-export * from './applicationsignals.generated';
+export * from './cfn-props-mixins.generated';

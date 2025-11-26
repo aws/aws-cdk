@@ -1,1 +1,1 @@
-export * from './devopsguru.generated';
+export * from './cfn-props-mixins.generated';

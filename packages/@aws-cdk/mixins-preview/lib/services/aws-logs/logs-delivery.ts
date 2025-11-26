@@ -1,0 +1,413 @@
+import { Names, Stack, Tags } from 'aws-cdk-lib/core';
+import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import { Construct, type IConstruct } from 'constructs';
+import type { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
+import { tryFindBucketPolicyForBucket } from '../../mixins/private/reflections';
+import { ConstructSelector, Mixins } from '../../core';
+import { BucketPolicyStatementsMixins } from '../../mixins/private/s3';
+import * as xray from '../aws-xray/policy';
+
+/**
+ * The individual elements of a logs delivery integration.
+ */
+export interface ILogsDeliveryConfig {
+  /**
+   * The logs delivery source.
+   */
+  readonly deliverySource: logs.IDeliverySourceRef;
+  /**
+   *  The logs delivery destination.
+   */
+  readonly deliveryDestination: logs.IDeliveryDestinationRef;
+  /**
+   *  The logs delivery
+   */
+  readonly delivery: logs.IDeliveryRef;
+}
+
+/**
+ * Represents the delivery of vended logs to a destination.
+ */
+export interface ILogsDelivery {
+  /**
+   * Binds the destination to a delivery source and creates a delivery connection between the source and destination.
+   * @param scope - The construct scope
+   * @param deliverySource - The delivery source reference
+   * @param sourceResourceArn - The Arn of the source resource
+   * @returns The delivery reference
+   */
+  bind(scope: IConstruct, deliverySource: logs.IDeliverySourceRef, sourceResourceArn: string): ILogsDeliveryConfig;
+}
+
+/**
+ * S3 Vended Logs Permissions version.
+ */
+export enum S3LogsDeliveryPermissionsVersion {
+  /**
+   * V1
+   */
+  V1 = 'V1',
+  /**
+   * V2
+   */
+  V2 = 'V2',
+}
+
+/**
+ * Props for S3LogsDelivery
+ */
+export interface S3LogsDeliveryProps {
+  /**
+   * The permissions version ('V1' or 'V2') to be used for this delivery.
+   * Depending on the source of the logs, different permissions are required.
+   *
+   * @default "V2"
+   */
+  readonly permissionsVersion?: S3LogsDeliveryPermissionsVersion;
+}
+
+/**
+ * Delivers vended logs to an S3 Bucket.
+ */
+export class S3LogsDelivery implements ILogsDelivery {
+  private readonly bucket: s3.IBucketRef;
+  private readonly permissions: S3LogsDeliveryPermissionsVersion;
+
+  /**
+   * Creates a new S3 Bucket delivery.
+   */
+  constructor(bucket: s3.IBucketRef, props: S3LogsDeliveryProps = {}) {
+    this.bucket = bucket;
+    this.permissions = props.permissionsVersion ?? S3LogsDeliveryPermissionsVersion.V2;
+  }
+
+  /**
+   * Binds the S3 destination to a delivery source and creates a delivery connection between them.
+   */
+  public bind(scope: IConstruct, deliverySource: logs.IDeliverySourceRef, _sourceResourceArn: string): ILogsDeliveryConfig {
+    const container = new Construct(scope, deliveryId('S3', scope, this.bucket));
+
+    const bucketPolicy = this.getOrCreateBucketPolicy(container);
+    this.grantLogsDelivery(bucketPolicy);
+
+    const deliveryDestination = new logs.CfnDeliveryDestination(container, 'Dest', {
+      destinationResourceArn: this.bucket.bucketRef.bucketArn,
+      name: deliveryDestName('s3', container),
+      deliveryDestinationType: 'S3',
+    });
+
+    const delivery = new logs.CfnDelivery(container, 'Delivery', {
+      deliveryDestinationArn: deliveryDestination.attrArn,
+      deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
+    });
+
+    delivery.node.addDependency(bucketPolicy);
+    deliveryDestination.node.addDependency(bucketPolicy);
+    deliverySource.node.addDependency(bucketPolicy);
+
+    delivery.node.addDependency(deliverySource);
+    delivery.node.addDependency(deliveryDestination);
+
+    return {
+      deliverySource,
+      deliveryDestination,
+      delivery,
+    };
+  }
+
+  /**
+   * Gets or creates a bucket policy for the S3 destination Bucket.
+   * @param scope - The construct scope
+   * @returns The bucket policy
+   */
+  private getOrCreateBucketPolicy(scope: IConstruct): s3.CfnBucketPolicy {
+    const existingPolicy = tryFindBucketPolicyForBucket(this.bucket);
+
+    return existingPolicy ?? new s3.CfnBucketPolicy(scope, 'BucketPolicy', {
+      bucket: this.bucket.bucketRef.bucketName,
+      policyDocument: { // needed to create an empty policy document, otherwise a validation error is thrown
+        Version: '2012-10-17',
+        Statement: [],
+      },
+    });
+  }
+
+  /**
+   * Grants permissions for log delivery to the bucket policy.
+   * @param policy - The bucket policy
+   */
+  private grantLogsDelivery(policy: s3.CfnBucketPolicy): void {
+    const stack = Stack.of(policy);
+
+    // always required permissions
+    const statements = [
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
+        actions: ['s3:PutObject'],
+        resources: [`${this.bucket.bucketRef.bucketArn}/AWSLogs/${stack.account}/*`],
+        conditions: {
+          StringEquals: {
+            's3:x-amz-acl': 'bucket-owner-full-control',
+            'aws:SourceAccount': stack.account,
+          },
+          ArnLike: {
+            'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${stack.account}:delivery-source:*`,
+          },
+        },
+      }),
+    ];
+
+    if (this.permissions == 'V1') {
+      statements.push(new PolicyStatement({
+        effect: Effect.ALLOW,
+        principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
+        actions: ['s3:GetBucketAcl', 's3:ListBucket'],
+        resources: [this.bucket.bucketRef.bucketArn],
+        conditions: {
+          StringEquals: {
+            'aws:SourceAccount': stack.account,
+          },
+          ArnLike: {
+            'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${stack.account}:*`,
+          },
+        },
+      }));
+    }
+
+    Mixins.of(policy, ConstructSelector.onlyItself())
+      .apply(new BucketPolicyStatementsMixins(statements));
+  }
+}
+
+/**
+ * Delivers vended logs to a Firehose Delivery Stream.
+ */
+export class FirehoseLogsDelivery implements ILogsDelivery {
+  private readonly deliveryStream: IDeliveryStreamRef;
+
+  /**
+   * Creates a new Firehose delivery.
+   * @param stream - The Kinesis Data Firehose delivery stream
+   */
+  constructor(stream: IDeliveryStreamRef) {
+    this.deliveryStream = stream;
+  }
+
+  /**
+   * Binds the Firehose destination to a delivery source and creates a delivery connection between them.
+   */
+  public bind(scope: IConstruct, deliverySource: logs.IDeliverySourceRef, _sourceResourceArn: string): ILogsDeliveryConfig {
+    const container = new Construct(scope, deliveryId('Firehose', scope, this.deliveryStream));
+
+    // Firehose uses a service-linked role to deliver logs
+    // This tag marks the destination stream as an allowed destination for the service-linked role
+    Tags.of(this.deliveryStream).add('LogDeliveryEnabled', 'true');
+
+    const deliveryDestination = new logs.CfnDeliveryDestination(container, 'Dest', {
+      destinationResourceArn: this.deliveryStream.deliveryStreamRef.deliveryStreamArn,
+      name: deliveryDestName('fh', container),
+      deliveryDestinationType: 'FH',
+    });
+
+    const delivery = new logs.CfnDelivery(container, 'Delivery', {
+      deliveryDestinationArn: deliveryDestination.attrArn,
+      deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
+    });
+
+    delivery.node.addDependency(deliverySource);
+    delivery.node.addDependency(deliveryDestination);
+
+    return {
+      deliverySource,
+      deliveryDestination,
+      delivery,
+    };
+  }
+}
+
+/**
+ * Delivers vended logs to a CloudWatch Log Group.
+ */
+export class LogGroupLogsDelivery implements ILogsDelivery {
+  private readonly logGroup: logs.ILogGroupRef;
+
+  /**
+   * Creates a new log group delivery.
+   * @param logGroup - The CloudWatch Logs log group reference
+   */
+  constructor(logGroup: logs.ILogGroupRef) {
+    this.logGroup = logGroup;
+  }
+
+  /**
+   * Binds the log group destination to a delivery source and creates a delivery connection between them.
+   */
+  public bind(scope: IConstruct, deliverySource: logs.IDeliverySourceRef, _sourceResourceArn: string): ILogsDeliveryConfig {
+    const container = new Construct(scope, deliveryId('LogGroup', scope, this.logGroup));
+
+    const logGroupPolicy = this.getOrCreateLogsResourcePolicy(container);
+    this.grantLogsDelivery(logGroupPolicy);
+
+    const deliveryDestination = new logs.CfnDeliveryDestination(container, 'Dest', {
+      destinationResourceArn: this.logGroup.logGroupRef.logGroupArn,
+      name: deliveryDestName('cwl', container),
+      deliveryDestinationType: 'CWL',
+    });
+
+    const delivery = new logs.CfnDelivery(container, 'Delivery', {
+      deliveryDestinationArn: deliveryDestination.deliveryDestinationRef.deliveryDestinationArn,
+      deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
+    });
+
+    delivery.node.addDependency(logGroupPolicy);
+    delivery.node.addDependency(deliverySource);
+    delivery.node.addDependency(deliveryDestination);
+
+    deliverySource.node.addDependency(logGroupPolicy);
+    deliveryDestination.node.addDependency(logGroupPolicy);
+
+    return {
+      deliverySource,
+      deliveryDestination,
+      delivery,
+    };
+  }
+
+  /**
+   * Gets or creates a singleton Logs Resource Policy.
+   * @param scope - The construct scope
+   * @returns The resource policy
+   */
+  private getOrCreateLogsResourcePolicy(scope: IConstruct): logs.ResourcePolicy {
+    const stack = Stack.of(scope);
+    const policyId = 'CdkLogGroupLogsDeliveryPolicy';
+
+    // Singleton policy per stack
+    const existingPolicy = stack.node.tryFindChild(policyId) as logs.ResourcePolicy;
+
+    return existingPolicy ?? new logs.ResourcePolicy(stack, policyId, {
+      resourcePolicyName: Names.uniqueResourceName(scope, { maxLength: 255 }),
+    });
+  }
+
+  /**
+   * Grants permissions for log delivery to the resource policy.
+   * @param policy - The resource policy
+   */
+  private grantLogsDelivery(policy: logs.ResourcePolicy): void {
+    const stack = Stack.of(policy);
+
+    policy.document.addStatements(new PolicyStatement({
+      effect: Effect.ALLOW,
+      principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
+      actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+      resources: [`${this.logGroup.logGroupRef.logGroupArn}:log-stream:*`],
+      conditions: {
+        StringEquals: {
+          'aws:SourceAccount': stack.account,
+        },
+        ArnLike: {
+          'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${stack.account}:*`,
+        },
+      },
+    }));
+  }
+}
+
+/**
+ * Delivers vended logs to AWS X-Ray.
+ */
+export class XRayLogsDelivery implements ILogsDelivery {
+  /**
+   * Creates a new X-Ray delivery.
+   */
+  constructor() {}
+
+  /**
+   * Binds the X-Ray destination to a delivery source and creates a delivery connection between them.
+   */
+  public bind(scope: IConstruct, deliverySource: logs.IDeliverySourceRef, sourceResourceArn: string): ILogsDeliveryConfig {
+    const container = new Construct(scope, deliveryId('XRay', scope, deliverySource));
+
+    const xrayResourcePolicy = this.getOrCreateResourcePolicy(container);
+    this.grantLogsDelivery(xrayResourcePolicy, sourceResourceArn);
+
+    const deliveryDestination = new logs.CfnDeliveryDestination(container, 'Dest', {
+      name: deliveryDestName('xray', container),
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const delivery = new logs.CfnDelivery(container, 'Delivery', {
+      deliveryDestinationArn: deliveryDestination.attrArn,
+      deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
+    });
+
+    delivery.node.addDependency(xrayResourcePolicy);
+    deliveryDestination.node.addDependency(xrayResourcePolicy);
+    deliverySource.node.addDependency(xrayResourcePolicy);
+
+    delivery.node.addDependency(deliverySource);
+    delivery.node.addDependency(deliveryDestination);
+
+    return {
+      deliverySource,
+      deliveryDestination,
+      delivery,
+    };
+  }
+
+  /**
+   * Gets or creates a singleton X-Ray resource policy.
+   *
+   * @param scope - The construct scope
+   * @returns The X-Ray resource policy
+   */
+  private getOrCreateResourcePolicy(scope: IConstruct): xray.ResourcePolicy {
+    const stack = Stack.of(scope);
+    const policyId = 'CdkXRayLogsDeliveryPolicy';
+
+    // Singleton policy per stack
+    const existingPolicy = stack.node.tryFindChild(policyId) as xray.ResourcePolicy;
+
+    return existingPolicy ?? new xray.ResourcePolicy(stack, policyId);
+  }
+
+  /**
+   * Grants permissions for log delivery to resource policy.
+   * @param policy - The resource policy
+   */
+  private grantLogsDelivery(policy: xray.ResourcePolicy, sourceResourceArn: string): void {
+    const stack = Stack.of(policy);
+
+    policy.document.addStatements( new PolicyStatement({
+      sid: 'CDKLogsDeliveryWrite',
+      effect: Effect.ALLOW,
+      principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
+      actions: ['xray:PutTraceSegments'],
+      resources: ['*'],
+      conditions: {
+        'ForAllValues:ArnLike': {
+          'logs:LogGeneratingResourceArns': [sourceResourceArn],
+        },
+        'StringEquals': {
+          'aws:SourceAccount': stack.account,
+        },
+        'ArnLike': {
+          'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${stack.account}:delivery-source:*`,
+        },
+      },
+    }));
+  }
+}
+
+function deliveryId(type: string, ...scopes: IConstruct[]) {
+  return `Cdk${type}Delivery${scopes.map(s => Names.uniqueId(s)).join('')}`;
+}
+
+function deliveryDestName(type: string, scope: IConstruct) {
+  const prefix = `cdk-${type}-dest-`;
+  return `${prefix}${Names.uniqueResourceName(scope, { maxLength: 60 - prefix.length })}`;
+}

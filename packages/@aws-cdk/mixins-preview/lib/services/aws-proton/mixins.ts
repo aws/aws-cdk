@@ -1,1 +1,1 @@
-export * from './proton.generated';
+export * from './cfn-props-mixins.generated';

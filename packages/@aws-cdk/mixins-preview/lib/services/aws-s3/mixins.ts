@@ -1,2 +1,2 @@
 export * from './bucket';
-export * from './s3.generated';
+export * from './cfn-props-mixins.generated';

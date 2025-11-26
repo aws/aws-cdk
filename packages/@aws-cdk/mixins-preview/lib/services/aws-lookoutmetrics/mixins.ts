@@ -1,1 +1,1 @@
-export * from './lookoutmetrics.generated';
+export * from './cfn-props-mixins.generated';

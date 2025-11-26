@@ -1,1 +1,1 @@
-export * from './applicationautoscaling.generated';
+export * from './cfn-props-mixins.generated';

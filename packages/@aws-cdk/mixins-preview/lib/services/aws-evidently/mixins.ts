@@ -1,1 +1,1 @@
-export * from './evidently.generated';
+export * from './cfn-props-mixins.generated';

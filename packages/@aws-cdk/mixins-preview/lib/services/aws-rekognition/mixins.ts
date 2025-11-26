@@ -1,1 +1,1 @@
-export * from './rekognition.generated';
+export * from './cfn-props-mixins.generated';

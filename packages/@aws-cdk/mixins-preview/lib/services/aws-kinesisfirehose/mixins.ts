@@ -1,1 +1,1 @@
-export * from './kinesisfirehose.generated';
+export * from './cfn-props-mixins.generated';

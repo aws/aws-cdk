@@ -1,1 +1,1 @@
-export * from './fsx.generated';
+export * from './cfn-props-mixins.generated';

@@ -1,1 +1,1 @@
-export * from './panorama.generated';
+export * from './cfn-props-mixins.generated';

@@ -1,1 +1,1 @@
-export * from './lex.generated';
+export * from './cfn-props-mixins.generated';

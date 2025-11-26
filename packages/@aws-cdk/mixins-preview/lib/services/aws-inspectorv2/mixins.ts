@@ -1,1 +1,1 @@
-export * from './inspectorv2.generated';
+export * from './cfn-props-mixins.generated';

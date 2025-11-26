@@ -372,4 +372,43 @@ describe('lambda', () => {
       },
     });
   });
+
+  test.each([
+    [apigateway.ResponseTransferMode.STREAM, '2021-11-15', '/response-streaming-invocations'],
+    [apigateway.ResponseTransferMode.BUFFERED, '2015-03-31', '/invocations'],
+    [undefined, '2015-03-31', '/invocations'],
+  ])('responseTransferMode %s generates correct Uri path', (responseTransferMode, expectedVersion, expectedSuffix) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'my-api');
+    const handler = new lambda.Function(stack, 'Handler', {
+      runtime: lambda.Runtime.PYTHON_3_9,
+      handler: 'boom',
+      code: lambda.Code.fromInline('foo'),
+    });
+
+    // WHEN
+    const integ = new apigateway.LambdaIntegration(handler, { responseTransferMode });
+    api.root.addMethod('POST', integ);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      Integration: {
+        Uri: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':apigateway:',
+              { Ref: 'AWS::Region' },
+              `:lambda:path/${expectedVersion}/functions/`,
+              { 'Fn::GetAtt': ['Handler886CB40B', 'Arn'] },
+              expectedSuffix,
+            ],
+          ],
+        },
+      },
+    });
+  });
 });
