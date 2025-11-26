@@ -121,7 +121,7 @@ export interface ImageProps {
    * The execution role used to perform workflow actions to build the image.
    *
    * By default, the Image Builder Service Linked Role (SLR) will be created automatically and used as the execution
-   * role. However, when providing a custom set of image workflows for the pipeline, an execution role will be
+   * role. However, when providing a custom set of image workflows for the image, an execution role will be
    * generated with the minimal permissions needed to execute the workflows.
    *
    * @default - Image Builder will use the SLR if possible. Otherwise, an execution role will be generated

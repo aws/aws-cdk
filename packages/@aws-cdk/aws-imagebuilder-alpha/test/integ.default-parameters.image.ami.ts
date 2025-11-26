@@ -20,7 +20,12 @@ const imageRecipe = new imagebuilder.ImageRecipe(stack, 'ImageRecipe', {
   ],
 });
 
-new imagebuilder.Image(stack, 'Image-AMI', { recipe: imageRecipe });
+const image = new imagebuilder.Image(stack, 'Image-AMI', { recipe: imageRecipe });
+
+new cdk.CfnOutput(stack, 'ImageArn', { value: image.imageArn });
+new cdk.CfnOutput(stack, 'ImageName', { value: image.imageName });
+new cdk.CfnOutput(stack, 'ImageVersion', { value: image.imageVersion });
+new cdk.CfnOutput(stack, 'ImageId', { value: image.imageId });
 
 new integ.IntegTest(app, 'ImageTest-AMI-DefaultParameters', {
   testCases: [stack],

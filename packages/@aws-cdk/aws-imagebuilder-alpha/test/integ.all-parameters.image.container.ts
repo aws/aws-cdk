@@ -59,7 +59,7 @@ const image = new imagebuilder.Image(stack, 'Image-Container', {
   distributionConfiguration: containerDistributionConfiguration,
   executionRole,
   logGroup,
-  workflows: [{ workflow: imagebuilder.AwsManagedWorkflow.buildContainer(stack, 'TestContainer') }],
+  workflows: [{ workflow: imagebuilder.AwsManagedWorkflow.buildContainer(stack, 'BuildContainer') }],
   enhancedImageMetadataEnabled: false,
   imageTestsEnabled: true,
   imageScanningEnabled: true,
@@ -69,6 +69,11 @@ const image = new imagebuilder.Image(stack, 'Image-Container', {
   tags: { key1: 'value1', key2: 'value2' },
 });
 image.grantDefaultExecutionRolePermissions(executionRole);
+
+new cdk.CfnOutput(stack, 'ImageArn', { value: image.imageArn });
+new cdk.CfnOutput(stack, 'ImageName', { value: image.imageName });
+new cdk.CfnOutput(stack, 'ImageVersion', { value: image.imageVersion });
+new cdk.CfnOutput(stack, 'ImageId', { value: image.imageId });
 
 new integ.IntegTest(app, 'ImageTest-Container-AllParameters', {
   testCases: [stack],

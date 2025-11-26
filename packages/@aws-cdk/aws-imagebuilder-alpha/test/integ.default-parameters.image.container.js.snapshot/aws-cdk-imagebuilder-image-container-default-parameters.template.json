@@ -142,6 +142,40 @@
    }
   }
  },
+ "Outputs": {
+  "ImageArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageContainer1E84CD29",
+     "Arn"
+    ]
+   }
+  },
+  "ImageName": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageContainer1E84CD29",
+     "Name"
+    ]
+   }
+  },
+  "ImageVersion": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ContainerRecipe8A7CC9ED",
+     "Version"
+    ]
+   }
+  },
+  "ImageId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageContainer1E84CD29",
+     "ImageUri"
+    ]
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

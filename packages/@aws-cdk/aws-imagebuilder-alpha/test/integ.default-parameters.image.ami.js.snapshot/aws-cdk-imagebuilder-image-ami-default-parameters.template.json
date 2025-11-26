@@ -112,6 +112,40 @@
    }
   }
  },
+ "Outputs": {
+  "ImageArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageAMI977A6808",
+     "Arn"
+    ]
+   }
+  },
+  "ImageName": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageAMI977A6808",
+     "Name"
+    ]
+   }
+  },
+  "ImageVersion": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageRecipe8C789631",
+     "Version"
+    ]
+   }
+  },
+  "ImageId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageAMI977A6808",
+     "ImageId"
+    ]
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

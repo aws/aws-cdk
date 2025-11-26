@@ -24,7 +24,12 @@ const containerRecipe = new imagebuilder.ContainerRecipe(stack, 'ContainerRecipe
   ],
 });
 
-new imagebuilder.Image(stack, 'Image-Container', { recipe: containerRecipe });
+const image = new imagebuilder.Image(stack, 'Image-Container', { recipe: containerRecipe });
+
+new cdk.CfnOutput(stack, 'ImageArn', { value: image.imageArn });
+new cdk.CfnOutput(stack, 'ImageName', { value: image.imageName });
+new cdk.CfnOutput(stack, 'ImageVersion', { value: image.imageVersion });
+new cdk.CfnOutput(stack, 'ImageId', { value: image.imageId });
 
 new integ.IntegTest(app, 'ImageTest-Container-DefaultParameters', {
   testCases: [stack],

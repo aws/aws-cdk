@@ -64,7 +64,11 @@ const containerImagePipeline = new imagebuilder.ImagePipeline(stack, 'ImagePipel
     startCondition: imagebuilder.ScheduleStartCondition.EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE,
     autoDisableFailureCount: 5,
   },
-  workflows: [{ workflow: imagebuilder.AwsManagedWorkflow.buildContainer(stack, 'BuildContainer') }],
+  workflows: [
+    { workflow: imagebuilder.AwsManagedWorkflow.buildContainer(stack, 'BuildContainer') },
+    { workflow: imagebuilder.AwsManagedWorkflow.testContainer(stack, 'TestContainer') },
+    { workflow: imagebuilder.AwsManagedWorkflow.distributeContainer(stack, 'DistributeContainer') },
+  ],
   imageLogGroup,
   imagePipelineLogGroup,
   enhancedImageMetadataEnabled: false,

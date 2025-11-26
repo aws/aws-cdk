@@ -984,6 +984,42 @@
         ]
        ]
       }
+     },
+     {
+      "WorkflowArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":imagebuilder:",
+         {
+          "Ref": "AWS::Region"
+         },
+         ":aws:workflow/test/test-container/x.x.x"
+        ]
+       ]
+      }
+     },
+     {
+      "WorkflowArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":imagebuilder:",
+         {
+          "Ref": "AWS::Region"
+         },
+         ":aws:workflow/distribution/distribute-container/x.x.x"
+        ]
+       ]
+      }
      }
     ]
    }
