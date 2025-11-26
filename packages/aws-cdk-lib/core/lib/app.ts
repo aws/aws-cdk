@@ -230,14 +230,36 @@ export class App extends Stage {
    * - Throw an error to fail synthesis
    *
    * @example
-   * // Inject metadata into all templates
-   * class MetadataInjector implements ITemplateTransform {
-   *   public transformTemplate(stack: Stack, template: any) {
-   *     template.Metadata = template.Metadata || {};
-   *     template.Metadata.GeneratedBy = 'CDK';
+   * // Prevent unsafe IAM policies that use hard-coded ARNs instead of dynamic references
+   * class BlockHardCodedIamArns implements ITemplateTransform {
+   *   public transformTemplate(stack: Stack, template: any): void {
+   *     const resources = template.Resources || {};
+   *
+   *     for (const logicalId of Object.keys(resources)) {
+   *       const resource = resources[logicalId];
+   *
+   *       if (resource.Type === 'AWS::IAM::Policy') {
+   *         const document = resource.Properties?.PolicyDocument;
+   *         if (document) {
+   *           // Scan policy for hard-coded ARN values.
+   *           // Tokens are resolved at this point, so any string starting with "arn:" is literal.
+   *           const json = JSON.stringify(document);
+   *           if (json.indexOf('"arn:') !== -1) {
+   *             // Add an error annotation - this will fail synthesis
+   *             Annotations.of(stack).addError(
+   *               `IAM Policy ${logicalId} contains a hard-coded ARN. ` +
+   *               'Use Fn.importValue, Ref, or GetAtt instead.',
+   *             );
+   *           }
+   *         }
+   *       }
+   *     }
    *   }
    * }
-   * app.addTemplateTransform(new MetadataInjector());
+   *
+   * // Registration
+   * const app = new App();
+   * app.addTemplateTransform(new BlockHardCodedIamArns());
    */
   public addTemplateTransform(transform: ITemplateTransform): void {
     TemplateTransforms.of(this).add(transform);
