@@ -109,6 +109,21 @@ const logGroup = new logs.CfnLogGroup(scope, "LogGroup");
 Mixins.of(logGroup).apply(new EncryptionAtRest());
 ```
 
+**VendedLogs**: Configures Vended log delivery for supported AWS Resources
+
+```typescript
+import * as UserPoolLogs from '@aws-cdk/mixins-preview/aws-cognito/mixins';
+import * as AgentCoreGatewayLogs from '@aws-cdk/mixins-preview/aws-agentcore/mixins';
+
+// Works across different resource types
+const bucket = new s3.CfnBucket(scope, "DestBucket");
+const userpool = new cognito.CfnUserPool(scope, "SourceUserpool");
+Mixins.of(userpool).apply(UserPoolLogs.APPLICATIONS_LOGS.toS3(bucket));
+
+const gateway = new AgentCore.gateway(scope, "SourceGateway");
+Mixins.of(gateway).apply(AgentCoreGatewayLogs.TRACES.toXRay());
+```
+
 ### S3-Specific Mixins
 
 **AutoDeleteObjects**: Configures automatic object deletion for S3 buckets
