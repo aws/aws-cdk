@@ -1,5 +1,6 @@
-import { generateAll as generateMixins } from './spec2mixins/generate';
-import { generateAll as generateEvents } from './spec2eventbridge/generate';
+import { generateAll as generateCfnPropsMixins } from './spec2mixins';
+import { generateAll as generateLogsDeliveryMixins } from './spec2logs';
+import { generateAll as generateEvents } from './spec2eventbridge';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -17,10 +18,13 @@ async function main() {
   const pkgPath = path.join(__dirname, '..');
   const outputPath = path.join(pkgPath, 'lib', 'services');
 
-  const mixinsModuleMap = await generateMixins({ outputPath });
-  const eventsModuleMap = await generateEvents({ outputPath });
+  const moduleMaps = [
+    await generateCfnPropsMixins({ outputPath }),
+    await generateLogsDeliveryMixins({ outputPath }),
+    await generateEvents({ outputPath }),
+  ];
 
-  const moduleMap = mergeModuleMaps(mixinsModuleMap, eventsModuleMap);
+  const moduleMap = mergeModuleMaps(...moduleMaps);
 
   await submodules(moduleMap, outputPath);
   await updateExportsAndEntryPoints(moduleMap, pkgPath);
@@ -135,7 +139,14 @@ async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
   // All it does is re-export the generated file. It can be manually edited so we don't
   // fully overwrite it.
   const mixinsModuleFile = path.join(modulePath, 'mixins.ts');
-  await ensureFileContains(mixinsModuleFile, ['export * from \'./mixins.generated\';']);
+  const mixinsIndexLines: string[] = [];
+  mixinsIndexLines.push('export * from \'./cfn-props-mixins.generated\';');
+
+  if (existsSync(path.join(modulePath, 'logs-delivery-mixins.generated.ts'))) {
+    mixinsIndexLines.push('export * from \'./logs-delivery-mixins.generated\';');
+  }
+
+  await ensureFileContains(mixinsModuleFile, mixinsIndexLines);
   await writeJsiiModuleMetadata(mixinsModuleFile, submodule.definition, 'mixins');
 
   if (hasEvents) {
@@ -187,8 +198,10 @@ async function ensureFileContains(fileName: string, lines: string[]) {
 
   // This index might contain hand-written mixins => ensure they are preserved
   if (existsSync(fileName)) {
-  // load lines from file
-    currentLines.push(...(await fs.readFile(fileName, 'utf-8')).split('\n').filter(Boolean));
+    // load lines from file
+    currentLines.push(...(await fs.readFile(fileName, 'utf-8')).split('\n')
+      .filter(l => !l.includes('.generated')) // remove all generated files, they are added later anyway
+      .filter(Boolean));
   }
 
   for (const line of lines) {

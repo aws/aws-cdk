@@ -1,7 +1,7 @@
 import type { GenerateModuleMap, GenerateOptions as Spec2CdkOptions } from '@aws-cdk/spec2cdk';
 import { generate, loadPatchedSpec } from '@aws-cdk/spec2cdk';
 import { MixinsBuilder } from './builder';
-import { MIXINS_PREVIEW_BASE_NAMES } from './config';
+import { MIXINS_PREVIEW_BASE_NAMES } from '../config';
 import { loadModuleMap, type ModuleMap } from '@aws-cdk/spec2cdk/lib/module-topology';
 
 type GenerateOptions = Pick<Spec2CdkOptions<typeof MixinsBuilder>, 'outputPath' | 'clearOutput' | 'debug'>;
