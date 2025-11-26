@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.229.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.229.0-alpha.0...v2.229.1-alpha.0) (2025-11-25)
+
+## [2.229.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.228.0-alpha.0...v2.229.0-alpha.0) (2025-11-24)
+
+
+### Features
+
+* **imagebuilder-alpha:** add support for Container Recipe Construct ([#36091](https://github.com/aws/aws-cdk/issues/36091)) ([875e0e7](https://github.com/aws/aws-cdk/commit/875e0e72bcc791eac4ea93d223941bc3d4ba99e5)), closes [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789) [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789)
+* **imagebuilder-alpha:** add support for Image Recipe Construct ([#36092](https://github.com/aws/aws-cdk/issues/36092)) ([4361f8b](https://github.com/aws/aws-cdk/commit/4361f8bd0fca4b6a69b69a9ca69f178b9b220db2)), closes [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789) [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789)
+* **imagebuilder-alpha:** add support for Workflow Construct ([#36007](https://github.com/aws/aws-cdk/issues/36007)) ([616d32a](https://github.com/aws/aws-cdk/commit/616d32a0fde55abb203c7396801cf3adab8b5006)), closes [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789) [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789)
+* **mixins-preview:** developer preview of CDK Mixins ([#36136](https://github.com/aws/aws-cdk/issues/36136)) ([0c6ee1d](https://github.com/aws/aws-cdk/commit/0c6ee1d2dc2b7474d767b947558369b3d67122d9))
+
+
+### Bug Fixes
+
+* **bedrock-agentcore-alpha:** empty submodule accidentally exposed and runtime validation fix ([#36148](https://github.com/aws/aws-cdk/issues/36148)) ([72d3e6f](https://github.com/aws/aws-cdk/commit/72d3e6f40528092e99fe2390e0d0101e1075e8af))
+
+## [2.228.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.227.0-alpha.0...v2.228.0-alpha.0) (2025-11-24)
+
 ## [2.227.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.226.0-alpha.0...v2.227.0-alpha.0) (2025-11-20)
 
 
