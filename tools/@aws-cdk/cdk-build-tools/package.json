@@ -58,7 +58,7 @@
     "eslint-plugin-jest": "^28",
     "eslint-plugin-jsdoc": "^50.8.0",
     "fs-extra": "^9.1.0",
-    "glob": "^7.2.3",
+    "glob": "^9.0.0",
     "jest": "^29.7.0",
     "jest-junit": "^13.2.0",
     "jsii": "~5.9.13",
