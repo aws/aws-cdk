@@ -261,12 +261,6 @@ examplePipeline.onImagePipelineAutoDisabled('PipelineDisabledAlert', {
 });
 ```
 
-#### Starting Image Pipelines
-
-Pipelines can be started programmatically to trigger image builds on-demand, in addition to scheduled executions. This
-is useful for integrating pipelines with CI/CD workflows, triggering builds based on custom conditions, or creating
-images in response to events.
-
 #### Importing Image Pipelines
 
 Reference existing pipelines created outside CDK:
