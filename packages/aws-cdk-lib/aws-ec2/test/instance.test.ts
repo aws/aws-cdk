@@ -1562,5 +1562,4 @@ describe('metadataOptions', () => {
     expect(metadataOptions.HttpPutResponseHopLimit).toBeUndefined();
     expect(metadataOptions.InstanceMetadataTags).toBeUndefined();
   });
-
 });

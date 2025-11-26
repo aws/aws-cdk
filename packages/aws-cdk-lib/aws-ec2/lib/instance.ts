@@ -85,8 +85,6 @@ export interface IInstance extends IResource, IConnectable, iam.IGrantable, IIns
   readonly instancePublicIp: string;
 }
 
-
-
 /**
  * Properties of an EC2 Instance
  */
