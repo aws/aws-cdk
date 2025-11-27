@@ -5,7 +5,7 @@ import { Connections, IConnectable } from './connections';
 import { CfnInstance, IInstanceRef, InstanceReference, IPlacementGroupRef } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
-import { CpuCredits, HttpTokens, InstanceInitiatedShutdownBehavior } from './launch-template';
+import { CpuCredits, InstanceInitiatedShutdownBehavior } from './launch-template';
 import { IMachineImage, OperatingSystemType } from './machine-image';
 import { instanceBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
@@ -32,6 +32,23 @@ import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-re
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
+
+/**
+ * The state of token usage for your instance metadata requests.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-metadataoptions.html#cfn-ec2-instance-metadataoptions-httptokens
+ */
+export enum HttpTokens {
+  /**
+   * If the state is optional, you can choose to retrieve instance metadata with or without a signed token header on your request.
+   */
+  OPTIONAL = 'optional',
+  /**
+   * If the state is required, you must send a signed token header with any instance metadata retrieval requests. In this state,
+   * retrieving the IAM role credentials always returns the version 2.0 credentials; the version 1.0 credentials are not available.
+   */
+  REQUIRED = 'required',
+}
 
 /**
  * Name tag constant

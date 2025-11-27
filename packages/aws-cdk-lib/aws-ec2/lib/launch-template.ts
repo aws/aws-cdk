@@ -202,7 +202,7 @@ export interface LaunchTemplateSpotOptions {
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-metadataoptions.html#cfn-ec2-instance-metadataoptions-httptokens
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httptokens
  */
-export enum HttpTokens {
+export enum LaunchTemplateHttpTokens {
   /**
    * If the state is optional, you can choose to retrieve instance metadata with or without a signed token header on your request.
    */
@@ -213,13 +213,6 @@ export enum HttpTokens {
    */
   REQUIRED = 'required',
 }
-
-/**
- * The state of token usage for your instance metadata requests.
- *
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httptokens
- */
-export const LaunchTemplateHttpTokens = HttpTokens;
 
 /**
  * Properties of a LaunchTemplate.
@@ -423,9 +416,9 @@ export interface LaunchTemplateProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httptokens
    *
-   * @default HttpTokens.OPTIONAL
+   * @default LaunchTemplateHttpTokens.OPTIONAL
    */
-  readonly httpTokens?: HttpTokens;
+  readonly httpTokens?: LaunchTemplateHttpTokens;
 
   /**
    * Set to enabled to allow access to instance tags from the instance metadata. Set to disabled to turn off access to instance tags from the instance metadata.
@@ -878,7 +871,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   private renderMetadataOptions(props: LaunchTemplateProps) {
     let requireMetadataOptions = false;
     // if requireImdsv2 is true, httpTokens must be required.
-    if (props.requireImdsv2 === true && props.httpTokens === HttpTokens.OPTIONAL) {
+    if (props.requireImdsv2 === true && props.httpTokens === LaunchTemplateHttpTokens.OPTIONAL) {
       Annotations.of(this).addError('httpTokens must be required when requireImdsv2 is true');
     }
     if (props.httpEndpoint !== undefined || props.httpProtocolIpv6 !== undefined || props.httpPutResponseHopLimit !== undefined ||
@@ -892,7 +885,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         httpProtocolIpv6: props.httpProtocolIpv6 === true ? 'enabled' :
           props.httpProtocolIpv6 === false ? 'disabled' : undefined,
         httpPutResponseHopLimit: props.httpPutResponseHopLimit,
-        httpTokens: props.requireImdsv2 === true ? HttpTokens.REQUIRED : props.httpTokens,
+        httpTokens: props.requireImdsv2 === true ? LaunchTemplateHttpTokens.REQUIRED : props.httpTokens,
         instanceMetadataTags: props.instanceMetadataTags === true ? 'enabled' :
           props.instanceMetadataTags === false ? 'disabled' : undefined,
       };
