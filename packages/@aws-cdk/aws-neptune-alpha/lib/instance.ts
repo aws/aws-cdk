@@ -416,6 +416,8 @@ export interface DatabaseInstanceProps {
   /**
    * Indicates whether the DB instance is publicly accessible.
    *
+   * Note that iamAuthentication must be enabled on the cluster.
+   *
    * @default - false
    */
   readonly publiclyAccessible?: boolean;

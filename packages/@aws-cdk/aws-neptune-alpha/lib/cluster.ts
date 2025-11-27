@@ -404,6 +404,8 @@ export interface DatabaseClusterProps {
   /**
    * If set to true, the database instances in this cluster will be publicly accessible.
    *
+   * Note that iamAuthentication must be enabled.
+   *
    * @see DatabaseInstanceProps.publiclyAccessible
    * @see https://docs.aws.amazon.com/neptune/latest/userguide/neptune-public-endpoints.html
    *

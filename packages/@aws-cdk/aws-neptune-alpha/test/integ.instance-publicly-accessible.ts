@@ -14,7 +14,7 @@ import { ClusterParameterGroup, ParameterGroupFamily } from '../lib/parameter-gr
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'AutoMinorVersionUpgradeInstanceStack');
+const stack = new cdk.Stack(app, 'PubliclyAccessibleInstanceStack');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, natGateways: 1 });
 
@@ -32,6 +32,7 @@ const cluster = new DatabaseCluster(stack, 'Database', {
   instanceType: InstanceType.R5_LARGE,
   clusterParameterGroup,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  iamAuthentication: true,
 });
 
 new DatabaseInstance(stack, 'EnabledInstance', {
