@@ -797,6 +797,17 @@ describe('bucket', () => {
     });
   });
 
+  test.each([true, false])('bucket with ABAC status %s', (abacStatus) => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      abacStatus,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      AbacStatus: abacStatus ? 'Enabled' : 'Disabled',
+    });
+  });
+
   test('bucket with object lock enabled but no retention', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'Bucket', {
