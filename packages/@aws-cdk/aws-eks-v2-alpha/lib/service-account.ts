@@ -79,39 +79,19 @@ export interface ServiceAccountOptions {
    * @default IdentityType.IRSA
    */
   readonly identityType?: IdentityType;
-}
-export interface ServiceAccountOptions {
-  /**
-   * The name of the service account.
-   *
-   * The name of a ServiceAccount object must be a valid DNS subdomain name.
-   * https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
-   * @default - If no name is given, it will use the id of the resource.
-   */
-  readonly name?: string;
 
   /**
-   * The namespace of the service account.
+   * The target IAM role to associate with the service account.
    *
-   * All namespace names must be valid RFC 1123 DNS labels.
-   * https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/#namespaces-and-dns
-   * @default "default"
-   */
-  readonly namespace?: string;
-
-  /**
-   * Additional annotations of the service account.
+   * This role is assumed by using the EKS Pod Identity association role, then the credentials
+   * for this role are injected into the Pod. This enables cross-account role chaining scenarios.
    *
-   * @default - no additional annotations
-   */
-  readonly annotations?: {[key:string]: string};
-
-  /**
-   * Additional labels of the service account.
+   * Only applicable when identityType is POD_IDENTITY.
    *
-   * @default - no additional labels
+   * @default - No target role (direct role assumption)
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html
    */
-  readonly labels?: {[key:string]: string};
+  readonly targetRole?: IRole;
 }
 
 /**
@@ -164,6 +144,11 @@ export class ServiceAccount extends Construct implements IPrincipal {
       throw RangeError('All namespace names must be valid RFC 1123 DNS labels.');
     }
 
+    // Validate targetRole compatibility
+    if (props.targetRole && props.identityType !== IdentityType.POD_IDENTITY) {
+      throw new Error('targetRole can only be used with POD_IDENTITY identity type');
+    }
+
     let principal: IPrincipal;
     if (props.identityType !== IdentityType.POD_IDENTITY) {
       /* Add conditions to the role to improve security. This prevents other pods in the same namespace to assume the role.
@@ -211,6 +196,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
         namespace: props.namespace ?? 'default',
         roleArn: role.roleArn,
         serviceAccount: this.serviceAccountName,
+        targetRoleArn: props.targetRole?.roleArn,
       });
     }
 
