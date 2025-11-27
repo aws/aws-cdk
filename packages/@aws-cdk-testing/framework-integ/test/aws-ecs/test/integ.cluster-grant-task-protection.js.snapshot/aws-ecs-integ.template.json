@@ -423,11 +423,21 @@
         "Fn::Join": [
          "",
          [
+          "arn:",
           {
-           "Fn::GetAtt": [
-            "ClusterEB0386A7",
-            "Arn"
-           ]
+           "Ref": "AWS::Partition"
+          },
+          ":ecs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":task/",
+          {
+           "Ref": "ClusterEB0386A7"
           },
           "/*"
          ]
