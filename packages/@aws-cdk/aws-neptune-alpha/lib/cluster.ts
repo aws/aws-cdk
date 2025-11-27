@@ -400,6 +400,16 @@ export interface DatabaseClusterProps {
    * @default 8182
    */
   readonly port?: number;
+
+  /**
+   * If set to true, the database instances in this cluster will be publicly accessible.
+   *
+   * @see DatabaseInstanceProps.publiclyAccessible
+   * @see https://docs.aws.amazon.com/neptune/latest/userguide/neptune-public-endpoints.html
+   *
+   * @default false
+   */
+  readonly publiclyAccessible?: boolean;
 }
 
 /**
@@ -746,6 +756,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
         dbInstanceClass: props.instanceType._instanceType,
         dbParameterGroupName: props.parameterGroup?.parameterGroupName,
         autoMinorVersionUpgrade: props.autoMinorVersionUpgrade === true,
+        publiclyAccessible: props.publiclyAccessible === true,
       });
 
       // We must have a dependency on the NAT gateway provider here to create
