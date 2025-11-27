@@ -173,27 +173,20 @@ If you need to restrict the `s3:ListBucket` action to specific paths, you can ad
 
 ## Attribute-Based Access Control (ABAC)
 
-You can enable ABAC (Attribute-Based Access Control) for an S3 bucket. When enabled, Amazon S3 evaluates ABAC policies in the request.
+You can enable ABAC (Attribute-Based Access Control) for an S3 general purpose bucket.
+When ABAC is enabled for the general purpose bucket, you can use tags to manage access to the general purpose buckets as well as for cost tracking purposes.
 
 To enable ABAC on a bucket:
 
 ```ts
-const bucket = new s3.Bucket(this, 'MyBucket', {
+const bucket = new s3.Bucket(this, 'Bucket', {
   abacStatus: true,
 });
 ```
 
-To explicitly disable ABAC:
+By default, if `abacStatus` is not specified, ABAC will not be enabled for the bucket.
 
-```ts
-const bucket = new s3.Bucket(this, 'MyBucket', {
-  abacStatus: false,
-});
-```
-
-By default, if `abacStatus` is not specified, ABAC will not be configured for the bucket.
-
-For more information about ABAC and how to use it with S3, see the [AWS documentation on ABAC](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-s3-bucket.html#cfn-s3-bucket-abacstatus).
+For more information about ABAC and how to use it with S3, see the [AWS documentation on ABAC](https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/buckets-tagging.html).
 
 ## AWS Foundational Security Best Practices
 
