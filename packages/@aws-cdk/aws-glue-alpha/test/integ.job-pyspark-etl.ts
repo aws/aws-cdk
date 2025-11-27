@@ -39,7 +39,7 @@ new glue.PySparkEtlJob(stack, 'OverridePySparkETLJob', {
   script: script,
   role: iam_role,
   description: 'Optional Override PySpark ETL Job',
-  glueVersion: glue.GlueVersion.V3_0,
+  glueVersion: glue.GlueVersion.V5_1,
   numberOfWorkers: 20,
   workerType: glue.WorkerType.G_1X,
   timeout: cdk.Duration.minutes(15),
@@ -57,5 +57,3 @@ new glue.PySparkEtlJob(stack, 'OverridePySparkETLJob', {
 new integ.IntegTest(app, 'aws-glue-job-pyspark-etl-integ-test', {
   testCases: [stack],
 });
-
-app.synth();

@@ -211,10 +211,14 @@ export enum GlueVersion {
   V4_0 = '4.0',
 
   /**
-   * Glue version using Spark 3.5.2 and Python 3.11
+   * Glue version using Spark 3.5.4, Python 3.11, and Scala 2.12.18
    */
   V5_0 = '5.0',
 
+  /**
+   * Glue version using Spark 3.5.6, Python 3.11, and Scala 2.12.18
+   */
+  V5_1 = '5.1',
 }
 
 /**
