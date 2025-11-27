@@ -2160,6 +2160,124 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ]
     },
+    'ImagePipeline': {
+      'recipe': {
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'imagePipelineName': '*',
+      'description': '*',
+      'schedule': {
+        'expression': '*',
+        'autoDisableFailureCount': '*',
+        'startCondition': 'ScheduleStartCondition'
+      },
+      'status': 'ImagePipelineStatus',
+      'infrastructureConfiguration': {
+        'infrastructureConfigurationArn': '*',
+        'infrastructureConfigurationName': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'distributionConfiguration': {
+        'distributionConfigurationArn': '*',
+        'distributionConfigurationName': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'workflows': {
+        'workflow': {
+          'workflowArn': '*',
+          'workflowName': '*',
+          'workflowType': '*',
+          'workflowVersion': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'onFailure': 'WorkflowOnFailure',
+        'parallelGroup': '*',
+        'parameters': '*'
+      },
+      'executionRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'imagePipelineLogGroup': {
+        'logGroupArn': '*',
+        'logGroupName': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'stack': '*',
+        'node': '*'
+      },
+      'imageLogGroup': {
+        'logGroupArn': '*',
+        'logGroupName': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'stack': '*',
+        'node': '*'
+      },
+      'imageScanningEnabled': 'boolean',
+      'imageScanningEcrRepository': {
+        'repositoryName': '*',
+        'repositoryArn': '*',
+        'repositoryUri': '*',
+        'registryUri': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'imageScanningEcrTags': '*',
+      'enhancedImageMetadataEnabled': 'boolean',
+      'imageTestsEnabled': 'boolean',
+      'tags': '*',
+      'grantDefaultExecutionRolePermissions': [
+        {
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        }
+      ]
+    },
     'ImageRecipe': {
       'baseImage': '*',
       'imageRecipeName': '*',
@@ -2362,6 +2480,69 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'isContainerBuild': 'boolean'
         }
       ]
+    },
+    'LifecyclePolicy': {
+      'resourceType': 'LifecyclePolicyResourceType',
+      'details': {
+        'action': {
+          'type': 'LifecyclePolicyActionType',
+          'includeAmis': 'boolean',
+          'includeContainers': 'boolean',
+          'includeSnapshots': 'boolean'
+        },
+        'filter': {
+          'ageFilter': {
+            'age': '*',
+            'retainAtLeast': '*'
+          },
+          'countFilter': {
+            'count': '*'
+          }
+        },
+        'exclusionRules': {
+          'imageExclusionRules': {
+            'tags': '*'
+          },
+          'amiExclusionRules': {
+            'isPublic': 'boolean',
+            'regions': '*',
+            'sharedAccounts': '*',
+            'tags': '*'
+          }
+        }
+      },
+      'resourceSelection': {
+        'recipes': {
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'tags': '*'
+      },
+      'lifecyclePolicyName': '*',
+      'description': '*',
+      'status': 'LifecyclePolicyStatus',
+      'executionRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'tags': '*'
     },
     'Workflow': {
       'data': '*',
@@ -6479,7 +6660,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'connectionType': 'ConnectionType',
         'vpcLink': {
           'vpcLinkId': '*'
-        }
+        },
+        'responseTransferMode': 'ResponseTransferMode'
       },
       'proxy': 'boolean',
       'options': {
@@ -30155,5 +30337,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ]
     }
+  },
+  'lib.services': {
+    'ResourcePolicy': {}
   }
 };
