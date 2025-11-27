@@ -416,7 +416,7 @@ export interface DatabaseInstanceProps {
   /**
    * Indicates whether the DB instance is publicly accessible.
    *
-   * @default false
+   * @default - false
    */
   readonly publiclyAccessible?: boolean;
 }
