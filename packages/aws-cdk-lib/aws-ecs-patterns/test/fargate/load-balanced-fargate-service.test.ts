@@ -2566,4 +2566,69 @@ describe('NetworkLoadBalancedFargateService', () => {
       });
     });
   });
+
+  describe('ALBS_KEEP_ECSPRIVATE_TARGET_GROUP_NAME feature flag', () => {
+    test('with feature flag enabled - keeps the name ECSPrivate', () => {
+      // GIVEN
+      const featureFlag = {
+        [cxapi.ALBS_KEEP_ECSPRIVATE_TARGET_GROUP_NAME]: true,
+      };
+      const app = new cdk.App({
+        context: featureFlag,
+      });
+      const stack = new cdk.Stack(app, 'TestStack');
+
+      // WHEN
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        },
+        loadBalancerName: 'Test',
+        publicLoadBalancer: false,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      const resources = template.toJSON().Resources;
+      const targetGroupKeys = Object.keys(resources).filter(key =>
+        resources[key].Type === 'AWS::ElasticLoadBalancingV2::TargetGroup',
+      );
+
+      // Should use legacy naming (contains 'ECS' but not unique identifier)
+      expect(targetGroupKeys).toHaveLength(1);
+      expect(targetGroupKeys[0]).toContain('ECSPrivate');
+    });
+
+    test('with feature flag disabled - uses legacy target group naming', () => {
+      // GIVEN
+      const featureFlag = {
+        [cxapi.ALBS_KEEP_ECSPRIVATE_TARGET_GROUP_NAME]: false,
+      };
+      const app = new cdk.App({
+        context: featureFlag,
+      });
+      const stack = new cdk.Stack(app, 'TestStack');
+
+      // WHEN
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        },
+        loadBalancerName: 'Test',
+        publicLoadBalancer: false,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      const resources = template.toJSON().Resources;
+      const targetGroupKeys = Object.keys(resources).filter(key =>
+        resources[key].Type === 'AWS::ElasticLoadBalancingV2::TargetGroup',
+      );
+
+      // Should use legacy naming (contains 'ECS' but not unique identifier)
+      expect(targetGroupKeys).toHaveLength(1);
+      expect(targetGroupKeys[0]).toContain('ECS');
+      expect(targetGroupKeys[0]).not.toContain('ECSPrivate');
+    });
+  });
 });

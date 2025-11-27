@@ -815,3 +815,23 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/ecs-patterns:albsKeepEcsPrivateTargetGroupName`
+
+When this feature flag is enabled, ALB patterns will use keep the target group name 'ECSPrivate' for
+non-public ApplicationLoadBalancedEc2 and ApplicationLoadBalancedFargateService constructs.
+
+This should only be used if you are migrating from versions of CDK prior to v2.221.0 and v2229.1 AND
+use either a ApplicationLoadBalancedEc2Service or ApplicationLoadBalancedFargateService construct with
+the publicLoadBalancer property set to off. As this will prevent the target group name from changing and
+forcing a replacement during deployment.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/ecs-patterns:albsKeepEcsPrivateTargetGroupName": true
+  }
+}
+```

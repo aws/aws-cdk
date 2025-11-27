@@ -148,6 +148,7 @@ export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccess
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
 export const NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT = '@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault';
 export const STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT = '@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint';
+export const ALBS_KEEP_ECSPRIVATE_TARGET_GROUP_NAME = '@aws-cdk/ecs-patterns:albsKeepEcsPrivateTargetGroupName';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1765,6 +1766,22 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.221.0' },
     recommendedValue: true,
+  },
+  //////////////////////////////////////////////////////////////////////
+  [ALBS_KEEP_ECSPRIVATE_TARGET_GROUP_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, ALB patterns will use the legacy target group name format.',
+    detailsMd: `
+      When this feature flag is enabled, ALB patterns will use keep the target group name 'ECSPrivate' for
+      non-public ApplicationLoadBalancedEc2 and ApplicationLoadBalancedFargateService constructs.
+
+      This should only be used if you are migrating from versions of CDK prior to v2.221.0 and v2229.1 AND
+      use either a ApplicationLoadBalancedEc2Service or ApplicationLoadBalancedFargateService construct with
+      the publicLoadBalancer property set to off. As this will prevent the target group name from changing and
+      forcing a replacement during deployment.
+    `,
+    introducedIn: { v2: 'V2_NEXT' },
+    recommendedValue: false,
   },
 };
 

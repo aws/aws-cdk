@@ -15,7 +15,7 @@ import { IRole } from '../../../aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
 import { CfnOutput, Duration, FeatureFlags, Stack, Token, ValidationError } from '../../../core';
-import { ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER, ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID } from '../../../cx-api';
+import { ALBS_KEEP_ECSPRIVATE_TARGET_GROUP_NAME, ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER, ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID } from '../../../cx-api';
 
 /**
  * Describes the type of DNS record the service should create
@@ -525,6 +525,8 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     if (FeatureFlags.of(this).isEnabled(ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID)) {
       // Include both internetFacing and loadBalancerName in target group ID
       targetGroupId = `ECS${props.loadBalancerName ?? ''}${internetFacing ? '' : 'Private'}`;
+    } else if ( FeatureFlags.of(this).isEnabled(ALBS_KEEP_ECSPRIVATE_TARGET_GROUP_NAME) && !internetFacing ) {
+      targetGroupId = 'ECSPrivate';
     } else {
       // Legacy behavior
       targetGroupId = 'ECS';
