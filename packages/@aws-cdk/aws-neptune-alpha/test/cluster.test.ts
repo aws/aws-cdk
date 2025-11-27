@@ -675,6 +675,41 @@ describe('DatabaseCluster', () => {
     });
   });
 
+  test('publiclyAccessible is enabled when configured', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Cluster', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+      publiclyAccessible: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
+      PubliclyAccessible: true,
+    });
+  });
+
+  test('publiclyAccessible is not enabled when not configured', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Cluster', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
+      PubliclyAccessible: false,
+    });
+  });
+
   test('cloudwatchLogsExports is enabled when configured', () => {
     // GIVEN
     const stack = testStack();
