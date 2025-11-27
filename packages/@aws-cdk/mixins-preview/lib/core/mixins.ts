@@ -28,11 +28,6 @@ export interface IMixin {
   supports(construct: IConstruct): boolean;
 
   /**
-   * Validates the construct before applying the mixin.
-   */
-  validate?(construct: IConstruct): string[];
-
-  /**
    * Applies the mixin functionality to the target construct.
    */
   applyTo(construct: IConstruct): IConstruct;
@@ -58,10 +53,6 @@ export abstract class Mixin implements IMixin {
 
   public supports(_construct: IConstruct): boolean {
     return true;
-  }
-
-  public validate(_construct: IConstruct): string[] {
-    return [];
   }
 
   abstract applyTo(construct: IConstruct): IConstruct;
