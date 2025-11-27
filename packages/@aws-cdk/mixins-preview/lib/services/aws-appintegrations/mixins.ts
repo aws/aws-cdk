@@ -1,1 +1,1 @@
-export * from './appintegrations.generated';
+export * from './cfn-props-mixins.generated';
