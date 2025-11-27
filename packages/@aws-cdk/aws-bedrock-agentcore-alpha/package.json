@@ -79,8 +79,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "aws-cdk-lib": "0.0.0",
+    "@aws-cdk/aws-bedrock-alpha": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.190.2",
+    "@aws-cdk/integ-runner": "^2.192.2",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@types/jest": "^29.5.14",
@@ -90,7 +91,8 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.0.0",
+    "@aws-cdk/aws-bedrock-alpha": "0.0.0"
   },
   "engines": {
     "node": ">= 18.0.0"
@@ -118,5 +120,10 @@
     "exclude": [
       "props-physical-name:@aws-cdk/aws-bedrock-agentcore-alpha.RuntimeEndpointProps"
     ]
+  },
+  "jsiiRosetta": {
+    "exampleDependencies": {
+      "@aws-cdk/aws-bedrock-alpha": "^0.0.0"
+    }
   }
 }

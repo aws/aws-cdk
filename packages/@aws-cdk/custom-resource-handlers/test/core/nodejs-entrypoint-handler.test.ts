@@ -179,6 +179,9 @@ async function invokeHandler(req: AWSLambda.CloudFormationCustomResourceEvent, u
 
   // stage entry point and user handler.
   const workdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-custom-resource-provider-handler-test-'));
+  process.on('exit', () => {
+    fs.rmSync(workdir, { recursive: true, force: true });
+  });
   entrypoint.external.userHandlerIndex = path.join(workdir, 'index.js');
   fs.writeFileSync(entrypoint.external.userHandlerIndex, `exports.handler = ${userHandler.toString()};`);
 

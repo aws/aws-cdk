@@ -199,7 +199,6 @@ export abstract class GuardrailBase extends Resource implements IGuardrail {
       grantee,
       actions,
       resourceArns: [this.guardrailArn],
-      scope: this,
     });
   }
 

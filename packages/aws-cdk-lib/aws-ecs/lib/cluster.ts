@@ -1,8 +1,15 @@
 import { Construct, IConstruct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
+import { ClusterGrants } from './cluster-grants';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
-import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
+import {
+  CfnCluster,
+  CfnCapacityProvider,
+  CfnClusterCapacityProviderAssociations,
+  IClusterRef,
+  ClusterReference,
+} from './ecs.generated';
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { InstanceRequirementsConfig } from '../../aws-ec2';
@@ -196,6 +203,12 @@ export class Cluster extends Resource implements ICluster {
       get vpc(): ec2.IVpc {
         throw new ValidationError(`vpc ${errorSuffix}`, this);
       }
+      public get clusterRef(): ClusterReference {
+        return {
+          clusterArn: this.clusterArn,
+          clusterName: this.clusterName,
+        };
+      }
     }
 
     return new Import(scope, id, {
@@ -222,6 +235,11 @@ export class Cluster extends Resource implements ICluster {
    * The name of the cluster.
    */
   public readonly clusterName: string;
+
+  /**
+   * Collection of grant methods for a Cluster
+   */
+  public readonly grants = ClusterGrants.fromCluster(this);
 
   /**
    * The names of both ASG and Fargate capacity providers associated with the cluster.
@@ -349,6 +367,13 @@ export class Cluster extends Resource implements ICluster {
     Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id), {
       priority: mutatingAspectPrio32333(this),
     });
+  }
+
+  public get clusterRef(): ClusterReference {
+    return {
+      clusterArn: this.clusterArn,
+      clusterName: this.clusterName,
+    };
   }
 
   /**
@@ -827,11 +852,7 @@ export class Cluster extends Resource implements ICluster {
    */
   @MethodMetadata()
   public grantTaskProtection(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions: ['ecs:UpdateTaskProtection'],
-      resourceArns: [this.arnForTasks('*')],
-    });
+    return this.grants.taskProtection(grantee);
   }
 
   private configureWindowsAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
@@ -965,7 +986,7 @@ Object.defineProperty(Cluster.prototype, CLUSTER_SYMBOL, {
 /**
  * A regional grouping of one or more container instances on which you can run tasks and services.
  */
-export interface ICluster extends IResource {
+export interface ICluster extends IResource, IClusterRef {
   /**
    * The name of the cluster.
    * @attribute
@@ -1087,6 +1108,13 @@ class ImportedCluster extends Resource implements ICluster {
    * VPC that the cluster instances are running in
    */
   public readonly vpc: ec2.IVpc;
+
+  public get clusterRef(): ClusterReference {
+    return {
+      clusterArn: this.clusterArn,
+      clusterName: this.clusterName,
+    };
+  }
 
   /**
    * Security group of the cluster instances
@@ -1972,7 +2000,7 @@ class MaybeCreateCapacityProviderAssociations implements IAspect {
   public visit(node: IConstruct): void {
     if (Cluster.isCluster(node)) {
       if ((this.scope.defaultCapacityProviderStrategy.length > 0
-          || (this.scope.capacityProviderNames.length > 0 || this.scope.clusterScopedCapacityProviderNames.length > 0) && !this.resource)) {
+          || (this.scope.capacityProviderNames.length > 0) && !this.resource)) {
         this.resource = new CfnClusterCapacityProviderAssociations(this.scope, this.id, {
           cluster: node.clusterName,
           defaultCapacityProviderStrategy: this.scope.defaultCapacityProviderStrategy,

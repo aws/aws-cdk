@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3956a2bec4a991a6d7a436be2c652a8935ebcaf8bcf360b99fc9e446ab7884e4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d2abe4add97c04bbda250c30c2a5192da0496f74877c7b68290dd18aa4a0a29b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -284,6 +284,56 @@
             "data": "PYTHON313functionName"
           }
         ],
+        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_14": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_14/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_14/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_14/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PYTHON314ServiceRoleB0324A64"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_14/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PYTHON314C98D0951"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_14-functionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PYTHON314functionName"
+          }
+        ],
         "/aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -384,6 +434,56 @@
             "data": "NODEJS22XfunctionName"
           }
         ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_24_X": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_24_X/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_24_X/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_24_X/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS24XServiceRoleF97C2B58"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_24_X/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS24X3400670E"
+          }
+        ],
+        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_24_X-functionName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NODEJS24XfunctionName"
+          }
+        ],
         "/aws-cdk-lambda-runtime-inlinecode/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -394,24 +494,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "NODEJS18XServiceRole4D18036A": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS18XServiceRole4D18036A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "NODEJS18X7B6E6033": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS18X7B6E6033",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
@@ -606,7 +688,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -945,6 +1027,10 @@
             "userValue": false,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
           "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
             "recommendedValue": true,

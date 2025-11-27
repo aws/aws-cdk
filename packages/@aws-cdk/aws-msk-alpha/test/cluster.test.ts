@@ -981,4 +981,132 @@ describe('MSK Cluster', () => {
       });
     });
   });
+
+  describe('with express broker ', () => {
+    let expressStack: core.Stack;
+    let expressVpc: ec2.Vpc;
+
+    beforeEach(() => {
+      const app = new core.App();
+      expressStack = new core.Stack(app, 'ExpressTestStack', {
+        env: {
+          region: 'us-east-1',
+          account: '123456789012',
+        },
+      });
+      expressVpc = new ec2.Vpc(expressStack, 'ExpressVpc', {
+        maxAzs: 3,
+      });
+    });
+
+    test('create a cluster with express broker', () => {
+      new msk.Cluster(expressStack, 'ExpressCluster', {
+        clusterName: 'express-cluster',
+        kafkaVersion: msk.KafkaVersion.V3_8_X,
+        vpc: expressVpc,
+        instanceType: ec2.InstanceType.of(
+          ec2.InstanceClass.M7G,
+          ec2.InstanceSize.XLARGE,
+        ),
+        brokerType: msk.BrokerType.EXPRESS,
+      });
+
+      Template.fromStack(expressStack).hasResourceProperties('AWS::MSK::Cluster', {
+        BrokerNodeGroupInfo: { InstanceType: 'express.m7g.xlarge' },
+      });
+    });
+
+    test('fails when instanceType is not specified', () => {
+      expect(() => {
+        new msk.Cluster(expressStack, 'ExpressClusterNoInstanceType', {
+          clusterName: 'express-cluster',
+          kafkaVersion: msk.KafkaVersion.V3_8_X,
+          vpc: expressVpc,
+          brokerType: msk.BrokerType.EXPRESS,
+        });
+      }).toThrow(
+        '`instanceType` must also be specified when `brokerType` is `BrokerType.EXPRESS`.',
+      );
+    });
+
+    test('fails when ebsStorageInfo is specified', () => {
+      expect(() => {
+        new msk.Cluster(expressStack, 'ExpressClusterWithStorage', {
+          clusterName: 'express-cluster',
+          kafkaVersion: msk.KafkaVersion.V3_8_X,
+          vpc: expressVpc,
+          instanceType: ec2.InstanceType.of(
+            ec2.InstanceClass.M7G,
+            ec2.InstanceSize.XLARGE,
+          ),
+          brokerType: msk.BrokerType.EXPRESS,
+          ebsStorageInfo: { volumeSize: 100 },
+        });
+      }).toThrow('`ebsStorageInfo` is not supported when `brokerType` is `BrokerType.EXPRESS`.');
+    });
+
+    test('fails when brokerType is EXPRESS and storageMode is specified', () => {
+      expect(() => {
+        new msk.Cluster(expressStack, 'ExpressClusterWithStorageMode', {
+          clusterName: 'express-cluster',
+          kafkaVersion: msk.KafkaVersion.V3_8_X,
+          vpc: expressVpc,
+          instanceType: ec2.InstanceType.of(
+            ec2.InstanceClass.M7G,
+            ec2.InstanceSize.XLARGE,
+          ),
+          brokerType: msk.BrokerType.EXPRESS,
+          storageMode: msk.StorageMode.LOCAL,
+        });
+      }).toThrow('`storageMode` is not supported when `brokerType` is `BrokerType.EXPRESS`.');
+    });
+
+    test('fails when brokerType is EXPRESS and logging is specified', () => {
+      expect(() => {
+        new msk.Cluster(expressStack, 'ExpressClusterWithLogging', {
+          clusterName: 'express-cluster',
+          kafkaVersion: msk.KafkaVersion.V3_8_X,
+          vpc: expressVpc,
+          instanceType: ec2.InstanceType.of(
+            ec2.InstanceClass.M7G,
+            ec2.InstanceSize.XLARGE,
+          ),
+          brokerType: msk.BrokerType.EXPRESS,
+          logging: {
+            cloudwatchLogGroup: new logs.LogGroup(expressStack, 'LogGroup'),
+          },
+        });
+      }).toThrow('`logging` is not supported when `brokerType` is `BrokerType.EXPRESS`.');
+    });
+
+    test('fails when brokerType is EXPRESS and less than 3 subnets are provided', () => {
+      expect(() => {
+        new msk.Cluster(stack, 'ExpressClusterWithInsufficientSubnets', {
+          clusterName: 'express-cluster',
+          kafkaVersion: msk.KafkaVersion.V3_8_X,
+          vpc,
+          instanceType: ec2.InstanceType.of(
+            ec2.InstanceClass.M7G,
+            ec2.InstanceSize.XLARGE,
+          ),
+          brokerType: msk.BrokerType.EXPRESS,
+        });
+      }).toThrow('Express cluster requires at least 3 subnets, got 2');
+    });
+
+    test('fails when brokerType is EXPRESS and incompatible Kafka version is used', () => {
+      expect(() => {
+        new msk.Cluster(expressStack, 'ExpressClusterWithIncompatibleVersion', {
+          clusterName: 'express-cluster',
+          kafkaVersion: msk.KafkaVersion.V2_6_1,
+          vpc: expressVpc,
+          instanceType: ec2.InstanceType.of(
+            ec2.InstanceClass.M7G,
+            ec2.InstanceSize.XLARGE,
+          ),
+          brokerType: msk.BrokerType.EXPRESS,
+        });
+      }).toThrow('Express brokers are only supported with Apache Kafka 3.6.x and 3.8.x, got 2.6.1');
+    });
+  });
 });

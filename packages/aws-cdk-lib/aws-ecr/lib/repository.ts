@@ -382,7 +382,6 @@ export abstract class RepositoryBase extends Resource implements IRepository {
         grantee,
         actions,
         resourceArns: [this.repositoryArn],
-        scope: this,
       });
     } else {
       return iam.Grant.addToPrincipalOrResource({
@@ -415,7 +414,6 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       grantee,
       actions: ['ecr:GetAuthorizationToken'],
       resourceArns: ['*'],
-      scope: this,
     });
 
     return ret;
@@ -430,7 +428,6 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       grantee,
       actions: ['ecr:GetAuthorizationToken'],
       resourceArns: ['*'],
-      scope: this,
     });
 
     return ret;
@@ -448,7 +445,6 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       grantee,
       actions: ['ecr:GetAuthorizationToken'],
       resourceArns: ['*'],
-      scope: this,
     });
 
     return ret;

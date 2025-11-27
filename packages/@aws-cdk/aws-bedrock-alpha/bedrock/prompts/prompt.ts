@@ -78,7 +78,6 @@ export abstract class PromptBase extends Resource implements IPrompt {
       grantee,
       resourceArns: [this.promptArn],
       actions: ['bedrock:GetPrompt'],
-      scope: this,
     });
   }
 }

@@ -132,7 +132,7 @@
   },
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
-    "@aws-cdk/aws-service-spec": "^0.1.110",
+    "@aws-cdk/aws-service-spec": "^0.1.123",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -451,6 +451,7 @@
     "./aws-route53recoverycontrol": "./aws-route53recoverycontrol/index.js",
     "./aws-route53recoveryreadiness": "./aws-route53recoveryreadiness/index.js",
     "./aws-route53resolver": "./aws-route53resolver/index.js",
+    "./aws-rtbfabric": "./aws-rtbfabric/index.js",
     "./aws-rum": "./aws-rum/index.js",
     "./aws-s3": "./aws-s3/index.js",
     "./aws-s3-assets": "./aws-s3-assets/index.js",
@@ -460,6 +461,7 @@
     "./aws-s3objectlambda": "./aws-s3objectlambda/index.js",
     "./aws-s3outposts": "./aws-s3outposts/index.js",
     "./aws-s3tables": "./aws-s3tables/index.js",
+    "./aws-s3vectors": "./aws-s3vectors/index.js",
     "./aws-sagemaker": "./aws-sagemaker/index.js",
     "./aws-sam": "./aws-sam/index.js",
     "./aws-scheduler": "./aws-scheduler/index.js",
@@ -516,6 +518,7 @@
     "./custom-resources": "./custom-resources/index.js",
     "./custom-resources/lib/helpers-internal": "./custom-resources/lib/helpers-internal/index.js",
     "./cx-api": "./cx-api/index.js",
+    "./interfaces": "./interfaces/index.js",
     "./lambda-layer-awscli": "./lambda-layer-awscli/index.js",
     "./lambda-layer-kubectl": "./lambda-layer-kubectl/index.js",
     "./lambda-layer-node-proxy-agent": "./lambda-layer-node-proxy-agent/index.js",
@@ -534,7 +537,7 @@
   },
   "jsiiRosetta": {
     "exampleDependencies": {
-      "@aws-cdk/lambda-layer-kubectl-v33": "^2.0.0",
+      "@aws-cdk/lambda-layer-kubectl-v34": "^2.0.0",
       "cdk8s-plus-25": "^2.7.0",
       "@aws-cdk/aws-glue-alpha": "^0.0.0"
     }

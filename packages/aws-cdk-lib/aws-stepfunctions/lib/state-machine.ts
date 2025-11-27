@@ -3,14 +3,15 @@ import { CustomerManagedEncryptionConfiguration } from './customer-managed-key-e
 import { EncryptionConfiguration } from './encryption-configuration';
 import { buildEncryptionConfiguration } from './private/util';
 import { StateGraph } from './state-graph';
+import { StateMachineGrants } from './state-machine-grants';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
-import { CfnStateMachine } from './stepfunctions.generated';
+import { CfnStateMachine, IStateMachineRef, StateMachineReference } from './stepfunctions.generated';
 import { IChainable, QueryLanguage } from './types';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
-import { Arn, ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
+import { ArnFormat, Duration, IResource, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -117,7 +118,7 @@ export interface StateMachineProps {
    *
    * @default A role is automatically created
    */
-  readonly role?: iam.IRoleRef & iam.IGrantable;
+  readonly role?: iam.IRole;
 
   /**
    * Maximum run time for this state machine
@@ -216,15 +217,22 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
+   * Collection of grant methods for a StateMachine
+   */
+  public grants = StateMachineGrants._fromStateMachine(this);
+
+  public get stateMachineRef(): StateMachineReference {
+    return {
+      stateMachineArn: this.stateMachineArn,
+    };
+  }
+
+  /**
    * Grant the given identity permissions to start an execution of this state
    * machine.
    */
   public grantStartExecution(identity: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: ['states:StartExecution'],
-      resourceArns: [this.stateMachineArn],
-    });
+    return this.grants.startExecution(identity);
   }
 
   /**
@@ -232,11 +240,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * this state machine.
    */
   public grantStartSyncExecution(identity: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: ['states:StartSyncExecution'],
-      resourceArns: [this.stateMachineArn],
-    });
+    return this.grants.startSyncExecution(identity);
   }
 
   /**
@@ -244,58 +248,21 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * machine.
    */
   public grantRead(identity: iam.IGrantable): iam.Grant {
-    iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: [
-        'states:ListExecutions',
-        'states:ListStateMachines',
-      ],
-      resourceArns: [this.stateMachineArn],
-    });
-    iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: [
-        'states:DescribeExecution',
-        'states:DescribeStateMachineForExecution',
-        'states:GetExecutionHistory',
-      ],
-      resourceArns: [`${this.executionArn()}:*`],
-    });
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: [
-        'states:ListActivities',
-        'states:DescribeStateMachine',
-        'states:DescribeActivity',
-      ],
-      resourceArns: ['*'],
-    });
+    return this.grants.read(identity);
   }
 
   /**
    * Grant the given identity task response permissions on a state machine
    */
   public grantTaskResponse(identity: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: [
-        'states:SendTaskSuccess',
-        'states:SendTaskFailure',
-        'states:SendTaskHeartbeat',
-      ],
-      resourceArns: [this.stateMachineArn],
-    });
+    return this.grants.taskResponse(identity);
   }
 
   /**
    * Grant the given identity permissions on all executions of the state machine
    */
   public grantExecution(identity: iam.IGrantable, ...actions: string[]) {
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions,
-      resourceArns: [`${this.executionArn()}:*`],
-    });
+    return this.grants.execution(identity, ...actions);
   }
 
   /**
@@ -309,11 +276,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * Grant the given identity custom permissions
    */
   public grant(identity: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions,
-      resourceArns: [this.stateMachineArn],
-    });
+    return this.grants.actions(identity, ...actions);
   }
 
   /**
@@ -395,18 +358,6 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
     return this.cannedMetric(StatesMetrics.executionTimeAverage, props);
   }
 
-  /**
-   * Returns the pattern for the execution ARN's of the state machine
-   */
-  private executionArn(): string {
-    return Stack.of(this).formatArn({
-      resource: 'execution',
-      service: 'states',
-      resourceName: Arn.split(this.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
-  }
-
   private cannedMetric(
     fn: (dims: { StateMachineArn: string }) => cloudwatch.MetricProps,
     props?: cloudwatch.MetricOptions): cloudwatch.Metric {
@@ -426,6 +377,11 @@ export class StateMachine extends StateMachineBase {
    * Uniquely identifies this class.
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-stepfunctions.StateMachine';
+
+  /**
+   * Execution role of this state machine
+   */
+  public readonly role: iam.IRole;
 
   /**
    * The name of the state machine
@@ -450,11 +406,6 @@ export class StateMachine extends StateMachineBase {
    */
   public readonly stateMachineRevisionId: string;
 
-  /**
-   * Execution role of this state machine
-   */
-  private readonly _role: iam.IRoleRef & iam.IGrantable;
-
   constructor(scope: Construct, id: string, props: StateMachineProps) {
     super(scope, id, {
       physicalName: props.stateMachineName,
@@ -476,7 +427,7 @@ export class StateMachine extends StateMachineBase {
       this.validateLogOptions(props.logs);
     }
 
-    this._role = props.role || new iam.Role(this, 'Role', {
+    this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
     });
 
@@ -494,7 +445,7 @@ export class StateMachine extends StateMachineBase {
     }
 
     if (props.encryptionConfiguration instanceof CustomerManagedEncryptionConfiguration) {
-      this._role.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: [
           'kms:Decrypt', 'kms:GenerateDataKey',
@@ -513,7 +464,7 @@ export class StateMachine extends StateMachineBase {
       }));
 
       if (props.logs && props.logs.level !== LogLevel.OFF) {
-        this._role.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+        this.role.addToPrincipalPolicy(new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
           actions: [
             'kms:GenerateDataKey',
@@ -540,10 +491,10 @@ export class StateMachine extends StateMachineBase {
     const resource = new CfnStateMachine(this, 'Resource', {
       stateMachineName: this.physicalName,
       stateMachineType: props.stateMachineType ?? undefined,
-      roleArn: this._role.roleRef.roleArn,
+      roleArn: this.role.roleArn,
       loggingConfiguration: props.logs ? this.buildLoggingConfiguration(props.logs) : undefined,
       tracingConfiguration: this.buildTracingConfiguration(props.tracingEnabled),
-      ...definitionBody.bind(this, this._role.grantPrincipal, props, graph),
+      ...definitionBody.bind(this, this.role, props, graph),
       definitionSubstitutions: props.definitionSubstitutions,
       encryptionConfiguration: buildEncryptionConfiguration(props.encryptionConfiguration),
     });
@@ -569,19 +520,7 @@ export class StateMachine extends StateMachineBase {
    * The principal this state machine is running as
    */
   public get grantPrincipal() {
-    return this._role.grantPrincipal;
-  }
-
-  /**
-   * Execution role of this state machine
-   *
-   * Will throw if the Role object that was given does not implement IRole
-   */
-  public get role(): iam.IRole {
-    if (!isIRole(this._role)) {
-      throw new ValidationError(`The role given to this StateMachine is not an IRole, but ${this._role.constructor.name}`, this);
-    }
-    return this._role;
+    return this.role.grantPrincipal;
   }
 
   /**
@@ -589,7 +528,7 @@ export class StateMachine extends StateMachineBase {
    */
   @MethodMetadata()
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this._role.grantPrincipal.addToPrincipalPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 
   private validateStateMachineName(stateMachineName: string) {
@@ -669,7 +608,7 @@ export class StateMachine extends StateMachineBase {
 /**
  * A State Machine
  */
-export interface IStateMachine extends IResource, iam.IGrantable {
+export interface IStateMachine extends IResource, iam.IGrantable, IStateMachineRef {
   /**
    * The ARN of the state machine
    * @attribute
@@ -857,10 +796,4 @@ export class ChainDefinitionBody extends DefinitionBody {
       }),
     };
   }
-}
-
-function isIRole(x: iam.IRoleRef): x is iam.IRole {
-  const xx = x as iam.IRole;
-  return (!!xx.addManagedPolicy && !!xx.addToPrincipalPolicy && !!xx.assumeRoleAction && !!xx.attachInlinePolicy
-   && !!xx.grant && !!xx.policyFragment);
 }

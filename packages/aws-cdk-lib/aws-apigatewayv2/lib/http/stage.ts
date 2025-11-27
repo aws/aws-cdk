@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { CfnStage } from '.././index';
+import { AccessLogFormat } from '../../../aws-apigateway';
 import { Metric, MetricOptions } from '../../../aws-cloudwatch';
 import { Lazy, Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
@@ -157,6 +158,15 @@ export class HttpStage extends HttpStageBase {
       get domainUrl(): string {
         throw new ValidationError('domainUrl is not available for imported stages.', scope);
       }
+
+      /**
+       * CLF Log format for HTTP API Stage.
+       *
+       * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-logging.html
+       */
+      defaultAccessLogFormat(): AccessLogFormat {
+        return AccessLogFormat.clf();
+      }
     }
     return new Import(scope, id);
   }
@@ -216,5 +226,14 @@ export class HttpStage extends HttpStageBase {
     }
 
     return `https://${this._apiMapping.domainName.name}/${this._apiMapping.mappingKey ?? ''}`;
+  }
+
+  /**
+   * CLF Log format for HTTP API Stage.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-logging.html
+   */
+  defaultAccessLogFormat(): AccessLogFormat {
+    return AccessLogFormat.clf();
   }
 }

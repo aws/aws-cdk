@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Node
         uses: actions/setup-node@v6
@@ -80,7 +80,7 @@ jobs:
           git add .
           git diff --patch --staged > ${{ runner.temp }}/upgrade.patch
       - name: Upload Patch
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: upgrade.patch
           path: ${{ runner.temp }}/upgrade.patch
@@ -94,10 +94,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Download patch
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: upgrade.patch
           path: ${{ runner.temp }}
