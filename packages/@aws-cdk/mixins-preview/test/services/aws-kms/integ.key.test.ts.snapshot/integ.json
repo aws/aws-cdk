@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "S3-Test/DefaultTest": {
+      "stacks": [
+        "test-case-1",
+        "test-case-2"
+      ],
+      "assertionStack": "S3-Test/DefaultTest/DeployAssert",
+      "assertionStackName": "S3TestDefaultTestDeployAssert23C67A7E"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

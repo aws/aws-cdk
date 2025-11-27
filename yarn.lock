@@ -92,6 +92,11 @@
   optionalDependencies:
     fsevents "2.3.2"
 
+"@aws-cdk/integ-tests-alpha@^2.229.1-alpha.0":
+  version "2.229.1-alpha.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/integ-tests-alpha/-/integ-tests-alpha-2.229.1-alpha.0.tgz#9f26e5634b47ad797460ae8aa2f70d24801f07a8"
+  integrity sha512-m5eWjL+glKNc1991iyqlkUEVnEfNaS16W6KhBdiHz191QqK/M5sGlNpOfYekJKON4Xc4pUc9pIB/HqF8XZ8+nA==
+
 "@aws-cdk/lambda-layer-kubectl-v24@^2.0.242":
   version "2.0.242"
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v24/-/lambda-layer-kubectl-v24-2.0.242.tgz#4273a5ad7714f933a7eba155eb9280823086db71"
