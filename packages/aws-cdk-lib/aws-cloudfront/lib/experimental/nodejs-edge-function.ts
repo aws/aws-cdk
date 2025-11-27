@@ -4,6 +4,7 @@ import { NodejsFunctionProps } from '../../../aws-lambda-nodejs';
 import { Bundling } from '../../../aws-lambda-nodejs/lib/bundling';
 import { getRuntime, resolveBundlingConfig, validateNodejsRuntime } from '../../../aws-lambda-nodejs/lib/function-helpers';
 import { ValidationError } from '../../../core';
+import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 
 /**
  * Properties for a NodejsEdgeFunction
@@ -60,5 +61,8 @@ export class NodejsEdgeFunction extends EdgeFunction {
         handler: config.handler.indexOf('.') !== -1 ? `${config.handler}` : `index.${config.handler}`,
       });
     }
+
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
   }
 }
