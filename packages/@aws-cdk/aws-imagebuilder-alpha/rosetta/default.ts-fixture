@@ -52,6 +52,10 @@ class Fixture extends Stack {
       )
     });
 
+    const exampleImage = new imagebuilder.Image(this, 'Image', {
+      recipe: exampleImageRecipe
+    });
+
     const examplePipeline = new imagebuilder.ImagePipeline(this, 'Pipeline', {
       recipe: exampleImageRecipe
     });

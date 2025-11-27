@@ -1,19 +1,20 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
-import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as imagebuilder from '../lib';
 import { ImageArchitecture, ImageType } from '../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-image-pipeline-container-all-parameters');
+const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-image-container-all-parameters');
 
 const repository = new ecr.Repository(stack, 'Repository', {
   emptyOnDelete: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
+cdk.Tags.of(repository).add('LifecycleExecutionAccess', 'EC2 Image Builder');
+
 const scanningRepository = new ecr.Repository(stack, 'ScanningRepository', {
   emptyOnDelete: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -21,12 +22,12 @@ const scanningRepository = new ecr.Repository(stack, 'ScanningRepository', {
 const executionRole = new iam.Role(stack, 'ExecutionRole', {
   assumedBy: new iam.ServicePrincipal('imagebuilder.amazonaws.com'),
 });
-const imageLogGroup = new logs.LogGroup(stack, 'ImageLogGroup', { removalPolicy: cdk.RemovalPolicy.DESTROY });
-const imagePipelineLogGroup = new logs.LogGroup(stack, 'ImagePipelineLogGroup', {
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
+const deletionExecutionRole = new iam.Role(stack, 'LifecycleExecutionRole', {
+  assumedBy: new iam.ServicePrincipal('imagebuilder.amazonaws.com'),
+  managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/EC2ImageBuilderLifecycleExecutionPolicy')],
 });
-imageLogGroup.grantWrite(executionRole);
-imagePipelineLogGroup.grantWrite(executionRole);
+const logGroup = new logs.LogGroup(stack, 'ImageLogGroup', { removalPolicy: cdk.RemovalPolicy.DESTROY });
+logGroup.grantWrite(executionRole);
 
 const infrastructureConfiguration = new imagebuilder.InfrastructureConfiguration(stack, 'InfrastructureConfiguration');
 const containerRecipe = new imagebuilder.ContainerRecipe(stack, 'ContainerRecipe', {
@@ -52,36 +53,28 @@ containerDistributionConfiguration.addContainerDistributions({
   containerRepository: imagebuilder.Repository.fromEcr(repository),
 });
 
-const containerImagePipeline = new imagebuilder.ImagePipeline(stack, 'ImagePipeline-Container', {
-  imagePipelineName: 'test-container-image-pipeline',
+const image = new imagebuilder.Image(stack, 'Image-Container', {
   recipe: containerRecipe,
   infrastructureConfiguration,
   distributionConfiguration: containerDistributionConfiguration,
-  status: imagebuilder.ImagePipelineStatus.DISABLED,
   executionRole,
-  schedule: {
-    expression: events.Schedule.rate(cdk.Duration.days(7)),
-    startCondition: imagebuilder.ScheduleStartCondition.EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE,
-    autoDisableFailureCount: 5,
-  },
-  workflows: [
-    { workflow: imagebuilder.AwsManagedWorkflow.buildContainer(stack, 'BuildContainer') },
-    { workflow: imagebuilder.AwsManagedWorkflow.testContainer(stack, 'TestContainer') },
-    { workflow: imagebuilder.AwsManagedWorkflow.distributeContainer(stack, 'DistributeContainer') },
-  ],
-  imageLogGroup,
-  imagePipelineLogGroup,
+  logGroup,
+  workflows: [{ workflow: imagebuilder.AwsManagedWorkflow.buildContainer(stack, 'BuildContainer') }],
   enhancedImageMetadataEnabled: false,
   imageTestsEnabled: true,
   imageScanningEnabled: true,
   imageScanningEcrRepository: scanningRepository,
   imageScanningEcrTags: ['latest-scan'],
+  deletionExecutionRole,
   tags: { key1: 'value1', key2: 'value2' },
 });
-containerImagePipeline.grantDefaultExecutionRolePermissions(executionRole);
-containerImagePipeline.onEvent('ImageBuildSuccessTriggerRule');
-containerImagePipeline.onImagePipelineAutoDisabled('ImagePipelineAutoDisabledTriggerRule');
+image.grantDefaultExecutionRolePermissions(executionRole);
 
-new integ.IntegTest(app, 'ImagePipelineTest-Container-AllParameters', {
+new cdk.CfnOutput(stack, 'ImageArn', { value: image.imageArn });
+new cdk.CfnOutput(stack, 'ImageName', { value: image.imageName });
+new cdk.CfnOutput(stack, 'ImageVersion', { value: image.imageVersion });
+new cdk.CfnOutput(stack, 'ImageId', { value: image.imageId });
+
+new integ.IntegTest(app, 'ImageTest-Container-AllParameters', {
   testCases: [stack],
 });

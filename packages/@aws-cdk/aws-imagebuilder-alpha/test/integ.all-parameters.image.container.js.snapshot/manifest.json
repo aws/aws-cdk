@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "aws-cdk-imagebuilder-image-pipeline-container-all-parameters.assets": {
+    "aws-cdk-imagebuilder-image-container-all-parameters.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-imagebuilder-image-pipeline-container-all-parameters.assets.json",
+        "file": "aws-cdk-imagebuilder-image-container-all-parameters.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-imagebuilder-image-pipeline-container-all-parameters": {
+    "aws-cdk-imagebuilder-image-container-all-parameters": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-imagebuilder-image-pipeline-container-all-parameters.template.json",
+        "templateFile": "aws-cdk-imagebuilder-image-container-all-parameters.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a65b8cf1b3b121eb0aa6e9497bb73a0ad6e7caebec9f789658be96ceb1a2d03f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1739d134cc12c2bfacb3f33271be30269b14b61f8ff44318abb3e3a0db0877e8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-imagebuilder-image-pipeline-container-all-parameters.assets"
+          "aws-cdk-imagebuilder-image-container-all-parameters.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,10 +31,10 @@
         }
       },
       "dependencies": [
-        "aws-cdk-imagebuilder-image-pipeline-container-all-parameters.assets"
+        "aws-cdk-imagebuilder-image-container-all-parameters.assets"
       ],
       "metadata": {
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/Repository": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/Repository": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -43,13 +43,13 @@
             }
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/Repository/Resource": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/Repository/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Repository22E53BBD"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ScanningRepository": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/ScanningRepository": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -58,13 +58,13 @@
             }
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ScanningRepository/Resource": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/ScanningRepository/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ScanningRepositoryB9C9B705"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ExecutionRole": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/ExecutionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -321,29 +321,21 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ExecutionRole/ImportExecutionRole": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/ExecutionRole/ImportExecutionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ExecutionRole/Resource": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/ExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExecutionRole605A040B"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ExecutionRole/DefaultPolicy": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/ExecutionRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -595,57 +587,53 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ExecutionRole/DefaultPolicy/Resource": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/ExecutionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExecutionRoleDefaultPolicyA5B92313"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImageLogGroup": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/LifecycleExecutionRole": [
           {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy"
-            }
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [LifecycleExecutionRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImageLogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImageLogGroupD34F5836"
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipelineLogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipelineLogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImagePipelineLogGroup7E475C9B"
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/InfrastructureConfiguration": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/LifecycleExecutionRole/ImportLifecycleExecutionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/InfrastructureConfiguration/InstanceProfileRole": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/LifecycleExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LifecycleExecutionRole4719EA2F"
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-container-all-parameters/ImageLogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-container-all-parameters/ImageLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImageLogGroupD34F5836"
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-container-all-parameters/InfrastructureConfiguration": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-container-all-parameters/InfrastructureConfiguration/InstanceProfileRole": [
           {
             "type": "aws:cdk:warning",
             "data": "Failed to add construct metadata for node [InstanceProfileRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
@@ -655,19 +643,19 @@
             "data": "Failed to add method metadata for node [InstanceProfileRole], method name addManagedPolicy. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addMethodMetadataFailed]"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/InfrastructureConfiguration/InstanceProfileRole/ImportInstanceProfileRole": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/InfrastructureConfiguration/InstanceProfileRole/ImportInstanceProfileRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/InfrastructureConfiguration/InstanceProfileRole/Resource": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/InfrastructureConfiguration/InstanceProfileRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InfrastructureConfigurationInstanceProfileRole3AFA1533"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/InfrastructureConfiguration/InstanceProfile": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/InfrastructureConfiguration/InstanceProfile": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -675,19 +663,19 @@
             }
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/InfrastructureConfiguration/InstanceProfile/Resource": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/InfrastructureConfiguration/InstanceProfile/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InfrastructureConfigurationInstanceProfile8FD9235B"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/InfrastructureConfiguration/Resource": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/InfrastructureConfiguration/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InfrastructureConfiguration86C7777D"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ContainerRecipe": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/ContainerRecipe": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -697,13 +685,13 @@
             "data": "*"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ContainerRecipe/Resource": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/ContainerRecipe/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ContainerRecipe8A7CC9ED"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ContainerDistributionConfiguration": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/ContainerDistributionConfiguration": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -721,138 +709,46 @@
             "data": "*"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ContainerDistributionConfiguration/Resource": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/ContainerDistributionConfiguration/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ContainerDistributionConfiguration18609EDB"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipeline-Container/Resource": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/Image-Container/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ImagePipelineContainer507B5032"
+            "data": "ImageContainer1E84CD29"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipeline-Container/ImageBuildSuccessTriggerRule": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventPattern": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addTarget": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventPattern": [
-                {
-                  "source": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipeline-Container/ImageBuildSuccessTriggerRule/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImagePipelineContainerImageBuildSuccessTriggerRuleFC549F96"
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipeline-Container/ImagePipelineAutoDisabledTriggerRule": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "eventPattern": {
-                "detailType": "*",
-                "resources": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventPattern": [
-                {
-                  "detailType": "*",
-                  "resources": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addTarget": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventPattern": [
-                {
-                  "source": "*",
-                  "resources": "*",
-                  "detailType": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipeline-Container/ImagePipelineAutoDisabledTriggerRule/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImagePipelineContainerImagePipelineAutoDisabledTriggerRule567551D9"
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipeline-Container/Image/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImagePipelineContainerImageF8CBEC27"
-          }
-        ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/BootstrapVersion": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/CheckBootstrapVersion": [
+        "/aws-cdk-imagebuilder-image-container-all-parameters/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-imagebuilder-image-pipeline-container-all-parameters"
+      "displayName": "aws-cdk-imagebuilder-image-container-all-parameters"
     },
-    "ImagePipelineTestContainerAllParametersDefaultTestDeployAssert1B190D7C.assets": {
+    "ImageTestContainerAllParametersDefaultTestDeployAssert76F5FCD3.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "ImagePipelineTestContainerAllParametersDefaultTestDeployAssert1B190D7C.assets.json",
+        "file": "ImageTestContainerAllParametersDefaultTestDeployAssert76F5FCD3.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "ImagePipelineTestContainerAllParametersDefaultTestDeployAssert1B190D7C": {
+    "ImageTestContainerAllParametersDefaultTestDeployAssert76F5FCD3": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "ImagePipelineTestContainerAllParametersDefaultTestDeployAssert1B190D7C.template.json",
+        "templateFile": "ImageTestContainerAllParametersDefaultTestDeployAssert76F5FCD3.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -861,7 +757,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "ImagePipelineTestContainerAllParametersDefaultTestDeployAssert1B190D7C.assets"
+          "ImageTestContainerAllParametersDefaultTestDeployAssert76F5FCD3.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -870,23 +766,23 @@
         }
       },
       "dependencies": [
-        "ImagePipelineTestContainerAllParametersDefaultTestDeployAssert1B190D7C.assets"
+        "ImageTestContainerAllParametersDefaultTestDeployAssert76F5FCD3.assets"
       ],
       "metadata": {
-        "/ImagePipelineTest-Container-AllParameters/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/ImageTest-Container-AllParameters/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/ImagePipelineTest-Container-AllParameters/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/ImageTest-Container-AllParameters/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "ImagePipelineTest-Container-AllParameters/DefaultTest/DeployAssert"
+      "displayName": "ImageTest-Container-AllParameters/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

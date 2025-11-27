@@ -3,7 +3,13 @@
   "Repository22E53BBD": {
    "Type": "AWS::ECR::Repository",
    "Properties": {
-    "EmptyOnDelete": true
+    "EmptyOnDelete": true,
+    "Tags": [
+     {
+      "Key": "LifecycleExecutionAccess",
+      "Value": "EC2 Image Builder"
+     }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -44,20 +50,12 @@
         "logs:PutLogEvents"
        ],
        "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "ImageLogGroupD34F5836",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "ImagePipelineLogGroup7E475C9B",
-          "Arn"
-         ]
-        }
-       ]
+       "Resource": {
+        "Fn::GetAtt": [
+         "ImageLogGroupD34F5836",
+         "Arn"
+        ]
+       }
       },
       {
        "Action": "ec2:RegisterImage",
@@ -737,15 +735,38 @@
     ]
    }
   },
-  "ImageLogGroupD34F5836": {
-   "Type": "AWS::Logs::LogGroup",
+  "LifecycleExecutionRole4719EA2F": {
+   "Type": "AWS::IAM::Role",
    "Properties": {
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "imagebuilder.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/EC2ImageBuilderLifecycleExecutionPolicy"
+       ]
+      ]
+     }
+    ]
+   }
   },
-  "ImagePipelineLogGroup7E475C9B": {
+  "ImageLogGroupD34F5836": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "RetentionInDays": 731
@@ -828,7 +849,7 @@
     "InstanceProfileName": {
      "Ref": "InfrastructureConfigurationInstanceProfile8FD9235B"
     },
-    "Name": "aws-cdk-imagebuilder-image-pipeline-container-all-parameters-infrastructureconfiguration-25b197bb"
+    "Name": "aws-cdk-imagebuilder-image-container-all-parameters-infrastructureconfiguration-136a7a89"
    }
   },
   "ContainerRecipe8A7CC9ED": {
@@ -856,7 +877,7 @@
     ],
     "ContainerType": "DOCKER",
     "DockerfileTemplateData": "FROM {{{ imagebuilder:parentImage }}}\n{{{ imagebuilder:environments }}}\n{{{ imagebuilder:components }}}",
-    "Name": "aws-cdk-imagebuilder-image-pipeline-container-all-parameters-containerrecipe-703c2596",
+    "Name": "aws-cdk-imagebuilder-image-container-all-parameters-containerrecipe-8d59e8ba",
     "ParentImage": {
      "Fn::Join": [
       "",
@@ -900,17 +921,25 @@
       }
      }
     ],
-    "Name": "aws-cdk-imagebuilder-image-pipeline-container-all-parameters-containerdistributionconfiguration-4e4b61cf"
+    "Name": "aws-cdk-imagebuilder-image-container-all-parameters-containerdistributionconfiguration-00ce51ab"
    }
   },
-  "ImagePipelineContainer507B5032": {
-   "Type": "AWS::ImageBuilder::ImagePipeline",
+  "ImageContainer1E84CD29": {
+   "Type": "AWS::ImageBuilder::Image",
    "Properties": {
     "ContainerRecipeArn": {
      "Fn::GetAtt": [
       "ContainerRecipe8A7CC9ED",
       "Arn"
      ]
+    },
+    "DeletionSettings": {
+     "ExecutionRole": {
+      "Fn::GetAtt": [
+       "LifecycleExecutionRole4719EA2F",
+       "Arn"
+      ]
+     }
     },
     "DistributionConfigurationArn": {
      "Fn::GetAtt": [
@@ -946,22 +975,10 @@
      ]
     },
     "LoggingConfiguration": {
-     "ImageLogGroupName": {
+     "LogGroupName": {
       "Ref": "ImageLogGroupD34F5836"
-     },
-     "PipelineLogGroupName": {
-      "Ref": "ImagePipelineLogGroup7E475C9B"
      }
     },
-    "Name": "test-container-image-pipeline",
-    "Schedule": {
-     "AutoDisablePolicy": {
-      "FailureCount": 5
-     },
-     "PipelineExecutionStartCondition": "EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE",
-     "ScheduleExpression": "rate(7 days)"
-    },
-    "Status": "DISABLED",
     "Tags": {
      "key1": "value1",
      "key2": "value2"
@@ -984,77 +1001,42 @@
         ]
        ]
       }
-     },
-     {
-      "WorkflowArn": {
-       "Fn::Join": [
-        "",
-        [
-         "arn:",
-         {
-          "Ref": "AWS::Partition"
-         },
-         ":imagebuilder:",
-         {
-          "Ref": "AWS::Region"
-         },
-         ":aws:workflow/test/test-container/x.x.x"
-        ]
-       ]
-      }
-     },
-     {
-      "WorkflowArn": {
-       "Fn::Join": [
-        "",
-        [
-         "arn:",
-         {
-          "Ref": "AWS::Partition"
-         },
-         ":imagebuilder:",
-         {
-          "Ref": "AWS::Region"
-         },
-         ":aws:workflow/distribution/distribute-container/x.x.x"
-        ]
-       ]
-      }
      }
     ]
    }
-  },
-  "ImagePipelineContainerImageBuildSuccessTriggerRuleFC549F96": {
-   "Type": "AWS::Events::Rule",
-   "Properties": {
-    "EventPattern": {
-     "source": [
-      "aws.imagebuilder"
-     ]
-    },
-    "State": "ENABLED"
+  }
+ },
+ "Outputs": {
+  "ImageArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageContainer1E84CD29",
+     "Arn"
+    ]
    }
   },
-  "ImagePipelineContainerImagePipelineAutoDisabledTriggerRule567551D9": {
-   "Type": "AWS::Events::Rule",
-   "Properties": {
-    "EventPattern": {
-     "detail-type": [
-      "EC2 Image Builder Image Pipeline Automatically Disabled"
-     ],
-     "resources": [
-      {
-       "Fn::GetAtt": [
-        "ImagePipelineContainer507B5032",
-        "Arn"
-       ]
-      }
-     ],
-     "source": [
-      "aws.imagebuilder"
-     ]
-    },
-    "State": "ENABLED"
+  "ImageName": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageContainer1E84CD29",
+     "Name"
+    ]
+   }
+  },
+  "ImageVersion": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ContainerRecipe8A7CC9ED",
+     "Version"
+    ]
+   }
+  },
+  "ImageId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageContainer1E84CD29",
+     "ImageUri"
+    ]
    }
   }
  },
