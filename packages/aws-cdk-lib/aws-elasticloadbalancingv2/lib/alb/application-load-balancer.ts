@@ -402,6 +402,56 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   }
 
   /**
+   * Enable health check logging for this load balancer.
+   */
+  @MethodMetadata()
+  public logHealthCheckLogs(bucket: s3.IBucket, prefix?: string) {
+    /**
+     * The bucket must be located in the same Region as the load balancer
+     */
+    if (Stack.of(this).region !== Stack.of(bucket).region) {
+      throw new ValidationError('Health Check Log bucket must be in the same region as the Application Load Balancer', this);
+    }
+
+    /**
+     * KMS key encryption is not supported on HealthCheck Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
+     * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-health-check-logging.html
+     */
+    if (bucket.encryptionKey) {
+      throw new ValidationError('Encryption key detected. Bucket encryption using KMS keys is unsupported', this);
+    }
+
+    prefix = prefix || '';
+    this.setAttribute('health_check_logs.s3.enabled', 'true');
+    this.setAttribute(
+      'health_check_logs.s3.bucket',
+      bucket.bucketName.toString(),
+    );
+    this.setAttribute('health_check_logs.s3.prefix', prefix);
+
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:PutObject'],
+        principals: [this.resourcePolicyPrincipal()],
+        resources: [
+          bucket.arnForObjects(
+            `${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`,
+          ),
+        ],
+      }),
+    );
+
+    // make sure the bucket's policy is created before the ALB (see https://github.com/aws/aws-cdk/issues/1633)
+    // at the L1 level to avoid creating a circular dependency (see https://github.com/aws/aws-cdk/issues/27528
+    // and https://github.com/aws/aws-cdk/issues/27928)
+    const lb = this.node.defaultChild;
+    const bucketPolicy = bucket.policy?.node.defaultChild;
+    if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
+      lb.addDependency(bucketPolicy);
+    }
+  }
+
+  /**
    * Add a security group to this load balancer
    */
   @MethodMetadata()
