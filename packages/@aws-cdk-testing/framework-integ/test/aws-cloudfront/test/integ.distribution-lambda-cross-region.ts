@@ -44,11 +44,11 @@ new cloudfront.Distribution(stack, 'Dist', {
   },
 });
 
+// Lambda@Edge functions cannot be immediately deleted due to CloudFront replication.
+// They must be disassociated from distributions and replicas cleared (takes hours).
+// See: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-edge-delete-replicas.html
 new integ.IntegTest(app, 'cdk-integ-distribution-lambda-cross-region', {
   testCases: [stack],
   diffAssets: true,
-  // Lambda@Edge functions cannot be immediately deleted due to CloudFront replication.
-  // They must be disassociated from distributions and replicas cleared (takes hours).
-  // See: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-edge-delete-replicas.html
   stackUpdateWorkflow: false,
 });

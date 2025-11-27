@@ -144,19 +144,6 @@ export function validateNodejsRuntime(scope: Construct, runtime?: lambda.Runtime
 }
 
 /**
- * Validates that handler is provided when code is specified
- */
-export function validateHandlerWithCode(scope: Construct, code?: lambda.Code, handler?: string): void {
-  if (code !== undefined && handler === undefined) {
-    throw new ValidationError(
-      'Cannot determine handler when `code` property is specified. Use `handler` property to specify a handler.\n'
-      + 'The handler should be the name of the exported function to be invoked and the file containing that function.\n'
-      + 'For example, handler should be specified in the form `myFile.myFunction`', scope,
-    );
-  }
-}
-
-/**
  * Configuration values resolved for bundling
  */
 export interface BundlingConfig {
