@@ -407,7 +407,7 @@ export interface DatabaseClusterProps {
    * @see DatabaseInstanceProps.publiclyAccessible
    * @see https://docs.aws.amazon.com/neptune/latest/userguide/neptune-public-endpoints.html
    *
-   * @default false
+   * @default - false
    */
   readonly publiclyAccessible?: boolean;
 }
