@@ -1,9 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
 import * as vpc from '../lib/vpc-v2';
 import * as subnet from '../lib/subnet-v2';
-import { CfnEIP, GatewayVpcEndpoint, GatewayVpcEndpointAwsService, SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
+import { CfnEIP, GatewayVpcEndpoint, GatewayVpcEndpointAwsService, SubnetType, VpnConnectionType, RouterType } from 'aws-cdk-lib/aws-ec2';
 import * as route from '../lib/route';
 import { Match, Template } from 'aws-cdk-lib/assertions';
+import { Role, AccountPrincipal } from 'aws-cdk-lib/aws-iam';
 
 describe('EC2 Routing', () => {
   let stack: cdk.Stack;
@@ -630,14 +631,21 @@ describe('VPCPeeringConnection', () => {
       ownerAccountId: '123456789012',
     });
 
+    const peerRole = new Role(stackA, 'PeerRole', {
+      assumedBy: new AccountPrincipal('123456789012'),
+      roleName: 'VpcPeeringRole',
+    });
+
     new route.VPCPeeringConnection(stackA, 'TestPeeringConnection', {
       requestorVpc: vpcA,
       acceptorVpc: importedVpcB,
-      peerRoleArn: 'arn:aws:iam::012345678910:role/VpcPeeringRole',
+      peerRole: peerRole,
     });
     const template = Template.fromStack(stackA);
     template.hasResourceProperties('AWS::EC2::VPCPeeringConnection', {
-      PeerRoleArn: 'arn:aws:iam::012345678910:role/VpcPeeringRole',
+      PeerRoleArn: {
+        'Fn::GetAtt': [Match.stringLikeRegexp('PeerRole.*'), 'Arn'],
+      },
       VpcId: {
         'Fn::GetAtt': ['VpcAAD85CA4C', 'VpcId'],
       },
@@ -670,33 +678,64 @@ describe('VPCPeeringConnection', () => {
     });
   });
 
-  test('Throws error when peerRoleArn is not provided for cross-account peering', () => {
+  test('Throws error when peerRole is not provided for cross-account peering', () => {
     expect(() => {
       new route.VPCPeeringConnection(stackA, 'TestCrossAccountPeeringConnection', {
         requestorVpc: vpcA,
         acceptorVpc: vpcB,
       });
-    }).toThrow(/Cross account VPC peering requires peerRoleArn/);
+    }).toThrow(/Cross account VPC peering requires peerRole. Use createAcceptorVpcRole\(\) or createRequestorPeerRole\(\) to create the required role./);
   });
 
-  test('Throws error when peerRoleArn is provided for same account peering', () => {
+  test('Throws error when peerRole is provided for same account peering', () => {
+    const unnecessaryRole = new Role(stackB, 'UnnecessaryRole', {
+      assumedBy: new AccountPrincipal('123456789012'),
+    });
+
     expect(() => {
       new route.VPCPeeringConnection(stackB, 'TestPeeringConnection', {
         requestorVpc: vpcB,
         acceptorVpc: vpcC,
-        peerRoleArn: 'arn:aws:iam::123456789012:role/unnecessary-role',
+        peerRole: unnecessaryRole,
       });
-    }).toThrow(/peerRoleArn is not needed for same account peering/);
+    }).toThrow(/peerRole is not needed for same account peering/);
   });
 
   test('CIDR block overlap with secondary CIDR block should throw error', () => {
+    // Create a VPC in the same account as vpcC with overlapping CIDR
+    const vpcOverlap = new vpc.VpcV2(stackC, 'VpcOverlap', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'), // This overlaps with vpcA's secondary CIDR
+    });
+
     expect(() => {
-      new route.VPCPeeringConnection(stackA, 'TestPeering', {
-        requestorVpc: vpcA,
-        acceptorVpc: vpcC,
-        peerRoleArn: 'arn:aws:iam::012345678910:role/VpcPeeringRole',
+      new route.VPCPeeringConnection(stackC, 'TestPeering', {
+        requestorVpc: vpcC,
+        acceptorVpc: vpcOverlap,
       });
     }).toThrow(/CIDR block should not overlap with each other for establishing a peering connection/);
+  });
+
+  test('fromAttributes creates imported VPC peering connection', () => {
+    const importedConnection = route.VPCPeeringConnection.fromAttributes(stackA, 'ImportedConnection', {
+      vpcPeeringConnectionId: 'pcx-12345678',
+    });
+
+    expect(importedConnection.routerType).toBe(RouterType.VPC_PEERING_CONNECTION);
+    expect(importedConnection.routerTargetId).toBe('pcx-12345678');
+  });
+
+  test('fromAttributes validates VPC peering connection ID format', () => {
+    expect(() => {
+      route.VPCPeeringConnection.fromAttributes(stackA, 'InvalidConnection', {
+        vpcPeeringConnectionId: 'invalid-id',
+      });
+    }).toThrow('VPC Peering Connection ID must be a valid ID starting with "pcx-"');
+
+    expect(() => {
+      route.VPCPeeringConnection.fromAttributes(stackA, 'EmptyConnection', {
+        vpcPeeringConnectionId: '',
+      });
+    }).toThrow('VPC Peering Connection ID must be a valid ID starting with "pcx-"');
   });
 
   test('CIDR block overlap with primary CIDR block should throw error', () => {
