@@ -3,9 +3,7 @@
 // On developer boxes we want to run the .ts files directly for quickest
 // iteration (save -> run), but on CI machines we want to run the compiled
 // JavaScript for highest throughput.
-
-const isCi = !!process.env.CI || !!process.env.CODEBUILD_BUILD_ID;
-const ext = isCi ? 'js' : 'ts';
+const ext = require('./ext');
 
 const thisPackagesPackageJson = require(`${process.cwd()}/package.json`);
 const setupFilesAfterEnv = [];
@@ -52,4 +50,9 @@ module.exports = {
   reporters: ['default', ['jest-junit', { suiteName: 'jest tests', outputDirectory: 'coverage' }]],
 
   setupFilesAfterEnv,
+
+  // A consequence of doing this is that snapshots files are always named after
+  // the currently executing file, which will be different for .ts and .js
+  // extensions, so we need to do some more work to redirect always to .ts
+  snapshotResolver: `${__dirname}/snapshot-resolver.js`,
 };

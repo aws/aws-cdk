@@ -1,14 +1,14 @@
-import { ConstructsUpdater, EnumLikeUpdater, PropertyUpdater } from '../lib/metadata-updater';
-import { Project, ClassDeclaration, SourceFile, QuoteKind, IndentationText } from 'ts-morph';
-import * as path from 'path';
-import * as fs from 'fs';
-
 // Mock ts-morph
 jest.mock('ts-morph');
 // Mock fs
 jest.mock('fs');
 // Mock path
 jest.mock('path');
+
+import { ConstructsUpdater, EnumLikeUpdater, PropertyUpdater } from '../lib/metadata-updater';
+import { Project, ClassDeclaration, SourceFile, QuoteKind, IndentationText } from 'ts-morph';
+import * as path from 'path';
+import * as fs from 'fs';
 
 describe('ResourceMetadataUpdater', () => {
   let updater: ConstructsUpdater;
