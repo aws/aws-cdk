@@ -1281,8 +1281,6 @@ describe('grants', () => {
                 Match.objectLike({
                   Action: [
                     'dynamodb:BatchGetItem',
-                    'dynamodb:GetRecords',
-                    'dynamodb:GetShardIterator',
                     'dynamodb:Query',
                     'dynamodb:GetItem',
                     'dynamodb:Scan',
