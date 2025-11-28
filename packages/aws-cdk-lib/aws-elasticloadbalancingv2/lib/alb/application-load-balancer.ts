@@ -3,6 +3,7 @@ import { ApplicationListener, BaseApplicationListenerProps } from './application
 import { ListenerAction } from './application-listener-action';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
+import * as iam from '../../../aws-iam';
 import { PolicyStatement } from '../../../aws-iam/lib/policy-statement';
 import { ServicePrincipal } from '../../../aws-iam/lib/principals';
 import * as s3 from '../../../aws-s3';
@@ -404,6 +405,10 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
   /**
    * Enable health check logging for this load balancer.
+   * A region must be specified on the stack containing the load balancer; you cannot enable logging on
+   * environment-agnostic stacks.
+   *
+   * @see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
    */
   @MethodMetadata()
   public logHealthCheckLogs(bucket: s3.IBucket, prefix?: string) {
