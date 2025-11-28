@@ -1267,6 +1267,8 @@ describe('tests', () => {
       new ExtendedLB(stack, 'ExtendedLB', vpc);
 
       // THEN
+      // verify no DependsOn on the bucket to ensure that the bucket storing the logs does not set an explicit dependency on the bucket policy.
+      // see: https://github.com/aws/aws-cdk/issues/1633#issuecomment-1758171559 and https://github.com/aws/aws-cdk/pull/27558
       Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
         Type: 'AWS::S3::Bucket',
         Properties: {
