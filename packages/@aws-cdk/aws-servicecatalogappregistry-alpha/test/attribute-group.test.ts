@@ -78,6 +78,15 @@ describe('Attribute Group', () => {
     expect(attributeGroup.attributeGroupId).toEqual('0aqmvxvgmry0ecc4mjhwypun6i');
   }),
 
+  test('attribute group exposes attributes property', () => {
+    const testAttributes = { key: 'value', environment: 'test' };
+    const attributeGroup = new appreg.AttributeGroup(stack, 'MyAttributeGroup', {
+      attributeGroupName: 'testAttributeGroup',
+      attributes: testAttributes,
+    });
+    expect(attributeGroup.attributes).toEqual(testAttributes);
+  }),
+
   test('Associate an application to an imported attribute group', () => {
     const attributeGroup = appreg.AttributeGroup.fromAttributeGroupArn(stack, 'MyAttributeGroup',
       'arn:aws:servicecatalog:us-east-1:123456789012:/attribute-groups/0aqmvxvgmry0ecc4mjhwypun6i');
