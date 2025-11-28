@@ -625,7 +625,12 @@ export interface ICfnResourceOptions {
 
 /**
  * Object keys that deepMerge should not consider. Currently these include
- * CloudFormation intrinsics
+ * CloudFormation intrinsics, exluding Fn::Transform.
+ *
+ * Intrinsics are objects in CloudFormation templates where the one and only key is the function name and the value is
+ * the function's arguments. Fn::Transform is a unique intrinsic as it can appear as a key in multi-key objects (like
+ * resource Properties). For this reason it is left out of this list as it should not get rid of other keys when doing object
+ * deep merges.
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
  */
@@ -642,7 +647,6 @@ const MERGE_EXCLUDE_KEYS: string[] = [
   'Fn::Select',
   'Fn::Split',
   'Fn::Sub',
-  'Fn::Transform',
   'Fn::And',
   'Fn::Equals',
   'Fn::If',
