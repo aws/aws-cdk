@@ -409,7 +409,6 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
    */
-  // TODO: ACL を有効にしたバケットでも動作確認する
   @MethodMetadata()
   public logHealthCheckLogs(bucket: s3.IBucket, prefix?: string) {
     /**
