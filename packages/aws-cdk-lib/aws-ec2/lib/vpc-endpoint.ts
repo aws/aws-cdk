@@ -373,6 +373,9 @@ export interface InterfaceVpcEndpointAwsServiceProps {
 export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointService {
   public static readonly ACCESS_ANALYZER = new InterfaceVpcEndpointAwsService('access-analyzer');
   public static readonly ACCOUNT_MANAGEMENT = new InterfaceVpcEndpointAwsService('account');
+  public static readonly ACM = new InterfaceVpcEndpointAwsService('acm');
+  public static readonly ACM_FIPS = new InterfaceVpcEndpointAwsService('acm-fips');
+  public static readonly ACM_PCA_FIPS = new InterfaceVpcEndpointAwsService('acm-pca-fips');
   public static readonly AIRFLOW_API = new InterfaceVpcEndpointAwsService('airflow.api');
   public static readonly AIRFLOW_API_FIPS = new InterfaceVpcEndpointAwsService('airflow.api-fips');
   public static readonly AIRFLOW_ENV = new InterfaceVpcEndpointAwsService('airflow.env');
@@ -403,11 +406,13 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly BACKUP_GATEWAY = new InterfaceVpcEndpointAwsService('backup-gateway');
   public static readonly BATCH = new InterfaceVpcEndpointAwsService('batch');
   public static readonly BEDROCK = new InterfaceVpcEndpointAwsService('bedrock');
+  public static readonly BEDROCK_FIPS = new InterfaceVpcEndpointAwsService('bedrock-fips');
   public static readonly BEDROCK_AGENT = new InterfaceVpcEndpointAwsService('bedrock-agent');
   public static readonly BEDROCK_AGENT_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-agent-runtime');
   public static readonly BEDROCK_AGENTCORE = new InterfaceVpcEndpointAwsService('bedrock-agentcore');
   public static readonly BEDROCK_AGENTCORE_GATEWAY = new InterfaceVpcEndpointAwsService('bedrock-agentcore.gateway');
   public static readonly BEDROCK_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-runtime');
+  public static readonly BEDROCK_RUNTIME_FIPS = new InterfaceVpcEndpointAwsService('bedrock-runtime-fips');
   public static readonly BEDROCK_DATA_AUTOMATION = new InterfaceVpcEndpointAwsService('bedrock-data-automation');
   public static readonly BEDROCK_DATA_AUTOMATION_FIPS = new InterfaceVpcEndpointAwsService('bedrock-data-automation-fips');
   public static readonly BEDROCK_DATA_AUTOMATION_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-data-automation-runtime');
@@ -502,6 +507,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly EC2_MESSAGES = new InterfaceVpcEndpointAwsService('ec2messages');
   public static readonly ECR = new InterfaceVpcEndpointAwsService('ecr.api');
   public static readonly ECR_DOCKER = new InterfaceVpcEndpointAwsService('ecr.dkr');
+  public static readonly ECR_PUBLIC = new InterfaceVpcEndpointAwsService('ecr-public.api');
   public static readonly ECS = new InterfaceVpcEndpointAwsService('ecs');
   public static readonly ECS_AGENT = new InterfaceVpcEndpointAwsService('ecs-agent');
   public static readonly ECS_TELEMETRY = new InterfaceVpcEndpointAwsService('ecs-telemetry');
@@ -699,6 +705,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly S3_OUTPOSTS = new InterfaceVpcEndpointAwsService('s3-outposts');
   public static readonly S3_MULTI_REGION_ACCESS_POINTS = new InterfaceVpcEndpointAwsService('s3-global.accesspoint', 'com.amazonaws', undefined, { global: true });
   public static readonly S3_TABLES = new InterfaceVpcEndpointAwsService('s3tables');
+  public static readonly S3_VECTORS = new InterfaceVpcEndpointAwsService('s3vectors');
   public static readonly SAVINGS_PLANS = new InterfaceVpcEndpointAwsService('savingsplans', 'com.amazonaws', undefined, { global: true });
   public static readonly SAGEMAKER_API = new InterfaceVpcEndpointAwsService('sagemaker.api');
   public static readonly SAGEMAKER_API_FIPS = new InterfaceVpcEndpointAwsService('sagemaker.api-fips');
