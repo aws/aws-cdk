@@ -1780,7 +1780,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       the publicLoadBalancer property set to off. As this will prevent the target group name from changing and
       forcing a replacement during deployment.
     `,
-    introducedIn: { v2: 'V2_NEXT' },
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: false,
   },
 };
