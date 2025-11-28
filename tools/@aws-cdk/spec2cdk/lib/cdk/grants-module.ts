@@ -25,7 +25,11 @@ const $this = $E(expr.this_());
  * repository.
  */
 export class GrantsModule extends Module {
-  public constructor(private readonly service: Service, private readonly db: SpecDatabase, private readonly schema: GrantsFileSchema) {
+  public constructor(
+    private readonly service: Service,
+    private readonly db: SpecDatabase,
+    private readonly schema: GrantsFileSchema,
+    public readonly stable: boolean) {
     super(`${service.shortName}.grants`);
   }
 
@@ -259,8 +263,12 @@ export class GrantsModule extends Module {
     }
 
     if (hasContent) {
-      new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`)
-        .import(this, this.service.shortName, { fromLocation: `./${this.service.shortName}.generated` });
+      if (this.stable) {
+        new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`)
+          .import(this, this.service.shortName, { fromLocation: `./${this.service.shortName}.generated` });
+      } else {
+        new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`).import(this, this.service.shortName);
+      }
       new ExternalModule('aws-cdk-lib/aws-iam').import(this, 'iam');
     }
   }
