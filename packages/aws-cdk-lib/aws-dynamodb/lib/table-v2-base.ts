@@ -16,6 +16,16 @@ export interface ITableV2 extends ITable {
    * @attribute
    */
   readonly tableId?: string;
+
+  /**
+   * Get a regional replica reference for cross-region access.
+   *
+   * Returns an ITableV2 with the ARN adjusted to the specified region,
+   * allowing grants and references to work correctly in cross-region stacks.
+   *
+   * @param region the region to reference the table in
+   */
+  regionalReplica?(region: string): ITableV2;
 }
 
 /**

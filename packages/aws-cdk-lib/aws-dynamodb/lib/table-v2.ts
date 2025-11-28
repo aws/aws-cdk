@@ -875,6 +875,41 @@ export class TableV2 extends TableBaseV2 {
     });
   }
 
+  /**
+   * Get a regional replica reference for cross-region access.
+   *
+   * Returns an ITableV2 with the ARN adjusted to the specified region,
+   * allowing grants and references to work correctly in cross-region stacks.
+   *
+   * @param region the region to reference the table in
+   */
+  public regionalReplica(region: string): ITableV2 {
+    if (Token.isUnresolved(region)) {
+      throw new ValidationError('Provided `region` cannot be a token', this);
+    }
+
+    if (region === this.stack.region) {
+      return this;
+    }
+
+    if (!this.replicaTables.has(region)) {
+      throw new ValidationError(`Table is not replicated to region ${region}`, this);
+    }
+
+    const tableArn = this.stack.formatArn({
+      service: 'dynamodb',
+      resource: 'table',
+      resourceName: this.tableName,
+      region,
+    });
+
+    return TableV2.fromTableAttributes(this, `RegionalReplica${region}`, {
+      tableArn,
+      encryptionKey: this.replicaKeys[region],
+      grantIndexPermissions: this.hasIndex,
+    });
+  }
+
   private configureReplicaTable(props: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
     const contributorInsightsSpecification = this.validateCCI(props);
 

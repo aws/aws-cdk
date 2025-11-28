@@ -3896,3 +3896,73 @@ test('can add GSI with both compound partition and sort keys', () => {
     ],
   });
 });
+
+describe('regionalReplica', () => {
+  test('returns reference with adjusted ARN for replica region', () => {
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
+
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicas: [{ region: 'us-west-2' }],
+    });
+
+    const replica = table.regionalReplica('us-west-2');
+
+    expect(replica.tableArn).toContain('us-west-2');
+    expect(replica.tableName).toBe(table.tableName);
+  });
+
+  test('returns same instance when region matches stack region', () => {
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    const replica = table.regionalReplica('us-east-1');
+
+    expect(replica).toBe(table);
+  });
+
+  test('throws when region is not replicated', () => {
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicas: [{ region: 'us-west-2' }],
+    });
+
+    expect(() => table.regionalReplica('eu-west-1')).toThrow(/not replicated to region eu-west-1/);
+  });
+
+  test('throws when region is a token', () => {
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    expect(() => table.regionalReplica(Fn.ref('SomeParam'))).toThrow('Provided `region` cannot be a token');
+  });
+
+  test('grants work with regional replica', () => {
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
+    const replicaStack = new Stack(undefined, 'ReplicaStack', { env: { region: 'us-west-2', account: '123456789012' } });
+
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicas: [{ region: 'us-west-2' }],
+    });
+
+    const user = new iam.User(replicaStack, 'User');
+    const replica = table.regionalReplica('us-west-2');
+    replica.grantReadData(user);
+
+    const template = Template.fromStack(replicaStack);
+    const policy = template.findResources('AWS::IAM::Policy');
+    const policyDoc = JSON.stringify(policy);
+
+    expect(policyDoc).toContain('us-west-2');
+    expect(policyDoc).toContain('dynamodb:GetItem');
+  });
+});

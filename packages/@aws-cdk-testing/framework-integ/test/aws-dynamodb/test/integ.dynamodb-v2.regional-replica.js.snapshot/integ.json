@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "table-v2-regional-replica-test/DefaultTest": {
+      "stacks": [
+        "GlobalTableStack",
+        "RegionalStack"
+      ],
+      "assertionStack": "table-v2-regional-replica-test/DefaultTest/DeployAssert",
+      "assertionStackName": "tablev2regionalreplicatestDefaultTestDeployAssert6EB9195C"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
