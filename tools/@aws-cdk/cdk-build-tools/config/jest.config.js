@@ -1,3 +1,12 @@
+// Crazy stuff!
+//
+// On developer boxes we want to run the .ts files directly for quickest
+// iteration (save -> run), but on CI machines we want to run the compiled
+// JavaScript for highest throughput.
+
+const isCi = !!process.env.CI || !!process.env.CODEBUILD_BUILD_ID;
+const ext = isCi ? 'js' : 'ts';
+
 const thisPackagesPackageJson = require(`${process.cwd()}/package.json`);
 const setupFilesAfterEnv = [];
 if ('aws-cdk-lib' in thisPackagesPackageJson.devDependencies ?? {}) {
@@ -5,7 +14,7 @@ if ('aws-cdk-lib' in thisPackagesPackageJson.devDependencies ?? {}) {
   setupFilesAfterEnv.push('aws-cdk-lib/testhelpers/jest-autoclean');
 } else if (thisPackagesPackageJson.name === 'aws-cdk-lib') {
   // If we *ARE* aws-cdk-lib, use the hook in a slightly different way
-  setupFilesAfterEnv.push('./testhelpers/jest-autoclean.ts');
+  setupFilesAfterEnv.push(`./testhelpers/jest-autoclean.${ext}`);
 }
 
 module.exports = {
@@ -15,7 +24,7 @@ module.exports = {
     'ts',
     'js',
   ],
-  testMatch: ['<rootDir>/test/**/?(*.)+(test).ts'],
+  testMatch: [`<rootDir>/test/**/?(*.)+(test).${ext}`],
 
   // Transform TypeScript using ts-jest. Use of this preset still requires the depending
   // package to depend on `ts-jest` directly.
