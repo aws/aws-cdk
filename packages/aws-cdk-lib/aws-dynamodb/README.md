@@ -839,6 +839,7 @@ When working with global tables across multiple regions, you may need to referen
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 class DynamoStack extends cdk.Stack {
   public readonly table: dynamodb.TableV2;
