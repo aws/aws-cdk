@@ -151,6 +151,11 @@
       "TITAN_EMBED_TEXT_V2_1024",
       "TITAN_EMBED_TEXT_V2_512",
       "TITAN_EMBED_TEXT_V2_256",
+      "ANTHROPIC_CLAUDE_HAIKU_4_5_V1_0",
+      "ANTHROPIC_CLAUDE_SONNET_4_5_V1_0",
+      "ANTHROPIC_CLAUDE_OPUS_4_1_V1_0",
+      "ANTHROPIC_CLAUDE_OPUS_4_V1_0",
+      "ANTHROPIC_CLAUDE_SONNET_4_V1_0",
       "ANTHROPIC_CLAUDE_3_7_SONNET_V1_0",
       "ANTHROPIC_CLAUDE_3_5_SONNET_V2_0",
       "ANTHROPIC_CLAUDE_3_5_SONNET_V1_0",
@@ -328,6 +333,32 @@
       "ORC",
       "PARQUET",
       "TSV"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/os-version.ts": {
+    "OSVersion": [
+      "LINUX",
+      "MAC_OS",
+      "WINDOWS",
+      "AMAZON_LINUX",
+      "AMAZON_LINUX_2",
+      "AMAZON_LINUX_2023",
+      "MAC_OS_14",
+      "MAC_OS_15",
+      "REDHAT_ENTERPRISE_LINUX",
+      "REDHAT_ENTERPRISE_LINUX_8",
+      "REDHAT_ENTERPRISE_LINUX_9",
+      "REDHAT_ENTERPRISE_LINUX_10",
+      "SLES",
+      "SLES_15",
+      "UBUNTU",
+      "UBUNTU_22_04",
+      "UBUNTU_24_04",
+      "WINDOWS_SERVER",
+      "WINDOWS_SERVER_2016",
+      "WINDOWS_SERVER_2019",
+      "WINDOWS_SERVER_2022",
+      "WINDOWS_SERVER_2025"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-iot-alpha/lib/scheduled-audit.ts": {
@@ -766,6 +797,7 @@
       "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_200K",
       "ANTHROPIC_CLAUDE_OPUS_4_20250514_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_1_20250805_V1_0",
+      "ANTHROPIC_CLAUDE_OPUS_4_5_20251101_V1_0",
       "ANTHROPIC_CLAUDE_INSTANT_V1",
       "ANTHROPIC_CLAUDE_INSTANT_V1_2_100K",
       "COHERE_COMMAND_V14",
@@ -2379,6 +2411,11 @@
       "ON_PUBLISHED_VERSIONS"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/tenancy-config.ts": {
+    "TenancyConfig": [
+      "PER_TENANT"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-logs/lib/data-protection-policy.ts": {
     "DataIdentifier": [
       "ADDRESS",
@@ -2638,6 +2675,7 @@
       "VER_3_09_0",
       "VER_3_10_0",
       "VER_3_10_1",
+      "VER_3_10_2",
       "VER_3_11_0"
     ],
     "AuroraPostgresEngineVersion": [
@@ -2755,6 +2793,7 @@
       "VER_16_8_LIMITLESS",
       "VER_16_9",
       "VER_16_9_LIMITLESS",
+      "VER_16_10",
       "VER_17_1",
       "VER_17_2",
       "VER_17_4",
@@ -2864,6 +2903,7 @@
       "VER_10_6_21",
       "VER_10_6_22",
       "VER_10_6_23",
+      "VER_10_6_24",
       "VER_10_11",
       "VER_10_11_4",
       "VER_10_11_5",
@@ -2875,11 +2915,13 @@
       "VER_10_11_11",
       "VER_10_11_13",
       "VER_10_11_14",
+      "VER_10_11_15",
       "VER_11_4_3",
       "VER_11_4_4",
       "VER_11_4_5",
       "VER_11_4_7",
       "VER_11_4_8",
+      "VER_11_4_9",
       "VER_11_8_3"
     ],
     "MysqlEngineVersion": [
@@ -2963,6 +3005,7 @@
       "VER_8_0_41",
       "VER_8_0_42",
       "VER_8_0_43",
+      "VER_8_0_44",
       "VER_8_4_3",
       "VER_8_4_4",
       "VER_8_4_5",

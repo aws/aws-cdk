@@ -7,8 +7,9 @@
 
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as agentcore from '../../../agentcore';
+import * as agentcore from '../../../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-bedrock-agentcore-runtime');
@@ -66,6 +67,17 @@ const v2Endpoint = new agentcore.RuntimeEndpoint(stack, 'V2Endpoint', {
   agentRuntimeVersion: '2',
   description: 'Version 2 endpoint',
 });
+
+// Test grant methods to verify sub-resource permissions
+const testFunction = new lambda.Function(stack, 'TestInvokerFunction', {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('def handler(event, context): return {"statusCode": 200}'),
+  description: 'Test function to verify runtime grant permissions with sub-resources',
+});
+
+// Grant invoke permissions - this will include sub-resource wildcard in IAM policy
+runtime.grantInvoke(testFunction);
 
 // Output runtime and endpoint information for verification
 new cdk.CfnOutput(stack, 'RuntimeId', {

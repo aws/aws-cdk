@@ -4,6 +4,7 @@ import { CfnComponent } from 'aws-cdk-lib/aws-imagebuilder';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import * as yaml from 'yaml';
@@ -281,15 +282,20 @@ export interface ComponentDocumentStep {
 
   /**
    * Contains parameters required by the action to run the step
+   *
+   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/toe-action-modules.html
    */
-  readonly inputs: any;
+  readonly inputs: ComponentStepInputs;
 
   /**
    * The condition to apply to the step. If the condition is false, then the step is skipped
    *
    * @default - no condition is applied to the step and it gets executed
+   *
+   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/toe-conditional-constructs.html
+   * @see https://docs.aws.amazon.com/imagebuilder/latest/userguide/toe-comparison-operators.html
    */
-  readonly if?: any;
+  readonly if?: ComponentStepIfCondition;
 
   /**
    * A looping construct defining a repeated sequence of instructions
@@ -638,6 +644,61 @@ export enum ComponentSchemaVersion {
 }
 
 /**
+ * Represents the inputs for a step in the component document
+ */
+export class ComponentStepInputs {
+  /**
+   * Creates the input value from an object, for the component step
+   *
+   * @param inputsObject The object containing the input values
+   */
+  public static fromObject(inputsObject: { [key: string]: any }): ComponentStepInputs {
+    return new ComponentStepInputs(inputsObject);
+  }
+
+  /**
+   * Creates the input value from a list of input objects, for the component step
+   *
+   * @param inputsObjectList The list of objects containing the input values
+   */
+  public static fromList(inputsObjectList: { [key: string]: any }[]): ComponentStepInputs {
+    return new ComponentStepInputs(inputsObjectList);
+  }
+
+  /**
+   * The rendered input value
+   */
+  public readonly inputs: any;
+
+  protected constructor(input: any) {
+    this.inputs = input;
+  }
+}
+
+/**
+ * Represents an `if` condition in the component document
+ */
+export class ComponentStepIfCondition {
+  /**
+   * Creates the `if` value from an object, for the component step
+   *
+   * @param ifObject The object containing the `if` condition
+   */
+  public static fromObject(ifObject: { [key: string]: any }): ComponentStepIfCondition {
+    return new ComponentStepIfCondition(ifObject);
+  }
+
+  /**
+   * The rendered input value
+   */
+  public readonly ifCondition: any;
+
+  protected constructor(ifCondition: any) {
+    this.ifCondition = ifCondition;
+  }
+}
+
+/**
  * Helper class for referencing and uploading component data
  */
 export abstract class ComponentData {
@@ -705,9 +766,9 @@ export abstract class ComponentData {
           action: step.action,
           ...(step.onFailure !== undefined && { onFailure: step.onFailure }),
           ...(step.timeout !== undefined && { timeoutSeconds: step.timeout.toSeconds() }),
-          ...(step.if !== undefined && { if: step.if }),
+          ...(step.if !== undefined && { if: step.if.ifCondition }),
           ...(step.loop !== undefined && { loop: step.loop }),
-          inputs: step.inputs,
+          inputs: step.inputs.inputs,
         })),
       })),
     });
@@ -1233,6 +1294,8 @@ export class Component extends ComponentBase {
             }).toLowerCase(), // Enforce lowercase for the auto-generated fallback
         }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Object.defineProperty(this, COMPONENT_SYMBOL, { value: true });
 
