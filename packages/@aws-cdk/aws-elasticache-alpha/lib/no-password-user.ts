@@ -2,7 +2,6 @@ import { Construct } from 'constructs';
 import { UserEngine } from './common';
 import { CfnUser } from 'aws-cdk-lib/aws-elasticache';
 import { UserBase, UserBaseProps } from './user-base';
-import { ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
@@ -81,14 +80,10 @@ export class NoPasswordUser extends UserBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.engine = props.engine ?? UserEngine.REDIS;
+    this.engine = UserEngine.REDIS;
     this.userId = props.userId;
     this.userName = props.userName ?? props.userId;
     this.accessString = props.accessControl.accessString;
-
-    if (this.engine === UserEngine.VALKEY) {
-      throw new ValidationError('Valkey engine does not support no-password authentication.', this);
-    }
 
     this.resource = new CfnUser(this, 'Resource', {
       engine: this.engine,
