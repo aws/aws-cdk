@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as cdk from 'aws-cdk-lib';
 import { AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
@@ -42,7 +43,7 @@ describe('AgentRuntimeArtifact tests', () => {
   test('Should use default options when not specified for asset', () => {
     // Call without specifying options to use default {}
     // Use the testArtifact directory that exists in tests
-    const artifact = AgentRuntimeArtifact.fromAsset('test/agentcore/runtime/testArtifact');
+    const artifact = AgentRuntimeArtifact.fromAsset(path.join(__dirname, 'testArtifact'));
 
     const runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
@@ -58,7 +59,7 @@ describe('AgentRuntimeArtifact tests', () => {
   });
 
   test('Should throw error if _render is called before bind for AssetImage', () => {
-    const artifact = AgentRuntimeArtifact.fromAsset('test/agentcore/runtime/testArtifact');
+    const artifact = AgentRuntimeArtifact.fromAsset(path.join(__dirname, 'testArtifact'));
 
     // Try to render without binding
     expect(() => {
@@ -92,7 +93,7 @@ describe('AgentRuntimeArtifact tests', () => {
   });
 
   test('Should only bind once for asset image', () => {
-    const artifact = AgentRuntimeArtifact.fromAsset('test/agentcore/runtime/testArtifact', {
+    const artifact = AgentRuntimeArtifact.fromAsset(path.join(__dirname, 'testArtifact'), {
       buildArgs: {
         TEST: 'value',
       },
@@ -113,5 +114,62 @@ describe('AgentRuntimeArtifact tests', () => {
 
     // Should return the same URI
     expect(rendered1.containerUri).toBe(rendered2.containerUri);
+  });
+
+  test('Should use static construct ID for asset image regardless of directory', () => {
+    // Create two separate stacks to test that the construct ID is always 'AgentRuntimeArtifact'
+    const stack1 = new cdk.Stack(app, 'test-stack-1', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const stack2 = new cdk.Stack(app, 'test-stack-2', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const testArtifactPath = path.join(__dirname, 'testArtifact');
+    const artifact1 = AgentRuntimeArtifact.fromAsset(testArtifactPath);
+    const artifact2 = AgentRuntimeArtifact.fromAsset(testArtifactPath);
+
+    const runtime1 = new Runtime(stack1, 'test-runtime', {
+      runtimeName: 'test_runtime_1',
+      agentRuntimeArtifact: artifact1,
+    });
+    const runtime2 = new Runtime(stack2, 'test-runtime', {
+      runtimeName: 'test_runtime_2',
+      agentRuntimeArtifact: artifact2,
+    });
+
+    artifact1.bind(stack1, runtime1);
+    artifact2.bind(stack2, runtime2);
+
+    // Both should succeed - if the ID was dynamic based on directory hash,
+    // different directories would produce different IDs, but now it's static
+    const rendered1: any = artifact1._render();
+    const rendered2: any = artifact2._render();
+
+    expect(rendered1.containerUri).toBeDefined();
+    expect(rendered2.containerUri).toBeDefined();
+  });
+
+  test('Should fail when binding different asset artifacts to same scope', () => {
+    // This test verifies the static ID behavior - binding different artifacts
+    // to the same scope should fail because the construct ID is static
+    const testArtifactPath = path.join(__dirname, 'testArtifact');
+    const artifact = AgentRuntimeArtifact.fromAsset(testArtifactPath);
+
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: artifact,
+    });
+
+    // First bind should succeed
+    artifact.bind(stack, runtime);
+
+    // Create a new artifact (same directory, but different artifact instance)
+    const artifact2 = AgentRuntimeArtifact.fromAsset(testArtifactPath);
+
+    // Second bind to the same scope should fail because the construct ID 'AgentRuntimeArtifact' already exists
+    expect(() => {
+      artifact2.bind(stack, runtime);
+    }).toThrow(/There is already a Construct with name 'AgentRuntimeArtifact'/);
   });
 });
