@@ -1,9 +1,34 @@
 import { BundlingFileAccess, DockerImage, DockerRunOptions } from '../../core';
 
 /**
+ * Bundler to use for packaging Lambda code
+ */
+export enum Bundler {
+  /**
+   * Use esbuild to bundle Lambda code
+   *
+   * @see https://esbuild.github.io/
+   */
+  ESBUILD = 'esbuild',
+
+  /**
+   * Use rolldown to bundle Lambda code
+   *
+   * @see https://rolldown.rs/
+   */
+  ROLLDOWN = 'rolldown',
+}
+
+/**
  * Bundling options
  */
 export interface BundlingOptions extends DockerRunOptions {
+  /**
+   * Bundler to use for packaging the code.
+   *
+   * @default Bundler.ESBUILD
+   */
+  readonly bundler?: Bundler;
   /**
    * Whether to minify files when bundling.
    *
@@ -29,6 +54,8 @@ export interface BundlingOptions extends DockerRunOptions {
   /**
    * Whether to include original source code in source maps when bundling.
    *
+   * Only applies when using the esbuild bundler.
+   *
    * @see https://esbuild.github.io/api/#sources-content
    *
    * @default true
@@ -37,6 +64,8 @@ export interface BundlingOptions extends DockerRunOptions {
 
   /**
    * Target environment for the generated JavaScript code.
+   *
+   * Only applies when using the esbuild bundler.
    *
    * @see https://esbuild.github.io/api/#target
    *
@@ -53,13 +82,14 @@ export interface BundlingOptions extends DockerRunOptions {
    * For example, `{ '.png': 'dataurl' }`.
    *
    * @see https://esbuild.github.io/api/#loader
+   * @see https://rolldown.rs/
    *
-   * @default - use esbuild default loaders
+   * @default - use default loaders for the selected bundler
    */
   readonly loader?: { [ext: string]: string };
 
   /**
-   * Log level for esbuild. This is also propagated to the package manager and
+   * Log level for the bundler. This is also propagated to the package manager and
    * applies to its specific install command.
    *
    * @default LogLevel.WARNING
@@ -80,12 +110,14 @@ export interface BundlingOptions extends DockerRunOptions {
    * If this is the case, you can enable this option to preserve the original
    * `name` values even in minified code.
    *
+   * Only applies when using the esbuild bundler.
+   *
    * @default false
    */
   readonly keepNames?: boolean;
 
   /**
-   * Normally the esbuild automatically discovers `tsconfig.json` files and reads their contents during a build.
+   * Normally the bundler automatically discovers `tsconfig.json` files and reads their contents during a build.
    *
    * However, you can also configure a custom `tsconfig.json` file to use instead.
    *
@@ -95,9 +127,9 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * For example, `{ 'tsconfig': 'path/custom.tsconfig.json' }`.
    *
-   * @default - automatically discovered by `esbuild`
+   * @default - automatically discovered by the bundler
    */
-  readonly tsconfig? : string;
+  readonly tsconfig?: string;
 
   /**
    * This option tells esbuild to write out a JSON file relative to output directory with metadata about the build.
@@ -121,6 +153,9 @@ export interface BundlingOptions extends DockerRunOptions {
    * This data can then be analyzed by other tools. For example,
    * bundle buddy can consume esbuild's metadata format and generates a treemap visualization
    * of the modules in your bundle and how much space each one takes up.
+   *
+   * Only applies when using the esbuild bundler.
+   *
    * @see https://esbuild.github.io/api/#metafile
    * @default false
    */
@@ -135,7 +170,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default - no comments are passed
    */
-  readonly banner? : string;
+  readonly banner?: string;
 
   /**
    * Use this to insert an arbitrary string at the end of generated JavaScript files.
@@ -146,7 +181,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default - no comments are passed
    */
-  readonly footer? : string;
+  readonly footer?: string;
 
   /**
    * The charset to use for esbuild's output.
@@ -201,12 +236,16 @@ export interface BundlingOptions extends DockerRunOptions {
   /**
    * The version of esbuild to use when running in a Docker container.
    *
+   * Only applies when using the esbuild bundler.
+   *
    * @default - latest v0
    */
   readonly esbuildVersion?: string;
 
   /**
    * Build arguments to pass into esbuild.
+   *
+   * Only applies when using the esbuild bundler.
    *
    * For example, to add the [--log-limit](https://esbuild.github.io/api/#log-limit) flag:
    *
@@ -224,6 +263,40 @@ export interface BundlingOptions extends DockerRunOptions {
    * @default - no additional esbuild arguments are passed
    */
   readonly esbuildArgs?: { [key: string]: string | boolean };
+
+  /**
+   * The version of rolldown to use when running in a Docker container.
+   *
+   * Only applies when using the rolldown bundler.
+   *
+   * @see https://rolldown.rs/
+   * @default - latest v0
+   */
+  readonly rolldownVersion?: string;
+
+  /**
+   * Build arguments to pass into rolldown.
+   *
+   * Only applies when using the rolldown bundler.
+   *
+   * For example, to add custom rolldown CLI arguments:
+   *
+   * ```text
+   * new NodejsFunction(scope, id, {
+   *   ...
+   *   bundling: {
+   *     bundler: Bundler.ROLLDOWN,
+   *     rolldownArgs: {
+   *       "--log-level": "debug",
+   *     }
+   *   }
+   * });
+   * ```
+   *
+   * @see https://rolldown.rs/apis/cli
+   * @default - no additional rolldown arguments are passed
+   */
+  readonly rolldownArgs?: { [key: string]: string | boolean };
 
   /**
    * Build arguments to pass when building the bundling image.
@@ -255,8 +328,9 @@ export interface BundlingOptions extends DockerRunOptions {
   /**
    * A custom bundling Docker image.
    *
-   * This image should have esbuild installed globally. If you plan to use `nodeModules`
-   * it should also have `npm`, `yarn`, `bun` or `pnpm` depending on the lock file you're using.
+   * This image should have esbuild or rolldown (depending on the bundler used) installed globally.
+   * If you plan to use `nodeModules` it should also have `npm`, `yarn`, `bun` or `pnpm`
+   * depending on the lock file you're using.
    *
    * See https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-lambda-nodejs/lib/Dockerfile
    * for the default image provided by aws-cdk-lib/aws-lambda-nodejs.
@@ -378,7 +452,7 @@ export interface ICommandHooks {
 }
 
 /**
- * Log levels for esbuild and package managers' install commands.
+ * Log levels for bundlers (esbuild or rolldown) and package managers' install commands.
  */
 export enum LogLevel {
   /** Show everything */
