@@ -1803,3 +1803,35 @@ test('outputObjectKeys default value is true', () => {
     OutputObjectKeys: true,
   });
 });
+
+test('destinationBucketRegion specified in props', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'TestStack', { env: { region: 'us-east-1' } });
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.data('test.txt', 'Destination Bucket Region Test')],
+    destinationBucket: bucket,
+    destinationBucketRegion: 'eu-south-2',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    DestinationBucketRegion: 'eu-south-2',
+  });
+});
+
+test('destinationBucketRegion not specified in props', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'TestStack', { env: { region: 'us-east-1' } });
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.data('test.txt', 'Destination Bucket Region Test')],
+    destinationBucket: bucket,
+  });
+
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('Custom::CDKBucketDeployment', {
+    DestinationBucketRegion: Match.absent(),
+  });
+});
