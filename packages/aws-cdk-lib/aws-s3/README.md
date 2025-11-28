@@ -186,7 +186,7 @@ const bucket = new s3.Bucket(this, 'Bucket', {
 
 By default, if `abacStatus` is not specified, ABAC will not be enabled for the bucket.
 
-For more information about ABAC and how to use it with S3, see the [AWS documentation on ABAC](https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/buckets-tagging.html).
+For more information about ABAC and how to use it with S3, see the [AWS documentation on ABAC](https://docs.aws.amazon.com/AmazonS3/latest/userguide/buckets-tagging.html).
 
 ## AWS Foundational Security Best Practices
 
