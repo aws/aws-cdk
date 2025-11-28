@@ -18,8 +18,11 @@ export class CdkCore extends ExternalModule {
   public readonly ITaggableV2 = Type.fromName(this, 'ITaggableV2');
   public readonly IResolvable = Type.fromName(this, 'IResolvable');
   public readonly Stack = Type.fromName(this, 'Stack');
+  public readonly Names = $T(Type.fromName(this, 'Names'));
+  public readonly Arn = $T(Type.fromName(this, 'Arn'));
 
   public readonly objectToCloudFormation = makeCallableExpr(this, 'objectToCloudFormation');
+  public readonly eventPatternToCloudFormation = makeCallableExpr(this, 'eventPatternToCloudFormation');
   public readonly stringToCloudFormation = makeCallableExpr(this, 'stringToCloudFormation');
   public readonly dateToCloudFormation = makeCallableExpr(this, 'dateToCloudFormation');
   public readonly booleanToCloudFormation = makeCallableExpr(this, 'booleanToCloudFormation');
@@ -48,6 +51,9 @@ export class CdkCore extends ExternalModule {
   public readonly validateNumber = makeCallableExpr(this, 'validateNumber');
   public readonly validateString = makeCallableExpr(this, 'validateString');
 
+  public readonly AWSEventMetadata = Type.fromName(this, 'AWSEventMetadata');
+  public readonly AWSEventMetadataProps = Type.fromName(this, 'AWSEventMetadataProps');
+
   constructor(fqn: string) {
     super(fqn);
   }
@@ -62,6 +68,18 @@ export class CdkCore extends ExternalModule {
 
   public tokenAsList(arg: Expression) {
     return this.Token.asList(arg);
+  }
+
+  public uniqueId(arg: Expression) {
+    return this.Names.uniqueId(arg);
+  }
+
+  public uniqueResourceName(...args: Expression[]) {
+    return this.Names.uniqueResourceName(...args);
+  }
+
+  public arnFormat(...args: Expression[]) {
+    return this.Arn.format(...args);
   }
 }
 
@@ -104,7 +122,7 @@ export class CdkCloudWatch extends ExternalModule {
 }
 
 export const CDK_INTERFACES_ENVIRONMENT_AWARE = new Interfaces('aws-cdk-lib/interfaces/environment-aware');
-export const CDK_CORE = new CdkCore('aws-cdk-lib');
+export const CDK_CORE = new CdkCore('aws-cdk-lib/core');
 export const CDK_CLOUDWATCH = new CdkCloudWatch('aws-cdk-lib/aws-cloudwatch');
 export const CONSTRUCTS = new Constructs();
 

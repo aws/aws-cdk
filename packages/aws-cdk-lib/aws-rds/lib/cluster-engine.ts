@@ -174,7 +174,12 @@ interface MysqlClusterEngineBaseProps {
 
 abstract class MySqlClusterEngineBase extends ClusterEngineBase {
   public readonly engineFamily = 'MYSQL';
-  public readonly supportedLogTypes: string[] = ['error', 'general', 'slowquery', 'audit'];
+
+  /**
+   * Log types supported by this engine. See EnableCloudwatchLogsExports of CreateDBCluster API
+   * for reference: https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_CreateDBCluster.html
+   */
+  public readonly supportedLogTypes: string[] = ['error', 'general', 'slowquery', 'audit', 'instance', 'iam-db-auth-error'];
   public readonly combineImportAndExportRoles?: boolean;
 
   constructor(props: MysqlClusterEngineBaseProps) {
@@ -706,6 +711,10 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_3_10_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.10.0');
   /** Version "8.0.mysql_aurora.3.10.1". */
   public static readonly VER_3_10_1 = AuroraMysqlEngineVersion.builtIn_8_0('3.10.1');
+  /** Version "8.0.mysql_aurora.3.10.2". */
+  public static readonly VER_3_10_2 = AuroraMysqlEngineVersion.builtIn_8_0('3.10.2');
+  /** Version "8.0.mysql_aurora.3.11.0". */
+  public static readonly VER_3_11_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.11.0');
 
   /**
    * Create a new AuroraMysqlEngineVersion with an arbitrary version.
@@ -1180,6 +1189,9 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_13_20 = AuroraPostgresEngineVersion.of('13.20', '13', { s3Import: true, s3Export: true });
   /** Version "13.21". */
   public static readonly VER_13_21 = AuroraPostgresEngineVersion.of('13.21', '13', { s3Import: true, s3Export: true });
+  /** Version "13.22". */
+  public static readonly VER_13_22 = AuroraPostgresEngineVersion.of('13.22', '13', { s3Import: true, s3Export: true });
+
   /**
    * Version "14.3".
    * @deprecated Version 14.3 is no longer supported by Amazon RDS.
@@ -1234,6 +1246,9 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_14_17 = AuroraPostgresEngineVersion.of('14.17', '14', { s3Import: true, s3Export: true });
   /** Version "14.18". */
   public static readonly VER_14_18 = AuroraPostgresEngineVersion.of('14.18', '14', { s3Import: true, s3Export: true });
+  /** Version "14.19". */
+  public static readonly VER_14_19 = AuroraPostgresEngineVersion.of('14.19', '14', { s3Import: true, s3Export: true });
+
   /**
    * Version "15.2".
    * @deprecated Version 15.2 is no longer supported by Amazon RDS.
@@ -1271,6 +1286,9 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_15_12 = AuroraPostgresEngineVersion.of('15.12', '15', { s3Import: true, s3Export: true });
   /** Version "15.13". */
   public static readonly VER_15_13 = AuroraPostgresEngineVersion.of('15.13', '15', { s3Import: true, s3Export: true });
+  /** Version "15.14". */
+  public static readonly VER_15_14 = AuroraPostgresEngineVersion.of('15.14', '15', { s3Import: true, s3Export: true });
+
   /**
    * Version "16.0"
    * @deprecated Version 16.0 is no longer supported by Amazon RDS.
@@ -1303,6 +1321,8 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_16_9 = AuroraPostgresEngineVersion.of('16.9', '16', { s3Import: true, s3Export: true });
   /** Version "16.9 limitless" */
   public static readonly VER_16_9_LIMITLESS = AuroraPostgresEngineVersion.of('16.9-limitless', '16', { s3Import: true, s3Export: true });
+  /** Version "16.10". */
+  public static readonly VER_16_10 = AuroraPostgresEngineVersion.of('16.10', '16', { s3Import: true, s3Export: true });
 
   /**
    * Version "17.1"
@@ -1318,6 +1338,8 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_17_4 = AuroraPostgresEngineVersion.of('17.4', '17', { s3Import: true, s3Export: true });
   /** Version "17.5". */
   public static readonly VER_17_5 = AuroraPostgresEngineVersion.of('17.5', '17', { s3Import: true, s3Export: true });
+  /** Version "17.6". */
+  public static readonly VER_17_6 = AuroraPostgresEngineVersion.of('17.6', '17', { s3Import: true, s3Export: true });
 
   /**
    * Create a new AuroraPostgresEngineVersion with an arbitrary version.
@@ -1383,7 +1405,12 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
 
   public readonly engineFamily = 'POSTGRESQL';
   public readonly defaultUsername = 'postgres';
-  public readonly supportedLogTypes: string[] = ['postgresql'];
+
+  /**
+   * Log types supported by this engine. See EnableCloudwatchLogsExports of CreateDBCluster API
+   * for reference: https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_CreateDBCluster.html
+   */
+  public readonly supportedLogTypes: string[] = ['postgresql', 'iam-db-auth-error', 'instance'];
 
   constructor(version?: AuroraPostgresEngineVersion) {
     super({

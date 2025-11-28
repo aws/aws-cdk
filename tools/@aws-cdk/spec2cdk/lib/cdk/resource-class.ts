@@ -8,7 +8,8 @@ import {
   ClassType,
   code,
   DummyScope,
-  expr, Expression,
+  expr,
+  Expression,
   Initializer,
   InterfaceType,
   IScope,
@@ -17,7 +18,8 @@ import {
   MemberVisibility,
   Module,
   ObjectLiteral,
-  Stability, Statement,
+  Stability,
+  Statement,
   stmt,
   StructType,
   SuperInitializer,
@@ -28,6 +30,7 @@ import {
   Property,
   SelectiveModuleImport,
 } from '@cdklabs/typewriter';
+import { findArnProperty, findNonIdentifierArnProperty } from './arn';
 import { CDK_CORE, CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
 import { ResourceDecider } from './resource-decider';
@@ -36,14 +39,18 @@ import {
   cfnParserNameFromType,
   cfnProducerNameFromType,
   classNameFromResource,
-  cloudFormationDocLink, propertyNameFromCloudFormation,
-  propStructNameFromResource, referenceInterfaceName, referenceInterfaceAttributeName, referencePropertyName,
+  cloudFormationDocLink,
+  propertyNameFromCloudFormation,
+  propStructNameFromResource,
+  referenceInterfaceAttributeName,
+  referenceInterfaceName,
+  referencePropertyName,
   staticRequiredTransform,
   staticResourceTypeName,
 } from '../naming';
 import { isDefined, splitDocumentation, maybeDeprecated } from '../util';
-import { findArnProperty } from './reference-props';
-import { SelectiveImport, RelationshipDecider } from './relationship-decider';
+import { RelationshipDecider } from './relationship-decider';
+import { SelectiveImport } from './service-submodule';
 
 export interface ITypeHost {
   typeFromSpecType(type: PropertyType): Type;
@@ -51,6 +58,11 @@ export interface ITypeHost {
 
 // This convenience typewriter builder is used all over the place
 const $this = $E(expr.this_());
+
+export interface Referenceable {
+  readonly hasArnGetter: boolean;
+  readonly ref: ReferenceInterfaceTypes;
+}
 
 export interface ResourceClassProps {
   readonly interfacesModule?: {
@@ -61,14 +73,15 @@ export interface ResourceClassProps {
   readonly deprecated?: string;
 }
 
-export class ResourceClass extends ClassType {
+export class ResourceClass extends ClassType implements Referenceable {
   private readonly propsType: StructType;
   private readonly decider: ResourceDecider;
   private readonly relationshipDecider: RelationshipDecider;
   private readonly converter: TypeConverter;
   private readonly module: Module;
+  private _hasArnGetter: boolean = false;
   public readonly imports = new Array<SelectiveImport>();
-  private ref: ReferenceInterfaceTypes;
+  public ref: ReferenceInterfaceTypes;
 
   constructor(
     scope: IScope,
@@ -160,7 +173,9 @@ export class ResourceClass extends ClassType {
    */
   public build() {
     // Build the props type
-    const cfnMapping = new CloudFormationMapping(this.module, this.converter);
+    const cfnMapping = new CloudFormationMapping(this.module, this.converter, {
+      resourceType: this.resource.cloudFormationType,
+    });
 
     for (const prop of this.decider.propsProperties) {
       this.propsType.addProperty(prop.propertySpec);
@@ -184,6 +199,7 @@ export class ResourceClass extends ClassType {
     this.makeFromCloudFormationFactory();
     this.makeFromArnFactory();
     this.makeFromNameFactory();
+    this.addArnForResourceMethod();
 
     if (this.resource.cloudFormationTransform) {
       this.addProperty({
@@ -304,6 +320,27 @@ export class ResourceClass extends ClassType {
     });
   }
 
+  /**
+   * ```ts
+   *  public static fromApplicationInstanceArn(scope: constructs.Construct, id: string, arn: string): IApplicationInstanceRef {
+   *    class Import extends cdk.Resource {
+   *      public applicationInstanceRef: ApplicationInstanceReference;
+   *
+   *      public constructor(scope: constructs.Construct, id: string, arn: string) {
+   *        super(scope, id, {
+   *          "environmentFromArn": arn
+   *        });
+   *
+   *        const variables = new cfn_parse.TemplateString("arn:${Partition}:panorama:${Region}:${Account}:applicationInstance/${ApplicationInstanceId}").parse(arn);
+   *        this.applicationInstanceRef = {
+   *          "applicationInstanceId": variables.ApplicationInstanceId,
+   *          "applicationInstanceArn": arn
+   *        };
+   *      }
+   *    }
+   *    return new Import(scope, id, arn);
+   *  }
+   */
   private makeFromArnFactory() {
     const arnTemplate = this.resource.arnTemplate;
     if (!(arnTemplate && this.ref.struct)) {
@@ -311,7 +348,7 @@ export class ResourceClass extends ClassType {
       return;
     }
 
-    const cfnArnProperty = findArnProperty(this.resource);
+    const cfnArnProperty = findNonIdentifierArnProperty(this.resource);
     if (cfnArnProperty == null) {
       return;
     }
@@ -390,6 +427,85 @@ export class ResourceClass extends ClassType {
       new TypeDeclarationStatement(innerClass),
       stmt.ret(innerClass.newInstance(expr.ident('scope'), expr.ident('id'), expr.ident('arn'))),
     );
+  }
+
+  /**
+   * Generates a static method that returns the ARN of the provided resource.
+   * If the resource's ref interface already has an ARN, that's what's returned:
+   *
+   *     public static arnForTable(resource: ITableRef): string {
+   *       return resource.tableRef.tableArn;
+   *     }
+   *
+   * Otherwise, we fall back to using the ARN template:
+   *
+   *    public static arnForRestApi(resource: IRestApiRef): string {
+   *       return new cfn_parse.TemplateString("arn:${Partition}:apigateway:${Region}::/restapis/${RestApiId}").interpolate({
+   *         "Partition": cdk.Stack.of(resource).partition,
+   *         "Region": cdk.Stack.of(resource).region,
+   *         "Account": cdk.Stack.of(resource).account,
+   *         "RestApiId": resource.restApiRef.restApiId
+   *       });
+   *     }
+   */
+  private addArnForResourceMethod() {
+    const doAddMethod = () => {
+      const method = this.addMethod({
+        name: `arnFor${this.resource.name}`,
+        static: true,
+        visibility: MemberVisibility.Public,
+        returnType: Type.STRING,
+      });
+
+      method.addParameter({
+        name: 'resource',
+        type: this.ref.interfaceType,
+      });
+
+      return method;
+    };
+
+    const arnTemplate = this.resource.arnTemplate;
+    const arnPropertyName = findArnProperty(this.resource);
+
+    const refAttributeName = referenceInterfaceAttributeName(this.decider.camelResourceName);
+    if (arnPropertyName != null) {
+      const method = doAddMethod();
+      const arn = referencePropertyName(arnPropertyName, this.resource.name);
+      method.addBody(
+        stmt.ret($E(method.parameters[0])[refAttributeName][arn]),
+      );
+      this._hasArnGetter = true;
+    } else if (arnTemplate != null) {
+      const propsWithoutArn = this.decider.referenceProps.filter(prop => !prop.declaration.name.endsWith('Arn'));
+
+      if (propsWithoutArn.length !== 1) {
+        // Only generate the method if there is exactly one non-ARN prop in the Reference interface
+        // and only one variable in the ARN template that is not Partition, Region or Account
+        return;
+      }
+
+      const allVariables = extractVariables(arnTemplate);
+      const propName = propsWithoutArn[0].declaration.name;
+      const variableName = allVariables.find(v => propertyNameFromCloudFormation(v) === propName);
+      if (variableName == null) {
+        return;
+      }
+
+      const resourceIdentifier = expr.ident('resource');
+      const method = doAddMethod();
+      const stackOfResource = $T(CDK_CORE.Stack).of(resourceIdentifier);
+      const interpolateArn = CDK_CORE.helpers.TemplateString.newInstance(expr.lit(arnTemplate)).prop('interpolate').call(expr.object({
+        Partition: stackOfResource.prop('partition'),
+        Region: stackOfResource.prop('region'),
+        Account: stackOfResource.prop('account'),
+        [variableName]: $E(resourceIdentifier)[refAttributeName][propName],
+      }));
+      method.addBody(
+        stmt.ret(interpolateArn),
+      );
+      this._hasArnGetter = true;
+    }
   }
 
   private makeFromNameFactory() {
@@ -711,6 +827,10 @@ export class ResourceClass extends ClassType {
       .filter((t) => t.mustRenderForBwCompat)) {
       this.converter.convertTypeDefinitionType(typeDef);
     }
+  }
+
+  public get hasArnGetter(): boolean {
+    return this._hasArnGetter;
   }
 }
 

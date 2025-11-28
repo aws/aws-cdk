@@ -1,6 +1,7 @@
 import { Resource } from '@aws-cdk/service-spec-types';
 import { $E, expr, Expression, PropertySpec, Type } from '@cdklabs/typewriter';
 import { attributePropertyName, referencePropertyName } from '../naming';
+import { findNonIdentifierArnProperty } from './arn';
 import { CDK_CORE } from './cdk';
 
 export interface ReferenceProp {
@@ -43,7 +44,7 @@ export function getReferenceProps(resource: Resource): ReferenceProp[] {
     }
   }
 
-  const arnProp = findArnProperty(resource);
+  const arnProp = findNonIdentifierArnProperty(resource);
   if (arnProp) {
     referenceProps.push({
       declaration: {
@@ -58,23 +59,6 @@ export function getReferenceProps(resource: Resource): ReferenceProp[] {
     });
   }
   return referenceProps;
-}
-
-/**
- * Find an ARN property for a given resource
- *
- * Returns `undefined` if no ARN property is found, or if the ARN property is already
- * included in the primary identifier.
- */
-export function findArnProperty(resource: Resource) {
-  const possibleArnNames = ['Arn', `${resource.name}Arn`];
-  for (const name of possibleArnNames) {
-    const prop = resource.attributes[name];
-    if (prop && !resource.primaryIdentifier?.includes(name)) {
-      return name;
-    }
-  }
-  return undefined;
 }
 
 function splitSelect(sep: string, n: number, base: Expression) {

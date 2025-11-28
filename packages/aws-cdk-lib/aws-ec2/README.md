@@ -1907,7 +1907,7 @@ You can configure [tag propagation on volume creation](https://docs.aws.amazon.c
 
 #### Throughput on GP3 Volumes
 
-You can specify the `throughput` of a GP3 volume from 125 (default) to 1000.
+You can specify the `throughput` of a GP3 volume from 125 (default) to 2000.
 
 ```ts
 new ec2.Volume(this, 'Volume', {
