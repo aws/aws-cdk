@@ -15,6 +15,7 @@ import {
   ComponentParameterType,
   ComponentPhaseName,
   ComponentSchemaVersion,
+  ComponentStepInputs,
   OSVersion,
   Platform,
 } from '../lib';
@@ -311,9 +312,9 @@ describe('Component', () => {
                   name: 'scope',
                   forEach: ['world', 'universe'],
                 },
-                inputs: {
+                inputs: ComponentStepInputs.fromObject({
                   commands: ['echo "Hello {{ scope.value }}!"'],
-                },
+                }),
               },
             ],
           },
@@ -331,9 +332,9 @@ describe('Component', () => {
                     updateBy: 1,
                   },
                 },
-                inputs: {
+                inputs: ComponentStepInputs.fromObject({
                   commands: ['echo "Hello {{ scope.index }} validate!"'],
-                },
+                }),
               },
             ],
           },
@@ -341,14 +342,11 @@ describe('Component', () => {
             name: ComponentPhaseName.TEST,
             steps: [
               {
-                name: 'hello-world-test',
-                action: ComponentAction.EXECUTE_BASH,
-                inputs: {
-                  commands: [
-                    'echo "Hello {{ Constant1 }} {{ Parameter1 }}!"',
-                    'echo "Hello {{ Constant2 }} {{ Parameter2 }}!"',
-                  ],
-                },
+                name: 'hello-world-download-test',
+                action: ComponentAction.WEB_DOWNLOAD,
+                inputs: ComponentStepInputs.fromList([
+                  { source: 'https://download.com/package.zip', destination: '/tmp/package.zip' },
+                ]),
               },
             ],
           },
@@ -426,12 +424,11 @@ phases:
             - echo "Hello {{ scope.index }} validate!"
   - name: test
     steps:
-      - name: hello-world-test
-        action: ExecuteBash
+      - name: hello-world-download-test
+        action: WebDownload
         inputs:
-          commands:
-            - echo "Hello {{ Constant1 }} {{ Parameter1 }}!"
-            - echo "Hello {{ Constant2 }} {{ Parameter2 }}!"
+          - source: https://download.com/package.zip
+            destination: /tmp/package.zip
 `,
           },
         }),
