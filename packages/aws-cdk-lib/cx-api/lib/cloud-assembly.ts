@@ -50,7 +50,7 @@ export class CloudAssembly implements ICloudAssembly {
    * For Jest, you have to make sure this function is called at the end of the
    * test suite instead:
    *
-   * ```ts
+   * ```js
    * import { CloudAssembly } from 'aws-cdk-lib/cx-api';
    *
    * afterAll(CloudAssembly.cleanupTemporaryDirectories);
