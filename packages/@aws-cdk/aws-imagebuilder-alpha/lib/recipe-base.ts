@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IComponent } from './component';
 import { IContainerRecipe } from './container-recipe';
+import { IImageRecipe } from './image-recipe';
 
 /**
  * The parameter value for a component parameter
@@ -69,4 +70,11 @@ export interface IRecipeBase extends cdk.IResource {
    * @internal
    */
   _isContainerRecipe(): this is IContainerRecipe;
+
+  /**
+   * Indicates whether the recipe is an Image Recipe
+   *
+   * @internal
+   */
+  _isImageRecipe(): this is IImageRecipe;
 }

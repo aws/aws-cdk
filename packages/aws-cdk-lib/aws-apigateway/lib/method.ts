@@ -373,6 +373,7 @@ export class Method extends Resource {
       connectionId: options.vpcLink ? options.vpcLink.vpcLinkId : undefined,
       credentials,
       timeoutInMillis: options.timeout?.toMilliseconds(),
+      responseTransferMode: options.responseTransferMode,
     };
   }
 
