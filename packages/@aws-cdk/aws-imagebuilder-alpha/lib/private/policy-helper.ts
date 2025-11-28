@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
+import { ImageProps } from '../image';
 import { ImagePipelineProps } from '../image-pipeline';
 import { WorkflowConfiguration } from '../workflow';
 
@@ -13,7 +14,7 @@ import { WorkflowConfiguration } from '../workflow';
  *
  * @see https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AWSServiceRoleForImageBuilder.html
  */
-export const defaultExecutionRolePolicy = <PropsT extends ImagePipelineProps>(
+export const defaultExecutionRolePolicy = <PropsT extends ImagePipelineProps | ImageProps>(
   scope: Construct,
   props?: PropsT,
 ): iam.PolicyStatement[] => {
