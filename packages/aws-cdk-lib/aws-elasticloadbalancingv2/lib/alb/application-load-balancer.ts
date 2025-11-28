@@ -3,7 +3,6 @@ import { ApplicationListener, BaseApplicationListenerProps } from './application
 import { ListenerAction } from './application-listener-action';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
-import * as iam from '../../../aws-iam';
 import { PolicyStatement } from '../../../aws-iam/lib/policy-statement';
 import { ServicePrincipal } from '../../../aws-iam/lib/principals';
 import * as s3 from '../../../aws-s3';
@@ -410,6 +409,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
    */
+  // TODO: ACL を有効にしたバケットでも動作確認する
   @MethodMetadata()
   public logHealthCheckLogs(bucket: s3.IBucket, prefix?: string) {
     /**
