@@ -37,12 +37,12 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@cdklabs/eslint-plugin": "^1.3.4",
+    "@cdklabs/eslint-plugin": "^1.3.5",
     "@types/fs-extra": "^9.0.13",
     "@types/glob": "^7.2.0",
     "@types/jest": "^29.5.14",
-    "@types/semver": "^7.7.0",
-    "@types/yargs": "^15.0.19",
+    "@types/semver": "^7.7.1",
+    "@types/yargs": "^15.0.20",
     "@typescript-eslint/eslint-plugin": "^8",
     "@stylistic/eslint-plugin": "^2",
     "@typescript-eslint/parser": "^8",
@@ -66,7 +66,7 @@
     "fs-extra": "^9.1.0",
     "glob": "^7.2.3",
     "npm-bundled": "^1.1.2",
-    "semver": "^7.7.2",
+    "semver": "^7.7.3",
     "yargs": "^16.2.0"
   }
 }
