@@ -797,23 +797,18 @@ describe('bucket', () => {
     });
   });
 
-  test.each([true, false])('bucket with ABAC status %s', (abacStatus) => {
+  test.each([
+    [true, 'Enabled'],
+    [false, 'Disabled'],
+    [undefined, Match.absent()],
+  ])('bucket with ABAC status %s', (abacStatus, expected) => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
       abacStatus,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      AbacStatus: abacStatus ? 'Enabled' : 'Disabled',
-    });
-  });
-
-  test('bucket without ABAC status', () => {
-    const stack = new cdk.Stack();
-    new s3.Bucket(stack, 'MyBucket');
-
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      AbacStatus: Match.absent(),
+      AbacStatus: expected,
     });
   });
 
