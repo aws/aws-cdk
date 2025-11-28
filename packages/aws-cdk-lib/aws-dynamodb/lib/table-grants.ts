@@ -47,12 +47,6 @@ export interface TableGrantsProps {
  * A set of permissions to grant on a Table
  */
 export class TableGrants {
-  private static _add_principal_read_actions(grant: iam.Grant): iam.Grant {
-    if (grant.principalStatements.length > 0) {
-      grant.principalStatements[0].addActions(...perms.PRINCIPAL_ONLY_READ_DATA_ACTIONS);
-    }
-    return grant;
-  }
   private readonly table: ITableRef;
   private readonly arns: string[] = [];
   private readonly encryptedResource?: iam.IEncryptedResource;
@@ -121,7 +115,11 @@ export class TableGrants {
     this.encryptedResource?.grantOnKey(grantee, ...perms.KEY_READ_ACTIONS);
     const result = this.actions(grantee, ...actions);
 
-    return TableGrants._add_principal_read_actions(result);
+    return result.combine(iam.Grant.addToPrincipal({
+      grantee,
+      actions: perms.PRINCIPAL_ONLY_READ_DATA_ACTIONS,
+      resourceArns: this.arns,
+    }));
   }
 
   /**
@@ -155,7 +153,11 @@ export class TableGrants {
     const result = this.actions(grantee, ...actions);
     this.encryptedResource?.grantOnKey(grantee, ...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS);
 
-    return TableGrants._add_principal_read_actions(result);
+    return result.combine(iam.Grant.addToPrincipal({
+      grantee,
+      actions: perms.PRINCIPAL_ONLY_READ_DATA_ACTIONS,
+      resourceArns: this.arns,
+    }));
   }
 
   /**

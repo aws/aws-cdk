@@ -22,13 +22,6 @@ export interface ITableV2 extends ITable {
  * Base class for a DynamoDB table.
  */
 export abstract class TableBaseV2 extends Resource implements ITableV2, IResourceWithPolicy {
-  private static _add_principal_read_actions(grant: Grant): Grant {
-    if (grant.principalStatements.length > 0) {
-      grant.principalStatements[0].addActions(...perms.PRINCIPAL_ONLY_READ_DATA_ACTIONS);
-    }
-    return grant;
-  }
-
   /**
    * The ARN of the table.
    *
@@ -160,8 +153,11 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   public grantReadData(grantee: IGrantable): Grant {
     const tableActions = perms.RESOURCE_READ_DATA_ACTIONS.concat(perms.DESCRIBE_TABLE);
-    const result = this.combinedGrant(grantee, { keyActions: perms.KEY_READ_ACTIONS, tableActions });
-    return TableBaseV2._add_principal_read_actions(result);
+    return this.combinedGrant(grantee, {
+      keyActions: perms.KEY_READ_ACTIONS,
+      tableActions,
+      tablePrinicipalExclusiveActions: perms.PRINCIPAL_ONLY_READ_DATA_ACTIONS,
+    });
   }
 
   /**
@@ -192,9 +188,13 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * @param grantee the principal to grant access to
    */
   public grantReadWriteData(grantee: IGrantable): Grant {
-    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS).concat(perms.DESCRIBE_TABLE);
+    const tableActions = perms.RESOURCE_READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS).concat(perms.DESCRIBE_TABLE);
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
-    return TableBaseV2._add_principal_read_actions(this.combinedGrant(grantee, { keyActions, tableActions }));
+    return this.combinedGrant(grantee, {
+      keyActions,
+      tableActions,
+      tablePrinicipalExclusiveActions: perms.PRINCIPAL_ONLY_READ_DATA_ACTIONS,
+    });
   }
 
   /**
@@ -431,7 +431,12 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * @param grantee the principal (no-op if undefined)
    * @param options options for keyActions, tableActions, and streamActions
    */
-  private combinedGrant(grantee: IGrantable, options: { keyActions?: string[]; tableActions?: string[]; streamActions?: string[] }) {
+  private combinedGrant(grantee: IGrantable, options: {
+    keyActions?: string[];
+    tableActions?: string[];
+    tablePrinicipalExclusiveActions?: string[];
+    streamActions?: string[];
+  }) {
     if (options.keyActions && this.encryptionKey) {
       this.encryptionKey.grant(grantee, ...options.keyActions);
     }
@@ -439,7 +444,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
     if (options.tableActions) {
       const resourceArns = [this.tableArn];
       this.hasIndex && resourceArns.push(`${this.tableArn}/index/*`);
-      return Grant.addToPrincipalOrResource({
+      const result = Grant.addToPrincipalOrResource({
         grantee,
         actions: options.tableActions,
         resourceArns,
@@ -449,6 +454,15 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
         resourceSelfArns: ['*'],
         resource: this,
       });
+
+      if (options.tablePrinicipalExclusiveActions) {
+        return result.combine(Grant.addToPrincipal({
+          grantee,
+          actions: options.tablePrinicipalExclusiveActions,
+          resourceArns,
+        }));
+      }
+      return result;
     }
 
     if (options.streamActions) {

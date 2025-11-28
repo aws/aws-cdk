@@ -1,6 +1,6 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct } from 'constructs';
-import { Capture, Template } from '../../assertions';
+import { Template } from '../../assertions';
 import { Alarm, Metric } from '../../aws-cloudwatch';
 import { User } from '../../aws-iam';
 import { Key } from '../../aws-kms';
@@ -98,12 +98,31 @@ describe('grants', () => {
     globalTable.grantReadData(user);
 
     // THEN
-    const actionsCapture = new Capture();
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: actionsCapture,
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'GlobalTable89F068B2',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: [
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+            ],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
@@ -122,16 +141,6 @@ describe('grants', () => {
         },
       ],
     });
-    expect(new Set(actionsCapture.asArray())).toEqual(new Set([
-      'dynamodb:BatchGetItem',
-      'dynamodb:GetRecords',
-      'dynamodb:GetShardIterator',
-      'dynamodb:Query',
-      'dynamodb:GetItem',
-      'dynamodb:Scan',
-      'dynamodb:ConditionCheckItem',
-      'dynamodb:DescribeTable',
-    ]));
   });
 
   test('grantReadData with customer managed keys', () => {
@@ -156,7 +165,6 @@ describe('grants', () => {
     globalTable.grantReadData(user);
 
     // THEN
-    const actionsCapture = new Capture();
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
@@ -174,7 +182,27 @@ describe('grants', () => {
             },
           },
           {
-            Action: actionsCapture,
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'GlobalTable89F068B2',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: [
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+            ],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
@@ -193,16 +221,6 @@ describe('grants', () => {
         },
       ],
     });
-    expect(new Set(actionsCapture.asArray())).toEqual(new Set([
-      'dynamodb:BatchGetItem',
-      'dynamodb:GetRecords',
-      'dynamodb:GetShardIterator',
-      'dynamodb:Query',
-      'dynamodb:GetItem',
-      'dynamodb:Scan',
-      'dynamodb:ConditionCheckItem',
-      'dynamodb:DescribeTable',
-    ]));
     testForKey(stack);
   });
 
@@ -339,12 +357,35 @@ describe('grants', () => {
     globalTable.grantReadWriteData(user);
 
     // THEN
-    const actionsCapture = new Capture();
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: actionsCapture,
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+              'dynamodb:BatchWriteItem',
+              'dynamodb:PutItem',
+              'dynamodb:UpdateItem',
+              'dynamodb:DeleteItem',
+              'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'GlobalTable89F068B2',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: [
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+            ],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
@@ -363,20 +404,6 @@ describe('grants', () => {
         },
       ],
     });
-    expect(new Set(actionsCapture.asArray())).toEqual(new Set([
-      'dynamodb:BatchGetItem',
-      'dynamodb:GetRecords',
-      'dynamodb:GetShardIterator',
-      'dynamodb:Query',
-      'dynamodb:GetItem',
-      'dynamodb:Scan',
-      'dynamodb:ConditionCheckItem',
-      'dynamodb:BatchWriteItem',
-      'dynamodb:PutItem',
-      'dynamodb:UpdateItem',
-      'dynamodb:DeleteItem',
-      'dynamodb:DescribeTable',
-    ]));
   });
 
   test('grantReadWriteData on global table with customer managed keys', () => {
@@ -401,7 +428,6 @@ describe('grants', () => {
     globalTable.grantReadWriteData(user);
 
     // THEN
-    const actionsCapture = new Capture();
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
@@ -422,7 +448,31 @@ describe('grants', () => {
             },
           },
           {
-            Action: actionsCapture,
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+              'dynamodb:BatchWriteItem',
+              'dynamodb:PutItem',
+              'dynamodb:UpdateItem',
+              'dynamodb:DeleteItem',
+              'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'GlobalTable89F068B2',
+                'Arn',
+              ],
+            },
+          },
+          {
+            Action: [
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+            ],
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
@@ -441,20 +491,6 @@ describe('grants', () => {
         },
       ],
     });
-    expect(new Set(actionsCapture.asArray())).toEqual(new Set([
-      'dynamodb:BatchGetItem',
-      'dynamodb:GetRecords',
-      'dynamodb:GetShardIterator',
-      'dynamodb:Query',
-      'dynamodb:GetItem',
-      'dynamodb:Scan',
-      'dynamodb:ConditionCheckItem',
-      'dynamodb:BatchWriteItem',
-      'dynamodb:PutItem',
-      'dynamodb:UpdateItem',
-      'dynamodb:DeleteItem',
-      'dynamodb:DescribeTable',
-    ]));
     testForKey(stack);
   });
 
@@ -585,12 +621,47 @@ describe('grants', () => {
     globalTable.grantReadData(user);
 
     // THEN
-    const actionsCapture = new Capture();
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: actionsCapture,
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'GlobalTable89F068B2',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'GlobalTable89F068B2',
+                        'Arn',
+                      ],
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: [
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+            ],
             Effect: 'Allow',
             Resource: [
               {
@@ -625,16 +696,6 @@ describe('grants', () => {
         },
       ],
     });
-    expect(new Set(actionsCapture.asArray())).toEqual(new Set([
-      'dynamodb:BatchGetItem',
-      'dynamodb:GetRecords',
-      'dynamodb:GetShardIterator',
-      'dynamodb:Query',
-      'dynamodb:GetItem',
-      'dynamodb:Scan',
-      'dynamodb:ConditionCheckItem',
-      'dynamodb:DescribeTable',
-    ]));
   });
 
   test('grantStream on global table with arbitrary actions', () => {
@@ -959,7 +1020,6 @@ describe('grants', () => {
     globalTable.replica('us-east-1').grantReadData(user);
 
     // THEN
-    const actionsCapture = new Capture();
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
@@ -972,7 +1032,40 @@ describe('grants', () => {
             Resource: 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
           },
           {
-            Action: actionsCapture,
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':dynamodb:us-east-1:',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':table/',
+                  {
+                    Ref: 'GlobalTable89F068B2',
+                  },
+                ],
+              ],
+            },
+          },
+          {
+            Action: [
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+            ],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
@@ -1004,16 +1097,6 @@ describe('grants', () => {
         },
       ],
     });
-    expect(new Set(actionsCapture.asArray())).toEqual(new Set([
-      'dynamodb:BatchGetItem',
-      'dynamodb:GetRecords',
-      'dynamodb:GetShardIterator',
-      'dynamodb:Query',
-      'dynamodb:GetItem',
-      'dynamodb:Scan',
-      'dynamodb:ConditionCheckItem',
-      'dynamodb:DescribeTable',
-    ]));
     testForKey(stack);
   });
 
@@ -1081,6 +1164,25 @@ describe('grants', () => {
               ],
             },
           },
+          {
+            Action: [
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':dynamodb:us-east-1:123456789012:table/foostackstackglobaltableb6dd9d1a6f2b84889e59',
+                ],
+              ],
+            },
+          },
         ],
         Version: '2012-10-17',
       },
@@ -1103,12 +1205,45 @@ describe('grants', () => {
     table.grantReadData(user);
 
     // THEN
-    const actionsCapture = new Capture();
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: actionsCapture,
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':dynamodb:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':table/my-table',
+                ],
+              ],
+            },
+          },
+          {
+            Action: [
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+            ],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
@@ -1141,16 +1276,6 @@ describe('grants', () => {
         },
       ],
     });
-    expect(new Set(actionsCapture.asArray())).toEqual(new Set([
-      'dynamodb:BatchGetItem',
-      'dynamodb:GetRecords',
-      'dynamodb:GetShardIterator',
-      'dynamodb:Query',
-      'dynamodb:GetItem',
-      'dynamodb:Scan',
-      'dynamodb:ConditionCheckItem',
-      'dynamodb:DescribeTable',
-    ]));
   });
 
   test('can grant with a table imported by arn', () => {
@@ -1174,6 +1299,14 @@ describe('grants', () => {
               'dynamodb:Scan',
               'dynamodb:ConditionCheckItem',
               'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-table',
+          },
+          {
+            Action: [
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
             ],
             Effect: 'Allow',
             Resource: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-table',
@@ -1232,6 +1365,14 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-table',
           },
+          {
+            Action: [
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+            ],
+            Effect: 'Allow',
+            Resource: 'arn:aws:dynamodb:us-east-2:123456789012:table/my-table',
+          },
         ],
         Version: '2012-10-17',
       },
@@ -1275,6 +1416,17 @@ describe('grants', () => {
               'arn:aws:dynamodb:us-east-2:123456789012:table/my-table/index/*',
             ],
           },
+          {
+            Action: [
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              'arn:aws:dynamodb:us-east-2:123456789012:table/my-table',
+              'arn:aws:dynamodb:us-east-2:123456789012:table/my-table/index/*',
+            ],
+          },
         ],
         Version: '2012-10-17',
       },
@@ -1311,6 +1463,17 @@ describe('grants', () => {
               'dynamodb:Scan',
               'dynamodb:ConditionCheckItem',
               'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              'arn:aws:dynamodb:us-east-2:123456789012:table/my-table',
+              'arn:aws:dynamodb:us-east-2:123456789012:table/my-table/index/*',
+            ],
+          },
+          {
+            Action: [
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
             ],
             Effect: 'Allow',
             Resource: [
