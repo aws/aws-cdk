@@ -1283,7 +1283,7 @@ test('grants createInvalidation to L1', () => {
   });
 
   DistributionGrants.
-    _fromDistribution(distribution.node.defaultChild as CfnDistribution)
+    fromDistribution(distribution.node.defaultChild as CfnDistribution)
     .createInvalidation(role);
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {

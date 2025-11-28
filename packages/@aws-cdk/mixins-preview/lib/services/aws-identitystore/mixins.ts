@@ -1,1 +1,1 @@
-export * from './identitystore.generated';
+export * from './cfn-props-mixins.generated';

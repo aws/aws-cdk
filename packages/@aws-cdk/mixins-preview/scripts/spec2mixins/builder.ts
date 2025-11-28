@@ -5,7 +5,7 @@ import { ResourceDecider } from '@aws-cdk/spec2cdk/lib/cdk/resource-decider';
 import { TypeConverter } from '@aws-cdk/spec2cdk/lib/cdk/type-converter';
 import { RelationshipDecider } from '@aws-cdk/spec2cdk/lib/cdk/relationship-decider';
 import type { Method } from '@cdklabs/typewriter';
-import { ExternalModule, Module, ClassType, Stability, StructType, Type, expr, stmt, $E, $T, ThingSymbol, $this, CallableProxy } from '@cdklabs/typewriter';
+import { ExternalModule, Module, ClassType, Stability, StructType, Type, expr, stmt, $T, ThingSymbol, $this, CallableProxy } from '@cdklabs/typewriter';
 import { MIXINS_COMMON, MIXINS_CORE, MIXINS_UTILS } from './helpers';
 import type { AddServiceProps, LibraryBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
 import { LibraryBuilder } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
@@ -22,7 +22,6 @@ class MixinsServiceModule extends BaseServiceSubmodule {
 }
 
 export interface MixinsBuilderProps extends LibraryBuilderProps {
-  filePattern?: string;
 }
 
 export class MixinsBuilder extends LibraryBuilder<MixinsServiceModule> {
@@ -30,7 +29,7 @@ export class MixinsBuilder extends LibraryBuilder<MixinsServiceModule> {
 
   public constructor(props: MixinsBuilderProps) {
     super(props);
-    this.filePattern = props.filePattern ?? '%moduleName%/%serviceShortName%.generated.ts';
+    this.filePattern = '%moduleName%/cfn-props-mixins.generated.ts';
   }
 
   protected createServiceSubmodule(service: Service, submoduleName: string): MixinsServiceModule {
@@ -127,7 +126,7 @@ class L1PropsMixin extends ClassType {
       },
     });
 
-    this.relationshipDecider = new RelationshipDecider(this.resource, db);
+    this.relationshipDecider = new RelationshipDecider(this.resource, db, false);
     this.converter = TypeConverter.forMixin({
       db: db,
       resource: this.resource,
@@ -230,9 +229,9 @@ class L1PropsMixin extends ClassType {
     method.addBody(
       stmt.ret(
         expr.binOp(
-          $E(expr.sym(CDK_CORE.CfnResource.symbol!)).isCfnResource(construct),
+          CallableProxy.fromName('CfnResource.isCfnResource', CDK_CORE).invoke(construct),
           '&&',
-          expr.eq($E(construct).cfnResourceType, expr.lit(this.resource.cloudFormationType)),
+          expr.eq(expr.get(construct, 'cfnResourceType'), expr.lit(this.resource.cloudFormationType)),
         ),
       ),
     );
