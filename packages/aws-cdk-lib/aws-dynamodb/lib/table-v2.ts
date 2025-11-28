@@ -883,6 +883,7 @@ export class TableV2 extends TableBaseV2 {
    *
    * @param region the region to reference the table in
    */
+  @MethodMetadata()
   public regionalReplica(region: string): ITableV2 {
     if (Token.isUnresolved(region)) {
       throw new ValidationError('Provided `region` cannot be a token', this);
