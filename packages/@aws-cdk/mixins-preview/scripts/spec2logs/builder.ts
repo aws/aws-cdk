@@ -9,15 +9,7 @@ import { BaseServiceSubmodule, relativeImportPath } from '@aws-cdk/spec2cdk/lib/
 import type { AddServiceProps, LibraryBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
 import { LibraryBuilder } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
 import { MIXINS_CORE } from '../spec2mixins/helpers';
-
-// we cannot currently get an Arn for these
-const EXCLUDE: string[] = [
-  'AWS::BedrockAgentCore::Runtime',
-  'AWS::ElastiCache::CacheCluster',
-  'AWS::Grafana::Workspace',
-  'AWS::RUM::AppMonitor',
-  'AWS::SageMaker::Workteam',
-];
+import { ResourceReference } from '@aws-cdk/spec2cdk/lib/cdk/reference-props';
 
 class LogsDeliveryBuilderServiceModule extends BaseServiceSubmodule {
   public readonly constructLibModule: ExternalModule;
@@ -47,7 +39,8 @@ export class LogsDeliveryBuilder extends LibraryBuilder<LogsDeliveryBuilderServi
   }
 
   protected addResourceToSubmodule(submodule: LogsDeliveryBuilderServiceModule, resource: Resource, _props?: AddServiceProps): void {
-    if (resource.vendedLogs && !EXCLUDE.includes(resource.cloudFormationType)) {
+    const resourceReference = new ResourceReference(resource);
+    if (resource.vendedLogs && resourceReference.hasArnGetter) {
       const service = this.db.incoming('hasResource', resource).only().entity;
       const logsModule = this.obtainLogsDeliveryModule(submodule, service);
 

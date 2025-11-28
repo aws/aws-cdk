@@ -9,8 +9,7 @@ import { LibraryBuilder } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
 import type { LocatedModule, ServiceSubmoduleProps } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 import { BaseServiceSubmodule } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 import { eventNamespaceName } from '@aws-cdk/spec2cdk/lib/naming';
-import type { ReferenceProp } from '@aws-cdk/spec2cdk/lib/cdk/reference-props';
-import { getReferenceProps } from '@aws-cdk/spec2cdk/lib/cdk/reference-props';
+import { ResourceReference, type ReferenceProp } from '@aws-cdk/spec2cdk/lib/cdk/reference-props';
 import { log } from '@aws-cdk/spec2cdk/lib/util';
 
 /**
@@ -136,7 +135,7 @@ class EventBridgeEventsClass extends ClassType {
 
     this.refInterface = Type.fromName(constructLibModule, naming.referenceInterfaceName(resource.name));
     this.referenceName = naming.referenceInterfaceAttributeName(resource.name);
-    this.referenceProps = getReferenceProps(resource);
+    this.referenceProps = new ResourceReference(resource).referenceProps;
   }
 
   public build() {

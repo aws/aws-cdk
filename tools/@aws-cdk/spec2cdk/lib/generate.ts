@@ -209,7 +209,6 @@ async function generator<Builder extends LBC = typeof AwsCdkLibBuilder>(
       servicesPerModule[moduleName].push(s);
 
       resourcesPerModule[moduleName] ??= {};
-      resourcesPerModule[moduleName] ??= {};
       for (const [res, type] of submod.resources.entries()) {
         resourcesPerModule[moduleName][res] = type.name;
       }
