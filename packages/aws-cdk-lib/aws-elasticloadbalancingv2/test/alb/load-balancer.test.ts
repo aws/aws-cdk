@@ -1115,6 +1115,20 @@ describe('tests', () => {
       });
     });
 
+    test('adds a dependency on the bucket', () => {
+      // GIVEN
+      const { stack, bucket, lb } = loggingSetup();
+
+      // WHEN
+      lb.logConnectionLogs(bucket);
+
+      // THEN
+      // verify the ALB depends on the bucket policy
+      Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        DependsOn: [Match.stringLikeRegexp('HealthCheckLogBucketPolicy')],
+      });
+    });
+
     test('adds a s3 permission', () => {
       // GIVEN
       const { stack, bucket, lb } = loggingSetup();
@@ -1184,6 +1198,11 @@ describe('tests', () => {
             },
           ],
         },
+      });
+
+      // verify the ALB depends on the bucket policy
+      Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        DependsOn: [Match.stringLikeRegexp('HealthCheckLogBucketPolicy')],
       });
     });
 
@@ -1255,6 +1274,11 @@ describe('tests', () => {
             },
           ],
         },
+      });
+
+      // verify the ALB depends on the bucket policy
+      Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        DependsOn: [Match.stringLikeRegexp('ImportedHealthCheckLoggingBucketPolicy')],
       });
     });
 

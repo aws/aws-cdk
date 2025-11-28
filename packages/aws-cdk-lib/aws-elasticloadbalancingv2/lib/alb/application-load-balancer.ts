@@ -13,6 +13,7 @@ import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
+import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType, ApplicationProtocol, DesyncMitigationMode } from '../shared/enums';
 import { parseLoadBalancerFullName } from '../shared/util';
@@ -433,6 +434,15 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
         ],
       }),
     );
+
+    // make sure the bucket's policy is created before the ALB (see https://github.com/aws/aws-cdk/issues/1633)
+    // at the L1 level to avoid creating a circular dependency (see https://github.com/aws/aws-cdk/issues/27528
+    // and https://github.com/aws/aws-cdk/issues/27928)
+    const lb = this.node.defaultChild as CfnLoadBalancer;
+    const bucketPolicy = bucket.policy?.node.defaultChild as CfnResource;
+    if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
+      lb.addDependency(bucketPolicy);
+    }
   }
 
   /**
