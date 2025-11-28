@@ -1,1 +1,1 @@
-export * from './mediaconvert.generated';
+export * from './cfn-props-mixins.generated';

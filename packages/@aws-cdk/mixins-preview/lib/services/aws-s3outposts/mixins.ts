@@ -1,1 +1,1 @@
-export * from './s3outposts.generated';
+export * from './cfn-props-mixins.generated';

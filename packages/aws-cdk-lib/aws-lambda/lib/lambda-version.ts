@@ -214,6 +214,10 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     this.lambda = props.lambda;
     this.architecture = props.lambda.architecture;
 
+    if (props.provisionedConcurrentExecutions && this.lambda.tenancyConfig) {
+      throw new ValidationError('Provisioned Concurrency is not supported for functions with tenant isolation mode', this);
+    }
+
     const version = new CfnVersion(this, 'Resource', {
       codeSha256: props.codeSha256,
       description: props.description,

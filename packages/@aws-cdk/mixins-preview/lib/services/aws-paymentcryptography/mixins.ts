@@ -1,1 +1,1 @@
-export * from './paymentcryptography.generated';
+export * from './cfn-props-mixins.generated';

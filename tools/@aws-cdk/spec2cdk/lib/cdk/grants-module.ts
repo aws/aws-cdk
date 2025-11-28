@@ -158,12 +158,11 @@ export class GrantsModule extends Module {
       }
 
       const factoryMethod = classType.addMethod({
-        name: `_from${resource.name}`,
+        name: `from${resource.name}`,
         static: true,
         returnType: Type.fromName(this, `${classType.name}`),
         docs: {
           summary: `Creates grants for ${className}`,
-          remarks: '@internal',
         },
       });
 
