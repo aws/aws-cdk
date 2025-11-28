@@ -254,6 +254,130 @@ describe('fargate resource provider', () => {
 
       expect(error.message).toEqual('DELETE_FAILED');
     });
+
+    test('uses physicalResourceId when it is valid length (<= 100 chars)', async () => {
+      // GIVEN
+      const client = newEksClientMock();
+      const validPhysicalResourceId = 'ValidProfileName123'; // 20 chars, well under 100
+      const handler = new FargateProfileResourceHandler(client, newRequestMock({
+        RequestType: 'Delete',
+        PhysicalResourceId: validPhysicalResourceId,
+      }));
+
+      // WHEN
+      await handler.onEvent();
+
+      // THEN - Should use physicalResourceId directly
+      sinon.assert.calledWithExactly(client.deleteFargateProfile, {
+        clusterName: 'MockClusterName',
+        fargateProfileName: validPhysicalResourceId,
+      });
+    });
+
+    test('uses explicit fargateProfileName from config when provided', async () => {
+      // GIVEN
+      const client = newEksClientMock();
+      const explicitName = 'ExplicitProfileName';
+      const handler = new FargateProfileResourceHandler(client, newRequestMock({
+        RequestType: 'Delete',
+        PhysicalResourceId: 'PhysicalResourceIdMock',
+        ResourceProperties: {
+          AssumeRoleArn: 'AssumeRoleArn',
+          Config: {
+            clusterName: 'MockClusterName',
+            fargateProfileName: explicitName,
+          },
+        },
+      }));
+
+      // WHEN
+      await handler.onEvent();
+
+      // THEN - Should use explicit name from config, not physicalResourceId
+      sinon.assert.calledWithExactly(client.deleteFargateProfile, {
+        clusterName: 'MockClusterName',
+        fargateProfileName: explicitName,
+      });
+    });
+
+    test('uses generateProfileName when physicalResourceId exceeds 100 characters', async () => {
+      // GIVEN
+      const client = newEksClientMock();
+      // Create a physicalResourceId that's > 100 characters
+      const longPhysicalResourceId = 'a'.repeat(101); // 101 chars
+      const handler = new FargateProfileResourceHandler(client, newRequestMock({
+        RequestType: 'Delete',
+        PhysicalResourceId: longPhysicalResourceId,
+        ResourceProperties: {
+          AssumeRoleArn: 'AssumeRoleArn',
+          Config: {
+            clusterName: 'MockClusterName',
+            // No explicit fargateProfileName provided
+          },
+        },
+      }));
+
+      // WHEN
+      await handler.onEvent();
+
+      // THEN - Should use generated name (LogicalResourceIdMock-RequestIdMock)
+      sinon.assert.calledWithExactly(client.deleteFargateProfile, {
+        clusterName: 'MockClusterName',
+        fargateProfileName: 'LogicalResourceIdMock-RequestIdMock', // Generated name
+      });
+    });
+
+    test('uses explicit fargateProfileName even when physicalResourceId exceeds 100 characters', async () => {
+      // GIVEN
+      const client = newEksClientMock();
+      const explicitName = 'ExplicitProfileName';
+      const longPhysicalResourceId = 'a'.repeat(101); // 101 chars
+      const handler = new FargateProfileResourceHandler(client, newRequestMock({
+        RequestType: 'Delete',
+        PhysicalResourceId: longPhysicalResourceId,
+        ResourceProperties: {
+          AssumeRoleArn: 'AssumeRoleArn',
+          Config: {
+            clusterName: 'MockClusterName',
+            fargateProfileName: explicitName,
+          },
+        },
+      }));
+
+      // WHEN
+      await handler.onEvent();
+
+      // THEN - Should use explicit name, not generated name
+      sinon.assert.calledWithExactly(client.deleteFargateProfile, {
+        clusterName: 'MockClusterName',
+        fargateProfileName: explicitName,
+      });
+    });
+
+    test('uses physicalResourceId when it is exactly 100 characters', async () => {
+      // GIVEN
+      const client = newEksClientMock();
+      const exactly100Chars = 'a'.repeat(100); // Exactly 100 chars
+      const handler = new FargateProfileResourceHandler(client, newRequestMock({
+        RequestType: 'Delete',
+        PhysicalResourceId: exactly100Chars,
+        ResourceProperties: {
+          AssumeRoleArn: 'AssumeRoleArn',
+          Config: {
+            clusterName: 'MockClusterName',
+          },
+        },
+      }));
+
+      // WHEN
+      await handler.onEvent();
+
+      // THEN - Should use physicalResourceId (100 chars is valid)
+      sinon.assert.calledWithExactly(client.deleteFargateProfile, {
+        clusterName: 'MockClusterName',
+        fargateProfileName: exactly100Chars,
+      });
+    });
   });
 });
 
