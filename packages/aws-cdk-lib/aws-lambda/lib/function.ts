@@ -1506,14 +1506,93 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       throw new ValidationError('Runtime go1.x is not supported by the ADOT Lambda Go SDK', this);
     }
 
-    // The Runtime is Python and Adot is set it requires a different EXEC_WRAPPER than the other code bases.
-    if (this.runtime.family === RuntimeFamily.PYTHON &&
-      props.adotInstrumentation.execWrapper.valueOf() !== AdotLambdaExecWrapper.INSTRUMENT_HANDLER) {
-      throw new ValidationError('Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER', this);
+    // Application Signals layers require the APPLICATION_SIGNALS wrapper
+    // Check this first before other validations
+    const layerConfig = props.adotInstrumentation.layerVersion._bind(this);
+
+    if (layerConfig._isApplicationSignals) {
+      if (props.adotInstrumentation.execWrapper !== AdotLambdaExecWrapper.APPLICATION_SIGNALS) {
+        throw new ValidationError(
+          'Application Signals Lambda layers require AdotLambdaExecWrapper.APPLICATION_SIGNALS (/opt/otel-instrument). ' +
+          'Use AdotLambdaExecWrapper.APPLICATION_SIGNALS for CloudWatch Application Signals monitoring.',
+          this,
+        );
+      }
+
+      // Validate runtime is supported by Application Signals
+      this.validateApplicationSignalsRuntime();
+    } else {
+      // The Runtime is Python and standard ADOT is set, it requires a different EXEC_WRAPPER than the other code bases.
+      // Note: APPLICATION_SIGNALS is an alias for INSTRUMENT_HANDLER, so we only need to check one
+      if (this.runtime.family === RuntimeFamily.PYTHON &&
+        props.adotInstrumentation.execWrapper !== AdotLambdaExecWrapper.INSTRUMENT_HANDLER) {
+        throw new ValidationError('Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER', this);
+      }
     }
 
-    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'AdotLayer', props.adotInstrumentation.layerVersion._bind(this).arn));
+    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'AdotLayer', layerConfig.arn));
     this.addEnvironment('AWS_LAMBDA_EXEC_WRAPPER', props.adotInstrumentation.execWrapper);
+  }
+
+  /**
+   * Validate that the runtime is supported by Application Signals.
+   * Based on: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Application-Signals-supportmatrix.html
+   */
+  private validateApplicationSignalsRuntime(): void {
+    const runtime = this.runtime;
+
+    // Python: 3.9 and higher
+    const supportedPythonRuntimes = [
+      Runtime.PYTHON_3_9,
+      Runtime.PYTHON_3_10,
+      Runtime.PYTHON_3_11,
+      Runtime.PYTHON_3_12,
+      Runtime.PYTHON_3_13,
+      Runtime.PYTHON_3_14,
+    ];
+
+    // Node.js: 14, 16, 18, 20, and 22
+    const supportedNodeRuntimes = [
+      Runtime.NODEJS_14_X,
+      Runtime.NODEJS_16_X,
+      Runtime.NODEJS_18_X,
+      Runtime.NODEJS_20_X,
+      Runtime.NODEJS_22_X,
+      Runtime.NODEJS_LATEST,
+    ];
+
+    // Java: 8, 11, 17, 21, and 25
+    const supportedJavaRuntimes = [
+      Runtime.JAVA_8,
+      Runtime.JAVA_8_CORRETTO,
+      Runtime.JAVA_11,
+      Runtime.JAVA_17,
+      Runtime.JAVA_21,
+      Runtime.JAVA_25,
+    ];
+
+    // .NET: 6, 8, 9
+    const supportedDotNetRuntimes = [
+      Runtime.DOTNET_6,
+      Runtime.DOTNET_8,
+      Runtime.DOTNET_9,
+    ];
+
+    const allSupportedRuntimes = [
+      ...supportedPythonRuntimes,
+      ...supportedNodeRuntimes,
+      ...supportedJavaRuntimes,
+      ...supportedDotNetRuntimes,
+    ];
+
+    if (!allSupportedRuntimes.includes(runtime)) {
+      throw new ValidationError(
+        `Application Signals does not support ${runtime.name}. ` +
+        'Supported runtimes: Python (3.9+), Node.js (14, 16, 18, 20, 22), Java (8, 11, 17, 21, 25), and .NET (6, 8, 9). ' +
+        'See https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Application-Signals-supportmatrix.html',
+        this,
+      );
+    }
   }
 
   /**
