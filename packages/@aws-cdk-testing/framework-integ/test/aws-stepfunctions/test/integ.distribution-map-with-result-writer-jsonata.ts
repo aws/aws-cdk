@@ -23,7 +23,7 @@ class DistributedMapStack extends cdk.Stack {
         key: CSV_KEY,
         csvHeaders: sfn.CsvHeaders.useFirstRow(),
       }),
-      resultWriter: new sfn.ResultWriter({
+      resultWriterV2: new sfn.ResultWriterV2({
         bucket: this.bucket,
         prefix: 'my-prefix',
       }),
