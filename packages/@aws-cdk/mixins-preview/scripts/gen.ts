@@ -1,5 +1,6 @@
 import { generateAll as generateCfnPropsMixins } from './spec2mixins';
 import { generateAll as generateLogsDeliveryMixins } from './spec2logs';
+import { generateAll as generateEvents } from './spec2eventbridge';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -20,6 +21,7 @@ async function main() {
   const moduleMaps = [
     await generateCfnPropsMixins({ outputPath }),
     await generateLogsDeliveryMixins({ outputPath }),
+    await generateEvents({ outputPath }),
   ];
 
   const moduleMap = mergeModuleMaps(...moduleMaps);
@@ -79,6 +81,13 @@ async function updateExportsAndEntryPoints(modules: ModuleMap, pkgPath: string) 
     // @aws-cdk/mixins-preview/aws_s3/mixins => ./lib/services/aws-s3/mixins.js
     const mixinsExportName = `./${moduleConfig.submodule}/mixins`;
     newExports[mixinsExportName] = `./lib/services/${moduleConfig.name}/mixins.js`;
+
+    // @aws-cdk/mixins-preview/aws_s3/events => ./lib/services/aws-s3/events.js
+    const eventsFilePath = path.join(pkgPath, 'lib', 'services', moduleConfig.name, 'events.ts');
+    if (existsSync(eventsFilePath)) {
+      const eventsExportName = `./${moduleConfig.submodule}/events`;
+      newExports[eventsExportName] = `./lib/services/${moduleConfig.name}/events.js`;
+    }
   }
 
   // sort exports
@@ -106,11 +115,16 @@ async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
   }
 
   // services/<mod>/index.ts
-  // These exports make submodules out of 'mixins.ts'
+  // These exports make submodules out of 'mixins.ts', 'events.ts'
   const subModuleIndex = path.join(modulePath, 'index.ts');
   const indexLines: string[] = [];
 
   indexLines.push('export * as mixins from \'./mixins\';');
+
+  const hasEvents = submodule.files.some(f => f.includes('events.generated.ts'));
+  if (hasEvents) {
+    indexLines.push('export * as events from \'./events\';');
+  }
 
   // This file may contain handwritten lines, preserve.
   await ensureFileContains(subModuleIndex, indexLines);
@@ -134,6 +148,14 @@ async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
 
   await ensureFileContains(mixinsModuleFile, mixinsIndexLines);
   await writeJsiiModuleMetadata(mixinsModuleFile, submodule.definition, 'mixins');
+
+  if (hasEvents) {
+    // services/<mod>/events.ts
+    // See mixins.ts for the motivation.
+    const eventsModuleFile = path.join(modulePath, 'events.ts');
+    await fs.writeFile(eventsModuleFile, 'export * from \'./events.generated\';\n');
+    await writeJsiiModuleMetadata(eventsModuleFile, submodule.definition, 'events');
+  }
 }
 
 async function writeJsiiModuleMetadata(moduleFile: string, moduleDef: ModuleDefinition, namespaceLc: string = '') {
