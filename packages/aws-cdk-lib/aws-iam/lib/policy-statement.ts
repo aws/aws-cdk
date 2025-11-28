@@ -232,6 +232,16 @@ export class PolicyStatement {
     }
   }
 
+  /**
+   * Validate that the SID is alphanumeric
+   * @internal
+   */
+  public _validateSid() {
+    if (this._sid !== undefined && !cdk.Token.isUnresolved(this._sid) && !/^[0-9A-Za-z]*$/.test(this._sid)) {
+      throw new UnscopedValidationError(`Statement ID (sid) must be alphanumeric. Got '${this._sid}'. The Sid element supports ASCII uppercase letters (A-Z), lowercase letters (a-z), and numbers (0-9).`);
+    }
+  }
+
   private validatePolicyActions(actions: string[]) {
     // In case of an unresolved list of actions return early
     if (cdk.Token.isUnresolved(actions)) return;
