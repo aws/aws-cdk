@@ -153,7 +153,7 @@
      "arg2": "value2"
     },
     "Description": "Optional Override PySpark ETL Job",
-    "GlueVersion": "5.1",
+    "GlueVersion": "3.0",
     "JobRunQueuingEnabled": true,
     "MaxRetries": 0,
     "Name": "Optional Override PySpark ETL Job",
