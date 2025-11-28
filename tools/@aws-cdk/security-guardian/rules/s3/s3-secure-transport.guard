@@ -1,0 +1,29 @@
+#
+#####################################
+##          S3 GUARD RULES          ##
+#####################################
+# Rule: S3_SECURE_TRANSPORT
+# Service: Amazon Simple Storage Service (S3)
+# Coverage: Secure Transport
+
+let s3_bucket_policies = Resources.*[
+  Type == 'AWS::S3::BucketPolicy'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "S3_SECURE_TRANSPORT"
+]
+
+# S3 secure transport enforcement
+rule S3_SECURE_TRANSPORT when %s3_bucket_policies !empty {
+    %s3_bucket_policies {
+        Properties.PolicyDocument.Statement[*] {
+            when Effect == "Deny" {
+                when Condition exists {
+                    when Condition.Bool exists {
+                        Condition.Bool["aws:SecureTransport"] exists
+                        Condition.Bool["aws:SecureTransport"] == "false"
+                    }
+                }
+            }
+        }
+    }
+}

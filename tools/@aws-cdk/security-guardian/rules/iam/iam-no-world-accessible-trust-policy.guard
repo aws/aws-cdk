@@ -1,0 +1,36 @@
+#
+#####################################
+##          IAM GUARD RULES        ##
+#####################################
+# Rule: IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY
+# Service: AWS Identity and Access Management (IAM)
+# Coverage: Trust Policies World Accessibility
+
+let iam_roles = Resources.*[
+  Type == 'AWS::IAM::Role'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY"
+]
+
+# Trust policies allowing world accessibility
+rule IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY when %iam_roles !empty {
+    %iam_roles {
+        Properties.AssumeRolePolicyDocument.Statement[*] {
+            when Effect == "Allow" {
+                when Principal exists {
+                    when Principal is_string {
+                        Principal != "*"
+                    }
+                    when Principal.AWS exists {
+                        when Principal.AWS is_string {
+                            Principal.AWS != "*"
+                        }
+                        when Principal.AWS is_list {
+                            Principal.AWS[*] != "*"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
