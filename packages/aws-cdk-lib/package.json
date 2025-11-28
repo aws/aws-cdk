@@ -530,6 +530,7 @@
     "./pipelines/package.json": "./pipelines/package.json",
     "./recommended-feature-flags.json": "./recommended-feature-flags.json",
     "./region-info": "./region-info/index.js",
+    "./testhelpers/jest-autoclean": "./testhelpers/jest-autoclean.js",
     "./triggers": "./triggers/index.js"
   },
   "publishConfig": {
