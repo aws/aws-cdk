@@ -13,7 +13,9 @@
     "compat": "./scripts/check-api-compatibility.sh",
     "bump": "./bump.sh",
     "build-all": "tsc -b",
-    "atmosphere-integ-test": "lerna run build --scope @aws-cdk/integration-test-deployment && node tools/@aws-cdk/integration-test-deployment/bin/index.js"
+    "atmosphere-integ-test": "lerna run build --scope @aws-cdk/integration-test-deployment && node tools/@aws-cdk/integration-test-deployment/bin/index.js",
+    "rosetta": "jsii-rosetta",
+    "synthetic-examples": "cdk-generate-synthetic-examples"
   },
   "devDependencies": {
     "@nx/workspace": "^20",
@@ -21,7 +23,7 @@
     "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "aws-sdk-js-codemod": "^2.4.5",
-    "cdk-generate-synthetic-examples": "^0.2.32",
+    "cdk-generate-synthetic-examples": "^0.2.36",
     "conventional-changelog-cli": "^2.2.2",
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.11",
