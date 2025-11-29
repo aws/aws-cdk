@@ -295,6 +295,17 @@ export interface DistributionProps {
    * @default false
    */
   readonly publishAdditionalMetrics?: boolean;
+
+  /**
+   * Configuration for mutual TLS (mTLS) authentication between viewers and CloudFront.
+   *
+   * When configured, CloudFront validates client certificates using the specified trust store.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/mtls-authentication.html
+   *
+   * @default - mTLS is not enabled
+   */
+  readonly viewerMtlsConfig?: ViewerMtlsConfig;
 }
 
 /**
@@ -419,6 +430,7 @@ export class Distribution extends Resource implements IDistribution {
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
+        viewerMtlsConfig: this.renderViewerMtlsConfig(props.viewerMtlsConfig),
         webAclId: Lazy.string({ produce: () => this.webAclId }),
       },
     });
@@ -865,6 +877,21 @@ export class Distribution extends Resource implements IDistribution {
     };
   }
 
+  private renderViewerMtlsConfig(config?: ViewerMtlsConfig): CfnDistribution.ViewerMtlsConfigProperty | undefined {
+    if (!config) {
+      return undefined;
+    }
+
+    return {
+      mode: config.mode,
+      trustStoreConfig: {
+        trustStoreId: config.trustStoreId,
+        advertiseTrustStoreCaNames: config.advertiseTrustStoreCaNames,
+        ignoreCertificateExpiry: config.ignoreCertificateExpiry,
+      },
+    };
+  }
+
   private validateGrpc(behaviorOptions: AddBehaviorOptions) {
     if (!behaviorOptions.enableGrpc) {
       return;
@@ -961,6 +988,69 @@ export enum SecurityPolicyProtocol {
   TLS_V1_2_2021 = 'TLSv1.2_2021',
   TLS_V1_2_2025 = 'TLSv1.2_2025',
   TLS_V1_3_2025 = 'TLSv1.3_2025',
+}
+
+/**
+ * The mode for mutual TLS (mTLS) authentication between viewers and CloudFront.
+ */
+export enum MtlsMode {
+  /**
+   * All clients must present valid certificates during the TLS handshake.
+   * Connections without valid certificates are rejected.
+   */
+  REQUIRED = 'required',
+
+  /**
+   * Clients can optionally present certificates during the TLS handshake.
+   * Connections are allowed even without certificates.
+   */
+  OPTIONAL = 'optional',
+}
+
+/**
+ * Configuration for mutual TLS (mTLS) authentication between viewers and CloudFront.
+ *
+ * Mutual TLS authentication enables bidirectional certificate-based authentication,
+ * ensuring only trusted clients can access your CloudFront distribution.
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/mtls-authentication.html
+ */
+export interface ViewerMtlsConfig {
+  /**
+   * The mode for mutual TLS authentication.
+   *
+   * - REQUIRED: All clients must present valid certificates
+   * - OPTIONAL: Clients can optionally present certificates
+   */
+  readonly mode: MtlsMode;
+
+  /**
+   * The ID of the trust store to use for mTLS authentication.
+   *
+   * You must create a trust store with your Certificate Authority certificates
+   * before associating it with your CloudFront distribution.
+   */
+  readonly trustStoreId: string;
+
+  /**
+   * Whether to advertise trust store CA names to clients during the TLS handshake.
+   *
+   * When enabled, CloudFront sends the list of CA names from the trust store to clients,
+   * which can help clients select the appropriate certificate to present.
+   *
+   * @default undefined - AWS CloudFront default is to not advertise CA names to clients
+   */
+  readonly advertiseTrustStoreCaNames?: boolean;
+
+  /**
+   * Whether to allow connections with expired client certificates.
+   *
+   * When enabled, CloudFront accepts connections from clients with expired certificates.
+   * This should only be used in specific scenarios where certificate expiration cannot be controlled.
+   *
+   * @default undefined - AWS CloudFront default is to reject expired client certificates
+   */
+  readonly ignoreCertificateExpiry?: boolean;
 }
 
 /**

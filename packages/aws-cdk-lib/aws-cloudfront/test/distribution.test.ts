@@ -19,6 +19,7 @@ import {
   HttpVersion,
   IOrigin,
   LambdaEdgeEventType,
+  MtlsMode,
   PriceClass,
   RealtimeLogConfig,
   SecurityPolicyProtocol,
@@ -1698,5 +1699,86 @@ describe('gRPC', () => {
         },
       });
     }).toThrow(msg);
+  });
+});
+
+describe('viewer mTLS', () => {
+  test('can configure mTLS with required mode', () => {
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      viewerMtlsConfig: {
+        mode: MtlsMode.REQUIRED,
+        trustStoreId: 'ts-123456789',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerMtlsConfig: {
+          Mode: 'required',
+          TrustStoreConfig: {
+            TrustStoreId: 'ts-123456789',
+          },
+        },
+      },
+    });
+  });
+
+  test('can configure mTLS with optional mode', () => {
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      viewerMtlsConfig: {
+        mode: MtlsMode.OPTIONAL,
+        trustStoreId: 'ts-123456789',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerMtlsConfig: {
+          Mode: 'optional',
+          TrustStoreConfig: {
+            TrustStoreId: 'ts-123456789',
+          },
+        },
+      },
+    });
+  });
+
+  test('can configure mTLS with all trust store options', () => {
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      viewerMtlsConfig: {
+        mode: MtlsMode.REQUIRED,
+        trustStoreId: 'ts-123456789',
+        advertiseTrustStoreCaNames: true,
+        ignoreCertificateExpiry: true,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerMtlsConfig: {
+          Mode: 'required',
+          TrustStoreConfig: {
+            TrustStoreId: 'ts-123456789',
+            AdvertiseTrustStoreCaNames: true,
+            IgnoreCertificateExpiry: true,
+          },
+        },
+      },
+    });
+  });
+
+  test('mTLS config is not present when not specified', () => {
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerMtlsConfig: Match.absent(),
+      },
+    });
   });
 });
