@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PublicSubnet2"
      }
     ]
    },
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC"
      }
     ]
    }
@@ -760,7 +760,7 @@
   "LBSecurityGroup8A41EA2B": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "Automatically created Security Group for ELB awscdkelbv2integLB9950B1E4",
+    "GroupDescription": "Automatically created Security Group for ELB awscdkelbv2integenableaclLB206B386F",
     "SecurityGroupEgress": [
      {
       "CidrIp": "255.255.255.255/32",
