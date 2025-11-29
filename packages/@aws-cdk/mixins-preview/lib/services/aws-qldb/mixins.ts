@@ -1,1 +1,1 @@
-export * from './qldb.generated';
+export * from './cfn-props-mixins.generated';

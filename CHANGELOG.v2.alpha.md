@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.230.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.229.1-alpha.0...v2.230.0-alpha.0) (2025-11-26)
+
+
+### Features
+
+* **bedrock-agentcore-alpha:** update resources on grantInvokeXXX for runtime ([#35864](https://github.com/aws/aws-cdk/issues/35864)) ([5dad62f](https://github.com/aws/aws-cdk/commit/5dad62f94c1a9f02c5fda1df7aa105e14630beb3))
+* **imagebuilder-alpha:** add support for Image Pipeline Construct ([#36153](https://github.com/aws/aws-cdk/issues/36153)) ([d8c324a](https://github.com/aws/aws-cdk/commit/d8c324ae31db5997f9511e3f43affceea57d86c3)), closes [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789) [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789)
+* **imagebuilder-alpha:** add support for Lifecycle Policy Construct ([#36152](https://github.com/aws/aws-cdk/issues/36152)) ([7e31eb6](https://github.com/aws/aws-cdk/commit/7e31eb6a310344634fefa0651bf55c7493fc09bd)), closes [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789) [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789)
+* **mixins-preview:** adds LogDelivery Mixins for 47 resources ([#36158](https://github.com/aws/aws-cdk/issues/36158)) ([6607ce9](https://github.com/aws/aws-cdk/commit/6607ce95256acda86107fa30b1f000a9dc189df7))
+* **mixins-preview:** vended log deliveries ([#36138](https://github.com/aws/aws-cdk/issues/36138)) ([69442a8](https://github.com/aws/aws-cdk/commit/69442a88b16b39d485bf7ec57d520599c564a612))
+* **mixins-preview:** helpers to generate EventBridge event patterns for 26 services ([#36121](https://github.com/aws/aws-cdk/issues/36121)) ([073185d](https://github.com/aws/aws-cdk/commit/073185d46e5d8a95915579013d1ef8fe47e6343c))
+
+
+### Bug Fixes
+
+* **mixins-preview:** `AutoDeleteObjects` mixin fails with cannot find file error ([#36188](https://github.com/aws/aws-cdk/issues/36188)) ([3ef337d](https://github.com/aws/aws-cdk/commit/3ef337dba5d9f6f13ca8faa84376bd9177a7ecbd)), closes [aws-cdk/mixins-preview/lib/custom-resource-handlers/aws-s3/auto-delete-objects-provider.ts#L21](https://github.com/aws-cdk/mixins-preview/lib/custom-resource-handlers/aws-s3/auto-delete-objects-provider.ts/issues/L21)
+* **mixins-preview:** `ResourcePolicy with this name already exists` error when setting up `LogDelivery` ([#36195](https://github.com/aws/aws-cdk/issues/36195)) ([f9aa31d](https://github.com/aws/aws-cdk/commit/f9aa31d021400aee8e172b3b0c949cd2d00473f7))
+* **mixins-preview:** cannot use string literal types for `S3LogsDeliveryProps.permissionsVersion` ([#36197](https://github.com/aws/aws-cdk/issues/36197)) ([cc491df](https://github.com/aws/aws-cdk/commit/cc491df13f6a4e62e0233b90dcc636efa34e32d7))
+
+## [2.229.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.229.0-alpha.0...v2.229.1-alpha.0) (2025-11-25)
+
+## [2.229.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.228.0-alpha.0...v2.229.0-alpha.0) (2025-11-24)
+
+
+### Features
+
+* **imagebuilder-alpha:** add support for Container Recipe Construct ([#36091](https://github.com/aws/aws-cdk/issues/36091)) ([875e0e7](https://github.com/aws/aws-cdk/commit/875e0e72bcc791eac4ea93d223941bc3d4ba99e5)), closes [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789) [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789)
+* **imagebuilder-alpha:** add support for Image Recipe Construct ([#36092](https://github.com/aws/aws-cdk/issues/36092)) ([4361f8b](https://github.com/aws/aws-cdk/commit/4361f8bd0fca4b6a69b69a9ca69f178b9b220db2)), closes [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789) [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789)
+* **imagebuilder-alpha:** add support for Workflow Construct ([#36007](https://github.com/aws/aws-cdk/issues/36007)) ([616d32a](https://github.com/aws/aws-cdk/commit/616d32a0fde55abb203c7396801cf3adab8b5006)), closes [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789) [aws/aws-cdk-rfcs#789](https://github.com/aws/aws-cdk-rfcs/issues/789)
+* **mixins-preview:** developer preview of CDK Mixins ([#36136](https://github.com/aws/aws-cdk/issues/36136)) ([0c6ee1d](https://github.com/aws/aws-cdk/commit/0c6ee1d2dc2b7474d767b947558369b3d67122d9))
+
+
+### Bug Fixes
+
+* **bedrock-agentcore-alpha:** empty submodule accidentally exposed and runtime validation fix ([#36148](https://github.com/aws/aws-cdk/issues/36148)) ([72d3e6f](https://github.com/aws/aws-cdk/commit/72d3e6f40528092e99fe2390e0d0101e1075e8af))
+
+## [2.228.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.227.0-alpha.0...v2.228.0-alpha.0) (2025-11-24)
+
 ## [2.227.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.226.0-alpha.0...v2.227.0-alpha.0) (2025-11-20)
 
 

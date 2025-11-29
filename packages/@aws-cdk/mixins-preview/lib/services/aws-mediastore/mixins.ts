@@ -1,1 +1,1 @@
-export * from './mediastore.generated';
+export * from './cfn-props-mixins.generated';

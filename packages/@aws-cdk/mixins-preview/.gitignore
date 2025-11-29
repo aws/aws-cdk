@@ -3,8 +3,10 @@
 *.d.ts
 node_modules
 *.generated.ts
+rosetta/_generated.ts-fixture
 dist
 .jsii
+.jsii.gz
 
 .LAST_BUILD
 .nyc_output
@@ -22,5 +24,4 @@ junit.xml
 !**/*.snapshot/**/asset.*/**
 
 # we ignore generated files that cannot contain hand-written info
-lib/services/*/index.ts
 lib/services/**/*.jsiirc.json
