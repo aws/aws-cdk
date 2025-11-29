@@ -7,7 +7,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-elbv2-integ', { env: { region: 'us-west-2' } });
+const stack = new cdk.Stack(app, 'aws-cdk-elbv2-integ-enable-acl', { env: { region: 'us-west-2' } });
 stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
 const vpc = new ec2.Vpc(stack, 'VPC', {
@@ -17,6 +17,9 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
 const bucket = new s3.Bucket(stack, 'Bucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
+  // Enable ACLs for the bucket
+  accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE,
+  objectOwnership: s3.ObjectOwnership.OBJECT_WRITER,
 });
 
 const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
@@ -42,7 +45,7 @@ vpc.publicSubnets.forEach((subnet) => {
   group1.node.addDependency(subnet);
 });
 
-new IntegTest(app, 'cdk-integ-alb-log', {
+new IntegTest(app, 'cdk-integ-alb-log-enable-acl', {
   testCases: [stack],
   diffAssets: true,
 });
