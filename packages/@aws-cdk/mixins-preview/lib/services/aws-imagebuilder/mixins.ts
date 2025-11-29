@@ -1,1 +1,1 @@
-export * from './imagebuilder.generated';
+export * from './cfn-props-mixins.generated';

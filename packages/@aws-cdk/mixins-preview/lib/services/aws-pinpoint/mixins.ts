@@ -1,1 +1,1 @@
-export * from './pinpoint.generated';
+export * from './cfn-props-mixins.generated';

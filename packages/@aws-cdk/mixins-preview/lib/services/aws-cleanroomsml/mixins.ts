@@ -1,1 +1,1 @@
-export * from './cleanroomsml.generated';
+export * from './cfn-props-mixins.generated';
