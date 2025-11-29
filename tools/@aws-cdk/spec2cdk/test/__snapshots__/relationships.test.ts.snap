@@ -44,6 +44,13 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     return ret;
   }
 
+  /**
+   * Checks whether the given object is a CfnRole
+   */
+  public static isCfnRole(x: any): x is CfnRole {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnRole.CFN_RESOURCE_TYPE_NAME));
+  }
+
   public static arnForRole(resource: IRoleRef): string {
     return resource.roleRef.roleArn;
   }
@@ -176,6 +183,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnResource
+   */
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
 
   public permissions?: Array<cdk.IResolvable | CfnResource.PermissionProperty> | cdk.IResolvable;
@@ -381,6 +395,13 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     return ret;
   }
 
+  /**
+   * Checks whether the given object is a CfnRole
+   */
+  public static isCfnRole(x: any): x is CfnRole {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnRole.CFN_RESOURCE_TYPE_NAME));
+  }
+
   public static arnForRole(resource: IRoleRef): string {
     return resource.roleRef.roleArn;
   }
@@ -515,6 +536,13 @@ export class CfnUser extends cdk.CfnResource implements cdk.IInspectable, IUserR
     return ret;
   }
 
+  /**
+   * Checks whether the given object is a CfnUser
+   */
+  public static isCfnUser(x: any): x is CfnUser {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnUser.CFN_RESOURCE_TYPE_NAME));
+  }
+
   public static arnForUser(resource: IUserRef): string {
     return resource.userRef.userArn;
   }
@@ -647,6 +675,13 @@ export class CfnPolicy extends cdk.CfnResource implements cdk.IInspectable, IPol
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnPolicy
+   */
+  public static isCfnPolicy(x: any): x is CfnPolicy {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnPolicy.CFN_RESOURCE_TYPE_NAME));
   }
 
   public principalArn?: string;
@@ -796,6 +831,13 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     return ret;
   }
 
+  /**
+   * Checks whether the given object is a CfnRole
+   */
+  public static isCfnRole(x: any): x is CfnRole {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnRole.CFN_RESOURCE_TYPE_NAME));
+  }
+
   public static arnForRole(resource: IRoleRef): string {
     return resource.roleRef.roleArn;
   }
@@ -928,6 +970,13 @@ export class CfnTask extends cdk.CfnResource implements cdk.IInspectable, ITaskR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnTask
+   */
+  public static isCfnTask(x: any): x is CfnTask {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnTask.CFN_RESOURCE_TYPE_NAME));
   }
 
   public executionConfig?: CfnTask.ExecutionConfigProperty | cdk.IResolvable;
@@ -1132,6 +1181,13 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     return ret;
   }
 
+  /**
+   * Checks whether the given object is a CfnRole
+   */
+  public static isCfnRole(x: any): x is CfnRole {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnRole.CFN_RESOURCE_TYPE_NAME));
+  }
+
   public static arnForRole(resource: IRoleRef): string {
     return resource.roleRef.roleArn;
   }
@@ -1264,6 +1320,13 @@ export class CfnJob extends cdk.CfnResource implements cdk.IInspectable, IJobRef
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnJob
+   */
+  public static isCfnJob(x: any): x is CfnJob {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnJob.CFN_RESOURCE_TYPE_NAME));
   }
 
   public config?: cdk.IResolvable | CfnJob.OldConfigProperty;
@@ -1530,6 +1593,13 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     return ret;
   }
 
+  /**
+   * Checks whether the given object is a CfnRole
+   */
+  public static isCfnRole(x: any): x is CfnRole {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnRole.CFN_RESOURCE_TYPE_NAME));
+  }
+
   public static arnForRole(resource: IRoleRef): string {
     return resource.roleRef.roleArn;
   }
@@ -1662,6 +1732,13 @@ export class CfnFunction extends cdk.CfnResource implements cdk.IInspectable, IF
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnFunction
+   */
+  public static isCfnFunction(x: any): x is CfnFunction {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnFunction.CFN_RESOURCE_TYPE_NAME));
   }
 
   public roleArn?: string;
