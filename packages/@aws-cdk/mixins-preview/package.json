@@ -648,6 +648,7 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
+  "homepage": "https://github.com/aws/aws-cdk",
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
@@ -665,7 +666,12 @@
     "jest": "^29.7.0",
     "tsx": "^4.20.6"
   },
-  "homepage": "https://github.com/aws/aws-cdk",
+  "dependencies": {
+    "minimatch": "^3.1.2"
+  },
+  "bundleDependencies": [
+    "minimatch"
+  ],
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
