@@ -51,7 +51,6 @@ export async function handler(event: MtlsTestEvent): Promise<MtlsTestResponse> {
       port: 443,
       path: '/index.html',
       method: 'GET',
-      rejectUnauthorized: false, // Allow CloudFront's default certificate
     };
 
     // Add client certificate if useCert is true

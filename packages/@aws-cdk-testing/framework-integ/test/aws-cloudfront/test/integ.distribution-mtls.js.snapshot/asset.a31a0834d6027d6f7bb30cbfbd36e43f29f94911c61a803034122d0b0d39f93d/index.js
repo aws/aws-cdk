@@ -65,9 +65,7 @@ async function handler(event) {
       hostname: event.distributionDomainName,
       port: 443,
       path: "/index.html",
-      method: "GET",
-      rejectUnauthorized: false
-      // Allow CloudFront's default certificate
+      method: "GET"
     };
     if (event.useCert && cert && key) {
       options.cert = cert;
