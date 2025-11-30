@@ -19,6 +19,7 @@ import {
   HttpVersion,
   IOrigin,
   LambdaEdgeEventType,
+  MtlsMode,
   PriceClass,
   RealtimeLogConfig,
   SecurityPolicyProtocol,
@@ -1698,5 +1699,104 @@ describe('gRPC', () => {
         },
       });
     }).toThrow(msg);
+  });
+});
+
+describe('viewer mTLS', () => {
+  test.each([
+    { mode: MtlsMode.REQUIRED, expected: 'required' },
+    { mode: MtlsMode.OPTIONAL, expected: 'optional' },
+  ])('can configure mTLS with %s mode', ({ mode, expected }) => {
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      viewerMtlsConfig: {
+        mode,
+        trustStoreId: 'ts-123456789',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerMtlsConfig: {
+          Mode: expected,
+          TrustStoreConfig: {
+            TrustStoreId: 'ts-123456789',
+          },
+        },
+      },
+    });
+  });
+
+  test.each([
+    [true, true],
+    [true, false],
+    [false, true],
+    [false, false],
+  ])('can configure mTLS with all trust store options', (advertiseTrustStoreCaNames, ignoreCertificateExpiry) => {
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      viewerMtlsConfig: {
+        mode: MtlsMode.REQUIRED,
+        trustStoreId: 'ts-123456789',
+        advertiseTrustStoreCaNames,
+        ignoreCertificateExpiry,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerMtlsConfig: {
+          Mode: 'required',
+          TrustStoreConfig: {
+            TrustStoreId: 'ts-123456789',
+            AdvertiseTrustStoreCaNames: advertiseTrustStoreCaNames,
+            IgnoreCertificateExpiry: ignoreCertificateExpiry,
+          },
+        },
+      },
+    });
+  });
+
+  test('mTLS config is not present when not specified', () => {
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerMtlsConfig: Match.absent(),
+      },
+    });
+  });
+
+  test.each([
+    [HttpVersion.HTTP3, 'http3'],
+    [HttpVersion.HTTP2_AND_3, 'http2and3'],
+  ])('throws if mTLS is configured with %s', (httpVersion, versionString) => {
+    expect(() => {
+      new Distribution(stack, 'Dist', {
+        defaultBehavior: { origin: defaultOrigin() },
+        httpVersion,
+        viewerMtlsConfig: {
+          mode: MtlsMode.REQUIRED,
+          trustStoreId: 'ts-123',
+        },
+      });
+    }).toThrow(`'httpVersion' must be http1.1 or http2 when 'viewerMtlsConfig' is specified. HTTP/3 is not supported with mTLS, got ${versionString}`);
+  });
+
+  test.each([
+    [HttpVersion.HTTP1_1],
+    [HttpVersion.HTTP2],
+    [undefined],
+  ])('mTLS works with httpVersion %s', (httpVersion) => {
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      httpVersion,
+      viewerMtlsConfig: {
+        mode: MtlsMode.REQUIRED,
+        trustStoreId: 'ts-123',
+      },
+    });
   });
 });

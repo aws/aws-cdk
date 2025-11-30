@@ -717,6 +717,35 @@ new cloudfront.Distribution(this, 'Dist', {
 });
 ```
 
+### Mutual TLS (mTLS) Authentication
+
+You can configure CloudFront to require mutual TLS (mTLS) authentication between viewers and CloudFront.
+With mTLS, CloudFront authenticates viewers using client certificates. To enable mTLS, create a TrustStore
+containing CA certificates and configure the `viewerMtlsConfig` property.
+
+> **Note:** mTLS requires HTTPS. Use `ViewerProtocolPolicy.HTTPS_ONLY` or `ViewerProtocolPolicy.REDIRECT_TO_HTTPS`.
+> mTLS is not supported with HTTP/3. Use the default `HttpVersion.HTTP2` or `HttpVersion.HTTP1_1`.
+
+```ts
+declare const myBucket: s3.Bucket;
+declare const trustStoreId: string; // ID of an existing CloudFront TrustStore
+
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: {
+    origin: origins.S3BucketOrigin.withOriginAccessControl(myBucket),
+    viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.HTTPS_ONLY,
+  },
+  viewerMtlsConfig: {
+    mode: cloudfront.MtlsMode.REQUIRED, // or MtlsMode.OPTIONAL to allow requests without certificates
+    trustStoreId: trustStoreId,
+    advertiseTrustStoreCaNames: true, // Optional: advertise CA names during TLS handshake
+    ignoreCertificateExpiry: false, // Optional: accept expired certificates (use with caution)
+  },
+});
+```
+
+See [Configuring mutual TLS authentication](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-mutual-tls.html) in the CloudFront User Guide.
+
 ### Lambda@Edge
 
 Lambda@Edge is an extension of AWS Lambda, a compute service that lets you execute
