@@ -2419,7 +2419,7 @@ export class Bucket extends BucketBase {
 
     if (this._resource.cfnOptions.deletionPolicy !== CfnDeletionPolicy.DELETE
       || this._resource.cfnOptions.updateReplacePolicy !== CfnDeletionPolicy.DELETE) {
-      throw new ValidationError('Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'.', this);
+      throw new ValidationError('Cannot use auto-delete objects property on a bucket without setting removal policy to \'DESTROY\'.', this);
     }
     const provider = AutoDeleteObjectsProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
       useCfnResponseWrapper: false,
