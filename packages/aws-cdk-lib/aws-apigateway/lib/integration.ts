@@ -1,5 +1,6 @@
 import { Method } from './method';
 import { IVpcLink, VpcLink } from './vpc-link';
+import * as apigwv2 from '../../aws-apigatewayv2';
 import * as iam from '../../aws-iam';
 import { Lazy, Duration } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
@@ -130,8 +131,36 @@ export interface IntegrationOptions {
   /**
    * The VpcLink used for the integration.
    * Required if connectionType is VPC_LINK
+   *
+   * @deprecated Use `vpcLinkV2` for VPC Link V2 integrations with ALB/NLB
    */
   readonly vpcLink?: IVpcLink;
+
+  /**
+   * The VPC Link V2 used for the integration.
+   *
+   * VPC links V2 enable private integrations that connect your REST API to
+   * Application Load Balancers or Network Load Balancers without using a
+   * Network Load Balancer as an intermediary.
+   *
+   * When using `vpcLinkV2`, you must also specify `integrationTarget` with the
+   * ARN of the ALB or NLB listener.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-vpc-links-v2.html
+   * @default - No VPC Link V2
+   */
+  readonly vpcLinkV2?: apigwv2.IVpcLink;
+
+  /**
+   * The ALB or NLB listener ARN to send the request to.
+   *
+   * Only supported for private integrations that use VPC links V2.
+   * When using this property, you must also specify `vpcLinkV2`.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-private-integration.html
+   * @default - No integration target
+   */
+  readonly integrationTarget?: string;
 
   /**
    * The response transfer mode for the integration.
@@ -229,12 +258,20 @@ export class Integration {
       throw new UnscopedValidationError('\'credentialsPassthrough\' and \'credentialsRole\' are mutually exclusive');
     }
 
-    if (options.connectionType === ConnectionType.VPC_LINK && options.vpcLink === undefined) {
-      throw new UnscopedValidationError('\'connectionType\' of VPC_LINK requires \'vpcLink\' prop to be set');
+    if (options.connectionType === ConnectionType.VPC_LINK && options.vpcLink === undefined && options.vpcLinkV2 === undefined) {
+      throw new UnscopedValidationError('\'connectionType\' of VPC_LINK requires \'vpcLink\' or \'vpcLinkV2\' prop to be set');
     }
 
-    if (options.connectionType === ConnectionType.INTERNET && options.vpcLink !== undefined) {
-      throw new UnscopedValidationError('cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
+    if (options.connectionType === ConnectionType.INTERNET && (options.vpcLink !== undefined || options.vpcLinkV2 !== undefined)) {
+      throw new UnscopedValidationError('cannot set \'vpcLink\' or \'vpcLinkV2\' where \'connectionType\' is INTERNET');
+    }
+
+    if (options.vpcLink !== undefined && options.vpcLinkV2 !== undefined) {
+      throw new UnscopedValidationError('\'vpcLink\' and \'vpcLinkV2\' are mutually exclusive');
+    }
+
+    if (options.integrationTarget !== undefined && options.vpcLinkV2 === undefined) {
+      throw new UnscopedValidationError('\'integrationTarget\' requires \'vpcLinkV2\' to be set');
     }
 
     if (options.timeout && !options.timeout.isUnresolved() && options.timeout.toMilliseconds() < 50) {
@@ -261,7 +298,8 @@ export class Integration {
     let uri = this.props.uri;
     const options = this.props.options;
 
-    if (options?.connectionType === ConnectionType.VPC_LINK && uri === undefined) {
+    // For VPC Link V1, auto-generate URI from NLB DNS name if not provided
+    if (options?.connectionType === ConnectionType.VPC_LINK && options?.vpcLink && uri === undefined) {
       uri = Lazy.string({
         // needs to be a lazy since the targets can be added to the VpcLink construct after initialization.
         produce: () => {
@@ -279,10 +317,17 @@ export class Integration {
         },
       });
     }
+
+    // Determine connection type based on vpcLink or vpcLinkV2
+    let connectionType = options?.connectionType;
+    if (options?.vpcLink || options?.vpcLinkV2) {
+      connectionType = ConnectionType.VPC_LINK;
+    }
+
     return {
       options: {
         ...options,
-        connectionType: options?.vpcLink ? ConnectionType.VPC_LINK : options?.connectionType,
+        connectionType,
       },
       type: this.props.type,
       uri,

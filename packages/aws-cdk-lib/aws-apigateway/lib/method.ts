@@ -358,6 +358,14 @@ export class Method extends Resource {
       credentials = Stack.of(this).formatArn({ service: 'iam', region: '', account: '*', resource: 'user', arnFormat: ArnFormat.SLASH_RESOURCE_NAME, resourceName: '*' });
     }
 
+    // Determine connectionId from vpcLink (V1) or vpcLinkV2 (V2)
+    let connectionId: string | undefined;
+    if (options.vpcLinkV2) {
+      connectionId = options.vpcLinkV2.vpcLinkId;
+    } else if (options.vpcLink) {
+      connectionId = options.vpcLink.vpcLinkId;
+    }
+
     return {
       type: bindResult.type,
       uri: bindResult.uri,
@@ -370,7 +378,8 @@ export class Method extends Resource {
       passthroughBehavior: options.passthroughBehavior,
       integrationResponses: options.integrationResponses,
       connectionType: options.connectionType,
-      connectionId: options.vpcLink ? options.vpcLink.vpcLinkId : undefined,
+      connectionId,
+      integrationTarget: options.integrationTarget,
       credentials,
       timeoutInMillis: options.timeout?.toMilliseconds(),
       responseTransferMode: options.responseTransferMode,
