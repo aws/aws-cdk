@@ -3627,7 +3627,7 @@ describe('bucket', () => {
 
     expect(() => new s3.Bucket(stack, 'MyBucket', {
       autoDeleteObjects: true,
-    })).toThrow(/Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'/);
+    })).toThrow(/Cannot use auto-delete objects on a bucket without setting removal policy to \'DESTROY\'./);
   });
 
   test('can enable auto-delete objects after creation with enableAutoDeleteObjects()', () => {
@@ -3658,7 +3658,7 @@ describe('bucket', () => {
     const stack = new cdk.Stack();
     const bucket = new s3.Bucket(stack, 'MyBucket');
 
-    expect(() => bucket.enableAutoDeleteObjects()).toThrow(/Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'/);
+    expect(() => bucket.enableAutoDeleteObjects()).toThrow(/Cannot use auto-delete objects on a bucket without setting removal policy to \'DESTROY\'./);
   });
 
   test('enableAutoDeleteObjects() is idempotent', () => {
