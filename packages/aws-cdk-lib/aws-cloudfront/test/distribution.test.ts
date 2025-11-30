@@ -1703,12 +1703,43 @@ describe('gRPC', () => {
 });
 
 describe('viewer mTLS', () => {
-  test('can configure mTLS with required mode', () => {
+  test.each([
+    { mode: MtlsMode.REQUIRED, expected: 'required' },
+    { mode: MtlsMode.OPTIONAL, expected: 'optional' },
+  ])('can configure mTLS with %s mode', ({ mode, expected }) => {
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      viewerMtlsConfig: {
+        mode,
+        trustStoreId: 'ts-123456789',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerMtlsConfig: {
+          Mode: expected,
+          TrustStoreConfig: {
+            TrustStoreId: 'ts-123456789',
+          },
+        },
+      },
+    });
+  });
+
+  test.each([
+    [true, true],
+    [true, false],
+    [false, true],
+    [false, false],
+  ])('can configure mTLS with all trust store options', (advertiseTrustStoreCaNames, ignoreCertificateExpiry) => {
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin: defaultOrigin() },
       viewerMtlsConfig: {
         mode: MtlsMode.REQUIRED,
         trustStoreId: 'ts-123456789',
+        advertiseTrustStoreCaNames,
+        ignoreCertificateExpiry,
       },
     });
 
@@ -1718,52 +1749,8 @@ describe('viewer mTLS', () => {
           Mode: 'required',
           TrustStoreConfig: {
             TrustStoreId: 'ts-123456789',
-          },
-        },
-      },
-    });
-  });
-
-  test('can configure mTLS with optional mode', () => {
-    new Distribution(stack, 'Dist', {
-      defaultBehavior: { origin: defaultOrigin() },
-      viewerMtlsConfig: {
-        mode: MtlsMode.OPTIONAL,
-        trustStoreId: 'ts-123456789',
-      },
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
-      DistributionConfig: {
-        ViewerMtlsConfig: {
-          Mode: 'optional',
-          TrustStoreConfig: {
-            TrustStoreId: 'ts-123456789',
-          },
-        },
-      },
-    });
-  });
-
-  test('can configure mTLS with all trust store options', () => {
-    new Distribution(stack, 'Dist', {
-      defaultBehavior: { origin: defaultOrigin() },
-      viewerMtlsConfig: {
-        mode: MtlsMode.REQUIRED,
-        trustStoreId: 'ts-123456789',
-        advertiseTrustStoreCaNames: true,
-        ignoreCertificateExpiry: true,
-      },
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
-      DistributionConfig: {
-        ViewerMtlsConfig: {
-          Mode: 'required',
-          TrustStoreConfig: {
-            TrustStoreId: 'ts-123456789',
-            AdvertiseTrustStoreCaNames: true,
-            IgnoreCertificateExpiry: true,
+            AdvertiseTrustStoreCaNames: advertiseTrustStoreCaNames,
+            IgnoreCertificateExpiry: ignoreCertificateExpiry,
           },
         },
       },
