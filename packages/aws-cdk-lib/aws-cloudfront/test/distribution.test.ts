@@ -1768,4 +1768,35 @@ describe('viewer mTLS', () => {
       },
     });
   });
+
+  test.each([
+    [HttpVersion.HTTP3, 'http3'],
+    [HttpVersion.HTTP2_AND_3, 'http2and3'],
+  ])('throws if mTLS is configured with %s', (httpVersion, versionString) => {
+    expect(() => {
+      new Distribution(stack, 'Dist', {
+        defaultBehavior: { origin: defaultOrigin() },
+        httpVersion,
+        viewerMtlsConfig: {
+          mode: MtlsMode.REQUIRED,
+          trustStoreId: 'ts-123',
+        },
+      });
+    }).toThrow(`'httpVersion' must be http1.1 or http2 when 'viewerMtlsConfig' is specified. HTTP/3 is not supported with mTLS, got ${versionString}`);
+  });
+
+  test.each([
+    [HttpVersion.HTTP1_1],
+    [HttpVersion.HTTP2],
+    [undefined],
+  ])('mTLS works with httpVersion %s', (httpVersion) => {
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      httpVersion,
+      viewerMtlsConfig: {
+        mode: MtlsMode.REQUIRED,
+        trustStoreId: 'ts-123',
+      },
+    });
+  });
 });

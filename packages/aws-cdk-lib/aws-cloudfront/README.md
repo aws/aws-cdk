@@ -724,6 +724,7 @@ With mTLS, CloudFront authenticates viewers using client certificates. To enable
 containing CA certificates and configure the `viewerMtlsConfig` property.
 
 > **Note:** mTLS requires HTTPS. Use `ViewerProtocolPolicy.HTTPS_ONLY` or `ViewerProtocolPolicy.REDIRECT_TO_HTTPS`.
+> mTLS is not supported with HTTP/3. Use the default `HttpVersion.HTTP2` or `HttpVersion.HTTP1_1`.
 
 ```ts
 declare const myBucket: s3.Bucket;

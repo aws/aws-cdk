@@ -388,6 +388,7 @@ export class Distribution extends Resource implements IDistribution {
 
     this.httpVersion = props.httpVersion ?? HttpVersion.HTTP2;
     this.validateGrpc(props.defaultBehavior);
+    this.validateMtls(props);
 
     const originId = this.addOrigin(props.defaultBehavior.origin);
     this.defaultBehavior = new CacheBehavior(originId, { pathPattern: '*', ...props.defaultBehavior });
@@ -899,6 +900,19 @@ export class Distribution extends Resource implements IDistribution {
     const validHttpVersions = [HttpVersion.HTTP2, HttpVersion.HTTP2_AND_3];
     if (!validHttpVersions.includes(this.httpVersion)) {
       throw new ValidationError(`'httpVersion' must be ${validHttpVersions.join(' or ')} if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`, this);
+    }
+  }
+
+  private validateMtls(props: DistributionProps): void {
+    if (!props.viewerMtlsConfig) {
+      return;
+    }
+    const invalidHttpVersions = [HttpVersion.HTTP3, HttpVersion.HTTP2_AND_3];
+    if (invalidHttpVersions.includes(this.httpVersion)) {
+      throw new ValidationError(
+        `'httpVersion' must be ${HttpVersion.HTTP1_1} or ${HttpVersion.HTTP2} when 'viewerMtlsConfig' is specified. HTTP/3 is not supported with mTLS, got ${this.httpVersion}`,
+        this,
+      );
     }
   }
 }
