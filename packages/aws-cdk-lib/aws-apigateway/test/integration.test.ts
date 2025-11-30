@@ -30,7 +30,7 @@ describe('integration', () => {
       options: {
         connectionType: apigw.ConnectionType.VPC_LINK,
       },
-    })).toThrow(/'connectionType' of VPC_LINK requires 'vpcLink' prop to be set/);
+    })).toThrow(/'connectionType' of VPC_LINK requires 'vpcLink' or 'vpcLinkV2' prop to be set/);
   });
 
   test('uri is self determined from the NLB', () => {
@@ -129,7 +129,7 @@ describe('integration', () => {
         connectionType: apigw.ConnectionType.INTERNET,
         vpcLink: link,
       },
-    })).toThrow(/cannot set 'vpcLink' where 'connectionType' is INTERNET/);
+    })).toThrow(/cannot set 'vpcLink' or 'vpcLinkV2' where 'connectionType' is INTERNET/);
   });
 
   test('connectionType is Match.absent() when vpcLink is not specified', () => {
