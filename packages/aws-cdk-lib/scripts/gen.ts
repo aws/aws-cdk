@@ -5,6 +5,7 @@ import generateServiceSubmoduleFiles from './submodules';
 import writeCloudFormationIncludeMapping from './submodules/cloudformation-include';
 
 const awsCdkLibDir = path.join(__dirname, '..');
+const atAwsCdkDir = path.join(__dirname, '../../@aws-cdk');
 const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
 const topLevelIndexFilePath = path.join(awsCdkLibDir, 'index.ts');
 const scopeMapPath = path.join(__dirname, 'scope-map.json');
@@ -20,7 +21,7 @@ main().catch(e => {
 async function main() {
   // Generate all L1s based on config in scope-map.json
 
-  const generated = (await generateAll(awsCdkLibDir, {
+  const generated = (await generateAll(awsCdkLibDir, atAwsCdkDir, {
     skippedServices: [],
     scopeMapPath,
   }));
