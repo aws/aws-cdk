@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnLifecyclePolicy } from 'aws-cdk-lib/aws-imagebuilder';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IRecipeBase } from './recipe-base';
@@ -432,6 +433,8 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
             }).toLowerCase(),
         }),
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Object.defineProperty(this, LIFECYCLE_POLICY_SYMBOL, { value: true });
 
@@ -584,8 +587,8 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
   /**
    * Generates the action property into the `Action` type in the CloudFormation L1 definition.
    *
-   * @param props The props passed as input to the construct
-   * @param detail The lifecycle policy detail where the exclusion rules are
+   * @param resourceType The resource type of the lifecycle policy
+   * @param action The action being taken in the lifecycle policy rule
    * @private
    */
   private buildAction(
@@ -683,7 +686,7 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
   /**
    * Validates a policy detail filter
    *
-   * @param detail The lifecycle policy detail to validate filters for
+   * @param filter The lifecycle policy resource filter applied in the rule
    * @private
    */
   private validatePolicyDetailFilter(filter: LifecyclePolicyFilter) {
