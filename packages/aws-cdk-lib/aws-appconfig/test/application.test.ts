@@ -8,6 +8,7 @@ import {
   LambdaDestination,
   Parameter,
   ActionPoint,
+  AppConfigLambdaVersion,
 } from '../lib';
 
 describe('appconfig', () => {
@@ -46,6 +47,53 @@ describe('appconfig', () => {
   test('get lambda layer arn', () => {
     expect(Application.getLambdaLayerVersionArn('us-east-1')).toEqual('arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension:128');
     expect(Application.getLambdaLayerVersionArn('us-east-1', Platform.ARM_64)).toEqual('arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension-Arm64:61');
+  });
+
+  test('get lambda layer arn with options', () => {
+    // Test with explicit version using enum (required) - x86_64 default
+    expect(Application.getLambdaLayerVersionArnWithOptions('us-east-1', {
+      version: AppConfigLambdaVersion.V2_0_2037,
+    })).toEqual('arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension:207');
+
+    // Test with platform option - ARM64
+    expect(Application.getLambdaLayerVersionArnWithOptions('us-east-1', {
+      version: AppConfigLambdaVersion.V2_0_2037,
+      platform: Platform.ARM_64,
+    })).toEqual('arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension-Arm64:140');
+
+    // Test with explicit x86_64 platform
+    expect(Application.getLambdaLayerVersionArnWithOptions('us-east-1', {
+      version: AppConfigLambdaVersion.V2_0_2037,
+      platform: Platform.X86_64,
+    })).toEqual('arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension:207');
+
+    // Test with different version - 2.0.165
+    expect(Application.getLambdaLayerVersionArnWithOptions('us-east-1', {
+      version: AppConfigLambdaVersion.V2_0_165,
+    })).toEqual('arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension:110');
+
+    // Test with different region
+    expect(Application.getLambdaLayerVersionArnWithOptions('us-west-2', {
+      version: AppConfigLambdaVersion.V2_0_2037,
+      platform: Platform.ARM_64,
+    })).toEqual('arn:aws:lambda:us-west-2:359756378197:layer:AWS-AppConfig-Extension-Arm64:164');
+  });
+
+  test('get lambda layer arn with options - error cases', () => {
+    // Test unsupported region
+    expect(() => {
+      Application.getLambdaLayerVersionArnWithOptions('unsupported-region', {
+        version: AppConfigLambdaVersion.V2_0_2037,
+      });
+    }).toThrow('AppConfig Lambda layer version 2.0.2037 is not supported in region unsupported-region for architecture x86_64');
+
+    // Test version with limited regional support - use a region that doesn't have 2.0.58 ARM64
+    expect(() => {
+      Application.getLambdaLayerVersionArnWithOptions('af-south-1', {
+        version: AppConfigLambdaVersion.V2_0_58,
+        platform: Platform.ARM_64,
+      });
+    }).toThrow('AppConfig Lambda layer version 2.0.58 is not supported in region af-south-1 for architecture arm64');
   });
 
   test('add agent to ecs', () => {
