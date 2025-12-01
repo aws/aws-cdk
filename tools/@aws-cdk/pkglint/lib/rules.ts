@@ -1545,11 +1545,11 @@ export class EslintSetup extends ValidationRule {
   public readonly name = 'package-info/eslint';
 
   public validate(pkg: PackageJson) {
-    const eslintrcFilename = '.eslintrc.js';
+    const eslintrcFilename = 'eslint.config.js';
     if (!fs.existsSync(eslintrcFilename)) {
       pkg.report({
         ruleName: this.name,
-        message: 'There must be a .eslintrc.js file at the root of the package',
+        message: `There must be a ${eslintrcFilename} file at the root of the package`,
         fix: () => {
           const rootRelative = path.relative(pkg.packageRoot, repoRoot(pkg.packageRoot));
           fs.writeFileSync(
@@ -1563,8 +1563,8 @@ export class EslintSetup extends ValidationRule {
         },
       });
     }
-    fileShouldContain(this.name, pkg, '.gitignore', '!.eslintrc.js');
-    fileShouldContain(this.name, pkg, '.npmignore', '.eslintrc.js');
+    fileShouldContain(this.name, pkg, '.gitignore', `!${eslintrcFilename}`);
+    fileShouldContain(this.name, pkg, '.npmignore', eslintrcFilename);
   }
 }
 

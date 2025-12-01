@@ -8,6 +8,7 @@
  *     https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/ROADMAP.md
  */
 module.exports = {
+  files: ['**/*.ts'],
   env: {
     jest: true,
     node: true,

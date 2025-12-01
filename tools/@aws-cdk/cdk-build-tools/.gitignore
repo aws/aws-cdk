@@ -4,6 +4,6 @@
 dist
 
 *.snk
-!.eslintrc.js
+!eslint.config.js
 !config/*.js
 junit.xml
