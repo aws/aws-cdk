@@ -21,7 +21,7 @@
 set -eu
 scriptdir=$(cd $(dirname $0) && pwd)
 
-ROSETTA=${ROSETTA:-npx jsii-rosetta}
+ROSETTA=${ROSETTA:-yarn run rosetta}
 
 infuse=false
 jsii_pkgs_file=""
@@ -73,7 +73,7 @@ time $ROSETTA extract \
 
 if $infuse; then
     echo "💎 Generating synthetic examples for the remainder" >&2
-    time npx cdk-generate-synthetic-examples@latest \
+    time yarn run synthetic-examples \
         $(cat $jsii_pkgs_file)
 
     time $ROSETTA extract \
