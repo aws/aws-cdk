@@ -50,7 +50,6 @@ export function trimFromStart(s: string, maxLength: number) {
 export const VERSION_LOCKED: { [key: string]: boolean } = {
   // locked to the version
   Architectures: true,
-  CapacityProviderConfig: true,
   Code: true,
   DeadLetterConfig: true,
   Description: true,
@@ -58,14 +57,12 @@ export const VERSION_LOCKED: { [key: string]: boolean } = {
   EphemeralStorage: true,
   FileSystemConfigs: true,
   FunctionName: true,
-  FunctionScalingConfig: true,
   Handler: true,
   ImageConfig: true,
   KmsKeyArn: true,
   Layers: true,
   MemorySize: true,
   PackageType: true,
-  PublishToLatestPublished: true,
   RecursiveLoop: true,
   Role: true,
   Runtime: true,
@@ -190,9 +187,9 @@ function sortFunctionProperties(properties: any) {
     // <= 2.87 explicitly fixed order
     'Code', 'Handler', 'Role', 'Runtime',
     // <= 2.87 implicitly fixed order
-    'Architectures', 'CapacityProviderConfig', 'CodeSigningConfigArn', 'DeadLetterConfig', 'Description', 'Environment',
-    'EphemeralStorage', 'FileSystemConfigs', 'FunctionName', 'FunctionScalingConfig', 'ImageConfig', 'KmsKeyArn', 'Layers',
-    'MemorySize', 'PackageType', 'PublishToLatestPublished', 'ReservedConcurrentExecutions', 'RuntimeManagementConfig', 'SnapStart',
+    'Architectures', 'CodeSigningConfigArn', 'DeadLetterConfig', 'Description', 'Environment',
+    'EphemeralStorage', 'FileSystemConfigs', 'FunctionName', 'ImageConfig', 'KmsKeyArn', 'Layers',
+    'MemorySize', 'PackageType', 'ReservedConcurrentExecutions', 'RuntimeManagementConfig', 'SnapStart',
     'Tags', 'Timeout', 'TracingConfig', 'VpcConfig',
   ]).sortObject(properties);
 }
