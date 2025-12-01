@@ -159,10 +159,14 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
 
   private createGrantsModule(moduleName: string, service: Service, grantsConfig: string): LocatedModule<GrantsModule> {
     const filePath = this.pathsFor(moduleName, service).grants;
-    return {
-      module: new GrantsModule(service, this.db, JSON.parse(grantsConfig)),
+    const imports = this.resolveImportPaths(filePath);
+
+    const module = {
+      module: new GrantsModule(service, this.db, JSON.parse(grantsConfig), imports.iam),
       filePath,
     };
+
+    return module;
   }
 
   protected addResourceToSubmodule(submodule: AwsCdkLibServiceSubmodule, resource: Resource, props?: AddServiceProps): void {
@@ -284,6 +288,7 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
         coreHelpers: 'aws-cdk-lib/core/lib/helpers-internal',
         coreErrors: 'aws-cdk-lib/core/lib/errors',
         cloudwatch: 'aws-cdk-lib/aws-cloudwatch',
+        iam: 'aws-cdk-lib/aws-iam',
       };
     }
 
@@ -293,6 +298,7 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
       coreHelpers: relativeImportPath(sourceModule, 'core/lib/helpers-internal'),
       coreErrors: relativeImportPath(sourceModule, 'core/lib/errors'),
       cloudwatch: relativeImportPath(sourceModule, 'aws-cloudwatch'),
+      iam: relativeImportPath(sourceModule, 'aws-iam'),
     };
   }
 
@@ -337,4 +343,9 @@ export interface ImportPaths {
    * The import name used to import the CloudWatch module
    */
   readonly cloudwatch: string;
+
+  /**
+   * The import name used to import the IAM module
+   */
+  readonly iam: string;
 }
