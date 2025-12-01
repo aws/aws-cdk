@@ -143,8 +143,7 @@ export interface IntegrationOptions {
    * Application Load Balancers or Network Load Balancers without using a
    * Network Load Balancer as an intermediary.
    *
-   * When using `vpcLinkV2`, you must also specify `integrationTarget` with the
-   * ARN of the ALB or NLB listener.
+   * When using `vpcLinkV2`, you must also specify `integrationTarget` with the ARN of the ALB or NLB.
    *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-vpc-links-v2.html
    * @default - No VPC Link V2
