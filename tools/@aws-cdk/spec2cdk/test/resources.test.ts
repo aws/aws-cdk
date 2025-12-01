@@ -1,7 +1,8 @@
 import { Resource, Service, SpecDatabase, emptyDatabase } from '@aws-cdk/service-spec-types';
 import { Plain } from '@cdklabs/tskb';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
-import { AwsCdkLibBuilder, AwsCdkLibBuilderProps } from '../lib/cdk/aws-cdk-lib';
+import { moduleForResource } from './util';
+import { AwsCdkLibBuilder } from '../lib/cdk/aws-cdk-lib';
 
 const renderer = new TypeScriptRenderer();
 let db: SpecDatabase;
@@ -296,9 +297,3 @@ test('can generate interface types into a separate module', () => {
   expect(rendered.interfaces).toMatchSnapshot();
   expect(rendered.resources).toMatchSnapshot();
 });
-
-function moduleForResource(resource: Resource, props: AwsCdkLibBuilderProps) {
-  const ast = new AwsCdkLibBuilder(props);
-  const info = ast.addResource(resource);
-  return info.resourcesMod.module;
-}

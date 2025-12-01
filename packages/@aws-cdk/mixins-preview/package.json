@@ -486,6 +486,7 @@
     "./aws_s3vectors": "./lib/services/aws-s3vectors/index.js",
     "./aws_s3vectors/mixins": "./lib/services/aws-s3vectors/mixins.js",
     "./aws_sagemaker": "./lib/services/aws-sagemaker/index.js",
+    "./aws_sagemaker/events": "./lib/services/aws-sagemaker/events.js",
     "./aws_sagemaker/mixins": "./lib/services/aws-sagemaker/mixins.js",
     "./aws_sam": "./lib/services/aws-sam/index.js",
     "./aws_sam/mixins": "./lib/services/aws-sam/mixins.js",

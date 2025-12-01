@@ -31,7 +31,7 @@ test('Logs Delivery Mixin for a resource', () => {
       },
     },
     attributes: {
-      SomethingArn: {
+      ThingArn: {
         type: { type: 'string' },
         documentation: 'The arn for something',
       },
