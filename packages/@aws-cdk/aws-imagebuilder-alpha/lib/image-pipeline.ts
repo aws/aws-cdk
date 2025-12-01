@@ -614,7 +614,7 @@ export class ImagePipeline extends ImagePipelineBase {
   /**
    * The infrastructure configuration used for the image build
    */
-  readonly infrastructureConfiguration: IInfrastructureConfiguration;
+  public readonly infrastructureConfiguration: IInfrastructureConfiguration;
 
   /**
    * The execution role used for the image build. If there is no execution role, then the build will be executed with
@@ -645,6 +645,7 @@ export class ImagePipeline extends ImagePipelineBase {
     this.validateImagePipelineName();
 
     this.props = props;
+
     this.infrastructureConfiguration =
       props.infrastructureConfiguration ?? new InfrastructureConfiguration(this, 'InfrastructureConfiguration');
     this.executionRole = getExecutionRole(
