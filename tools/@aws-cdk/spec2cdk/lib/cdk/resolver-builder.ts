@@ -78,7 +78,7 @@ export class ResolverBuilder {
       : Type.distinctUnionOf(resolvableType, ...newTypes);
 
     const typeDisplayNames = [
-      ...relationships.map(r => r.typeDisplayName),
+      ...[...new Set(relationships.map(r => r.typeDisplayName))],
       resolvableType.arrayOfType?.toString() ?? resolvableType.toString(),
     ].join(' | ');
 
