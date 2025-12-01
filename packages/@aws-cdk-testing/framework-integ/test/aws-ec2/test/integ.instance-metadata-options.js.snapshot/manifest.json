@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "aws-cdk-dynamodb.assets": {
+    "integ-ec2-instance-metadata-options.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-dynamodb.assets.json",
+        "file": "integ-ec2-instance-metadata-options.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-dynamodb": {
+    "integ-ec2-instance-metadata-options": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-dynamodb.template.json",
+        "templateFile": "integ-ec2-instance-metadata-options.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a4b6fb93c9fd5e59cc9be52a9335b51c0203f552086cc2b2e6b5403b0f7ce1d3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a3fe2657cb183a6d55e6cec6684fde42415e6b72a2ac18e922a401c5ef2fdd49.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-dynamodb.assets"
+          "integ-ec2-instance-metadata-options.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,304 +31,321 @@
         }
       },
       "dependencies": [
-        "aws-cdk-dynamodb.assets"
+        "integ-ec2-instance-metadata-options.assets"
       ],
       "metadata": {
-        "/aws-cdk-dynamodb/Table": [
+        "/integ-ec2-instance-metadata-options/VPC": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "partitionKey": {
-                "name": "*",
-                "type": "S"
-              },
-              "removalPolicy": "destroy"
+              "maxAzs": "*",
+              "natGateways": "*"
+            }
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
             }
           },
           {
             "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
             "data": {
-              "addToResourcePolicy": [
-                {}
+              "addNatGateway": [
+                "*"
               ]
             }
           }
         ],
-        "/aws-cdk-dynamodb/Table/Resource": [
+        "/integ-ec2-instance-metadata-options/VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TableCD117FA1"
+            "data": "VPCPublicSubnet1SubnetB4246D30"
           }
         ],
-        "/aws-cdk-dynamodb/Table/ScalingRole": [
+        "/integ-ec2-instance-metadata-options/VPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1EIP6AD938E8"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1NATGatewayE0556630"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2Subnet74179F39"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/VPC/RestrictDefaultSecurityGroupCustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "pointInTimeRecovery": true,
-              "encryption": "AWS_MANAGED",
-              "stream": "KEYS_ONLY",
-              "timeToLiveAttribute": "*",
-              "partitionKey": {
-                "name": "*",
-                "type": "S"
-              },
-              "sortKey": {
-                "name": "*",
-                "type": "N"
-              },
-              "removalPolicy": "destroy"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addGlobalSecondaryIndex": [
-                {
-                  "indexName": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addGlobalSecondaryIndex": [
-                {
-                  "indexName": "*",
-                  "readCapacity": "*",
-                  "writeCapacity": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addGlobalSecondaryIndex": [
-                {
-                  "indexName": "*",
-                  "projectionType": "KEYS_ONLY"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addGlobalSecondaryIndex": [
-                {
-                  "indexName": "*",
-                  "projectionType": "INCLUDE",
-                  "nonKeyAttributes": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addGlobalSecondaryIndex": [
-                {
-                  "indexName": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addLocalSecondaryIndex": [
-                {
-                  "indexName": "*",
-                  "sortKey": {
-                    "name": "*",
-                    "type": "N"
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addLocalSecondaryIndex": [
-                {
-                  "indexName": "*",
-                  "sortKey": {
-                    "name": "*",
-                    "type": "N"
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addLocalSecondaryIndex": [
-                {
-                  "indexName": "*",
-                  "sortKey": {
-                    "name": "*",
-                    "type": "N"
-                  },
-                  "projectionType": "KEYS_ONLY"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addLocalSecondaryIndex": [
-                {
-                  "indexName": "*",
-                  "sortKey": {
-                    "name": "*",
-                    "type": "N"
-                  },
-                  "projectionType": "INCLUDE",
-                  "nonKeyAttributes": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex/Resource": [
+        "/integ-ec2-instance-metadata-options/VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TableWithGlobalAndLocalSecondaryIndexBC540710"
+            "data": "VPCRestrictDefaultSecurityGroupCustomResource59474679"
           }
         ],
-        "/aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex/ScalingRole": [
+        "/integ-ec2-instance-metadata-options/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
           {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
           }
         ],
-        "/aws-cdk-dynamodb/TableWithGlobalSecondaryIndex": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "partitionKey": {
-                "name": "*",
-                "type": "S"
-              },
-              "removalPolicy": "destroy"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addGlobalSecondaryIndex": [
-                {
-                  "indexName": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-dynamodb/TableWithGlobalSecondaryIndex/Resource": [
+        "/integ-ec2-instance-metadata-options/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TableWithGlobalSecondaryIndexCC8E841E"
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
           }
         ],
-        "/aws-cdk-dynamodb/TableWithGlobalSecondaryIndex/ScalingRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-dynamodb/TableWithLocalSecondaryIndex": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "partitionKey": {
-                "name": "*",
-                "type": "S"
-              },
-              "sortKey": {
-                "name": "*",
-                "type": "N"
-              },
-              "removalPolicy": "destroy"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addLocalSecondaryIndex": [
-                {
-                  "indexName": "*",
-                  "sortKey": {
-                    "name": "*",
-                    "type": "N"
-                  }
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-dynamodb/TableWithLocalSecondaryIndex/Resource": [
+        "/integ-ec2-instance-metadata-options/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TableWithLocalSecondaryIndex4DA3D08F"
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
-        "/aws-cdk-dynamodb/TableWithLocalSecondaryIndex/ScalingRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-dynamodb/Key": [
+        "/integ-ec2-instance-metadata-options/InstanceWithMetadataOptions": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "enableKeyRotation": true
+              "vpc": "*",
+              "instanceType": "*",
+              "machineImage": "*"
             }
           }
         ],
-        "/aws-cdk-dynamodb/Key/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Key961B73FD"
-          }
-        ],
-        "/aws-cdk-dynamodb/TableWithCustomerManagedKey": [
+        "/integ-ec2-instance-metadata-options/InstanceWithMetadataOptions/InstanceSecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "partitionKey": {
-                "name": "*",
-                "type": "S"
-              },
-              "removalPolicy": "destroy",
-              "stream": "NEW_AND_OLD_IMAGES",
-              "encryptionKey": "*"
+              "vpc": "*",
+              "allowAllOutbound": true,
+              "allowAllIpv6Outbound": "*"
             }
           }
         ],
-        "/aws-cdk-dynamodb/TableWithCustomerManagedKey/Resource": [
+        "/integ-ec2-instance-metadata-options/InstanceWithMetadataOptions/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TableWithCustomerManagedKeyD5C58807"
+            "data": "InstanceWithMetadataOptionsInstanceSecurityGroupC84D51F0"
           }
         ],
-        "/aws-cdk-dynamodb/TableWithCustomerManagedKey/ScalingRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-dynamodb/Role": [
+        "/integ-ec2-instance-metadata-options/InstanceWithMetadataOptions/InstanceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -337,238 +354,229 @@
                 "assumeRoleAction": "*"
               }
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
           }
         ],
-        "/aws-cdk-dynamodb/Role/ImportRole": [
+        "/integ-ec2-instance-metadata-options/InstanceWithMetadataOptions/InstanceRole/ImportInstanceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-dynamodb/Role/Resource": [
+        "/integ-ec2-instance-metadata-options/InstanceWithMetadataOptions/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Role1ABCC5F0"
+            "data": "InstanceWithMetadataOptionsInstanceRole01978EE1"
           }
         ],
-        "/aws-cdk-dynamodb/Role/DefaultPolicy": [
+        "/integ-ec2-instance-metadata-options/InstanceWithMetadataOptions/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceWithMetadataOptionsInstanceProfile28FEADED"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/InstanceWithMetadataOptions/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceWithMetadataOptions32FAD7A9"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/InstanceWithPartialMetadataOptions": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "instanceType": "*",
+              "machineImage": "*"
+            }
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/InstanceWithPartialMetadataOptions/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "allowAllOutbound": true,
+              "allowAllIpv6Outbound": "*"
+            }
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/InstanceWithPartialMetadataOptions/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceWithPartialMetadataOptionsInstanceSecurityGroup5499DC95"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/InstanceWithPartialMetadataOptions/InstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/InstanceWithPartialMetadataOptions/InstanceRole/ImportInstanceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
-        "/aws-cdk-dynamodb/Role/DefaultPolicy/Resource": [
+        "/integ-ec2-instance-metadata-options/InstanceWithPartialMetadataOptions/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RoleDefaultPolicy5FFB7DAB"
+            "data": "InstanceWithPartialMetadataOptionsInstanceRoleEFC1CE3D"
           }
         ],
-        "/aws-cdk-dynamodb/User": [
+        "/integ-ec2-instance-metadata-options/InstanceWithPartialMetadataOptions/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceWithPartialMetadataOptionsInstanceProfile013FEDED"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/InstanceWithPartialMetadataOptions/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceWithPartialMetadataOptions336808B8"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/InstanceWithRequireImdsv2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "instanceType": "*",
+              "machineImage": "*",
+              "requireImdsv2": true
+            }
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/InstanceWithRequireImdsv2/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "allowAllOutbound": true,
+              "allowAllIpv6Outbound": "*"
+            }
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/InstanceWithRequireImdsv2/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceWithRequireImdsv2InstanceSecurityGroup0CD05818"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/InstanceWithRequireImdsv2/InstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/InstanceWithRequireImdsv2/InstanceRole/ImportInstanceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
           }
         ],
-        "/aws-cdk-dynamodb/User/Resource": [
+        "/integ-ec2-instance-metadata-options/InstanceWithRequireImdsv2/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "User00B015A1"
+            "data": "InstanceWithRequireImdsv2InstanceRole83349B52"
           }
         ],
-        "/aws-cdk-dynamodb/User/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToUser": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToUser": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-dynamodb/User/DefaultPolicy/Resource": [
+        "/integ-ec2-instance-metadata-options/InstanceWithRequireImdsv2/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "UserDefaultPolicy1F97781E"
+            "data": "InstanceWithRequireImdsv2InstanceProfile62399DF3"
           }
         ],
-        "/aws-cdk-dynamodb/BootstrapVersion": [
+        "/integ-ec2-instance-metadata-options/InstanceWithRequireImdsv2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceWithRequireImdsv2F02E4DA2"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/InstanceWithRequireImdsv2/LaunchTemplate": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceWithRequireImdsv2LaunchTemplate3D122EDE"
+          }
+        ],
+        "/integ-ec2-instance-metadata-options/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-dynamodb/CheckBootstrapVersion": [
+        "/integ-ec2-instance-metadata-options/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-dynamodb"
+      "displayName": "integ-ec2-instance-metadata-options"
+    },
+    "instancemetadataoptionstestDefaultTestDeployAssert743E5801.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "instancemetadataoptionstestDefaultTestDeployAssert743E5801.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "instancemetadataoptionstestDefaultTestDeployAssert743E5801": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "instancemetadataoptionstestDefaultTestDeployAssert743E5801.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "instancemetadataoptionstestDefaultTestDeployAssert743E5801.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "instancemetadataoptionstestDefaultTestDeployAssert743E5801.assets"
+      ],
+      "metadata": {
+        "/instance-metadata-options-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/instance-metadata-options-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "instance-metadata-options-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -1072,5 +1080,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1031.2"
 }
