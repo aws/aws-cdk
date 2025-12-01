@@ -441,7 +441,6 @@ describe('function hash', () => {
       const spec = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Lambda::Function').only();
       const expected = Object.keys(spec.properties).sort();
       const actual = Object.keys(VERSION_LOCKED).sort();
-
       expect(expected).toEqual(actual);
     });
   });
