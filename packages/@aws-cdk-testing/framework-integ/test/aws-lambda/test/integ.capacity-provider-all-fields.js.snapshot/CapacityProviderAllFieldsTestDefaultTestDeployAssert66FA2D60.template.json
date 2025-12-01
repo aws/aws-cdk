@@ -1,0 +1,168 @@
+{
+ "Resources": {
+  "AwsApiCallLambdaGetCapacityProvider0c9a08178552c10ed1a34e2e33c012c7": {
+   "Type": "Custom::DeployAssert@SdkCallLambdaGetCapacityProvider",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "GetCapacityProvider",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"CapacityProviderArn\":\"",
+       {
+        "Fn::ImportValue": "CapacityProviderAllFieldsStack:ExportsOutputFnGetAttCapacityProvider7AA4F436Arn4B0DFB60"
+       },
+       "\",\"State\":\"Active\",\"CapacityProviderScalingConfig\":{\"MaxVCpuCount\":12,\"ScalingMode\":\"Manual\",\"ScalingPolicies\":[{\"PredefinedMetricType\":\"LambdaCapacityProviderAverageCPUUtilization\",\"TargetValue\":70}]},\"PermissionsConfig\":{\"CapacityProviderOperatorRoleArn\":\"",
+       {
+        "Fn::ImportValue": "CapacityProviderAllFieldsStack:ExportsOutputFnGetAttOperatorRole6A7B6B68Arn9CC337A5"
+       },
+       "\"},\"VpcConfig\":{\"SubnetIds\":[\"",
+       {
+        "Fn::ImportValue": "CapacityProviderAllFieldsStack:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
+       },
+       "\",\"",
+       {
+        "Fn::ImportValue": "CapacityProviderAllFieldsStack:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
+       },
+       "\"],\"SecurityGroupIds\":[\"",
+       {
+        "Fn::ImportValue": "CapacityProviderAllFieldsStack:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09"
+       },
+       "\"]},\"InstanceRequirements\":{\"Architectures\":[\"x86_64\"],\"AllowedInstanceTypes\":[\"t2.micro\"]}}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "CapacityProviderName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "CapacityProviderAllFieldsStack:ExportsOutputRefCapacityProvider7AA4F436FE90E476"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1764275246470"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "lambda:GetCapacityProvider"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "1bf478116a59c3d8e069e12fe42948c11b5d5233fca90d2f2b3ec9fcd695025b.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallLambdaGetCapacityProvider0c9a08178552c10ed1a34e2e33c012c7": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallLambdaGetCapacityProvider0c9a08178552c10ed1a34e2e33c012c7",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
