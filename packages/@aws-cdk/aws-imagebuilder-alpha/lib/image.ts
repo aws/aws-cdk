@@ -3,6 +3,7 @@ import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnImage } from 'aws-cdk-lib/aws-imagebuilder';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { BaseContainerImage, BaseImage } from './base-image';
@@ -429,6 +430,8 @@ export class Image extends ImageBase {
 
   public constructor(scope: Construct, id: string, props: ImageProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     Object.defineProperty(this, IMAGE_SYMBOL, { value: true });
 
@@ -467,6 +470,7 @@ export class Image extends ImageBase {
    *
    * @param grantee The execution role used for the image build.
    */
+  @MethodMetadata()
   public grantDefaultExecutionRolePermissions(grantee: iam.IGrantable): iam.Grant[] {
     const policies = defaultExecutionRolePolicy(this, this.props);
     return policies.map((policy) =>

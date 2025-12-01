@@ -6,7 +6,8 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Annotations, Arn, ArnFormat, IResource, Resource, Stack, ValidationError } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a Lambda capacity provider.
@@ -314,7 +315,11 @@ export interface LatestPublishedScalingConfig {
 /**
  * A Lambda capacity provider that manages compute resources for Lambda functions.
  */
+@propertyInjectable
 export class CapacityProvider extends CapacityProviderBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.CapacityProvider';
+
   /**
    * Import an existing capacity provider by name.
    *
@@ -503,6 +508,7 @@ export class CapacityProvider extends CapacityProviderBase {
    * @param func The Lambda function to configure
    * @param options Optional configuration for the function's capacity provider settings
    */
+  @MethodMetadata()
   public addFunction(func: IFunction, options?: CapacityProviderFunctionOptions): void {
     Annotations.of(func).addInfoV2('aws-lambda:Function.CapacityProviderConfiguration', 'Capacity provider configuration cannot be removed from a function, only modified.');
 
