@@ -1,5 +1,5 @@
 import { Deprecation, Property, Resource, RichProperty, TagVariant } from '@aws-cdk/service-spec-types';
-import { $E, $T, Expression, PropertySpec, Type, expr } from '@cdklabs/typewriter';
+import { $E, $T, $this, Expression, PropertySpec, Type, expr } from '@cdklabs/typewriter';
 import { CDK_CORE } from './cdk';
 import { PropertyMapping } from './cloudformation-mapping';
 import { RelationshipDecider } from './relationship-decider';
@@ -8,10 +8,7 @@ import { NON_RESOLVABLE_PROPERTY_NAMES, TaggabilityStyle, resourceTaggabilitySty
 import { TypeConverter } from './type-converter';
 import { attributePropertyName, camelcasedResourceName, cloudFormationDocLink, propertyNameFromCloudFormation } from '../naming';
 import { splitDocumentation } from '../util';
-import { getReferenceProps, ReferenceProp } from './reference-props';
-
-// This convenience typewriter builder is used all over the place
-const $this = $E(expr.this_());
+import { ResourceReference } from './reference-props';
 
 /**
  * Decide how properties get mapped between model types, Typescript types, and CloudFormation
@@ -29,7 +26,7 @@ export class ResourceDecider {
   private readonly taggability?: TaggabilityStyle;
   private readonly resolverBuilder: ResolverBuilder;
 
-  public readonly referenceProps = new Array<ReferenceProp>();
+  public readonly resourceReference: ResourceReference;
   public readonly propsProperties = new Array<PropsProperty>();
   public readonly classProperties = new Array<ClassProperty>();
   public readonly classAttributeProperties = new Array<ClassAttributeProperty>();
@@ -47,7 +44,7 @@ export class ResourceDecider {
     this.convertProperties();
     this.convertAttributes();
 
-    this.referenceProps.push(...getReferenceProps(resource));
+    this.resourceReference = new ResourceReference(this.resource);
 
     this.propsProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
     this.classProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
@@ -393,4 +390,3 @@ export function deprecationMessage(property: Property): string | undefined {
 
   return undefined;
 }
-
