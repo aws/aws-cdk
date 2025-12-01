@@ -16,13 +16,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* **core:** temp cleanup does not work with jest ([#36226](https://github.com/aws/aws-cdk/issues/36226)) ([d284733](https://github.com/aws/aws-cdk/commit/d284733f9ee9af782879ff4ecc221df843c2f576)), closes [#36043](https://github.com/aws/aws-cdk/issues/36043) [#802](https://github.com/aws/aws-cdk/issues/802)
 * **dynamodb:** unsupported actions added to table resource policy ([#36228](https://github.com/aws/aws-cdk/issues/36228)) ([10de047](https://github.com/aws/aws-cdk/commit/10de0470215a6d211983b1457218914bb3c3c388)), closes [#32230](https://github.com/aws/aws-cdk/issues/32230)
 
-
-### Reverts
-
-* **core:** temp cleanup does not work with jest  ([#36237](https://github.com/aws/aws-cdk/issues/36237)) ([5cb99a5](https://github.com/aws/aws-cdk/commit/5cb99a585dc953e48db4d37de09c704b78025c13)), closes [aws/aws-cdk#36226](https://github.com/aws/aws-cdk/issues/36226)
 
 ## [2.230.0](https://github.com/aws/aws-cdk/compare/v2.229.1...v2.230.0) (2025-11-26)
 
