@@ -126,7 +126,7 @@ class L1PropsMixin extends ClassType {
       },
     });
 
-    this.relationshipDecider = new RelationshipDecider(this.resource, db, false);
+    this.relationshipDecider = new RelationshipDecider(this.resource, db, true, true);
     this.converter = TypeConverter.forMixin({
       db: db,
       resource: this.resource,

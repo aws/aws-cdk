@@ -1,7 +1,7 @@
 import { DefinitionReference, Property } from '@aws-cdk/service-spec-types';
 import { expr, Expression, Module, Type } from '@cdklabs/typewriter';
 import { CDK_CORE } from './cdk';
-import { RelationshipDecider, Relationship, GENERATE_RELATIONSHIPS_ON_TYPES } from './relationship-decider';
+import { RelationshipDecider, Relationship } from './relationship-decider';
 import { NON_RESOLVABLE_PROPERTY_NAMES } from './tagging';
 import { TypeConverter } from './type-converter';
 import { flattenFunctionNameFromType, propertyNameFromCloudFormation } from '../naming';
@@ -29,7 +29,7 @@ export class ResolverBuilder {
   ) {}
 
   public buildResolver(prop: Property, cfnName: string, isTypeProp = false): ResolverResult {
-    const shouldGenerateRelationships = isTypeProp ? GENERATE_RELATIONSHIPS_ON_TYPES : true;
+    const shouldGenerateRelationships = isTypeProp ? this.relationshipDecider.enableNestedRelationships : true;
     const name = propertyNameFromCloudFormation(cfnName);
     const baseType = this.converter.typeFromProperty(prop);
 
