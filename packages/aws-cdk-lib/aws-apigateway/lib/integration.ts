@@ -139,9 +139,7 @@ export interface IntegrationOptions {
   /**
    * The VPC Link V2 used for the integration.
    *
-   * VPC links V2 enable private integrations that connect your REST API to
-   * Application Load Balancers or Network Load Balancers without using a
-   * Network Load Balancer as an intermediary.
+   * VPC Links V2 enable private integrations that connect your REST API directly to Application Load Balancers or Network Load Balancers.
    *
    * When using `vpcLinkV2`, you must also specify `integrationTarget` with the ARN of the ALB or NLB.
    *
