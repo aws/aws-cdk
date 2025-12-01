@@ -77,6 +77,14 @@ export abstract class AgentRuntimeArtifact {
   }
 
   /**
+   * Reference an image using a container URI
+   * @param containerUri The container image URI
+   */
+  public static fromImageUri(containerUri: string): AgentRuntimeArtifact {
+    return new ImageUriArtifact(containerUri);
+  }
+
+  /**
    * Called when the image is used by a Runtime to handle side effects like permissions
    */
   public abstract bind(scope: Construct, runtime: Runtime): void;
@@ -188,6 +196,21 @@ class S3Image extends AgentRuntimeArtifact {
       },
       runtime: this.runtime,
       entryPoint: this.entrypoint,
+    } as any;
+  }
+}
+
+class ImageUriArtifact extends AgentRuntimeArtifact {
+  constructor(private readonly containerUri: string) {
+    super();
+  }
+
+  public bind(_scope: Construct, _runtime: Runtime): void {
+  }
+
+  public _render(): CfnRuntime.AgentRuntimeArtifactProperty {
+    return {
+      containerUri: this.containerUri,
     } as any;
   }
 }

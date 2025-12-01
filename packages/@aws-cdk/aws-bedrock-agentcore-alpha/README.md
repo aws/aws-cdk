@@ -249,6 +249,41 @@ const runtimeInstance = new agentcore.Runtime(this, "MyAgentRuntime", {
 });
 ```
 
+#### Option 4: Use a container image URI
+
+Reference a container image directly by its URI. This is useful when you have a pre-existing image URI from CloudFormation parameters, cross-stack references, or external registries. No IAM permissions are automatically granted.
+
+```typescript fixture=default
+// Direct URI reference
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromImageUri(
+  "123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:v1.0.0"
+);
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+});
+```
+
+You can also use CloudFormation parameters or references:
+
+```typescript fixture=default
+// Using a CloudFormation parameter
+const imageUriParam = new cdk.CfnParameter(this, "ImageUri", {
+  type: "String",
+  description: "Container image URI for the agent runtime",
+});
+
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromImageUri(
+  imageUriParam.valueAsString
+);
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+});
+```
+
 ### Granting Permissions to Invoke Bedrock Models or Inference Profiles
 
 To grant the runtime permissions to invoke Bedrock models or inference profiles:
