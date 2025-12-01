@@ -97,7 +97,7 @@ export class ResolverBuilder {
     const resolver = (_: Expression) => {
       if (resolvableType.arrayOfType) {
         return expr.directCode(
-          `(props.${name}?.forEach((item: ${propType.arrayOfType!.toString()}, i: number, arr: ${propType.toString()}) => { arr[i] = ${buildChain('item')}; }), props.${name} as ${resolvableType.toString()})`,
+          `(cdk.withResolved(props.${name}, () => props.${name}?.forEach((item: ${propType.arrayOfType!.toString()}, i: number, arr: ${propType.toString()}) => { arr[i] = ${buildChain('item')}; })), props.${name} as ${resolvableType.toString()})`,
         );
       } else {
         return expr.directCode(buildChain(`props.${name}`));

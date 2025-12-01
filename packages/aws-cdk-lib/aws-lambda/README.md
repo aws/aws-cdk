@@ -733,6 +733,196 @@ new lambda.LayerVersion(this, 'MyLayer', {
 });
 ```
 
+## Capacity Providers
+
+Lambda capacity providers allow you to run Lambda functions on dedicated compute resources instead of the default serverless execution environment. Capacity providers can have multiple functions and function versions associated with them, but a function can be attached to at most one capacity provider.
+
+### Creating a Capacity Provider
+
+To create a capacity provider, you need to specify the VPC configuration and optionally configure permissions, scaling, and instance requirements:
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+// Create a VPC for the capacity provider
+const vpc = new ec2.Vpc(this, 'MyVpc');
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
+
+// Create a basic capacity provider
+const capacityProvider = new lambda.CapacityProvider(this, 'MyCapacityProvider', {
+  capacityProviderName: 'my-capacity-provider',
+  subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
+});
+```
+
+By default, permissions are granted to the capacity provider to manage instances using the AWS managed policy AWSLambdaManagedEC2ResourceOperator. You can also supply a custom role via the `operatorRole` parameter.
+
+### Configuring Scaling Policies
+
+You can configure target tracking scaling policies to automatically scale your capacity provider based on CPU utilization:
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'MyVpc');
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
+
+const capacityProvider = new lambda.CapacityProvider(this, 'MyCapacityProvider', {
+  subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
+  scalingOptions: lambda.ScalingOptions.manual([
+    lambda.TargetTrackingScalingPolicy.cpuUtilization(70),
+  ]),
+});
+```
+
+### Instance Type Configuration
+
+You can control which EC2 instance types the capacity provider can use:
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'MyVpc');
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
+
+// Allow only specific instance families
+const allowCapacityProvider = new lambda.CapacityProvider(this, 'MyCapacityProviderAllowed', {
+  subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
+  instanceTypeFilter: lambda.InstanceTypeFilter.allow([
+    ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+    ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
+  ]),
+});
+
+// Or exclude specific instance types
+const excludeCapacityProvider = new lambda.CapacityProvider(this, 'MyCapacityProviderExcluded', {
+  subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
+  instanceTypeFilter: lambda.InstanceTypeFilter.exclude([
+    ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
+  ]),
+});
+```
+
+### Using a Capacity Provider with Lambda Functions
+
+Once you have a capacity provider, you can configure Lambda functions to use it:
+
+```ts
+declare const capacityProvider: lambda.CapacityProvider;
+
+const fn = new lambda.Function(this, 'MyFunction', {
+  // Runtime must be equal to or newer than NODEJS_22_X
+  runtime: lambda.Runtime.NODEJS_22_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+});
+
+// Associate the function with the capacity provider
+capacityProvider.addFunction(fn, {
+  perExecutionEnvironmentMaxConcurrency: 10,
+  executionEnvironmentMemoryGiBPerVCpu: 4,
+});
+```
+
+Note that once you use a capacity provider in a function, it cannot be removed, only changed.
+
+#### CapacityProviderFunctionOptions (addFunction method)
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| perExecutionEnvironmentMaxConcurrency | number | No | Maximum concurrent invokes per execution environment. |
+| executionEnvironmentMemoryGiBPerVCpu | number | No | Memory per VCPU in GiB. |
+| publishToLatestPublished | boolean | No | Whether to automatically publish to $LATEST.PUBLISHED version. |
+| latestPublishedScalingConfig | LatestPublishedScalingConfig | No | Scaling configuration for $LATEST.PUBLISHED version. |
+
+#### LatestPublishedScalingConfig
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| minExecutionEnvironments | number | No | Minimum execution environments for $LATEST.PUBLISHED version. |
+| maxExecutionEnvironments | number | No | Maximum execution environments for $LATEST.PUBLISHED version. |
+
+### Capacity Provider Versions
+
+When publishing Lambda versions that use capacity providers, you can configure scaling settings specific to each version.
+
+To publish a permanent version with specific scaling properties, you can use the [`currentVersion`](#currentversion-updated-hashing-logic) property of the function:
+
+```ts
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_22_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  currentVersionOptions: {
+    minExecutionEnvironments: 3,
+  }
+});
+
+const version = fn.latestVersion
+```
+
+You can also specify scaling properties for the special `$LATEST.PUBLISHED` version when attaching the function to the capacity provider.
+
+`$LATEST.PUBLISHED` is a version that is automatically published when you deploy changes to your function.
+
+```ts
+declare const capacityProvider: lambda.CapacityProvider;
+declare const fn: lambda.Function;
+
+capacityProvider.addFunction(fn, {
+  latestPublishedScalingConfig: {
+    minExecutionEnvironments: 5,
+    maxExecutionEnvironments: 25,
+  },
+});
+```
+
+#### VersionOptions (Capacity Provider Related Fields)
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| minExecutionEnvironments | number | No | Minimum execution environments to maintain for this version. |
+| maxExecutionEnvironments | number | No | Maximum execution environments allowed for this version. |
+
+### Security and Encryption
+
+Capacity providers support encryption using AWS KMS keys:
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'MyVpc');
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
+const kmsKey = new kms.Key(this, 'MyKey');
+
+const capacityProvider = new lambda.CapacityProvider(this, 'MyCapacityProvider', {
+  subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
+  kmsKey: kmsKey,
+});
+```
+
+### Capacity Provider Configuration Reference
+
+#### CapacityProviderProps
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| capacityProviderName | string | No | Name of the capacity provider. Must be unique within the AWS account and region. |
+| securityGroups | ISecurityGroup[] | Yes | Security groups to associate with EC2 instances. Up to 5 allowed. |
+| subnets | ISubnet[] | Yes | Subnets where the capacity provider can launch EC2 instances. 1-16 subnets supported. |
+| operatorRole | IRole | No | IAM role for Lambda to manage the capacity provider. Uses AWS Managed Policy AWSLambdaManagedEC2ResourceOperator by default. |
+| architectures | Architecture[] | No | Instruction set architecture for compute instances. |
+| instanceTypeFilter | InstanceTypeFilter | No | Filter for allowed or excluded instance types. |
+| maxVCpuCount | number | No | Maximum number of EC2 instances for scaling. |
+| scalingOptions | ScalingOptions | No | Scaling configuration including policies. |
+| kmsKey | IKey | No | KMS key for encrypting capacity provider data. |
+
 ## Lambda Insights
 
 Lambda functions can be configured to use CloudWatch [Lambda Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights.html)

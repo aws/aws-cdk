@@ -29,8 +29,9 @@ import {
   TypeDeclarationStatement,
   Property,
   SelectiveModuleImport,
+  $this,
 } from '@cdklabs/typewriter';
-import { findArnProperty, findNonIdentifierArnProperty } from './arn';
+import { extractVariablesFromArnFormat, findNonIdentifierArnProperty } from './arn';
 import { CDK_CORE, CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
 import { ResourceDecider } from './resource-decider';
@@ -56,9 +57,6 @@ export interface ITypeHost {
   typeFromSpecType(type: PropertyType): Type;
 }
 
-// This convenience typewriter builder is used all over the place
-const $this = $E(expr.this_());
-
 export interface Referenceable {
   readonly hasArnGetter: boolean;
   readonly ref: ReferenceInterfaceTypes;
@@ -79,7 +77,6 @@ export class ResourceClass extends ClassType implements Referenceable {
   private readonly relationshipDecider: RelationshipDecider;
   private readonly converter: TypeConverter;
   private readonly module: Module;
-  private _hasArnGetter: boolean = false;
   public readonly imports = new Array<SelectiveImport>();
   public ref: ReferenceInterfaceTypes;
 
@@ -173,7 +170,9 @@ export class ResourceClass extends ClassType implements Referenceable {
    */
   public build() {
     // Build the props type
-    const cfnMapping = new CloudFormationMapping(this.module, this.converter);
+    const cfnMapping = new CloudFormationMapping(this.module, this.converter, {
+      resourceType: this.resource.cloudFormationType,
+    });
 
     for (const prop of this.decider.propsProperties) {
       this.propsType.addProperty(prop.propertySpec);
@@ -195,6 +194,7 @@ export class ResourceClass extends ClassType implements Referenceable {
     });
 
     this.makeFromCloudFormationFactory();
+    this.makeIsAResource();
     this.makeFromArnFactory();
     this.makeFromNameFactory();
     this.addArnForResourceMethod();
@@ -231,6 +231,39 @@ export class ResourceClass extends ClassType implements Referenceable {
     cfnMapping.makeCfnParser(this.module, this.propsType);
 
     this.makeMustRenderStructs();
+  }
+
+  /**
+   * Adds the static isCfn<Resource> method to the class.
+   *
+   * @example
+   * public static isCfnBucket(x: any): construct is CfnBucket {
+   *   return CfnResource.isCfnResource(x) && x.cfnResourceType === this.constructor.CFN_RESOURCE_TYPE_NAME;
+   * }
+   */
+  public makeIsAResource() {
+    // Add the factory method to the outer class
+    const isA = this.addMethod({
+      name: `is${this.name}`,
+      static: true,
+      returnType: Type.ambient(`x is ${this.name}`),
+      docs: {
+        summary: `Checks whether the given object is a ${this.name}`,
+      },
+    });
+
+    const x = isA.addParameter({
+      name: 'x',
+      type: Type.ANY,
+    });
+
+    isA.addBody(
+      stmt.ret(expr.binOp(
+        $T(CDK_CORE.CfnResource).isCfnResource(x),
+        '&&',
+        expr.eq($E(x).cfnResourceType, $T(this.type).CFN_RESOURCE_TYPE_NAME),
+      )),
+    );
   }
 
   /**
@@ -291,7 +324,7 @@ export class ResourceClass extends ClassType implements Referenceable {
     });
 
     // Build the shared interface
-    for (const { declaration } of this.decider.referenceProps ?? []) {
+    for (const { declaration } of this.decider.resourceReference.referenceProps) {
       struct.addProperty(declaration);
     }
 
@@ -308,11 +341,12 @@ export class ResourceClass extends ClassType implements Referenceable {
   }
 
   private implementReferenceInterface() {
+    const refProps = this.decider.resourceReference.referenceProps;
     this.addProperty({
       name: this.ref.property.name,
       type: this.ref.property.type,
       getterBody: Block.with(
-        stmt.ret(expr.object(Object.fromEntries(this.decider.referenceProps.map(({ declaration, cfnValue }) => [declaration.name, cfnValue])))),
+        stmt.ret(expr.object(Object.fromEntries(refProps.map(({ declaration, cfnValue }) => [declaration.name, cfnValue])))),
       ),
       immutable: true,
     });
@@ -355,7 +389,7 @@ export class ResourceClass extends ClassType implements Referenceable {
 
     // Build the reference object
     const variables = expr.ident('variables');
-    const props = this.decider.referenceProps.map(p => p.declaration.name);
+    const props = this.decider.resourceReference.referenceProps.map(p => p.declaration.name);
 
     const referenceObject: Record<string, Expression> = Object.fromEntries(
       Object.entries(propsToVars(arnTemplate, props))
@@ -446,7 +480,12 @@ export class ResourceClass extends ClassType implements Referenceable {
    *       });
    *     }
    */
-  private addArnForResourceMethod() {
+  private addArnForResourceMethod(): void {
+    // The resource cannot provide us with its ARN
+    if (!this.decider.resourceReference.hasArnGetter) {
+      return;
+    }
+
     const doAddMethod = () => {
       const method = this.addMethod({
         name: `arnFor${this.resource.name}`,
@@ -463,46 +502,34 @@ export class ResourceClass extends ClassType implements Referenceable {
       return method;
     };
 
-    const arnTemplate = this.resource.arnTemplate;
-    const arnPropertyName = findArnProperty(this.resource);
-
     const refAttributeName = referenceInterfaceAttributeName(this.decider.camelResourceName);
-    if (arnPropertyName != null) {
+
+    // Case 1: Arn property
+    const arnPropName = this.decider.resourceReference.arnPropertyName;
+    if (arnPropName) {
       const method = doAddMethod();
-      const arn = referencePropertyName(arnPropertyName, this.resource.name);
+      const arn = referencePropertyName(arnPropName, this.resource.name);
       method.addBody(
         stmt.ret($E(method.parameters[0])[refAttributeName][arn]),
       );
-      this._hasArnGetter = true;
-    } else if (arnTemplate != null) {
-      const propsWithoutArn = this.decider.referenceProps.filter(prop => !prop.declaration.name.endsWith('Arn'));
 
-      if (propsWithoutArn.length !== 1) {
-        // Only generate the method if there is exactly one non-ARN prop in the Reference interface
-        // and only one variable in the ARN template that is not Partition, Region or Account
-        return;
-      }
-
-      const allVariables = extractVariables(arnTemplate);
-      const propName = propsWithoutArn[0].declaration.name;
-      const variableName = allVariables.find(v => propertyNameFromCloudFormation(v) === propName);
-      if (variableName == null) {
-        return;
-      }
-
-      const resourceIdentifier = expr.ident('resource');
+    // Case 2: Interpolate from template
+    } else {
       const method = doAddMethod();
+      const resourceIdentifier = expr.ident('resource');
       const stackOfResource = $T(CDK_CORE.Stack).of(resourceIdentifier);
-      const interpolateArn = CDK_CORE.helpers.TemplateString.newInstance(expr.lit(arnTemplate)).prop('interpolate').call(expr.object({
+
+      const interpolationVars = {
         Partition: stackOfResource.prop('partition'),
         Region: stackOfResource.prop('region'),
         Account: stackOfResource.prop('account'),
-        [variableName]: $E(resourceIdentifier)[refAttributeName][propName],
-      }));
-      method.addBody(
-        stmt.ret(interpolateArn),
-      );
-      this._hasArnGetter = true;
+        ...mapValues(this.decider.resourceReference.arnVariables!, (propName) => $E(resourceIdentifier)[refAttributeName][propName]),
+      };
+
+      const interpolateArn = CDK_CORE.helpers.TemplateString
+        .newInstance(expr.lit(this.resource.arnTemplate))
+        .prop('interpolate').call(expr.object(interpolationVars));
+      method.addBody(stmt.ret(interpolateArn));
     }
   }
 
@@ -513,8 +540,8 @@ export class ResourceClass extends ClassType implements Referenceable {
       return;
     }
 
-    const propsWithoutArn = this.decider.referenceProps.filter(prop => !prop.declaration.name.endsWith('Arn'));
-    const allVariables = extractVariables(arnTemplate);
+    const propsWithoutArn = this.decider.resourceReference.referenceProps.filter(prop => !prop.declaration.name.endsWith('Arn'));
+    const allVariables = extractVariablesFromArnFormat(arnTemplate);
     const onlyProperties = allVariables.filter(v => !['Partition', 'Region', 'Account'].includes(v));
 
     if (propsWithoutArn.length !== 1 || onlyProperties.length !== 1) {
@@ -827,8 +854,12 @@ export class ResourceClass extends ClassType implements Referenceable {
     }
   }
 
+  /**
+   * If the resource decide says it can provide as with an arn,
+   * then the resource has an arn getter
+   */
   public get hasArnGetter(): boolean {
-    return this._hasArnGetter;
+    return this.decider.resourceReference.hasArnGetter;
   }
 }
 
@@ -850,7 +881,7 @@ interface ReferenceInterfaceTypes {
  * }
  */
 function propsToVars(template: string, props: string[]): Record<string, string> {
-  const variables = extractVariables(template);
+  const variables = extractVariablesFromArnFormat(template);
   const result: Record<string, string> = {};
 
   for (let prop of props) {
@@ -864,10 +895,6 @@ function propsToVars(template: string, props: string[]): Record<string, string> 
   }
 
   return result;
-}
-
-function extractVariables(template: string): string[] {
-  return (template.match(/\${([^{}]+)}/g) || []).map(match => match.slice(2, -1));
 }
 
 function mkScope(init: Initializer) {
@@ -907,4 +934,8 @@ function mkImportClass(largerScope: IScope): ClassType {
 
 function lastPart(x: string): string {
   return x.split('.').slice(-1)[0];
+}
+
+function mapValues<T, U>(data: Record<string, T>, map: (item: T) => U): Record<string, U> {
+  return Object.fromEntries(Object.entries(data).map(([k, v]) => [k, map(v)]));
 }

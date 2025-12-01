@@ -4,8 +4,8 @@ import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { BrowserCustom, BrowserSigning } from '../../../agentcore/tools/browser';
-import { BrowserNetworkConfiguration } from '../../../agentcore/network/network-configuration';
+import { BrowserCustom, BrowserSigning } from '../../../lib/tools/browser';
+import { BrowserNetworkConfiguration } from '../../../lib/network/network-configuration';
 
 describe('BrowserCustom default tests', () => {
   let template: Template;
