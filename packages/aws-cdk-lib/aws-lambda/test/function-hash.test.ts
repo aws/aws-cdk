@@ -440,10 +440,7 @@ describe('function hash', () => {
       const db = await loadAwsServiceSpec();
       const spec = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Lambda::Function').only();
       const expected = Object.keys(spec.properties).sort();
-
-      // Exclude properties that are in temporary schema but not yet in official CloudFormation spec
-      const temporaryProperties = ['CapacityProviderConfig', 'FunctionScalingConfig', 'PublishToLatestPublished'];
-      const actual = Object.keys(VERSION_LOCKED).filter(key => !temporaryProperties.includes(key)).sort();
+      const actual = Object.keys(VERSION_LOCKED).sort();
 
       expect(expected).toEqual(actual);
     });
