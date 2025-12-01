@@ -601,6 +601,20 @@ describe('Linear Deployment', () => {
     }).toThrow(/Linear deployment stepBakeTime must be between 0 and 1440 minutes, received 1500/);
   });
 
+  test('should throw error when step bake time is not a whole number of minutes', () => {
+    // THEN
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        deploymentStrategy: ecs.DeploymentStrategy.LINEAR,
+        linearConfiguration: {
+          stepBakeTime: cdk.Duration.seconds(30),
+        },
+      });
+    }).toThrow(/Linear deployment stepBakeTime must be a whole number of minutes, received 0.5 minutes/);
+  });
+
   test('should configure linear deployment via method', () => {
     // WHEN
     const service = new ecs.FargateService(stack, 'FargateService', {
@@ -708,6 +722,20 @@ describe('Canary Deployment', () => {
         },
       });
     }).toThrow(/Canary deployment stepBakeTime must be between 0 and 1440 minutes, received 1500/);
+  });
+
+  test('should throw error when step bake time is not a whole number of minutes', () => {
+    // THEN
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        deploymentStrategy: ecs.DeploymentStrategy.CANARY,
+        canaryConfiguration: {
+          stepBakeTime: cdk.Duration.seconds(45),
+        },
+      });
+    }).toThrow(/Canary deployment stepBakeTime must be a whole number of minutes, received 0.75 minutes/);
   });
 
   test('should configure canary deployment via method', () => {

@@ -1224,9 +1224,12 @@ export abstract class BaseService extends Resource
     }
 
     if (config.stepBakeTime !== undefined && !Token.isUnresolved(config.stepBakeTime)) {
-      const minutes = config.stepBakeTime.toMinutes();
+      const minutes = config.stepBakeTime.toMinutes({ integral: false });
+      if (!Number.isInteger(minutes)) {
+        throw new ValidationError(`Canary deployment stepBakeTime must be a whole number of minutes, received ${minutes} minutes`, this);
+      }
       if (minutes < 0 || minutes > 1440) {
-        throw new ValidationError(`Canary deployment stepBakeTime must be between 0 and 1440 minutes, received ${minutes}`, this);
+        throw new ValidationError(`Canary deployment stepBakeTime must be between 0 and 1440 minutes, received ${minutes} minutes`, this);
       }
     }
   }
@@ -1245,9 +1248,12 @@ export abstract class BaseService extends Resource
     }
 
     if (config.stepBakeTime !== undefined && !Token.isUnresolved(config.stepBakeTime)) {
-      const minutes = config.stepBakeTime.toMinutes();
+      const minutes = config.stepBakeTime.toMinutes({ integral: false });
+      if (!Number.isInteger(minutes)) {
+        throw new ValidationError(`Linear deployment stepBakeTime must be a whole number of minutes, received ${minutes} minutes`, this);
+      }
       if (minutes < 0 || minutes > 1440) {
-        throw new ValidationError(`Linear deployment stepBakeTime must be between 0 and 1440 minutes, received ${minutes}`, this);
+        throw new ValidationError(`Linear deployment stepBakeTime must be between 0 and 1440 minutes, received ${minutes} minutes`, this);
       }
     }
   }
