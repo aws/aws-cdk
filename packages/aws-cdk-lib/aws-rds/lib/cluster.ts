@@ -559,6 +559,11 @@ export enum ClusterScalabilityType {
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless.html
    */
   LIMITLESS = 'limitless',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  SCALEOUT = 'scaleout',
 }
 
 /**
@@ -578,6 +583,11 @@ export enum ClusterScailabilityType {
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/limitless.html
    */
   LIMITLESS = 'limitless',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  SCALEOUT = 'scaleout',
 }
 
 /**
