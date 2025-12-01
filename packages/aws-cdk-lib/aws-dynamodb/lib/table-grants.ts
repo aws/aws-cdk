@@ -90,6 +90,10 @@ export class TableGrants {
       actions,
       resourceArns: this.arns,
       resource: this.policyResource,
+      // Use wildcard for resource policy to avoid circular dependency when grantee is a resource principal
+      // (e.g., AccountRootPrincipal). This follows the same pattern as KMS (aws-kms/lib/key.ts).
+      // resourceArns is used for principal policies, resourceSelfArns is used for resource policies.
+      resourceSelfArns: ['*'],
     }) : iam.Grant.addToPrincipal({
       grantee,
       actions,
@@ -107,22 +111,15 @@ export class TableGrants {
    * @param grantee The principal to grant access to
    */
   public readData(grantee: iam.IGrantable): iam.Grant {
-    const actions = [...perms.READ_DATA_ACTIONS, perms.DESCRIBE_TABLE];
+    const actions = [...perms.RESOURCE_READ_DATA_ACTIONS, perms.DESCRIBE_TABLE];
     this.encryptedResource?.grantOnKey(grantee, ...perms.KEY_READ_ACTIONS);
-    const result = this.policyResource ? iam.Grant.addToPrincipalOrResource({
+    const result = this.actions(grantee, ...actions);
+
+    return result.combine(iam.Grant.addToPrincipal({
       grantee,
-      actions,
+      actions: perms.PRINCIPAL_ONLY_READ_DATA_ACTIONS,
       resourceArns: this.arns,
-      resource: this.policyResource,
-      // Use wildcard for resource policy to avoid circular dependency when grantee is a resource principal
-      // (e.g., AccountRootPrincipal). This follows the same pattern as KMS (aws-kms/lib/key.ts).      // resourceArns is used for principal policies, resourceSelfArns is used for resource policies.
-      resourceSelfArns: ['*'],
-    }) : iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: this.arns,
-    });
-    return result;
+    }));
   }
 
   /**
@@ -136,19 +133,7 @@ export class TableGrants {
    */
   public writeData(grantee: iam.IGrantable): iam.Grant {
     const actions = [...perms.WRITE_DATA_ACTIONS, perms.DESCRIBE_TABLE];
-    const result = this.policyResource ? iam.Grant.addToPrincipalOrResource({
-      grantee,
-      actions,
-      resourceArns: this.arns,
-      resource: this.policyResource,
-      // Use wildcard for resource policy to avoid circular dependency when grantee is a resource principal
-      // (e.g., AccountRootPrincipal). This follows the same pattern as KMS (aws-kms/lib/key.ts).      // resourceArns is used for principal policies, resourceSelfArns is used for resource policies.
-      resourceSelfArns: ['*'],
-    }) : iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: this.arns,
-    });
+    const result = this.actions(grantee, ...actions);
     this.encryptedResource?.grantOnKey(grantee, ...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS);
     return result;
   }
@@ -164,24 +149,15 @@ export class TableGrants {
    * @param grantee The principal to grant access to
    */
   public readWriteData(grantee: iam.IGrantable): iam.Grant {
-    const actions = [...perms.READ_DATA_ACTIONS, ...perms.WRITE_DATA_ACTIONS, perms.DESCRIBE_TABLE];
-    const result = this.policyResource ? iam.Grant.addToPrincipalOrResource({
-      grantee,
-      actions,
-      resourceArns: this.arns,
-      resource: this.policyResource,
-      // Use wildcard for resource policy to avoid circular dependency when grantee is a resource principal
-      // (e.g., AccountRootPrincipal). This follows the same pattern as KMS (aws-kms/lib/key.ts).      // resourceArns is used for principal policies, resourceSelfArns is used for resource policies.
-      resourceSelfArns: ['*'],
-    }) : iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: this.arns,
-    });
-
+    const actions = [...perms.RESOURCE_READ_DATA_ACTIONS, ...perms.WRITE_DATA_ACTIONS, perms.DESCRIBE_TABLE];
+    const result = this.actions(grantee, ...actions);
     this.encryptedResource?.grantOnKey(grantee, ...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS);
 
-    return result;
+    return result.combine(iam.Grant.addToPrincipal({
+      grantee,
+      actions: perms.PRINCIPAL_ONLY_READ_DATA_ACTIONS,
+      resourceArns: this.arns,
+    }));
   }
 
   /**
@@ -194,19 +170,7 @@ export class TableGrants {
    */
   public fullAccess(grantee: iam.IGrantable) {
     const actions = ['dynamodb:*'];
-    const result = this.policyResource ? iam.Grant.addToPrincipalOrResource({
-      grantee,
-      actions,
-      resourceArns: this.arns,
-      resource: this.policyResource,
-      // Use wildcard for resource policy to avoid circular dependency when grantee is a resource principal
-      // (e.g., AccountRootPrincipal). This follows the same pattern as KMS (aws-kms/lib/key.ts).      // resourceArns is used for principal policies, resourceSelfArns is used for resource policies.
-      resourceSelfArns: ['*'],
-    }) : iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: this.arns,
-    });
+    const result = this.actions(grantee, ...actions);
     this.encryptedResource?.grantOnKey(grantee, ...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS);
     return result;
   }

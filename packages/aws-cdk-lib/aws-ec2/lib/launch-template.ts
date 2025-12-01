@@ -199,6 +199,7 @@ export interface LaunchTemplateSpotOptions {
 /**
  * The state of token usage for your instance metadata requests.
  *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-metadataoptions.html#cfn-ec2-instance-metadataoptions-httptokens
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httptokens
  */
 export enum LaunchTemplateHttpTokens {

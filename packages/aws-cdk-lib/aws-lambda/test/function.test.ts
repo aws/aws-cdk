@@ -3875,13 +3875,13 @@ describe('function', () => {
       // THEN
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Properties:
-            {
-              Handler: 'example.Handler::handleRequest',
-              Runtime: 'java11',
-              SnapStart: {
-                ApplyOn: 'PublishedVersions',
-              },
-            },
+        {
+          Handler: 'example.Handler::handleRequest',
+          Runtime: 'java11',
+          SnapStart: {
+            ApplyOn: 'PublishedVersions',
+          },
+        },
       });
     });
 
@@ -3910,14 +3910,14 @@ describe('function', () => {
       // THEN
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Properties:
-            {
-              Handler: 'example.Handler::handleRequest',
-              Runtime: 'java11',
-              Architectures: ['arm64'],
-              SnapStart: {
-                ApplyOn: 'PublishedVersions',
-              },
-            },
+        {
+          Handler: 'example.Handler::handleRequest',
+          Runtime: 'java11',
+          Architectures: ['arm64'],
+          SnapStart: {
+            ApplyOn: 'PublishedVersions',
+          },
+        },
       });
     });
 

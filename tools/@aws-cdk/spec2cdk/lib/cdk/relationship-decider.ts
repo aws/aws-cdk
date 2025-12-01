@@ -1,7 +1,7 @@
 import { Property, RelationshipRef, Resource, RichProperty, SpecDatabase } from '@aws-cdk/service-spec-types';
 import * as naming from '../naming';
 import { namespaceFromResource, referenceInterfaceName, referenceInterfaceAttributeName, referencePropertyName, typeAliasPrefixFromResource } from '../naming';
-import { getReferenceProps } from './reference-props';
+import { ResourceReference } from './reference-props';
 import { log } from '../util';
 import { SelectiveImport } from './service-submodule';
 
@@ -76,7 +76,7 @@ export class RelationshipDecider {
       return undefined;
     }
     const targetResource = this.db.lookup('resource', 'cloudFormationType', 'equals', relationship.cloudFormationType).only();
-    const refProps = getReferenceProps(targetResource);
+    const refProps = new ResourceReference(targetResource).referenceProps;
     const expectedPropName = referencePropertyName(relationship.propertyName, targetResource.name);
     const prop = refProps.find(p => p.declaration.name === expectedPropName);
     if (!prop) {

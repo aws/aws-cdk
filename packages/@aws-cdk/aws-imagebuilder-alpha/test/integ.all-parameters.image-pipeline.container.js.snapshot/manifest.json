@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/362dd503d4f2a2cbe795b8f6d500d82162fe73a642e142c7edbb91e89a5e8226.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a65b8cf1b3b121eb0aa6e9497bb73a0ad6e7caebec9f789658be96ceb1a2d03f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -38,6 +38,7 @@
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
+              "emptyOnDelete": true,
               "removalPolicy": "destroy"
             }
           }
@@ -52,6 +53,7 @@
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
+              "emptyOnDelete": true,
               "removalPolicy": "destroy"
             }
           }
@@ -93,6 +95,22 @@
             "data": {
               "attachInlinePolicy": [
                 "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           },
@@ -569,6 +587,22 @@
                 {}
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
         "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ExecutionRole/DefaultPolicy/Resource": [
@@ -783,6 +817,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ImagePipelineContainerImagePipelineAutoDisabledTriggerRule567551D9"
+          }
+        ],
+        "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/ImagePipeline-Container/Image/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImagePipelineContainerImageF8CBEC27"
           }
         ],
         "/aws-cdk-imagebuilder-image-pipeline-container-all-parameters/BootstrapVersion": [

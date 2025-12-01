@@ -5,6 +5,7 @@
     "lib": ["es2022", "dom"],
     "strict": true,
     "alwaysStrict": true,
+    "strictNullChecks": true,
     "declaration": true,
     "inlineSourceMap": true,
     "inlineSources": true,
