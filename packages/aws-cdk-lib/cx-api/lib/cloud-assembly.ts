@@ -476,7 +476,14 @@ function ignore(_x: any) {
  * Turn the given optional output directory into a fixed output directory
  */
 function determineOutputDirectory(outdir?: string) {
-  return outdir ?? fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'cdk.out'));
+  if (outdir) {
+    return outdir;
+  }
+
+  // Make a temporary directory; clean it up automatically if this is done for testing.
+  const tmpDir = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'cdk.out'));
+  TEMPORARY_ASSEMBLY_DIRS.push(tmpDir);
+  return outdir ?? tmpDir;
 }
 
 function ensureDirSync(dir: string) {
@@ -488,3 +495,11 @@ function ensureDirSync(dir: string) {
     fs.mkdirSync(dir, { recursive: true });
   }
 }
+
+// On process exit, delete all temporary assembly directories
+const TEMPORARY_ASSEMBLY_DIRS: string[] = [];
+process.on('exit', () => {
+  for (const dir of TEMPORARY_ASSEMBLY_DIRS) {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});

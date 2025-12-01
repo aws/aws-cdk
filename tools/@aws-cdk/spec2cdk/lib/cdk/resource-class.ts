@@ -1,3 +1,4 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 import { PropertyType, Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
 import {
   $E,
@@ -7,7 +8,8 @@ import {
   ClassType,
   code,
   DummyScope,
-  expr, Expression,
+  expr,
+  Expression,
   Initializer,
   InterfaceType,
   IScope,
@@ -16,7 +18,8 @@ import {
   MemberVisibility,
   Module,
   ObjectLiteral,
-  Stability, Statement,
+  Stability,
+  Statement,
   stmt,
   StructType,
   SuperInitializer,
@@ -24,9 +27,11 @@ import {
   TruthyOr,
   Type,
   TypeDeclarationStatement,
-  DocsSpec,
+  Property,
+  SelectiveModuleImport,
 } from '@cdklabs/typewriter';
-import { CDK_CORE, CONSTRUCTS } from './cdk';
+import { findArnProperty, findNonIdentifierArnProperty } from './arn';
+import { CDK_CORE, CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
 import { ResourceDecider } from './resource-decider';
 import { TypeConverter } from './type-converter';
@@ -34,14 +39,18 @@ import {
   cfnParserNameFromType,
   cfnProducerNameFromType,
   classNameFromResource,
-  cloudFormationDocLink, propertyNameFromCloudFormation,
-  propStructNameFromResource, referenceInterfaceName, referenceInterfaceAttributeName, referencePropertyName,
+  cloudFormationDocLink,
+  propertyNameFromCloudFormation,
+  propStructNameFromResource,
+  referenceInterfaceAttributeName,
+  referenceInterfaceName,
+  referencePropertyName,
   staticRequiredTransform,
   staticResourceTypeName,
 } from '../naming';
-import { splitDocumentation } from '../util';
-import { findArnProperty } from './reference-props';
-import { SelectiveImport, RelationshipDecider } from './relationship-decider';
+import { isDefined, splitDocumentation, maybeDeprecated } from '../util';
+import { RelationshipDecider } from './relationship-decider';
+import { SelectiveImport } from './service-submodule';
 
 export interface ITypeHost {
   typeFromSpecType(type: PropertyType): Type;
@@ -50,20 +59,29 @@ export interface ITypeHost {
 // This convenience typewriter builder is used all over the place
 const $this = $E(expr.this_());
 
+export interface Referenceable {
+  readonly hasArnGetter: boolean;
+  readonly ref: ReferenceInterfaceTypes;
+}
+
 export interface ResourceClassProps {
+  readonly interfacesModule?: {
+    readonly module: Module;
+    readonly importLocation: string;
+  };
   readonly suffix?: string;
   readonly deprecated?: string;
 }
 
-export class ResourceClass extends ClassType {
+export class ResourceClass extends ClassType implements Referenceable {
   private readonly propsType: StructType;
-  private readonly refInterface: InterfaceType;
   private readonly decider: ResourceDecider;
   private readonly relationshipDecider: RelationshipDecider;
   private readonly converter: TypeConverter;
   private readonly module: Module;
-  private referenceStruct?: StructType;
+  private _hasArnGetter: boolean = false;
   public readonly imports = new Array<SelectiveImport>();
+  public ref: ReferenceInterfaceTypes;
 
   constructor(
     scope: IScope,
@@ -71,17 +89,8 @@ export class ResourceClass extends ClassType {
     private readonly resource: Resource,
     private readonly props: ResourceClassProps = {},
   ) {
-    // IBucketRef { bucketRef: BucketRef }
-    const refInterface = new InterfaceType(scope, {
-      export: true,
-      name: referenceInterfaceName(resource.name, props.suffix),
-      extends: [CONSTRUCTS.IConstruct, CDK_CORE.IEnvironmentAware],
-      docs: {
-        summary: `Indicates that this resource can be referenced as a ${resource.name}.`,
-        stability: Stability.Experimental,
-        ...maybeDeprecated(props.deprecated),
-      },
-    });
+    // A mutable array we pass to super()
+    const implements_: Type[] = [CDK_CORE.IInspectable];
 
     super(scope, {
       export: true,
@@ -96,11 +105,21 @@ export class ResourceClass extends ClassType {
         ...maybeDeprecated(props.deprecated),
       },
       extends: CDK_CORE.CfnResource,
-      implements: [CDK_CORE.IInspectable, refInterface.type, ...ResourceDecider.taggabilityInterfaces(resource)].filter(isDefined),
+      implements: implements_,
     });
 
-    this.refInterface = refInterface;
     this.module = Module.of(this);
+
+    this.relationshipDecider = new RelationshipDecider(this.resource, db);
+    this.converter = TypeConverter.forResource({
+      db: db,
+      resource: this.resource,
+      resourceClass: this,
+      relationshipDecider: this.relationshipDecider,
+    });
+
+    this.imports = this.relationshipDecider.imports;
+    this.decider = new ResourceDecider(this.resource, this.converter, this.relationshipDecider);
 
     this.propsType = new StructType(this.scope, {
       export: true,
@@ -115,16 +134,38 @@ export class ResourceClass extends ClassType {
       },
     });
 
-    this.relationshipDecider = new RelationshipDecider(this.resource, db);
-    this.converter = TypeConverter.forResource({
-      db: db,
-      resource: this.resource,
-      resourceClass: this,
-      relationshipDecider: this.relationshipDecider,
-    });
+    // IBucketRef { bucketRef: BucketRef }
+    // Preferentially put this in a separate module, put it in the same module if no other module given
+    this.ref = this.buildReferenceInterface(props.interfacesModule?.module ?? scope);
+    implements_.push(this.ref.interfaceType, ...ResourceDecider.taggabilityInterfaces(resource).filter(isDefined));
 
-    this.imports = this.relationshipDecider.imports;
-    this.decider = new ResourceDecider(this.resource, this.converter, this.relationshipDecider);
+    if (props.interfacesModule) {
+      const typeNames = [lastPart(this.ref.interfaceType.fqn!), lastPart(this.ref.struct.fqn!)];
+
+      // If the interface type ended up being in a different scope, import the symbols into this scope
+      this.module.addImport(new SelectiveModuleImport(
+        props.interfacesModule.module,
+        props.interfacesModule.importLocation,
+        typeNames,
+      ));
+
+      // And put an export in for backwards compatibility, but only if this is not an aliased service
+      if (!this.isAliasedService) {
+        this.module.addInitialization(stmt.directCode(`export type { ${typeNames.join(', ')} }`));
+      }
+    }
+  }
+
+  /**
+   * Aliased services are resources that are emitted outside their natural habitat,
+   * with a suffix.
+   *
+   * There is only one, and it's
+   * emitting KinesisAnalyticsV2 classes into the `aws_kinesisanalytics`
+   * submodule).
+   */
+  private get isAliasedService() {
+    return !!this.props.suffix;
   }
 
   /**
@@ -132,14 +173,16 @@ export class ResourceClass extends ClassType {
    */
   public build() {
     // Build the props type
-    const cfnMapping = new CloudFormationMapping(this.module, this.converter);
+    const cfnMapping = new CloudFormationMapping(this.module, this.converter, {
+      resourceType: this.resource.cloudFormationType,
+    });
 
     for (const prop of this.decider.propsProperties) {
       this.propsType.addProperty(prop.propertySpec);
       cfnMapping.add(prop.cfnMapping);
     }
 
-    this.buildReferenceInterface();
+    this.implementReferenceInterface();
 
     // Build the members of this class
     this.addProperty({
@@ -156,6 +199,7 @@ export class ResourceClass extends ClassType {
     this.makeFromCloudFormationFactory();
     this.makeFromArnFactory();
     this.makeFromNameFactory();
+    this.addArnForResourceMethod();
 
     if (this.resource.cloudFormationTransform) {
       this.addProperty({
@@ -192,37 +236,83 @@ export class ResourceClass extends ClassType {
   }
 
   /**
-   * Build the reference interface for this resource
+   * Create the reference interface types
+   *
+   * They might conceivably already be in the module, if we're emitting the same service
+   * multiple times. In those cases, just reference the type but don't re-emit.
+   *
+   * We never use suffixes for reference interface types.
    */
-  private buildReferenceInterface() {
-    // BucketRef { bucketName, bucketArn }
-    this.referenceStruct = new StructType(this.scope, {
+  private buildReferenceInterface(scope: IScope): ReferenceInterfaceTypes {
+    const refName = referenceInterfaceName(this.resource.name);
+    const structName = `${this.resource.name}Reference`;
+
+    const refFqn = scope.qualifyName(refName);
+    const structFqn = scope.qualifyName(structName);
+
+    let existing = scope.tryFindType(refFqn);
+    if (existing) {
+      const existingStruct = scope.tryFindType(structFqn);
+      if (!existingStruct) {
+        throw new Error(`Found interface ${refName} but not struct ${structName}`);
+      }
+
+      const interface_ = existing as InterfaceType;
+
+      return {
+        interfaceType: interface_.type,
+        property: interface_.properties[0],
+        struct: existingStruct as StructType,
+      };
+    }
+
+    // We don't check deprecation notices if this was generated with a suffix.
+    const considerDeprecation = !this.isAliasedService;
+
+    const interface_ = new InterfaceType(scope, {
       export: true,
-      name: `${this.resource.name}${this.props.suffix ?? ''}Reference`,
+      name: refName,
+      extends: [CONSTRUCTS.IConstruct, CDK_INTERFACES_ENVIRONMENT_AWARE.IEnvironmentAware],
+      docs: {
+        summary: `Indicates that this resource can be referenced as a ${this.resource.name}.`,
+        stability: Stability.Experimental,
+        ...considerDeprecation ? maybeDeprecated(this.props.deprecated) : {},
+      },
+    });
+    const interfaceType = interface_.type;
+
+    // BucketRef { bucketName, bucketArn }
+    const struct = new StructType(scope, {
+      export: true,
+      name: structName,
       docs: {
         summary: `A reference to a ${this.resource.name} resource.`,
         stability: Stability.External,
-        ...maybeDeprecated(this.props.deprecated),
+        ...considerDeprecation ? maybeDeprecated(this.props.deprecated) : {},
       },
     });
 
     // Build the shared interface
     for (const { declaration } of this.decider.referenceProps ?? []) {
-      this.referenceStruct.addProperty(declaration);
+      struct.addProperty(declaration);
     }
 
-    const refProperty = this.refInterface.addProperty({
+    const property = interface_.addProperty({
       name: referenceInterfaceAttributeName(this.decider.camelResourceName),
-      type: this.referenceStruct.type,
+      type: struct.type,
       immutable: true,
       docs: {
         summary: `A reference to a ${this.resource.name} resource.`,
       },
     });
 
+    return { interfaceType, property, struct };
+  }
+
+  private implementReferenceInterface() {
     this.addProperty({
-      name: refProperty.name,
-      type: refProperty.type,
+      name: this.ref.property.name,
+      type: this.ref.property.type,
       getterBody: Block.with(
         stmt.ret(expr.object(Object.fromEntries(this.decider.referenceProps.map(({ declaration, cfnValue }) => [declaration.name, cfnValue])))),
       ),
@@ -230,14 +320,35 @@ export class ResourceClass extends ClassType {
     });
   }
 
+  /**
+   * ```ts
+   *  public static fromApplicationInstanceArn(scope: constructs.Construct, id: string, arn: string): IApplicationInstanceRef {
+   *    class Import extends cdk.Resource {
+   *      public applicationInstanceRef: ApplicationInstanceReference;
+   *
+   *      public constructor(scope: constructs.Construct, id: string, arn: string) {
+   *        super(scope, id, {
+   *          "environmentFromArn": arn
+   *        });
+   *
+   *        const variables = new cfn_parse.TemplateString("arn:${Partition}:panorama:${Region}:${Account}:applicationInstance/${ApplicationInstanceId}").parse(arn);
+   *        this.applicationInstanceRef = {
+   *          "applicationInstanceId": variables.ApplicationInstanceId,
+   *          "applicationInstanceArn": arn
+   *        };
+   *      }
+   *    }
+   *    return new Import(scope, id, arn);
+   *  }
+   */
   private makeFromArnFactory() {
     const arnTemplate = this.resource.arnTemplate;
-    if (!(arnTemplate && this.referenceStruct)) {
+    if (!(arnTemplate && this.ref.struct)) {
       // We don't have enough information to build this factory
       return;
     }
 
-    const cfnArnProperty = findArnProperty(this.resource);
+    const cfnArnProperty = findNonIdentifierArnProperty(this.resource);
     if (cfnArnProperty == null) {
       return;
     }
@@ -264,7 +375,7 @@ export class ResourceClass extends ClassType {
 
     innerClass.addProperty({
       name: refAttributeName,
-      type: this.referenceStruct!.type,
+      type: this.ref.struct!.type,
     });
 
     const init = innerClass.addInitializer({
@@ -287,9 +398,9 @@ export class ResourceClass extends ClassType {
     const factory = this.addMethod({
       name: `from${this.resource.name}Arn`,
       static: true,
-      returnType: this.refInterface.type,
+      returnType: this.ref.interfaceType,
       docs: {
-        summary: `Creates a new ${this.refInterface.name} from an ARN`,
+        summary: `Creates a new ${lastPart(this.ref.interfaceType.fqn!)} from an ARN`,
       },
     });
     factory.addParameter({ name: 'scope', type: CONSTRUCTS.Construct });
@@ -318,9 +429,88 @@ export class ResourceClass extends ClassType {
     );
   }
 
+  /**
+   * Generates a static method that returns the ARN of the provided resource.
+   * If the resource's ref interface already has an ARN, that's what's returned:
+   *
+   *     public static arnForTable(resource: ITableRef): string {
+   *       return resource.tableRef.tableArn;
+   *     }
+   *
+   * Otherwise, we fall back to using the ARN template:
+   *
+   *    public static arnForRestApi(resource: IRestApiRef): string {
+   *       return new cfn_parse.TemplateString("arn:${Partition}:apigateway:${Region}::/restapis/${RestApiId}").interpolate({
+   *         "Partition": cdk.Stack.of(resource).partition,
+   *         "Region": cdk.Stack.of(resource).region,
+   *         "Account": cdk.Stack.of(resource).account,
+   *         "RestApiId": resource.restApiRef.restApiId
+   *       });
+   *     }
+   */
+  private addArnForResourceMethod() {
+    const doAddMethod = () => {
+      const method = this.addMethod({
+        name: `arnFor${this.resource.name}`,
+        static: true,
+        visibility: MemberVisibility.Public,
+        returnType: Type.STRING,
+      });
+
+      method.addParameter({
+        name: 'resource',
+        type: this.ref.interfaceType,
+      });
+
+      return method;
+    };
+
+    const arnTemplate = this.resource.arnTemplate;
+    const arnPropertyName = findArnProperty(this.resource);
+
+    const refAttributeName = referenceInterfaceAttributeName(this.decider.camelResourceName);
+    if (arnPropertyName != null) {
+      const method = doAddMethod();
+      const arn = referencePropertyName(arnPropertyName, this.resource.name);
+      method.addBody(
+        stmt.ret($E(method.parameters[0])[refAttributeName][arn]),
+      );
+      this._hasArnGetter = true;
+    } else if (arnTemplate != null) {
+      const propsWithoutArn = this.decider.referenceProps.filter(prop => !prop.declaration.name.endsWith('Arn'));
+
+      if (propsWithoutArn.length !== 1) {
+        // Only generate the method if there is exactly one non-ARN prop in the Reference interface
+        // and only one variable in the ARN template that is not Partition, Region or Account
+        return;
+      }
+
+      const allVariables = extractVariables(arnTemplate);
+      const propName = propsWithoutArn[0].declaration.name;
+      const variableName = allVariables.find(v => propertyNameFromCloudFormation(v) === propName);
+      if (variableName == null) {
+        return;
+      }
+
+      const resourceIdentifier = expr.ident('resource');
+      const method = doAddMethod();
+      const stackOfResource = $T(CDK_CORE.Stack).of(resourceIdentifier);
+      const interpolateArn = CDK_CORE.helpers.TemplateString.newInstance(expr.lit(arnTemplate)).prop('interpolate').call(expr.object({
+        Partition: stackOfResource.prop('partition'),
+        Region: stackOfResource.prop('region'),
+        Account: stackOfResource.prop('account'),
+        [variableName]: $E(resourceIdentifier)[refAttributeName][propName],
+      }));
+      method.addBody(
+        stmt.ret(interpolateArn),
+      );
+      this._hasArnGetter = true;
+    }
+  }
+
   private makeFromNameFactory() {
     const arnTemplate = this.resource.arnTemplate;
-    if (!(arnTemplate && this.referenceStruct)) {
+    if (!(arnTemplate && this.ref.struct)) {
       // We don't have enough information to build this factory
       return;
     }
@@ -347,7 +537,7 @@ export class ResourceClass extends ClassType {
     const refAttributeName = referenceInterfaceAttributeName(this.decider.camelResourceName);
     innerClass.addProperty({
       name: refAttributeName,
-      type: this.referenceStruct!.type,
+      type: this.ref.struct!.type,
     });
 
     const init = innerClass.addInitializer({
@@ -376,7 +566,7 @@ export class ResourceClass extends ClassType {
 
     const initBodyStatements: Statement[] = [];
 
-    const arnPropName = this.referenceStruct.properties.map(p => p.name).find(n => n.endsWith('Arn'));
+    const arnPropName = this.ref.struct.properties.map(p => p.name).find(n => n.endsWith('Arn'));
     const arn = expr.ident('arn');
     if (arnPropName != null) {
       refenceObject[arnPropName] = arn;
@@ -396,9 +586,9 @@ export class ResourceClass extends ClassType {
     const factory = this.addMethod({
       name: `from${variableName}`,
       static: true,
-      returnType: this.refInterface.type,
+      returnType: this.ref.interfaceType,
       docs: {
-        summary: `Creates a new ${this.refInterface.name} from a ${propName}`,
+        summary: `Creates a new ${lastPart(this.ref.interfaceType.fqn!)} from a ${propName}`,
       },
     });
     factory.addParameter({ name: 'scope', type: CONSTRUCTS.Construct });
@@ -638,37 +828,16 @@ export class ResourceClass extends ClassType {
       this.converter.convertTypeDefinitionType(typeDef);
     }
   }
-}
 
-/**
- * Type guard to filter out undefined values.
- */
-function isDefined<T>(x: T | undefined): x is T {
-  return x !== undefined;
-}
-
-/**
- * Compute stability taking into account deprecation status.
- */
-function stability(isDeprecated: boolean = false, defaultStability: Stability = Stability.External): Stability {
-  if (isDeprecated) {
-    return Stability.Deprecated;
+  public get hasArnGetter(): boolean {
+    return this._hasArnGetter;
   }
-  return defaultStability;
 }
 
-/**
- * Returns deprecation props if deprecated.
- */
-function maybeDeprecated(deprecationNotice?: string, defaultStability: Stability = Stability.External): Pick<DocsSpec, 'deprecated' | 'stability'> {
-  if (deprecationNotice) {
-    return {
-      deprecated: deprecationNotice,
-      stability: stability(Boolean(deprecationNotice), defaultStability),
-    };
-  }
-
-  return {};
+interface ReferenceInterfaceTypes {
+  readonly interfaceType: Type;
+  readonly struct: StructType;
+  readonly property: Property;
 }
 
 /**
@@ -736,4 +905,8 @@ function mkImportClass(largerScope: IScope): ClassType {
   });
   largerScope.linkSymbol(new ThingSymbol(className, scope), expr.ident(className));
   return innerClass;
+}
+
+function lastPart(x: string): string {
+  return x.split('.').slice(-1)[0];
 }

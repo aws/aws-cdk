@@ -367,38 +367,38 @@ const crossAccountRole = new iam.Role(this, 'CrossAccountRole', {
   roleName: 'MyDelegationRole',
   // The other account
   assumedBy: new iam.AccountPrincipal('12345678901'),
-  // You can scope down this role policy to be least privileged.
-  // If you want the other account to be able to manage specific records,
-  // you can scope down by resource and/or normalized record names
-  inlinePolicies: {
-    crossAccountPolicy: new iam.PolicyDocument({
-      statements: [
-        new iam.PolicyStatement({
-          sid: 'ListHostedZonesByName',
-          effect: iam.Effect.ALLOW,
-          actions: ['route53:ListHostedZonesByName'],
-          resources: ['*'],
-        }),
-        new iam.PolicyStatement({
-          sid: 'GetHostedZoneAndChangeResourceRecordSets',
-          effect: iam.Effect.ALLOW,
-          actions: ['route53:GetHostedZone', 'route53:ChangeResourceRecordSets'],
-          // This example assumes the RecordSet subdomain.somexample.com
-          // is contained in the HostedZone
-          resources: ['arn:aws:route53:::hostedzone/HZID00000000000000000'],
-          conditions: {
-            'ForAllValues:StringLike': {
-              'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
-                'subdomain.someexample.com',
-              ],
-            },
-          },
-        }),
-      ],
-    }),
-  },
 });
 parentZone.grantDelegation(crossAccountRole);
+```
+
+To restrict the records that can be created with the delegation IAM role, use the optional `delegatedZoneNames` property in the delegation options,
+which enforces the `route53:ChangeResourceRecordSetsNormalizedRecordNames` condition key for record names that match those hosted zone names.
+The `delegatedZoneNames` list may only consist of hosted zones names that are subzones of the parent hosted zone.
+
+If the delegated zone name contains an unresolved token,
+it must resolve to a zone name that satisfies the requirements according to the documentation:
+https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/specifying-conditions-route53.html#route53_rrset_conditionkeys_normalization
+
+> All letters must be lowercase.
+> The DNS name must be without the trailing dot.
+> Characters other than a–z, 0–9, - (hyphen), _ (underscore), and . (period, as a delimiter between labels) must use escape codes in the format \three-digit octal code. For example, \052 is the octal code for character *.
+
+This feature allows you to better follow the minimum permissions privilege principle:
+
+```ts
+const parentZone = new route53.PublicHostedZone(this, 'HostedZone', {
+  zoneName: 'someexample.com',
+});
+
+declare const betaCrossAccountRole: iam.Role;
+parentZone.grantDelegation(betaCrossAccountRole, {
+    delegatedZoneNames: ['beta.someexample.com'],
+});
+
+declare const prodCrossAccountRole: iam.Role;
+parentZone.grantDelegation(prodCrossAccountRole, {
+    delegatedZoneNames: ['prod.someexample.com'],
+});
 ```
 
 In the account containing the child zone to be delegated:
@@ -540,7 +540,8 @@ const zone = route53.HostedZone.fromHostedZoneAttributes(this, 'MyZone', {
 ```
 
 Alternatively, use the `HostedZone.fromHostedZoneId` to import hosted zones if
-you know the ID and the retrieval for the `zoneName` is undesirable.
+you know the ID and the retrieval for the `zoneName` is undesirable. 
+Note that any records created with a hosted zone obtained this way must have their name be fully qualified
 
 ```ts
 const zone = route53.HostedZone.fromHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');

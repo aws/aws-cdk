@@ -381,7 +381,7 @@ https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#key-mgmt
 
 Secondary indexes allow efficient access to data with attributes other than the `primaryKey`. DynamoDB supports two types of secondary indexes:
 
-* Global secondary index - An index with a `partitionKey` and a `sortKey` that can be different from those on the base table. A `globalSecondaryIndex` is considered "global" because queries on the index can span all of the data in the base table, across all partitions. A `globalSecondaryIndex` is stored in its own partition space away from the base table and scales separately from the base table.
+* Global secondary index - An index with partition key(s) and optional sort key(s) that can be different from those on the base table. A `globalSecondaryIndex` is considered "global" because queries on the index can span all of the data in the base table, across all partitions. A `globalSecondaryIndex` is stored in its own partition space away from the base table and scales separately from the base table.
 
 * Local secondary index - An index that has the same `partitionKey` as the base table, but a different `sortKey`. A `localSecondaryIndex` is "local" in the sense that every partition of a `localSecondaryIndex` is scoped to a base table partition that has the same `partitionKey` value.
 
@@ -404,7 +404,41 @@ const table = new dynamodb.TableV2(this, 'Table', {
 });
 ```
 
-Alternatively, you can add a `globalSecondaryIndex` using the `addGlobalSecondaryIndex` method:
+#### Compound Keys
+
+Global secondary indexes support compound keys, allowing you to specify multiple partition keys and/or multiple sort keys. This enables more flexible query patterns for complex data models.
+
+**Key Constraints:**
+- You can specify up to **4 partition keys** per global secondary index
+- You can specify up to **4 sort keys** per global secondary index
+- Use **either** `partitionKey` (singular) **or** `partitionKeys` (plural), but not both
+- Use **either** `sortKey` (singular) **or** `sortKeys` (plural), but not both
+- At least one partition key must be specified (either `partitionKey` or `partitionKeys`)
+- For multiple keys, you **must** use the plural parameters (`partitionKeys` and/or `sortKeys`)
+- **Keys cannot be added or modified after index creation** - attempting to add additional keys to an existing index will result in an error
+
+**Example with compound partition and sort keys:**
+
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  globalSecondaryIndexes: [
+    {
+      indexName: 'compound-gsi',
+      partitionKeys: [
+        { name: 'gsi_pk1', type: dynamodb.AttributeType.STRING },
+        { name: 'gsi_pk2', type: dynamodb.AttributeType.NUMBER },
+      ],
+      sortKeys: [
+        { name: 'gsi_sk1', type: dynamodb.AttributeType.STRING },
+        { name: 'gsi_sk2', type: dynamodb.AttributeType.BINARY },
+      ],
+    },
+  ],
+});
+```
+
+You can also add a `globalSecondaryIndex` using the `addGlobalSecondaryIndex` method:
 
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
@@ -420,6 +454,16 @@ const table = new dynamodb.TableV2(this, 'Table', {
 table.addGlobalSecondaryIndex({
   indexName: 'gsi2',
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+});
+
+// Add a GSI with compound keys
+table.addGlobalSecondaryIndex({
+  indexName: 'compound-gsi2',
+  partitionKeys: [
+    { name: 'compound_pk1', type: dynamodb.AttributeType.STRING },
+    { name: 'compound_pk2', type: dynamodb.AttributeType.NUMBER },
+  ],
+  sortKey: { name: 'sk', type: dynamodb.AttributeType.STRING },
 });
 ```
 
@@ -871,6 +915,32 @@ table.addToResourcePolicy(new iam.PolicyStatement({
 
 TableV2 doesn’t support creating a replica and adding a resource-based policy to that replica in the same stack update in Regions other than the Region where you deploy the stack update.
 To incorporate a resource-based policy into a replica, you'll need to initially deploy the replica without the policy, followed by a subsequent update to include the desired policy.
+
+### Grant Methods and Resource Policies
+
+Grant methods like `grantReadData()`, `grantWriteData()`, and `grantReadWriteData()` automatically add permissions to resource policies when used with same-account principals (like `AccountRootPrincipal`). This happens transparently:
+
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+});
+
+// Automatically adds to table's resource policy (same account)
+table.grantReadData(new iam.AccountRootPrincipal());
+
+// Adds to IAM user's policy (not resource policy)
+declare const user: iam.User;
+table.grantReadData(user);
+```
+
+**How it works:**
+- **Same-account principals** (AccountRootPrincipal, AccountPrincipal): Grant adds statement to table's resource policy
+- **IAM identities** (User, Role, Group): Grant adds statement to the identity's IAM policy
+- **Resource policy statements**: Automatically use wildcard resources (`*`) to avoid circular dependencies
+
+This behavior follows the same pattern as other AWS services like KMS and S3, where grants intelligently choose between resource policies and identity policies based on the principal type.
+
+**To avoid wildcards in resource policies:** If you need scoped resource ARNs instead of wildcards, use `addToResourcePolicy()` directly with an explicit table name instead of grant methods. See the "Scoped Resource Policies (Advanced)" section above for details.
 
 ## Grants
 
