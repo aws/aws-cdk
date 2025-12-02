@@ -21,7 +21,7 @@
     "glob": "^7.2.3"
   },
   "devDependencies": {
-    "@octokit/types": "^16",
+    "@octokit/types": "^6",
     "@aws-cdk/eslint-config": "0.0.0",
     "@types/conventional-commits-parser": "3.0.2",
     "@types/fs-extra": "^9.0.13",
