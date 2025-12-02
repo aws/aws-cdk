@@ -1,10 +1,11 @@
+/* eslint-disable no-console */
 import * as path from 'path';
+import { CODE_BUILD_WORKFLOW_FILE, CODECOV_CHECKS, Exemption } from './constants';
+import { CheckRun, GitHubFile, GitHubPr, Review, sumChanges, summarizeRunConclusions } from './github';
+import { LinterActions, mergeLinterActions, PR_FROM_MAIN_ERROR, PullRequestLinterBase } from './linter-base';
 import { findModulePath, moduleStability } from './module';
 import { breakingModules } from './parser';
-import { CheckRun, GitHubFile, GitHubPr, Review, sumChanges, summarizeRunConclusions } from "./github";
 import { TestResult, ValidationCollector } from './results';
-import { CODE_BUILD_WORKFLOW_FILE, CODECOV_CHECKS, Exemption } from './constants';
-import { LinterActions, mergeLinterActions, PR_FROM_MAIN_ERROR, PullRequestLinterBase } from './linter-base';
 
 /**
  * This class provides functionality to run lint checks against a pull request, request changes with the lint failures
@@ -26,7 +27,7 @@ export class PullRequestLinter extends PullRequestLinterBase {
       workflow_id: CODE_BUILD_WORKFLOW_FILE,
     });
     let conclusions = statuses.data.workflow_runs.filter(run => run.status === 'completed').map(run => run.conclusion);
-    console.log("CodeBuild Commit Conclusions: ", conclusions);
+    console.log('CodeBuild Commit Conclusions: ', conclusions);
     return conclusions.some(conclusion => conclusion === 'success');
   }
 
@@ -107,10 +108,11 @@ export class PullRequestLinter extends PullRequestLinterBase {
         };
       }, {} as Record<string, typeof reviewsData[0]>);
     console.log('raw data: ', JSON.stringify(reviewsByTrustedCommunityMembers));
-    const communityApproved = Object.values(reviewsByTrustedCommunityMembers).some(({state}) => state === 'APPROVED');
-    const communityRequestedChanges = !communityApproved && Object.values(reviewsByTrustedCommunityMembers).some(({state}) => state === 'CHANGES_REQUESTED')
+    const communityApproved = Object.values(reviewsByTrustedCommunityMembers).some(({ state }) => state === 'APPROVED');
+    const communityRequestedChanges = !communityApproved && Object.values(reviewsByTrustedCommunityMembers).some(({ state }) => state === 'CHANGES_REQUESTED');
 
     const prLinterFailed = reviewsData.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
+    // eslint-disable-next-line max-len
     const userRequestsExemption = pr.labels.some(label => (label.name === Exemption.REQUEST_EXEMPTION || label.name === Exemption.REQUEST_CLARIFICATION));
     console.log('evaluation: ', JSON.stringify({
       draft: pr.draft,
@@ -193,7 +195,7 @@ export class PullRequestLinter extends PullRequestLinterBase {
 
     console.log(`⌛  Fetching PR number ${number}`);
     const pr = await this.pr();
-    console.log(`PR base ref is: ${pr.base.ref}`)
+    console.log(`PR base ref is: ${pr.base.ref}`);
 
     console.log(`⌛  Fetching files for PR number ${number}`);
     const files = await this.client.paginate(this.client.pulls.listFiles, this.prParams);
@@ -257,7 +259,7 @@ export class PullRequestLinter extends PullRequestLinterBase {
       testRuleSet: [
         { test: prIsSmall },
       ],
-    })
+    });
 
     if (pr.base.ref === 'main') {
       // Only check CodeCov for PRs targeting 'main'
@@ -308,7 +310,7 @@ export class PullRequestLinter extends PullRequestLinterBase {
     // also assess whether the PR needs review or not
     try {
       const state = await this.codeBuildJobSucceeded(sha);
-      console.log(`PR code build job ${state ? "SUCCESSFUL" : "not yet successful"}`);
+      console.log(`PR code build job ${state ? 'SUCCESSFUL' : 'not yet successful'}`);
       if (state) {
         console.log('Assessing if the PR needs a review now');
         ret = mergeLinterActions(ret, await this.assessNeedsReview());
@@ -335,7 +337,7 @@ export class PullRequestLinter extends PullRequestLinterBase {
       const prAuthor = (await this.pr()).user?.login;
 
       const comments = await this.client.paginate(this.client.issues.listComments, this.issueParams);
-      const exemptionRequest = comments.some(comment => comment.user?.login === prAuthor && comment.body?.toLowerCase().includes("exemption request"));
+      const exemptionRequest = comments.some(comment => comment.user?.login === prAuthor && comment.body?.toLowerCase().includes('exemption request'));
 
       return {
         requestChanges: {
@@ -437,7 +439,6 @@ function hasLabel(pr: GitHubPr, labelName: string): boolean {
   });
 }
 
-
 /**
  * Check that the 'BREAKING CHANGE:' note in the body is correct.
  *
@@ -465,7 +466,7 @@ function validateBreakingChangeFormat(pr: GitHubPr, _files: GitHubFile[]): TestR
  */
 function validateTitlePrefix(pr: GitHubPr): TestResult {
   const result = new TestResult();
-  const validTypes = "feat|fix|build|chore|ci|docs|style|refactor|perf|test|revert";
+  const validTypes = 'feat|fix|build|chore|ci|docs|style|refactor|perf|test|revert';
   const titleRe = new RegExp(`^(${validTypes})(\\([\\w_-]+\\))?: `);
   const m = titleRe.exec(pr.title);
   result.assessFailure(
@@ -605,16 +606,17 @@ function prIsSmall(_pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
   result.assessFailure(
     sum.additions > maxLinesAdded,
-    `The number of lines added (${sum.additions}) is greater than ${maxLinesAdded}`
+    `The number of lines added (${sum.additions}) is greater than ${maxLinesAdded}`,
   );
   result.assessFailure(
     sum.deletions > maxLinesRemoved,
-    `The number of lines removed (${sum.deletions}) is greater than ${maxLinesAdded}`
+    `The number of lines removed (${sum.deletions}) is greater than ${maxLinesAdded}`,
   );
 
   return result;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 require('make-runnable/custom')({
   printOutputFrame: false,
 });

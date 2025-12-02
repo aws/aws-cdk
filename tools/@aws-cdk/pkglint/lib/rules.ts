@@ -78,15 +78,12 @@ export class PublishConfigTagIsRequired extends ValidationRule {
  * publishing it.
  */
 export class CdkOutMustBeNpmIgnored extends ValidationRule {
-
   public readonly name = 'package-info/npm-ignore-cdk-out';
 
   public validate(pkg: PackageJson): void {
-
     const npmIgnorePath = path.join(pkg.packageRoot, '.npmignore');
 
     if (fs.existsSync(npmIgnorePath)) {
-
       const npmIgnore = fs.readFileSync(npmIgnorePath);
 
       if (!npmIgnore.includes('**/cdk.out')) {
@@ -101,7 +98,6 @@ export class CdkOutMustBeNpmIgnored extends ValidationRule {
       }
     }
   }
-
 }
 
 /**
@@ -171,7 +167,6 @@ export class ThirdPartyAttributions extends ValidationRule {
   public readonly name = 'license/3p-attributions';
 
   public validate(pkg: PackageJson): void {
-
     const alwaysCheck = ['aws-cdk-lib'];
     if (pkg.json.private && !alwaysCheck.includes(pkg.json.name)) {
       return;
@@ -496,7 +491,7 @@ export class FeatureStabilityRule extends ValidationRule {
 
     const featuresColumnWitdh = Math.max(
       13, // 'CFN Resources'.length
-      ...pkg.json.features.map((feat: { name: string; }) => feat.name.length),
+      ...pkg.json.features.map((feat: { name: string }) => feat.name.length),
     );
 
     const stabilityBanner: string = [
@@ -878,7 +873,7 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
 
     const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
     const moduleName = cdkModuleName(pkg.json.name);
-    expectJSON(this.name, pkg, 'jsii.targets.dotnet.namespace', moduleName.dotnetNamespace, /\./g, /*case insensitive*/ true);
+    expectJSON(this.name, pkg, 'jsii.targets.dotnet.namespace', moduleName.dotnetNamespace, /\./g, /* case insensitive*/ true);
 
     if (dotnet) {
       const actualPrefix = dotnet.split('.').slice(0, 2).join('.');
@@ -905,7 +900,7 @@ export class JSIIDotNetPackageIdIsRequired extends ValidationRule {
 
     const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
     const moduleName = cdkModuleName(pkg.json.name);
-    expectJSON(this.name, pkg, 'jsii.targets.dotnet.packageId', moduleName.dotnetPackageId, /\./g, /*case insensitive*/ true);
+    expectJSON(this.name, pkg, 'jsii.targets.dotnet.packageId', moduleName.dotnetPackageId, /\./g, /* case insensitive*/ true);
 
     if (dotnet) {
       const actualPrefix = dotnet.split('.').slice(0, 2).join('.');
@@ -950,7 +945,7 @@ export class MustDependOnBuildTools extends ValidationRule {
     expectDevDependency(this.name,
       pkg,
       '@aws-cdk/cdk-build-tools',
-      `${PKGLINT_VERSION}`); // eslint-disable-line @typescript-eslint/no-require-imports
+      `${PKGLINT_VERSION}`);
   }
 }
 
@@ -1191,7 +1186,7 @@ export class MustHaveIntegCommand extends ValidationRule {
     expectDevDependency(this.name,
       pkg,
       '@aws-cdk/integ-runner',
-      '*'); // eslint-disable-line @typescript-eslint/no-require-imports
+      '*');
   }
 }
 
@@ -1214,7 +1209,7 @@ export class PkgLintAsScript extends ValidationRule {
   public validate(pkg: PackageJson): void {
     const script = 'pkglint -f';
 
-    expectDevDependency(this.name, pkg, '@aws-cdk/pkglint', `${PKGLINT_VERSION}`); // eslint-disable-line @typescript-eslint/no-require-imports
+    expectDevDependency(this.name, pkg, '@aws-cdk/pkglint', `${PKGLINT_VERSION}`);
 
     if (!pkg.npmScript('pkglint')) {
       pkg.report({
@@ -1456,7 +1451,7 @@ export class ConstructsDependency extends ValidationRule {
   public readonly name = 'constructs/dependency';
 
   public validate(pkg: PackageJson) {
-    const REQUIRED_VERSION = ConstructsVersion.VERSION;;
+    const REQUIRED_VERSION = ConstructsVersion.VERSION;
 
     // require a "constructs" dependency if there's a @aws-cdk/core dependency
     const requiredDev = pkg.getDevDependency('@aws-cdk/core') && !pkg.getDevDependency('constructs');
@@ -1619,7 +1614,6 @@ export class JestSetup extends ValidationRule {
         message: 'There must be a devDependency on \'@types/jest\' if you use jest testing',
       });
     }
-
   }
 }
 
@@ -1721,7 +1715,6 @@ export class NoExperimentalDependents extends ValidationRule {
       }
     });
   }
-
 }
 
 /**
@@ -1761,7 +1754,6 @@ function isJSII(pkg: PackageJson): boolean {
 
 /**
  * Indicates that this is an "AWS" package (i.e. that it it has a cloudformation source)
- * @param pkg
  */
 function isAWS(pkg: PackageJson): boolean {
   return pkg.json['cdk-build']?.cloudformation != null;

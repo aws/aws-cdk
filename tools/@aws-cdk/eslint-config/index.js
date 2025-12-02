@@ -43,7 +43,7 @@ const config = defineConfig(
     'import/resolver': {
       node: {},
       typescript: {
-        directory: './tsconfig.json',
+        project: './tsconfig.json',
       },
     },
   },

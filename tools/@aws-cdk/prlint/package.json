@@ -16,22 +16,20 @@
     "@octokit/rest": "^18",
     "@octokit/webhooks-definitions": "^3.68.1",
     "conventional-commits-parser": "^3.2.4",
+    "make-runnable": "^1.4.1",
     "fs-extra": "^9.1.0",
     "glob": "^7.2.3"
   },
   "devDependencies": {
+    "@octokit/types": "^16",
+    "@aws-cdk/eslint-config": "0.0.0",
     "@types/conventional-commits-parser": "3.0.2",
     "@types/fs-extra": "^9.0.13",
     "@types/glob": "^7.2.0",
     "@types/jest": "^29.5.14",
     "jest": "^29.7.0",
     "make-runnable": "^1.4.1",
-    "typescript": "~5.5.4",
-    "eslint": "^9",
-    "eslint-import-resolver-node": "^0.3.9",
-    "eslint-import-resolver-typescript": "^2.7.1",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-jest": "^28"
+    "typescript": "~5.5.4"
   },
   "jest": {
     "testMatch": [
@@ -39,11 +37,11 @@
     ]
   },
   "scripts": {
-    "build": "tsc --build",
+    "build": "tsc --build && yarn lint",
     "test": "jest",
     "build+test": "npm run build && npm run test",
     "build+test+extract": "npm run build+test",
     "build+extract": "npm run build",
-    "lint": "tsc -b && eslint . --ext=.ts"
+    "lint": "eslint"
   }
 }

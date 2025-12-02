@@ -36,7 +36,6 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/eslint-config": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
     "@types/glob": "^7.2.0",
@@ -47,6 +46,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@aws-cdk/eslint-config": "0.0.0",
     "awslint": "0.0.0",
     "chalk": "^4",
     "fs-extra": "^9.1.0",

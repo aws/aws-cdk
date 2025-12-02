@@ -1,4 +1,5 @@
-import { GitHubFile, GitHubPr } from "./github";
+/* eslint-disable no-console */
+import { GitHubFile, GitHubPr } from './github';
 
 /**
  * Results of a single test.
@@ -68,8 +69,6 @@ export interface ValidateRuleSetOptions {
    */
   testRuleSet: Test[];
 }
-
-
 
 /**
  * This class provides functionality for performing validation tests against each ruleset and

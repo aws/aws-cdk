@@ -22,7 +22,6 @@ export async function lintCurrentPackage(
 
     await shell([
       eslintPath,
-      `--resolve-plugins-relative-to=${__dirname}`,
       ...fixOption,
     ], { timers, env });
   }
