@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-eks-nodegroup-removal-policy/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-nodegroup-removal-policy-test"
+      ],
+      "diffAssets": false,
+      "assertionStack": "aws-cdk-eks-nodegroup-removal-policy/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksnodegroupremovalpolicyDefaultTestDeployAssert503B1B53"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
