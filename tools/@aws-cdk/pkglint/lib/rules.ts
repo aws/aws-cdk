@@ -950,16 +950,22 @@ export class MustDependOnBuildTools extends ValidationRule {
 }
 
 /**
- * Build script must be 'cdk-build'
+ * Build script must contain 'cdk-build'
  */
 export class MustUseCDKBuild extends ValidationRule {
   public readonly name = 'package-info/scripts/build';
 
   public validate(pkg: PackageJson): void {
     if (!shouldUseCDKBuildTools(pkg)) { return; }
+    if (pkg.packageName === '@aws-cdk/custom-resource-handlers') { return; }
 
-    if (pkg.packageName !== '@aws-cdk/custom-resource-handlers') {
-      expectJSON(this.name, pkg, 'scripts.build', 'cdk-build');
+    const buildScript = deepGet(pkg.json, ['scripts', 'build']) ?? '';
+    if (!buildScript.includes('cdk-build')) {
+      pkg.report({
+        ruleName: this.name,
+        message: `scripts.build should contain cdk-build is ${JSON.stringify(buildScript)}`,
+        fix: () => { deepSet(pkg.json, ['scripts', 'build'], 'cdk-build'); },
+      });
     }
 
     // cdk-build will write a hash file that we have to ignore.

@@ -9,8 +9,9 @@ const jsdoc = require('eslint-plugin-jsdoc');
 const path = require('path');
 const fs = require('fs');
 
-module.exports = function(/** @type{string} */ tsconfigFile) {
+module.exports = function makeConfig(/** @type{string} */ tsconfigFile) {
   tsconfigFile = path.resolve(tsconfigFile);
+  const tsconfigRootDir = path.dirname(tsconfigFile);
   const tsConfig = require(tsconfigFile);
   const include = tsConfig?.include ?? [];
   const exclude = tsConfig?.exclude ?? [];
@@ -21,6 +22,8 @@ module.exports = function(/** @type{string} */ tsconfigFile) {
     }
   }
 
+  // Always exclude these
+  exclude.push('**/*.d.ts');
   exclude.push('**/*.generated.ts');
 
   // This cannot reference the build rules from cdk-build-tools as this
@@ -45,7 +48,7 @@ module.exports = function(/** @type{string} */ tsconfigFile) {
     // Necessary for type-checked rules
     languageOptions: {
       parserOptions: {
-        tsconfigRootDir: path.dirname(tsconfigFile),
+        tsconfigRootDir,
         projectService: true,
       },
     },
@@ -65,7 +68,7 @@ module.exports = function(/** @type{string} */ tsconfigFile) {
         },
       },
     },
-    rules: require('./rules'),
+    rules: require('./rules')(tsconfigRootDir),
   });
 }
 
