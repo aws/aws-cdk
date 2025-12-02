@@ -351,17 +351,20 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     const minExecutionEnvironments = props.minExecutionEnvironments;
     const maxExecutionEnvironments = props.maxExecutionEnvironments;
 
-    if (minExecutionEnvironments === undefined && maxExecutionEnvironments === undefined) {
+    const minDefined = minExecutionEnvironments !== undefined && !Token.isUnresolved(minExecutionEnvironments);
+    const maxDefined = maxExecutionEnvironments !== undefined && !Token.isUnresolved(maxExecutionEnvironments);
+
+    if (!minDefined && !maxDefined) {
       return undefined;
     }
 
-    if (minExecutionEnvironments && minExecutionEnvironments < 0) {
+    if (minDefined && minExecutionEnvironments < 0) {
       throw new ValidationError('minExecutionEnvironments must be a non-negative integer.', this);
     }
-    if (maxExecutionEnvironments && maxExecutionEnvironments < 0) {
+    if (maxDefined && maxExecutionEnvironments < 0) {
       throw new ValidationError('maxExecutionEnvironments must be a non-negative integer.', this);
     }
-    if (minExecutionEnvironments && maxExecutionEnvironments && minExecutionEnvironments > maxExecutionEnvironments) {
+    if (minDefined && maxDefined && minExecutionEnvironments > maxExecutionEnvironments) {
       throw new ValidationError('minExecutionEnvironments must be less than or equal to maxExecutionEnvironments', this);
     }
 
