@@ -27,6 +27,7 @@
   ],
   "exclude": [
     "**/*.d.ts",
+    "dist/**/*.ts",
     "test/custom-resources-framework/expected/**/*.ts",
     "runtime-determiner"
   ]
