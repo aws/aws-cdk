@@ -144,7 +144,6 @@ export class AlbIntegration extends Integration {
 
     return new apigwv2.VpcLink(method.api, id, {
       vpc,
-      vpcLinkName: `${Names.uniqueId(method.api)}-${Names.nodeUniqueId(this.alb.node)}`,
     });
   }
 }
