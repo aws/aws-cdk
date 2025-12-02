@@ -24,7 +24,7 @@ tsconfig.json
 
 !.jsii
 !.jsii.gz
-.eslintrc.js
+eslint.config.js
 
 # exclude cdk artifacts
 **/cdk.out

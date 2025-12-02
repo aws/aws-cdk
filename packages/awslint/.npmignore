@@ -7,6 +7,6 @@ dist
 **/cdk.out
 *.tsbuildinfo
 tsconfig.json
-.eslintrc.js
+eslint.config.js
 junit.xml
 test/
