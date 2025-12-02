@@ -19,7 +19,7 @@
     "composite": true,
     "incremental": true,
     "skipLibCheck": true,
-    "esModuleInterop": true,
+    "esModuleInterop": false,
     "isolatedModules": true
   },
   "include": [
@@ -28,8 +28,6 @@
   "exclude": [
     "**/*.d.ts",
     "test/custom-resources-framework/expected/**/*.ts",
-    "scripts/*",
-    "dist",
     "runtime-determiner"
   ]
 }

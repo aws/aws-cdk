@@ -287,7 +287,7 @@ function newEksClientMock() {
     updateClusterConfig: sinon.fake.throws('not implemented'),
     updateClusterVersion: sinon.fake.throws('not implemented'),
     configureAssumeRole: sinon.fake(),
-    createFargateProfile: sinon.fake.returns({
+    createFargateProfile: sinon.fake.resolves({
       fargateProfile: {
         fargateProfileName: 'MockProfileName',
         fargateProfileArn: 'MockProfileArn',
@@ -295,5 +295,7 @@ function newEksClientMock() {
     }),
     deleteFargateProfile: sinon.fake(),
     describeFargateProfile: sinon.fake.throws('not implemented'),
+    tagResource: sinon.fake.throws('not implemented'),
+    untagResource: sinon.fake.throws('not implemented'),
   };
 }

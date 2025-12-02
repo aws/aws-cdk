@@ -1,6 +1,8 @@
-const { SSM } = require('@aws-sdk/client-ssm');
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable no-console */
+import { SSM } from '@aws-sdk/client-ssm';
 
-exports.handler = async function (event) {
+export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const props = event.ResourceProperties;
 
   console.info(`Reading function ARN from SSM parameter ${props.ParameterName} in region ${props.Region}`);
@@ -9,11 +11,12 @@ exports.handler = async function (event) {
     const ssm = new SSM({ region: props.Region });
     const ssmParameter = await ssm.getParameter({ Name: props.ParameterName });
     console.info('Response: %j', ssmParameter);
-    const functionArn = ssmParameter.Parameter.Value;
+    const functionArn = ssmParameter.Parameter?.Value ?? '';
     return {
       Data: {
         FunctionArn: functionArn,
       },
     };
   }
-};
+  return {};
+}
