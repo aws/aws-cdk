@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+
 import { AccessDeniedException } from '@aws-sdk/client-account';
 import { InvokeCommand, LambdaClient } from '@aws-sdk/client-lambda';
 import { Uint8ArrayBlobAdapter } from '@smithy/util-stream';

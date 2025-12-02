@@ -37,6 +37,7 @@ describe('handler', () => {
   let oldConsoleLog: any;
 
   beforeAll(() => {
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     oldConsoleLog = global.console.log;
     global.console.log = jest.fn();
   });

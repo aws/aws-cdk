@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+
 process.env.AWS_REGION = 'us-east-1';
 
 import { CloudWatchClient, GetMetricDataCommand } from '@aws-sdk/client-cloudwatch';

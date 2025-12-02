@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+
 import * as eks from '@aws-sdk/client-eks';
 import * as sinon from 'sinon';
 import { FARGATE_PROFILE_RESOURCE_TYPE } from '../../lib/aws-eks/cluster-resource-handler/consts';
