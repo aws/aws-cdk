@@ -149,7 +149,7 @@ export interface IntegrationOptions {
   readonly vpcLinkV2?: apigwv2.IVpcLink;
 
   /**
-   * The ALB or NLB listener ARN to send the request to.
+   * The ALB or NLB ARN to send the request to.
    *
    * Only supported for private integrations that use VPC links V2.
    * When using this property, you must also specify `vpcLinkV2`.
