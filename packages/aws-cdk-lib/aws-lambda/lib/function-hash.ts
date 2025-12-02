@@ -72,11 +72,15 @@ export const VERSION_LOCKED: { [key: string]: boolean } = {
   TracingConfig: true,
   VpcConfig: true,
   LoggingConfig: true,
+  CapacityProviderConfig: true,
+  FunctionScalingConfig: true,
+  PublishToLatestPublished: true,
 
   // not locked to the version
   CodeSigningConfigArn: false,
   ReservedConcurrentExecutions: false,
   Tags: false,
+  TenancyConfig: false,
 };
 
 function filterUsefulKeys(properties: any, fn: LambdaFunction) {

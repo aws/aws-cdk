@@ -280,7 +280,7 @@ export class Source {
       return obj.map(v => Source.escapeTokens(scope, v));
     }
 
-    if (typeof obj === 'object') {
+    if (obj !== null && typeof obj === 'object') {
       return Object.fromEntries(
         Object.entries(obj).map(([key, value]) => {
           // As JSON keys are always strings, keys are assumed to be either regular strings or string tokens.

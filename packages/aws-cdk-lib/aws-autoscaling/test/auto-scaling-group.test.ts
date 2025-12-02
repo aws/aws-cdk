@@ -1170,7 +1170,7 @@ describe('auto scaling group', () => {
     }).toThrow(/maxInstanceLifetime must be between 1 and 365 days \(inclusive\)/);
   });
 
-  test.each([124, 1001])('throws if throughput is set less than 125 or more than 1000', (throughput) => {
+  test.each([124, 2001])('throws if throughput is set less than 125 or more than 2000', (throughput) => {
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
 
@@ -1188,7 +1188,7 @@ describe('auto scaling group', () => {
           }),
         }],
       });
-    }).toThrow(/throughput property takes a minimum of 125 and a maximum of 1000/);
+    }).toThrow(/throughput property takes a minimum of 125 and a maximum of 2000/);
   });
 
   test.each([
