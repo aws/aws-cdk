@@ -92,6 +92,7 @@ describe('custom resource provider handler', () => {
         ThumbprintList: ['THUMB1', 'THUMB2'],
       },
       OldResourceProperties: {
+        ServiceToken: 'x',
         Url: 'https://old',
       },
     });
@@ -120,6 +121,7 @@ describe('custom resource provider handler', () => {
         Url: 'https://new',
       },
       OldResourceProperties: {
+        ServiceToken: 'x',
         Url: 'https://old',
       },
     });
@@ -150,6 +152,7 @@ describe('custom resource provider handler', () => {
         RejectUnauthorized: true,
       },
       OldResourceProperties: {
+        ServiceToken: 'x',
         Url: 'https://old',
       },
     });
@@ -181,6 +184,7 @@ describe('custom resource provider handler', () => {
         ThumbprintList: ['Foo', 'Bar'],
       },
       OldResourceProperties: {
+        ServiceToken: 'x',
         Url: 'https://url',
         ThumbprintList: ['Foo'],
       },
@@ -207,6 +211,7 @@ describe('custom resource provider handler', () => {
         ClientIDList: ['A', 'B', 'C'],
       },
       OldResourceProperties: {
+        ServiceToken: 'x',
         Url: 'https://url',
         ClientIDList: ['A', 'D'],
       },
@@ -239,6 +244,7 @@ describe('custom resource provider handler', () => {
         ClientIDList: ['A'],
       },
       OldResourceProperties: {
+        ServiceToken: 'x',
         Url: 'https://url',
         ThumbprintList: ['OLD-LIST'],
         ClientIDList: [],
@@ -271,6 +277,7 @@ describe('custom resource provider handler', () => {
         ClientIDList: ['A'],
       },
       OldResourceProperties: {
+        ServiceToken: 'x',
         Url: 'https://old-url',
         ThumbprintList: ['OLD-LIST'],
         ClientIDList: [],

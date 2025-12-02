@@ -134,7 +134,7 @@ test('update event with physical resource id', async () => {
     ...eventCommon,
     RequestType: 'Update',
     PhysicalResourceId: 'physicalResourceId',
-    OldResourceProperties: {},
+    OldResourceProperties: { ServiceToken: 'x' },
     ResourceProperties: {
       ServiceToken: 'token',
       Update: JSON.stringify({

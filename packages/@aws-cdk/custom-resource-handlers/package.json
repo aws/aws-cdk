@@ -4,7 +4,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "build": "tsc -b && node scripts/generate.js && cdk-lint",
+    "build": "tsc -b tsconfig.dev.json && scripts/generate.js && cdk-lint",
     "integ": "integ-runner --unstable=toolkit-lib-engine --language javascript",
     "lint": "cdk-lint",
     "package": "cdk-package",

@@ -19,15 +19,16 @@
     "composite": true,
     "incremental": true,
     "skipLibCheck": true,
-    "esModuleInterop": false,
+    "esModuleInterop": true,
     "isolatedModules": true
   },
   "include": [
-    "**/*.ts",
-    "**/*.d.ts"
+    "**/*.ts"
   ],
   "exclude": [
+    "**/*.d.ts",
     "**/test/**/*.ts",
+    "scripts/*",
     "dist",
     "runtime-determiner"
   ]

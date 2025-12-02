@@ -92,7 +92,7 @@ module.exports = {
   '@stylistic/semi': ['error', 'always'],
 
   // Don't unnecessarily quote properties
-  'quote-props': ['error', 'consistent-as-needed'],
+  '@stylistic/quote-props': ['error', 'consistent-as-needed'],
 
   // No multiple empty lines
   'no-multiple-empty-lines': ['error', { 'max': 1 }],

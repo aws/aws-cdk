@@ -50,7 +50,7 @@ test('Create', async () => {
 test('Update', async () => {
   lambdaMock.on(InvokeCommand).resolves({ StatusCode: 200 });
 
-  await lambda.handler({ RequestType: 'Update', PhysicalResourceId: 'PRID', OldResourceProperties: {}, ResourceProperties: mockResourceProperties, ...mockRequest });
+  await lambda.handler({ RequestType: 'Update', PhysicalResourceId: 'PRID', OldResourceProperties: { ServiceToken: 'x' }, ResourceProperties: mockResourceProperties, ...mockRequest });
 
   expect(lambdaMock).toHaveReceivedCommandTimes(InvokeCommand, 1);
   expect(lambdaMock).toHaveReceivedCommandWith(InvokeCommand, { FunctionName: handlerArn, InvocationType: 'Event' });
@@ -67,7 +67,7 @@ test('Update with ExecuteOnHandlerChange = false', async () => {
 
   lambdaMock.on(InvokeCommand).resolves({ StatusCode: 200 });
 
-  await lambda.handler({ RequestType: 'Update', PhysicalResourceId: 'PRID', OldResourceProperties: {}, ResourceProperties: resourceProperties, ...mockRequest });
+  await lambda.handler({ RequestType: 'Update', PhysicalResourceId: 'PRID', OldResourceProperties: { ServiceToken: 'x' }, ResourceProperties: resourceProperties, ...mockRequest });
 
   expect(lambdaMock).not.toHaveReceivedCommand(InvokeCommand);
 });

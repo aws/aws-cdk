@@ -1,9 +1,8 @@
 import type { components } from '@octokit/openapi-types';
-import type { Endpoints } from '@octokit/types';
+import type { Octokit } from '@octokit/rest';
 import { StatusEvent } from '@octokit/webhooks-definitions/schema';
 
-export type GitHubPr =
-  Endpoints['GET /repos/{owner}/{repo}/pulls/{pull_number}']['response']['data'];
+export type GitHubPr = Awaited<ReturnType<Octokit['pulls']['get']>>['data'];
 
 export type CheckRun = components['schemas']['check-run'];
 
