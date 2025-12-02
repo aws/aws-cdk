@@ -22,7 +22,7 @@ const RESOURCES_WITH_TABLE_ARN = getResourcesWithTablesArn(TABLE_UUID);
 const RESOURCES_WITH_WILDCARD = getResourcesWithTablesArn('*');
 
 /* Allow quotes in the object keys used for CloudFormation template assertions */
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('TableBucket with encryption', () => {
   let stack: core.Stack;

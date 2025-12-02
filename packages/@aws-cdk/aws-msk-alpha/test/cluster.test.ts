@@ -7,7 +7,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as core from 'aws-cdk-lib';
 import * as msk from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 describe('MSK Cluster', () => {
   let stack: core.Stack;
   let vpc: ec2.IVpc;

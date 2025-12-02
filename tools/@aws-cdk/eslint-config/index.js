@@ -7,12 +7,21 @@ const stylistic = require('@stylistic/eslint-plugin');
 const jest =  require('eslint-plugin-jest');
 const jsdoc = require('eslint-plugin-jsdoc');
 const path = require('path');
+const fs = require('fs');
 
 module.exports = function(/** @type{string} */ tsconfigFile) {
   tsconfigFile = path.resolve(tsconfigFile);
   const tsConfig = require(tsconfigFile);
   const include = tsConfig?.include ?? [];
   const exclude = tsConfig?.exclude ?? [];
+
+  for (let i = 0; i < exclude.length; i++) {
+    if (isDirectory(exclude[i])) {
+      exclude[i] = `${exclude[i]}/**/*`;
+    }
+  }
+
+  exclude.push('**/*.generated.ts');
 
   // This cannot reference the build rules from cdk-build-tools as this
   // package is itself used by cdk-build-tools.
@@ -58,4 +67,16 @@ module.exports = function(/** @type{string} */ tsconfigFile) {
     },
     rules: require('./rules'),
   });
+}
+
+function isDirectory(/** @type{string} */ p) {
+  try {
+    const f = fs.statSync(p);
+    return f.isDirectory;
+  } catch (/** @type{any} */ e) {
+    if (e.code === 'ENOENT') {
+      return false;
+    }
+    throw e;
+  }
 }

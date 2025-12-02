@@ -13,8 +13,8 @@
   "maturity": "stable",
   "scripts": {
     "gen": "ts-node -P tsconfig.dev.json scripts/gen.ts",
-    "build": "cdk-build",
-    "lint": "cdk-lint",
+    "build": "env NODE_OPTIONS=\"--max-old-space-size=8192\" cdk-build",
+    "lint": "env NODE_OPTIONS=\"--max-old-space-size=8192\" cdk-lint",
     "test": "jest",
     "package": "cdk-package",
     "pkglint": "pkglint -f",

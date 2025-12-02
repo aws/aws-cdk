@@ -35,7 +35,7 @@ export async function main(): Promise<void> {
   const lines = [
     "import { Fact, FactName } from './fact';",
     '',
-    '/* eslint-disable quote-props */',
+    '/* eslint-disable @stylistic/quote-props */',
     '/* eslint-disable max-len */',
     '',
     '/**',
