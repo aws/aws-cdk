@@ -1,11 +1,14 @@
 // @ts-check
+const currentPackageJson = require(`${process.cwd()}/package.json`);
+
+const isConstructLibrary = currentPackageJson.name === 'aws-cdk-lib' || ('aws-cdk-lib' in (currentPackageJson.peerDependencies ?? {}));
 
 /** @type { import("@eslint/core").RulesConfig } */
 module.exports = {
   '@cdklabs/no-core-construct': ['error'],
   '@cdklabs/invalid-cfn-imports': ['error'],
   '@cdklabs/no-literal-partition': ['error'],
-  '@cdklabs/no-invalid-path': [ 'error' ],
+  '@cdklabs/no-invalid-path': ['error'],
   '@cdklabs/promiseall-no-unbounded-parallelism': [ 'error' ],
 
   // Error handling
@@ -184,6 +187,10 @@ module.exports = {
 
   // Too easy to make mistakes
   '@typescript-eslint/unbound-method': ['error', { ignoreStatic: true } ],
+
+  ...isConstructLibrary ? {
+    '@cdklabs/no-throw-default-error': ['error'],
+  } : undefined,
 
   // Overrides for plugin:jest/recommended
   "jest/expect-expect": "off",
