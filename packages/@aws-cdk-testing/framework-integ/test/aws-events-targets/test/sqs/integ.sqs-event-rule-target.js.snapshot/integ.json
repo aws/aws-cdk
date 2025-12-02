@@ -6,7 +6,12 @@
         "aws-cdk-sqs-event-target"
       ],
       "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "stackUpdateWorkflow": true,
+      "allowDestroy": [
+        "AWS::SQS::Queue",
+        "AWS::SQS::QueuePolicy",
+        "AWS::Events::Rule"
+      ]
     }
   },
   "synthContext": {},
