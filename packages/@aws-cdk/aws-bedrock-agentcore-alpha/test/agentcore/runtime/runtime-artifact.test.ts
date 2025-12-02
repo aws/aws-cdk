@@ -1,7 +1,7 @@
-import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as cdk from 'aws-cdk-lib';
-import { AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
 import { Runtime } from '../../../lib/runtime/runtime';
+import { AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
 
 describe('AgentRuntimeArtifact tests', () => {
   let app: cdk.App;

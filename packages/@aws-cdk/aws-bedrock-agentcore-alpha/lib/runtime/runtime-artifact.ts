@@ -11,16 +11,16 @@
  *  and limitations under the License.
  */
 
+import { Stack, Token } from 'aws-cdk-lib';
+import { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as assets from 'aws-cdk-lib/aws-ecr-assets';
-import { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
+import { Location } from 'aws-cdk-lib/aws-s3';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import { Runtime } from './runtime';
 import { ValidationError } from './validation-helpers';
-import { Location } from 'aws-cdk-lib/aws-s3';
-import { Stack, Token } from 'aws-cdk-lib';
-import * as s3 from 'aws-cdk-lib/aws-s3';
 
 /**
  * Bedrock AgentCore runtime environment for code execution
