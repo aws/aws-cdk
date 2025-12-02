@@ -249,9 +249,9 @@ const runtimeInstance = new agentcore.Runtime(this, "MyAgentRuntime", {
 });
 ```
 
-#### Option 4: Use a container image URI
+#### Option 4: Use an ECR container image URI
 
-Reference a container image directly by its URI. This is useful when you have a pre-existing image URI from CloudFormation parameters, cross-stack references, or external registries. No IAM permissions are automatically granted.
+Reference an ECR container image directly by its URI. This is useful when you have a pre-existing ECR image URI from CloudFormation parameters or cross-stack references. No IAM permissions are automatically granted - you must ensure the runtime has ECR pull permissions.
 
 ```typescript fixture=default
 // Direct URI reference
