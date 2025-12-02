@@ -14,7 +14,6 @@
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 import { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
-import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import { Runtime } from './runtime';
 import { ValidationError } from './validation-helpers';
@@ -137,8 +136,7 @@ class AssetImage extends AgentRuntimeArtifact {
   public bind(scope: Construct, runtime: Runtime): void {
     // Create the asset if not already created
     if (!this.asset) {
-      const hash = md5hash(this.directory);
-      this.asset = new assets.DockerImageAsset(scope, `AgentRuntimeArtifact${hash}`, {
+      this.asset = new assets.DockerImageAsset(scope, 'AgentRuntimeArtifact', {
         directory: this.directory,
         ...this.options,
       });
