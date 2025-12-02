@@ -55,23 +55,6 @@ export interface AlbIntegrationProps {
  *
  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-private-integration.html
  *
- * @example
- * declare const api: apigateway.RestApi;
- * declare const alb: elbv2.ApplicationLoadBalancer;
- *
- * const integration = new apigateway.AlbIntegration(alb);
- * api.root.addMethod('GET', integration);
- *
- * @example
- * // With existing VPC Link
- * declare const api: apigateway.RestApi;
- * declare const alb: elbv2.ApplicationLoadBalancer;
- * declare const vpcLink: apigatewayv2.VpcLink;
- *
- * const integration = new apigateway.AlbIntegration(alb, {
- *   vpcLink,
- * });
- * api.root.addMethod('GET', integration);
  */
 export class AlbIntegration extends Integration {
   private readonly alb: elbv2.IApplicationLoadBalancer;
