@@ -1,16 +1,7 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { DatabaseCluster, InstanceType } from '../lib';
-import { ClusterParameterGroup, ParameterGroupFamily } from '../lib/parameter-group';
-
-/*
- * Test creating a cluster without specifying engine version.
- * This defaults to  engine version < 1.2.0.0 and associated parameter group with family neptune1
- *
- * Stack verification steps:
- * * aws docdb describe-db-clusters --db-cluster-identifier <deployed db cluster identifier>
- */
+import { ClusterParameterGroup, DatabaseCluster, EngineVersion, InstanceType, ParameterGroupFamily } from '../lib';
 
 const app = new cdk.App();
 
@@ -20,7 +11,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup:
 
 const clusterParameterGroup = new ClusterParameterGroup(stack, 'Params', {
   description: 'A nice parameter group',
-  family: ParameterGroupFamily.NEPTUNE_1_2,
+  family: ParameterGroupFamily.NEPTUNE_1_4,
   parameters: {
     neptune_enable_audit_log: '1',
     neptune_query_timeout: '100000',
@@ -29,6 +20,7 @@ const clusterParameterGroup = new ClusterParameterGroup(stack, 'Params', {
 
 new DatabaseCluster(stack, 'Database', {
   vpc,
+  engineVersion: EngineVersion.V1_4_6_1,
   instanceType: InstanceType.SERVERLESS,
   clusterParameterGroup,
   removalPolicy: cdk.RemovalPolicy.DESTROY,

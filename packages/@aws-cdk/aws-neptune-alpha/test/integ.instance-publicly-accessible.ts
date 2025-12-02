@@ -1,16 +1,8 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { DatabaseCluster, DatabaseInstance, InstanceType } from '../lib';
+import { DatabaseCluster, DatabaseInstance, InstanceType, EngineVersion } from '../lib';
 import { ClusterParameterGroup, ParameterGroupFamily } from '../lib/parameter-group';
-
-/*
- * Test creating a cluster without specifying engine version.
- * This defaults to engine version >= 1.4.0.0 and associated parameter group with family neptune1.4
- *
- * Stack verification steps:
- * * aws docdb describe-db-clusters --db-cluster-identifier <deployed db cluster identifier>
- */
 
 const app = new cdk.App();
 
@@ -29,6 +21,7 @@ const clusterParameterGroup = new ClusterParameterGroup(stack, 'Params', {
 
 const cluster = new DatabaseCluster(stack, 'Database', {
   vpc,
+  engineVersion: EngineVersion.V1_4_6_1,
   instanceType: InstanceType.R5_LARGE,
   clusterParameterGroup,
   removalPolicy: cdk.RemovalPolicy.DESTROY,

@@ -147,6 +147,10 @@ export class EngineVersion {
    */
   public static readonly V1_4_6_1 = new EngineVersion('1.4.6.1');
   /**
+   * Neptune engine version 1.4.6.2
+   */
+  public static readonly V1_4_6_2 = new EngineVersion('1.4.6.2');
+  /**
    * Constructor for specifying a custom engine version
    * @param version the engine version of Neptune
    */
