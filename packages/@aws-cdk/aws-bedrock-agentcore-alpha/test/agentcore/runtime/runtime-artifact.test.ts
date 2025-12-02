@@ -146,7 +146,7 @@ describe('AgentRuntimeArtifact tests', () => {
   });
 
   test('Should not require permissions for image URI', () => {
-    const artifact = AgentRuntimeArtifact.fromImageUri('my-registry.example.com/app:latest');
+    const artifact = AgentRuntimeArtifact.fromImageUri('123456789012.dkr.ecr.us-east-1.amazonaws.com/my-repo:latest');
 
     const runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
@@ -157,6 +157,16 @@ describe('AgentRuntimeArtifact tests', () => {
     expect(() => artifact.bind(stack, runtime)).not.toThrow();
 
     const rendered: any = artifact._render();
-    expect(rendered.containerUri).toBe('my-registry.example.com/app:latest');
+    expect(rendered.containerUri).toBe('123456789012.dkr.ecr.us-east-1.amazonaws.com/my-repo:latest');
+  });
+
+  test('Should reject non-ECR container URIs', () => {
+    expect(() => {
+      AgentRuntimeArtifact.fromImageUri('docker.io/myimage:latest');
+    }).toThrow(/Invalid ECR container URI format/);
+
+    expect(() => {
+      AgentRuntimeArtifact.fromImageUri('ghcr.io/owner/repo:tag');
+    }).toThrow(/Invalid ECR container URI format/);
   });
 });
