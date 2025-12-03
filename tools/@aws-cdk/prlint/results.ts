@@ -50,6 +50,8 @@ export class TestResult {
   }
 }
 
+export type PrPred = (pr: GitHubPr) => boolean;
+
 /**
  * Represents a set of tests and the conditions under which those rules exempt.
  */
@@ -57,7 +59,7 @@ export interface ValidateRuleSetOptions {
   /**
    * The function to test for exemption from the rules in testRuleSet.
    */
-  exemption?: (pr: GitHubPr) => boolean;
+  exemption: PrPred;
 
   /**
    * The log message printed if the exemption is granted.
