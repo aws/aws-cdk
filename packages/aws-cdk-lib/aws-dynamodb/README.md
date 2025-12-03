@@ -404,9 +404,9 @@ const table = new dynamodb.TableV2(this, 'Table', {
 });
 ```
 
-#### Compound Keys
+#### Multi-attribute Keys
 
-Global secondary indexes support compound keys, allowing you to specify multiple partition keys and/or multiple sort keys. This enables more flexible query patterns for complex data models.
+Global secondary indexes support multi-attribute keys, allowing you to specify multiple partition keys and/or multiple sort keys. This enables more flexible query patterns for complex data models.
 
 **Key Constraints:**
 - You can specify up to **4 partition keys** per global secondary index
@@ -417,14 +417,14 @@ Global secondary indexes support compound keys, allowing you to specify multiple
 - For multiple keys, you **must** use the plural parameters (`partitionKeys` and/or `sortKeys`)
 - **Keys cannot be added or modified after index creation** - attempting to add additional keys to an existing index will result in an error
 
-**Example with compound partition and sort keys:**
+**Example with multi-attribute partition and sort keys:**
 
 ```ts
 const table = new dynamodb.TableV2(this, 'Table', {
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
   globalSecondaryIndexes: [
     {
-      indexName: 'compound-gsi',
+      indexName: 'multi-attribute-gsi',
       partitionKeys: [
         { name: 'gsi_pk1', type: dynamodb.AttributeType.STRING },
         { name: 'gsi_pk2', type: dynamodb.AttributeType.NUMBER },
@@ -456,12 +456,12 @@ table.addGlobalSecondaryIndex({
   partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
 });
 
-// Add a GSI with compound keys
+// Add a GSI with multi-attribute keys
 table.addGlobalSecondaryIndex({
-  indexName: 'compound-gsi2',
+  indexName: 'multi-attribute-gsi2',
   partitionKeys: [
-    { name: 'compound_pk1', type: dynamodb.AttributeType.STRING },
-    { name: 'compound_pk2', type: dynamodb.AttributeType.NUMBER },
+    { name: 'multi-attribute_pk1', type: dynamodb.AttributeType.STRING },
+    { name: 'multi-attribute_pk2', type: dynamodb.AttributeType.NUMBER },
   ],
   sortKey: { name: 'sk', type: dynamodb.AttributeType.STRING },
 });

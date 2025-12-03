@@ -10,8 +10,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.S3ObjectLambda.Alpha",
         "packageId": "Amazon.CDK.AWS.S3ObjectLambda.Alpha",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {

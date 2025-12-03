@@ -1371,6 +1371,26 @@ const fn = new lambda.Function(this, 'MyFunction', {
 const version = fn.currentVersion;
 ```
 
+## Lambda with Durable Configuration
+
+Lambda functions can be configured with durability to enable long-running, stateful executions.
+
+```ts
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_24_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  durableConfig: { executionTimeout: Duration.hours(1), retentionPeriod: Duration.days(30) }, // 1 hour timeout, 30 days retention
+});
+```
+*Note:* If adding the `durableConfig` property to an existing lambda function, a resource replacement will be triggered.
+For the resource replacement to succeed, you cannot explicitly set the `functionName` parameter, or else it will
+result in CloudFormation deployment errors. Modifying the parameters within `durableConfig` will not trigger a resource replacement.
+
+*Further Note:* Deletion for durable functions will wait for all running executions to complete. CloudFormation will wait up to 1 hour, 
+after which the stack update or deletion will timeout. If you have functions that are stuck deleting, please check if there
+are any running executions for the function.
+
 ## AutoScaling
 
 You can use Application AutoScaling to automatically configure the provisioned concurrency for your functions. AutoScaling can be set to track utilization or be based on a schedule. To configure AutoScaling on a function alias:
