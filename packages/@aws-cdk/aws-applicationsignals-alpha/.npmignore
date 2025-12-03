@@ -9,7 +9,7 @@ junit.xml
 coverage
 .nyc_output
 *.tgz
-eslint.config.js
+eslint.config.mjs
 # exclude cdk artifacts
 **/cdk.out
 dist

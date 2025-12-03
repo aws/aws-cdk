@@ -5,7 +5,7 @@ dist
 
 .LAST_BUILD
 *.snk
-!eslint.config.js
+!eslint.config.mjs
 
 .nyc_output
 coverage

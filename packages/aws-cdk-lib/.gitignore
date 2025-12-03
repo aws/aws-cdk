@@ -13,7 +13,7 @@ nyc.config.js
 .types-compat
 coverage
 dist
-!eslint.config.js
+!eslint.config.mjs
 !jest.config.js
 cloudformation-include/cfn-types-2-classes.json
 !aws-synthetics/test/canaries/**/*

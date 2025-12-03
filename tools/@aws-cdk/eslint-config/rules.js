@@ -1,6 +1,8 @@
+import fs from 'fs';
+
 // @ts-check
-module.exports = function makeRules(/** @type{string} */ directory) {
-  const currentPackageJson = require(`${directory}/package.json`);
+export function makeRules(/** @type{string} */ directory) {
+  const currentPackageJson = JSON.parse(fs.readFileSync(`${directory}/package.json`, 'utf-8'));
 
   const isConstructLibrary = currentPackageJson.name === 'aws-cdk-lib' || ('aws-cdk-lib' in (currentPackageJson.peerDependencies ?? {}));
 

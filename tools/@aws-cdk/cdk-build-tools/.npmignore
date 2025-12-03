@@ -6,7 +6,7 @@ coverage
 *.tgz
 
 *.snk
-eslint.config.js
+eslint.config.mjs
 # exclude cdk artifacts
 **/cdk.out
 junit.xml

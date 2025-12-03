@@ -5,4 +5,4 @@ junit.xml
 .nyc_output
 coverage
 nyc.config.js
-!eslint.config.js
+!eslint.config.mjs

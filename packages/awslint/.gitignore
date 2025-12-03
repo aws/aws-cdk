@@ -94,5 +94,5 @@ dist
 *.snk
 nyc.config.js
 
-!eslint.config.js
+!eslint.config.mjs
 junit.xml

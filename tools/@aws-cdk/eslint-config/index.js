@@ -1,18 +1,19 @@
 // @ts-check
-const { defineConfig } = require('eslint/config');
-const typescriptEslint = require('typescript-eslint');
-const importPlugin = require('eslint-plugin-import');
-const cdklabs = require('@cdklabs/eslint-plugin');
-const stylistic = require('@stylistic/eslint-plugin');
-const jest =  require('eslint-plugin-jest');
-const jsdoc = require('eslint-plugin-jsdoc');
-const path = require('path');
-const fs = require('fs');
+import { defineConfig } from 'eslint/config';
+import typescriptEslint from 'typescript-eslint';
+import importPlugin from 'eslint-plugin-import';
+import cdklabs from '@cdklabs/eslint-plugin';
+import stylistic from '@stylistic/eslint-plugin';
+import jest from 'eslint-plugin-jest';
+import jsdoc from 'eslint-plugin-jsdoc';
+import path from 'path';
+import fs from 'fs';
+import { makeRules } from './rules.js';
 
-module.exports = function makeConfig(/** @type{string} */ tsconfigFile) {
+export function makeConfig(/** @type{string} */ tsconfigFile) {
   tsconfigFile = path.resolve(tsconfigFile);
   const tsconfigRootDir = path.dirname(tsconfigFile);
-  const tsConfig = require(tsconfigFile);
+  const tsConfig = JSON.parse(fs.readFileSync(tsconfigFile, 'utf-8'));
   const include = tsConfig?.include ?? [];
   const exclude = tsConfig?.exclude ?? [];
 
@@ -68,7 +69,7 @@ module.exports = function makeConfig(/** @type{string} */ tsconfigFile) {
         },
       },
     },
-    rules: require('./rules')(tsconfigRootDir),
+    rules: makeRules(tsconfigRootDir),
   });
 }
 

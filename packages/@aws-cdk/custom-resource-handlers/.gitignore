@@ -19,7 +19,7 @@ nyc.config.js
 !test/integ/cli/**/*
 assets.json
 npm-shrinkwrap.json
-!eslint.config.js
+!eslint.config.mjs
 !jest.config.js
 
 junit.xml

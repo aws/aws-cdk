@@ -18,7 +18,7 @@ dist
 *.tsbuildinfo
 
 tsconfig.json
-eslint.config.js
+eslint.config.mjs
 
 # exclude cdk artifacts
 **/cdk.out

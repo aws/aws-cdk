@@ -11,7 +11,7 @@ coverage
 dist
 
 *.snk
-!eslint.config.js
+!eslint.config.mjs
 !jest.config.js
 
 junit.xml

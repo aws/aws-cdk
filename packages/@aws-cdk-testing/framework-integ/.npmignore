@@ -2,6 +2,6 @@
 .LAST_BUILD
 *.snk
 junit.xml
-eslint.config.js
+eslint.config.mjs
 # exclude cdk artifacts
 **/cdk.out

@@ -14,7 +14,7 @@ coverage
 nyc.config.js
 .LAST_PACKAGE
 *.snk
-!eslint.config.js
+!eslint.config.mjs
 !jest.config.js
 
 junit.xml

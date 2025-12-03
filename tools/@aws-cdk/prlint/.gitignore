@@ -2,4 +2,4 @@
 *.js
 
 !decs.d.ts
-!eslint.config.js
+!eslint.config.mjs
