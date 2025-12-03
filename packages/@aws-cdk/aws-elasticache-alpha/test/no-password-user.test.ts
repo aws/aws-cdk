@@ -3,21 +3,6 @@ import { Stack } from 'aws-cdk-lib';
 import { NoPasswordUser, AccessControl, UserEngine } from '../lib';
 
 describe('NoPasswordUser', () => {
-  describe('validation errors', () => {
-    let stack: Stack;
-    beforeEach(() => {
-      stack = new Stack();
-    });
-
-    test('when using Valkey engine throws validation error', () => {
-      expect(() => new NoPasswordUser(stack, 'TestUser', {
-        userId: 'test-user',
-        engine: UserEngine.VALKEY,
-        accessControl: AccessControl.fromAccessString('on ~* +@all'),
-      })).toThrow('Valkey engine does not support no-password authentication.');
-    });
-  });
-
   describe('constructor', () => {
     let stack: Stack;
     beforeEach(() => {
@@ -27,7 +12,6 @@ describe('NoPasswordUser', () => {
     test('creates user with minimal required properties', () => {
       new NoPasswordUser(stack, 'TestUser', {
         userId: 'test-user',
-        engine: UserEngine.REDIS,
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
       });
 
@@ -49,7 +33,6 @@ describe('NoPasswordUser', () => {
       new NoPasswordUser(stack, 'TestUser', {
         userId: 'test-user',
         accessControl: AccessControl.fromAccessString('on ~app:* +@read +@write'),
-        engine: UserEngine.REDIS,
         userName: 'test-user-name',
       });
 
@@ -71,7 +54,6 @@ describe('NoPasswordUser', () => {
       new NoPasswordUser(stack, 'TestUser', {
         userId: 'test-user',
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
-        engine: UserEngine.REDIS,
       });
 
       const template = Template.fromStack(stack);
@@ -89,7 +71,6 @@ describe('NoPasswordUser', () => {
       const user = new NoPasswordUser(stack, 'TestUser', {
         userId: 'test-user-id',
         userName: 'test-user-name',
-        engine: UserEngine.REDIS,
         accessControl: AccessControl.fromAccessString('on ~app:* +@read'),
       });
 
@@ -104,7 +85,6 @@ describe('NoPasswordUser', () => {
     test('userName defaults to userId when not provided', () => {
       const user = new NoPasswordUser(stack, 'TestUser', {
         userId: 'my-user-id',
-        engine: UserEngine.REDIS,
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
       });
 
@@ -118,7 +98,6 @@ describe('NoPasswordUser', () => {
       const stack = new Stack();
       const user = new NoPasswordUser(stack, 'TestUser', {
         userId: 'test-user',
-        engine: UserEngine.REDIS,
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
       });
 

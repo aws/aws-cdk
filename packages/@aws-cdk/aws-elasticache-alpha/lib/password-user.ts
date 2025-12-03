@@ -19,6 +19,13 @@ export interface PasswordUserProps extends UserBaseProps {
    */
   readonly userName?: string;
   /**
+   * The engine type for the user.
+   * Enum options: UserEngine.VALKEY, UserEngine.REDIS.
+   *
+   * @default UserEngine.VALKEY.
+   */
+  readonly engine?: UserEngine;
+  /**
    * The passwords for the user.
    * Password authentication requires using 1-2 passwords.
    */

@@ -102,13 +102,11 @@ describe('UserGroup', () => {
         new NoPasswordUser(stack, 'TestUser1', {
           userId: 'user1',
           userName: 'duplicate-name',
-          engine: UserEngine.REDIS,
           accessControl: AccessControl.fromAccessString('on ~* +@all'),
         }),
         new NoPasswordUser(stack, 'TestUser2', {
           userId: 'user2',
           userName: 'duplicate-name',
-          engine: UserEngine.REDIS,
           accessControl: AccessControl.fromAccessString('on ~* +@all'),
         }),
       ];
@@ -179,7 +177,6 @@ describe('UserGroup', () => {
     test('creates Redis user group with minimal required properties', () => {
       const user = new NoPasswordUser(stack, 'TestUser', {
         userId: 'default',
-        engine: UserEngine.REDIS,
         accessControl: AccessControl.fromAccessString('on ~app:* +@read +@write'),
       });
 
@@ -220,7 +217,6 @@ describe('UserGroup', () => {
     test('creates Valkey user group with both Redis and Valkey users', () => {
       const redisUser = new NoPasswordUser(stack, 'RedisUser', {
         userId: 'redis-user',
-        engine: UserEngine.REDIS,
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
       });
 
@@ -325,7 +321,6 @@ describe('UserGroup', () => {
       });
       const user = new NoPasswordUser(stack, 'TestUser', {
         userId: 'test-user',
-        engine: UserEngine.REDIS,
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
       });
 
@@ -338,7 +333,6 @@ describe('UserGroup', () => {
     test('adds second user to group that already has one user', () => {
       const existingUser = new NoPasswordUser(stack, 'ExistingUser', {
         userId: 'existing-user',
-        engine: UserEngine.REDIS,
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
       });
 
@@ -349,7 +343,6 @@ describe('UserGroup', () => {
 
       const newUser = new NoPasswordUser(stack, 'NewUser', {
         userId: 'new-user',
-        engine: UserEngine.REDIS,
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
       });
 
@@ -425,7 +418,6 @@ describe('UserGroup', () => {
     test('fromUserGroupAttributes preserves users when provided', () => {
       const user = new NoPasswordUser(stack, 'TestUser', {
         userId: 'test-user',
-        engine: UserEngine.REDIS,
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
       });
 
@@ -441,7 +433,6 @@ describe('UserGroup', () => {
     test('fromUserGroupAttributes works with both engine and users', () => {
       const user = new NoPasswordUser(stack, 'TestUser', {
         userId: 'test-user',
-        engine: UserEngine.REDIS,
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
       });
 
@@ -462,7 +453,6 @@ describe('UserGroup', () => {
       const arn = 'arn:aws:elasticache:us-east-1:123456789012:usergroup:my-group';
       const user = new NoPasswordUser(stack, 'TestUser', {
         userId: 'test-user',
-        engine: UserEngine.REDIS,
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
       });
 
