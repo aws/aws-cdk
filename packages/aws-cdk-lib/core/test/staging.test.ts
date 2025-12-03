@@ -1746,7 +1746,6 @@ function readDockerStubInputConcat(file?: string) {
   return readAndCleanDockerStubInput(file ?? STUB_INPUT_CONCAT_FILE);
 }
 
-
 function isSeLinux(): boolean {
   if (process.platform != 'linux') {
     return false;
