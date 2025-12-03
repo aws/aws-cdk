@@ -75,6 +75,24 @@
             "data": "MyDeadLetterQueuePolicyCC35D52C"
           }
         ],
+        "/aws-cdk-sqs-event-target/StandardQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StandardQueue4A8B3C4D"
+          }
+        ],
+        "/aws-cdk-sqs-event-target/StandardQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StandardQueuePolicyFB772D09"
+          }
+        ],
+        "/aws-cdk-sqs-event-target/StandardQueueRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StandardQueueRule2E5F2E91"
+          }
+        ],
         "/aws-cdk-sqs-event-target/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

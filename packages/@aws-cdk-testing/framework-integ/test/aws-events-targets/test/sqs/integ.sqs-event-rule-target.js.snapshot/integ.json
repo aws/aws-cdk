@@ -10,7 +10,10 @@
       "allowDestroy": [
         "AWS::SQS::Queue",
         "AWS::SQS::QueuePolicy",
-        "AWS::Events::Rule"
+        "AWS::Events::Rule",
+        "StandardQueue4A8B3C4D",
+        "StandardQueuePolicyFB772D09",
+        "StandardQueueRule2E5F2E91"
       ]
     }
   },
