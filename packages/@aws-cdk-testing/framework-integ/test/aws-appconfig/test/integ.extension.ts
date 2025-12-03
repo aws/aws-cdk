@@ -3,7 +3,7 @@ import { Stack, App, Duration } from 'aws-cdk-lib';
 import { EventBus } from 'aws-cdk-lib/aws-events';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Topic } from 'aws-cdk-lib/aws-sns';
-import { Queue } from 'aws-cdk-lib/aws-sqs';
+import { Queue, QueueEncryption } from 'aws-cdk-lib/aws-sqs';
 import {
   DeploymentStrategy,
   Extension,
@@ -65,6 +65,22 @@ const queueExtension = new Extension(stack, 'MyQueueExtension', {
 });
 app.addExtension(queueExtension);
 
+// create extension through encrypted sqs queue
+const encryptedQueue = new Queue(stack, 'MyEncryptedQueue', {
+  encryption: QueueEncryption.KMS_MANAGED,
+});
+const encryptedQueueExtension = new Extension(stack, 'MyEncryptedQueueExtension', {
+  actions: [
+    new Action({
+      actionPoints: [
+        ActionPoint.ON_DEPLOYMENT_START,
+      ],
+      eventDestination: new SqsDestination(encryptedQueue),
+    }),
+  ],
+});
+app.addExtension(encryptedQueueExtension);
+
 // create extension through sns topic
 const topic = new Topic(stack, 'MyTopic');
 const topicExtension = new Extension(stack, 'MyTopicExtension', {
@@ -112,7 +128,7 @@ const hostedConfig = new HostedConfiguration(stack, 'HostedConfiguration', {
     }),
   }),
 });
-hostedConfig.node.addDependency(lambdaExtension, topicExtension, busExtension, queueExtension);
+hostedConfig.node.addDependency(lambdaExtension, topicExtension, busExtension, queueExtension, encryptedQueueExtension);
 
 /* resource deployment alone is sufficient because we already have the
    corresponding resource handler tests to assert that resources can be
