@@ -375,7 +375,6 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly ACCOUNT_MANAGEMENT = new InterfaceVpcEndpointAwsService('account');
   public static readonly ACM = new InterfaceVpcEndpointAwsService('acm');
   public static readonly ACM_FIPS = new InterfaceVpcEndpointAwsService('acm-fips');
-  public static readonly ACM_PCA_FIPS = new InterfaceVpcEndpointAwsService('acm-pca-fips');
   public static readonly AIRFLOW_API = new InterfaceVpcEndpointAwsService('airflow.api');
   public static readonly AIRFLOW_API_FIPS = new InterfaceVpcEndpointAwsService('airflow.api-fips');
   public static readonly AIRFLOW_ENV = new InterfaceVpcEndpointAwsService('airflow.env');
@@ -669,6 +668,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly POLLY = new InterfaceVpcEndpointAwsService('polly');
   public static readonly PRIVATE_5G = new InterfaceVpcEndpointAwsService('private-networks');
   public static readonly PRIVATE_CERTIFICATE_AUTHORITY = new InterfaceVpcEndpointAwsService('acm-pca');
+  public static readonly PRIVATE_CERTIFICATE_AUTHORITY_FIPS = new InterfaceVpcEndpointAwsService('acm-pca-fips');
   public static readonly PRIVATE_CERTIFICATE_AUTHORITY_CONNECTOR_AD = new InterfaceVpcEndpointAwsService('pca-connector-ad');
   public static readonly PRIVATE_CERTIFICATE_AUTHORITY_CONNECTOR_SCEP = new InterfaceVpcEndpointAwsService('pca-connector-scep');
   public static readonly PROMETHEUS = new InterfaceVpcEndpointAwsService('aps');
