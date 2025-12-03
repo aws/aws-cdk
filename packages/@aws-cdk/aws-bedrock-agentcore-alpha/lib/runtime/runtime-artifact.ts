@@ -15,9 +15,7 @@ import { Stack, Token } from 'aws-cdk-lib';
 import { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as assets from 'aws-cdk-lib/aws-ecr-assets';
-import { Location } from 'aws-cdk-lib/aws-s3';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import { Runtime } from './runtime';
 import { ValidationError } from './validation-helpers';
@@ -72,7 +70,7 @@ export abstract class AgentRuntimeArtifact {
    * @param runtime The runtime environment for executing the code. Allowed values: PYTHON_3_10 | PYTHON_3_11 | PYTHON_3_12 | PYTHON_3_13
    * @param entrypoint The entry point for the code execution, specifying the function or method that should be invoked when the code runs.
    */
-  public static fromS3(s3Location: Location, runtime: AgentCoreRuntime, entrypoint: string[]): AgentRuntimeArtifact {
+  public static fromS3(s3Location: s3.Location, runtime: AgentCoreRuntime, entrypoint: string[]): AgentRuntimeArtifact {
     return new S3Image(s3Location, runtime, entrypoint);
   }
 
@@ -123,8 +121,7 @@ class AssetImage extends AgentRuntimeArtifact {
   public bind(scope: Construct, runtime: Runtime): void {
     // Create the asset if not already created
     if (!this.asset) {
-      const hash = md5hash(this.directory);
-      this.asset = new assets.DockerImageAsset(scope, `AgentRuntimeArtifact${hash}`, {
+      this.asset = new assets.DockerImageAsset(scope, 'AgentRuntimeArtifact', {
         directory: this.directory,
         ...this.options,
       });
@@ -153,7 +150,7 @@ class AssetImage extends AgentRuntimeArtifact {
 class S3Image extends AgentRuntimeArtifact {
   private bound = false;
 
-  constructor(private readonly s3Location: Location, private readonly runtime: AgentCoreRuntime, private readonly entrypoint: string[]) {
+  constructor(private readonly s3Location: s3.Location, private readonly runtime: AgentCoreRuntime, private readonly entrypoint: string[]) {
     super();
   }
 

@@ -6715,10 +6715,10 @@ case@1.6.3, case@^1.6.3:
   resolved "https://registry.npmjs.org/case/-/case-1.6.3.tgz#0a4386e3e9825351ca2e6216c60467ff5f1ea1c9"
   integrity sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==
 
-cdk-generate-synthetic-examples@^0.2.36:
-  version "0.2.36"
-  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.2.36.tgz#eadf34cd497552fbcc3acc4c356e3f17506c5808"
-  integrity sha512-rybNIxro8Z2i6HPy7Zea/STbnnyR5gMQlKeuQ/Bx1ZB6XdPlN11YuL79RXG59Bc/JDMJCxDhQdyQWbkte24+Nw==
+cdk-generate-synthetic-examples@^0.2.37:
+  version "0.2.37"
+  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.2.37.tgz#4330cab1ee1d114e65890ac4a520e763fc6e9086"
+  integrity sha512-CpkNqCKi1OdEuENfKLm1+1oEHAQ8aqwXA1k8h7wSlrlZvlWlGKwp1o5ps9e1qyjAae8IQvuikq1ZxVl9EXtiPA==
   dependencies:
     "@jsii/spec" "^1.120.0"
     jsii-reflect "^1.120.0"
