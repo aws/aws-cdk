@@ -1005,6 +1005,7 @@
     "construct-ctor-props-type:aws-cdk-lib.aws_inspector.AssessmentTemplate",
     "props-physical-name:aws-cdk-lib.aws_inspector.AssessmentTemplateProps",
     "attribute-tag:aws-cdk-lib.aws_scheduler.Schedule.scheduleGroup",
-    "docs-public-apis:aws-cdk-lib.aws_scheduler.ContextAttribute.name"
+    "docs-public-apis:aws-cdk-lib.aws_scheduler.ContextAttribute.name",
+    "docs-public-apis:aws-cdk-lib.cloud_assembly_schema.UnconfiguredBehavesLike"
   ]
 }
