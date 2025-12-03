@@ -1,8 +1,8 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-console */
-// eslint-disable-next-line import/no-extraneous-dependencies
+import { flatten } from '@aws-cdk/aws-custom-resource-sdk-adapter';
 import fetch, { Response } from 'node-fetch';
 // TODO: can use builtin fetch on node18
-import { flatten } from '@aws-cdk/aws-custom-resource-sdk-adapter';
 import { CustomResourceHandler } from './base';
 import { HttpRequest, HttpResponseWrapper } from './types';
 import { deepParseJson } from './utils';

@@ -3,7 +3,7 @@ import { Match, Template } from '../../../assertions';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import * as cpactions from '../../lib';
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 let stack: TestFixture;
 let importedAdminRole: iam.IRole;

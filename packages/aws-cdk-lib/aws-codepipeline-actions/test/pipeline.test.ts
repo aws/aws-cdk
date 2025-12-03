@@ -11,7 +11,7 @@ import { App, Aws, CfnParameter, SecretValue, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
 import * as cpactions from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('pipeline', () => {
   test('basic pipeline', () => {

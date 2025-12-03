@@ -2,7 +2,7 @@ import { Template } from '../../assertions';
 import { Stack } from '../../core';
 import { ReceiptRuleSet } from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('receipt rule set', () => {
   test('can create a receipt rule set', () => {

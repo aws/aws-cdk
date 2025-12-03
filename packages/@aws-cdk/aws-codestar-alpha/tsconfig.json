@@ -22,7 +22,7 @@
     "strict": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
-    "stripInternal": false,
+    "stripInternal": true,
     "target": "es2022",
     "composite": true,
     "tsBuildInfoFile": "tsconfig.tsbuildinfo",
@@ -33,7 +33,8 @@
     "**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "**/*.d.ts"
   ],
   "references": [
     {

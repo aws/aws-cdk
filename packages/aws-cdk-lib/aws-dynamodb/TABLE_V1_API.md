@@ -211,12 +211,12 @@ To get the partition key and sort key of the table or indexes you have configure
 ```ts
 declare const table: dynamodb.Table;
 
-// For single keys, use schema() (deprecated for compound keys)
+// For single keys, use schema() (deprecated for multi-attribute keys)
 const schema = table.schema();
 const partitionKey = schema.partitionKey;
 const sortKey = schema.sortKey;
 
-// For compound keys, use schemaV2() which returns normalized arrays
+// For multi-attribute keys, use schemaV2() which returns normalized arrays
 const schemaV2 = table.schemaV2();
 const partitionKeys = schemaV2.partitionKeys; // Attribute[]
 const sortKeys = schemaV2.sortKeys; // Attribute[]
@@ -225,11 +225,11 @@ const sortKeys = schemaV2.sortKeys; // Attribute[]
 const indexSchema = table.schemaV2('INDEX_NAME');
 ```
 
-Note: `schema()` is deprecated for indexes with compound keys and will throw an error. Use `schemaV2()` instead, which always returns normalized arrays.
+Note: `schema()` is deprecated for indexes with multi-attribute keys and will throw an error. Use `schemaV2()` instead, which always returns normalized arrays.
 
-## Global Secondary Indexes with Compound Keys
+## Global Secondary Indexes with multi-attribute Keys
 
-Global secondary indexes support compound keys, allowing you to specify multiple partition keys and/or multiple sort keys. This enables more flexible query patterns for complex data models.
+Global secondary indexes support multi-attribute keys, allowing you to specify multiple partition keys and/or multiple sort keys. This enables more flexible query patterns for complex data models.
 
 **Key Constraints:**
 - You can specify up to **4 partition keys** per global secondary index
@@ -249,7 +249,7 @@ const table = new dynamodb.Table(this, 'Table', {
 });
 
 table.addGlobalSecondaryIndex({
-  indexName: 'compound-gsi',
+  indexName: 'multi-attribute-gsi',
   partitionKeys: [
     { name: 'gsi_pk1', type: dynamodb.AttributeType.STRING },
     { name: 'gsi_pk2', type: dynamodb.AttributeType.NUMBER },

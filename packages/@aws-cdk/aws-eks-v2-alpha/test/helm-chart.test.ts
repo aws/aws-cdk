@@ -1,11 +1,9 @@
 import * as path from 'path';
-import { testFixtureCluster } from './util';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { Duration } from 'aws-cdk-lib/core';
+import { testFixtureCluster } from './util';
 import * as eks from '../lib';
-
-/* eslint-disable max-len */
 
 describe('helm chart', () => {
   describe('add Helm chart', () => {
