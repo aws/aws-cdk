@@ -171,7 +171,7 @@ describe('AgentRuntimeArtifact tests', () => {
       AgentRuntimeArtifact.fromImageUri('ghcr.io/owner/repo:tag');
     }).toThrow(/Invalid ECR container URI format/);
   });
-  
+
   test('Should use static construct ID for asset image regardless of directory', () => {
     // Create two separate stacks to test that the construct ID is always 'AgentRuntimeArtifact'
     const stack1 = new cdk.Stack(app, 'test-stack-1', {
