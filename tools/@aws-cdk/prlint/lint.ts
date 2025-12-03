@@ -227,14 +227,17 @@ export class PullRequestLinter extends PullRequestLinterBase {
     });
 
     validationCollector.validateRuleSet({
-      exemption: exemptByLabel(Exemption.CLI_INTEG_TESTED),
+      exemption: either(
+        exemptByLabel(Exemption.CLI_INTEG_TESTED),
+        exemptIfAutomationUser(),
+      ),
       testRuleSet: [{ test: noCliChanges }],
     });
 
     validationCollector.validateRuleSet({
       exemption: either(
         exemptByLabel(Exemption.ANALYTICS_METADATA_CHANGE),
-        exemptBySubmitter('aws-cdk-automation')
+        exemptIfAutomationUser(),
       ),
       testRuleSet: [
         { test: noMetadataChanges },
@@ -269,7 +272,7 @@ export class PullRequestLinter extends PullRequestLinterBase {
       const codeCovRuns = CODECOV_CHECKS.map(c => runs[c] as CheckRun | undefined);
 
       validationCollector.validateRuleSet({
-        exemption: () => hasLabel(pr, Exemption.CODECOV),
+        exemption: exemptByLabel(Exemption.CODECOV),
         testRuleSet: [{
           test: () => {
             const summary = summarizeRunConclusions(codeCovRuns.map(r => r?.conclusion));
@@ -411,11 +414,15 @@ function fixContainsIntegTest(pr: GitHubPr, files: GitHubFile[]): TestResult {
  * Return a function that exempts a PR if it has a certain label
  */
 function exemptByLabel(label: Exemption): PrPred {
-  return (pr: GitHubPr) => hasLabel(pr, label);
+  return (pr: GitHubPr) => hasLabel(pr, label)
 }
 
 function exemptBySubmitter(username: string): PrPred {
   return (pr) => pr.user?.login === username;
+}
+
+function exemptIfAutomationUser(): PrPred {
+  return exemptBySubmitter('aws-cdk-automation');
 }
 
 /**
