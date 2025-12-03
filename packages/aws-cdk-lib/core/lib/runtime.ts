@@ -52,7 +52,6 @@ export function dateToCloudFormation(x?: Date): any {
     return undefined;
   }
 
-  // eslint-disable-next-line max-len
   return `${x.getUTCFullYear()}-${pad(x.getUTCMonth() + 1)}-${pad(x.getUTCDate())}T${pad(x.getUTCHours())}:${pad(x.getUTCMinutes())}:${pad(x.getUTCSeconds())}Z`;
 }
 

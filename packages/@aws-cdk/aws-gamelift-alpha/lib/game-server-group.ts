@@ -1,11 +1,11 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { CfnGameServerGroup } from 'aws-cdk-lib/aws-gamelift';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { CfnGameServerGroup } from 'aws-cdk-lib/aws-gamelift';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
 
 /**
  * Configuration settings for intelligent automatic scaling that uses target tracking.

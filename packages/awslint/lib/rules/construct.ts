@@ -7,7 +7,6 @@ export const constructLinter = new Linter<ConstructReflection>(assembly => assem
   .map(construct => new ConstructReflection(construct)));
 
 export class ConstructReflection {
-
   public static findAllConstructs(assembly: reflect.Assembly) {
     return assembly.allClasses
       .filter(c => CoreTypes.isConstructClass(c))

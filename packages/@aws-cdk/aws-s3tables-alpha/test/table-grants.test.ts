@@ -5,7 +5,7 @@ import * as s3tables from '../lib';
 import * as perms from '../lib/permissions';
 
 /* Allow quotes in the object keys used for CloudFormation template assertions */
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('Table grant methods', () => {
   const TABLE_POLICY_CFN_RESOURCE = 'AWS::S3Tables::TablePolicy';

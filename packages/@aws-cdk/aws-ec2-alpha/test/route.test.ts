@@ -1,9 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
-import * as vpc from '../lib/vpc-v2';
-import * as subnet from '../lib/subnet-v2';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { CfnEIP, GatewayVpcEndpoint, GatewayVpcEndpointAwsService, SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
 import * as route from '../lib/route';
-import { Match, Template } from 'aws-cdk-lib/assertions';
+import * as subnet from '../lib/subnet-v2';
+import * as vpc from '../lib/vpc-v2';
 
 describe('EC2 Routing', () => {
   let stack: cdk.Stack;

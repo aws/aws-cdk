@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 /// !cdk-integ VarablePipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { App, Stack, StackProps, RemovalPolicy, Stage, StageProps, DefaultStackSynthesizer } from 'aws-cdk-lib';

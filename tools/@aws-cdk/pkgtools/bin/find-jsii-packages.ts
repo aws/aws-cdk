@@ -5,7 +5,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yargs from 'yargs';
 
-/* eslint-disable @typescript-eslint/no-shadow */
 const argv = yargs
   .usage('$0')
   .option('verbose', { alias: 'v', type: 'boolean', desc: 'Turn on verbose logging' })
@@ -107,7 +106,6 @@ function enumeratePackages(root: string, pred: PackagePredicate): JSIIPackage[] 
  * a build tool and not shipped, I'm fine with it for now.
  */
 function findPackageFrom(packageName: string, relativeTo: string) {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   const Module = module.constructor as any;
 
   const searchDirs: string[] = Module._nodeModulePaths(relativeTo).concat(Module.globalPaths);

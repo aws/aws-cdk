@@ -1,6 +1,8 @@
-import * as cdk from 'aws-cdk-lib/core';
-import * as constructs from 'constructs';
 import { CfnWorkflow, CfnTrigger } from 'aws-cdk-lib/aws-glue';
+import * as cdk from 'aws-cdk-lib/core';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import * as constructs from 'constructs';
 import {
   ConditionLogicalOperator,
   PredicateLogical,
@@ -15,8 +17,6 @@ import {
   NotifyEventTriggerOptions,
   ConditionalTriggerOptions,
 } from './trigger-options';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * The base interface for Glue Workflow

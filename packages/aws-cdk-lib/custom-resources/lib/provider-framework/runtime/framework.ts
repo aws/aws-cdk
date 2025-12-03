@@ -1,5 +1,6 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 /* eslint-disable max-len */
-/* eslint-disable no-console */
+
 import * as cfnResponse from './cfn-response';
 import * as consts from './consts';
 import { invokeFunction, startExecution } from './outbound';

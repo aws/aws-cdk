@@ -24,13 +24,13 @@ import {
 import * as path from 'path';
 
 const SCHEMA_STR =
-`{
+  `{
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "string"
 }`;
 
 const LAMBDA_CODE =
-`
+  `
 def handler(event, context):
   print('This is my dummy validator')
 `;

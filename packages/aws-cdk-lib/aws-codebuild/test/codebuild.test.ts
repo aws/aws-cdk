@@ -8,7 +8,7 @@ import * as codebuild from '../lib';
 import { CodePipelineSource } from '../lib/codepipeline-source';
 import { NoSource } from '../lib/no-source';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('default properties', () => {
   test('with CodePipeline source', () => {

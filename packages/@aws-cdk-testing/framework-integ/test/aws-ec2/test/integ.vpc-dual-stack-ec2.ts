@@ -2,7 +2,6 @@
  * Note: this integ test may take around 10 minutes to complete successfully.
  */
 
-/* eslint-disable no-console */
 import * as cdk from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';

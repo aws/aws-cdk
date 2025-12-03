@@ -1,14 +1,14 @@
-import { ITransitGateway } from './transit-gateway';
-import { CfnTransitGatewayAttachment, ISubnet, IVpc } from 'aws-cdk-lib/aws-ec2';
-import { Construct } from 'constructs';
-import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
-import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
-import { ITransitGatewayAttachment, TransitGatewayAttachmentBase } from './transit-gateway-attachment';
-import { getFeatureStatus } from './util';
-import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
 import { Annotations } from 'aws-cdk-lib';
+import { CfnTransitGatewayAttachment, ISubnet, IVpc } from 'aws-cdk-lib/aws-ec2';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { ITransitGateway } from './transit-gateway';
+import { ITransitGatewayAttachment, TransitGatewayAttachmentBase } from './transit-gateway-attachment';
+import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
+import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
+import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
+import { getFeatureStatus } from './util';
 
 /**
  * Options for Transit Gateway VPC Attachment.

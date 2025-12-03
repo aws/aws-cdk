@@ -1,12 +1,12 @@
+import { CfnFleet } from 'aws-cdk-lib/aws-gamelift';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IBuild } from './build';
 import { FleetBase, FleetProps, IFleet } from './fleet-base';
-import { CfnFleet } from 'aws-cdk-lib/aws-gamelift';
 import { Port, IPeer, IngressRule } from './ingress-rule';
-import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents a GameLift Fleet used to run a custom game build.

@@ -1,10 +1,10 @@
+import { CfnVpcConnector } from 'aws-cdk-lib/aws-apprunner';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Connections } from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { CfnVpcConnector } from 'aws-cdk-lib/aws-apprunner';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
 
 /**
  * Properties of the AppRunner VPC Connector

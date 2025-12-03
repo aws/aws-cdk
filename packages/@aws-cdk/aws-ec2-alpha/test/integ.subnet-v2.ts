@@ -8,12 +8,12 @@
  * see the main CONTRIBUTING.md file.
  */
 
-import * as vpc_v2 from '../lib/vpc-v2';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { InternetGateway, IpCidr, RouteTable, SubnetV2 } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { InternetGateway, IpCidr, RouteTable, SubnetV2 } from '../lib';
+import * as vpc_v2 from '../lib/vpc-v2';
 
 const app = new cdk.App();
 

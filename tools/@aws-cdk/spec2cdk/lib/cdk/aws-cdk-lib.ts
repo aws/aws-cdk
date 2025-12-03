@@ -1,4 +1,4 @@
-/* eslint-disable @cdklabs/no-throw-default-error */
+
 import { Resource, Service } from '@aws-cdk/service-spec-types';
 import { Module, stmt } from '@cdklabs/typewriter';
 import { AugmentationsModule } from './augmentation-generator';

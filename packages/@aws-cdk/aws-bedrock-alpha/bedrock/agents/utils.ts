@@ -1,7 +1,7 @@
 import { createHash } from 'crypto';
 import * as cdk from 'aws-cdk-lib';
-import { IConstruct } from 'constructs';
 import { ValidationError } from 'aws-cdk-lib';
+import { IConstruct } from 'constructs';
 
 /**
  * The CFN NAG suppress rule interface

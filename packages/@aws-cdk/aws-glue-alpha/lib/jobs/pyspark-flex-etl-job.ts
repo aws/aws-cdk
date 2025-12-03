@@ -1,11 +1,11 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
-import { Construct } from 'constructs';
-import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType, ExecutionClass } from '../constants';
 import * as cdk from 'aws-cdk-lib/core';
-import { Code } from '../code';
-import { SparkJob, SparkJobProps } from './spark-job';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { Code } from '../code';
+import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType, ExecutionClass } from '../constants';
+import { SparkJob, SparkJobProps } from './spark-job';
 
 /**
  * Properties for PySparkFlexEtlJob

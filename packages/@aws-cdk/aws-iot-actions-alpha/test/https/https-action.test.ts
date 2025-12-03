@@ -1,6 +1,6 @@
-import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iot from '@aws-cdk/aws-iot-alpha';
 import * as cdk from 'aws-cdk-lib';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as actions from '../../lib';
 
 test('Default HTTPS action', () => {

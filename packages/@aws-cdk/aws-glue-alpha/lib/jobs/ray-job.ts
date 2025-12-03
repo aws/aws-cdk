@@ -1,11 +1,11 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Job, JobProps } from './job';
-import { Construct } from 'constructs';
-import { JobType, GlueVersion, WorkerType, Runtime } from '../constants';
+import { ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { ValidationError } from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
+import { Job, JobProps } from './job';
+import { JobType, GlueVersion, WorkerType, Runtime } from '../constants';
 
 /**
  * Properties for creating a Ray Glue job

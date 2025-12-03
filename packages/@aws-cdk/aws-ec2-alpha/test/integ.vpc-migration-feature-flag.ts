@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ec2alpha from '../lib';
 

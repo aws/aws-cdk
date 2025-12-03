@@ -1,6 +1,6 @@
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { IpAddressType, Service, Source } from '../lib';
-import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 

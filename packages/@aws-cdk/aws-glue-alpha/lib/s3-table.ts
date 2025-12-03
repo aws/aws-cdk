@@ -1,13 +1,13 @@
+import { UnscopedValidationError, ValidationError } from 'aws-cdk-lib';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { Column } from './schema';
 import { PartitionIndex, TableBase, TableBaseProps } from './table-base';
-import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { UnscopedValidationError, ValidationError } from 'aws-cdk-lib';
 
 /**
  * Encryption options for a Table.

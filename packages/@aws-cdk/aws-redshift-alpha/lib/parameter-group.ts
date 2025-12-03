@@ -1,8 +1,8 @@
-import { IResource, Resource } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
 import { CfnClusterParameterGroup } from 'aws-cdk-lib/aws-redshift';
+import { IResource, Resource } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
 
 /**
  * A parameter group

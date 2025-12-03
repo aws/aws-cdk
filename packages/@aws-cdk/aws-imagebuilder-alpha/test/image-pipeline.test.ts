@@ -20,7 +20,7 @@ import {
   WorkflowParameterValue,
 } from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 describe('ImagePipeline', () => {
   let app: cdk.App;
   let stack: cdk.Stack;

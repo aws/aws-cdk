@@ -1,3 +1,4 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 import { CfnResource, Duration, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { AssertionsProvider } from './providers';

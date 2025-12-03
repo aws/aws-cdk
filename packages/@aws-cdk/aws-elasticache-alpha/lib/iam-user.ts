@@ -1,11 +1,11 @@
-import { Construct } from 'constructs';
-import { UserEngine } from './common';
 import { CfnUser } from 'aws-cdk-lib/aws-elasticache';
-import { UserBase, UserBaseProps } from './user-base';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { UserEngine } from './common';
+import { UserBase, UserBaseProps } from './user-base';
 
 const ELASTICACHE_IAMUSER_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.IamUser');
 

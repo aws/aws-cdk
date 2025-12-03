@@ -13,13 +13,13 @@ class TestStack extends cdk.Stack {
     const targetRegion = 'eu-west-1';
     const tableName = `TestTable${cdk.Stack.of(this).stackName}`;
     const tableArn =
-    cdk.Stack.of(this).formatArn({
-      service: 'dynamodb',
-      resource: 'table',
-      resourceName: tableName,
-      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
-      region: targetRegion,
-    });
+      cdk.Stack.of(this).formatArn({
+        service: 'dynamodb',
+        resource: 'table',
+        resourceName: tableName,
+        arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
+        region: targetRegion,
+      });
 
     const createTable = new tasks.CallAwsServiceCrossRegion(this, 'CreateTable', {
       service: 'dynamodb',

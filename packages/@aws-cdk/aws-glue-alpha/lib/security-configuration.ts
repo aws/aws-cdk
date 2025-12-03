@@ -1,10 +1,10 @@
+import { CfnSecurityConfiguration } from 'aws-cdk-lib/aws-glue';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as cdk from 'aws-cdk-lib/core';
 import { Lazy, Names } from 'aws-cdk-lib/core';
-import * as constructs from 'constructs';
-import { CfnSecurityConfiguration } from 'aws-cdk-lib/aws-glue';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import * as constructs from 'constructs';
 
 /**
  * Interface representing a created or an imported `SecurityConfiguration`.

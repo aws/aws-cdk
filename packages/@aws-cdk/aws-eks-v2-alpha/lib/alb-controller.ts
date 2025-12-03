@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { Cluster } from './cluster';
 import { HelmChart } from './helm-chart';
 import { ServiceAccount } from './service-account';
-import * as iam from 'aws-cdk-lib/aws-iam';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line

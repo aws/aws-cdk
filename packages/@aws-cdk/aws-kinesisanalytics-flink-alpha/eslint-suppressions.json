@@ -1,0 +1,17 @@
+{
+  "lib/application-code.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "lib/application.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 2
+    }
+  },
+  "lib/private/validation.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 7
+    }
+  }
+}

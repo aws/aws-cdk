@@ -10,7 +10,7 @@ dist
 *.snk
 *.tsbuildinfo
 tsconfig.json
-.eslintrc.js
+eslint.config.mjs
 jest.config.js
 
 # exclude cdk artifacts

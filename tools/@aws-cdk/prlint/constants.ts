@@ -15,9 +15,9 @@ export enum Exemption {
   ANALYTICS_METADATA_CHANGE = 'pr-linter/analytics-metadata-change',
   REQUEST_CLARIFICATION = 'pr/reviewer-clarification-requested',
   REQUEST_EXEMPTION = 'pr-linter/exemption-requested',
-  CODECOV = "pr-linter/exempt-codecov",
-  SIZE_CHECK = "pr-linter/exempt-size-check",
-  PR_FORMATTING = "pr-linter/exempt-pr-formatting",
+  CODECOV = 'pr-linter/exempt-codecov',
+  SIZE_CHECK = 'pr-linter/exempt-size-check',
+  PR_FORMATTING = 'pr-linter/exempt-pr-formatting',
 }
 
 const CODECOV_PREFIX = 'codecov/';
@@ -28,5 +28,5 @@ export const CODECOV_CHECKS = [
   `${CODECOV_PREFIX}patch/packages/aws-cdk-lib/core`,
   `${CODECOV_PREFIX}project`,
   `${CODECOV_PREFIX}project/packages/aws-cdk`,
-  `${CODECOV_PREFIX}project/packages/aws-cdk-lib/core`
+  `${CODECOV_PREFIX}project/packages/aws-cdk-lib/core`,
 ];

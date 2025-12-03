@@ -1,8 +1,8 @@
 import * as path from 'path';
-import * as assets from 'aws-cdk-lib/aws-ecr-assets';
-import * as cdk from 'aws-cdk-lib';
-import { Service, Source } from '../lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
+import * as assets from 'aws-cdk-lib/aws-ecr-assets';
+import { Service, Source } from '../lib';
 
 const app = new cdk.App();
 

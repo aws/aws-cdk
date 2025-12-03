@@ -1,7 +1,7 @@
 /* eslint-disable @cdklabs/no-throw-default-error */
+import { CfnBrowserCustom, CfnCodeInterpreterCustom, CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 // Internal Libs
-import { CfnBrowserCustom, CfnCodeInterpreterCustom, CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { Construct } from 'constructs';
 
 /**

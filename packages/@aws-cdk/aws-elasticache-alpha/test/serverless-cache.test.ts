@@ -1,7 +1,7 @@
+import { Stack, Size } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { Stack, Size } from 'aws-cdk-lib';
 import { CacheEngine, ServerlessCache, UserEngine, UserGroup } from '../lib';
 
 describe('serverless cache', () => {

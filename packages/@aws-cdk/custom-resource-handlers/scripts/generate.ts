@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import * as fs from 'fs';
 import * as path from 'path';
 import * as esbuild from 'esbuild';

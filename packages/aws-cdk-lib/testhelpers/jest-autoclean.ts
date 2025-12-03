@@ -11,5 +11,4 @@
  */
 import { CloudAssembly } from '../cx-api';
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
 afterAll(CloudAssembly.cleanupTemporaryDirectories);

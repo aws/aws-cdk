@@ -1,5 +1,5 @@
-import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
 import * as glue from '../lib';
 
 test('a data quality ruleset', () => {

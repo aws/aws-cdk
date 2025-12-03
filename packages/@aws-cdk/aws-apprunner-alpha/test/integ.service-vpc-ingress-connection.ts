@@ -1,8 +1,8 @@
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Service, Source } from '../lib';
 import { VpcIngressConnection } from '../lib/vpc-ingress-connection';
-import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 

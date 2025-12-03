@@ -1,12 +1,12 @@
+import * as gamelift from 'aws-cdk-lib/aws-gamelift';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { IGameSessionQueue } from './game-session-queue';
-import * as gamelift from 'aws-cdk-lib/aws-gamelift';
-import { MatchmakingConfigurationProps, GameProperty, MatchmakingConfigurationBase, IMatchmakingConfiguration } from './matchmaking-configuration';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { IGameSessionQueue } from './game-session-queue';
+import { MatchmakingConfigurationProps, GameProperty, MatchmakingConfigurationBase, IMatchmakingConfiguration } from './matchmaking-configuration';
 
 /**
  * Properties for a new queued matchmaking configuration

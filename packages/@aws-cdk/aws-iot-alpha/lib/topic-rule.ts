@@ -1,10 +1,10 @@
+import { CfnTopicRule } from 'aws-cdk-lib/aws-iot';
 import { ArnFormat, Resource, Stack, IResource, Lazy } from 'aws-cdk-lib/core';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IAction } from './action';
 import { IotSql } from './iot-sql';
-import { CfnTopicRule } from 'aws-cdk-lib/aws-iot';
-import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents an AWS IoT Rule

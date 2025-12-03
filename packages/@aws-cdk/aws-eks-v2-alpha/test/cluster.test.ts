@@ -1,10 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as cdk8s from 'cdk8s';
-import { Construct } from 'constructs';
-import * as YAML from 'yaml';
 import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
-import { testFixture, testFixtureNoVpc } from './util';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as asg from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
@@ -12,12 +8,14 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib/core';
+import * as cdk8s from 'cdk8s';
+import { Construct } from 'constructs';
+import * as YAML from 'yaml';
+import { testFixture, testFixtureNoVpc } from './util';
 import * as eks from '../lib';
 import { HelmChart } from '../lib';
 import { KubectlProvider } from '../lib/kubectl-provider';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
-
-/* eslint-disable max-len */
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_33;
 const commonProps = {

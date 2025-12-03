@@ -1,9 +1,9 @@
 /// !cdk-integ *
 
 import * as path from 'path';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
-import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
+import { App, Stack } from 'aws-cdk-lib';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as lambda from '../lib';
 
 const app = new App({

@@ -17,6 +17,6 @@
     "isolatedModules": true,
     "incremental": true
   },
-  "exclude": ["test/enrichments/**"],
+  "exclude": ["test/enrichments/**", "**/*.d.ts"],
   "include": ["**/*.ts"]
 }

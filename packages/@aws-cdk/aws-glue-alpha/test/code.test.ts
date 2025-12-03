@@ -1,10 +1,10 @@
 import * as path from 'path';
-import { Template, Match } from 'aws-cdk-lib/assertions';
-import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
+import { Template, Match } from 'aws-cdk-lib/assertions';
+import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import * as glue from '../lib';
-import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
 describe('Code', () => {
   let stack: cdk.Stack;

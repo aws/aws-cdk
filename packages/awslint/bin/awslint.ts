@@ -1,4 +1,4 @@
-/* eslint-disable max-len */
+
 /* eslint-disable no-console */
 import * as child_process from 'child_process';
 import * as path from 'path';
@@ -103,7 +103,6 @@ async function main() {
       mergeOptions(args, pkg.awslint);
     }
   }
-
 
   if (args.debug) {
     console.error('command: ' + command);
@@ -215,7 +214,6 @@ async function main() {
   throw new Error(`Invalid command: ${command}`);
 
   async function shouldCompile() {
-
     // if --compile is explicitly enabled then just compile always
     if (args.compile === true) {
       return true;
@@ -234,7 +232,6 @@ async function main() {
     // compile!
     return true;
   }
-
 }
 
 main().catch(e => {
@@ -267,7 +264,6 @@ function mergeOptions(dest: any, pkg?: any) {
   if (!pkg) { return; } // no options in package.json
 
   for (const [key, value] of Object.entries(pkg)) {
-
     // if this is an array option, then add values to destination
     if (Array.isArray(value)) {
       const arr = dest[key] || [];

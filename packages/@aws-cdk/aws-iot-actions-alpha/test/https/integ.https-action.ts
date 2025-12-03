@@ -1,7 +1,7 @@
 import * as iot from '@aws-cdk/aws-iot-alpha';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as actions from '../../lib';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 

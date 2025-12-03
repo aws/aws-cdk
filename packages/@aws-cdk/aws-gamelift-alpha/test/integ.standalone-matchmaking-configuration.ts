@@ -1,7 +1,7 @@
 import * as path from 'path';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { CfnOutput } from 'aws-cdk-lib';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as gamelift from '../lib';
 

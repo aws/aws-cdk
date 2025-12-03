@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { App, Stack, StackProps } from 'aws-cdk-lib';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import * as route53resolver from '../lib';
 

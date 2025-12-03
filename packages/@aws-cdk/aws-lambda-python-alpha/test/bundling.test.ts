@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/unbound-method */
+
 import * as fs from 'fs';
 import * as path from 'path';
-import { Architecture, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { BundlingFileAccess, DockerImage } from 'aws-cdk-lib';
+import { Architecture, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Bundling } from '../lib/bundling';
 
 jest.spyOn(Code, 'fromAsset');

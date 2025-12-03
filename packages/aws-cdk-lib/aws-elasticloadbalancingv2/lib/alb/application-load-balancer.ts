@@ -1258,13 +1258,13 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
 
   public get loadBalancerCanonicalHostedZoneId(): string {
     if (this.props.loadBalancerCanonicalHostedZoneId) { return this.props.loadBalancerCanonicalHostedZoneId; }
-    // eslint-disable-next-line max-len
+
     throw new ValidationError(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`, this);
   }
 
   public get loadBalancerDnsName(): string {
     if (this.props.loadBalancerDnsName) { return this.props.loadBalancerDnsName; }
-    // eslint-disable-next-line max-len
+
     throw new ValidationError(`'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`, this);
   }
 }
