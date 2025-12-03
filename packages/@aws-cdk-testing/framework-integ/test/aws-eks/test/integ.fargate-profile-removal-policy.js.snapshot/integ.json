@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-eks-fargate-profile-removal-policy/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-fargate-profile-removal-policy-test"
+      ],
+      "diffAssets": false,
+      "assertionStack": "aws-cdk-eks-fargate-profile-removal-policy/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksfargateprofileremovalpolicyDefaultTestDeployAssert850A3ED6"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-eks-k8s-manifest-removal-policy/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-k8s-manifest-removal-policy-test"
+      ],
+      "diffAssets": false,
+      "assertionStack": "aws-cdk-eks-k8s-manifest-removal-policy/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksk8smanifestremovalpolicyDefaultTestDeployAssertE90B8EE6"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

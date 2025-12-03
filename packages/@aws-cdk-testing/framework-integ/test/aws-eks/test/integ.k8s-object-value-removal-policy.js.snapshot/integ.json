@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-eks-k8s-object-value-removal-policy/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-k8s-object-value-removal-policy-test"
+      ],
+      "diffAssets": false,
+      "assertionStack": "aws-cdk-eks-k8s-object-value-removal-policy/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksk8sobjectvalueremovalpolicyDefaultTestDeployAssert2EDDA9D2"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

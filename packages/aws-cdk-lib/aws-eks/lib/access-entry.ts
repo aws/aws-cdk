@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { CfnAccessEntry } from './eks.generated';
 import {
-  Resource, IResource, Aws, Lazy,
+  Resource, IResource, Aws, Lazy, RemovalPolicy,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -287,6 +287,20 @@ export interface AccessEntryProps {
    * The Amazon Resource Name (ARN) of the principal (user or role) to associate the access entry with.
    */
   readonly principal: string;
+
+  /**
+   * The removal policy applied to the access entry.
+   *
+   * The removal policy controls what happens to the resource if it stops being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -352,6 +366,10 @@ export class AccessEntry extends Resource implements IAccessEntry {
       }),
 
     });
+
+    if (props.removalPolicy) {
+      resource.applyRemovalPolicy(props.removalPolicy);
+    }
     this.accessEntryName = this.getResourceNameAttribute(resource.ref);
     this.accessEntryArn = this.getResourceArnAttribute(resource.attrAccessEntryArn, {
       service: 'eks',
