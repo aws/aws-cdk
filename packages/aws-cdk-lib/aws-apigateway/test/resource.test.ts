@@ -3,7 +3,7 @@ import { Stack } from '../../core';
 import { APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID } from '../../cx-api';
 import * as apigw from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('resource', () => {
   test('ProxyResource defines a "{proxy+}" resource with ANY method', () => {

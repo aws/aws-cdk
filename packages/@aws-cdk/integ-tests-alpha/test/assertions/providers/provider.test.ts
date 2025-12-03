@@ -1,7 +1,7 @@
-import { Template } from 'aws-cdk-lib/assertions';
 import { Stack } from 'aws-cdk-lib';
-import { AssertionsProvider } from '../../../lib/assertions';
+import { Template } from 'aws-cdk-lib/assertions';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { AssertionsProvider } from '../../../lib/assertions';
 
 let stack: Stack;
 beforeEach(() => {

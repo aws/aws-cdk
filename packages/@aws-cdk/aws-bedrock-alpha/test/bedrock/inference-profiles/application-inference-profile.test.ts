@@ -1,8 +1,8 @@
+import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { App } from 'aws-cdk-lib/core';
 import * as core from 'aws-cdk-lib/core';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as bedrock from 'aws-cdk-lib/aws-bedrock';
-import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as bedrockAlpha from '../../../bedrock';
 
 describe('ApplicationInferenceProfile', () => {

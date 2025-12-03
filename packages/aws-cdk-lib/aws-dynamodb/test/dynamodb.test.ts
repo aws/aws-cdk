@@ -41,7 +41,7 @@ jest.mock('../../custom-resources', () => {
   };
 });
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 // CDK parameters
 const CONSTRUCT_NAME = 'MyTable';
