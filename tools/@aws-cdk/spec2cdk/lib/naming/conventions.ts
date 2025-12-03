@@ -119,7 +119,7 @@ export function referencePropertyName(propName: string, resourceName: string) {
   propName = propName.split('/').pop() ?? propName;
 
   if (['arn', 'id', 'name', 'url'].includes(propName.toLowerCase())) {
-    return `${camelcase(resourceName)}${propName.charAt(0).toUpperCase()}${propName.slice(1)}`;
+    return `${camelcase(resourceName)}${propName.charAt(0).toUpperCase()}${propName.slice(1).toLowerCase()}`;
   }
 
   return camelcase(propName);

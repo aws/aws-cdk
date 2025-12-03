@@ -1,6 +1,6 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct } from 'constructs';
-import { Annotations, Match, Template } from '../../assertions';
+import { Annotations, Capture, Match, Template } from '../../assertions';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
@@ -2602,13 +2602,40 @@ describe('grants', () => {
           {
             'Action': [
               'dynamodb:BatchGetItem',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
               'dynamodb:ConditionCheckItem',
               'dynamodb:DescribeTable',
+            ],
+            'Effect': 'Allow',
+            'Resource': [
+              {
+                'Fn::GetAtt': [
+                  'mytable0324D45C',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'mytable0324D45C',
+                        'Arn',
+                      ],
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            'Action': [
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
             ],
             'Effect': 'Allow',
             'Resource': [
@@ -2750,13 +2777,19 @@ describe('import', () => {
           {
             'Action': [
               'dynamodb:BatchGetItem',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
               'dynamodb:ConditionCheckItem',
               'dynamodb:DescribeTable',
+            ],
+            'Effect': 'Allow',
+            'Resource': tableArn,
+          },
+          {
+            'Action': [
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
             ],
             'Effect': 'Allow',
             'Resource': tableArn,
@@ -2790,8 +2823,6 @@ describe('import', () => {
           {
             'Action': [
               'dynamodb:BatchGetItem',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
@@ -2801,6 +2832,33 @@ describe('import', () => {
               'dynamodb:UpdateItem',
               'dynamodb:DeleteItem',
               'dynamodb:DescribeTable',
+            ],
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    'Ref': 'AWS::Partition',
+                  },
+                  ':dynamodb:',
+                  {
+                    'Ref': 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    'Ref': 'AWS::AccountId',
+                  },
+                  ':table/MyTable',
+                ],
+              ],
+            },
+          },
+          {
+            'Action': [
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
             ],
             'Effect': 'Allow',
             'Resource': {
@@ -2986,13 +3044,41 @@ describe('import', () => {
             {
               Action: [
                 'dynamodb:BatchGetItem',
-                'dynamodb:GetRecords',
-                'dynamodb:GetShardIterator',
                 'dynamodb:Query',
                 'dynamodb:GetItem',
                 'dynamodb:Scan',
                 'dynamodb:ConditionCheckItem',
                 'dynamodb:DescribeTable',
+              ],
+              Resource: [
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dynamodb:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':table/MyTableName',
+                  ]],
+                },
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dynamodb:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':table/MyTableName/index/*',
+                  ]],
+                },
+              ],
+            },
+            {
+              Action: [
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
               ],
               Resource: [
                 {
@@ -3044,13 +3130,41 @@ describe('import', () => {
             {
               Action: [
                 'dynamodb:BatchGetItem',
-                'dynamodb:GetRecords',
-                'dynamodb:GetShardIterator',
                 'dynamodb:Query',
                 'dynamodb:GetItem',
                 'dynamodb:Scan',
                 'dynamodb:ConditionCheckItem',
                 'dynamodb:DescribeTable',
+              ],
+              Resource: [
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dynamodb:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':table/MyTableName',
+                  ]],
+                },
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dynamodb:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':table/MyTableName/index/*',
+                  ]],
+                },
+              ],
+            },
+            {
+              Action: [
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
               ],
               Resource: [
                 {
@@ -3219,13 +3333,118 @@ describe('global', () => {
           {
             Action: [
               'dynamodb:BatchGetItem',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
               'dynamodb:ConditionCheckItem',
               'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'TableCD117FA1',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-west-2:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-central-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'TableCD117FA1',
+                        'Arn',
+                      ],
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-west-2:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-central-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: [
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
             ],
             Effect: 'Allow',
             Resource: [
@@ -3356,8 +3575,6 @@ describe('global', () => {
             Match.objectLike({
               Action: [
                 'dynamodb:BatchGetItem',
-                'dynamodb:GetRecords',
-                'dynamodb:GetShardIterator',
                 'dynamodb:Query',
                 'dynamodb:GetItem',
                 'dynamodb:Scan',
@@ -3413,13 +3630,116 @@ describe('global', () => {
           {
             Action: [
               'dynamodb:BatchGetItem',
-              'dynamodb:GetRecords',
-              'dynamodb:GetShardIterator',
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
               'dynamodb:ConditionCheckItem',
               'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:us-east-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-west-2:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-central-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:us-east-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table/index/*',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-west-2:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table/index/*',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-central-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table/index/*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: [
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
             ],
             Effect: 'Allow',
             Resource: [
@@ -3850,22 +4170,12 @@ function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal,
   invocation(user, table);
 
   // THEN
-  const action = expectedActions.length > 1 ? expectedActions.map(a => `dynamodb:${a}`) : `dynamodb:${expectedActions[0]}`;
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+  const template = Template.fromStack(stack);
+  const capture = new Capture();
+
+  template.hasResourceProperties('AWS::IAM::Policy', {
     'PolicyDocument': {
-      'Statement': [
-        {
-          'Action': action,
-          'Effect': 'Allow',
-          'Resource': {
-            'Fn::GetAtt': [
-              'mytable0324D45C',
-              'Arn',
-            ],
-          },
-        },
-      ],
-      'Version': '2012-10-17',
+      'Statement': capture,
     },
     'PolicyName': 'userDefaultPolicy083DF682',
     'Users': [
@@ -3874,6 +4184,27 @@ function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal,
       },
     ],
   });
+
+  // Collect all actions from statements that target the table
+  const tableResource = { 'Fn::GetAtt': ['mytable0324D45C', 'Arn'] };
+  const allActions: string[] = [];
+
+  for (const statement of capture.asArray()) {
+    if (statement.Effect === 'Allow' &&
+        JSON.stringify(statement.Resource) === JSON.stringify(tableResource)) {
+      if (Array.isArray(statement.Action)) {
+        allActions.push(...statement.Action);
+      } else {
+        allActions.push(statement.Action);
+      }
+    }
+  }
+
+  // Check that all expected actions are present
+  const expectedDynamoActions = expectedActions.map(a => `dynamodb:${a}`);
+  for (const expectedAction of expectedDynamoActions) {
+    expect(allActions).toContain(expectedAction);
+  }
 }
 
 describe('deletionProtectionEnabled', () => {
