@@ -51,6 +51,7 @@ module.exports = function makeRules(/** @type{string} */ directory) {
       {
         devDependencies: [ // Only allow importing devDependencies from:
           '**/build-tools/**', // --> Build tools
+          '**/scripts/**', // --> Build tools
           '**/test/**', // --> Unit tests
         ],
         optionalDependencies: false, // Disallow importing optional dependencies (those shouldn't be in use in the project)

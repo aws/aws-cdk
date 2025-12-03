@@ -1,3 +1,4 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 import { generateAll as generateCfnPropsMixins } from './spec2mixins';
 import { generateAll as generateLogsDeliveryMixins } from './spec2logs';
 import { generateAll as generateEvents } from './spec2eventbridge';
