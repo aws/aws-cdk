@@ -349,7 +349,6 @@ export class ResourceDecider {
  * Utility function to ensure exhaustive checks for never type.
  */
 function assertNever(x: never): never {
-  // eslint-disable-next-line @cdklabs/no-throw-default-error
   throw new Error(`Unexpected object: ${x}`);
 }
 

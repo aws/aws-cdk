@@ -11,15 +11,14 @@
  *  and limitations under the License.
  */
 
+import { Stack, Token } from 'aws-cdk-lib';
+import { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as assets from 'aws-cdk-lib/aws-ecr-assets';
-import { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { Runtime } from './runtime';
 import { ValidationError } from './validation-helpers';
-import { Location } from 'aws-cdk-lib/aws-s3';
-import { Stack, Token } from 'aws-cdk-lib';
-import * as s3 from 'aws-cdk-lib/aws-s3';
 
 /**
  * Bedrock AgentCore runtime environment for code execution
@@ -71,7 +70,7 @@ export abstract class AgentRuntimeArtifact {
    * @param runtime The runtime environment for executing the code. Allowed values: PYTHON_3_10 | PYTHON_3_11 | PYTHON_3_12 | PYTHON_3_13
    * @param entrypoint The entry point for the code execution, specifying the function or method that should be invoked when the code runs.
    */
-  public static fromS3(s3Location: Location, runtime: AgentCoreRuntime, entrypoint: string[]): AgentRuntimeArtifact {
+  public static fromS3(s3Location: s3.Location, runtime: AgentCoreRuntime, entrypoint: string[]): AgentRuntimeArtifact {
     return new S3Image(s3Location, runtime, entrypoint);
   }
 
@@ -165,7 +164,7 @@ class AssetImage extends AgentRuntimeArtifact {
 class S3Image extends AgentRuntimeArtifact {
   private bound = false;
 
-  constructor(private readonly s3Location: Location, private readonly runtime: AgentCoreRuntime, private readonly entrypoint: string[]) {
+  constructor(private readonly s3Location: s3.Location, private readonly runtime: AgentCoreRuntime, private readonly entrypoint: string[]) {
     super();
   }
 

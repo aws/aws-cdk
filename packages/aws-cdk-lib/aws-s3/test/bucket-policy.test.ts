@@ -5,7 +5,7 @@ import * as s3 from '../lib';
 import { CfnBucketPolicy } from '../lib';
 
 // to make it easy to copy & paste from output:
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('bucket policy', () => {
   test('default properties', () => {

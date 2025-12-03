@@ -1,5 +1,4 @@
-/* eslint-disable max-len */
-/* eslint-disable no-console */
+
 import * as url from 'url';
 import { httpRequest } from './outbound';
 import { log, withRetries } from './util';
