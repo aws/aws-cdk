@@ -5,6 +5,10 @@
   "private": true,
   "main": "index.js",
   "description": "ESlint config for this repository",
+  "scripts": {
+      "build": "true",
+      "test": "true"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/aws/aws-cdk"
