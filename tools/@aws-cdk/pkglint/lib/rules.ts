@@ -1546,19 +1546,17 @@ export class EslintSetup extends ValidationRule {
   public readonly name = 'package-info/eslint';
 
   public validate(pkg: PackageJson) {
-    const eslintrcFilename = 'eslint.config.js';
+    const eslintrcFilename = 'eslint.config.mjs';
     if (!fs.existsSync(eslintrcFilename)) {
       pkg.report({
         ruleName: this.name,
         message: `There must be a ${eslintrcFilename} file at the root of the package`,
         fix: () => {
-          const rootRelative = path.relative(pkg.packageRoot, repoRoot(pkg.packageRoot));
           fs.writeFileSync(
             eslintrcFilename,
             [
-              `const baseConfig = require('${rootRelative}/tools/@aws-cdk/cdk-build-tools/config/eslintrc');`,
-              "baseConfig.parserOptions.project = __dirname + '/tsconfig.json';",
-              'module.exports = baseConfig;',
+              `import { makeConfig } from '@aws-cdk/eslint-config';`,
+              `export default makeConfig('tsconfig.json');`
             ].join('\n') + '\n',
           );
         },
