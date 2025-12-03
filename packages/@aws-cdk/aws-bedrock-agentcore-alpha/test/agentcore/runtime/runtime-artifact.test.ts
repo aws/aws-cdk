@@ -1,5 +1,7 @@
+import * as path from 'path';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as cdk from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
 import { AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
 import { Runtime } from '../../../lib/runtime/runtime';
 
@@ -42,7 +44,7 @@ describe('AgentRuntimeArtifact tests', () => {
   test('Should use default options when not specified for asset', () => {
     // Call without specifying options to use default {}
     // Use the testArtifact directory that exists in tests
-    const artifact = AgentRuntimeArtifact.fromAsset('test/agentcore/runtime/testArtifact');
+    const artifact = AgentRuntimeArtifact.fromAsset(path.join(__dirname, 'testArtifact'));
 
     const runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
@@ -58,7 +60,7 @@ describe('AgentRuntimeArtifact tests', () => {
   });
 
   test('Should throw error if _render is called before bind for AssetImage', () => {
-    const artifact = AgentRuntimeArtifact.fromAsset('test/agentcore/runtime/testArtifact');
+    const artifact = AgentRuntimeArtifact.fromAsset(path.join(__dirname, 'testArtifact'));
 
     // Try to render without binding
     expect(() => {
@@ -92,7 +94,7 @@ describe('AgentRuntimeArtifact tests', () => {
   });
 
   test('Should only bind once for asset image', () => {
-    const artifact = AgentRuntimeArtifact.fromAsset('test/agentcore/runtime/testArtifact', {
+    const artifact = AgentRuntimeArtifact.fromAsset(path.join(__dirname, 'testArtifact'), {
       buildArgs: {
         TEST: 'value',
       },
@@ -113,5 +115,61 @@ describe('AgentRuntimeArtifact tests', () => {
 
     // Should return the same URI
     expect(rendered1.containerUri).toBe(rendered2.containerUri);
+  });
+
+  test('Should use static construct ID for asset image regardless of directory', () => {
+    // Create two separate stacks to test that the construct ID is always 'AgentRuntimeArtifact'
+    const stack1 = new cdk.Stack(app, 'test-stack-1', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const stack2 = new cdk.Stack(app, 'test-stack-2', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const testArtifactPath = path.join(__dirname, 'testArtifact');
+
+    const runtime1 = new Runtime(stack1, 'test-runtime', {
+      runtimeName: 'test_runtime_1',
+      agentRuntimeArtifact: AgentRuntimeArtifact.fromAsset(testArtifactPath),
+    });
+    const runtime2 = new Runtime(stack2, 'test-runtime', {
+      runtimeName: 'test_runtime_2',
+      agentRuntimeArtifact: AgentRuntimeArtifact.fromAsset(testArtifactPath),
+    });
+
+    // Both stacks should synthesize successfully with the static construct ID
+    const template1 = Template.fromStack(stack1);
+    const template2 = Template.fromStack(stack2);
+
+    template1.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      AgentRuntimeName: 'test_runtime_1',
+    });
+    template2.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      AgentRuntimeName: 'test_runtime_2',
+    });
+
+    // Verify both runtimes have the same static construct ID for the asset
+    const assetNode1 = runtime1.node.findChild('AgentRuntimeArtifact');
+    const assetNode2 = runtime2.node.findChild('AgentRuntimeArtifact');
+    expect(assetNode1.node.id).toBe('AgentRuntimeArtifact');
+    expect(assetNode1.node.id).toEqual(assetNode2.node.id);
+  });
+
+  test('internal: should throw when binding different asset artifacts to same scope', () => {
+    const testArtifactPath = path.join(__dirname, 'testArtifact');
+
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: AgentRuntimeArtifact.fromAsset(testArtifactPath),
+    });
+
+    // Synthesize to trigger lazy asset creation
+    Template.fromStack(stack);
+
+    const artifact2 = AgentRuntimeArtifact.fromAsset(testArtifactPath);
+
+    expect(() => {
+      artifact2.bind(runtime, runtime);
+    }).toThrow(/There is already a Construct with name 'AgentRuntimeArtifact'/);
   });
 });
