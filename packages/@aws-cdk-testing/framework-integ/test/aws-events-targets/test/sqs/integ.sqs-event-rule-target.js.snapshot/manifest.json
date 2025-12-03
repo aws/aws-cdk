@@ -78,19 +78,28 @@
         "/aws-cdk-sqs-event-target/StandardQueue/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StandardQueue4A8B3C4D"
+            "data": "StandardQueue4A8B3C4D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/aws-cdk-sqs-event-target/StandardQueue/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StandardQueuePolicyFB772D09"
+            "data": "StandardQueuePolicyFB772D09",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/aws-cdk-sqs-event-target/StandardQueueRule/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StandardQueueRule2E5F2E91"
+            "data": "StandardQueueRule2E5F2E91",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "/aws-cdk-sqs-event-target/BootstrapVersion": [
