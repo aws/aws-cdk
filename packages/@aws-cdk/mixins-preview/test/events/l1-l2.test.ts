@@ -1,4 +1,4 @@
-/* eslint-disable @cdklabs/no-throw-default-error */
+
 import { App, Stack } from 'aws-cdk-lib';
 import { CfnRule, Rule } from 'aws-cdk-lib/aws-events';
 import type { EventPattern } from 'aws-cdk-lib/aws-events';

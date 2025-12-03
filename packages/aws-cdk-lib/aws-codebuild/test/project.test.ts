@@ -7,7 +7,7 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import * as codebuild from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 test('can use filename as buildspec', () => {
   // GIVEN

@@ -1,9 +1,9 @@
-import { Construct } from 'constructs';
-import { ICluster } from './cluster';
 import { CfnAddon } from 'aws-cdk-lib/aws-eks';
 import { ArnFormat, IResource, Resource, Stack, Fn } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { ICluster } from './cluster';
 
 /**
  * Represents an Amazon EKS Add-On.

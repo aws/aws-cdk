@@ -1,3 +1,4 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 import { generateAll as generateCfnPropsMixins } from './spec2mixins';
 import { generateAll as generateLogsDeliveryMixins } from './spec2logs';
 import { generateAll as generateEvents } from './spec2eventbridge';
@@ -165,6 +166,7 @@ async function writeJsiiModuleMetadata(moduleFile: string, moduleDef: ModuleDefi
     : path.join(path.dirname(moduleFile), `.${base}.jsiirc.json`);
 
   const namespaceUc = ucfirst(namespaceLc ?? '');
+  const dotnetNamespace = join(moduleDef.dotnetPackage, '.', namespaceUc);
 
   const mixinsJsiirc = {
     targets: {
@@ -172,7 +174,8 @@ async function writeJsiiModuleMetadata(moduleFile: string, moduleDef: ModuleDefi
         package: join(moduleDef.javaPackage, '.', namespaceLc),
       },
       dotnet: {
-        package: join(moduleDef.dotnetPackage, '.', namespaceUc),
+        namespace: dotnetNamespace,
+        packageId: dotnetNamespace,
       },
       python: {
         module: join(moduleDef.pythonModuleName, '.', namespaceLc),

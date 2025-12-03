@@ -6,7 +6,7 @@ import * as cdk from '../../core';
 import * as codebuild from '../lib';
 import { ReportGroupType } from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 /* eslint-disable quotes */
 
 describe('Test Reports Groups', () => {

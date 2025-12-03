@@ -1,14 +1,14 @@
 import { EOL } from 'os';
-import { Construct } from 'constructs';
-import * as s3tables from 'aws-cdk-lib/aws-s3tables';
-import { TableBucketPolicy } from './table-bucket-policy';
-import * as perms from './permissions';
-import { validateTableBucketAttributes } from './util';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
+import * as s3tables from 'aws-cdk-lib/aws-s3tables';
 import { Resource, IResource, UnscopedValidationError, RemovalPolicy, Token } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import * as perms from './permissions';
+import { TableBucketPolicy } from './table-bucket-policy';
+import { validateTableBucketAttributes } from './util';
 
 /**
  * Interface definition for S3 Table Buckets
