@@ -1555,8 +1555,8 @@ export class EslintSetup extends ValidationRule {
           fs.writeFileSync(
             eslintrcFilename,
             [
-              `import { makeConfig } from '@aws-cdk/eslint-config';`,
-              `export default makeConfig('tsconfig.json');`
+              'import { makeConfig } from \'@aws-cdk/eslint-config\';',
+              'export default makeConfig(\'tsconfig.json\');',
             ].join('\n') + '\n',
           );
         },
