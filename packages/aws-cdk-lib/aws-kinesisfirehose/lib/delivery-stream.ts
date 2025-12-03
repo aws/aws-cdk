@@ -6,8 +6,7 @@ import { DeliveryStreamGrants } from './kinesisfirehose-grants.generated';
 import { CfnDeliveryStream, DeliveryStreamReference, IDeliveryStreamRef } from './kinesisfirehose.generated';
 import { ISource } from './source';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { Connections, IConnectable } from '../../aws-ec2/lib/connections';
-import { Peer } from '../../aws-ec2/lib/peer';
+import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
@@ -18,7 +17,7 @@ import { RegionInfo } from '../../region-info';
 /**
  * Represents an Amazon Data Firehose delivery stream.
  */
-export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, IConnectable, IDeliveryStreamRef {
+export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.IConnectable, IDeliveryStreamRef {
   /**
    * The ARN of the delivery stream.
    *
@@ -104,7 +103,7 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
   /**
    * Network connections between Amazon Data Firehose and other resources, i.e. Redshift cluster.
    */
-  public readonly connections: Connections;
+  public readonly connections: ec2.Connections;
 
   constructor(scope: Construct, id: string, props: cdk.ResourceProps = {}) {
     super(scope, id, props);
@@ -421,7 +420,7 @@ function setConnections(scope: Construct) {
 
   const cidrBlock = cfnMapping.findInMap(stack.region, 'FirehoseCidrBlock');
 
-  return new Connections({
-    peer: Peer.ipv4(cidrBlock),
+  return new ec2.Connections({
+    peer: ec2.Peer.ipv4(cidrBlock),
   });
 }

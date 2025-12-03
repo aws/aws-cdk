@@ -250,7 +250,7 @@ export abstract class FlowLogDestination {
    * @param iamRole the IAM Role for cross account log delivery
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-firehose.html
    */
-  public static toFirehose(deliveryStream: firehose.IDeliveryStream, iamRole?: iam.IRole): FlowLogDestination {
+  public static toFirehose(deliveryStream: firehose.IDeliveryStreamRef, iamRole?: iam.IRole): FlowLogDestination {
     return new FirehoseDestination({
       logDestinationType: FlowLogDestinationType.KINESIS_DATA_FIREHOSE,
       deliveryStream,
@@ -318,7 +318,7 @@ export interface FlowLogDestinationConfig {
    *
    * @default - undefined
    */
-  readonly deliveryStream?: firehose.IDeliveryStream;
+  readonly deliveryStream?: firehose.IDeliveryStreamRef;
 
   /**
    * Options for writing flow logs to a supported destination
@@ -908,7 +908,7 @@ export class FlowLog extends FlowLogBase {
   /**
    * The Amazon Data Firehose delivery stream to publish flow logs to
    */
-  public readonly deliveryStream?: firehose.IDeliveryStream;
+  public readonly deliveryStream?: firehose.IDeliveryStreamRef;
 
   constructor(scope: Construct, id: string, props: FlowLogProps) {
     super(scope, id);
@@ -922,7 +922,8 @@ export class FlowLog extends FlowLogBase {
     this.bucket = destinationConfig.s3Bucket;
     this.iamRole = destinationConfig.iamRole;
     this.keyPrefix = destinationConfig.keyPrefix;
-    this.deliveryStreamArn = destinationConfig.deliveryStream?.deliveryStreamArn ?? destinationConfig.deliveryStreamArn;
+    this.deliveryStreamArn = destinationConfig.deliveryStream?.deliveryStreamRef?.deliveryStreamArn
+      ?? destinationConfig.deliveryStreamArn;
     this.deliveryStream = destinationConfig.deliveryStream;
 
     Tags.of(this).add(NAME_TAG, props.flowLogName || this.node.path);
