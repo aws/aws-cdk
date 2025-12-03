@@ -315,7 +315,7 @@ class LogsMixin extends ClassType {
     const destinationType = init.addParameter({
       name: 'destinationType',
       type: Type.STRING,
-      documentation: 'Type of the resource logs are getting sent to',
+      documentation: 'Resource type of the delivery destination',
     });
 
     const delivery = init.addParameter({
@@ -379,11 +379,11 @@ class LogsMixin extends ClassType {
     const prefix = `${this.resource.name}Source-`;
     const newCfnDeliverySource = CDK_AWS_LOGS.CfnDeliverySource.newInstance(
       resource,
-      expr.strConcat(expr.str('CdkSource'), CDK_CORE.uniqueId(resource)),
+      expr.strConcat(expr.str('CdkSource'), $this.logType, $this.destinationType, CDK_CORE.uniqueId(resource)),
       expr.object({
         name: expr.strConcat(expr.str(prefix), CDK_CORE.uniqueResourceName(resource, expr.object({
-          maxLength: expr.binOp(expr.num(60 - (prefix.length + 1)), '-', $this.logType.prop('length')),
-        })), expr.str('-'), $this.logType),
+          maxLength: expr.binOp(expr.num(60 - (prefix.length + 2)), '-', expr.binOp($this.logType.prop('length'), '+', $this.destinationType.prop('length'))),
+        })), expr.str('-'), $this.logType, expr.str('-'), $this.destinationType),
         resourceArn: sourceArn,
         logType: $this.logType,
       }),
