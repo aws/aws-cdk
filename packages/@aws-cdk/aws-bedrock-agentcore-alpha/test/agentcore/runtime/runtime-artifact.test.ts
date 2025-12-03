@@ -117,6 +117,61 @@ describe('AgentRuntimeArtifact tests', () => {
     expect(rendered1.containerUri).toBe(rendered2.containerUri);
   });
 
+  test('Should create artifact from image URI', () => {
+    const containerUri = '123456789012.dkr.ecr.us-east-1.amazonaws.com/my-repo:v1.0.0';
+    const artifact = AgentRuntimeArtifact.fromImageUri(containerUri);
+
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: artifact,
+    });
+
+    artifact.bind(stack, runtime);
+    const rendered: any = artifact._render();
+
+    expect(rendered.containerUri).toBe(containerUri);
+  });
+
+  test('Should support CloudFormation tokens in image URI', () => {
+    const token = cdk.Fn.ref('ImageUriParameter');
+    const artifact = AgentRuntimeArtifact.fromImageUri(token);
+
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: artifact,
+    });
+
+    artifact.bind(stack, runtime);
+    const rendered: any = artifact._render();
+
+    expect(rendered.containerUri).toBe(token);
+  });
+
+  test('Should not require permissions for image URI', () => {
+    const artifact = AgentRuntimeArtifact.fromImageUri('123456789012.dkr.ecr.us-east-1.amazonaws.com/my-repo:latest');
+
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: artifact,
+    });
+
+    // Bind should not throw or require any permissions
+    expect(() => artifact.bind(stack, runtime)).not.toThrow();
+
+    const rendered: any = artifact._render();
+    expect(rendered.containerUri).toBe('123456789012.dkr.ecr.us-east-1.amazonaws.com/my-repo:latest');
+  });
+
+  test('Should reject non-ECR container URIs', () => {
+    expect(() => {
+      AgentRuntimeArtifact.fromImageUri('docker.io/myimage:latest');
+    }).toThrow(/Invalid ECR container URI format/);
+
+    expect(() => {
+      AgentRuntimeArtifact.fromImageUri('ghcr.io/owner/repo:tag');
+    }).toThrow(/Invalid ECR container URI format/);
+  });
+
   test('Should use static construct ID for asset image regardless of directory', () => {
     // Create two separate stacks to test that the construct ID is always 'AgentRuntimeArtifact'
     const stack1 = new cdk.Stack(app, 'test-stack-1', {
