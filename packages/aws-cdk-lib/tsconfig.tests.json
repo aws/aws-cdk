@@ -13,6 +13,7 @@
   "exclude": [
     "node_modules",
     ".types-compat",
+    "**/test/**/docker-*-handler/*",
     "**/*.d.ts"
   ],
   "references": [
