@@ -1,6 +1,6 @@
+import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import * as cdk from 'aws-cdk-lib';
 import * as glue from '../lib';
 
 test('throws when a security configuration has no encryption config', () => {

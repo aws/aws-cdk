@@ -6,8 +6,6 @@ import { App, CfnParameter, NestedStack, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
-/* eslint-disable @cdklabs/no-core-construct */
-
 interface MyNestedStackProps {
   readonly subscriber?: sqs.Queue;
   readonly siblingTopic?: sns.Topic; // a topic defined in a sibling nested stack

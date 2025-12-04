@@ -1,5 +1,5 @@
-import { Duration } from 'aws-cdk-lib/core';
 import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
+import { Duration } from 'aws-cdk-lib/core';
 import * as validation from './validation-helpers';
 
 /**
