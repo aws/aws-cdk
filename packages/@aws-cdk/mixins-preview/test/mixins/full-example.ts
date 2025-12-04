@@ -25,13 +25,13 @@ describe('Integration Tests', () => {
     // Apply encryption only to production buckets
     Mixins.of(
       stack,
-      ConstructSelector.byId(/.*Prod.*/),
+      ConstructSelector.byId('*Prod*'),
     ).apply(new s3Mixins.AutoDeleteObjects());
 
     // Apply versioning to all S3 buckets
     Mixins.of(
       stack,
-      ConstructSelector.resourcesOfType(s3.CfnBucket),
+      ConstructSelector.resourcesOfType(s3.CfnBucket.CFN_RESOURCE_TYPE_NAME),
     ).apply(new s3Mixins.EnableVersioning());
 
     // Verify auto-delete only applied to prod bucket

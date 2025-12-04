@@ -797,6 +797,7 @@
       "ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0_200K",
       "ANTHROPIC_CLAUDE_OPUS_4_20250514_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_1_20250805_V1_0",
+      "ANTHROPIC_CLAUDE_OPUS_4_5_20251101_V1_0",
       "ANTHROPIC_CLAUDE_INSTANT_V1",
       "ANTHROPIC_CLAUDE_INSTANT_V1_2_100K",
       "COHERE_COMMAND_V14",
@@ -2552,7 +2553,8 @@
       "OPENSEARCH_2_15",
       "OPENSEARCH_2_17",
       "OPENSEARCH_2_19",
-      "OPENSEARCH_3_1"
+      "OPENSEARCH_3_1",
+      "OPENSEARCH_3_3"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/ca-certificate.ts": {
@@ -2753,6 +2755,7 @@
       "VER_13_18",
       "VER_13_20",
       "VER_13_21",
+      "VER_13_22",
       "VER_14_3",
       "VER_14_4",
       "VER_14_5",
@@ -2768,6 +2771,7 @@
       "VER_14_15",
       "VER_14_17",
       "VER_14_18",
+      "VER_14_19",
       "VER_15_2",
       "VER_15_3",
       "VER_15_4",
@@ -2779,6 +2783,7 @@
       "VER_15_10",
       "VER_15_12",
       "VER_15_13",
+      "VER_15_14",
       "VER_16_0",
       "VER_16_1",
       "VER_16_2",
@@ -2792,10 +2797,12 @@
       "VER_16_8_LIMITLESS",
       "VER_16_9",
       "VER_16_9_LIMITLESS",
+      "VER_16_10",
       "VER_17_1",
       "VER_17_2",
       "VER_17_4",
-      "VER_17_5"
+      "VER_17_5",
+      "VER_17_6"
     ],
     "DatabaseClusterEngine": [
       "AURORA",

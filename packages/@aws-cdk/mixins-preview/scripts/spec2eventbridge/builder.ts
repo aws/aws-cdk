@@ -9,8 +9,7 @@ import { LibraryBuilder } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
 import type { LocatedModule, ServiceSubmoduleProps } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 import { BaseServiceSubmodule } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 import { eventNamespaceName } from '@aws-cdk/spec2cdk/lib/naming';
-import type { ReferenceProp } from '@aws-cdk/spec2cdk/lib/cdk/reference-props';
-import { getReferenceProps } from '@aws-cdk/spec2cdk/lib/cdk/reference-props';
+import { ResourceReference, type ReferenceProp } from '@aws-cdk/spec2cdk/lib/cdk/reference-props';
 import { log } from '@aws-cdk/spec2cdk/lib/util';
 
 /**
@@ -136,7 +135,7 @@ class EventBridgeEventsClass extends ClassType {
 
     this.refInterface = Type.fromName(constructLibModule, naming.referenceInterfaceName(resource.name));
     this.referenceName = naming.referenceInterfaceAttributeName(resource.name);
-    this.referenceProps = getReferenceProps(resource);
+    this.referenceProps = new ResourceReference(resource).referenceProps;
   }
 
   public build() {
@@ -179,6 +178,7 @@ class EventBridgeEventsClass extends ClassType {
     eventNsName,
     event,
     typeDef,
+    addMetadata,
   }: {
     /** The interface or struct to add properties to */
     target: InterfaceType | StructType;
@@ -194,6 +194,7 @@ class EventBridgeEventsClass extends ClassType {
     event: Event;
     /** Type definition for resource field identification */
     typeDef: TypeDefinition;
+    addMetadata: boolean;
   }): FreeFunction {
     const propertyMappings = new Map<string, { original: string; type: Type; resolver?: Expression }>();
     const module = Module.of(this);
@@ -225,6 +226,18 @@ class EventBridgeEventsClass extends ClassType {
           summary: propSpec.documentation || `${propName} property`,
           remarks: `Specify an array of string values to match this event if the actual value of ${propName} is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.`,
           default: defaultDoc,
+        },
+      });
+    }
+    if (addMetadata) {
+      target.addProperty({
+        name: 'eventMetadata',
+        type: CDK_CORE.AWSEventMetadataProps,
+        optional: true,
+        immutable: true,
+        docs: {
+          summary: 'EventBridge event metadata',
+          default: '-',
         },
       });
     }
@@ -329,6 +342,7 @@ class EventBridgeEventsClass extends ClassType {
               eventNsName,
               event,
               typeDef,
+              addMetadata: false,
             });
           }
         };
@@ -364,10 +378,10 @@ class EventBridgeEventsClass extends ClassType {
 
         // Create detail interface with event properties
         const detailInterface = new InterfaceType(eventNamespace, {
-          name: `${namespaceName}Detail`,
+          name: `${namespaceName}Props`,
           export: true,
           docs: {
-            summary: `Detail type for ${this.resource.name} ${event.name} event`,
+            summary: `Props type for ${this.resource.name} ${event.name} event`,
           },
         });
 
@@ -380,26 +394,7 @@ class EventBridgeEventsClass extends ClassType {
           eventNsName: namespaceName,
           event,
           typeDef: rootProperty,
-        });
-
-        // Create pattern props interface extending detail with metadata
-        const propInterface = new InterfaceType(eventNamespace, {
-          name: 'PatternProps',
-          export: true,
-          extends: [detailInterface.type],
-          docs: {
-            summary: `Properties for ${this.resource.name} ${event.name} event pattern`,
-          },
-        });
-        propInterface.addProperty({
-          name: 'eventMetadata',
-          type: CDK_CORE.AWSEventMetadataProps,
-          optional: true,
-          immutable: true,
-          docs: {
-            summary: 'EventBridge event metadata',
-            default: '-',
-          },
+          addMetadata: true,
         });
 
         // Create event pattern method that returns events.EventPattern
@@ -411,27 +406,21 @@ class EventBridgeEventsClass extends ClassType {
             summary: `EventBridge event pattern for ${this.resource.name} ${event.detailType}`,
           },
         });
-        const eventPatternMethodParam = eventPatternMethod.addParameter({
+        eventPatternMethod.addParameter({
           name: 'options',
-          type: propInterface.type,
+          type: detailInterface.type,
           optional: true,
         });
 
-        const eventMetadata = expr.ident('eventMetadata');
-
         eventPatternMethod.addBody(
-          stmt.constVar(
-            expr.destructuringObject(eventMetadata, expr.directCode('...obj')),
-            expr.binOp(expr.ident(eventPatternMethodParam.spec.name), '||', expr.lit({})),
-          ),
           stmt.ret(
             expr.object({
               source: expr.list([expr.lit(event.source)]),
               detailType: expr.list([expr.lit(event.detailType)]),
-              detail: expr.ident(converterFunction.name).call(expr.ident('obj'), expr.this_().prop(this.referenceName)),
-              version: expr.directCode('eventMetadata?.version'),
-              resources: expr.directCode('eventMetadata?.resources'),
-              region: expr.directCode('eventMetadata?.region'),
+              detail: expr.ident(converterFunction.name).call(expr.ident('options'), expr.this_().prop(this.referenceName)),
+              version: expr.directCode('options?.eventMetadata?.version'),
+              resources: expr.directCode('options?.eventMetadata?.resources'),
+              region: expr.directCode('options?.eventMetadata?.region'),
             }),
           ),
         );
