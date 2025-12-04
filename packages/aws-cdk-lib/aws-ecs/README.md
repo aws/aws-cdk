@@ -1675,6 +1675,12 @@ declare const vpc: ec2.Vpc;
 const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
 
 const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
+<<<<<<< HEAD
+=======
+  infrastructureRole,
+  capacityOptionType: ecs.CapacityOptionType.SPOT,  // Optionally specify whether capacity should be ON_DEMAND or SPOT
+  ec2InstanceProfile: instanceProfile,
+>>>>>>> 0c4467efa0 (feat(ecs): add capacityOptionType (SPOT) to ManagedInstances config)
   subnets: vpc.privateSubnets,
   instanceRequirements: {
     vCpuCountMin: 1,
