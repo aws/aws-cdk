@@ -1,6 +1,6 @@
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import { App, Stack } from 'aws-cdk-lib';
 import * as ivs from '../lib';
-import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new App();
 

@@ -5,7 +5,7 @@ import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import { LogRetention, RetentionDays } from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('log retention', () => {
   test('log retention construct', () => {
