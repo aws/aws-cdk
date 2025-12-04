@@ -46,12 +46,12 @@ async function main() {
 
   if (options.pre) {
     const commands = options.pre.join(' && ');
-    await shell([commands], { timers, env });
+    await shell([commands], { timers, env, traceName: `pre,${options.currentPackageName}` });
   }
 
   const gen = genScript();
   if (args.gen && gen) {
-    await shell([gen], { timers, env });
+    await shell([gen], { timers, env, traceName: `gen,${options.currentPackageName}` });
   }
 
   const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc };
@@ -62,7 +62,7 @@ async function main() {
 
   if (options.post) {
     const commands = options.post.join(' && ');
-    await shell([commands], { timers, env });
+    await shell([commands], { timers, env, traceName: `post,${options.currentPackageName}` });
   }
 }
 
