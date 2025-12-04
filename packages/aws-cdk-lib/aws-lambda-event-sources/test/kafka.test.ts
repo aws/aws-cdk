@@ -603,7 +603,7 @@ describe('KafkaEventSource', () => {
       const clusterArn = 'some-arn';
       const kafkaTopic = 'some-topic';
       const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
-      const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
+      new sources.S3OnFailureDestination(bucket);
 
       testLambdaFunction.addEventSource(new sources.ManagedKafkaEventSource({
         clusterArn,
@@ -2790,7 +2790,7 @@ describe('backwards compatibility', () => {
     test('no breaking changes to existing API surface', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      const fn = new TestFunction(stack, 'Fn');
+      new TestFunction(stack, 'Fn');
       const clusterArn = 'some-arn';
       const kafkaTopic = 'some-topic';
 
@@ -3021,7 +3021,7 @@ describe('KafkaDlq CloudFormation Template Generation', () => {
         onFailure: kafkaDlq,
         batchSize: 100,
         maxBatchingWindow: cdk.Duration.seconds(10),
-        parallelizationFactor: 2,
+        // parallelizationFactor: 2,
         filters: [
           lambda.FilterCriteria.filter({
             stringEquals: lambda.FilterRule.isEqual('test'),
@@ -3118,7 +3118,7 @@ describe('template synthesis with various configurations', () => {
   test('CDK synthesis with complex topic names', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const fn = new TestFunction(stack, 'Fn');
+    new TestFunction(stack, 'Fn');
     const clusterArn = 'arn:aws:kafka:us-east-1:123456789012:cluster/test-cluster';
     const kafkaTopic = 'test-topic';
 
@@ -3221,7 +3221,7 @@ describe('template synthesis with various configurations', () => {
       onFailure: kafkaDlq,
       batchSize: 200,
       maxBatchingWindow: cdk.Duration.seconds(15),
-      parallelizationFactor: 5,
+      // parallelizationFactor: 5,
       secret,
       filters: [
         lambda.FilterCriteria.filter({

@@ -1811,7 +1811,7 @@ describe('SpecRestApi', () => {
       const api = apigw.RestApi.fromRestApiId(stack, 'Api', 'api-id');
 
       // THEN
-      const result = api.addToResourcePolicy(new iam.PolicyStatement({
+      const result = (api as any).addToResourcePolicy(new iam.PolicyStatement({
         actions: ['execute-api:Invoke'],
         resources: [Stack.of(stack).formatArn({
           service: 'execute-api',
@@ -1831,7 +1831,7 @@ describe('SpecRestApi', () => {
       });
 
       // THEN
-      const result = api.addToResourcePolicy(new iam.PolicyStatement({
+      const result = (api as any).addToResourcePolicy(new iam.PolicyStatement({
         actions: ['execute-api:Invoke'],
         resources: [Stack.of(stack).formatArn({
           service: 'execute-api',

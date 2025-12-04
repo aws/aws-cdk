@@ -134,10 +134,9 @@ describe('HttpUserPoolAuthorizer', () => {
     const userPoolClient2 = userPool.addClient('UserPoolClient2');
 
     const t = () => {
-      const authorizer = new HttpUserPoolAuthorizer('BooksAuthorizer', userPool, {
+      new HttpUserPoolAuthorizer('BooksAuthorizer', userPool, {
         userPoolClients: [userPoolClient1, userPoolClient2],
       });
-      const authorizerId = authorizer.authorizerId;
     };
 
     // THEN

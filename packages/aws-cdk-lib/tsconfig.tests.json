@@ -1,0 +1,20 @@
+{
+  "$": "A tsconfig for the tests files, used in compilation of the tests only",
+  "extends": "./tsconfig.options.json",
+  "ts-node": {
+    "preferTsExts": true
+  },
+  "include": [
+    "**/test/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    ".types-compat",
+    "**/*.d.ts"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.lib.json"
+    }
+  ]
+}

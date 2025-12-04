@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
-import { getWarnings } from './util';
-import { App, CfnResource, Stack } from '../lib';
+import { CfnResource, Stack } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 import { RemovalPolicies, MissingRemovalPolicies } from '../lib/removal-policies';
 import { RemovalPolicy } from '../lib/removal-policy';

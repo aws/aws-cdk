@@ -1,7 +1,6 @@
 import { Match, Template } from '../../assertions';
 import { AccountRootPrincipal, Role } from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { SnapStartConf } from '../../aws-lambda';
 import * as cdk from '../../core';
 import { SizeRoundingBehavior } from '../../core';
 import * as cxapi from '../../cx-api';

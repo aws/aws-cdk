@@ -1,3 +1,4 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 import { execSync } from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
@@ -692,7 +693,7 @@ describe('staging', () => {
         },
       });
       throw new Error('We expected the above command to fail');
-    } catch (e) {
+    } catch (e: any) {
       // We expect the command to be terminated with a signal, which sometimes shows
       // as 'signal' is set to SIGTERM, and on some Linuxes as exitCode = 128 + 15 = 143
       if (e.signal === 'SIGTERM' || e.status === 143) {

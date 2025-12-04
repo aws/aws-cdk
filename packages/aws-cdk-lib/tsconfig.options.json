@@ -1,17 +1,16 @@
 {
-  "$": "Config file for ts-node",
-  "ts-node": {
-    "preferTsExts": true
-  },
   "compilerOptions": {
+    "declarationMap": false,
+    "inlineSourceMap": true,
+    "inlineSources": true,
     "alwaysStrict": true,
-    "experimentalDecorators": true,
+    "declaration": true,
     "incremental": true,
     "lib": [
-      "es2022",
-      "dom"
+      "es2022"
     ],
-    "module": "CommonJS",
+    "module": "commonjs",
+    "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
@@ -24,17 +23,9 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "stripInternal": false,
-    "target": "ES2022",
-    "composite": false,
+    "target": "es2022",
+    "composite": true,
+    "esModuleInterop": false,
     "isolatedModules": true,
-    "tsBuildInfoFile": "tsconfig.dev.tsbuildinfo"
-  },
-  "include": [
-    "**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    ".types-compat",
-    "**/*.d.ts"
-  ]
+  }
 }
