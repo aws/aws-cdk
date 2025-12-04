@@ -193,7 +193,8 @@ describe('HttpLambdaAuthorizer', () => {
     });
 
     const t = () => {
-      new HttpLambdaAuthorizer('BooksAuthorizer', handler);
+      const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', handler);
+      void(authorizer.authorizerId);
     };
 
     // THEN

@@ -4976,7 +4976,7 @@ describe('canContainersAccessInstanceRole behaviour', () => {
               wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole });
             }).toThrow(cdkConfigurations.expectedSynthError);
           } else {
-            wayToCreateCluster({ stack, canContainersAccessInstanceRole: !!cdkConfigurations.canContainersAccessInstanceRole });
+            wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole as any });
             cdkConfigurations.assertion(stack);
           }
         });
@@ -5269,7 +5269,7 @@ describe('canContainersAccessInstanceRole behaviour', () => {
               wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole });
             }).toThrow(cdkConfigurations.expectedSynthError);
           } else {
-            wayToCreateCluster({ stack, canContainersAccessInstanceRole: !!cdkConfigurations.canContainersAccessInstanceRole });
+            wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole as any });
             cdkConfigurations.assertion(stack);
           }
         });
@@ -5583,7 +5583,7 @@ describe('canContainersAccessInstanceRole behaviour', () => {
               wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole });
             }).toThrow(cdkConfigurations.expectedSynthError);
           } else {
-            wayToCreateCluster({ stack, canContainersAccessInstanceRole: !!cdkConfigurations.canContainersAccessInstanceRole });
+            wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole as any });
             cdkConfigurations.assertion(stack);
           }
         });

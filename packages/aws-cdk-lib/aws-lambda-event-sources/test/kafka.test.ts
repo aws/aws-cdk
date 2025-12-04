@@ -3021,13 +3021,13 @@ describe('KafkaDlq CloudFormation Template Generation', () => {
         onFailure: kafkaDlq,
         batchSize: 100,
         maxBatchingWindow: cdk.Duration.seconds(10),
-        // parallelizationFactor: 2,
+        parallelizationFactor: 2,
         filters: [
           lambda.FilterCriteria.filter({
             stringEquals: lambda.FilterRule.isEqual('test'),
           }),
         ],
-      }));
+      } as any));
 
       // THEN - Verify all properties coexist properly
       const template = Template.fromStack(stack);
@@ -3221,7 +3221,7 @@ describe('template synthesis with various configurations', () => {
       onFailure: kafkaDlq,
       batchSize: 200,
       maxBatchingWindow: cdk.Duration.seconds(15),
-      // parallelizationFactor: 5,
+      parallelizationFactor: 5,
       secret,
       filters: [
         lambda.FilterCriteria.filter({
@@ -3229,7 +3229,7 @@ describe('template synthesis with various configurations', () => {
           numericEquals: lambda.FilterRule.isEqual(42),
         }),
       ],
-    }));
+    } as any));
 
     // THEN - Should synthesize without errors and include all properties
     expect(() => Template.fromStack(stack)).not.toThrow();
