@@ -295,7 +295,7 @@ describe('Uses Certificate when @aws-cdk/aws-route53-patters:useCertificate=true
   });
 });
 
-test('Uses Distribution when @aws-cdk/aws-route53-patters:useDistribution=true', () => {
+test('Uses Distribution when @aws-cdk/aws-route53-patterns:useDistribution=true', () => {
   // GIVEN
   const app = new App({
     context: {
@@ -355,7 +355,7 @@ test('Uses Distribution when @aws-cdk/aws-route53-patters:useDistribution=true',
   });
 });
 
-test('Uses CloudFrontWebDistribution when @aws-cdk/aws-route53-patters:useDistribution=false', () => {
+test('Uses CloudFrontWebDistribution when @aws-cdk/aws-route53-patterns:useDistribution=false', () => {
   // GIVEN
   const app = new App({
     context: {

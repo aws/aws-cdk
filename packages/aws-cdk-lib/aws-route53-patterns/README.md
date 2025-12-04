@@ -75,6 +75,6 @@ before the old certificate is deleted.
 
 To have `HttpsRedirect` use the `Distribution` construct as the default
 created CloudFront distribution instead of the deprecated `CloudFrontWebDistribution`
-construct, enable the `@aws-cdk/aws-route53-patters:useDistribution` [feature flag].
+construct, enable the `@aws-cdk/aws-route53-patterns:useDistribution` [feature flag].
 
 [feature flag]: https://docs.aws.amazon.com/cdk/latest/guide/featureflags.html
