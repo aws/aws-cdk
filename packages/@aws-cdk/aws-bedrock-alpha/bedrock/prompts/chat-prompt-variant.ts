@@ -1,8 +1,8 @@
 import { CfnPrompt } from 'aws-cdk-lib/aws-bedrock';
-import { CommonPromptVariantProps, PromptTemplateType, IPromptVariant } from './prompt-variant';
-import { ToolConfiguration } from './tool-choice';
 import { PromptInferenceConfiguration } from './prompt-inference-configuration';
 import { PromptTemplateConfiguration } from './prompt-template-configuration';
+import { CommonPromptVariantProps, PromptTemplateType, IPromptVariant } from './prompt-variant';
+import { ToolConfiguration } from './tool-choice';
 import { ValidationError } from '../agents/validation-helpers';
 
 /**

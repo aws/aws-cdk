@@ -1,5 +1,5 @@
 import type { IConstruct } from 'constructs';
-import type { ConstructSelector } from './selectors';
+import type { IConstructSelector } from './selectors';
 import { MixinApplicator } from './applicator';
 
 // this will change when we update the interface to deliberately break compatibility checks
@@ -12,7 +12,7 @@ export class Mixins {
   /**
    * Creates a MixinApplicator for the given scope.
    */
-  static of(scope: IConstruct, selector?: ConstructSelector): MixinApplicator {
+  static of(scope: IConstruct, selector?: IConstructSelector): MixinApplicator {
     return new MixinApplicator(scope, selector);
   }
 }

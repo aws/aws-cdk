@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { testFixture } from './util';
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { testFixture } from './util';
 import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, HelmChart } from '../lib';
 
 const versions = Object.values(AlbControllerVersion);

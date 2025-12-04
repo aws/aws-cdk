@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-/* eslint-disable import/no-extraneous-dependencies */
+
 import { LambdaClient, DeleteFunctionCommand } from '@aws-sdk/client-lambda';
 import { SyntheticsClient, GetCanaryCommand } from '@aws-sdk/client-synthetics';
 import { makeHandler } from '../../nodejs-entrypoint';
