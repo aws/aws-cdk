@@ -819,19 +819,21 @@ export class FileSystem extends FileSystemBase {
             // Per AWS documentation, when NO file system policy exists, EFS uses its default behavior
             // which allows anonymous NFS access without IAM authentication. By creating ANY policy,
             // EFS switches to IAM enforcement mode, which blocks anonymous clients (they have no IAM
-            // credentials to authenticate). IAM principals with proper identity permissions can still
-            // access the file system because this ALLOW policy permits their actions.
+            // credentials to authenticate).
             //
-            // We use AccountRootPrincipal to restrict access to IAM principals within this AWS account only.
-            // This prevents unintended cross-account access while still allowing same-account IAM principals
-            // to access the file system with proper identity-based permissions. For cross-account access,
-            // users should explicitly grant access using the grant methods or add specific principal ARNs.
+            // We use AccountRootPrincipal instead of AnyPrincipal to restrict access to IAM principals
+            // within this AWS account only. This prevents unintended cross-account access while still
+            // allowing same-account IAM principals to access the file system when explicitly granted
+            // via grantRead(), grantReadWrite(), or grantRootAccess() methods.
+            //
+            // Note: ClientMount is intentionally NOT included in this resource policy. IAM principals
+            // must be explicitly granted ClientMount via identity-based permissions (using grant methods)
+            // to mount the file system. This follows the principle of least privilege.
             //
             // See: https://docs.aws.amazon.com/efs/latest/ug/iam-access-control-nfs-efs.html
             this.addToResourcePolicy(new iam.PolicyStatement({
               principals: [new iam.AccountRootPrincipal()],
               actions: [
-                ClientAction.MOUNT,
                 ClientAction.WRITE,
                 ClientAction.ROOT_ACCESS,
               ],

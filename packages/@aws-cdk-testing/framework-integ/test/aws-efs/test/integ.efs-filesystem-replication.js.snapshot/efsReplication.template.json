@@ -454,7 +454,6 @@
      "Statement": [
       {
        "Action": [
-        "elasticfilesystem:ClientMount",
         "elasticfilesystem:ClientRootAccess",
         "elasticfilesystem:ClientWrite"
        ],
@@ -578,7 +577,6 @@
      "Statement": [
       {
        "Action": [
-        "elasticfilesystem:ClientMount",
         "elasticfilesystem:ClientRootAccess",
         "elasticfilesystem:ClientWrite"
        ],
@@ -691,7 +689,6 @@
      "Statement": [
       {
        "Action": [
-        "elasticfilesystem:ClientMount",
         "elasticfilesystem:ClientRootAccess",
         "elasticfilesystem:ClientWrite"
        ],
