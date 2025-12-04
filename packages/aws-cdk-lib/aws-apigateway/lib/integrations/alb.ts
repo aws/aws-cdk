@@ -1,7 +1,7 @@
 import * as apigwv2 from '../../../aws-apigatewayv2';
 import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
-import { Names, Token } from '../../../core';
+import { Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { ConnectionType, Integration, IntegrationConfig, IntegrationOptions, IntegrationType } from '../integration';
 import { Method } from '../method';
@@ -39,8 +39,7 @@ export interface AlbIntegrationProps {
   /**
    * Integration options, such as request/response mapping, content handling, etc.
    *
-   * Note: `vpcLinkV2` and `integrationTarget` options are automatically configured
-   * and should not be specified here.
+   * `vpcLinkV2` and `integrationTarget` options are automatically configured and should not be specified here.
    *
    * @default - No additional options
    */
@@ -70,9 +69,9 @@ export class AlbIntegration extends Integration {
 
     super({
       type: proxy ? IntegrationType.HTTP_PROXY : IntegrationType.HTTP,
-      // integrationHttpMethod will be set in bind() if not provided
+      // integrationHttpMethod will be updated in bind() if not provided
       integrationHttpMethod: props.httpMethod ?? 'ANY',
-      // uri is required for HTTP integrations, will be set in bind()
+      // uri is required for HTTP integrations, will be updated in bind()
       uri: 'http://placeholder.internal',
       options: props.options,
     });
@@ -131,12 +130,14 @@ export class AlbIntegration extends Integration {
   }
 
   /**
-   * Creates a new VPC Link for the ALB's VPC.
+   * Creates a new VPC Link for the VPC, or returns an existing one if already created.
+   *
+   * VPC Links are shared per VPC, similar to the API Gateway V2 implementation.
    */
   private createVpcLink(method: Method, vpc: ec2.IVpc): apigwv2.VpcLink {
-    const id = `VpcLink-${Names.nodeUniqueId(this.alb.node)}`;
+    const id = `VpcLink-${vpc.node.id}`;
 
-    // Check if a VPC link already exists in the API's scope
+    // Check if a VPC link already exists in the API's scope for this VPC
     const existingVpcLink = method.api.node.tryFindChild(id) as apigwv2.VpcLink | undefined;
     if (existingVpcLink) {
       return existingVpcLink;

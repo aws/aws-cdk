@@ -132,16 +132,16 @@ export interface IntegrationOptions {
    * The VpcLink used for the integration.
    * Required if connectionType is VPC_LINK
    *
-   * @deprecated Use `vpcLinkV2` for VPC Link V2 integrations with ALB/NLB
+   * Use this for NLB integrations. For ALB integrations, use `vpcLinkV2` instead.
    */
   readonly vpcLink?: IVpcLink;
 
   /**
    * The VPC Link V2 used for the integration.
    *
-   * VPC Links V2 enable private integrations that connect your REST API directly to Application Load Balancers or Network Load Balancers.
+   * VPC Links V2 enable private integrations that connect your REST API directly to Application Load Balancers.
    *
-   * When using `vpcLinkV2`, you must also specify `integrationTarget` with the ARN of the ALB or NLB.
+   * When using `vpcLinkV2`, you must also specify `integrationTarget` with the ARN of the ALB.
    *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-vpc-links-v2.html
    * @default - No VPC Link V2
@@ -149,7 +149,7 @@ export interface IntegrationOptions {
   readonly vpcLinkV2?: apigwv2.IVpcLink;
 
   /**
-   * The ALB or NLB ARN to send the request to.
+   * The ALB ARN to send the request to.
    *
    * Only supported for private integrations that use VPC links V2.
    * When using this property, you must also specify `vpcLinkV2`.
@@ -233,11 +233,12 @@ export interface IntegrationConfig {
   readonly integrationHttpMethod?: string;
 
   /**
-   * This value is included in computing the Deployment's fingerprint. When the fingerprint
-   * changes, a new deployment is triggered.
+   * This value is included in computing the Deployment's fingerprint.
+   * When the fingerprint changes, a new deployment is triggered.
    * This property should contain values associated with the Integration that upon changing
    * should trigger a fresh the Deployment needs to be refreshed.
-   * @default undefined deployments are not triggered for any change to this integration.
+   *
+   * @default undefined - deployments are not triggered for any change to this integration.
    */
   readonly deploymentToken?: string;
 }
