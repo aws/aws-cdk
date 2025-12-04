@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+
 import * as cdkp from '../../../lib';
 import { ManualApprovalStep, Step } from '../../../lib';
 import { Graph, GraphNode, PipelineGraph } from '../../../lib/helpers-internal';

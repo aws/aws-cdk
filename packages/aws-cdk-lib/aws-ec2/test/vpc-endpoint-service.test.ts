@@ -3,7 +3,6 @@ import { Template } from '../../assertions';
 import { ArnPrincipal } from '../../aws-iam';
 import { Stack } from '../../core';
 
-// eslint-disable-next-line max-len
 import { IpAddressType, IVpcEndpointServiceLoadBalancer, Vpc, VpcEndpointService } from '../lib';
 
 /**

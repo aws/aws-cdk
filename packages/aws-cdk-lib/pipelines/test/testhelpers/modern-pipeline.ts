@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+
 import { Construct } from 'constructs';
 import * as cdkp from '../../lib';
 

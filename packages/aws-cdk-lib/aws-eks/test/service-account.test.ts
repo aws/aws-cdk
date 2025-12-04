@@ -6,8 +6,6 @@ import { App, Stack } from '../../core';
 import * as eks from '../lib';
 import { Cluster, KubernetesVersion } from '../lib';
 
-/* eslint-disable max-len */
-
 describe('service account', () => {
   describe('add Service Account', () => {
     test('should have unique resource name', () => {

@@ -1124,7 +1124,6 @@ describe('fromCfnKey()', () => {
 });
 
 describe('addToResourcePolicy allowNoOp and there is no policy', () => {
-  // eslint-disable-next-line jest/expect-expect
   test('succeed if set to true (default)', () => {
     const stack = new cdk.Stack();
     const key = kms.Key.fromKeyArn(stack, 'Imported',

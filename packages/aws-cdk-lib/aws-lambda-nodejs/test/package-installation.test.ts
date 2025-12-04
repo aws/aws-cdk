@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import { PackageInstallation } from '../lib/package-installation';
 import * as util from '../lib/util';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const version = require('esbuild/package.json').version;
 
 test('detects local version', () => {
