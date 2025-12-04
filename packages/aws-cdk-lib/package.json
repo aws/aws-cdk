@@ -132,7 +132,7 @@
   },
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
-    "@aws-cdk/aws-service-spec": "^0.1.127",
+    "@aws-cdk/aws-service-spec": "^0.1.128",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -294,6 +294,7 @@
     "./aws-deadline": "./aws-deadline/index.js",
     "./aws-detective": "./aws-detective/index.js",
     "./aws-devicefarm": "./aws-devicefarm/index.js",
+    "./aws-devopsagent": "./aws-devopsagent/index.js",
     "./aws-devopsguru": "./aws-devopsguru/index.js",
     "./aws-directoryservice": "./aws-directoryservice/index.js",
     "./aws-dlm": "./aws-dlm/index.js",
