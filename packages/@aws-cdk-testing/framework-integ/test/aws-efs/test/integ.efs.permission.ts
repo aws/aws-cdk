@@ -1,4 +1,44 @@
+/**
+ * EFS Permission Integration Test Architecture
+ * 
+ *  AWS-Managed Lambda VPC              Customer VPC
+ *  ┌────────────────────┐      ┌─────────────────────────────┐
+ *  │                    │      │                             │
+ *  │  ┌──────────────┐  │      │                             │
+ *  │  │   Write      │──┼──────┼──┐                          │
+ *  │  │   Lambda     │  │      │  │                          │
+ *  │  │              │  │      │  │                          │
+ *  │  │ ✓ Write      │  │      │  │  ┌──────────────┐       │
+ *  │  │ ✓ Read       │  │      │  ├─►│  EFS File    │       │
+ *  │  └──────────────┘  │      │  │  │   System     │       │
+ *  │  grantReadWrite    │      │  │  │              │       │
+ *  │                    │      │  │  │  /mnt/efs    │       │
+ *  │  ┌──────────────┐  │      │  │  └──────────────┘       │
+ *  │  │    Read      │──┼──────┼──┤                          │
+ *  │  │   Lambda     │  │      │  │                          │
+ *  │  │              │  │      │  │                          │
+ *  │  │ ✓ Read       │  │      │  │                          │
+ *  │  │ ✗ Write      │  │      │  │                          │
+ *  │  └──────────────┘  │      │  │                          │
+ *  │    grantRead       │      │  │                          │
+ *  │                    │      │  │                          │
+ *  │  ┌──────────────┐  │      │  │                          │
+ *  │  │  Anonymous   │──┼──────┼──X (no IAM perms)           │
+ *  │  │   Lambda     │  │      │                             │
+ *  │  │              │  │      │                             │
+ *  │  │ ✗ Access     │  │      │                             │
+ *  │  └──────────────┘  │      │                             │
+ *  │                    │      │                             │
+ *  └────────────────────┘      └─────────────────────────────┘
+ * 
+ * Test validates:
+ * - WriteLambda: grantReadWrite → can write and read files
+ * - ReadLambda: grantRead → can read files, write fails with permission denied
+ * - AnonymousLambda: no grant → access denied
+ */
+
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import { FileSystem } from 'aws-cdk-lib/aws-efs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
@@ -6,92 +46,135 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'test-efs-permission-integ');
 
-const vpc = new ec2.Vpc(stack, 'Vpc');
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
 
 const fileSystem = new FileSystem(stack, 'FileSystem', {
   vpc,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-const createInstance = (id: string, initCommands: string[]) => {
-  const instance = new ec2.Instance(stack, id, {
-    vpc,
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.NANO),
-    machineImage: ec2.MachineImage.latestAmazonLinux2023({
-      cpuType: ec2.AmazonLinuxCpuType.ARM_64,
-    }),
-    ssmSessionPermissions: true,
-    init: ec2.CloudFormationInit.fromConfig(
-      new ec2.InitConfig(initCommands.map((command) => ec2.InitCommand.shellCommand(command))),
-    ),
-    initOptions: {
-      timeout: cdk.Duration.minutes(10),
-    },
-  });
-  fileSystem.connections.allowDefaultPortFrom(instance);
-  return instance;
-};
-const writeInstance = createInstance('WriteInstance', [
-  'dnf install -y amazon-efs-utils',
-  'mkdir /mnt/efs',
-  // https://docs.aws.amazon.com/efs/latest/ug/troubleshooting-efs-mounting.html#mount-fails-propegation
-  'sleep 5m',
-  `mount -t efs -o tls,iam ${fileSystem.fileSystemId} /mnt/efs`,
-  'echo \'Integ Test\' | tee /mnt/efs/integ-test.txt',
-]);
-writeInstance.instance.node.addDependency(fileSystem);
-fileSystem.grantReadWrite(writeInstance);
+const accessPoint = fileSystem.addAccessPoint('AccessPoint', {
+  path: '/lambda',
+  createAcl: {
+    ownerGid: '1000',
+    ownerUid: '1000',
+    permissions: '755',
+  },
+  posixUser: {
+    gid: '1000',
+    uid: '1000',
+  },
+});
 
-const readInstance = createInstance('ReadInstance', [
-  'dnf install -y amazon-efs-utils',
-  'mkdir /mnt/efs',
-  'sleep 5m',
-  `mount -t efs -o tls,iam ${fileSystem.fileSystemId} /mnt/efs`,
-]);
-readInstance.instance.node.addDependency(fileSystem);
-fileSystem.grantRead(readInstance);
+// Lambda that can write to EFS
+const writeLambda = new lambda.Function(stack, 'WriteLambda', {
+  runtime: lambda.Runtime.determineLatestPythonRuntime(stack),
+  handler: 'index.handler',
+  code: lambda.Code.fromInline(`
+import os
+import json
 
-const anonymousInstance = createInstance('AnonymousInstance', [
-  'dnf install -y amazon-efs-utils',
-  'mkdir /mnt/efs',
-  'sleep 5m',
-]);
+def handler(event, context):
+    try:
+        file_path = '/mnt/efs/integ-test.txt'
+        with open(file_path, 'w') as f:
+            f.write('Integ Test')
+        return {'statusCode': 200, 'body': json.dumps('Write successful')}
+    except Exception as e:
+        return {'statusCode': 500, 'body': json.dumps(f'Error: {str(e)}')}
+`),
+  vpc,
+  filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/efs'),
+  timeout: cdk.Duration.seconds(30),
+});
+fileSystem.grantReadWrite(writeLambda);
+
+// Lambda that can only read from EFS
+const readLambda = new lambda.Function(stack, 'ReadLambda', {
+  runtime: lambda.Runtime.determineLatestPythonRuntime(stack),
+  handler: 'index.handler',
+  code: lambda.Code.fromInline(`
+import os
+import json
+
+def handler(event, context):
+    try:
+        action = event.get('action', 'read')
+        file_path = '/mnt/efs/integ-test.txt'
+        
+        if action == 'read':
+            with open(file_path, 'r') as f:
+                content = f.read()
+            return {'statusCode': 200, 'body': json.dumps(f'Content: {content}')}
+        elif action == 'write':
+            with open(file_path, 'w') as f:
+                f.write('Should fail')
+            return {'statusCode': 200, 'body': json.dumps('Write successful')}
+    except PermissionError as e:
+        return {'statusCode': 403, 'body': json.dumps(f'Permission denied: {str(e)}')}
+    except Exception as e:
+        return {'statusCode': 500, 'body': json.dumps(f'Error: {str(e)}')}
+`),
+  vpc,
+  filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/efs'),
+  timeout: cdk.Duration.seconds(30),
+});
+fileSystem.grantRead(readLambda);
+
+// Lambda with no EFS permissions
+const anonymousLambda = new lambda.Function(stack, 'AnonymousLambda', {
+  runtime: lambda.Runtime.determineLatestPythonRuntime(stack),
+  handler: 'index.handler',
+  code: lambda.Code.fromInline(`
+import os
+import json
+
+def handler(event, context):
+    try:
+        file_path = '/mnt/efs/integ-test.txt'
+        with open(file_path, 'r') as f:
+            content = f.read()
+        return {'statusCode': 200, 'body': json.dumps(f'Content: {content}')}
+    except Exception as e:
+        return {'statusCode': 500, 'body': json.dumps(f'Error: {str(e)}')}
+`),
+  vpc,
+  filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/efs'),
+  timeout: cdk.Duration.seconds(30),
+});
 
 const test = new integ.IntegTest(app, 'EfsPermissionTest', {
   testCases: [stack],
 });
 
-const anonymousMountCommand = test.assertions.awsApiCall('SSM', 'sendCommand', {
-  InstanceIds: [anonymousInstance.instanceId],
-  DocumentName: 'AWS-RunShellScript',
-  Parameters: {
-    commands: [`mount -t efs -o tls,iam ${fileSystem.fileSystemId} /mnt/efs`],
-  },
-});
-test.assertions.awsApiCall('SSM', 'getCommandInvocation', {
-  CommandId: anonymousMountCommand.getAttString('Command.CommandId'),
-  InstanceId: anonymousInstance.instanceId,
+// Test 1: WriteLambda can write to EFS
+test.assertions.invokeFunction({
+  functionName: writeLambda.functionName,
 }).expect(integ.ExpectedResult.objectLike({
-  StandardErrorContent: "b'mount.nfs4: access denied by server while mounting 127.0.0.1:/'\nfailed to run commands: exit status 32",
-  Status: 'Failed',
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(3),
-});
+  Payload: integ.ExpectedResult.stringLikeRegexp('.*Write successful.*'),
+}));
 
-const readFileCommand = test.assertions.awsApiCall('SSM', 'sendCommand', {
-  InstanceIds: [readInstance.instanceId],
-  DocumentName: 'AWS-RunShellScript',
-  Parameters: {
-    commands: ['cat /mnt/efs/integ-test.txt'],
-  },
-});
-test.assertions.awsApiCall('SSM', 'getCommandInvocation', {
-  CommandId: readFileCommand.getAttString('Command.CommandId'),
-  InstanceId: readInstance.instanceId,
+// Test 2: ReadLambda can read from EFS
+test.assertions.invokeFunction({
+  functionName: readLambda.functionName,
+  payload: JSON.stringify({ action: 'read' }),
 }).expect(integ.ExpectedResult.objectLike({
-  StandardOutputContent: 'Integ Test\n',
-  Status: 'Success',
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(3),
-});
+  Payload: integ.ExpectedResult.stringLikeRegexp('.*Content: Integ Test.*'),
+}));
+
+// Test 3: ReadLambda cannot write to EFS (should get permission denied)
+test.assertions.invokeFunction({
+  functionName: readLambda.functionName,
+  payload: JSON.stringify({ action: 'write' }),
+}).expect(integ.ExpectedResult.objectLike({
+  Payload: integ.ExpectedResult.stringLikeRegexp('.*Permission denied.*'),
+}));
+
+// Test 4: AnonymousLambda cannot access EFS
+test.assertions.invokeFunction({
+  functionName: anonymousLambda.functionName,
+}).expect(integ.ExpectedResult.objectLike({
+  Payload: integ.ExpectedResult.stringLikeRegexp('.*Error.*'),
+}));
+
 app.synth();
