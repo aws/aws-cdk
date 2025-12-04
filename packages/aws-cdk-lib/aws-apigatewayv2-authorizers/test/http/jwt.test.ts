@@ -80,9 +80,10 @@ describe('HttpJwtAuthorizer', () => {
   test('should throw error when acessing authorizer before it been bound to route', () => {
     // GIVEN
     const t = () => {
-      new HttpJwtAuthorizer('BooksAuthorizer', 'https://test.us.auth0.com', {
+      const authorizer = new HttpJwtAuthorizer('BooksAuthorizer', 'https://test.us.auth0.com', {
         jwtAudience: ['3131231'],
       });
+      void(authorizer.authorizerId);
     };
 
     // THEN
