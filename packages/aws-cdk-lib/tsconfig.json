@@ -1,6 +1,9 @@
 {
   "$": "A tsconfig for all files, for the benefit of the VSCode plugin; necessary because we can't convince the plugin to load anything other than tsconfig.json upwards of the file we are editing, and all tests aren't in a single test/ subdirectory.b",
   "extends": "./tsconfig.options.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "tsconfig.tests.tsbuildinfo"
+  },
   "include": [
     "**/*.ts"
   ],

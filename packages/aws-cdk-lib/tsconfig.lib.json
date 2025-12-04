@@ -1,6 +1,9 @@
 {
   "$": "A tsconfig for the library files, used in compilation of the library",
   "extends": "./tsconfig.options.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "tsconfig.lib.tsbuildinfo"
+  },
   "include": [
     "**/*.ts"
   ],
