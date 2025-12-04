@@ -1281,8 +1281,6 @@ describe('grants', () => {
                 Match.objectLike({
                   Action: [
                     'dynamodb:BatchGetItem',
-                    'dynamodb:GetRecords',
-                    'dynamodb:GetShardIterator',
                     'dynamodb:Query',
                     'dynamodb:GetItem',
                     'dynamodb:Scan',
@@ -3718,7 +3716,7 @@ test('ContributorInsightsSpecification && ContributorInsights - v2', () => {
   }).toThrow('`contributorInsightsSpecification` and `contributorInsights` are set. Use `contributorInsightsSpecification` only.');
 });
 
-test('can add GSI with compound partition keys', () => {
+test('can add GSI with multi-attribute partition keys', () => {
   const stack = new Stack();
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
@@ -3750,7 +3748,7 @@ test('can add GSI with compound partition keys', () => {
   });
 });
 
-test('can add GSI with compound sort keys', () => {
+test('can add GSI with multi-attribute sort keys', () => {
   const stack = new Stack();
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
@@ -3864,7 +3862,7 @@ test('throws when no partition key specified', () => {
   }).toThrow('Exactly one of \'partitionKey\', \'partitionKeys\' must be specified');
 });
 
-test('can add GSI with both compound partition and sort keys', () => {
+test('can add GSI with both multi-attribute partition and sort keys', () => {
   const stack = new Stack();
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },

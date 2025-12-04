@@ -9,7 +9,7 @@ import * as s3 from '../lib';
 import { ReplicationTimeValue } from '../lib/bucket';
 
 // to make it easy to copy & paste from output:
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 /* eslint-disable no-console */
 
 describe('bucket', () => {
