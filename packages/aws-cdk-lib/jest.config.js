@@ -1,15 +1,13 @@
 // @ts-check
 const baseConfig = require('@aws-cdk/cdk-build-tools/config/jest.config');
 
-const ext = require('@aws-cdk/cdk-build-tools/config/ext.js');
-
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 const config = {
   ...baseConfig,
 
   // Different than usual
   testMatch: [
-    `<rootDir>/**/test/**/?(*.)+(test).${ext}`,
+    `<rootDir>/**/test/**/?(*.)+(test).ts`,
   ],
   coveragePathIgnorePatterns: ['\\.generated\\.[jt]s$', '<rootDir>/.*/test/', '.warnings.jsii.js$', '/node_modules/'],
 
