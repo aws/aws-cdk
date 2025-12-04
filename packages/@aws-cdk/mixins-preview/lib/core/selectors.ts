@@ -1,58 +1,72 @@
-import type { IConstruct } from 'constructs';
+import type { IConstruct, Node } from 'constructs';
 import { CfnResource } from 'aws-cdk-lib/core';
+
+/**
+ * Selects constructs from a construct tree.
+ */
+export interface IConstructSelector {
+  /**
+   * Selects constructs from the given scope based on the selector's criteria.
+   */
+  select(scope: IConstruct): IConstruct[];
+}
 
 /**
  * Selects constructs from a construct tree based on various criteria.
  */
-export abstract class ConstructSelector {
+export class ConstructSelector {
   /**
    * Selects all constructs in the tree.
    */
-  static all(): ConstructSelector {
+  static all(): IConstructSelector {
     return new AllConstructsSelector();
   }
 
   /**
    * Selects CfnResource constructs or the default CfnResource child.
    */
-  static cfnResource(): ConstructSelector {
+  static cfnResource(): IConstructSelector {
     return new CfnResourceSelector();
   }
 
   /**
    * Selects only the provided construct.
    */
-  static onlyItself(): ConstructSelector {
+  static onlyItself(): IConstructSelector {
     return new OnlyItselfSelector();
   }
 
   /**
    * Selects constructs of a specific type.
    */
-  static resourcesOfType(type: string | any): ConstructSelector {
-    return new ResourceTypeSelector(type);
+  static resourcesOfType(...types: string[]): IConstructSelector {
+    return new ResourceTypeSelector(types);
   }
 
   /**
-   * Selects constructs whose IDs match a pattern.
+   * Selects constructs whose construct IDs match a pattern.
+   * Uses glob like matching.
    */
-  static byId(pattern: any): ConstructSelector {
-    return new IdPatternSelector(pattern);
+  static byId(pattern: string): IConstructSelector {
+    return new IdPatternSelector(pattern, 'id');
   }
 
   /**
-   * Selects constructs from the given scope based on the selector's criteria.
+   * Selects constructs whose construct paths match a pattern.
+   * Uses glob like matching.
    */
-  abstract select(scope: IConstruct): IConstruct[];
+  static byPath(pattern: string): IConstructSelector {
+    return new IdPatternSelector(pattern, 'path');
+  }
 }
 
-class AllConstructsSelector extends ConstructSelector {
+class AllConstructsSelector implements IConstructSelector {
   select(scope: IConstruct): IConstruct[] {
     return scope.node.findAll();
   }
 }
 
-class CfnResourceSelector extends ConstructSelector {
+class CfnResourceSelector implements IConstructSelector {
   select(scope: IConstruct): IConstruct[] {
     if (CfnResource.isCfnResource(scope)) {
       return [scope];
@@ -65,45 +79,14 @@ class CfnResourceSelector extends ConstructSelector {
   }
 }
 
-class ResourceTypeSelector extends ConstructSelector {
-  constructor(private readonly type: string | any) {
-    super();
+class ResourceTypeSelector implements IConstructSelector {
+  constructor(private readonly types: string[]) {
   }
 
   select(scope: IConstruct): IConstruct[] {
     const result: IConstruct[] = [];
     const visit = (node: IConstruct) => {
-      if (typeof this.type === 'string') {
-        if (CfnResource.isCfnResource(node) && node.cfnResourceType === this.type) {
-          result.push(node);
-        }
-      } else if ('isCfnResource' in this.type && 'CFN_RESOURCE_TYPE_NAME' in this.type) {
-        if (CfnResource.isCfnResource(node) && node.cfnResourceType === this.type.CFN_RESOURCE_TYPE_NAME) {
-          result.push(node);
-        }
-      } else {
-        if (node instanceof this.type) {
-          result.push(node);
-        }
-      }
-      for (const child of node.node.children) {
-        visit(child);
-      }
-    };
-    visit(scope);
-    return result;
-  }
-}
-
-class IdPatternSelector extends ConstructSelector {
-  constructor(private readonly pattern: any) {
-    super();
-  }
-
-  select(scope: IConstruct): IConstruct[] {
-    const result: IConstruct[] = [];
-    const visit = (node: IConstruct) => {
-      if (this.pattern && typeof this.pattern.test === 'function' && this.pattern.test(node.node.id)) {
+      if (CfnResource.isCfnResource(node) && this.types.includes(node.cfnResourceType)) {
         result.push(node);
       }
       for (const child of node.node.children) {
@@ -115,7 +98,29 @@ class IdPatternSelector extends ConstructSelector {
   }
 }
 
-class OnlyItselfSelector extends ConstructSelector {
+// Must be a 'require' to not run afoul of ESM module import rules
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const minimatch = require('minimatch');
+
+class IdPatternSelector implements IConstructSelector {
+  constructor(private readonly pattern: string, private field: keyof Node) {}
+
+  select(scope: IConstruct): IConstruct[] {
+    const result: IConstruct[] = [];
+    const visit = (node: IConstruct) => {
+      if (minimatch(node.node[this.field], this.pattern)) {
+        result.push(node);
+      }
+      for (const child of node.node.children) {
+        visit(child);
+      }
+    };
+    visit(scope);
+    return result;
+  }
+}
+
+class OnlyItselfSelector implements IConstructSelector {
   select(scope: IConstruct): IConstruct[] {
     return [scope];
   }

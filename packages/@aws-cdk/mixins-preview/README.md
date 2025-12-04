@@ -95,11 +95,11 @@ Mixins operate on construct trees and can be applied selectively:
 Mixins.of(scope).apply(new EncryptionAtRest());
 
 // Apply to specific resource types
-Mixins.of(scope, ConstructSelector.resourcesOfType(s3.CfnBucket))
+Mixins.of(scope, ConstructSelector.resourcesOfType(s3.CfnBucket.CFN_RESOURCE_TYPE_NAME))
   .apply(new EncryptionAtRest());
 
-// Apply to constructs matching a pattern
-Mixins.of(scope, ConstructSelector.byId(/.*-prod-.*/))
+// Apply to constructs matching a path pattern
+Mixins.of(scope, ConstructSelector.byPath("**/*-prod-*/**"))
   .apply(new ProductionSecurityMixin());
 ```
 
