@@ -9,10 +9,10 @@ describe('AlbIntegration', () => {
   test('minimal setup with ALB', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc });
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'Alb', { vpc });
 
-    const api = new apigateway.RestApi(stack, 'my-api');
+    const api = new apigateway.RestApi(stack, 'Api');
 
     // WHEN
     const integ = new apigateway.AlbIntegration(alb);
@@ -28,7 +28,9 @@ describe('AlbIntegration', () => {
     });
 
     // VPC Link V2 should be created
-    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::VpcLink', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::VpcLink', {
+      Name: 'VpcLink-Vpc',
+    });
   });
 
   test('with existing VPC Link V2', () => {
