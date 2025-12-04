@@ -448,8 +448,7 @@
     "DBClusterIdentifier": {
      "Ref": "DatabaseCopyTagsToSnapshotDisabled06721937"
     },
-    "DBInstanceClass": "db.r5.large",
-    "PubliclyAccessible": false
+    "DBInstanceClass": "db.r5.large"
    },
    "DependsOn": [
     "VPCPrivateSubnet1DefaultRouteAE1D6490",
@@ -517,8 +516,7 @@
     "DBClusterIdentifier": {
      "Ref": "DatabaseCopyTagsToSnapshotEnabled84786E21"
     },
-    "DBInstanceClass": "db.r5.large",
-    "PubliclyAccessible": false
+    "DBInstanceClass": "db.r5.large"
    },
    "DependsOn": [
     "VPCPrivateSubnet1DefaultRouteAE1D6490",

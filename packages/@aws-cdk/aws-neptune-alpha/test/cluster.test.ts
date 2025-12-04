@@ -675,7 +675,7 @@ describe('DatabaseCluster', () => {
     });
   });
 
-  test('publiclyAccessible is enabled when configured', () => {
+  test.each([true, false])('publiclyAccessible is set', (value) => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -684,16 +684,16 @@ describe('DatabaseCluster', () => {
     new DatabaseCluster(stack, 'Cluster', {
       vpc,
       instanceType: InstanceType.R5_LARGE,
-      publiclyAccessible: true,
+      publiclyAccessible: value,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
-      PubliclyAccessible: true,
+      PubliclyAccessible: value,
     });
   });
 
-  test('publiclyAccessible is not enabled when not configured', () => {
+  test('publiclyAccessible is not set when not configured', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -706,7 +706,7 @@ describe('DatabaseCluster', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
-      PubliclyAccessible: false,
+      PubliclyAccessible: Match.absent(),
     });
   });
 

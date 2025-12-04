@@ -556,8 +556,7 @@
     "DBClusterIdentifier": {
      "Ref": "DatabaseB269D8BB"
     },
-    "DBInstanceClass": "db.r5.large",
-    "PubliclyAccessible": false
+    "DBInstanceClass": "db.r5.large"
    },
    "DependsOn": [
     "VPCPrivateSubnet1DefaultRouteAE1D6490",

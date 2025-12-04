@@ -1,6 +1,6 @@
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { DatabaseCluster, DatabaseInstance, InstanceType, EngineVersion } from '../lib';
 import { ClusterParameterGroup, ParameterGroupFamily } from '../lib/parameter-group';
 
