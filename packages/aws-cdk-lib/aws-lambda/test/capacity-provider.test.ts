@@ -387,6 +387,30 @@ describe('capacity provider', () => {
         });
       }).toThrow();
     });
+
+    test('accepts tokens for all validated fields', () => {
+      // GIVEN
+      const tokenName = cdk.Fn.ref('CapacityProviderNameParam');
+      const tokenMaxVCpu = cdk.Fn.ref('MaxVCpuParam');
+      const tokenSubnets = cdk.Fn.split(',', cdk.Fn.ref('SubnetIdsParam'));
+      const tokenSecurityGroups = cdk.Fn.split(',', cdk.Fn.ref('SecurityGroupIdsParam'));
+
+      // WHEN - should not throw
+      new lambda.CapacityProvider(stack, 'MyCapacityProvider', {
+        capacityProviderName: tokenName,
+        maxVCpuCount: cdk.Token.asNumber(tokenMaxVCpu),
+        subnets: tokenSubnets.map((id, i) => ec2.Subnet.fromSubnetId(stack, `TokenSubnet${i}`, id)),
+        securityGroups: tokenSecurityGroups.map((id, i) => ec2.SecurityGroup.fromSecurityGroupId(stack, `TokenSG${i}`, id)),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::CapacityProvider', {
+        CapacityProviderName: { Ref: 'CapacityProviderNameParam' },
+        CapacityProviderScalingConfig: {
+          MaxVCpuCount: { Ref: 'MaxVCpuParam' },
+        },
+      });
+    });
   });
 
   describe('static methods', () => {
