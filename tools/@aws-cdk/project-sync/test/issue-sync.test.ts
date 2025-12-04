@@ -1,4 +1,3 @@
-import { describe, test, expect, jest, beforeEach } from '@jest/globals';
 import * as issueSync from '../lib/issue-sync.js';
 import { GithubMock } from './github-mock.js';
 import { Github } from '../lib/github.js';
