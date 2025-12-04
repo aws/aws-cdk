@@ -381,9 +381,7 @@ class LogsMixin extends ClassType {
       resource,
       expr.strConcat(expr.str('CdkSource'), $this.logType, $this.destinationType, CDK_CORE.uniqueId(resource)),
       expr.object({
-        name: expr.strConcat(expr.str(prefix), CDK_CORE.uniqueResourceName(resource, expr.object({
-          maxLength: expr.binOp(expr.num(60 - (prefix.length + 2)), '-', expr.binOp($this.logType.prop('length'), '+', $this.destinationType.prop('length'))),
-        })), expr.str('-'), $this.logType, expr.str('-'), $this.destinationType),
+        name: expr.strConcat(expr.str(prefix), $this.logType, expr.str('-'), $this.destinationType),
         resourceArn: sourceArn,
         logType: $this.logType,
       }),
@@ -397,7 +395,7 @@ class LogsMixin extends ClassType {
 
       stmt.constVar(sourceArn, arnBuilder),
       stmt.constVar(deliverySource, newCfnDeliverySource),
-      $this.logDelivery.callMethod('bind', resource, deliverySource, sourceArn),
+      $this.logDelivery.callMethod('bind', resource, deliverySource, $this.logType, sourceArn),
 
       stmt.ret(resource),
     );

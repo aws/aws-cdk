@@ -23,11 +23,13 @@ const distribution = new cloudfront.Distribution(stack, 'Distribution', {
   },
 });
 
+const logType = 'ACCESS_LOGS';
+
 // Delivery Source
 const deliverySource = new logs.CfnDeliverySource(stack, 'CloudFrontSource', {
   name: `delivery-source-${distribution.distributionId}-ACCESS_LOGS`,
   resourceArn: distribution.distributionArn,
-  logType: 'ACCESS_LOGS',
+  logType,
 });
 
 // Destinations
@@ -66,9 +68,9 @@ const deliveryStream = new firehose.CfnDeliveryStream(stack, 'DeliveryStream', {
 });
 
 // Setup deliveries
-const s3Delivery = new S3LogsDelivery(destinationBucket).bind(stack, deliverySource, distribution.distributionArn);
-const lgDelivery = new LogGroupLogsDelivery(destinationLogGroup).bind(stack, deliverySource, distribution.distributionArn);
-const fhDelivery = new FirehoseLogsDelivery(deliveryStream).bind(stack, deliverySource, distribution.distributionArn);
+const s3Delivery = new S3LogsDelivery(destinationBucket).bind(stack, deliverySource, logType, distribution.distributionArn);
+const lgDelivery = new LogGroupLogsDelivery(destinationLogGroup).bind(stack, deliverySource, logType, distribution.distributionArn);
+const fhDelivery = new FirehoseLogsDelivery(deliveryStream).bind(stack, deliverySource, logType, distribution.distributionArn);
 
 // // There's issues with multiple Logs::Delivery resources bing deployed in parallel
 // // let's ensure they wait for each other for now

@@ -21,11 +21,13 @@ const distribution = new cloudfront.Distribution(stack, 'Distribution', {
   },
 });
 
+const logType = 'ACCESS_LOGS';
+
 // Delivery Source
 const deliverySource = new logs.CfnDeliverySource(stack, 'CloudFrontSource', {
   name: `delivery-source-${distribution.distributionId}-ACCESS_LOGS`,
   resourceArn: distribution.distributionArn,
-  logType: 'ACCESS_LOGS',
+  logType,
 });
 
 // Destinations
@@ -37,8 +39,8 @@ const destinationLogGroupB = new logs.LogGroup(stack, 'DeliveryLogGroupB', {
 });
 
 // Setup deliveries
-const one = new LogGroupLogsDelivery(destinationLogGroupA).bind(stack, deliverySource, distribution.distributionArn);
-const two = new LogGroupLogsDelivery(destinationLogGroupB).bind(stack, deliverySource, distribution.distributionArn);
+const one = new LogGroupLogsDelivery(destinationLogGroupA).bind(stack, deliverySource, logType, distribution.distributionArn);
+const two = new LogGroupLogsDelivery(destinationLogGroupB).bind(stack, deliverySource, logType, distribution.distributionArn);
 
 // // There's issues with multiple Logs::Delivery resources bing deployed in parallel
 // // let's ensure they wait for each other for now
