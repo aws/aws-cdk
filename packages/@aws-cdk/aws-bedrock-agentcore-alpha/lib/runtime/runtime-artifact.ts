@@ -75,6 +75,20 @@ export abstract class AgentRuntimeArtifact {
   }
 
   /**
+   * Reference an image using an ECR container URI
+   *
+   * Use this when referencing ECR images from CloudFormation parameters or cross-stack references.
+   *
+   * **Note:** No IAM permissions are automatically granted. You must ensure the runtime has
+   * ECR pull permissions for the repository.
+   *
+   * @param containerUri The ECR container image URI (format: {account}.dkr.ecr.{region}.amazonaws.com/{repository}:{tag})
+   */
+  public static fromImageUri(containerUri: string): AgentRuntimeArtifact {
+    return new ImageUriArtifact(containerUri);
+  }
+
+  /**
    * Called when the image is used by a Runtime to handle side effects like permissions
    */
   public abstract bind(scope: Construct, runtime: Runtime): void;
@@ -185,6 +199,31 @@ class S3Image extends AgentRuntimeArtifact {
       },
       runtime: this.runtime,
       entryPoint: this.entrypoint,
+    } as any;
+  }
+}
+
+class ImageUriArtifact extends AgentRuntimeArtifact {
+  constructor(private readonly containerUri: string) {
+    super();
+
+    // Validate ECR container URI format per CloudFormation requirements
+    const ecrPattern = /^\d{12}\.dkr\.ecr\.([a-z0-9-]+)\.amazonaws\.com\/((?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*)([:@]\S+)$/;
+    if (!Token.isUnresolved(containerUri) && !ecrPattern.test(containerUri)) {
+      throw new ValidationError(
+        `Invalid ECR container URI format: ${containerUri}. Must be an ECR URI: {account}.dkr.ecr.{region}.amazonaws.com/{repository}:{tag}`,
+      );
+    }
+  }
+
+  public bind(_scope: Construct, _runtime: Runtime): void {
+    // No permissions are granted automatically when using a direct URI.
+    // Users must manage ECR pull permissions separately.
+  }
+
+  public _render(): CfnRuntime.AgentRuntimeArtifactProperty {
+    return {
+      containerUri: this.containerUri,
     } as any;
   }
 }
