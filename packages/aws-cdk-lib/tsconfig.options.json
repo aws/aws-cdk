@@ -26,6 +26,6 @@
     "target": "es2022",
     "composite": true,
     "esModuleInterop": false,
-    "isolatedModules": true,
+    "isolatedModules": true
   }
 }
