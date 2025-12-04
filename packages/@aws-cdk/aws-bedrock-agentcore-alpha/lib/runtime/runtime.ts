@@ -19,9 +19,9 @@ import { AgentRuntimeArtifact } from './runtime-artifact';
 import { RuntimeAuthorizerConfiguration } from './runtime-authorizer-configuration';
 import { RuntimeBase, IBedrockAgentRuntime, AgentRuntimeAttributes } from './runtime-base';
 import { RuntimeEndpoint } from './runtime-endpoint';
-import { RuntimeNetworkConfiguration } from '../network/network-configuration';
 import { LifecycleConfiguration, ProtocolType, RequestHeaderConfiguration } from './types';
 import { validateStringField, ValidationError, validateFieldPattern } from './validation-helpers';
+import { RuntimeNetworkConfiguration } from '../network/network-configuration';
 
 /******************************************************************************
  *                                Constants

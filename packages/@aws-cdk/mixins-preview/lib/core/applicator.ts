@@ -1,18 +1,18 @@
 import type { IConstruct } from 'constructs';
 import { ValidationError } from 'aws-cdk-lib/core';
 import type { IMixin } from './mixins';
-import { ConstructSelector } from './selectors';
+import { ConstructSelector, type IConstructSelector } from './selectors';
 
 /**
  * Applies mixins to constructs.
  */
 export class MixinApplicator {
   private readonly scope: IConstruct;
-  private readonly selector: ConstructSelector;
+  private readonly selector: IConstructSelector;
 
   constructor(
     scope: IConstruct,
-    selector: ConstructSelector = ConstructSelector.all(),
+    selector: IConstructSelector = ConstructSelector.all(),
   ) {
     this.scope = scope;
     this.selector = selector;

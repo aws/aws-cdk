@@ -1,3 +1,6 @@
+import { EOL } from 'os';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { CfnTable, CfnTablePolicy } from 'aws-cdk-lib/aws-s3tables';
 import {
   Resource,
   IResource,
@@ -5,14 +8,11 @@ import {
   UnscopedValidationError,
   Token,
 } from 'aws-cdk-lib/core';
-import { INamespace } from './namespace';
-import { CfnTable, CfnTablePolicy } from 'aws-cdk-lib/aws-s3tables';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import { INamespace } from './namespace';
 import * as perms from './permissions';
-import { EOL } from 'os';
 
 /**
  * Represents an S3 Table.
