@@ -1,12 +1,12 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
 import { CfnTracker, CfnTrackerConsumer } from 'aws-cdk-lib/aws-location';
-import { generateUniqueId } from './util';
-import { IGeofenceCollection } from './geofence-collection';
+import { ArnFormat, IResource, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { IGeofenceCollection } from './geofence-collection';
+import { generateUniqueId } from './util';
 
 /**
  * A Tracker

@@ -80,6 +80,7 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
     - [Creating a Runtime](#creating-a-runtime)
       - [Option 1: Use an existing image in ECR](#option-1-use-an-existing-image-in-ecr)
       - [Option 2: Use a local asset](#option-2-use-a-local-asset)
+      - [Option 3: Use direct code deployment](#option-3-use-direct-code-deployment)
     - [Granting Permissions to Invoke Bedrock Models or Inference Profiles](#granting-permissions-to-invoke-bedrock-models-or-inference-profiles)
     - [Runtime Versioning](#runtime-versioning)
       - [Managing Endpoints and Versions](#managing-endpoints-and-versions)
@@ -163,6 +164,8 @@ to production by simply updating the endpoint to point to the newer version.
 | `authorizerConfiguration` | `RuntimeAuthorizerConfiguration` | No | Authorizer configuration for the agent runtime. Use `RuntimeAuthorizerConfiguration` static methods to create configurations for IAM, Cognito, JWT, or OAuth authentication |
 | `environmentVariables` | `{ [key: string]: string }` | No | Environment variables for the agent runtime. Maximum 50 environment variables |
 | `tags` | `{ [key: string]: string }` | No | Tags for the agent runtime. A list of key:value pairs of tags to apply to this Runtime resource |
+| `lifecycleConfiguration` | LifecycleConfiguration | No | The life cycle configuration for the AgentCore Runtime. Defaults to 900 seconds (15 minutes) for idle, 28800 seconds (8 hours) for max life time |
+| `requestHeaderConfiguration` | RequestHeaderConfiguration | No | Configuration for HTTP request headers that will be passed through to the runtime. Defaults to no configuration |
 
 ### Runtime Endpoint Properties
 
@@ -180,7 +183,7 @@ to production by simply updating the endpoint to point to the newer version.
 
 Reference an image available within ECR.
 
-```typescript
+```typescript fixture=default
 const repository = new ecr.Repository(this, "TestRepository", {
   repositoryName: "test-agent-runtime",
 });
@@ -201,9 +204,78 @@ Reference a local directory containing a Dockerfile.
 Images are built from a local Docker context directory (with a Dockerfile), uploaded to Amazon Elastic Container Registry (ECR)
 by the CDK toolkit,and can be naturally referenced in your CDK app.
 
-```typescript
+```typescript fixture=default
 const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
   path.join(__dirname, "path to agent dockerfile directory")
+);
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+});
+```
+
+#### Option 3: Use direct code deployment
+
+With the container deployment method, developers create a Dockerfile, build ARM-compatible containers, manage ECR repositories, and upload containers for code changes. This works well where container DevOps pipelines have already been established to automate deployments.
+
+However, customers looking for fully managed deployments can benefit from direct code deployment, which can significantly improve developer time and productivity. Direct code deployment provides a secure and scalable path forward for rapid prototyping agent capabilities to deploying production workloads at scale.
+
+With direct code deployment, developers create a zip archive of code and dependencies, upload to Amazon S3, and configure the bucket in the agent configuration. A ZIP archive containing Linux arm64 dependencies needs to be uploaded to S3 as a pre-requisite to Create Agent Runtime.
+
+For more information, please refer to the [documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-get-started-code-deploy.html).
+
+```typescript fixture=default
+// S3 bucket containing the agent core
+const codeBucket = new s3.Bucket(this, "AgentCode", {
+  bucketName: "my-code-bucket",
+  removalPolicy: RemovalPolicy.DESTROY, // For demo purposes
+});
+
+// the bucket above needs to contain the agent code
+
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromS3(
+  {
+    bucketName: codeBucket.bucketName,
+    objectKey: 'deployment_package.zip',
+  }, 
+  agentcore.AgentCoreRuntime.PYTHON_3_12, 
+  ['opentelemetry-instrument', 'main.py']
+);
+
+const runtimeInstance = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+});
+```
+
+#### Option 4: Use an ECR container image URI
+
+Reference an ECR container image directly by its URI. This is useful when you have a pre-existing ECR image URI from CloudFormation parameters or cross-stack references. No IAM permissions are automatically granted - you must ensure the runtime has ECR pull permissions.
+
+```typescript fixture=default
+// Direct URI reference
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromImageUri(
+  "123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:v1.0.0"
+);
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+});
+```
+
+You can also use CloudFormation parameters or references:
+
+```typescript fixture=default
+// Using a CloudFormation parameter
+const imageUriParam = new cdk.CfnParameter(this, "ImageUri", {
+  type: "String",
+  description: "Container image URI for the agent runtime",
+});
+
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromImageUri(
+  imageUriParam.valueAsString
 );
 
 const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
@@ -254,7 +326,7 @@ the steps below to understand how to use versioning with runtime for controlled 
 When you first create an agent runtime, AgentCore automatically creates Version 1 of your runtime. At this point, a DEFAULT endpoint is
 automatically created that points to Version 1. This DEFAULT endpoint serves as the main access point for your runtime.
 
-```ts
+```typescript fixture=default
 const repository = new ecr.Repository(this, "TestRepository", {
   repositoryName: "test-agent-runtime",
 });
@@ -271,7 +343,7 @@ After the initial deployment, you can create additional endpoints for different 
 endpoint that explicitly points to Version 1. This allows you to maintain stable access points for specific environments while keeping the
 flexibility to test newer versions elsewhere.
 
-```ts
+```typescript fixture=default
 const repository = new ecr.Repository(this, "TestRepository", {
   repositoryName: "test-agent-runtime",
 });
@@ -296,7 +368,7 @@ configurations), AgentCore automatically creates a new version (Version 2). Upon
 - The DEFAULT endpoint automatically updates to point to Version 2
 - Any explicitly pinned endpoints (like the production endpoint) remain on their specified versions
 
-```ts
+```typescript fixture=default
 const repository = new ecr.Repository(this, "TestRepository", {
   repositoryName: "test-agent-runtime",
 });
@@ -315,7 +387,7 @@ Once Version 2 exists, you can create a staging endpoint that points to the new 
 new version in a controlled environment before promoting it to production. This separation ensures that production traffic continues
 to use the stable version while you validate the new version.
 
-```ts
+```typescript fixture=default
 const repository = new ecr.Repository(this, "TestRepository", {
   repositoryName: "test-agent-runtime",
 });
@@ -338,7 +410,7 @@ const stagingEndpoint = runtime.addEndpoint("staging", {
 After thoroughly testing the new version through the staging endpoint, you can update the production endpoint to point to Version 2.
 This controlled promotion process ensures that you can validate changes before they affect production traffic.
 
-```ts
+```typescript fixture=default
 const repository = new ecr.Repository(this, "TestRepository", {
   repositoryName: "test-agent-runtime",
 });
@@ -362,7 +434,7 @@ RuntimeEndpoint can also be created as a standalone resource.
 
 #### Example: Creating an endpoint for an existing runtime
 
-```typescript
+```typescript fixture=default
 // Reference an existing runtime by its ID
 const existingRuntimeId = "abc123-runtime-id"; // The ID of an existing runtime
 
@@ -387,7 +459,7 @@ IAM authentication is the default mode, when no authorizerConfiguration is set t
 
 To configure AWS Cognito User Pool authentication:
 
-```typescript
+```typescript fixture=default
 declare const userPool: cognito.UserPool;
 declare const userPoolClient: cognito.UserPoolClient;
 declare const anotherUserPoolClient: cognito.UserPoolClient;
@@ -411,7 +483,7 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
 
 To configure custom JWT authentication with your own OpenID Connect (OIDC) provider:
 
-```typescript
+```typescript fixture=default
 const repository = new ecr.Repository(this, "TestRepository", {
   repositoryName: "test-agent-runtime",
 });
@@ -434,7 +506,7 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
 
 To configure OAuth 2.0 authentication:
 
-```typescript
+```typescript fixture=default
 const repository = new ecr.Repository(this, "TestRepository", {
   repositoryName: "test-agent-runtime",
 });
@@ -463,7 +535,7 @@ The AgentCore Runtime supports two network modes for deployment:
 
 By default, runtimes are deployed in PUBLIC network mode, which provides internet access suitable for less sensitive or open-use scenarios:
 
-```typescript
+```typescript fixture=default
 const repository = new ecr.Repository(this, "TestRepository", {
   repositoryName: "test-agent-runtime",
 });
@@ -481,7 +553,7 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
 
 For enhanced security and network isolation, you can deploy your runtime within a VPC:
 
-```typescript
+```typescript fixture=default
 const repository = new ecr.Repository(this, "TestRepository", {
   repositoryName: "test-agent-runtime",
 });
@@ -510,8 +582,7 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
 
 When using VPC mode, the Runtime implements `ec2.IConnectable`, allowing you to manage network access using the `connections` property:
 
-```typescript
-
+```typescript fixture=default
 const vpc = new ec2.Vpc(this, 'MyVpc', {
   maxAzs: 2,
 });
@@ -542,6 +613,106 @@ runtime.connections.allowTo(databaseSecurityGroup, ec2.Port.tcp(5432), 'Allow Po
 
 // Allow outbound HTTPS to anywhere (for external API calls)
 runtime.connections.allowToAnyIpv4(ec2.Port.tcp(443), 'Allow HTTPS outbound');
+```
+
+### Runtime IAM Permissions
+
+The Runtime construct provides convenient methods for granting IAM permissions to principals that need to invoke the runtime or manage its execution role.
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+// Create a runtime
+const runtime = new agentcore.Runtime(this, "MyRuntime", {
+  runtimeName: "my_runtime",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+});
+
+// Create a Lambda function that needs to invoke the runtime
+const invokerFunction = new lambda.Function(this, "InvokerFunction", {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+import boto3
+def handler(event, context):
+    client = boto3.client('bedrock-agentcore')
+    # Invoke the runtime...
+  `),
+});
+
+// Grant permission to invoke the runtime directly
+runtime.grantInvokeRuntime(invokerFunction);
+
+// Grant permission to invoke the runtime on behalf of a user
+// (requires X-Amzn-Bedrock-AgentCore-Runtime-User-Id header)
+runtime.grantInvokeRuntimeForUser(invokerFunction);
+
+// Grant both invoke permissions (most common use case)
+runtime.grantInvoke(invokerFunction);
+
+// Grant specific custom permissions to the runtime's execution role
+runtime.grant(['bedrock:InvokeModel'], ['arn:aws:bedrock:*:*:*']);
+
+// Add a policy statement to the runtime's execution role
+runtime.addToRolePolicy(new iam.PolicyStatement({
+  actions: ['s3:GetObject'],
+  resources: ['arn:aws:s3:::my-bucket/*'],
+}));
+```
+
+### Other configuration
+
+#### Lifecycle configuration
+
+The LifecycleConfiguration input parameter to CreateAgentRuntime lets you manage the lifecycle of runtime sessions and resources in Amazon Bedrock AgentCore Runtime. This configuration helps optimize resource utilization by automatically cleaning up idle sessions and preventing long-running instances from consuming resources indefinitely.
+
+You can configure:
+
+- idleRuntimeSessionTimeout: Timeout in seconds for idle runtime sessions. When a session remains idle for this duration, it will trigger termination. Termination can last up to 15 seconds due to logging and other process completion. Default: 900 seconds (15 minutes)
+- maxLifetime: Maximum lifetime for the instance in seconds. Once reached, instances will initialize termination. Termination can last up to 15 seconds due to logging and other process completion. Default: 28800 seconds (8 hours)
+
+For additional information, please refer to the [documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-lifecycle-settings.html).
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+new agentcore.Runtime(this, 'test-runtime', {
+  runtimeName: 'test_runtime',
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  lifecycleConfiguration: {
+    idleRuntimeSessionTimeout: Duration.minutes(10),
+    maxLifetime: Duration.hours(4),
+  },
+});
+```
+
+#### Request header configuration
+
+Custom headers let you pass contextual information from your application directly to your agent code without cluttering the main request payload. This includes authentication tokens like JWT (JSON Web Tokens, which contain user identity and authorization claims) through the Authorization header, allowing your agent to make decisions based on who is calling it. You can also pass custom metadata like user preferences, session identifiers, or trace context using headers prefixed with X-Amzn-Bedrock-AgentCore-Runtime-Custom-, giving your agent access to up to 20 pieces of runtime context that travel alongside each request. This information can be also used in downstream systems like AgentCore Memory that you can namespace based on those characteristics like user_id or aud in claims like line of business.
+
+For additional information, please refer to the [documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-header-allowlist.html).
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+new agentcore.Runtime(this, 'test-runtime', {
+  runtimeName: 'test_runtime',
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  requestHeaderConfiguration: {
+    allowlistedHeaders: ['X-Amzn-Bedrock-AgentCore-Runtime-Custom-H1'],
+  },
+});
 ```
 
 ## Browser
@@ -583,6 +754,7 @@ For more information on VPC connectivity for Amazon Bedrock AgentCore Browser, p
 | `recordingConfig` | `RecordingConfig` | No | Recording configuration for browser. Defaults to no recording |
 | `executionRole` | `iam.IRole` | No | The IAM role that provides permissions for the browser to access AWS services. A new role will be created if not provided |
 | `tags` | `{ [key: string]: string }` | No | Tags to apply to the browser resource |
+| `browserSigning` | BrowserSigning | No | Browser signing configuration. Defaults to DISABLED |
 
 ### Basic Browser Creation
 
@@ -707,6 +879,21 @@ const browser = new agentcore.BrowserCustom(this, "MyBrowser", {
 
 // The browser construct automatically grants S3 permissions to the execution role
 // when recording is enabled, so no additional IAM configuration is needed
+```
+
+### Browser with Browser signing
+
+AI agents need to browse the web on your behalf. When your agent visits a website to gather information, complete a form, or verify data, it encounters the same defenses designed to stop unwanted bots: CAPTCHAs, rate limits, and outright blocks.
+
+Amazon Bedrock AgentCore Browser supports Web Bot Auth. Web Bot Auth is a draft IETF protocol that gives agents verifiable cryptographic identities. When you enable Web Bot Auth in AgentCore Browser, the service issues cryptographic credentials that websites can verify. The agent presents these credentials with every request. The WAF may now additionally check the signature, confirm it matches a trusted directory, and allow the request through if verified bots are allowed by the domain owner and other WAF checks are clear.
+
+To enable the browser to sign requests using the Web Bot Auth protocol, create a browser tool with the browserSigning configuration:
+
+```typescript fixture=default
+const browser = new agentcore.BrowserCustom(this, 'test-browser', {
+  browserCustomName: 'test_browser',
+  browserSigning: agentcore.BrowserSigning.ENABLED
+});
 ```
 
 ### Browser IAM Permissions

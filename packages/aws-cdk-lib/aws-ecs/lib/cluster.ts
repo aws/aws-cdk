@@ -1,8 +1,8 @@
 import { Construct, IConstruct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
+import { ClusterGrants } from './cluster-grants';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
-import { ClusterGrants } from './ecs-grants.generated';
 import {
   CfnCluster,
   CfnCapacityProvider,

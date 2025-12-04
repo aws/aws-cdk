@@ -17,16 +17,16 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { Gateway } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/gateway';
-import { GatewayExceptionLevel } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/gateway-base';
-import { GatewayAuthorizer } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/inbound-auth/authorizer';
-import { ApiKeyCredentialLocation } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/outbound-auth/api-key';
-import { GatewayCredentialProvider } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/outbound-auth/credential-provider';
-import { McpProtocolConfiguration, MCPProtocolVersion, McpGatewaySearchType } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/protocol';
-import { ApiSchema } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/targets/schema/api-schema';
-import { ToolSchema, SchemaDefinitionType } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/targets/schema/tool-schema';
-import { GatewayTarget } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/targets/target';
-import { LambdaTargetConfiguration, McpServerTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from '../../../../aws-bedrock-agentcore-alpha/agentcore/gateway/targets/target-configuration';
+import { Gateway } from '../../../lib';
+import { GatewayExceptionLevel } from '../../../lib/gateway/gateway-base';
+import { GatewayAuthorizer } from '../../../lib/gateway/inbound-auth/authorizer';
+import { ApiKeyCredentialLocation } from '../../../lib/gateway/outbound-auth/api-key';
+import { GatewayCredentialProvider } from '../../../lib/gateway/outbound-auth/credential-provider';
+import { McpProtocolConfiguration, MCPProtocolVersion, McpGatewaySearchType } from '../../../lib/gateway/protocol';
+import { ApiSchema } from '../../../lib/gateway/targets/schema/api-schema';
+import { ToolSchema, SchemaDefinitionType } from '../../../lib/gateway/targets/schema/tool-schema';
+import { GatewayTarget } from '../../../lib/gateway/targets/target';
+import { LambdaTargetConfiguration, McpServerTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from '../../../lib/gateway/targets/target-configuration';
 
 describe('Gateway Core Tests', () => {
   let stack: cdk.Stack;

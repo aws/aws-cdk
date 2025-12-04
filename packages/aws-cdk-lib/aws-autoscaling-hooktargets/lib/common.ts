@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/order
+
 import * as constructs from 'constructs';
 import * as iam from '../../aws-iam';
 
