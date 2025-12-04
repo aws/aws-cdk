@@ -357,8 +357,8 @@ class LogsMixin extends ClassType {
     const resource = method.addParameter({
       name: 'resource',
       type: CONSTRUCTS.IConstruct,
-      documentation: `Some configuration may be required on the source resource to get Vended Logs to function properly.` +
-        `\nSee Vended Logs documentation specific to ${this.resource.cloudFormationType} for more information.`
+      documentation: 'Some configuration may be required on the source resource to get Vended Logs to function properly.' +
+        `\nSee Vended Logs documentation specific to ${this.resource.cloudFormationType} for more information.`,
     });
 
     const sourceArn = expr.ident('sourceArn');
