@@ -4002,3 +4002,10 @@ move:aws-cdk-lib.IEnvironmentAware                                              
 move:aws-cdk-lib.ResourceEnvironment                                                        aws-cdk-lib.interfaces.ResourceEnvironment
 
 removed:aws-cdk-lib.aws_dynamodb.Table.table
+
+# Making aws-dynamodb partitionKey optional to support schema() function and compound keys
+weakened:aws-cdk-lib.aws_dynamodb.SchemaOptions
+
+# property unconfiguredBehavesLike is deprecated and had its type changed
+strengthened:aws-cdk-lib.cloud_assembly_schema.FeatureFlag
+weakened:aws-cdk-lib.cloud_assembly_schema.FeatureFlag

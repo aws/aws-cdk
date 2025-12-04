@@ -987,7 +987,7 @@ export class Stack extends Construct implements ITaggable {
       const cycleDescription = cycle.map((cycleReason) => {
         return cycleReason.description;
       }).join(', ');
-      // eslint-disable-next-line max-len
+
       throw new ValidationError(`'${target.node.path}' depends on '${this.node.path}' (${cycleDescription}). Adding this dependency (${reason.description}) would create a cyclic reference.`, this);
     }
 
@@ -1405,7 +1405,6 @@ export class Stack extends Construct implements ITaggable {
     let transform: string | string[] | undefined;
 
     if (this.templateOptions.transform) {
-      // eslint-disable-next-line max-len
       Annotations.of(this).addWarningV2('@aws-cdk/core:stackDeprecatedTransform', 'This stack is using the deprecated `templateOptions.transform` property. Consider switching to `addTransform()`.');
       this.addTransform(this.templateOptions.transform);
     }

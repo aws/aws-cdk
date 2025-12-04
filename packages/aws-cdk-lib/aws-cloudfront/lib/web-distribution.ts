@@ -788,7 +788,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         return iam.Grant.addToPrincipal({ grantee, actions, resourceArns: [formatDistributionArn(this)] });
       }
       public grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
-        return DistributionGrants._fromDistribution(this).createInvalidation(identity);
+        return DistributionGrants.fromDistribution(this).createInvalidation(identity);
       }
     }();
   }
@@ -796,7 +796,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
   /**
    * Collection of grant methods for a Distribution
    */
-  public readonly grants = DistributionGrants._fromDistribution(this);
+  public readonly grants = DistributionGrants.fromDistribution(this);
 
   /**
    * The logging bucket for this CloudFront distribution.
@@ -946,7 +946,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
       priceClass: props.priceClass || PriceClass.PRICE_CLASS_100,
       ipv6Enabled: props.enableIpV6 ?? true,
-      // eslint-disable-next-line max-len
+
       customErrorResponses: props.errorConfigurations, // TODO: validation : https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-customerrorresponse.html#cfn-cloudfront-distribution-customerrorresponse-errorcachingminttl
       webAclId: props.webACLId,
 

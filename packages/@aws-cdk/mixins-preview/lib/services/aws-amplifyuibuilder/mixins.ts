@@ -1,1 +1,1 @@
-export * from './amplifyuibuilder.generated';
+export * from './cfn-props-mixins.generated';
