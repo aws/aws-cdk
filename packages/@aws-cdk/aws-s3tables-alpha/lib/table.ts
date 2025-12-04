@@ -312,7 +312,7 @@ export interface SchemaFieldProperty {
   /**
    * The field type.
    *
-   * S3 Tables supports all Apache Iceberg primitive types. For more information, see the [Apache Iceberg documentation](https://docs.aws.amazon.com/https://iceberg.apache.org/spec/#primitive-types).
+   * S3 Tables supports all Apache Iceberg primitive types. For more information, see the [Apache Iceberg documentation](https://iceberg.apache.org/spec/#primitive-types).
    */
   readonly type: string;
 }
