@@ -1,9 +1,8 @@
 import { Template, Match } from '../../assertions';
+import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
-import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import { App, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
@@ -307,6 +306,43 @@ describe('For alarm-based rollbacks', () => {
       DeploymentConfiguration: {
         Alarms: Match.absent(),
       },
+    });
+  });
+
+  describe('enableDeploymentAlarms', () => {
+    test('enableDeploymentAlarms will concat alarms in the deployment configuration when called more than once', () => {
+      // GIVEN
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      const expectedAlarmNames = ['alarm1', 'alarm2', 'alarm3'];
+
+      // WHEN
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        minHealthyPercent: 100,
+        maxHealthyPercent: 200,
+        deploymentAlarms: { alarmNames: ['alarm1'] },
+      });
+
+      service.enableDeploymentAlarms(['alarm2']);
+      service.enableDeploymentAlarms(['alarm3']);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          Alarms: {
+            AlarmNames: expectedAlarmNames,
+            Enable: true,
+            Rollback: true,
+          },
+        },
+      });
     });
   });
 });
