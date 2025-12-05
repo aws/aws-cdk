@@ -483,13 +483,13 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
 export interface RecordingConfig {
   /**
    * Whether recording is enabled
-   * @default - false
+   * @default false
    */
   readonly enabled?: boolean;
 
   /**
    * S3 Location Configuration
-   * @default - undefined
+   * @default undefined
    */
   readonly s3Location?: Location;
 }

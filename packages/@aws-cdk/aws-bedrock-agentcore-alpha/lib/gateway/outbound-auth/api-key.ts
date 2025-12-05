@@ -114,7 +114,7 @@ export interface ApiKeyCredentialProviderProps {
    * The location of the API key credential.
    * This field specifies where in the request the API key should be placed.
    *
-   * @default - HEADER
+   * @default HEADER
    */
   readonly credentialLocation?: ApiKeyCredentialLocation;
 }
