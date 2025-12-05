@@ -1,9 +1,9 @@
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { Stack, Tags } from 'aws-cdk-lib/core';
-import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import * as eks from '../lib';
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_25;

@@ -1,6 +1,6 @@
 import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
-import * as validation from './validation-helpers';
 import { ActionGroupSchema } from './schema-base';
+import * as validation from './validation-helpers';
 
 /**
  * Enum for parameter types in function schemas

@@ -4,13 +4,13 @@
 
 /// !cdk-integ aws-cdk-bedrock-api-schema-1
 
-import * as cdk from 'aws-cdk-lib';
+import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as bedrock from '../../../bedrock';
-import * as path from 'path';
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-bedrock-api-schema-1');

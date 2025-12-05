@@ -31,7 +31,6 @@ export function propertyNameFromCloudFormation(name: string): string {
 
   let ret = camelcase(name);
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   const suffixes: { [key: string]: string } = { ARNs: 'Arns', MBs: 'MBs', AZs: 'AZs' };
 
   for (const suffix of Object.keys(suffixes)) {

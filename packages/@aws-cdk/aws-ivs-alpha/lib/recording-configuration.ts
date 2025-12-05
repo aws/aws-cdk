@@ -1,11 +1,11 @@
 import { CfnRecordingConfiguration } from 'aws-cdk-lib/aws-ivs';
 import { IBucketRef } from 'aws-cdk-lib/aws-s3';
 import { Duration, Fn, IResource, Resource, Stack, Token } from 'aws-cdk-lib/core';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { RenditionConfiguration } from './rendition-configuration';
 import { ThumbnailConfiguration } from './thumbnail-configuration';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Properties of the IVS Recording configuration

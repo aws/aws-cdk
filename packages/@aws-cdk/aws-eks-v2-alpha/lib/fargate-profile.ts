@@ -1,9 +1,9 @@
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { CfnFargateProfile } from 'aws-cdk-lib/aws-eks';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { Annotations, ITaggable, TagManager, TagType } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { Cluster } from './cluster';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { CfnFargateProfile } from 'aws-cdk-lib/aws-eks';
-import { Annotations, ITaggable, TagManager, TagType } from 'aws-cdk-lib/core';
 
 /**
  * Options for defining EKS Fargate Profiles.

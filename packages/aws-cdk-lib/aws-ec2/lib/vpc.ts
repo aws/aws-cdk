@@ -2567,11 +2567,9 @@ class ImportedVpc extends VpcBase {
       }
     }
 
-    /* eslint-disable max-len */
     const pub = new ImportSubnetGroup(props.publicSubnetIds, props.publicSubnetNames, props.publicSubnetRouteTableIds, props.publicSubnetIpv4CidrBlocks, SubnetType.PUBLIC, this.availabilityZones, 'publicSubnetIds', 'publicSubnetNames', 'publicSubnetRouteTableIds', 'publicSubnetIpv4CidrBlocks');
     const priv = new ImportSubnetGroup(props.privateSubnetIds, props.privateSubnetNames, props.privateSubnetRouteTableIds, props.privateSubnetIpv4CidrBlocks, SubnetType.PRIVATE_WITH_EGRESS, this.availabilityZones, 'privateSubnetIds', 'privateSubnetNames', 'privateSubnetRouteTableIds', 'privateSubnetIpv4CidrBlocks');
     const iso = new ImportSubnetGroup(props.isolatedSubnetIds, props.isolatedSubnetNames, props.isolatedSubnetRouteTableIds, props.isolatedSubnetIpv4CidrBlocks, SubnetType.PRIVATE_ISOLATED, this.availabilityZones, 'isolatedSubnetIds', 'isolatedSubnetNames', 'isolatedSubnetRouteTableIds', 'isolatedSubnetIpv4CidrBlocks');
-    /* eslint-enable max-len */
 
     this.publicSubnets = pub.import(this);
     this.privateSubnets = priv.import(this);
@@ -2733,7 +2731,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
       const ref = Token.isUnresolved(attrs.subnetId) || Token.isUnresolved([attrs.subnetId])
         ? `at '${Node.of(scope).path}/${id}'`
         : `'${attrs.subnetId}'`;
-      // eslint-disable-next-line max-len
+
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:noSubnetRouteTableId', `No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
     }
 
@@ -2754,7 +2752,6 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
 
   public get availabilityZone(): string {
     if (!this._availabilityZone) {
-      // eslint-disable-next-line max-len
       throw new ValidationError('You cannot reference a Subnet\'s availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()', this);
     }
     return this._availabilityZone;
@@ -2799,12 +2796,10 @@ function determineNatGatewayCount(requestedCount: number | undefined, subnetConf
   const count = requestedCount !== undefined ? Math.min(requestedCount, azCount) : (hasPrivateSubnets ? azCount : 0);
 
   if (count === 0 && hasPrivateSubnets && !hasCustomEgress) {
-    // eslint-disable-next-line max-len
     throw new UnscopedValidationError('If you do not want NAT gateways (natGateways=0), make sure you don\'t configure any PRIVATE(_WITH_NAT) subnets in \'subnetConfiguration\' (make them PUBLIC or ISOLATED instead)');
   }
 
   if (count > 0 && !hasPublicSubnets) {
-    // eslint-disable-next-line max-len
     throw new UnscopedValidationError(`If you configure PRIVATE subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into (got ${JSON.stringify(subnetConfig)}.`);
   }
 

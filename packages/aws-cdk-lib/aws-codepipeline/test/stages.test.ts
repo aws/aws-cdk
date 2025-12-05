@@ -6,7 +6,7 @@ import * as codepipeline from '../lib';
 import { Result } from '../lib';
 import { Stage } from '../lib/private/stage';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('stages', () => {
   describe('Pipeline Stages', () => {

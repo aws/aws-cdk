@@ -1,3 +1,4 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 /**
  * Load the `features.ts` source file, and replace the "V2NEXT" version markers with the actual current version
  */

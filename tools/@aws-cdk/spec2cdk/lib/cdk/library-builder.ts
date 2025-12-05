@@ -1,4 +1,4 @@
-/* eslint-disable @cdklabs/no-throw-default-error */
+
 import * as path from 'path';
 import { SpecDatabase, Resource, Service } from '@aws-cdk/service-spec-types';
 import { Module } from '@cdklabs/typewriter';

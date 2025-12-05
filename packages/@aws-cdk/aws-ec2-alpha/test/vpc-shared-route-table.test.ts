@@ -1,9 +1,9 @@
-import { Annotations, Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
-import * as vpc from '../lib/vpc-v2';
-import { IpCidr, SubnetV2 } from '../lib/subnet-v2';
-import * as route from '../lib/route';
+import { Annotations, Template } from 'aws-cdk-lib/assertions';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
+import * as route from '../lib/route';
+import { IpCidr, SubnetV2 } from '../lib/subnet-v2';
+import * as vpc from '../lib/vpc-v2';
 
 describe('VPC with shared route tables', () => {
   let stack: cdk.Stack;

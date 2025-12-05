@@ -554,6 +554,13 @@
       }
     ]
   },
+  "aws-devopsagent": {
+    "scopes": [
+      {
+        "namespace": "AWS::DevOpsAgent"
+      }
+    ]
+  },
   "aws-devopsguru": {
     "scopes": [
       {

@@ -23,12 +23,12 @@
     "isolatedModules": true
   },
   "include": [
-    "**/*.ts",
-    "**/*.d.ts"
+    "**/*.ts"
   ],
   "exclude": [
-    "**/test/**/*.ts",
-    "dist",
+    "**/*.d.ts",
+    "dist/**/*.ts",
+    "test/custom-resources-framework/expected/**/*.ts",
     "runtime-determiner"
   ]
 }

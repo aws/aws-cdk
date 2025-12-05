@@ -1,7 +1,7 @@
-import * as cdk from 'aws-cdk-lib';
-import { Service, Source } from '../lib';
-import * as kms from 'aws-cdk-lib/aws-kms';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import { Service, Source } from '../lib';
 
 const app = new cdk.App();
 

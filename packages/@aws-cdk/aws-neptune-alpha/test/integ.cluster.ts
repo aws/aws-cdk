@@ -1,9 +1,9 @@
+import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import * as cdk from 'aws-cdk-lib';
-import * as integ from '@aws-cdk/integ-tests-alpha';
 import { DatabaseCluster, EngineVersion, InstanceType, LogType } from '../lib';
 import { ClusterParameterGroup, ParameterGroupFamily } from '../lib/parameter-group';
 

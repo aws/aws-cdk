@@ -1,6 +1,6 @@
 import * as iot from '@aws-cdk/aws-iot-alpha';
-import * as logs from 'aws-cdk-lib/aws-logs';
 import * as cdk from 'aws-cdk-lib';
+import * as logs from 'aws-cdk-lib/aws-logs';
 import * as actions from '../../lib';
 
 const app = new cdk.App();

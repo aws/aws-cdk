@@ -56,7 +56,7 @@ function asgHandler(_event: any, _context: any, callback: any) {
   json.Instances.forEach((instance: any) => {
     instanceIds.push(instance.InstanceId);
   });
-  // eslint-disable-next-line quote-props
+  // eslint-disable-next-line @stylistic/quote-props
   const result = { 'InstanceIDs': instanceIds };
   return callback(undefined, result);
 }

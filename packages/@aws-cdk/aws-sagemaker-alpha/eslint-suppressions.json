@@ -1,0 +1,37 @@
+{
+  "lib/accelerator-type.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "lib/endpoint-config.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 13
+    }
+  },
+  "lib/endpoint.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 5
+    }
+  },
+  "lib/instance-type.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "lib/model-data.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "lib/model.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 5
+    }
+  },
+  "lib/scalable-instance-count.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  }
+}

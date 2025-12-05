@@ -3,6 +3,7 @@ import { AdotInstrumentationConfig, AdotLambdaExecWrapper } from './adot-layers'
 import { AliasOptions, Alias } from './alias';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
+import { DurableConfig } from './durable-config';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FileSystem } from './filesystem';
@@ -560,6 +561,16 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly tenancyConfig?: TenancyConfig;
 
   /**
+   * The durable configuration for the function.
+   *
+   * If durability is added to an existing function, a resource replacement will be triggered.
+   * See the 'durableConfig' section in the module README for more details.
+   *
+   * @default - No durable configuration
+   */
+  readonly durableConfig?: DurableConfig;
+
+  /**
    * The log group the function sends logs to.
    *
    * By default, Lambda functions send logs to an automatically created default log group named /aws/lambda/\<function name\>.
@@ -975,7 +986,11 @@ export class Function extends FunctionBase {
     const managedPolicies = new Array<iam.IManagedPolicy>();
 
     // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-    managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'));
+    if (props.durableConfig) {
+      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicDurableExecutionRolePolicy'));
+    } else {
+      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'));
+    }
 
     if (props.vpc) {
       // Policy that will have ENI creation permissions
@@ -1114,6 +1129,7 @@ export class Function extends FunctionBase {
       architectures: this._architecture ? [this._architecture.name] : undefined,
       runtimeManagementConfig: props.runtimeManagementMode?.runtimeManagementConfig,
       tenancyConfig: props.tenancyConfig?.tenancyConfigProperty,
+      durableConfig: props.durableConfig ? this.renderDurableConfig(props.durableConfig) : undefined,
       snapStart: this.configureSnapStart(props),
       loggingConfig: this.getLoggingConfig(props),
       recursiveLoop: props.recursiveLoop,
@@ -1668,6 +1684,26 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
         securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
       };
     }
+  }
+
+  private renderDurableConfig(config: DurableConfig): CfnFunction.DurableConfigProperty {
+    Annotations.of(this).addInfoV2('aws-lambda:Function.DurableConfig', 'Modifying an existing lambda to use durability will trigger a resource replacement');
+    if (!config.executionTimeout.isUnresolved() && (config.executionTimeout.toSeconds() < 1 || config.executionTimeout.toSeconds() > 31622400)) {
+      throw new ValidationError(`executionTimeout must be between 1 and 31622400 seconds, got ${config.executionTimeout.toSeconds()}`, this);
+    }
+
+    let retentionDays: number | undefined;
+    if (config.retentionPeriod) {
+      if (!config.retentionPeriod.isUnresolved() && (config.retentionPeriod.toDays() < 1 || config.retentionPeriod.toDays() > 90)) {
+        throw new ValidationError(`retentionPeriodInDays must be between 1 and 90 days, got ${config.retentionPeriod.toDays()}`, this);
+      }
+      retentionDays = config.retentionPeriod.toDays();
+    }
+
+    return {
+      executionTimeout: config.executionTimeout.toSeconds(),
+      retentionPeriodInDays: retentionDays,
+    };
   }
 
   private configureSnapStart(props: FunctionProps): CfnFunction.SnapStartProperty | undefined {

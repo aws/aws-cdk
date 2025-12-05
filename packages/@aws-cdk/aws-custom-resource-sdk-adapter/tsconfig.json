@@ -21,8 +21,6 @@
     "composite": true,
     "incremental": true
   },
-  "include": [
-    "**/*.ts",
-    "**/*.d.ts"
-  ]
+  "include": [ "**/*.ts" ],
+  "exclude": [ "**/*.d.ts" ]
 }

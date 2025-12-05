@@ -4,7 +4,7 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as sources from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('S3EventSource', () => {
   test('sufficiently complex example', () => {

@@ -1,10 +1,10 @@
-import { Construct } from 'constructs';
-import { UserEngine } from './common';
 import { CfnUser } from 'aws-cdk-lib/aws-elasticache';
-import { UserBase, UserBaseProps } from './user-base';
 import { SecretValue, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { UserEngine } from './common';
+import { UserBase, UserBaseProps } from './user-base';
 
 const ELASTICACHE_PASSWORDUSER_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.PasswordUser');
 

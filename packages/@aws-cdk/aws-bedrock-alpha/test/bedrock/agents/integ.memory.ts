@@ -4,8 +4,8 @@
 
 /// !cdk-integ aws-cdk-bedrock-memory-1
 
-import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as bedrock from '../../../lib';
 

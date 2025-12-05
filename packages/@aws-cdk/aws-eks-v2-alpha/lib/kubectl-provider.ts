@@ -1,12 +1,12 @@
-import { Construct, IConstruct } from 'constructs';
-import { Cluster, ICluster } from './cluster';
+import * as path from 'path';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Duration, CfnCondition, Fn, Aws, Size } from 'aws-cdk-lib/core';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { AwsCliLayer } from 'aws-cdk-lib/lambda-layer-awscli';
-import * as path from 'path';
+import { Construct, IConstruct } from 'constructs';
+import { Cluster, ICluster } from './cluster';
 
 export interface KubectlProviderOptions {
   /**

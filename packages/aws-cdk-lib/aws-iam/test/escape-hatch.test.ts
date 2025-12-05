@@ -5,7 +5,7 @@ import { Template } from '../../assertions';
 import { Stack } from '../../core';
 import * as iam from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('IAM escape hatches', () => {
   test('addPropertyOverride should allow overriding supported properties', () => {

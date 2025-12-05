@@ -75,6 +75,7 @@ export const VERSION_LOCKED: { [key: string]: boolean } = {
   CapacityProviderConfig: true,
   FunctionScalingConfig: true,
   PublishToLatestPublished: true,
+  DurableConfig: true,
 
   // not locked to the version
   CodeSigningConfigArn: false,

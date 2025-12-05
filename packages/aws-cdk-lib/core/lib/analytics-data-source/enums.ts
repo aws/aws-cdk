@@ -1,5 +1,5 @@
 /* eslint-disable quotes */
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 /* eslint-disable @stylistic/comma-dangle */
 /* eslint-disable @cdklabs/no-literal-partition */
 /*

@@ -1,8 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template, Capture } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as glue from '../lib';
 import { TriggerSchedule } from '../lib/triggers/trigger-options';
-import * as iam from 'aws-cdk-lib/aws-iam';
 
 describe('Workflow and Triggers', () => {
   let stack: cdk.Stack;

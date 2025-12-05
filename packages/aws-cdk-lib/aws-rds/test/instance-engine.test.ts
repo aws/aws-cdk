@@ -312,6 +312,7 @@ describe('instance engine', () => {
       ['11.4.7', rds.MariaDbEngineVersion.VER_11_4_7],
       ['11.4.8', rds.MariaDbEngineVersion.VER_11_4_8],
       ['11.8.3', rds.MariaDbEngineVersion.VER_11_8_3],
+      ['11.8.5', rds.MariaDbEngineVersion.VER_11_8_5],
     ])('is passed correctly for %s', (engineVersion, version) => {
       // WHEN
       const stack = new cdk.Stack();

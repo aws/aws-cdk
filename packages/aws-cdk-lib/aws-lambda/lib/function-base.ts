@@ -469,7 +469,6 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      // eslint-disable-next-line max-len
       throw new ValidationError('Only VPC-associated Lambda Functions have security groups to manage. Supply the "vpc" parameter when creating the Lambda, or "securityGroupId" when importing it.', this);
     }
     return this._connections;

@@ -14,7 +14,6 @@ enum CoreTypesFqn {
 }
 
 export class CoreTypes {
-
   /**
    * @returns true if assembly has the Core module
    */

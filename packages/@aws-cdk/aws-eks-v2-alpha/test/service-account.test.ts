@@ -1,9 +1,7 @@
-import { testFixture, testFixtureCluster } from './util';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { testFixture, testFixtureCluster } from './util';
 import * as eks from '../lib';
-
-/* eslint-disable max-len */
 
 describe('service account', () => {
   describe('add Service Account', () => {

@@ -6,9 +6,9 @@
 /// !cdk-integ aws-cdk-bedrock-agentcore-runtime
 
 import * as path from 'path';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as agentcore from '../../../lib';
 
 const app = new cdk.App();

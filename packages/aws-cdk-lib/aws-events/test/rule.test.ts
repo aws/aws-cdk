@@ -6,7 +6,7 @@ import * as cdk from '../../core';
 import { CfnRule, EventBus, EventField, EventPattern, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule, Match as m } from '../lib';
 import { Rule } from '../lib/rule';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('rule', () => {
   test('default rule', () => {

@@ -6,7 +6,7 @@ import * as cxapi from '../../cx-api';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 /* eslint-disable quotes */
 
 describe('CDK Include for templates with SAM transform', () => {

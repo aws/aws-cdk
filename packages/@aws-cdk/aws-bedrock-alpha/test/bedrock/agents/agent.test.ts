@@ -1,9 +1,9 @@
+import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App } from 'aws-cdk-lib/core';
 import * as core from 'aws-cdk-lib/core';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as bedrock from '../../../bedrock';
 
 describe('Agent', () => {

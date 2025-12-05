@@ -5,7 +5,7 @@ import * as sns from '../../aws-sns';
 import { Duration, SecretValue, Stack } from '../../core';
 import * as cpactions from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('manual approval', () => {
   describe('manual approval Action', () => {

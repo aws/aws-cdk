@@ -1,12 +1,12 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { CfnFleet } from 'aws-cdk-lib/aws-gamelift';
+import { GameLiftMetrics } from 'aws-cdk-lib/aws-gamelift/lib/gamelift-canned-metrics.generated';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { Alias, AliasOptions } from './alias';
 import { IGameSessionQueueDestination } from './game-session-queue';
-import { GameLiftMetrics } from 'aws-cdk-lib/aws-gamelift/lib/gamelift-canned-metrics.generated';
-import { CfnFleet } from 'aws-cdk-lib/aws-gamelift';
 
 /**
  * Current resource capacity settings in a specified fleet or location.

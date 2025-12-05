@@ -1,3 +1,4 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 import { generateAll as generateCfnPropsMixins } from './spec2mixins';
 import { generateAll as generateLogsDeliveryMixins } from './spec2logs';
 import { generateAll as generateEvents } from './spec2eventbridge';
@@ -70,7 +71,7 @@ async function updateExportsAndEntryPoints(modules: ModuleMap, pkgPath: string) 
     };
 
     // @aws-cdk/mixins-preview/aws_s3 => ./lib/services/aws-s3/index.js
-    const indexExportName = `./${moduleConfig.submodule}`;
+    const indexExportName = `./${moduleConfig.name}`;
     newExports[indexExportName] = `./lib/services/${moduleConfig.name}/index.js`;
 
     // @aws-cdk/mixins-preview/aws-s3 => `export * as aws_s3 from './aws-s3';`
@@ -79,13 +80,13 @@ async function updateExportsAndEntryPoints(modules: ModuleMap, pkgPath: string) 
     }
 
     // @aws-cdk/mixins-preview/aws_s3/mixins => ./lib/services/aws-s3/mixins.js
-    const mixinsExportName = `./${moduleConfig.submodule}/mixins`;
+    const mixinsExportName = `./${moduleConfig.name}/mixins`;
     newExports[mixinsExportName] = `./lib/services/${moduleConfig.name}/mixins.js`;
 
     // @aws-cdk/mixins-preview/aws_s3/events => ./lib/services/aws-s3/events.js
     const eventsFilePath = path.join(pkgPath, 'lib', 'services', moduleConfig.name, 'events.ts');
     if (existsSync(eventsFilePath)) {
-      const eventsExportName = `./${moduleConfig.submodule}/events`;
+      const eventsExportName = `./${moduleConfig.name}/events`;
       newExports[eventsExportName] = `./lib/services/${moduleConfig.name}/events.js`;
     }
   }
@@ -165,6 +166,7 @@ async function writeJsiiModuleMetadata(moduleFile: string, moduleDef: ModuleDefi
     : path.join(path.dirname(moduleFile), `.${base}.jsiirc.json`);
 
   const namespaceUc = ucfirst(namespaceLc ?? '');
+  const dotnetNamespace = join(moduleDef.dotnetPackage, '.', namespaceUc);
 
   const mixinsJsiirc = {
     targets: {
@@ -172,7 +174,8 @@ async function writeJsiiModuleMetadata(moduleFile: string, moduleDef: ModuleDefi
         package: join(moduleDef.javaPackage, '.', namespaceLc),
       },
       dotnet: {
-        package: join(moduleDef.dotnetPackage, '.', namespaceUc),
+        namespace: dotnetNamespace,
+        packageId: dotnetNamespace,
       },
       python: {
         module: join(moduleDef.pythonModuleName, '.', namespaceLc),

@@ -4,14 +4,14 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnApplicationCloudWatchLoggingOptionV2, CfnApplicationV2 } from 'aws-cdk-lib/aws-kinesisanalytics';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as core from 'aws-cdk-lib/core';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { ApplicationCode } from './application-code';
 import { environmentProperties } from './private/environment-properties';
 import { flinkApplicationConfiguration } from './private/flink-application-configuration';
 import { validateFlinkApplicationProps as validateApplicationProps } from './private/validation';
 import { LogLevel, MetricsLevel, Runtime } from './types';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * An interface expressing the public properties on both an imported and

@@ -1,0 +1,17 @@
+{
+  "lib/function.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 3
+    }
+  },
+  "lib/layer.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "test/function.test.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 2
+    }
+  }
+}

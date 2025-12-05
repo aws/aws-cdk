@@ -1,0 +1,37 @@
+{
+  "lib/app-staging-synthesizer.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 5
+    }
+  },
+  "lib/default-staging-stack.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 4
+    }
+  },
+  "lib/private/app-global.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "test/evaluate-cfn.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 7
+    }
+  },
+  "test/integ.synth-default-encryption.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "test/integ.synth-default-resources.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "test/util.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  }
+}

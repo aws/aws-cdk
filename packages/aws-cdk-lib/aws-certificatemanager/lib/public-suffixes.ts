@@ -1,5 +1,5 @@
 // This file has been generated using ../suffixes/build-map.py
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 export const publicSuffixes = {
   'ac': {
     'com': {},
