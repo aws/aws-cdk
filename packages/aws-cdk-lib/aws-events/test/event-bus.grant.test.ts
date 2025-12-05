@@ -1,6 +1,6 @@
 import { Annotations, Template, Match } from '../../assertions';
 import * as iam from '../../aws-iam';
-import { App, Stack, Token } from '../../core';
+import { App, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
 import { EventBus } from '../lib';
 

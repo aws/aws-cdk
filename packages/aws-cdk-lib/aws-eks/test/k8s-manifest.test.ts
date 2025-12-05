@@ -1,10 +1,7 @@
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
-import { testFixtureNoVpc } from './util';
 import { Template } from '../../assertions';
 import { App, CfnResource, Stack } from '../../core';
 import { Cluster, KubernetesManifest, KubernetesVersion, HelmChart } from '../lib';
-
-/* eslint-disable max-len */
 
 describe('k8s manifest', () => {
   let app: App;

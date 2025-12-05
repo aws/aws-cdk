@@ -1,41 +1,15 @@
 {
+  "$": "A tsconfig for all files, for the benefit of the VSCode plugin; necessary because we can't convince the plugin to load anything other than tsconfig.json upwards of the file we are editing, and all tests aren't in a single test/ subdirectory.b",
+  "extends": "./tsconfig.options.json",
   "compilerOptions": {
-    "declarationMap": false,
-    "inlineSourceMap": true,
-    "inlineSources": true,
-    "alwaysStrict": true,
-    "declaration": true,
-    "incremental": true,
-    "lib": [
-      "es2022"
-    ],
-    "module": "commonjs",
-    "noEmitOnError": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
-    "stripInternal": true,
-    "target": "es2022",
-    "composite": true,
-    "esModuleInterop": false,
-    "isolatedModules": true,
-    "tsBuildInfoFile": "tsconfig.tsbuildinfo"
+    "tsBuildInfoFile": "tsconfig.tsbuildinfo",
+    "stripInternal": true
   },
   "include": [
     "**/*.ts"
   ],
   "exclude": [
     "node_modules",
-    "scripts",
-    "**/test/**/*.ts",
     "**/*.d.ts"
   ],
   "references": [

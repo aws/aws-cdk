@@ -21,14 +21,23 @@ export function cdkBuildOptions(): CDKBuildOptions {
   // now it's easiest to just read them from the package JSON.
   // Our package directories are littered with .json files enough
   // already.
-  return currentPackageJson()['cdk-build'] || {};
+  const pj = currentPackageJson();
+
+  return {
+    ...pj['cdk-build'],
+    currentPackageName: pj.name,
+  };
 }
 
 /**
  * Return the cdk-package options
  */
 export function cdkPackageOptions(): CDKPackageOptions {
-  return currentPackageJson()['cdk-package'] || {};
+  const pj = currentPackageJson();
+  return {
+    ...pj['cdk-package'],
+    currentPackageName: pj.name,
+  };
 }
 
 /**
@@ -121,6 +130,8 @@ export function genScript(): string | undefined {
 }
 
 export interface CDKBuildOptions {
+  currentPackageName: string;
+
   /**
    * What CloudFormation scope to generate resources for, if any
    */
@@ -185,6 +196,8 @@ export interface CDKBuildOptions {
 }
 
 export interface CDKPackageOptions {
+  currentPackageName: string;
+
   /**
    * Optional commands (formatted as a list of strings, which will be joined together with the && operator) to run before packaging
    */

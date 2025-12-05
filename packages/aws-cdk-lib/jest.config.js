@@ -1,13 +1,16 @@
+// @ts-check
 const baseConfig = require('@aws-cdk/cdk-build-tools/config/jest.config');
+const ext = require('@aws-cdk/cdk-build-tools/config/ext');
 
 /** @type {import('ts-jest').JestConfigWithTsJest} */
-module.exports = {
+const config = {
   ...baseConfig,
 
   // Different than usual
   testMatch: [
-    '<rootDir>/**/test/**/?(*.)+(test).ts',
+    `<rootDir>/**/test/**/?(*.)+(test).${ext}`,
   ],
+
   coveragePathIgnorePatterns: ['\\.generated\\.[jt]s$', '<rootDir>/.*/test/', '.warnings.jsii.js$', '/node_modules/'],
 
   // Massive parallellism leads to common timeouts
@@ -20,5 +23,7 @@ module.exports = {
     },
   },
 
-  testEnvironment: './testhelpers/jest-bufferedconsole.ts',
+  testEnvironment: `./testhelpers/jest-bufferedconsole.${ext}`,
 };
+
+module.exports = config;

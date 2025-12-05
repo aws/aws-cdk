@@ -15,11 +15,8 @@ import {
   Aspects,
   Stage,
   TagManager,
-  Resource,
   TagType,
-  ITaggable,
   ITaggableV2,
-  Token,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
@@ -1836,7 +1833,6 @@ describe('stack', () => {
 
     expect(() => {
       app.synth();
-      // eslint-disable-next-line max-len
     }).toThrow("'Stack1' depends on 'Stack2' (Stack1 -> Stack2.AWS::AccountId). Adding this dependency (Stack2 -> Stack1.AWS::AccountId) would create a cyclic reference.");
   });
 
@@ -2256,7 +2252,7 @@ describe('stack', () => {
       stackTraces: false,
     });
 
-    const stack = new Stack(app, 'stack1', {
+    new Stack(app, 'stack1', {
       tags: {
         foo: Lazy.string({ produce: () => 'lazy' }),
       },

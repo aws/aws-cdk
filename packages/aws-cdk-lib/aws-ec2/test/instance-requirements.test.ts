@@ -1,4 +1,3 @@
-import { Size } from '../../core';
 import {
   AcceleratorManufacturer,
   AcceleratorName,
@@ -7,7 +6,6 @@ import {
   BurstablePerformance,
   CpuManufacturer,
   InstanceGeneration,
-  InstanceRequirementsConfig,
   LocalStorage,
   LocalStorageType,
 } from '../lib';

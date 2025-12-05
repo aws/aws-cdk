@@ -1,5 +1,5 @@
 import * as cxschema from '../../cloud-assembly-schema';
-import { CfnParameter, ContextProvider, Stack, Token } from '../../core';
+import { CfnParameter, ContextProvider, Stack } from '../../core';
 import * as iam from '../lib';
 
 /* eslint-disable */
@@ -8,7 +8,7 @@ describe('Role from lookup', () => {
     // GIVEN
     const resultObjs = [
       {
-        'Arn': 'arn:aws:iam::123456789012:role/MyExistingRole', 
+        'Arn': 'arn:aws:iam::123456789012:role/MyExistingRole',
       },
     ];
     const value = {
