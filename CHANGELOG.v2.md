@@ -5,9 +5,9 @@ All notable changes to this project will be documented in this file. See [standa
 ## [2.232.1](https://github.com/aws/aws-cdk/compare/v2.232.0...v2.232.1) (2025-12-05)
 
 
-### Reverts
+### Bug Fixes
 
-* turn on stripInternal everywhere ([#36313](https://github.com/aws/aws-cdk/issues/36313)) ([3e7e17c](https://github.com/aws/aws-cdk/commit/3e7e17c0def24567610a541e39195596f5d83387)), closes [#36310](https://github.com/aws/aws-cdk/issues/36310)
+* **core:** TypeScript properties missing for types which extend internal interfaces ([#36313](https://github.com/aws/aws-cdk/issues/36313)) ([3e7e17c](https://github.com/aws/aws-cdk/commit/3e7e17c0def24567610a541e39195596f5d83387)), closes [#36310](https://github.com/aws/aws-cdk/issues/36310)
 
 ## [2.232.0](https://github.com/aws/aws-cdk/compare/v2.231.0...v2.232.0) (2025-12-04)
 
