@@ -45,14 +45,11 @@ class MtlsDistributionStack extends cdk.Stack {
     });
 
     // Create TrustStore using L1 construct (CfnTrustStore)
-    const trustStore = new cloudfront.CfnTrustStore(this, 'TrustStore', {
+    const trustStore = new cloudfront.TrustStore(this, 'TrustStore', {
       name: 'integ-test-trust-store',
-      caCertificatesBundleSource: {
-        caCertificatesBundleS3Location: {
-          bucket: this.certBucket.bucketName,
-          key: 'ca-bundle.pem',
-          region: cdk.Stack.of(this).region,
-        },
+      caCertificatesBundleS3Location: {
+        bucket: this.certBucket,
+        key: 'ca-bundle.pem',
       },
     });
     // Ensure certificates are deployed before creating TrustStore
@@ -82,7 +79,7 @@ class MtlsDistributionStack extends cdk.Stack {
       },
       viewerMtlsConfig: {
         mode: cloudfront.MtlsMode.REQUIRED,
-        trustStoreId: trustStore.attrId,
+        trustStore: trustStore,
       },
     });
 
