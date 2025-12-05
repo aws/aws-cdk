@@ -1,0 +1,24 @@
+{
+  "$": "A tsconfig for the tests files, used in compilation of the tests only",
+  "extends": "./tsconfig.options.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "tsconfig.tests.tsbuildinfo"
+  },
+  "ts-node": {
+    "preferTsExts": true
+  },
+  "include": [
+    "**/test/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    ".types-compat",
+    "**/test/**/docker-*-handler/*",
+    "**/*.d.ts"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.lib.json"
+    }
+  ]
+}

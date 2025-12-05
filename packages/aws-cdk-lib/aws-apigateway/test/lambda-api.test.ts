@@ -446,7 +446,7 @@ describe('LambdaRestApi inherits from RestApi prop injector test ', () => {
       this.constructUniqueId = apigw.RestApi.PROPERTY_INJECTION_ID;
     }
 
-    inject(originalProps: apigw.RestApiProps, context: cdk.InjectionContext): apigw.RestApiProps {
+    inject(originalProps: apigw.RestApiProps, _context: cdk.InjectionContext): apigw.RestApiProps {
       return {
         endpointTypes: [apigw.EndpointType.REGIONAL],
         deploy: false,

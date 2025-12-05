@@ -10,8 +10,6 @@ import * as eks from '../lib';
 import { NodegroupAmiType, TaintEffect } from '../lib';
 import { isGpuInstanceType } from '../lib/private/nodegroup';
 
-/* eslint-disable max-len */
-
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
 
 describe('node group', () => {

@@ -475,7 +475,7 @@ describe('external service', () => {
 
   test('warning if minHealthyPercent not set for an external service', () => {
     // GIVEN
-    const service = new ecs.ExternalService(stack, 'ExternalService', {
+    new ecs.ExternalService(stack, 'ExternalService', {
       cluster,
       taskDefinition,
     });
@@ -487,7 +487,7 @@ describe('external service', () => {
 
   test('no warning if minHealthyPercent set for an external service', () => {
     // GIVEN
-    const service = new ecs.ExternalService(stack, 'ExternalService', {
+    new ecs.ExternalService(stack, 'ExternalService', {
       cluster,
       taskDefinition,
       minHealthyPercent: 100,

@@ -1,6 +1,6 @@
 import { Template } from '../../assertions';
 import { AnyPrincipal, PolicyStatement } from '../../aws-iam';
-import { RemovalPolicy, Stack, App } from '../../core';
+import { RemovalPolicy, Stack } from '../../core';
 import * as s3 from '../lib';
 import { CfnBucketPolicy } from '../lib';
 
