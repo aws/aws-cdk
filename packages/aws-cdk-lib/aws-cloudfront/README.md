@@ -734,15 +734,6 @@ const trustStore = new cloudfront.TrustStore(this, 'TrustStore', {
 });
 ```
 
-You can also import an existing Trust Store by its ID:
-
-```ts
-const importedTrustStore = cloudfront.TrustStore.fromTrustStoreId(
-  this,
-  'ImportedTrustStore',
-  'ts_36QBpGQoOtQIsJUDB4IXYXogHoc',
-);
-```
 
 ### Mutual TLS (mTLS) Authentication
 
