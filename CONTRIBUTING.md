@@ -223,6 +223,7 @@ See [Gitpod section](#gitpod) on how to set up the CDK repo on Gitpod.
 
 ### Setup
 
+
 The following tools need to be installed on your system prior to installing the CDK:
 
 - [Node.js >= 20.x](https://nodejs.org/en/download)
@@ -234,6 +235,7 @@ The following tools need to be installed on your system prior to installing the 
   - If using a Docker replacement, the `CDK_DOCKER` environment variable must be set to the replacement command's name (e.g. `export CDK_DOCKER=finch`)
   - For some Docker replacements like Finch and Podman, you may also need to set the `DOCKER_HOST` environment variable to specify the socket path
     - For Podman: `export DOCKER_HOST=$(podman machine inspect --format 'unix://{{.ConnectionInfo.PodmanSocket.Path}}')`
+    - For Finch: `export DOCKER_HOST=$(finch machine inspect --format 'unix://{{.ConnectionInfo.PodmanSocket.Path}}')`
   - The Docker or replacement daemon must be running
 - [git-lfs](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage)
   - Without this, you'll get the message that the clone succeeded but the checkout failed when you initially clone the repo.
