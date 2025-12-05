@@ -110,9 +110,8 @@ describe('TrustStore', () => {
   });
 
   test.each([
-    ['empty', ''],
-    ['exceeds 64 characters', 'a'.repeat(65)],
-  ])('throws if trustStoreName is %s', (_, trustStoreName) => {
+    '', 'a'.repeat(65),
+  ])('throws if trustStoreName is %s', (trustStoreName) => {
     expect(() => {
       new TrustStore(stack, 'TrustStore', {
         trustStoreName,
@@ -125,10 +124,9 @@ describe('TrustStore', () => {
   });
 
   test.each([
-    ['exactly 1 character', 'a'],
-    ['exactly 64 characters', 'a'.repeat(64)],
-  ])('accepts trustStoreName with %s', (_, trustStoreName) => {
-    new TrustStore(stack, `TrustStore-${trustStoreName.length}`, {
+    'a', 'a'.repeat(64),
+  ])('accepts trustStoreName with %s', (trustStoreName) => {
+    new TrustStore(stack, 'TrustStore', {
       trustStoreName,
       caCertificatesBundleS3Location: {
         bucket,
