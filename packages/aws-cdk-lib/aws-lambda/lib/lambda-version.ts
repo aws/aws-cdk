@@ -74,6 +74,28 @@ export interface VersionOptions extends EventInvokeConfigOptions {
    * @default RemovalPolicy.DESTROY
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * The minimum number of execution environments to maintain for this version
+   * when published into a capacity provider.
+   *
+   * This setting ensures that at least this many execution environments are always
+   * available to handle function invocations for this specific version, reducing cold start latency.
+   *
+   * @default - 3 execution environments are set to be the minimum
+   */
+  readonly minExecutionEnvironments?: number;
+
+  /**
+   * The maximum number of execution environments allowed for this version
+   * when published into a capacity provider.
+   *
+   * This setting limits the total number of execution environments that can be created
+   * to handle concurrent invocations of this specific version.
+   *
+   * @default - No maximum specified
+   */
+  readonly maxExecutionEnvironments?: number;
 }
 
 /**
@@ -214,11 +236,16 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     this.lambda = props.lambda;
     this.architecture = props.lambda.architecture;
 
+    if (props.provisionedConcurrentExecutions && this.lambda.tenancyConfig) {
+      throw new ValidationError('Provisioned Concurrency is not supported for functions with tenant isolation mode', this);
+    }
+
     const version = new CfnVersion(this, 'Resource', {
       codeSha256: props.codeSha256,
       description: props.description,
       functionName: props.lambda.functionName,
       provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props),
+      functionScalingConfig: this.getFunctionScalingConfig(props),
     });
     version.addMetadata(ArtifactMetadataEntryType.DO_NOT_REFACTOR, true);
 
@@ -318,6 +345,30 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     }
 
     return { provisionedConcurrentExecutions: props.provisionedConcurrentExecutions };
+  }
+
+  private getFunctionScalingConfig(props: VersionProps): CfnVersion.FunctionScalingConfigProperty | undefined {
+    const minExecutionEnvironments = props.minExecutionEnvironments;
+    const maxExecutionEnvironments = props.maxExecutionEnvironments;
+
+    if (minExecutionEnvironments === undefined && maxExecutionEnvironments === undefined) {
+      return undefined;
+    }
+
+    if (minExecutionEnvironments && minExecutionEnvironments < 0) {
+      throw new ValidationError('minExecutionEnvironments must be a non-negative integer.', this);
+    }
+    if (maxExecutionEnvironments && maxExecutionEnvironments < 0) {
+      throw new ValidationError('maxExecutionEnvironments must be a non-negative integer.', this);
+    }
+    if (minExecutionEnvironments && maxExecutionEnvironments && minExecutionEnvironments > maxExecutionEnvironments) {
+      throw new ValidationError('minExecutionEnvironments must be less than or equal to maxExecutionEnvironments', this);
+    }
+
+    return {
+      minExecutionEnvironments,
+      maxExecutionEnvironments,
+    };
   }
 }
 

@@ -80,7 +80,7 @@ class TestStack extends Stack {
       bucketName: 's3sourcekmskeyarnbucket',
     });
     const deployment = new s3deploy.BucketDeployment(this, 'DeployLambdaCode', {
-      sources: [s3deploy.Source.asset('lambda-zip')],
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'lambda-zip'))],
       destinationBucket: bucket,
     });
     const fnBucket = new lambda.Function(this, 'myFunction2', {
@@ -96,7 +96,7 @@ class TestStack extends Stack {
     this.functionName2 = fnBucket.functionName;
 
     // Using Custom Command
-    const command = 'lambda-zip/python-lambda-handler.zip';
+    const command = path.join(__dirname, 'lambda-zip/python-lambda-handler.zip');
     const fnCustom = new lambda.Function(this, 'myFunction3', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'index.handler',

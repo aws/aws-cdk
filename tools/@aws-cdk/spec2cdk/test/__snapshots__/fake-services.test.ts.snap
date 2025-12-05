@@ -2,23 +2,11 @@
 
 exports[`can codegen deprecated service 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as cdk from "aws-cdk-lib";
+import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-
-/**
- * Indicates that this resource can be referenced as a Resource.
- *
- * @deprecated in favour of something else
- * @stability deprecated
- */
-export interface IResourceRef extends constructs.IConstruct, cdk.IEnvironmentAware {
-  /**
-   * A reference to a Resource resource.
-   */
-  readonly resourceRef: ResourceReference;
-}
+import { IResourceRef, ResourceReference } from "../interfaces/generated/aws-some-interfaces.generated";
 
 /**
  * @deprecated in favour of something else
@@ -54,6 +42,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnResource
+   */
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
 
   /**
@@ -122,20 +117,6 @@ export interface CfnResourceProps {
 }
 
 /**
- * A reference to a Resource resource.
- *
- * @struct
- * @deprecated in favour of something else
- * @stability deprecated
- */
-export interface ResourceReference {
-  /**
-   * The Id of the Resource resource.
-   */
-  readonly resourceId: string;
-}
-
-/**
  * Determine whether the given properties match those of a \`CfnResourceProps\`
  *
  * @param properties - the TypeScript properties of a \`CfnResourceProps\`
@@ -175,5 +156,6 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
   ret.addPropertyResult("id", "Id", (properties.Id != null ? cfn_parse.FromCloudFormation.getString(properties.Id) : undefined));
   ret.addUnrecognizedPropertiesAsExtra(properties);
   return ret;
-}"
+}
+export type { IResourceRef, ResourceReference };"
 `;

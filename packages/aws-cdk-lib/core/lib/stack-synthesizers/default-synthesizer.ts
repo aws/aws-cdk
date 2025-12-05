@@ -11,8 +11,6 @@ import { Token } from '../token';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 
-/* eslint-disable max-len */
-
 /**
  * The minimum bootstrap stack version required by this app.
  */

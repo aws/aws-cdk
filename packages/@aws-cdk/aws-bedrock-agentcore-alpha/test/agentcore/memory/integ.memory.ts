@@ -4,13 +4,13 @@
 
 /// !cdk-integ aws-cdk-bedrock-agentcore-memory-1
 
-import * as cdk from 'aws-cdk-lib';
-import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as agentcore from '../../../agentcore';
 import * as bedrock from '@aws-cdk/aws-bedrock-alpha';
+import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
-import * as kms from 'aws-cdk-lib/aws-kms';
+import * as agentcore from '../../../lib';
 
 const app = new cdk.App();
 
