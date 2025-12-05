@@ -9,7 +9,7 @@ type StackConfiguration = {
   vpcProps?: ec2.VpcProps;
   subnetSelection?: ec2.SubnetSelection;
   securityGroupProps?: Array<Omit<ec2.SecurityGroupProps, 'vpc'>>;
-}
+};
 const configurations: Array<StackConfiguration> = [
   {
     computeConfiguration: {

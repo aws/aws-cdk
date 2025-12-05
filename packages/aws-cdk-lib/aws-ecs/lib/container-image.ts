@@ -1,4 +1,4 @@
-/* eslint-disable import/order */
+
 import { Construct } from 'constructs';
 import { ContainerDefinition } from './container-definition';
 import { CfnTaskDefinition } from './ecs.generated';
