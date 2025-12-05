@@ -20,10 +20,11 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "esModuleInterop": false,
+    "isolatedModules": true,
     "strict": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
-    "stripInternal": false,
+    "stripInternal": true,
     "target": "es2022",
     "composite": false,
     "tsBuildInfoFile": "tsconfig.tsbuildinfo"

@@ -1,26 +1,26 @@
 import * as crypto from 'crypto';
-import { Arn, ArnFormat, Duration, IResource, Lazy, Names, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import { Arn, ArnFormat, Duration, IResource, Lazy, Names, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct, IConstruct } from 'constructs';
 // Internal Libs
 import { AgentActionGroup } from './action-group';
 import { AgentAlias, IAgentAlias } from './agent-alias';
-import { AgentCollaborator } from './agent-collaborator';
 import { AgentCollaboration } from './agent-collaboration';
-import { PromptOverrideConfiguration } from './prompt-override';
+import { AgentCollaborator } from './agent-collaborator';
 import { AssetApiSchema, S3ApiSchema } from './api-schema';
-import { IGuardrail } from '../guardrails/guardrails';
-import * as validation from './validation-helpers';
-import { IBedrockInvokable } from '.././models';
 import { Memory } from './memory';
 import { CustomOrchestrationExecutor, OrchestrationType } from './orchestration-executor';
+import { PromptOverrideConfiguration } from './prompt-override';
+import * as validation from './validation-helpers';
+import { IBedrockInvokable } from '.././models';
+import { IGuardrail } from '../guardrails/guardrails';
 
 /******************************************************************************
  *                              CONSTANTS
@@ -133,21 +133,15 @@ export abstract class AgentBase extends Resource implements IAgent {
    * @returns An EventBridge Rule configured for agent events
    */
   public onEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
-    // Create rule with minimal props and event pattern
-    const rule = new events.Rule(this, id, {
-      description: options.description,
-      eventPattern: {
-        source: ['aws.bedrock'],
-        detail: {
-          'agent-id': [this.agentId],
-        },
+    const rule = new events.Rule(this, id, options);
+    rule.addEventPattern({
+      source: ['aws.bedrock'],
+      detail: {
+        'agent-id': [this.agentId],
       },
     });
 
-    // Add target if provided
-    if (options.target) {
-      rule.addTarget(options.target);
-    }
+    rule.addTarget(options.target);
     return rule;
   }
 

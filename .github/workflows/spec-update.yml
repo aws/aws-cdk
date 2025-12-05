@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Node
         uses: actions/setup-node@v6
@@ -85,12 +85,12 @@ jobs:
       CI: "true"
     steps:
       - name: Download base database
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: db.base.json.gz
           path: base
       - name: Download head database
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: db.head.json.gz
           path: head
@@ -125,10 +125,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Download patch
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: update-spec.patch
           path: ${{ runner.temp }}
@@ -137,7 +137,7 @@ jobs:
         run: '[ -s ${{ runner.temp }}/update-spec.patch ] && git apply ${{ runner.temp }}/update-spec.patch || echo "Empty patch. Skipping."'
 
       - name: Download PR body file
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: PR.md
           path: ${{ runner.temp }}

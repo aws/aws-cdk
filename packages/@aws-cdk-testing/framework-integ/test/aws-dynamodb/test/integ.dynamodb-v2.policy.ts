@@ -33,10 +33,18 @@ class TestStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
       resourcePolicy: docu,
     });
+
+    const table = new dynamodb.TableV2(this, 'TableTestV2-2', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+    });
+    table.grantReadData(new iam.AccountRootPrincipal());
   }
 }
 
-const stack = new TestStack(app, 'ResourcePolicyTest-v2', { env: { region: 'eu-west-1' } });
+const stack = new TestStack(app, 'ResourcePolicyTest-v2');
 
 new IntegTest(app, 'table-v2-resource-policy-integ-test', {
   testCases: [stack],

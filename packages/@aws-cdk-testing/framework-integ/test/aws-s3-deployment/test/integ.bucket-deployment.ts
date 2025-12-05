@@ -1,5 +1,4 @@
 import * as path from 'path';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
@@ -7,115 +6,93 @@ import { Match } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 
+/**
+ * Integration test for core bucket deployment features:
+ * - Basic deployment functionality
+ * - Prune behavior (deleting files not in source)
+ * - Exclude filters
+ * - Extract behavior (extracting vs keeping zip files)
+ * - addSource() method for dynamically adding sources
+ * - objectKeys output property and outputObjectKeys flag
+ */
 class TestBucketDeployment extends cdk.Stack {
-  public readonly bucket5: s3.IBucket;
+  public readonly bucketWithAddSource: s3.IBucket;
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const commonBucketProps = {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true, // needed for integration test cleanup
+    };
+
     const destinationBucket = new s3.Bucket(this, 'Destination', {
-      websiteIndexDocument: 'index.html',
-      publicReadAccess: false,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true, // needed for integration test cleanup
+      ...commonBucketProps,
     });
 
-    new s3deploy.BucketDeployment(this, 'DeployMe', {
+    // Test basic deployment functionality
+    new s3deploy.BucketDeployment(this, 'DeployWithBasic', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
       destinationBucket,
-      retainOnDelete: false, // default is true, which will block the integration test cleanup
+      retainOnDelete: false,
     });
 
-    new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
-      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
-      destinationBucket,
-      destinationKeyPrefix: 'efs/',
-      useEfs: true,
-      vpc: new ec2.Vpc(this, 'InlineVpc', { restrictDefaultSecurityGroup: false }),
-      retainOnDelete: false, // default is true, which will block the integration test cleanup
-    });
-
-    const bucket2 = new s3.Bucket(this, 'Destination2', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true, // needed for integration test cleanup
-    });
-
-    new s3deploy.BucketDeployment(this, 'DeployWithPrefix', {
-      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
-      destinationBucket: bucket2,
-      destinationKeyPrefix: 'deploy/here/',
-      retainOnDelete: false, // default is true, which will block the integration test cleanup
-    });
-
-    const bucket3 = new s3.Bucket(this, 'Destination3', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true, // needed for integration test cleanup
-    });
-
-    new s3deploy.BucketDeployment(this, 'DeployWithMetadata', {
-      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
-      destinationBucket: bucket3,
-      retainOnDelete: false, // default is true, which will block the integration test cleanup
-      cacheControl: [s3deploy.CacheControl.setPublic(), s3deploy.CacheControl.maxAge(cdk.Duration.minutes(1))],
-      contentType: 'text/html',
-      metadata: { A: 'aaa', B: 'bbb', C: 'ccc' },
-    });
-
-    new s3deploy.BucketDeployment(this, 'DeployMeWithoutDeletingFilesOnDestination', {
+    // Test that files not in source are preserved when prune is disabled
+    new s3deploy.BucketDeployment(this, 'DeployWithPruneDisabled', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
       destinationBucket,
       prune: false,
       retainOnDelete: false,
     });
 
-    new s3deploy.BucketDeployment(this, 'DeployMeWithExcludedFilesOnDestination', {
+    // Test exclude filters to skip certain files from deployment
+    new s3deploy.BucketDeployment(this, 'DeployWithExclude', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
       destinationBucket,
       exclude: ['*.gif'],
       retainOnDelete: false,
     });
 
-    const bucket4 = new s3.Bucket(this, 'Destination4', {
-      publicReadAccess: false,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true, // needed for integration test cleanup
+    const bucketWithoutExtract = new s3.Bucket(this, 'BucketWithoutExtract', {
+      ...commonBucketProps,
     });
 
-    new s3deploy.BucketDeployment(this, 'DeployMeWithoutExtractingFilesOnDestination', {
+    // Test that zip files are uploaded as-is when extract is disabled
+    new s3deploy.BucketDeployment(this, 'DeployWithoutExtract', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
-      destinationBucket: bucket4,
+      destinationBucket: bucketWithoutExtract,
       extract: false,
       retainOnDelete: false,
     });
 
-    this.bucket5 = new s3.Bucket(this, 'Destination5', {
-      publicReadAccess: false,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true, // needed for integration test cleanup
+    this.bucketWithAddSource = new s3.Bucket(this, 'BucketWithAddSource', {
+      ...commonBucketProps,
     });
 
-    const deploy5 = new s3deploy.BucketDeployment(this, 'DeployMe5', {
+    // Test addSource() method for dynamically adding sources after construction
+    // and validate objectKeys output property returns both asset files and added sources
+    const deployWithAddSource = new s3deploy.BucketDeployment(this, 'DeployWithAddSource', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website-second'))],
-      destinationBucket: this.bucket5,
-      retainOnDelete: false, // default is true, which will block the integration test cleanup
+      destinationBucket: this.bucketWithAddSource,
+      retainOnDelete: false,
     });
-    deploy5.addSource(s3deploy.Source.data('some-key', 'helloworld'));
+    deployWithAddSource.addSource(s3deploy.Source.data('some-key', 'helloworld'));
 
+    // Output objectKeys to validate they are returned in CloudFormation outputs
     new cdk.CfnOutput(this, 'customResourceData', {
       value: cdk.Fn.sub('Object Keys are ${keys}', {
-        keys: cdk.Fn.join(',', deploy5.objectKeys),
+        keys: cdk.Fn.join(',', deployWithAddSource.objectKeys),
       }),
     });
 
-    const bucket6 = new s3.Bucket(this, 'Destination6', {
-      publicReadAccess: false,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true, // needed for integration test cleanup
+    const bucketWithoutObjectKeys = new s3.Bucket(this, 'BucketWithoutObjectKeys', {
+      ...commonBucketProps,
     });
 
-    new s3deploy.BucketDeployment(this, 'DeployMe6', {
+    // Test that objectKeys are not returned when outputObjectKeys is disabled
+    new s3deploy.BucketDeployment(this, 'DeployWithoutObjectKeys', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website-second'))],
-      destinationBucket: bucket6,
-      retainOnDelete: false, // default is true, which will block the integration test cleanup
+      destinationBucket: bucketWithoutObjectKeys,
+      retainOnDelete: false,
       outputObjectKeys: false,
     });
   }
@@ -128,13 +105,14 @@ const app = new cdk.App({
 });
 const testCase = new TestBucketDeployment(app, 'test-bucket-deployments');
 
-// Assert that DeployMeWithoutExtractingFilesOnDestination deploys a zip file to bucket4
 const integTest = new integ.IntegTest(app, 'integ-test-bucket-deployments', {
   testCases: [testCase],
   diffAssets: true,
 });
+
+// Assert that addSource() successfully adds the data source alongside the asset source
 const listObjectsCall = integTest.assertions.awsApiCall('S3', 'listObjects', {
-  Bucket: testCase.bucket5.bucketName,
+  Bucket: testCase.bucketWithAddSource.bucketName,
 });
 listObjectsCall.provider.addToRolePolicy({
   Effect: 'Allow',
@@ -154,12 +132,12 @@ listObjectsCall.expect(integ.ExpectedResult.objectLike({
   ),
 }));
 
-// Assert that there is one object key returned from the custom resource
+// Assert that objectKeys output contains the deployed object keys when outputObjectKeys is enabled (default)
 const describe = integTest.assertions.awsApiCall('CloudFormation', 'describeStacks', {
   StackName: 'test-bucket-deployments',
 });
 
 describe.assertAtPath('Stacks.0.Outputs.0.OutputKey', integ.ExpectedResult.stringLikeRegexp('customResourceData'));
-describe.assertAtPath('Stacks.0.Outputs.0.OutputValue', integ.ExpectedResult.stringLikeRegexp('Object Keys are ([0-9a-f])+\.zip'));
+describe.assertAtPath('Stacks.0.Outputs.0.OutputValue', integ.ExpectedResult.stringLikeRegexp('Object Keys are ([0-9a-f])+\\.zip(,([0-9a-f])+\\.zip)*'));
 
 app.synth();

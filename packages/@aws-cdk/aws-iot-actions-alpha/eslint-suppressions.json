@@ -1,0 +1,12 @@
+{
+  "lib/iotevents-put-message-action.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "lib/step-functions-state-machine-action.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  }
+}
