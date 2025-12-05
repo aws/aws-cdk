@@ -1,15 +1,16 @@
 {
-  "$": "A tsconfig for all files, for the benefit of the VSCode plugin; necessary because we can't convince the plugin to load anything other than tsconfig.json upwards of the file we are editing, and all tests aren't in a single test/ subdirectory.b",
+  "$": "A tsconfig for the library files, used in compilation of the library",
   "extends": "./tsconfig.options.json",
   "compilerOptions": {
-    "noEmit": true,
-    "tsBuildInfoFile": "tsconfig.tests.tsbuildinfo"
+    "tsBuildInfoFile": "tsconfig.lib.tsbuildinfo"
   },
   "include": [
     "**/*.ts"
   ],
   "exclude": [
     "node_modules",
+    "scripts",
+    "**/test/**/*.ts",
     "**/*.d.ts"
   ],
   "references": [

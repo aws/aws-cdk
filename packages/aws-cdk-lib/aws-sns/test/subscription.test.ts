@@ -538,7 +538,7 @@ describe('Subscription', () => {
         },
       },
     },
-  ];
+  ] as const;
 
   delayTestCases.forEach(({ prop, invalidDeliveryPolicy }) => {
     const invalidValue = invalidDeliveryPolicy.healthyRetryPolicy[prop];

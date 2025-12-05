@@ -194,7 +194,7 @@ describe('HttpLambdaAuthorizer', () => {
 
     const t = () => {
       const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', handler);
-      const authorizerId = authorizer.authorizerId;
+      void(authorizer.authorizerId);
     };
 
     // THEN

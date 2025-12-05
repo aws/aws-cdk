@@ -76,7 +76,7 @@ describe('rule', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
     const resource = new Construct(stack, 'Resource');
-    const rule = new Rule(stack, 'MyRule', {
+    new Rule(stack, 'MyRule', {
       schedule: Schedule.rate(cdk.Duration.minutes(10)),
       targets: [
         new SomeTarget('T1', resource),
@@ -1220,7 +1220,6 @@ describe('rule', () => {
 });
 
 class SomeTarget implements IRuleTarget {
-  // eslint-disable-next-line @cdklabs/no-core-construct
   public constructor(private readonly id?: string, private readonly resource?: IConstruct) {
   }
 
