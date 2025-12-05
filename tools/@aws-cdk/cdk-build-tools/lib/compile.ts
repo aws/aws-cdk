@@ -7,7 +7,8 @@ import { Timers } from './timer';
  */
 export async function compileCurrentPackage(options: CDKBuildOptions, timers: Timers, compilers: CompilerOverrides = {}): Promise<void> {
   const env = options.env;
-  await shell(packageCompiler(compilers, options), { timers, env });
+  const compiler = packageCompiler(compilers, options);
+  await shell(compiler, { timers, env, traceName: `${compiler[0]},${options.currentPackageName}` });
 
   // Find files in bin/ that look like they should be executable, and make them so.
   const scripts = currentPackageJson().bin || {};
