@@ -156,8 +156,8 @@ export class TrustStore extends Resource implements ITrustStore {
       return;
     }
 
-    if (name.length < 2 || name.length > 64) {
-      throw new ValidationError(`'trustStoreName' must be between 2 and 64 characters, got ${name.length} characters`, this);
+    if (name.length < 1 || name.length > 64) {
+      throw new ValidationError(`'trustStoreName' must be between 1 and 64 characters, got ${name.length} characters`, this);
     }
   }
 

@@ -111,7 +111,6 @@ describe('TrustStore', () => {
 
   test.each([
     ['empty', ''],
-    ['only 1 character', 'a'],
     ['exceeds 64 characters', 'a'.repeat(65)],
   ])('throws if trustStoreName is %s', (_, trustStoreName) => {
     expect(() => {
@@ -122,11 +121,11 @@ describe('TrustStore', () => {
           key: 'ca-bundle.pem',
         },
       });
-    }).toThrow(`'trustStoreName' must be between 2 and 64 characters, got ${trustStoreName.length} characters`);
+    }).toThrow(`'trustStoreName' must be between 1 and 64 characters, got ${trustStoreName.length} characters`);
   });
 
   test.each([
-    ['exactly 2 characters', 'ab'],
+    ['exactly 1 character', 'a'],
     ['exactly 64 characters', 'a'.repeat(64)],
   ])('accepts trustStoreName with %s', (_, trustStoreName) => {
     new TrustStore(stack, `TrustStore-${trustStoreName.length}`, {
