@@ -120,6 +120,10 @@ echo "==========================================================================
 echo "building..."
 time npx lerna run $bail --concurrency=$concurrency $runtarget $flags || fail
 
+echo "=============[ MEMORY AND TIMING TRACES ]===================================================="
+cat .traces/*
+echo "============================================================================================="
+
 if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh
 fi

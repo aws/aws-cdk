@@ -255,5 +255,5 @@ export function findUp(name: string, directory: string = process.cwd()): string 
 }
 
 function slugify(x: string): string {
-  return x.replace(/[^a-zA-Z0-9]/g, '');
+  return x.replace(/[^a-zA-Z0-9]/g, '-');
 }
