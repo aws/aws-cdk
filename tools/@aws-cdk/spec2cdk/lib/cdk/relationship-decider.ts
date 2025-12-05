@@ -1,11 +1,23 @@
 import { Property, RelationshipRef, Resource, RichProperty, SpecDatabase } from '@aws-cdk/service-spec-types';
 import * as naming from '../naming';
 import { namespaceFromResource, referenceInterfaceName, referenceInterfaceAttributeName, referencePropertyName, typeAliasPrefixFromResource } from '../naming';
-import { getReferenceProps } from './reference-props';
+import { ResourceReference } from './reference-props';
 import { log } from '../util';
+import { SelectiveImport } from './service-submodule';
 
-// For now we want relationships to be applied only for these services
-export const RELATIONSHIP_SERVICES: string[] = [];
+/**
+ * We currently disable the relationship on the properties of types because they would create a backwards incompatible change
+ * by broadening the output type as types are used both in input and output. This represents:
+ * Relationship counts:
+ *   Resource-level (non-nested): 598
+ *   Type-level (nested):         483 <- these are disabled by this flag
+ *   Total:                       1081
+ * Properties with relationships:
+ *   Resource-level (non-nested): 493
+ *   Type-level (nested):         358
+ *   Total:                       851
+ */
+export const GENERATE_RELATIONSHIPS_ON_TYPES = false;
 
 /**
  * Represents a cross-service property relationship that enables references
@@ -23,30 +35,13 @@ export interface Relationship {
 }
 
 /**
- * Represents a selective import statement for cross-module type references.
- * Used to import specific types from other CDK modules when relationships
- * are between different modules.
- */
-export interface SelectiveImport {
-  /** The module name to import from */
-  readonly moduleName: string;
-  /** Array of types that need to be imported */
-  readonly types: {
-    /** The original type name in the source module */
-    originalType: string;
-    /** The aliased name to avoid naming conflicts */
-    aliasedType: string;
-  }[];
-}
-
-/**
  * Extracts resource relationship information from the database for cross-service property references.
  */
 export class RelationshipDecider {
   private readonly namespace: string;
   public readonly imports = new Array<SelectiveImport>();
 
-  constructor(readonly resource: Resource, private readonly db: SpecDatabase) {
+  constructor(readonly resource: Resource, private readonly db: SpecDatabase, private readonly enableRelationships = true) {
     this.namespace = namespaceFromResource(resource);
   }
 
@@ -77,11 +72,11 @@ export class RelationshipDecider {
    * properties as a relationship can only target a primary identifier or arn
    */
   private findTargetResource(sourcePropName: string, relationship: RelationshipRef) {
-    if (!RELATIONSHIP_SERVICES.some(s => this.resource.cloudFormationType.toLowerCase().startsWith(`aws::${s}::`))) {
+    if (!this.enableRelationships) {
       return undefined;
     }
     const targetResource = this.db.lookup('resource', 'cloudFormationType', 'equals', relationship.cloudFormationType).only();
-    const refProps = getReferenceProps(targetResource);
+    const refProps = new ResourceReference(targetResource).referenceProps;
     const expectedPropName = referencePropertyName(relationship.propertyName, targetResource.name);
     const prop = refProps.find(p => p.declaration.name === expectedPropName);
     if (!prop) {
@@ -151,6 +146,9 @@ export class RelationshipDecider {
    * Checks if a given property needs a flattening function or not
    */
   public needsFlatteningFunction(propName: string, prop: Property, visited = new Set<string>()): boolean {
+    if (!GENERATE_RELATIONSHIPS_ON_TYPES) {
+      return false;
+    }
     if (this.hasValidRelationships(propName, prop.relationshipRefs)) {
       return true;
     }

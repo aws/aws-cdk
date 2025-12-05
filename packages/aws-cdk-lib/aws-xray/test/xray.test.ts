@@ -4,7 +4,7 @@ import * as kms from '../../aws-kms';
 import { CfnParameter, Duration, Stack, App, Token, Tags } from '../../core';
 import * as xray from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 test('able to add tags to XRay CfnGroup', () => {
   const stack = new Stack();

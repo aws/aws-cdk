@@ -1,9 +1,9 @@
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as iot from '@aws-cdk/aws-iot-alpha';
+import { ArnFormat, Stack } from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as stepfunctions from 'aws-cdk-lib/aws-stepfunctions';
 import { CommonActionProps } from './common-action-props';
 import { singletonActionRole } from './private/role';
-import { ArnFormat, Stack } from 'aws-cdk-lib';
 
 /**
  * Configuration properties of an action for the Step Functions State Machine.

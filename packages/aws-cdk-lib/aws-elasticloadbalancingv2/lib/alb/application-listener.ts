@@ -455,7 +455,6 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   @MethodMetadata()
   public addTargets(id: string, props: AddApplicationTargetsProps): ApplicationTargetGroup {
     if (!this.loadBalancer.vpc) {
-      // eslint-disable-next-line max-len
       throw new ValidationError('Can only call addTargets() when using a constructed Load Balancer or an imported Load Balancer with specified vpc; construct a new TargetGroup and use addTargetGroup', this);
     }
 
@@ -760,7 +759,6 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
    * @returns The newly created target group
    */
   public addTargets(_id: string, _props: AddApplicationTargetsProps): ApplicationTargetGroup {
-    // eslint-disable-next-line max-len
     throw new ValidationError('Can only call addTargets() when using a constructed ApplicationListener; construct a new TargetGroup and use addTargetGroup.', this);
   }
 

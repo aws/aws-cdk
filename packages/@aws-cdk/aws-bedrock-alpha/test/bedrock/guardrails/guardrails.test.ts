@@ -1,8 +1,8 @@
+import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import { App } from 'aws-cdk-lib/core';
 import * as core from 'aws-cdk-lib/core';
-import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as bedrock from '../../../bedrock';
-import * as kms from 'aws-cdk-lib/aws-kms';
 
 describe('CDK-Created-Guardrail', () => {
   let stack: core.Stack;

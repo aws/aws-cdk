@@ -1,6 +1,5 @@
 import * as path from 'node:path';
-import { naming, topo } from '@aws-cdk/spec2cdk';
-import { generateAll } from '@aws-cdk/spec2cdk/lib/cfn2ts';
+import { naming, generateAll, topo } from '@aws-cdk/spec2cdk';
 import * as fs from 'fs-extra';
 import generateServiceSubmoduleFiles from './submodules';
 import writeCloudFormationIncludeMapping from './submodules/cloudformation-include';
@@ -27,7 +26,7 @@ async function main() {
   }));
 
   await updateExportsAndEntryPoints(generated);
-  await topo.writeModuleMap(generated);
+  topo.writeModuleMap(generated);
   await writeCloudFormationIncludeMapping(generated, awsCdkLibDir);
 
   for (const nss of NON_SERVICE_SUBMODULES) {

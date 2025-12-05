@@ -1,10 +1,10 @@
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Fn, Lazy, Names, ValidationError } from 'aws-cdk-lib';
-import * as constructs from 'constructs';
-import { ClusterBase, ICluster } from '.';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { CfnServerlessCluster } from 'aws-cdk-lib/aws-msk';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import * as constructs from 'constructs';
+import { ClusterBase, ICluster } from '.';
 
 /**
  *  Properties for a MSK Serverless Cluster

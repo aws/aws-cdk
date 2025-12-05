@@ -71,7 +71,6 @@ function operateOnDependency(operation: DependencyOperation, source: Element, ta
   const sourceStage = Stage.of(sourceStack);
   const targetStage = Stage.of(targetStack);
   if (sourceStage !== targetStage) {
-    // eslint-disable-next-line max-len
     throw new UnscopedValidationError(`You cannot have a dependency from '${source.node.path}' (in ${describeStage(sourceStage)}) to '${target.node.path}' (in ${describeStage(targetStage)}): dependency cannot cross stage boundaries`);
   }
 

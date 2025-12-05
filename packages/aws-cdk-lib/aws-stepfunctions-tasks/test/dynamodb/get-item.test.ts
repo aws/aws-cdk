@@ -145,7 +145,7 @@ test('supports tokens', () => {
     },
     End: true,
     Parameters: {
-      /* eslint-disable quote-props */
+      /* eslint-disable @stylistic/quote-props */
       Key: {
         SOME_KEY: { 'S.$': '$.partitionKey' },
         OTHER_KEY: { 'N.$': '$.sortKey' },

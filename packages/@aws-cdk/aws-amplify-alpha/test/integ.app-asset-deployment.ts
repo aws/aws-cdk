@@ -1,9 +1,9 @@
 import * as path from 'path';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Stack, StackProps } from 'aws-cdk-lib';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { Construct } from 'constructs';
 import * as amplify from '../lib';
-import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {

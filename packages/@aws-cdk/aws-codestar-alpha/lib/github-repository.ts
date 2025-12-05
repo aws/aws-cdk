@@ -1,9 +1,9 @@
+import * as codestar from 'aws-cdk-lib/aws-codestar';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import * as codestar from 'aws-cdk-lib/aws-codestar';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
 
 /**
  * GitHubRepository resource interface

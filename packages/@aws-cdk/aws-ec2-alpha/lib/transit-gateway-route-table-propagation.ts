@@ -1,10 +1,10 @@
-import { IResource, Resource } from 'aws-cdk-lib/core';
 import { CfnTransitGatewayRouteTablePropagation } from 'aws-cdk-lib/aws-ec2';
+import { IResource, Resource } from 'aws-cdk-lib/core';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { ITransitGatewayAttachment } from './transit-gateway-attachment';
 import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents a Transit Gateway Route Table Propagation.

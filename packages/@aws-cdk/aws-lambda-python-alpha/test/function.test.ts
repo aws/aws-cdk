@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/unbound-method */
+
 import * as path from 'path';
+import { AssetHashType, DockerImage, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Code, Runtime, Architecture } from 'aws-cdk-lib/aws-lambda';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { AssetHashType, DockerImage, Stack } from 'aws-cdk-lib';
 import { PythonFunction } from '../lib';
 import { Bundling, BundlingProps } from '../lib/bundling';
 

@@ -1,0 +1,27 @@
+{
+  "lib/application-associator.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "lib/application.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "lib/attribute-group.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "lib/common.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "lib/private/validation.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 2
+    }
+  }
+}

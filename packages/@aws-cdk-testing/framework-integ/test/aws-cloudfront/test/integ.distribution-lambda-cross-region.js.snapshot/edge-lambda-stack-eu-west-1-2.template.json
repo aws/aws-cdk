@@ -53,12 +53,34 @@
     "Lambda2ServiceRole31A072E1"
    ]
   },
+  "Lambda2LogGroup4F31598F": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "Lambda217CFB423"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "Lambda2CurrentVersion72012B7448e7ccb012bdf87615c944d94691ab6d": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
      "Ref": "Lambda217CFB423"
     }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
    }
   },
   "Lambda2Parameter3444E17A": {

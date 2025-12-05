@@ -526,8 +526,8 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       // Include both internetFacing and loadBalancerName in target group ID
       targetGroupId = `ECS${props.loadBalancerName ?? ''}${internetFacing ? '' : 'Private'}`;
     } else {
-      // Legacy behavior: only include internetFacing
-      targetGroupId = internetFacing ? 'ECS' : 'ECSPrivate';
+      // Legacy behavior
+      targetGroupId = 'ECS';
     }
 
     this.targetGroup = this.listener.addTargets(targetGroupId, targetProps);

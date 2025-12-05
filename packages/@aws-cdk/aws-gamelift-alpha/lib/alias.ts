@@ -1,10 +1,10 @@
+import { CfnAlias } from 'aws-cdk-lib/aws-gamelift';
 import * as cdk from 'aws-cdk-lib/core';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { IFleet } from './fleet-base';
 import { IGameSessionQueueDestination } from './game-session-queue';
-import { CfnAlias } from 'aws-cdk-lib/aws-gamelift';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * Represents a Gamelift Alias for a Gamelift fleet destination.

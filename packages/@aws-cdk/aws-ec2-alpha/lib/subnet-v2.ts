@@ -9,13 +9,13 @@ import {
   SubnetNetworkAclAssociation,
   SubnetType,
 } from 'aws-cdk-lib/aws-ec2';
-import { Construct, DependencyGroup, IDependable } from 'constructs';
-import { IVpcV2 } from './vpc-v2-base';
-import { CidrBlock, CidrBlockIpv6, defaultSubnetName } from './util';
-import { RouteTable } from './route';
+import { SubnetReference } from 'aws-cdk-lib/aws-ec2/lib/ec2.generated';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { SubnetReference } from 'aws-cdk-lib/aws-ec2/lib/ec2.generated';
+import { Construct, DependencyGroup, IDependable } from 'constructs';
+import { RouteTable } from './route';
+import { CidrBlock, CidrBlockIpv6, defaultSubnetName } from './util';
+import { IVpcV2 } from './vpc-v2-base';
 
 /**
  * Interface to define subnet CIDR

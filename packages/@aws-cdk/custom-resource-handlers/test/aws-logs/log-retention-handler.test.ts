@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 import { CloudWatchLogsClient, CloudWatchLogsClientResolvedConfig, CreateLogGroupCommand, DeleteLogGroupCommand, DeleteRetentionPolicyCommand, OperationAbortedException, PutRetentionPolicyCommand, ResourceAlreadyExistsException, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-cloudwatch-logs';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';

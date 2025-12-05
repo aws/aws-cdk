@@ -1,0 +1,29 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "AwsCustomResourceTest/DefaultTest": {
+      "stacks": [
+        "aws-custom-resource-external-id-test"
+      ],
+      "diffAssets": true,
+      "allowDestroy": [
+        "AWS::CDK::Metadata"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": false
+          }
+        },
+        "destroy": {
+          "args": {
+            "force": true
+          }
+        }
+      },
+      "assertionStack": "AwsCustomResourceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

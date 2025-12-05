@@ -60,7 +60,7 @@ export abstract class DockerCredential {
    * to support the `docker-credential-cdk-assets` tool for `docker login`.
    * @internal
    */
-  public abstract _renderCdkAssetsConfig(): DockerCredentialCredentialSource
+  public abstract _renderCdkAssetsConfig(): DockerCredentialCredentialSource;
 }
 
 /** Options for defining credentials for a Docker Credential */

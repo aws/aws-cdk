@@ -1,7 +1,7 @@
-import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
-import * as vpc from '../lib/vpc-v2';
+import { Template } from 'aws-cdk-lib/assertions';
 import { AddressFamily, AwsServiceName, Ipam, IpamPoolPublicIpSource } from '../lib';
+import * as vpc from '../lib/vpc-v2';
 
 describe('Vpc V2 with full control', () => {
   let stack: cdk.Stack;

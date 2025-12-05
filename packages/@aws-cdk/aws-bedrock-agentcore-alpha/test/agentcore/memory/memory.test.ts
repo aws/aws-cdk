@@ -8,8 +8,8 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import {
   Memory,
-} from '../../../agentcore/memory/memory';
-import { MemoryStrategy } from '../../../agentcore/memory/memory-strategy';
+} from '../../../lib/memory/memory';
+import { MemoryStrategy } from '../../../lib/memory/memory-strategy';
 
 describe('Memory default tests', () => {
   let template: Template;
@@ -468,6 +468,21 @@ describe('Memory expiration duration validation tests', () => {
       new Memory(stack, 'middle-expiry', {
         memoryName: 'middle_expiry_memory',
         expirationDuration: Duration.days(180),
+      });
+    }).not.toThrow();
+  });
+
+  test('does not fail validation if expirationDuration is a late-bound value', () => {
+    // WHEN
+    const expirationDuration = new cdk.CfnParameter(stack, 'ExpirationDuration', {
+      default: 30,
+      type: 'Number',
+    });
+
+    expect(() => {
+      new Memory(stack, 'memory-late-bound', {
+        memoryName: 'memory_late_bound',
+        expirationDuration: Duration.days(expirationDuration.valueAsNumber),
       });
     }).not.toThrow();
   });

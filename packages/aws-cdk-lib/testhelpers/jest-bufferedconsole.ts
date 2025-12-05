@@ -100,7 +100,7 @@ export default class TestEnvironment extends NodeEnvironment implements JestEnvi
 type TestDescription = PartialBy<Pick<Circus.TestEntry, 'name' | 'parent'>, 'parent'>;
 
 // Utility type to make specific fields optional
-type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
+type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 function fullTestName(test: TestDescription) {
   let ret = test.name;

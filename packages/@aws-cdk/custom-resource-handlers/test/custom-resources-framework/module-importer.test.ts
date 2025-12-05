@@ -12,6 +12,10 @@ describe('module importer', () => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-test'));
   });
 
+  afterEach(() => {
+    fs.removeSync(tmpDir);
+  });
+
   test('aliased import', () => {
     // GIVEN
     const module = new HandlerFrameworkModule('cdk-testing');

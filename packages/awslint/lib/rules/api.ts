@@ -53,7 +53,6 @@ apiLinter.add({
     }
 
     function assertProperty(property: reflect.Property) {
-
       if (property.protected) {
         return;
       }
@@ -63,7 +62,6 @@ apiLinter.add({
     }
 
     function assertMethod(method: reflect.Callable) {
-
       if (method.protected) {
         return;
       }

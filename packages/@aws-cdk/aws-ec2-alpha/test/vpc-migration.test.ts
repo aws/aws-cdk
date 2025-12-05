@@ -1,9 +1,9 @@
 import { App, Stack, cx_api } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+import { SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { IpCidr, SubnetV2 } from '../lib';
 import { InternetGateway, NatConnectivityType, NatGateway, RouteTable } from '../lib/route';
 import { VpcV2, IpAddresses } from '../lib/vpc-v2';
-import { IpCidr, SubnetV2 } from '../lib';
-import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 
 describe('InternetGateway', () => {
   describe('feature flag USE_RESOURCEID_FOR_VPCV2_MIGRATION', () => {

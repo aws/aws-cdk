@@ -317,7 +317,6 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   @MethodMetadata()
   public addTargets(id: string, props: AddNetworkTargetsProps): NetworkTargetGroup {
     if (!this.loadBalancer.vpc) {
-      // eslint-disable-next-line max-len
       throw new ValidationError('Can only call addTargets() when using a constructed Load Balancer or imported Load Balancer with specified VPC; construct a new TargetGroup and use addTargetGroup', this);
     }
 

@@ -50,21 +50,18 @@ export class GeoLocation {
 
   private static validateCountry(country: string) {
     if (!GeoLocation.COUNTRY_REGEX.test(country)) {
-      // eslint-disable-next-line max-len
       throw new UnscopedValidationError(`Invalid country format for country: ${country}, country should be two-letter and uppercase country ISO 3166-1-alpha-2 code`);
     }
   }
 
   private static validateCountryForSubdivision(country: string) {
     if (!GeoLocation.COUNTRY_FOR_SUBDIVISION_REGEX.test(country)) {
-      // eslint-disable-next-line max-len
       throw new UnscopedValidationError(`Invalid country for subdivisions geolocation: ${country}, only UA (Ukraine) and US (United states) are supported`);
     }
   }
 
   private static validateSubDivision(subDivision: string) {
     if (!GeoLocation.SUBDIVISION_REGEX.test(subDivision)) {
-      // eslint-disable-next-line max-len
       throw new UnscopedValidationError(`Invalid subdivision format for subdivision: ${subDivision}, subdivision should be alphanumeric and between 1 and 3 characters`);
     }
   }

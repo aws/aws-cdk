@@ -1429,6 +1429,7 @@ test('Source.jsonData() can be used to create a file with a JSON object', () => 
 
   const config = {
     foo: 'bar',
+    baz: null,
     sub: {
       hello: bucket.bucketArn,
     },
@@ -1441,7 +1442,7 @@ test('Source.jsonData() can be used to create a file with a JSON object', () => 
   });
 
   const result = app.synth();
-  expect(readDataFile(result, 'app-config.json')).toBe('{"foo":"bar","sub":{"hello":<<marker:0xbaba:0>>},"<<marker:0xbaba:1>>":"Token can be a key as well!"}');
+  expect(readDataFile(result, 'app-config.json')).toBe('{"foo":"bar","baz":null,"sub":{"hello":<<marker:0xbaba:0>>},"<<marker:0xbaba:1>>":"Token can be a key as well!"}');
 
   // verify marker is mapped to the bucket ARN in the resource props
   Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {

@@ -15,6 +15,50 @@
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-apprunner-alpha/lib/service.ts"
     }
   },
+  "bedrock-agentcore": {
+    "GatewayExceptionLevel": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway-base.ts"
+    },
+    "GatewayAuthorizerType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/inbound-auth/authorizer.ts"
+    },
+    "ApiKeyCredentialLocationType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/outbound-auth/api-key.ts"
+    },
+    "CredentialProviderType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/outbound-auth/credential-provider.ts"
+    },
+    "GatewayProtocolType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/protocol.ts"
+    },
+    "MCPProtocolVersion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/protocol.ts"
+    },
+    "McpGatewaySearchType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/protocol.ts"
+    },
+    "SchemaDefinitionType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/targets/schema/tool-schema.ts"
+    },
+    "GatewayTargetProtocolType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/targets/target-base.ts"
+    },
+    "McpTargetType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/targets/target-base.ts"
+    },
+    "MemoryStrategyType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/memory/memory-strategy.ts"
+    },
+    "AgentCoreRuntime": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/runtime-artifact.ts"
+    },
+    "ProtocolType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/types.ts"
+    },
+    "BrowserSigning": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/tools/browser.ts"
+    }
+  },
   "bedrock": {
     "AgentCollaboratorType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent-collaborator.ts"
@@ -382,6 +426,77 @@
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/data-format.ts"
     }
   },
+  "imagebuilder": {
+    "ComponentAction": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/component.ts"
+    },
+    "ComponentOnFailure": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/component.ts"
+    },
+    "ComponentParameterType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/component.ts"
+    },
+    "ComponentPhaseName": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/component.ts"
+    },
+    "ComponentSchemaVersion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/component.ts"
+    },
+    "ContainerType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/container-recipe.ts"
+    },
+    "RepositoryService": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/distribution-configuration.ts"
+    },
+    "ScheduleStartCondition": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/image-pipeline.ts"
+    },
+    "ImagePipelineStatus": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/image-pipeline.ts"
+    },
+    "ImageArchitecture": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/image.ts"
+    },
+    "ImageType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/image.ts"
+    },
+    "HttpTokens": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/infrastructure-configuration.ts"
+    },
+    "Tenancy": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/infrastructure-configuration.ts"
+    },
+    "LifecyclePolicyActionType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/lifecycle-policy.ts"
+    },
+    "LifecyclePolicyStatus": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/lifecycle-policy.ts"
+    },
+    "LifecyclePolicyResourceType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/lifecycle-policy.ts"
+    },
+    "Platform": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/os-version.ts"
+    },
+    "WorkflowAction": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/workflow.ts"
+    },
+    "WorkflowOnFailure": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/workflow.ts"
+    },
+    "WorkflowParameterType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/workflow.ts"
+    },
+    "WorkflowSchemaVersion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/workflow.ts"
+    },
+    "WorkflowType": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/workflow.ts"
+    },
+    "OSVersion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-imagebuilder-alpha/lib/os-version.ts"
+    }
+  },
   "iot-actions": {
     "MqttQualityOfService": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/iot-republish-action.ts"
@@ -431,6 +546,9 @@
   },
   "msk": {
     "StorageMode": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/aws-msk-alpha/lib/cluster.ts"
+    },
+    "BrokerType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/aws-msk-alpha/lib/cluster.ts"
     },
     "ClusterMonitoringLevel": {
@@ -564,6 +682,14 @@
     },
     "InvocationType": {
       "cdk_path": "aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts"
+    }
+  },
+  "mixins-preview": {
+    "PropertyMergeStrategy": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/mixins-preview/lib/mixins/property-mixins.ts"
+    },
+    "S3LogsDeliveryPermissionsVersion": {
+      "cdk_path": "aws-cdk/packages/@aws-cdk/mixins-preview/lib/services/aws-logs/logs-delivery.ts"
     }
   },
   "assets": {
@@ -1429,8 +1555,29 @@
     "StreamEncryptionType": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/delivery-stream.ts"
     },
+    "ParquetWriterVersion": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/output.ts"
+    },
+    "OrcFormatVersion": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/output.ts"
+    },
     "Compression": {
       "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/common.ts"
+    },
+    "TimestampParser": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/input.ts"
+    },
+    "InputFormat": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/input.ts"
+    },
+    "ParquetCompression": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/output.ts"
+    },
+    "OrcCompression": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/output.ts"
+    },
+    "OutputFormat": {
+      "cdk_path": "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/output.ts"
     }
   },
   "lambda-nodejs": {

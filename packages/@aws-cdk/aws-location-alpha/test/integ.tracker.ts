@@ -1,9 +1,9 @@
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
-import { PositionFiltering, Tracker } from '../lib/tracker';
 import { GeofenceCollection } from '../lib';
+import { PositionFiltering, Tracker } from '../lib/tracker';
 
 class TestStack extends Stack {
   public readonly tracker: Tracker;

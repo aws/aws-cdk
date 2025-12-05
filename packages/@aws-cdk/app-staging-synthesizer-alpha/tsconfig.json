@@ -22,7 +22,7 @@
     "strict": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
-    "stripInternal": false,
+    "stripInternal": true,
     "target": "es2022",
     "esModuleInterop": false,
     "isolatedModules": true,

@@ -414,7 +414,7 @@ export class RdsDataSource extends BackedDataSource {
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appsync.RdsDataSource';
 
-  constructor(scope: Construct, id: string, props: RdsDataSourceProps)
+  constructor(scope: Construct, id: string, props: RdsDataSourceProps);
   constructor(scope: Construct, id: string, props: RdsDataSourcePropsV2) {
     super(scope, id, props, {
       type: 'RELATIONAL_DATABASE',

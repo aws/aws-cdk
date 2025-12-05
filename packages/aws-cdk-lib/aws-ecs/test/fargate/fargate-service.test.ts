@@ -2328,48 +2328,6 @@ describe('fargate service', () => {
       }).toThrow(/'throughput' can only be configured with gp3 volume type, got gp2/);
     });
 
-    test('throw an error if throughput is greater tahn 1000 for volume type gp3', ()=> {
-      // WHEN
-      container.addMountPoints({
-        containerPath: '/var/lib',
-        readOnly: false,
-        sourceVolume: 'nginx-vol',
-      });
-
-      expect(() => {
-        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
-          name: 'nginx-vol',
-          managedEBSVolume: {
-            fileSystemType: ecs.FileSystemType.XFS,
-            volumeType: ec2.EbsDeviceVolumeType.GP3,
-            size: cdk.Size.gibibytes(10),
-            throughput: 10001,
-          },
-        }));
-      }).toThrow("'throughput' must be less than or equal to 1000 MiB/s, got 10001 MiB/s");
-    });
-
-    test('throw an error if throughput is greater tahn 1000 for volume type gp3', ()=> {
-      // WHEN
-      container.addMountPoints({
-        containerPath: '/var/lib',
-        readOnly: false,
-        sourceVolume: 'nginx-vol',
-      });
-
-      expect(() => {
-        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
-          name: 'nginx-vol',
-          managedEBSVolume: {
-            fileSystemType: ecs.FileSystemType.XFS,
-            volumeType: ec2.EbsDeviceVolumeType.GP3,
-            size: cdk.Size.gibibytes(10),
-            throughput: 10001,
-          },
-        }));
-      }).toThrow("'throughput' must be less than or equal to 1000 MiB/s, got 10001 MiB/s");
-    });
-
     test('throw an error if iops is not supported for volume type sc1', ()=> {
       // WHEN
       container.addMountPoints({
@@ -2579,6 +2537,27 @@ describe('fargate service', () => {
           },
         ],
       });
+    });
+
+    test('throw an error if throughput is greater than 2000 for volume type gp3', () => {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            volumeType: ec2.EbsDeviceVolumeType.GP3,
+            size: cdk.Size.gibibytes(10),
+            throughput: 2001,
+          },
+        }));
+      }).toThrow("'throughput' must be less than or equal to 2000 MiB/s, got 2001 MiB/s");
     });
   });
 

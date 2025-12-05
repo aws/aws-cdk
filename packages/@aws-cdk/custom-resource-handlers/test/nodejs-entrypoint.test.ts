@@ -1,5 +1,6 @@
 import * as assert from 'assert';
 import * as fs from 'fs';
+import { OutgoingHttpHeaders } from 'http';
 import * as https from 'https';
 import * as os from 'os';
 import * as path from 'path';
@@ -88,8 +89,8 @@ describe('nodejs entrypoint', () => {
       }));
 
       // THEN
-      const emptyLength = emptyDataRequest.headers?.['content-length'] as number;
-      const utf8Length = utf8DataRequest.headers?.['content-length'] as number;
+      const emptyLength = (emptyDataRequest.headers as OutgoingHttpHeaders)?.['content-length'] as number;
+      const utf8Length = (utf8DataRequest.headers as OutgoingHttpHeaders)?.['content-length'] as number;
       expect(utf8Length - emptyLength).toEqual(6);
     });
   });
@@ -179,6 +180,9 @@ async function invokeHandler(req: AWSLambda.CloudFormationCustomResourceEvent, u
 
   // stage entry point and user handler.
   const workdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-custom-resource-provider-handler-test-'));
+  process.on('exit', () => {
+    fs.rmSync(workdir, { recursive: true, force: true });
+  });
   entrypoint.external.userHandlerIndex = path.join(workdir, 'index.js');
   fs.writeFileSync(entrypoint.external.userHandlerIndex, `exports.handler = ${userHandler.toString()};`);
 

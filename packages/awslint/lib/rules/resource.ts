@@ -22,7 +22,6 @@ export enum AttributeSite {
 }
 
 export class ResourceReflection {
-
   /**
    * @returns all resource constructs (everything that extends `cdk.Resource`)
    */
@@ -284,7 +283,7 @@ function tryResolveCfnResource(resourceClass: reflect.ClassType): CfnResourceRef
 
 function guessResourceName(fqn: string) {
   // Strip any version suffixes e.g. 'TableV2' becomes 'Table'
-  var match = /^(.+?)(V[0-9]+)?$/.exec(fqn);
+  let match = /^(.+?)(V[0-9]+)?$/.exec(fqn);
   if (!match) { return undefined; }
   const [, versionless] = match;
 

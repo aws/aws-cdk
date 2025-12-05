@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
-import { CfnVirtualGateway } from './appmesh.generated';
+import { VirtualGatewayGrants } from './appmesh-grants.generated';
+import { CfnVirtualGateway, IVirtualGatewayRef, VirtualGatewayReference } from './appmesh.generated';
 import { GatewayRoute, GatewayRouteBaseProps } from './gateway-route';
 import { IMesh, Mesh } from './mesh';
 import { renderTlsClientPolicy, renderMeshOwner } from './private/utils';
@@ -13,7 +14,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Interface which all Virtual Gateway based classes must implement
  */
-export interface IVirtualGateway extends cdk.IResource {
+export interface IVirtualGateway extends cdk.IResource, IVirtualGatewayRef {
   /**
    * Name of the VirtualGateway
    *
@@ -104,6 +105,18 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
   public abstract readonly mesh: IMesh;
 
   /**
+   * Collection of grant methods for a VirtualGateway
+   */
+  public readonly grants: VirtualGatewayGrants = VirtualGatewayGrants.fromVirtualGateway(this);
+
+  public get virtualGatewayRef(): VirtualGatewayReference {
+    return {
+      virtualGatewayArn: this.virtualGatewayArn,
+      virtualGatewayId: this.virtualGatewayName,
+    };
+  }
+
+  /**
    * Utility method to add a new GatewayRoute to the VirtualGateway
    */
   public addGatewayRoute(id: string, props: GatewayRouteBaseProps): GatewayRoute {
@@ -114,11 +127,7 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
   }
 
   public grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: ['appmesh:StreamAggregatedResources'],
-      resourceArns: [this.virtualGatewayArn],
-    });
+    return this.grants.streamAggregatedResources(identity);
   }
 }
 

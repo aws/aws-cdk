@@ -1,11 +1,11 @@
 /// !cdk-integ pragma:disable-update-workflow
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as eks from '../lib';
-import { NodegroupAmiType } from 'aws-cdk-lib/aws-eks';
 import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+import { App, Stack, StackProps } from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { NodegroupAmiType } from 'aws-cdk-lib/aws-eks';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as eks from '../lib';
 
 class EksClusterStack extends Stack {
   private cluster: eks.Cluster;

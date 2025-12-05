@@ -55,6 +55,7 @@ export class TypeDefinitionStruct extends StructType {
       },
     });
 
+    this.options = options;
     this.typeDefinition = options.typeDefinition;
     this.converter = options.converter;
     this.resource = options.resource;
@@ -65,7 +66,10 @@ export class TypeDefinitionStruct extends StructType {
   }
 
   public build() {
-    const cfnMapping = new CloudFormationMapping(this.module, this.converter);
+    const cfnMapping = new CloudFormationMapping(this.module, this.converter, {
+      resourceType: this.resource.cloudFormationType,
+      propTypeName: this.typeDefinition.name,
+    });
 
     const decider = new TypeDefinitionDecider(this.resource, this.typeDefinition, this.converter, this.relationshipDecider);
 

@@ -1,4 +1,4 @@
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';

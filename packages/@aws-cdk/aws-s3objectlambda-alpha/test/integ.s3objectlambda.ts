@@ -1,6 +1,6 @@
+import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
 import { AccessPoint } from '../lib';
 
 class TestStack extends cdk.Stack {

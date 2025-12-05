@@ -6,6 +6,7 @@ import {
   ConfigurationContent,
   HostedConfiguration,
 } from 'aws-cdk-lib/aws-appconfig';
+import * as path from 'path';
 
 const app = new App();
 
@@ -21,7 +22,7 @@ const appConfigApp = new Application(stack, 'MyAppConfig', {
 
 new HostedConfiguration(stack, 'MyHostedConfigFromFile', {
   application: appConfigApp,
-  content: ConfigurationContent.fromFile('config.json'),
+  content: ConfigurationContent.fromFile(path.join(__dirname, 'config.json')),
   kmsKey,
 });
 

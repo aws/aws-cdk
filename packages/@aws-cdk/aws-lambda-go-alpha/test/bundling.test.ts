@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/unbound-method */
+
 import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import { Architecture, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { AssetHashType, BundlingFileAccess, DockerImage } from 'aws-cdk-lib';
+import { Architecture, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Bundling } from '../lib/bundling';
 import * as util from '../lib/util';
 

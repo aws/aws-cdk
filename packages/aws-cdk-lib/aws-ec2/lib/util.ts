@@ -67,17 +67,16 @@ export class ImportSubnetGroup {
     this.groups = this.subnetIds.length / this.availabilityZones.length;
 
     if (Math.floor(this.groups) !== this.groups) {
-      // eslint-disable-next-line max-len
       throw new UnscopedValidationError(`Number of ${idField} (${this.subnetIds.length}) must be a multiple of availability zones (${this.availabilityZones.length}).`);
     }
     if (this.routeTableIds.length !== this.subnetIds.length && routeTableIds != null) {
       // We don't err if no routeTableIds were provided to maintain backwards-compatibility. See https://github.com/aws/aws-cdk/pull/3171
-      /* eslint-disable max-len */
+
       throw new UnscopedValidationError(`Number of ${routeTableIdField} (${this.routeTableIds.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
     }
     if (this.ipv4CidrBlocks.length !== this.subnetIds.length && ipv4CidrBlocks != null) {
       // We don't err if no ipv4CidrBlocks were provided to maintain backwards-compatibility.
-      /* eslint-disable max-len */
+
       throw new UnscopedValidationError(`Number of ${ipv4CidrBlockField} (${this.ipv4CidrBlocks.length}) must be equal to the amount of ${idField} (${this.subnetIds.length}).`);
     }
 

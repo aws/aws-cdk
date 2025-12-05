@@ -1,6 +1,6 @@
+import * as cdk from 'aws-cdk-lib';
 import { Annotations, Template } from 'aws-cdk-lib/assertions';
 import * as codecommit from 'aws-cdk-lib/aws-codecommit';
-import * as cdk from 'aws-cdk-lib';
 import * as codepipeline from 'aws-cdk-lib/pipelines';
 import { Construct } from 'constructs';
 import * as appreg from '../lib';

@@ -12,7 +12,7 @@ import { CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME } from '../../../cx-api';
 import * as cpactions from '../../lib';
 import { CodeCommitSourceActionProps } from '../../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('CodeCommit Source Action', () => {
   describe('CodeCommit Source Action', () => {

@@ -5,7 +5,7 @@ import * as s3 from '../../../aws-s3';
 import { App, Duration, SecretValue, Stack } from '../../../core';
 import * as cpactions from '../../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('S3 Deploy Action', () => {
   test('by default extract artifacts', () => {

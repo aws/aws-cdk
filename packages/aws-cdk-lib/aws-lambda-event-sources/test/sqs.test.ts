@@ -8,7 +8,7 @@ import * as cdk from '../../core';
 import { App } from '../../core';
 import * as sources from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('SQSEventSource', () => {
   test('defaults', () => {

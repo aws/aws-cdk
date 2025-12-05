@@ -1,0 +1,16 @@
+{
+  "resources": {
+    "Environment": {
+      "grants": {
+        "readConfig": {
+          "arnFormat": "${environmentArn}/configuration/*",
+          "actions": [
+            "appconfig:GetLatestConfiguration",
+            "appconfig:StartConfigurationSession"
+          ]
+        }
+      }
+    }
+  }
+}
+

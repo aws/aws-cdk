@@ -1,5 +1,5 @@
 export const LICENSE =
-`                                 Apache License
+  `                                 Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
 
@@ -203,6 +203,6 @@ export const LICENSE =
 `;
 
 export const NOTICE =
-`AWS Cloud Development Kit (AWS CDK)
+  `AWS Cloud Development Kit (AWS CDK)
 Copyright 2018-${new Date().getFullYear()} Amazon.com, Inc. or its affiliates. All Rights Reserved.
 `;

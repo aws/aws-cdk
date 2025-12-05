@@ -1,13 +1,16 @@
 import { Construct } from 'constructs';
 import { QueuePolicy } from './policy';
+import { QueueGrants } from './sqs-grants.generated';
+import { IQueueRef, QueueReference } from './sqs.generated';
 import * as iam from '../../aws-iam';
+import { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { IResource, Resource, ResourceProps } from '../../core';
 
 /**
  * Represents an SQS queue
  */
-export interface IQueue extends IResource {
+export interface IQueue extends IResource, IQueueRef {
   /**
    * The ARN of this queue
    * @attribute
@@ -104,7 +107,7 @@ export interface IQueue extends IResource {
 /**
  * Reference to a new or existing Amazon SQS queue
  */
-export abstract class QueueBase extends Resource implements IQueue {
+export abstract class QueueBase extends Resource implements IQueue, IEncryptedResource {
   /**
    * The ARN of this queue
    */
@@ -136,6 +139,11 @@ export abstract class QueueBase extends Resource implements IQueue {
   public abstract readonly encryptionType?: QueueEncryption;
 
   /**
+   * Collection of grant methods for a Queue
+   */
+  public readonly grants = QueueGrants.fromQueue(this);
+
+  /**
    * Controls automatic creation of policy objects.
    *
    * Set by subclasses.
@@ -148,6 +156,20 @@ export abstract class QueueBase extends Resource implements IQueue {
     super(scope, id, props);
 
     this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
+  }
+
+  public grantOnKey(grantee: IGrantable, ...actions: string[]): GrantOnKeyResult {
+    const grant = this.encryptionMasterKey
+      ? this.encryptionMasterKey.grant(grantee, ...actions)
+      : undefined;
+    return { grant };
+  }
+
+  public get queueRef(): QueueReference {
+    return {
+      queueUrl: this.queueUrl,
+      queueArn: this.queueArn,
+    };
   }
 
   /**
@@ -190,18 +212,7 @@ export abstract class QueueBase extends Resource implements IQueue {
    * @param grantee Principal to grant consume rights to
    */
   public grantConsumeMessages(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee,
-      'sqs:ReceiveMessage',
-      'sqs:ChangeMessageVisibility',
-      'sqs:GetQueueUrl',
-      'sqs:DeleteMessage',
-      'sqs:GetQueueAttributes');
-
-    if (this.encryptionMasterKey) {
-      this.encryptionMasterKey.grantDecrypt(grantee);
-    }
-
-    return ret;
+    return this.grants.consumeMessages(grantee);
   }
 
   /**
@@ -225,16 +236,7 @@ export abstract class QueueBase extends Resource implements IQueue {
    * @param grantee Principal to grant send rights to
    */
   public grantSendMessages(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee,
-      'sqs:SendMessage',
-      'sqs:GetQueueAttributes',
-      'sqs:GetQueueUrl');
-
-    if (this.encryptionMasterKey) {
-      // kms:Decrypt necessary to execute grantsendMessages to an SSE enabled SQS queue
-      this.encryptionMasterKey.grantEncryptDecrypt(grantee);
-    }
-    return ret;
+    return this.grants.sendMessages(grantee);
   }
 
   /**
@@ -249,10 +251,7 @@ export abstract class QueueBase extends Resource implements IQueue {
    * @param grantee Principal to grant send rights to
    */
   public grantPurge(grantee: iam.IGrantable) {
-    return this.grant(grantee,
-      'sqs:PurgeQueue',
-      'sqs:GetQueueAttributes',
-      'sqs:GetQueueUrl');
+    return this.grants.purge(grantee);
   }
 
   /**

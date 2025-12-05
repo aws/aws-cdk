@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { ApiKeyGrants } from './apigateway-grants.generated';
 import { ApiKeyReference, CfnApiKey, IApiKeyRef, IStageRef } from './apigateway.generated';
 import { ResourceOptions } from './resource';
 import { IRestApi } from './restapi';
@@ -101,16 +102,17 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
   public abstract readonly keyArn: string;
 
   /**
+   * Collection of grant methods for an ApiKey
+   */
+  public readonly grants = ApiKeyGrants.fromApiKey(this);
+
+  /**
    * Permits the IAM principal all read operations through this key
    *
    * @param grantee The principal to grant access to
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions: readPermissions,
-      resourceArns: [this.keyArn],
-    });
+    return this.grants.read(grantee);
   }
 
   /**
@@ -119,11 +121,7 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
    * @param grantee The principal to grant access to
    */
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions: writePermissions,
-      resourceArns: [this.keyArn],
-    });
+    return this.grants.write(grantee);
   }
 
   /**
@@ -132,11 +130,7 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
    * @param grantee The principal to grant access to
    */
   public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions: [...readPermissions, ...writePermissions],
-      resourceArns: [this.keyArn],
-    });
+    return this.grants.readWrite(grantee);
   }
 
   public get apiKeyRef(): ApiKeyReference {
@@ -294,14 +288,3 @@ export class RateLimitedApiKey extends ApiKeyBase {
     this.keyArn = resource.keyArn;
   }
 }
-
-const readPermissions = [
-  'apigateway:GET',
-];
-
-const writePermissions = [
-  'apigateway:POST',
-  'apigateway:PUT',
-  'apigateway:PATCH',
-  'apigateway:DELETE',
-];

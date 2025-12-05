@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { DistributionGrants } from './cloudfront-grants.generated';
 import { CfnDistribution, DistributionReference } from './cloudfront.generated';
 import {
   HttpVersion,
@@ -787,10 +788,15 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         return iam.Grant.addToPrincipal({ grantee, actions, resourceArns: [formatDistributionArn(this)] });
       }
       public grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
-        return this.grant(identity, 'cloudfront:CreateInvalidation');
+        return DistributionGrants.fromDistribution(this).createInvalidation(identity);
       }
     }();
   }
+
+  /**
+   * Collection of grant methods for a Distribution
+   */
+  public readonly grants = DistributionGrants.fromDistribution(this);
 
   /**
    * The logging bucket for this CloudFront distribution.
@@ -940,7 +946,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
       priceClass: props.priceClass || PriceClass.PRICE_CLASS_100,
       ipv6Enabled: props.enableIpV6 ?? true,
-      // eslint-disable-next-line max-len
+
       customErrorResponses: props.errorConfigurations, // TODO: validation : https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-customerrorresponse.html#cfn-cloudfront-distribution-customerrorresponse-errorcachingminttl
       webAclId: props.webACLId,
 
@@ -1044,7 +1050,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
    * @param identity The principal
    */
   grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
-    return this.grant(identity, 'cloudfront:CreateInvalidation');
+    return this.grants.createInvalidation(identity);
   }
 
   private toBehavior(input: BehaviorWithOrigin, protoPolicy?: ViewerProtocolPolicy) {

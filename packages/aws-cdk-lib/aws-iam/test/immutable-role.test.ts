@@ -3,7 +3,7 @@ import { Template, Match } from '../../assertions';
 import { Stack } from '../../core';
 import * as iam from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('ImmutableRole', () => {
   let stack: Stack;

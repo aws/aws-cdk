@@ -1,5 +1,4 @@
-import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
-import { generate as generateModules } from '../generate';
+import { generate as generateModules, loadPatchedSpec } from '../generate';
 import { ModuleMap, readModuleMap } from '../module-topology';
 import * as naming from '../naming';
 import { jsii } from '../util';
@@ -44,7 +43,7 @@ export async function generateAll(
   outPath: string,
   { scopeMapPath, skippedServices }: GenerateAllOptions,
 ): Promise<ModuleMap> {
-  const db = await loadAwsServiceSpec();
+  const db = await loadPatchedSpec();
   const allScopes = getAllScopes(db, 'cloudFormationNamespace');
   const scopes = skippedServices ? allScopes.filter((scope) => !skippedServices.includes(scope.namespace)) : allScopes;
   const moduleMap = readModuleMap(scopeMapPath);
@@ -82,11 +81,14 @@ export async function generateAll(
     {
       outputPath: outPath,
       clearOutput: false,
-      inCdkLib: true,
-      filePatterns: {
-        resources: '%moduleName%/lib/%serviceShortName%.generated.ts',
-        augmentations: '%moduleName%/lib/%serviceShortName%-augmentations.generated.ts',
-        cannedMetrics: '%moduleName%/lib/%serviceShortName%-canned-metrics.generated.ts',
+      builderProps: {
+        inCdkLib: true,
+        filePatterns: {
+          resources: '%moduleName%/lib/%serviceShortName%.generated.ts',
+          augmentations: '%moduleName%/lib/%serviceShortName%-augmentations.generated.ts',
+          cannedMetrics: '%moduleName%/lib/%serviceShortName%-canned-metrics.generated.ts',
+          grants: '%moduleName%/lib/%serviceShortName%-grants.generated.ts',
+        },
       },
     },
   );

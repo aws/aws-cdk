@@ -1,6 +1,6 @@
 import { Service, SpecDatabase, emptyDatabase } from '@aws-cdk/service-spec-types';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
-import { AstBuilder } from '../lib/cdk/ast';
+import { AwsCdkLibBuilder } from '../lib/cdk/aws-cdk-lib';
 
 const renderer = new TypeScriptRenderer();
 let db: SpecDatabase;
@@ -33,7 +33,7 @@ test('can codegen deprecated service', () => {
   });
   db.link('hasResource', service, resource);
 
-  const ast = new AstBuilder({ db });
+  const ast = new AwsCdkLibBuilder({ db });
   const info = ast.addService(service, { deprecated: 'in favour of something else' });
 
   const rendered = renderer.render(info.resourcesMod.module);

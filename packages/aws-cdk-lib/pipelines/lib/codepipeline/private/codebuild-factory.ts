@@ -132,7 +132,6 @@ export interface CodeBuildFactoryProps {
  * a CodeBuild project, as well as the `CodeBuildStep` straight up.
  */
 export class CodeBuildFactory implements ICodePipelineActionFactory {
-  // eslint-disable-next-line max-len
   public static fromShellStep(constructId: string, shellStep: ShellStep, additional?: Partial<CodeBuildFactoryProps>): ICodePipelineActionFactory {
     return new CodeBuildFactory(constructId, {
       commands: shellStep.commands,

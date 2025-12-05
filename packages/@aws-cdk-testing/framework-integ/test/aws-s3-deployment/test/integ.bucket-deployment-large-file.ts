@@ -30,6 +30,9 @@ const bucket = new Bucket(stack, 'Bucket', {
 
 // Create a temporary directory for our large files
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-large-files-'));
+process.on('exit', () => {
+  fs.rmSync(tempDir, { force: true, recursive: true });
+});
 
 // Generate a large JSON file (10MB) programmatically
 const largeJsonFilePath = path.join(tempDir, 'large-file.json');
