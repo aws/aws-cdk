@@ -40,7 +40,6 @@
     }
    },
    "DependsOn": [
-    "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857",
     "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDestC87FF06E",
     "EventBusCDKSourceERRORLOGSVendedLogsMixinTestEventBus050202CA0AA12A32"
    ]
@@ -56,10 +55,7 @@
       "Arn"
      ]
     }
-   },
-   "DependsOn": [
-    "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857"
-   ]
+   }
   },
   "DeliveryLogGroup2A53FD53": {
    "Type": "AWS::Logs::LogGroup",

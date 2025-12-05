@@ -28,8 +28,10 @@ const destinationLogGroupB = new logs.LogGroup(stack, 'DeliveryLogGroupB', {
 });
 
 // Setup deliveries
-new LogGroupLogsDelivery(destinationLogGroupA).bind(stack, logType, eventBus.attrArn);
-new LogGroupLogsDelivery(destinationLogGroupB).bind(stack, logType, eventBus.attrArn);
+const first = new LogGroupLogsDelivery(destinationLogGroupA).bind(stack, logType, eventBus.attrArn);
+const second = new LogGroupLogsDelivery(destinationLogGroupB).bind(stack, logType, eventBus.attrArn);
+
+second.delivery.node.addDependency(first.delivery);
 
 new integ.IntegTest(app, 'DeliveryTest', {
   testCases: [stack],

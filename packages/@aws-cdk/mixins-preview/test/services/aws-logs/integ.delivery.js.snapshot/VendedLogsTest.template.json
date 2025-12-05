@@ -404,8 +404,7 @@
    },
    "DependsOn": [
     "CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247DestE1C5E99F",
-    "CDKSourceERRORLOGSVendedLogsTest",
-    "DeliveryBucketPolicyB86375F3"
+    "CDKSourceERRORLOGSVendedLogsTest"
    ]
   },
   "CDKSourceERRORLOGSVendedLogsTest": {
@@ -419,11 +418,7 @@
       "Arn"
      ]
     }
-   },
-   "DependsOn": [
-    "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857",
-    "DeliveryBucketPolicyB86375F3"
-   ]
+   }
   },
   "CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Dest07565F4E": {
    "Type": "AWS::Logs::DeliveryDestination",
@@ -456,7 +451,6 @@
    },
    "DependsOn": [
     "CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Dest07565F4E",
-    "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857",
     "CDKSourceERRORLOGSVendedLogsTest"
    ]
   },

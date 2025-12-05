@@ -93,6 +93,7 @@ export class S3LogsDelivery implements ILogsDelivery {
     this.grantLogsDelivery(bucketPolicy);
 
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
+    const deliverySourceRef = deliverySource.deliverySourceRef;
 
     const deliveryDestination = new logs.CfnDeliveryDestination(container, 'Dest', {
       destinationResourceArn: this.bucket.bucketRef.bucketArn,
@@ -102,7 +103,7 @@ export class S3LogsDelivery implements ILogsDelivery {
 
     const delivery = new logs.CfnDelivery(container, 'Delivery', {
       deliveryDestinationArn: deliveryDestination.attrArn,
-      deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
+      deliverySourceName: deliverySourceRef.deliverySourceName,
     });
 
     deliveryDestination.node.addDependency(bucketPolicy);
@@ -251,6 +252,7 @@ export class LogGroupLogsDelivery implements ILogsDelivery {
     const container = new Construct(scope, deliveryId('LogGroup'.concat(logType.split('_').map(word => word.charAt(0) + word.slice(1).toLowerCase()).join('')), scope, this.logGroup));
 
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
+    const deliverySourceRef = deliverySource.deliverySourceRef;
 
     const logGroupPolicy = this.getOrCreateLogsResourcePolicy(container);
     this.grantLogsDelivery(logGroupPolicy);
@@ -263,7 +265,7 @@ export class LogGroupLogsDelivery implements ILogsDelivery {
 
     const delivery = new logs.CfnDelivery(container, 'Delivery', {
       deliveryDestinationArn: deliveryDestination.deliveryDestinationRef.deliveryDestinationArn,
-      deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
+      deliverySourceName: deliverySourceRef.deliverySourceName,
     });
 
     delivery.node.addDependency(deliverySource);

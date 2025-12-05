@@ -57,7 +57,6 @@
    },
    "DependsOn": [
     "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupA5ACD97D5Dest7C0F50BC",
-    "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857",
     "CDKSourceERRORLOGSVendedLogsMultiplesTest"
    ]
   },
@@ -72,10 +71,7 @@
       "Arn"
      ]
     }
-   },
-   "DependsOn": [
-    "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857"
-   ]
+   }
   },
   "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857": {
    "Type": "AWS::Logs::ResourcePolicy",
@@ -167,8 +163,8 @@
     }
    },
    "DependsOn": [
+    "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupA5ACD97D5Delivery1DAA8855",
     "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupB352246CFDest3419A983",
-    "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857",
     "CDKSourceERRORLOGSVendedLogsMultiplesTest"
    ]
   }
