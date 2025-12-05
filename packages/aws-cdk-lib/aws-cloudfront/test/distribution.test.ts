@@ -1706,9 +1706,9 @@ describe('gRPC', () => {
 
 describe('viewer mTLS', () => {
   test.each([
-    { mode: MtlsMode.REQUIRED, expected: 'required' },
-    { mode: MtlsMode.OPTIONAL, expected: 'optional' },
-  ])('can configure mTLS with %s mode', ({ mode, expected }) => {
+    MtlsMode.REQUIRED,
+    MtlsMode.OPTIONAL,
+  ])('can configure mTLS with %s mode', (mode) => {
     const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123456789');
     new Distribution(stack, 'Dist', {
       defaultBehavior: {
@@ -1724,7 +1724,7 @@ describe('viewer mTLS', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         ViewerMtlsConfig: {
-          Mode: expected,
+          Mode: mode,
           TrustStoreConfig: {
             TrustStoreId: 'ts-123456789',
           },
@@ -1780,9 +1780,9 @@ describe('viewer mTLS', () => {
   });
 
   test.each([
-    [HttpVersion.HTTP3, 'http3'],
-    [HttpVersion.HTTP2_AND_3, 'http2and3'],
-  ])('throws if mTLS is configured with %s', (httpVersion, versionString) => {
+    HttpVersion.HTTP3,
+    HttpVersion.HTTP2_AND_3,
+  ])('throws if mTLS is configured with %s', (httpVersion) => {
     const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
     expect(() => {
       new Distribution(stack, 'Dist', {
@@ -1796,7 +1796,7 @@ describe('viewer mTLS', () => {
           trustStore,
         },
       });
-    }).toThrow(`'httpVersion' must be http1.1 or http2 when 'viewerMtlsConfig' is specified. HTTP/3 is not supported with mTLS, got ${versionString}`);
+    }).toThrow(`'httpVersion' must be http1.1 or http2 when 'viewerMtlsConfig' is specified. HTTP/3 is not supported with mTLS, got ${httpVersion}`);
   });
 
   test.each([
@@ -1831,8 +1831,8 @@ describe('viewer mTLS', () => {
   });
 
   test.each([
-    [ViewerProtocolPolicy.HTTPS_ONLY],
-    [ViewerProtocolPolicy.REDIRECT_TO_HTTPS],
+    ViewerProtocolPolicy.HTTPS_ONLY,
+    ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
   ])('mTLS works with viewerProtocolPolicy %s', (viewerProtocolPolicy) => {
     const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
     new Distribution(stack, 'Dist', {
