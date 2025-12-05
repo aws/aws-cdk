@@ -55,7 +55,7 @@ export interface TrustStoreProps {
    *
    * @default - generated from the construct id
    */
-  readonly name?: string;
+  readonly trustStoreName?: string;
 
   /**
    * The S3 location of the CA certificates bundle.
@@ -139,10 +139,10 @@ export class TrustStore extends Resource implements ITrustStore {
     super(scope, id);
     addConstructMetadata(this, props);
 
-    this.validateName(props.name);
+    this.validateName(props.trustStoreName);
 
     const resource = new CfnTrustStore(this, 'Resource', {
-      name: props.name ?? Names.uniqueResourceName(this, { maxLength: 64 }),
+      name: props.trustStoreName ?? Names.uniqueResourceName(this, { maxLength: 64 }),
       caCertificatesBundleSource: this.renderCaCertificatesBundleSource(props),
     });
 
@@ -157,7 +157,7 @@ export class TrustStore extends Resource implements ITrustStore {
     }
 
     if (name.length < 2 || name.length > 64) {
-      throw new ValidationError(`'name' must be between 2 and 64 characters, got ${name.length} characters`, this);
+      throw new ValidationError(`'trustStoreName' must be between 2 and 64 characters, got ${name.length} characters`, this);
     }
   }
 

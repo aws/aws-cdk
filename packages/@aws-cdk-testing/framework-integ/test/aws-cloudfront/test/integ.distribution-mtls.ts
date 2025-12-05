@@ -44,9 +44,9 @@ class MtlsDistributionStack extends cdk.Stack {
       retainOnDelete: false,
     });
 
-    // Create TrustStore using L1 construct (CfnTrustStore)
+    // Create TrustStore
     const trustStore = new cloudfront.TrustStore(this, 'TrustStore', {
-      name: 'integ-test-trust-store',
+      trustStoreName: 'integ-test-trust-store',
       caCertificatesBundleS3Location: {
         bucket: this.certBucket,
         key: 'ca-bundle.pem',

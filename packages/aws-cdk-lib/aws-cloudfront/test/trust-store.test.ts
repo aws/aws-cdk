@@ -44,7 +44,7 @@ describe('TrustStore', () => {
 
   test('with full settings', () => {
     new TrustStore(stack, 'TrustStore', {
-      name: 'my-custom-trust-store',
+      trustStoreName: 'my-custom-trust-store',
       caCertificatesBundleS3Location: {
         bucket,
         key: 'ca-bundle.pem',
@@ -113,24 +113,24 @@ describe('TrustStore', () => {
     ['empty', ''],
     ['only 1 character', 'a'],
     ['exceeds 64 characters', 'a'.repeat(65)],
-  ])('throws if name is %s', (_, name) => {
+  ])('throws if trustStoreName is %s', (_, trustStoreName) => {
     expect(() => {
       new TrustStore(stack, 'TrustStore', {
-        name,
+        trustStoreName,
         caCertificatesBundleS3Location: {
           bucket,
           key: 'ca-bundle.pem',
         },
       });
-    }).toThrow(`'name' must be between 2 and 64 characters, got ${name.length} characters`);
+    }).toThrow(`'trustStoreName' must be between 2 and 64 characters, got ${trustStoreName.length} characters`);
   });
 
   test.each([
     ['exactly 2 characters', 'ab'],
     ['exactly 64 characters', 'a'.repeat(64)],
-  ])('accepts name with %s', (_, name) => {
-    new TrustStore(stack, `TrustStore-${name.length}`, {
-      name,
+  ])('accepts trustStoreName with %s', (_, trustStoreName) => {
+    new TrustStore(stack, `TrustStore-${trustStoreName.length}`, {
+      trustStoreName,
       caCertificatesBundleS3Location: {
         bucket,
         key: 'ca-bundle.pem',
@@ -138,7 +138,7 @@ describe('TrustStore', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::TrustStore', {
-      Name: name,
+      Name: trustStoreName,
     });
   });
 });
