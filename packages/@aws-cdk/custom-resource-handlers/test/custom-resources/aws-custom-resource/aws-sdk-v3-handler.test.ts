@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 process.env.AWS_REGION = 'us-east-1';
 
 import { CloudWatchClient, GetMetricDataCommand } from '@aws-sdk/client-cloudwatch';
@@ -134,7 +133,7 @@ test('update event with physical resource id', async () => {
     ...eventCommon,
     RequestType: 'Update',
     PhysicalResourceId: 'physicalResourceId',
-    OldResourceProperties: {},
+    OldResourceProperties: { ServiceToken: 'x' },
     ResourceProperties: {
       ServiceToken: 'token',
       Update: JSON.stringify({

@@ -31,7 +31,6 @@ export function propertyNameFromCloudFormation(name: string): string {
 
   let ret = camelcase(name);
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   const suffixes: { [key: string]: string } = { ARNs: 'Arns', MBs: 'MBs', AZs: 'AZs' };
 
   for (const suffix of Object.keys(suffixes)) {
@@ -119,7 +118,7 @@ export function referencePropertyName(propName: string, resourceName: string) {
   propName = propName.split('/').pop() ?? propName;
 
   if (['arn', 'id', 'name', 'url'].includes(propName.toLowerCase())) {
-    return `${camelcase(resourceName)}${propName.charAt(0).toUpperCase()}${propName.slice(1)}`;
+    return `${camelcase(resourceName)}${propName.charAt(0).toUpperCase()}${propName.slice(1).toLowerCase()}`;
   }
 
   return camelcase(propName);
