@@ -1,0 +1,35 @@
+#
+#####################################
+##          SQS GUARD RULES         ##
+#####################################
+# Rule: SQS_NO_WORLD_ACCESSIBLE_INLINE
+# Service: Amazon Simple Queue Service (SQS)
+# Coverage: Inline Queue Policies
+
+let sqs_queues = Resources.*[
+  Type == 'AWS::SQS::Queue'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "SQS_NO_WORLD_ACCESSIBLE_INLINE"
+]
+
+# Check inline queue policies
+rule SQS_NO_WORLD_ACCESSIBLE_INLINE when %sqs_queues !empty {
+    %sqs_queues {
+        Properties.QueuePolicy.Statement[*] {
+            when Effect == "Allow" {
+                when Principal exists {
+                    when Principal != "*" {
+                        when Principal.AWS exists {
+                            when Principal.AWS is_string {
+                                Principal.AWS != "*"
+                            }
+                            when Principal.AWS is_list {
+                                Principal.AWS[*] != "*"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
