@@ -915,6 +915,29 @@ export class Distribution extends Resource implements IDistribution {
         this,
       );
     }
+
+    // Validate viewerProtocolPolicy - mTLS requires HTTPS.
+    // When viewerProtocolPolicy is not specified, it defaults to ALLOW_ALL which is not compatible with mTLS.
+    const validPolicies = [ViewerProtocolPolicy.HTTPS_ONLY, ViewerProtocolPolicy.REDIRECT_TO_HTTPS];
+    const defaultPolicy = props.defaultBehavior.viewerProtocolPolicy ?? ViewerProtocolPolicy.ALLOW_ALL;
+    if (!validPolicies.includes(defaultPolicy)) {
+      throw new ValidationError(
+        `'viewerProtocolPolicy' must be '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified, got '${defaultPolicy}' in default behavior`,
+        this,
+      );
+    }
+
+    if (props.additionalBehaviors) {
+      for (const [pathPattern, behavior] of Object.entries(props.additionalBehaviors)) {
+        const policy = behavior.viewerProtocolPolicy ?? ViewerProtocolPolicy.ALLOW_ALL;
+        if (!validPolicies.includes(policy)) {
+          throw new ValidationError(
+            `'viewerProtocolPolicy' must be '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified, got '${policy}' in behavior for path '${pathPattern}'`,
+            this,
+          );
+        }
+      }
+    }
   }
 }
 

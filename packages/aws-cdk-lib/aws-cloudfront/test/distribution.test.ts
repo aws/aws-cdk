@@ -25,6 +25,7 @@ import {
   SecurityPolicyProtocol,
   SSLMethod,
   TrustStore,
+  ViewerProtocolPolicy,
 } from '../lib';
 import { DistributionGrants } from '../lib/cloudfront-grants.generated';
 
@@ -1710,7 +1711,10 @@ describe('viewer mTLS', () => {
   ])('can configure mTLS with %s mode', ({ mode, expected }) => {
     const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123456789');
     new Distribution(stack, 'Dist', {
-      defaultBehavior: { origin: defaultOrigin() },
+      defaultBehavior: {
+        origin: defaultOrigin(),
+        viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
+      },
       viewerMtlsConfig: {
         mode,
         trustStore,
@@ -1737,7 +1741,10 @@ describe('viewer mTLS', () => {
   ])('can configure mTLS with all trust store options', (advertiseTrustStoreCaNames, ignoreCertificateExpiry) => {
     const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123456789');
     new Distribution(stack, 'Dist', {
-      defaultBehavior: { origin: defaultOrigin() },
+      defaultBehavior: {
+        origin: defaultOrigin(),
+        viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
+      },
       viewerMtlsConfig: {
         mode: MtlsMode.REQUIRED,
         trustStore,
@@ -1779,7 +1786,10 @@ describe('viewer mTLS', () => {
     const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
     expect(() => {
       new Distribution(stack, 'Dist', {
-        defaultBehavior: { origin: defaultOrigin() },
+        defaultBehavior: {
+          origin: defaultOrigin(),
+          viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
+        },
         httpVersion,
         viewerMtlsConfig: {
           mode: MtlsMode.REQUIRED,
@@ -1796,7 +1806,10 @@ describe('viewer mTLS', () => {
   ])('mTLS works with httpVersion %s', (httpVersion, expectedHttpVersion) => {
     const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
     new Distribution(stack, 'Dist', {
-      defaultBehavior: { origin: defaultOrigin() },
+      defaultBehavior: {
+        origin: defaultOrigin(),
+        viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
+      },
       httpVersion,
       viewerMtlsConfig: {
         mode: MtlsMode.REQUIRED,
@@ -1815,5 +1828,89 @@ describe('viewer mTLS', () => {
         },
       },
     });
+  });
+
+  test.each([
+    [ViewerProtocolPolicy.HTTPS_ONLY],
+    [ViewerProtocolPolicy.REDIRECT_TO_HTTPS],
+  ])('mTLS works with viewerProtocolPolicy %s', (viewerProtocolPolicy) => {
+    const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: {
+        origin: defaultOrigin(),
+        viewerProtocolPolicy,
+      },
+      additionalBehaviors: {
+        '/api/*': {
+          origin: defaultOrigin(),
+          viewerProtocolPolicy,
+        },
+      },
+      viewerMtlsConfig: {
+        mode: MtlsMode.REQUIRED,
+        trustStore,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          ViewerProtocolPolicy: viewerProtocolPolicy,
+        },
+        CacheBehaviors: [{
+          PathPattern: '/api/*',
+          ViewerProtocolPolicy: viewerProtocolPolicy,
+        }],
+        ViewerMtlsConfig: {
+          Mode: 'required',
+          TrustStoreConfig: {
+            TrustStoreId: 'ts-123',
+          },
+        },
+      },
+    });
+  });
+
+  test.each([
+    ViewerProtocolPolicy.ALLOW_ALL, undefined,
+  ])('throws if mTLS is configured with viewerProtocolPolicy %s in default behavior', (viewerProtocolPolicy) => {
+    const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
+    expect(() => {
+      new Distribution(stack, 'Dist', {
+        defaultBehavior: {
+          origin: defaultOrigin(),
+          viewerProtocolPolicy,
+        },
+        viewerMtlsConfig: {
+          mode: MtlsMode.REQUIRED,
+          trustStore,
+        },
+      });
+    }).toThrow(`'viewerProtocolPolicy' must be 'https-only' or 'redirect-to-https' when 'viewerMtlsConfig' is specified, got 'allow-all' in default behavior`);
+  });
+
+  test.each([
+    [ViewerProtocolPolicy.ALLOW_ALL, '/api/*'],
+    [undefined, '/images/*'],
+  ])('throws if mTLS is configured with viewerProtocolPolicy %s in additional behavior', (viewerProtocolPolicy, pathPattern) => {
+    const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
+    expect(() => {
+      new Distribution(stack, 'Dist', {
+        defaultBehavior: {
+          origin: defaultOrigin(),
+          viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
+        },
+        additionalBehaviors: {
+          [pathPattern]: {
+            origin: defaultOrigin(),
+            viewerProtocolPolicy,
+          },
+        },
+        viewerMtlsConfig: {
+          mode: MtlsMode.REQUIRED,
+          trustStore,
+        },
+      });
+    }).toThrow(`'viewerProtocolPolicy' must be 'https-only' or 'redirect-to-https' when 'viewerMtlsConfig' is specified, got 'allow-all' in behavior for path '${pathPattern}'`);
   });
 });
