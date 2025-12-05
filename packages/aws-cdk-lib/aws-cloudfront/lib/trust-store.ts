@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnTrustStore, ITrustStoreRef, TrustStoreReference } from './cloudfront.generated';
 import { IBucket } from '../../aws-s3';
-import { IResource, Names, Resource, Stack } from '../../core';
+import { IResource, Names, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -55,7 +55,7 @@ export interface TrustStoreProps {
    *
    * @default - generated from the construct id
    */
-  readonly trustStoreName?: string;
+  readonly name?: string;
 
   /**
    * The S3 location of the CA certificates bundle.
@@ -139,14 +139,26 @@ export class TrustStore extends Resource implements ITrustStore {
     super(scope, id);
     addConstructMetadata(this, props);
 
+    this.validateName(props.name);
+
     const resource = new CfnTrustStore(this, 'Resource', {
-      name: props.trustStoreName ?? Names.uniqueResourceName(this, { maxLength: 64 }),
+      name: props.name ?? Names.uniqueResourceName(this, { maxLength: 64 }),
       caCertificatesBundleSource: this.renderCaCertificatesBundleSource(props),
     });
 
     this.trustStoreId = resource.attrId;
     this.trustStoreArn = resource.attrArn;
     this.trustStoreRef = resource.trustStoreRef;
+  }
+
+  private validateName(name?: string): void {
+    if (name === undefined || Token.isUnresolved(name)) {
+      return;
+    }
+
+    if (name.length < 2 || name.length > 64) {
+      throw new ValidationError(`'name' must be between 2 and 64 characters, got ${name.length} characters`, this);
+    }
   }
 
   private renderCaCertificatesBundleSource(
