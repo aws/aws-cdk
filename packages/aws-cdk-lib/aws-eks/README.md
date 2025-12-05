@@ -1371,11 +1371,11 @@ const clusterSecurityGroupId = cluster.clusterSecurityGroupId;
 You can configure the scaling tier for the EKS cluster control plane using the `controlPlaneScalingConfig` property. This allows you to specify the tier for provisioned control plane scaling.
 
 ```ts
-import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+declare const kubectlLayer: lambda.ILayerVersion;
 
 const cluster = new eks.Cluster(this, 'MyCluster', {
   version: eks.KubernetesVersion.V1_29,
-  kubectlLayer: new KubectlV31Layer(this, 'KubectlLayer'),
+  kubectlLayer,
   controlPlaneScalingConfig: {
     tier: 'standard'
   }
