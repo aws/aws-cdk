@@ -11,11 +11,6 @@ const config = {
     `<rootDir>/**/test/**/?(*.)+(test).${ext}`,
   ],
 
-  transform: {
-    "\\.jsx?$": ["babel-jest", {}],
-    '^.+\\.tsx?$': ['ts-jest', { tsConfig: 'tsconfig.tests.json' }],
-  },
-
   coveragePathIgnorePatterns: ['\\.generated\\.[jt]s$', '<rootDir>/.*/test/', '.warnings.jsii.js$', '/node_modules/'],
 
   // Massive parallellism leads to common timeouts

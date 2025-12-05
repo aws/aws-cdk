@@ -62,7 +62,7 @@
     ]
   },
   "jsii": {
-    "tsconfig": "tsconfig.lib.json",
+    "tsconfig": "tsconfig.json",
     "outdir": "dist",
     "targets": {
       "dotnet": {
