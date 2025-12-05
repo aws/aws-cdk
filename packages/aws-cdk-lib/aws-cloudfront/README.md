@@ -717,27 +717,61 @@ new cloudfront.Distribution(this, 'Dist', {
 });
 ```
 
+### Trust Store
+
+A Trust Store contains CA certificates that CloudFront uses to authenticate client certificates
+during mutual TLS (mTLS) handshakes. The CA certificates bundle must be stored in an S3 bucket
+in PEM format.
+
+```ts
+declare const certsBucket: s3.Bucket;
+
+const trustStore = new cloudfront.TrustStore(this, 'TrustStore', {
+  caCertificatesBundleS3Location: {
+    bucket: certsBucket,
+    key: 'ca-bundle.pem',
+  },
+});
+```
+
+You can also import an existing Trust Store by its ID:
+
+```ts
+const importedTrustStore = cloudfront.TrustStore.fromTrustStoreId(
+  this,
+  'ImportedTrustStore',
+  'ts_36QBpGQoOtQIsJUDB4IXYXogHoc',
+);
+```
+
 ### Mutual TLS (mTLS) Authentication
 
 You can configure CloudFront to require mutual TLS (mTLS) authentication between viewers and CloudFront.
 With mTLS, CloudFront authenticates viewers using client certificates. To enable mTLS, create a TrustStore
 containing CA certificates and configure the `viewerMtlsConfig` property.
 
-> **Note:** mTLS requires HTTPS. Use `ViewerProtocolPolicy.HTTPS_ONLY` or `ViewerProtocolPolicy.REDIRECT_TO_HTTPS`.
-> mTLS is not supported with HTTP/3. Use the default `HttpVersion.HTTP2` or `HttpVersion.HTTP1_1`.
+**Note:** mTLS requires HTTPS. Use `ViewerProtocolPolicy.HTTPS_ONLY` or `ViewerProtocolPolicy.REDIRECT_TO_HTTPS`.
+**Note:** mTLS is not supported with HTTP/3. Use the `HttpVersion.HTTP2` or `HttpVersion.HTTP1_1`.
 
 ```ts
-declare const myBucket: s3.Bucket;
-declare const trustStoreId: string; // ID of an existing CloudFront TrustStore
+declare const bucket: s3.Bucket;
+declare const certsBucket: s3.Bucket;
 
-new cloudfront.Distribution(this, 'myDist', {
+const trustStore = new cloudfront.TrustStore(this, 'TrustStore', {
+  caCertificatesBundleS3Location: {
+    bucket: certsBucket,
+    key: 'ca-bundle.pem',
+  },
+});
+
+new cloudfront.Distribution(this, 'Dist', {
   defaultBehavior: {
-    origin: origins.S3BucketOrigin.withOriginAccessControl(myBucket),
+    origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
     viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.HTTPS_ONLY,
   },
   viewerMtlsConfig: {
     mode: cloudfront.MtlsMode.REQUIRED, // or MtlsMode.OPTIONAL to allow requests without certificates
-    trustStoreId: trustStoreId,
+    trustStore: trustStore,
     advertiseTrustStoreCaNames: true, // Optional: advertise CA names during TLS handshake
     ignoreCertificateExpiry: false, // Optional: accept expired certificates (use with caution)
   },

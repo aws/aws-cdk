@@ -24,6 +24,7 @@ import {
   RealtimeLogConfig,
   SecurityPolicyProtocol,
   SSLMethod,
+  TrustStore,
 } from '../lib';
 import { DistributionGrants } from '../lib/cloudfront-grants.generated';
 
@@ -1707,11 +1708,12 @@ describe('viewer mTLS', () => {
     { mode: MtlsMode.REQUIRED, expected: 'required' },
     { mode: MtlsMode.OPTIONAL, expected: 'optional' },
   ])('can configure mTLS with %s mode', ({ mode, expected }) => {
+    const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123456789');
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin: defaultOrigin() },
       viewerMtlsConfig: {
         mode,
-        trustStoreId: 'ts-123456789',
+        trustStore,
       },
     });
 
@@ -1733,11 +1735,12 @@ describe('viewer mTLS', () => {
     [false, true],
     [false, false],
   ])('can configure mTLS with all trust store options', (advertiseTrustStoreCaNames, ignoreCertificateExpiry) => {
+    const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123456789');
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin: defaultOrigin() },
       viewerMtlsConfig: {
         mode: MtlsMode.REQUIRED,
-        trustStoreId: 'ts-123456789',
+        trustStore,
         advertiseTrustStoreCaNames,
         ignoreCertificateExpiry,
       },
@@ -1773,29 +1776,43 @@ describe('viewer mTLS', () => {
     [HttpVersion.HTTP3, 'http3'],
     [HttpVersion.HTTP2_AND_3, 'http2and3'],
   ])('throws if mTLS is configured with %s', (httpVersion, versionString) => {
+    const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
     expect(() => {
       new Distribution(stack, 'Dist', {
         defaultBehavior: { origin: defaultOrigin() },
         httpVersion,
         viewerMtlsConfig: {
           mode: MtlsMode.REQUIRED,
-          trustStoreId: 'ts-123',
+          trustStore,
         },
       });
     }).toThrow(`'httpVersion' must be http1.1 or http2 when 'viewerMtlsConfig' is specified. HTTP/3 is not supported with mTLS, got ${versionString}`);
   });
 
   test.each([
-    [HttpVersion.HTTP1_1],
-    [HttpVersion.HTTP2],
-    [undefined],
-  ])('mTLS works with httpVersion %s', (httpVersion) => {
+    [HttpVersion.HTTP1_1, 'http1.1'],
+    [HttpVersion.HTTP2, 'http2'],
+    [undefined, 'http2'],
+  ])('mTLS works with httpVersion %s', (httpVersion, expectedHttpVersion) => {
+    const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin: defaultOrigin() },
       httpVersion,
       viewerMtlsConfig: {
         mode: MtlsMode.REQUIRED,
-        trustStoreId: 'ts-123',
+        trustStore,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        HttpVersion: expectedHttpVersion,
+        ViewerMtlsConfig: {
+          Mode: 'required',
+          TrustStoreConfig: {
+            TrustStoreId: 'ts-123',
+          },
+        },
       },
     });
   });

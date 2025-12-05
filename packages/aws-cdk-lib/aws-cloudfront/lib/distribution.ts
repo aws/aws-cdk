@@ -16,6 +16,7 @@ import { GeoRestriction } from './geo-restriction';
 import { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
 import { CacheBehavior } from './private/cache-behavior';
 import { formatDistributionArn, grant } from './private/utils';
+import { ITrustStore } from './trust-store';
 import * as acm from '../../aws-certificatemanager';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
@@ -886,7 +887,7 @@ export class Distribution extends Resource implements IDistribution {
     return {
       mode: config.mode,
       trustStoreConfig: {
-        trustStoreId: config.trustStoreId,
+        trustStoreId: config.trustStore.trustStoreId,
         advertiseTrustStoreCaNames: config.advertiseTrustStoreCaNames,
         ignoreCertificateExpiry: config.ignoreCertificateExpiry,
       },
@@ -1039,12 +1040,12 @@ export interface ViewerMtlsConfig {
   readonly mode: MtlsMode;
 
   /**
-   * The ID of the trust store to use for mTLS authentication.
+   * The trust store to use for mTLS authentication.
    *
-   * You must create a trust store with your Certificate Authority certificates
-   * before associating it with your CloudFront distribution.
+   * The trust store contains CA certificates that CloudFront uses to
+   * authenticate client certificates during mTLS handshakes.
    */
-  readonly trustStoreId: string;
+  readonly trustStore: ITrustStore;
 
   /**
    * Whether to advertise trust store CA names to clients during the TLS handshake.
