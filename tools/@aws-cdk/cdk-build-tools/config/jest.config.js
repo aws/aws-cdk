@@ -19,12 +19,6 @@ if ('aws-cdk-lib' in (thisPackagesPackageJson.devDependencies ?? {})) {
 // @ts-check
 /** @type {import('jest').Config} */
 const config = {
-  globals: {
-    'ts-jest': {
-      tsConfig: 'tsconfig.json'
-    }
-  },
-
   // The preset deals with preferring TS over JS
   moduleFileExtensions: [
     // .ts first to prefer a ts over a js if present
@@ -38,7 +32,7 @@ const config = {
   // make sure `jest.mock` calls are hoisted to the top of every test file.
   transform: {
     "\\.jsx?$": ["babel-jest", {}],
-    '^.+\\.tsx?$': ['ts-jest', {}],
+    '^.+\\.tsx?$': ['ts-jest', { tsConfig: 'tsconfig.json' }],
   },
   // Jest is resource greedy so this shouldn't be more than 50%
   maxWorkers: '50%',
