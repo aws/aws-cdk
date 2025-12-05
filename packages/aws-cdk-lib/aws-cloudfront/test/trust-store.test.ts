@@ -22,7 +22,7 @@ describe('TrustStore', () => {
     bucket = new s3.Bucket(stack, 'Bucket');
   });
 
-  test('minimal example', () => {
+  test('minimal settings', () => {
     new TrustStore(stack, 'TrustStore', {
       caCertificatesBundleS3Location: {
         bucket,
