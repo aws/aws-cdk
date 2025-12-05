@@ -140,6 +140,7 @@ export class TrustStore extends Resource implements ITrustStore {
     addConstructMetadata(this, props);
 
     this.validateName(props.trustStoreName);
+    this.validateS3Key(props.caCertificatesBundleS3Location.key);
 
     const resource = new CfnTrustStore(this, 'Resource', {
       name: props.trustStoreName ?? Names.uniqueResourceName(this, { maxLength: 64 }),
@@ -158,6 +159,16 @@ export class TrustStore extends Resource implements ITrustStore {
 
     if (name.length < 1 || name.length > 64) {
       throw new ValidationError(`'trustStoreName' must be between 1 and 64 characters, got ${name.length} characters`, this);
+    }
+  }
+
+  private validateS3Key(key: string): void {
+    if (Token.isUnresolved(key)) {
+      return;
+    }
+
+    if (key.length === 0) {
+      throw new ValidationError("'caCertificatesBundleS3Location.key' cannot be an empty string", this);
     }
   }
 

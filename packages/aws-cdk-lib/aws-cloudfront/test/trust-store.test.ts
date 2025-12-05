@@ -140,4 +140,15 @@ describe('TrustStore', () => {
       Name: trustStoreName,
     });
   });
+
+  test('throws if S3 key is an empty string', () => {
+    expect(() => {
+      new TrustStore(stack, 'TrustStore', {
+        caCertificatesBundleS3Location: {
+          bucket,
+          key: '',
+        },
+      });
+    }).toThrow("'caCertificatesBundleS3Location.key' cannot be an empty string");
+  });
 });

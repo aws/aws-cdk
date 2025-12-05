@@ -764,8 +764,10 @@ new cloudfront.Distribution(this, 'Dist', {
   viewerMtlsConfig: {
     mode: cloudfront.MtlsMode.REQUIRED, // or MtlsMode.OPTIONAL to allow requests without certificates
     trustStore: trustStore,
-    advertiseTrustStoreCaNames: true, // Optional: advertise CA names during TLS handshake
-    ignoreCertificateExpiry: false, // Optional: accept expired certificates (use with caution)
+    // Optional: advertise CA names during TLS handshake
+    advertiseTrustStoreCaNames: true,
+    // Optional: accept expired certificates (use with caution)
+    ignoreCertificateExpiry: false,
   },
 });
 ```
