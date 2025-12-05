@@ -16,7 +16,7 @@ interface ShellOptions {
  *
  * Is platform-aware, handles errors nicely.
  */
-export async function shell(command: string[], options: ShellOptions): Promise<string> {
+export async function shell(command: string[], options: ShellOptions = {}): Promise<string> {
   let [cmd, ...args] = command;
 
   const timeFile = '.time.tmp';
