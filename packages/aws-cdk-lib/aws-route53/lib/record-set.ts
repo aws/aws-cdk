@@ -167,7 +167,7 @@ export enum RecordType {
 }
 
 /**
- * The failvoer policy.
+ * The failover policy.
  * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-failover.html
  */
 export enum Failover {
@@ -408,15 +408,6 @@ export class RecordSet extends Resource implements IRecordSet {
     if (props.failover && props.multiValueAnswer) {
       throw new ValidationError('Cannot use both failover and multiValueAnswer routing policies', this);
     }
-    if (props.failover === Failover.PRIMARY && !props.healthCheck) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-route53:primaryFailoverHealthCheck', 'PRIMARY failover record sets should include a health check for proper failover behavior');
-    }
-    if (props.failover && props.target.aliasTarget) {
-      const aliasTargetConfig = props.target.aliasTarget.bind(this, props.zone);
-      if (aliasTargetConfig && aliasTargetConfig.evaluateTargetHealth !== true) {
-        Annotations.of(this).addWarningV2('@aws-cdk/aws-route53:failoverAliasEvaluateTargetHealth', 'Failover alias record sets should include EvaluateTargetHealth = true for proper failover behavior.');
-      }
-    }
 
     const nonSimpleRoutingPolicies = [
       props.geoLocation,
@@ -428,6 +419,16 @@ export class RecordSet extends Resource implements IRecordSet {
     ].filter((variable) => variable !== undefined).length;
     if (nonSimpleRoutingPolicies > 1) {
       throw new ValidationError('Only one of region, weight, multiValueAnswer, geoLocation, cidrRoutingConfig, or failover can be defined', this);
+    }
+
+    if (props.failover === Failover.PRIMARY && !props.healthCheck && !props.target.aliasTarget) {
+      throw new ValidationError('PRIMARY failover record sets must include a health check', this);
+    }
+    if (props.failover && props.target.aliasTarget) {
+      const aliasTargetConfig = props.target.aliasTarget.bind(this, props.zone);
+      if (aliasTargetConfig && !Token.isUnresolved(aliasTargetConfig.evaluateTargetHealth) && aliasTargetConfig.evaluateTargetHealth !== true) {
+        throw new ValidationError('Failover alias record sets must set EvaluateTargetHealth to true', this);
+      }
     }
 
     this.geoLocation = props.geoLocation;

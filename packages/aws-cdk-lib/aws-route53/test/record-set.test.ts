@@ -1851,27 +1851,21 @@ describe('record set', () => {
     });
   });
 
-  test('warns when PRIMARY failover has no health check', () => {
+  test('throws when PRIMARY failover has no health check', () => {
     // GIVEN
     const stack = new Stack();
     const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
 
-    // WHEN
-    new route53.ARecord(stack, 'PrimaryFailover', {
+    // THEN
+    expect(() => new route53.ARecord(stack, 'PrimaryFailover', {
       zone,
       recordName: 'www',
       target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
       failover: route53.Failover.PRIMARY,
-    });
-
-    // THEN
-    Annotations.fromStack(stack).hasWarning(
-      '*',
-      Match.stringLikeRegexp('PRIMARY failover record sets should include a health check'),
-    );
+    })).toThrow('PRIMARY failover record sets must include a health check');
   });
 
-  test('warns when failover alias target does not set EvaluateTargetHealth=true', () => {
+  test('throws when failover alias target does not set EvaluateTargetHealth=true', () => {
     // GIVEN
     const stack = new Stack();
     const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
@@ -1884,22 +1878,16 @@ describe('record set', () => {
       }),
     };
 
-    // WHEN
-    new route53.ARecord(stack, 'AliasFailover', {
+    // THEN
+    expect(() => new route53.ARecord(stack, 'AliasFailover', {
       zone,
       recordName: 'www',
       target: route53.RecordTarget.fromAlias(target),
       failover: route53.Failover.PRIMARY,
-    });
-
-    // THEN
-    Annotations.fromStack(stack).hasWarning(
-      '*',
-      Match.stringLikeRegexp('Failover alias record sets should include EvaluateTargetHealth'),
-    );
+    })).toThrow('Failover alias record sets must set EvaluateTargetHealth to true');
   });
 
-  test('does not warn when failover alias target sets EvaluateTargetHealth=true', () => {
+  test('allows failover alias target when EvaluateTargetHealth=true', () => {
     // GIVEN
     const stack = new Stack();
     const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
@@ -1921,7 +1909,14 @@ describe('record set', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasNoWarning('*', '*');
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Failover: 'PRIMARY',
+      AliasTarget: {
+        DNSName: 'alias.example.com',
+        HostedZoneId: 'Z111',
+        EvaluateTargetHealth: true,
+      },
+    });
   });
 
   test('throws when failover is combined with another routing policy', () => {
