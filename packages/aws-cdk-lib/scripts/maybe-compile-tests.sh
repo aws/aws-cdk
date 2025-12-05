@@ -9,5 +9,5 @@ esac
 
 # Compile tests if we're running in CI
 if ${ci}; then
-    npx tsc -b tsconfig.tests.json
+    npx tsc -b tsconfig.json
 fi
