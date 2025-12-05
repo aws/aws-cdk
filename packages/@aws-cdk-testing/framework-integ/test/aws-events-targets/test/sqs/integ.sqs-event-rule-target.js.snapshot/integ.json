@@ -1,12 +1,17 @@
 {
   "version": "21.0.0",
   "testCases": {
-    "integ.sqs-event-rule-target": {
+    "integ.sqs-event-rule-target/DefaultTest": {
       "stacks": [
         "aws-cdk-sqs-event-target"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "allowDestroy": [
+        "AWS::SQS::Queue",
+        "AWS::SQS::QueuePolicy",
+        "AWS::Events::Rule"
+      ],
+      "assertionStack": "integ.sqs-event-rule-target/DefaultTest/DeployAssert",
+      "assertionStackName": "integsqseventruletargetDefaultTestDeployAssert71C4FD7F"
     }
   },
   "synthContext": {},
