@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/490957a1747e56a1f8583d023556fd6f1c7c9fbb256cdf79688e2fd99c010579.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b1940458c77affbe4d194980c7695e39740a60648a15b5cc4f9b12c8ad85f7f4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,109 +34,34 @@
         "VendedLogsMixinTest.assets"
       ],
       "metadata": {
-        "/VendedLogsMixinTest/OriginBucket": [
+        "/VendedLogsMixinTest/EventBus": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy",
-              "autoDeleteObjects": true
-            }
+            "data": {}
           }
         ],
-        "/VendedLogsMixinTest/OriginBucket/Resource": [
+        "/VendedLogsMixinTest/EventBus/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "OriginBucketCA772B8F"
+            "data": "EventBus7B8748AA"
           }
         ],
-        "/VendedLogsMixinTest/OriginBucket/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
-          }
-        ],
-        "/VendedLogsMixinTest/OriginBucket/Policy/Resource": [
+        "/VendedLogsMixinTest/EventBus/Resource/CdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335F/Dest": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "OriginBucketPolicyFD67BA59"
+            "data": "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDestC87FF06E"
           }
         ],
-        "/VendedLogsMixinTest/OriginBucket/AutoDeleteObjectsCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/VendedLogsMixinTest/OriginBucket/AutoDeleteObjectsCustomResource/Default": [
+        "/VendedLogsMixinTest/EventBus/Resource/CdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335F/Delivery": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "OriginBucketAutoDeleteObjectsCustomResource064ED07E"
+            "data": "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDelivery2D4329FE"
           }
         ],
-        "/VendedLogsMixinTest/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/VendedLogsMixinTest/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+        "/VendedLogsMixinTest/EventBus/Resource/CDKSourceERROR_LOGSVendedLogsMixinTestEventBus050202CA": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-          }
-        ],
-        "/VendedLogsMixinTest/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
-          }
-        ],
-        "/VendedLogsMixinTest/Distribution": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "defaultBehavior": {
-                "origin": "*"
-              }
-            }
-          }
-        ],
-        "/VendedLogsMixinTest/Distribution/Origin1/S3OriginAccessControl": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/VendedLogsMixinTest/Distribution/Origin1/S3OriginAccessControl/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DistributionOrigin1S3OriginAccessControlEB606076"
-          }
-        ],
-        "/VendedLogsMixinTest/Distribution/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Distribution830FAC52"
-          }
-        ],
-        "/VendedLogsMixinTest/Distribution/Resource/CdkSourceVendedLogsMixinTestDistributionAD616170": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DistributionCdkSourceVendedLogsMixinTestDistributionAD616170C405E503"
-          }
-        ],
-        "/VendedLogsMixinTest/Distribution/Resource/CdkLogGroupDeliveryVendedLogsMixinTestDistributionAD616170VendedLogsMixinTestDeliveryLogGroupD06F335F/Dest": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DistributionCdkLogGroupDeliveryVendedLogsMixinTestDistributionAD616170VendedLogsMixinTestDeliveryLogGroupD06F335FDest81EEE80A"
-          }
-        ],
-        "/VendedLogsMixinTest/Distribution/Resource/CdkLogGroupDeliveryVendedLogsMixinTestDistributionAD616170VendedLogsMixinTestDeliveryLogGroupD06F335F/Delivery": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DistributionCdkLogGroupDeliveryVendedLogsMixinTestDistributionAD616170VendedLogsMixinTestDeliveryLogGroupD06F335FDelivery47B2B011"
+            "data": "EventBusCDKSourceERRORLOGSVendedLogsMixinTestEventBus050202CA0AA12A32"
           }
         ],
         "/VendedLogsMixinTest/DeliveryLogGroup": [

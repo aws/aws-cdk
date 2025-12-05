@@ -1,30 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
-      "displayName": "VendedLogsMultiplesTest/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
-      "source": {
-        "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
-        "packaging": "zip"
-      },
-      "destinations": {
-        "current_account-current_region-094cbf39": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
-        }
-      }
-    },
-    "4fd37131bcf54706a1c81918f5b3722ef21a2389120c80c4ed1c76ef51386464": {
+    "6ff109101f69823b038efb3913949008c71798e2f98157aec19ca8ff2e179aa9": {
       "displayName": "VendedLogsMultiplesTest Template",
       "source": {
         "path": "VendedLogsMultiplesTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-451ac0eb": {
+        "current_account-current_region-c78c0773": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4fd37131bcf54706a1c81918f5b3722ef21a2389120c80c4ed1c76ef51386464.json",
+          "objectKey": "6ff109101f69823b038efb3913949008c71798e2f98157aec19ca8ff2e179aa9.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

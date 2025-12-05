@@ -1,268 +1,16 @@
 {
  "Resources": {
-  "OriginBucketCA772B8F": {
-   "Type": "AWS::S3::Bucket",
+  "EventBus7B8748AA": {
+   "Type": "AWS::Events::EventBus",
    "Properties": {
-    "Tags": [
-     {
-      "Key": "aws-cdk:auto-delete-objects",
-      "Value": "true"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "OriginBucketPolicyFD67BA59": {
-   "Type": "AWS::S3::BucketPolicy",
-   "Properties": {
-    "Bucket": {
-     "Ref": "OriginBucketCA772B8F"
+    "LogConfig": {
+     "IncludeDetail": "NONE",
+     "Level": "ERROR"
     },
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "s3:DeleteObject*",
-        "s3:GetBucket*",
-        "s3:List*",
-        "s3:PutBucketPolicy"
-       ],
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::GetAtt": [
-          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-          "Arn"
-         ]
-        }
-       },
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "OriginBucketCA772B8F",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "OriginBucketCA772B8F",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "s3:GetObject",
-       "Condition": {
-        "StringEquals": {
-         "AWS:SourceArn": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":cloudfront::",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":distribution/",
-            {
-             "Ref": "Distribution830FAC52"
-            }
-           ]
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "cloudfront.amazonaws.com"
-       },
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          {
-           "Fn::GetAtt": [
-            "OriginBucketCA772B8F",
-            "Arn"
-           ]
-          },
-          "/*"
-         ]
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
+    "Name": "vended-logs-mixin-event-bus"
    }
   },
-  "OriginBucketAutoDeleteObjectsCustomResource064ED07E": {
-   "Type": "Custom::S3AutoDeleteObjects",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-      "Arn"
-     ]
-    },
-    "BucketName": {
-     "Ref": "OriginBucketCA772B8F"
-    }
-   },
-   "DependsOn": [
-    "OriginBucketPolicyFD67BA59"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-     }
-    ]
-   }
-  },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip"
-    },
-    "Timeout": 900,
-    "MemorySize": 128,
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs22.x",
-    "Description": {
-     "Fn::Join": [
-      "",
-      [
-       "Lambda function for auto-deleting objects in ",
-       {
-        "Ref": "OriginBucketCA772B8F"
-       },
-       " S3 bucket."
-      ]
-     ]
-    }
-   },
-   "DependsOn": [
-    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-   ]
-  },
-  "DistributionOrigin1S3OriginAccessControlEB606076": {
-   "Type": "AWS::CloudFront::OriginAccessControl",
-   "Properties": {
-    "OriginAccessControlConfig": {
-     "Name": "VendedLogsMixinTestDistributOrigin1S3OriginAccessControl746C2DF7",
-     "OriginAccessControlOriginType": "s3",
-     "SigningBehavior": "always",
-     "SigningProtocol": "sigv4"
-    }
-   }
-  },
-  "Distribution830FAC52": {
-   "Type": "AWS::CloudFront::Distribution",
-   "Properties": {
-    "DistributionConfig": {
-     "DefaultCacheBehavior": {
-      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
-      "Compress": true,
-      "TargetOriginId": "VendedLogsMixinTestDistributionOrigin1622BA555",
-      "ViewerProtocolPolicy": "allow-all"
-     },
-     "Enabled": true,
-     "HttpVersion": "http2",
-     "IPV6Enabled": true,
-     "Origins": [
-      {
-       "DomainName": {
-        "Fn::GetAtt": [
-         "OriginBucketCA772B8F",
-         "RegionalDomainName"
-        ]
-       },
-       "Id": "VendedLogsMixinTestDistributionOrigin1622BA555",
-       "OriginAccessControlId": {
-        "Fn::GetAtt": [
-         "DistributionOrigin1S3OriginAccessControlEB606076",
-         "Id"
-        ]
-       },
-       "S3OriginConfig": {
-        "OriginAccessIdentity": ""
-       }
-      }
-     ]
-    }
-   }
-  },
-  "DistributionCdkSourceVendedLogsMixinTestDistributionAD616170C405E503": {
-   "Type": "AWS::Logs::DeliverySource",
-   "Properties": {
-    "LogType": "CONNECTION_LOGS",
-    "Name": "DistributionSource-VendedLoributionAD616170-CONNECTION_LOGS",
-    "ResourceArn": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":cloudfront::",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":distribution/",
-       {
-        "Ref": "Distribution830FAC52"
-       }
-      ]
-     ]
-    }
-   },
-   "DependsOn": [
-    "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857"
-   ]
-  },
-  "DistributionCdkLogGroupDeliveryVendedLogsMixinTestDistributionAD616170VendedLogsMixinTestDeliveryLogGroupD06F335FDest81EEE80A": {
+  "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDestC87FF06E": {
    "Type": "AWS::Logs::DeliveryDestination",
    "Properties": {
     "DeliveryDestinationType": "CWL",
@@ -272,29 +20,45 @@
       "Arn"
      ]
     },
-    "Name": "cdk-cwl-dest-VendedLogsMixinTesteryLogGroupD06F335F73D12F53"
+    "Name": "cdk-cwl-error-logs-dest-VendedLogsMixigGroupD06F335FDE18FD44"
    },
    "DependsOn": [
     "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857"
    ]
   },
-  "DistributionCdkLogGroupDeliveryVendedLogsMixinTestDistributionAD616170VendedLogsMixinTestDeliveryLogGroupD06F335FDelivery47B2B011": {
+  "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDelivery2D4329FE": {
    "Type": "AWS::Logs::Delivery",
    "Properties": {
     "DeliveryDestinationArn": {
      "Fn::GetAtt": [
-      "DistributionCdkLogGroupDeliveryVendedLogsMixinTestDistributionAD616170VendedLogsMixinTestDeliveryLogGroupD06F335FDest81EEE80A",
+      "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDestC87FF06E",
       "Arn"
      ]
     },
     "DeliverySourceName": {
-     "Ref": "DistributionCdkSourceVendedLogsMixinTestDistributionAD616170C405E503"
+     "Ref": "EventBusCDKSourceERRORLOGSVendedLogsMixinTestEventBus050202CA0AA12A32"
     }
    },
    "DependsOn": [
     "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857",
-    "DistributionCdkLogGroupDeliveryVendedLogsMixinTestDistributionAD616170VendedLogsMixinTestDeliveryLogGroupD06F335FDest81EEE80A",
-    "DistributionCdkSourceVendedLogsMixinTestDistributionAD616170C405E503"
+    "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDestC87FF06E",
+    "EventBusCDKSourceERRORLOGSVendedLogsMixinTestEventBus050202CA0AA12A32"
+   ]
+  },
+  "EventBusCDKSourceERRORLOGSVendedLogsMixinTestEventBus050202CA0AA12A32": {
+   "Type": "AWS::Logs::DeliverySource",
+   "Properties": {
+    "LogType": "ERROR_LOGS",
+    "Name": "cdk-errorlogs-source-VendedLogsMixinTestEventBus050202CA",
+    "ResourceArn": {
+     "Fn::GetAtt": [
+      "EventBus7B8748AA",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857"
    ]
   },
   "DeliveryLogGroup2A53FD53": {
@@ -339,7 +103,7 @@
       ]
      ]
     },
-    "PolicyName": "VendedLogsMixinTestDistributionCdkLogGroupDeliveryVendedLogsMixinTestDistributionAD616170VendedLogsMixinTestDeliveryLogGroupD06F335F73D12F53"
+    "PolicyName": "VendedLogsMixinTestEventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDE18FD44"
    }
   }
  },
