@@ -1,80 +1,105 @@
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { App, CfnOutput, RemovalPolicy, Stack, Token } from 'aws-cdk-lib';
+import { App, CfnOutput, RemovalPolicy, Stack, StackProps, Token } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as path from 'path';
+import { Construct } from 'constructs';
+
+/**
+ * Integration test for bucket deployment with various data source types:
+ * - Tests Source.data(), Source.jsonData(), and Source.yamlData() methods
+ * - Validates token substitution in JSON and YAML files
+ * - Tests proper escaping of special characters (quotes) in JSON files
+ * - Tests addSource() method for dynamically adding sources
+ * - Validates empty string handling
+ */
+class TestBucketDeploymentData extends Stack {
+  public readonly bucket: Bucket;
+
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    this.bucket = new Bucket(this, 'Bucket', {
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+
+    // Test various data source types with different content
+    const file1 = Source.data('file1.txt', 'boom');
+    const file2 = Source.data('path/to/file2.txt', `bam! ${this.bucket.bucketName}`);
+    const file3 = Source.jsonData('my-json/config.json', { website_url: this.bucket.bucketWebsiteUrl });
+    const file4 = Source.yamlData('my-yaml/config.yaml', { website_url: this.bucket.bucketWebsiteUrl });
+    const file5 = Source.jsonData('my-json/config2.json', { bucket_domain_name: this.bucket.bucketWebsiteDomainName });
+
+    // Test secret value with quotes that need escaping
+    const secret = new secretsmanager.Secret(this, 'TestSecret', {
+      generateSecretString: {
+        secretStringTemplate: JSON.stringify({
+          value: 'test"with"quotes',
+        }),
+        generateStringKey: 'password',
+      },
+    });
+
+    // Store secret in SSM (workaround for #21503)
+    const param = new ssm.StringParameter(this, 'SecretParam', {
+      stringValue: secret.secretValueFromJson('value').unsafeUnwrap(),
+    });
+
+    const tokenizedValue = param.stringValue; // This should be a Token
+    new CfnOutput(this, 'IsToken', { value: Token.isUnresolved(tokenizedValue).toString() });
+    new CfnOutput(this, 'SecretValue', { value: tokenizedValue });
+
+    // Test proper escaping of quotes in JSON
+    const file6 = Source.jsonData('my-json/secret-config.json', {
+      secret_value: tokenizedValue,
+    }, { escape: true });
+    // Test YAML file (which doesn't require escaping)
+    const file7 = Source.yamlData('my-yaml/secret-config.yaml', {
+      secret_value: tokenizedValue,
+    });
+
+    // Test empty string handling
+    const file8 = Source.data('file8.txt', '');
+
+    // Test null JSON data value
+    const file9 = Source.jsonData('my-json/config-with-null.json', { hello: 'there', goodbye: null });
+
+    const deployment = new BucketDeployment(this, 'DeployWithDataSources', {
+      destinationBucket: this.bucket,
+      sources: [file1, file2],
+      destinationKeyPrefix: 'deploy/here/',
+      retainOnDelete: false,
+    });
+    // Test addSource() method
+    deployment.addSource(file3);
+    deployment.addSource(file4);
+    deployment.addSource(file5);
+    deployment.addSource(file6);
+    deployment.addSource(file7);
+    deployment.addSource(file8);
+    deployment.addSource(file9);
+
+    new CfnOutput(this, 'BucketName', { value: this.bucket.bucketName });
+  }
+}
 
 const app = new App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
 });
-const stack = new Stack(app, 'TestBucketDeploymentContent');
-const bucket = new Bucket(stack, 'Bucket', {
-  removalPolicy: RemovalPolicy.DESTROY, // Allow bucket deletion
-  autoDeleteObjects: true, // Delete objects when bucket is deleted
+const testCase = new TestBucketDeploymentData(app, 'test-bucket-deployment-data');
+
+const integTest = new IntegTest(app, 'integ-test-bucket-deployment-data', {
+  testCases: [testCase],
 });
 
-const file1 = Source.data('file1.txt', 'boom');
-const file2 = Source.data('path/to/file2.txt', `bam! ${bucket.bucketName}`);
-const file3 = Source.jsonData('my-json/config.json', { website_url: bucket.bucketWebsiteUrl });
-const file4 = Source.yamlData('my-yaml/config.yaml', { website_url: bucket.bucketWebsiteUrl });
-const file5 = Source.jsonData('my-json/config2.json', { bucket_domain_name: bucket.bucketWebsiteDomainName });
-
-// Add new test case for secret value with quotes
-const secret = new secretsmanager.Secret(stack, 'TestSecret', {
-  generateSecretString: {
-    secretStringTemplate: JSON.stringify({
-      value: 'test"with"quotes',
-    }),
-    generateStringKey: 'password',
-  },
-});
-
-// Store secret in SSM (workaround for #21503)
-const param = new ssm.StringParameter(stack, 'SecretParam', {
-  stringValue: secret.secretValueFromJson('value').unsafeUnwrap(),
-});
-
-const tokenizedValue = param.stringValue; // This should be a Token
-new CfnOutput(stack, 'IsToken', { value: Token.isUnresolved(tokenizedValue).toString() });
-new CfnOutput(stack, 'SecretValue', { value: tokenizedValue });
-
-// Add new file with secret value that needs proper escaping
-const file6 = Source.jsonData('my-json/secret-config.json', {
-  secret_value: tokenizedValue, // Using the tokenized value explicitly
-}, { escape: true });
-const file7 = Source.yamlData('my-yaml/secret-config.yaml', {
-  secret_value: tokenizedValue,
-});
-
-// case for empty string
-const file8 = Source.data('file8.txt', '');
-
-const deployment = new BucketDeployment(stack, 'DeployMeHere', {
-  destinationBucket: bucket,
-  sources: [file1, file2],
-  destinationKeyPrefix: 'deploy/here/',
-  retainOnDelete: false, // default is true, which will block the integration test cleanup
-});
-deployment.addSource(file3);
-deployment.addSource(file4);
-deployment.addSource(file5);
-deployment.addSource(file6);
-deployment.addSource(file7);
-deployment.addSource(file8);
-
-new CfnOutput(stack, 'BucketName', { value: bucket.bucketName });
-
-const integ = new IntegTest(app, 'integ-test-bucket-deployment-data', {
-  testCases: [stack],
-});
-
-// Add assertions to verify the JSON file
-const assertionProvider = integ.assertions.awsApiCall('S3', 'getObject', {
-  Bucket: bucket.bucketName,
+// Assert that addSource() successfully adds the data source alongside the asset source
+const assertionProvider = integTest.assertions.awsApiCall('S3', 'getObject', {
+  Bucket: testCase.bucket.bucketName,
   Key: path.join('deploy/here', 'my-json/secret-config.json'),
 });
 
@@ -84,9 +109,20 @@ assertionProvider.expect(ExpectedResult.objectLike({
   Body: '{"secret_value":"test\\"with\\"quotes"}',
 }));
 
+// Assert that JSON data with a null value is represented properly
+const jsonNullAssertionProvider = integTest.assertions.awsApiCall('S3', 'getObject', {
+  Bucket: testCase.bucket.bucketName,
+  Key: path.join('deploy/here', 'my-json/config-with-null.json'),
+});
+
+// Verify the content is valid JSON and both null and non-null fields are present
+jsonNullAssertionProvider.expect(ExpectedResult.objectLike({
+  Body: '{"hello":"there","goodbye":null}',
+}));
+
 // Add assertions to verify the YAML file
-const yamlAssertionProvider = integ.assertions.awsApiCall('S3', 'getObject', {
-  Bucket: bucket.bucketName,
+const yamlAssertionProvider = integTest.assertions.awsApiCall('S3', 'getObject', {
+  Bucket: testCase.bucket.bucketName,
   Key: path.join('deploy/here', 'my-yaml/secret-config.yaml'),
 });
 

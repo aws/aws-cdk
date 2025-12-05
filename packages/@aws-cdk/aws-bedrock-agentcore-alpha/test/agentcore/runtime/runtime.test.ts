@@ -1,18 +1,22 @@
 
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
-import { Template, Match } from 'aws-cdk-lib/assertions';
+import { Duration } from 'aws-cdk-lib';
+import { Annotations, Template, Match } from 'aws-cdk-lib/assertions';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Runtime } from '../../../agentcore/runtime/runtime';
-import { RuntimeEndpoint } from '../../../agentcore/runtime/runtime-endpoint';
-import { AgentRuntimeArtifact } from '../../../agentcore/runtime/runtime-artifact';
-import { RuntimeAuthorizerConfiguration } from '../../../agentcore/runtime/runtime-authorizer-configuration';
-import { RuntimeNetworkConfiguration } from '../../../agentcore/network/network-configuration';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import { RuntimeNetworkConfiguration } from '../../../lib/network/network-configuration';
+import { Runtime } from '../../../lib/runtime/runtime';
+import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
+import { RuntimeAuthorizerConfiguration } from '../../../lib/runtime/runtime-authorizer-configuration';
+import { RuntimeEndpoint } from '../../../lib/runtime/runtime-endpoint';
 import {
   ProtocolType,
-} from '../../../agentcore/runtime/types';
+} from '../../../lib/runtime/types';
 
 describe('Runtime default tests', () => {
   let template: Template;
@@ -94,6 +98,10 @@ describe('Runtime default tests', () => {
       MaxSessionDuration: 28800, // 8 hours in seconds
     });
   });
+
+  test('Should have policy for execution role with correct permissions', () => {
+    template.hasResourceProperties('AWS::IAM::Policy', expectedExecutionRolePolicy);
+  });
 });
 
 describe('Runtime with custom execution role tests', () => {
@@ -172,6 +180,10 @@ describe('Runtime with custom execution role tests', () => {
         Version: '2012-10-17',
       },
     });
+  });
+
+  test('Should have policy for custom execution role with correct permissions', () => {
+    template.hasResourceProperties('AWS::IAM::Policy', expectedExecutionRolePolicy);
   });
 });
 
@@ -335,6 +347,13 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
       },
     });
 
+    const userPool = new cognito.UserPool(stack, 'MyUserPool', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const userPoolClient = userPool.addClient('MyUserPoolClient', {});
+    const anotherUserPoolClient = userPool.addClient('MyAnotherUserPoolClient', {});
+
     repository = new ecr.Repository(stack, 'TestRepository', {
       repositoryName: 'test-agent-runtime-cognito',
     });
@@ -346,8 +365,8 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
       description: 'A test runtime with Cognito authorizer configuration',
       agentRuntimeArtifact: agentRuntimeArtifact,
       authorizerConfiguration: RuntimeAuthorizerConfiguration.usingCognito(
-        'us-west-2_ABC123',
-        'client123',
+        userPool,
+        [userPoolClient, anotherUserPoolClient],
       ),
     });
 
@@ -384,13 +403,14 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
         'Fn::Join': [
           '',
           [
-            'https://cognito-idp.',
-            { Ref: 'AWS::Region' },
-            '.amazonaws.com/us-west-2_ABC123/.well-known/openid-configuration',
+            'https://cognito-idp.us-east-1.amazonaws.com/',
+            { Ref: 'MyUserPoolD09D1D74' },
+            '/.well-known/openid-configuration',
           ],
         ],
       });
-      expect(jwtConfig.AllowedClients).toEqual(['client123']);
+      expect(jwtConfig.AllowedClients).toContainEqual({ Ref: 'MyUserPoolMyUserPoolClient01266CD6' });
+      expect(jwtConfig.AllowedClients).toContainEqual({ Ref: 'MyUserPoolMyAnotherUserPoolClient4444CD16' });
     } else {
       // L1 construct might not be handling the authorizer configuration properly
       // This is acceptable as the configuration is still passed to the construct
@@ -1098,12 +1118,18 @@ describe('Runtime authentication configuration error cases', () => {
   });
 
   test('Should create runtime with Cognito auth using static factory', () => {
+    const userPool = new cognito.UserPool(stack, 'MyUserPool', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const userPoolClient = userPool.addClient('MyUserPoolClient', {});
+
     const runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
       agentRuntimeArtifact: agentRuntimeArtifact,
       authorizerConfiguration: RuntimeAuthorizerConfiguration.usingCognito(
-        'us-west-2_ABC123',
-        'client456',
+        userPool,
+        [userPoolClient],
       ),
     });
 
@@ -1130,6 +1156,35 @@ describe('Runtime authentication configuration error cases', () => {
 
     app.synth();
     expect(runtime.agentRuntimeName).toBe('test_runtime');
+  });
+
+  test('does not fail validation if JWT discovery URL is a late-bound value', () => {
+    // WHEN
+    const discoveryUrlParam = new cdk.CfnParameter(stack, 'JWTDiscoveryUrl', {
+      default: 'https://example.com/.well-known/openid-configuration',
+      type: 'String',
+    });
+
+    // THEN
+    expect(() => {
+      RuntimeAuthorizerConfiguration.usingJWT(discoveryUrlParam.valueAsString);
+    }).not.toThrow();
+  });
+
+  test('does not fail validation if OAuth discovery URL is a late-bound value', () => {
+    // WHEN
+    const discoveryUrlParam = new cdk.CfnParameter(stack, 'OAuthDiscoveryUrl', {
+      default: 'https://oauth-provider.com/.well-known/openid-configuration',
+      type: 'String',
+    });
+
+    // THEN
+    expect(() => {
+      RuntimeAuthorizerConfiguration.usingOAuth(
+        discoveryUrlParam.valueAsString,
+        'oauth-client-123',
+      );
+    }).not.toThrow();
   });
 });
 
@@ -1297,13 +1352,18 @@ describe('Runtime metrics and grant methods tests', () => {
   });
 
   test('Should add policy statement to runtime role', () => {
-    const statement = new iam.PolicyStatement({
+    const result = runtime.addToRolePolicy(new iam.PolicyStatement({
       actions: ['s3:GetObject'],
       resources: ['arn:aws:s3:::bucket/*'],
-    });
-
-    const result = runtime.addToRolePolicy(statement);
+    }));
     expect(result).toBe(runtime);
+
+    // Can call multiple times
+    const result2 = runtime.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:Query'],
+      resources: ['arn:aws:dynamodb:us-east-1:123456789012:table/test-table'],
+    }));
+    expect(result2).toBe(runtime);
   });
 
   test('Should add policy to imported runtime role', () => {
@@ -1319,13 +1379,18 @@ describe('Runtime metrics and grant methods tests', () => {
       agentRuntimeVersion: '1',
     });
 
-    const statement = new iam.PolicyStatement({
+    const result = imported.addToRolePolicy(new iam.PolicyStatement({
       actions: ['s3:GetObject'],
       resources: ['arn:aws:s3:::bucket/*'],
-    });
-
-    const result = imported.addToRolePolicy(statement);
+    }));
     expect(result).toBe(imported);
+
+    // Can call multiple times
+    const result2 = imported.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:Query'],
+      resources: ['arn:aws:dynamodb:us-east-1:123456789012:table/test-table'],
+    }));
+    expect(result2).toBe(imported);
   });
 });
 
@@ -1436,6 +1501,291 @@ describe('Runtime description validation tests', () => {
         description: 'Valid description for the runtime',
       });
     }).not.toThrow();
+  });
+});
+
+describe('Runtime grantInvokeRuntime permission tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let repository: ecr.Repository;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+  let runtime: Runtime;
+  let granteeRole: iam.Role;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+
+    runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime_grant',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    granteeRole = new iam.Role(stack, 'GranteeRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+  });
+
+  test('Should grant InvokeAgentRuntime permission with grantInvokeRuntime', () => {
+    runtime.grantInvokeRuntime(granteeRole);
+
+    const template = Template.fromStack(stack);
+
+    // Verify that a policy is created with the correct permission
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:InvokeAgentRuntime',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  Match.stringLikeRegexp('testruntime.*'),
+                  'AgentRuntimeArn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        Match.stringLikeRegexp('testruntime.*'),
+                        'AgentRuntimeArn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should grant InvokeAgentRuntimeForUser permission with grantInvokeRuntimeForUser', () => {
+    runtime.grantInvokeRuntimeForUser(granteeRole);
+
+    const template = Template.fromStack(stack);
+
+    // Verify that a policy is created with the correct permission
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:InvokeAgentRuntimeForUser',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  Match.stringLikeRegexp('testruntime.*'),
+                  'AgentRuntimeArn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        Match.stringLikeRegexp('testruntime.*'),
+                        'AgentRuntimeArn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should grant both permissions with grantInvoke', () => {
+    runtime.grantInvoke(granteeRole);
+
+    const template = Template.fromStack(stack);
+
+    // Verify that a policy is created with both permissions
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: [
+              'bedrock-agentcore:InvokeAgentRuntime',
+              'bedrock-agentcore:InvokeAgentRuntimeForUser',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  Match.stringLikeRegexp('testruntime.*'),
+                  'AgentRuntimeArn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        Match.stringLikeRegexp('testruntime.*'),
+                        'AgentRuntimeArn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should attach policy to grantee role', () => {
+    runtime.grantInvokeRuntime(granteeRole);
+
+    const template = Template.fromStack(stack);
+
+    // Verify that the policy is attached to the grantee role
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      Roles: [
+        {
+          Ref: Match.stringLikeRegexp('GranteeRole.*'),
+        },
+      ],
+    });
+  });
+
+  test('Should work with imported runtime', () => {
+    const importedRuntime = Runtime.fromAgentRuntimeAttributes(stack, 'ImportedRuntime', {
+      agentRuntimeArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id',
+      agentRuntimeId: 'test-runtime-id',
+      agentRuntimeName: 'test-runtime',
+      roleArn: 'arn:aws:iam::123456789012:role/test-role',
+      agentRuntimeVersion: '1',
+    });
+
+    importedRuntime.grantInvokeRuntime(granteeRole);
+
+    const template = Template.fromStack(stack);
+
+    // Verify that a policy is created for the imported runtime
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:InvokeAgentRuntime',
+            Effect: 'Allow',
+            Resource: [
+              'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id',
+              'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id/*',
+            ],
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should grant to Lambda function', () => {
+    const lambdaFunction = new lambda.Function(stack, 'TestLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): pass'),
+    });
+
+    runtime.grantInvokeRuntime(lambdaFunction);
+
+    const template = Template.fromStack(stack);
+
+    // Verify that the Lambda function's role has the permission
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:InvokeAgentRuntime',
+            Effect: 'Allow',
+          }),
+        ]),
+      },
+      Roles: [
+        {
+          Ref: Match.stringLikeRegexp('TestLambdaServiceRole.*'),
+        },
+      ],
+    });
+  });
+
+  test('Should grant multiple permissions to same role', () => {
+    runtime.grantInvokeRuntime(granteeRole);
+    runtime.grantInvokeRuntimeForUser(granteeRole);
+
+    const template = Template.fromStack(stack);
+
+    // Should have two separate policies
+    template.resourceCountIs('AWS::IAM::Policy', 2);
+  });
+
+  test('Should return Grant object with success', () => {
+    const grant = runtime.grantInvokeRuntime(granteeRole);
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+    expect(grant.principalStatement).toBeDefined();
+  });
+
+  test('Should work with runtime that has custom execution role', () => {
+    const customRole = new iam.Role(stack, 'CustomExecutionRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+    });
+
+    const customRuntime = new Runtime(stack, 'custom-runtime', {
+      runtimeName: 'custom_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      executionRole: customRole,
+    });
+
+    const lambdaRole = new iam.Role(stack, 'LambdaRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    customRuntime.grantInvokeRuntime(lambdaRole);
+
+    const template = Template.fromStack(stack);
+
+    // Verify policy is created for the lambda role
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:InvokeAgentRuntime',
+            Effect: 'Allow',
+          }),
+        ]),
+      },
+      Roles: [
+        {
+          Ref: Match.stringLikeRegexp('LambdaRole.*'),
+        },
+      ],
+    });
   });
 });
 
@@ -1593,18 +1943,31 @@ describe('Runtime role validation tests', () => {
     }).toThrow(/Invalid IAM role ARN format/);
   });
 
-  test('Should handle cross-account role with warning', () => {
-    const crossAccountRole = {
-      roleArn: 'arn:aws:iam::123456789012:role/test-role',
-      roleName: 'test-role',
-      assumeRoleAction: 'sts:AssumeRole',
-      grantPrincipal: {} as iam.IPrincipal,
-      principalAccount: '123456789012',
-      applyRemovalPolicy: () => {},
-      node: {} as any,
-      stack: stack,
-      env: { account: '123456789012', region: 'us-east-1' },
-    } as unknown as iam.IRole;
+  test('Should handle cross-account role with no warnings', () => {
+    const crossAccountStack = new cdk.Stack(app, 'cross-account-stack', {
+      env: {
+        account: '111111111111',
+        region: 'us-east-1',
+      },
+    });
+    const crossAccountRole = new iam.Role(crossAccountStack, 'ImportedCrossAccountRole', {
+      roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+    });
+
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      executionRole: crossAccountRole,
+    });
+
+    // Should not throw
+    expect(runtime.role).toBe(crossAccountRole);
+  });
+
+  test('Should handle cross-account imported role with warning', () => {
+    const crossAccountRole = iam.Role.fromRoleArn(stack, 'ImportedCrossAccountRole',
+      'arn:aws:iam::111111111111:role/test-cross-account-role');
 
     const runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
@@ -1614,5 +1977,698 @@ describe('Runtime role validation tests', () => {
 
     // Should not throw, just add warning
     expect(runtime.role).toBe(crossAccountRole);
+
+    const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
+    expect(annotations.length).toBe(1);
+
+    Annotations.fromStack(stack).hasWarning('/test-stack/test-runtime', 'IAM role is from a different account (111111111111) than the stack account (123456789012). Ensure cross-account permissions are properly configured.');
   });
 });
+
+describe('Runtime lifecycle configuration tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let repository: ecr.Repository;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should use default lifecycle configuration when not specified', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      LifecycleConfiguration: {
+        IdleRuntimeSessionTimeout: 60,
+        MaxLifetime: 28800,
+      },
+    });
+  });
+
+  test('Should set custom lifecycle configuration', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      lifecycleConfiguration: {
+        idleRuntimeSessionTimeout: Duration.minutes(10),
+        maxLifetime: Duration.hours(4),
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      LifecycleConfiguration: {
+        IdleRuntimeSessionTimeout: 600,
+        MaxLifetime: 14400,
+      },
+    });
+  });
+
+  test('Should set only idleRuntimeSessionTimeout', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      lifecycleConfiguration: {
+        idleRuntimeSessionTimeout: Duration.minutes(15),
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      LifecycleConfiguration: {
+        IdleRuntimeSessionTimeout: 900,
+        MaxLifetime: 28800,
+      },
+    });
+  });
+
+  test('Should set only maxLifetime', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      lifecycleConfiguration: {
+        maxLifetime: Duration.hours(6),
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      LifecycleConfiguration: {
+        IdleRuntimeSessionTimeout: 60,
+        MaxLifetime: 21600,
+      },
+    });
+  });
+
+  test('Should throw error for idleRuntimeSessionTimeout below minimum', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        lifecycleConfiguration: {
+          idleRuntimeSessionTimeout: Duration.seconds(30),
+        },
+      });
+    }).toThrow(/Idle runtime session timeout must be between 60 seconds and 28800 seconds/);
+  });
+
+  test('Should throw error for idleRuntimeSessionTimeout above maximum', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        lifecycleConfiguration: {
+          idleRuntimeSessionTimeout: Duration.hours(9),
+        },
+      });
+    }).toThrow(/Idle runtime session timeout must be between 60 seconds and 28800 seconds/);
+  });
+
+  test('Should throw error for maxLifetime below minimum', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        lifecycleConfiguration: {
+          maxLifetime: Duration.seconds(30),
+        },
+      });
+    }).toThrow(/Maximum lifetime must be between 60 seconds and 28800 seconds/);
+  });
+
+  test('does not fail validation if lifecycle configuration is a late-bound value', () => {
+    // WHEN
+    const idleTimeoutParam = new cdk.CfnParameter(stack, 'IdleTimeout', {
+      default: 600,
+      type: 'Number',
+    });
+
+    const maxLifetimeParam = new cdk.CfnParameter(stack, 'MaxLifetime', {
+      default: 14400,
+      type: 'Number',
+    });
+
+    // THEN
+    expect(() => {
+      new Runtime(stack, 'runtime-late-bound', {
+        runtimeName: 'runtime_late_bound',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        lifecycleConfiguration: {
+          idleRuntimeSessionTimeout: Duration.seconds(idleTimeoutParam.valueAsNumber),
+          maxLifetime: Duration.seconds(maxLifetimeParam.valueAsNumber),
+        },
+      });
+    }).not.toThrow();
+  });
+});
+
+describe('Runtime request header configuration tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let repository: ecr.Repository;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should not include request header configuration when not specified', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    const runtimeResource = template.findResources('AWS::BedrockAgentCore::Runtime');
+    const resourceId = Object.keys(runtimeResource)[0];
+    const resource = runtimeResource[resourceId];
+
+    expect(resource.Properties).not.toHaveProperty('RequestHeaderConfiguration');
+  });
+
+  test('Should set request header configuration with allowList', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      requestHeaderConfiguration: {
+        allowlistedHeaders: ['Authorization', 'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header1'],
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      RequestHeaderConfiguration: {
+        RequestHeaderAllowlist: ['Authorization', 'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header1'],
+      },
+    });
+  });
+
+  test('Should set request header configuration with single header', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      requestHeaderConfiguration: {
+        allowlistedHeaders: ['Authorization'],
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      RequestHeaderConfiguration: {
+        RequestHeaderAllowlist: ['Authorization'],
+      },
+    });
+  });
+
+  test('Should set request header configuration with multiple custom headers', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      requestHeaderConfiguration: {
+        allowlistedHeaders: [
+          'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header1',
+          'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header2',
+          'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header3',
+        ],
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      RequestHeaderConfiguration: {
+        RequestHeaderAllowlist: [
+          'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header1',
+          'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header2',
+          'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header3',
+        ],
+      },
+    });
+  });
+
+  test('Should throw error for empty allowList', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: [],
+        },
+      });
+    }).toThrow(/Request header allow list contain between 1 and 20 headers/);
+  });
+
+  test('Should throw error for allowList exceeding 20 headers', () => {
+    const longList = Array.from({ length: 21 }, (_, i) => `X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header${i + 1}`);
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: longList,
+        },
+      });
+    }).toThrow(/Request header allow list contain between 1 and 20 headers/);
+  });
+
+  test('Should throw error for invalid header pattern', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: ['Invalid-Header@Name'],
+        },
+      });
+    }).toThrow(/Request header must contain only letters, numbers, and hyphens/);
+  });
+
+  test('Should throw error for empty header name', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: [''],
+        },
+      });
+    }).toThrow(/The field Request header is 0 characters long but must be at least 1 characters/);
+  });
+});
+
+describe('Runtime fromS3 artifact loading tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let bucket: s3.Bucket;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    bucket = new s3.Bucket(stack, 'CodeBucket', {
+      bucketName: 'test-runtime-code-bucket',
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+  });
+
+  test('Should create runtime with fromS3 artifact', () => {
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromS3(
+      {
+        bucketName: bucket.bucketName,
+        objectKey: 'runtime-code.zip',
+      },
+      AgentCoreRuntime.PYTHON_3_10,
+      ['main.handler'],
+    );
+
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    expect(runtime.agentRuntimeArtifact).toBe(agentRuntimeArtifact);
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      AgentRuntimeArtifact: {
+        CodeConfiguration: {
+          Code: {
+            S3: {
+              Bucket: {
+                Ref: Match.stringLikeRegexp('CodeBucket.*'),
+              },
+              Prefix: 'runtime-code.zip',
+            },
+          },
+          Runtime: 'PYTHON_3_10',
+          EntryPoint: ['main.handler'],
+        },
+      },
+    });
+  });
+
+  test('Should create runtime with fromS3 artifact with object version', () => {
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromS3(
+      {
+        bucketName: bucket.bucketName,
+        objectKey: 'runtime-code.zip',
+        objectVersion: 'version123',
+      },
+      AgentCoreRuntime.PYTHON_3_10,
+      ['index.handler'],
+    );
+
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      AgentRuntimeArtifact: {
+        CodeConfiguration: {
+          Code: {
+            S3: {
+              Bucket: {
+                Ref: Match.stringLikeRegexp('CodeBucket.*'),
+              },
+              Prefix: 'runtime-code.zip',
+              VersionId: 'version123',
+            },
+          },
+          Runtime: 'PYTHON_3_10',
+          EntryPoint: ['index.handler'],
+        },
+      },
+    });
+  });
+
+  test('Should grant S3 permissions to execution role when using fromS3 artifact', () => {
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromS3(
+      {
+        bucketName: bucket.bucketName,
+        objectKey: 'runtime-code.zip',
+      },
+      AgentCoreRuntime.PYTHON_3_10,
+      ['main.handler'],
+    );
+
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    // Check that the execution role has S3 permissions
+    // grantReadWrite grants multiple S3 actions, so we check for at least one S3 action
+    const policies = template.findResources('AWS::IAM::Policy');
+    const hasS3Permissions = Object.values(policies).some((policy: any) => {
+      const statements = policy.Properties?.PolicyDocument?.Statement || [];
+      return statements.some((stmt: any) => {
+        const actions = Array.isArray(stmt.Action) ? stmt.Action : [stmt.Action];
+        return actions.some((action: string) => action.startsWith('s3:'));
+      });
+    });
+    expect(hasS3Permissions).toBe(true);
+  });
+
+  test('Should work with fromS3 artifact and lifecycle configuration', () => {
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromS3(
+      {
+        bucketName: bucket.bucketName,
+        objectKey: 'runtime-code.zip',
+      },
+      AgentCoreRuntime.PYTHON_3_10,
+      ['main.handler'],
+    );
+
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      lifecycleConfiguration: {
+        idleRuntimeSessionTimeout: Duration.minutes(15),
+        maxLifetime: Duration.hours(4),
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      AgentRuntimeArtifact: {
+        CodeConfiguration: {
+          Code: {
+            S3: Match.anyValue(),
+          },
+          Runtime: 'PYTHON_3_10',
+          EntryPoint: ['main.handler'],
+        },
+      },
+      LifecycleConfiguration: {
+        IdleRuntimeSessionTimeout: 900,
+        MaxLifetime: 14400,
+      },
+    });
+  });
+
+  test('Should work with fromS3 artifact and request header configuration', () => {
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromS3(
+      {
+        bucketName: bucket.bucketName,
+        objectKey: 'runtime-code.zip',
+      },
+      AgentCoreRuntime.PYTHON_3_10,
+      ['main.handler'],
+    );
+
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      requestHeaderConfiguration: {
+        allowlistedHeaders: ['Authorization', 'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header1'],
+      },
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      AgentRuntimeArtifact: {
+        CodeConfiguration: {
+          Code: {
+            S3: Match.anyValue(),
+          },
+          Runtime: 'PYTHON_3_10',
+          EntryPoint: ['main.handler'],
+        },
+      },
+      RequestHeaderConfiguration: {
+        RequestHeaderAllowlist: ['Authorization', 'X-Amzn-Bedrock-AgentCore-Runtime-Custom-Header1'],
+      },
+    });
+  });
+
+  test('Should work with fromS3 artifact using string bucket name', () => {
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromS3(
+      {
+        bucketName: 'my-custom-bucket',
+        objectKey: 'runtime-code.zip',
+      },
+      AgentCoreRuntime.PYTHON_3_10,
+      ['com.example.Handler::handleRequest'],
+    );
+
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      AgentRuntimeArtifact: {
+        CodeConfiguration: {
+          Code: {
+            S3: {
+              Bucket: 'my-custom-bucket',
+              Prefix: 'runtime-code.zip',
+            },
+          },
+          Runtime: 'PYTHON_3_10',
+          EntryPoint: ['com.example.Handler::handleRequest'],
+        },
+      },
+    });
+  });
+});
+
+const logGroupPolicyStatement = {
+  Sid: 'LogGroupAccess',
+  Action: ['logs:DescribeLogStreams', 'logs:CreateLogGroup'],
+  Effect: 'Allow',
+  Resource: {
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/*',
+      ],
+    ],
+  },
+};
+
+const describeLogGroupsPolicyStatement = {
+  Sid: 'DescribeLogGroups',
+  Action: 'logs:DescribeLogGroups',
+  Effect: 'Allow',
+  Resource: {
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':logs:us-east-1:123456789012:log-group:*',
+      ],
+    ],
+  },
+};
+
+const logStreamPolicyStatement = {
+  Sid: 'LogStreamAccess',
+  Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+  Effect: 'Allow',
+  Resource: {
+    'Fn::Join': [
+      '',
+      [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/*:log-stream:*',
+      ],
+    ],
+  },
+};
+
+const xrayPolicyStatement = {
+  Sid: 'XRayAccess',
+  Action: [
+    'xray:PutTraceSegments',
+    'xray:PutTelemetryRecords',
+    'xray:GetSamplingRules',
+    'xray:GetSamplingTargets',
+  ],
+  Effect: 'Allow',
+  Resource: '*',
+};
+
+const cloudWatchMetricsPolicyStatement = {
+  Sid: 'CloudWatchMetrics',
+  Action: 'cloudwatch:PutMetricData',
+  Condition: {
+    StringEquals: {
+      'cloudwatch:namespace': 'bedrock-agentcore',
+    },
+  },
+  Effect: 'Allow',
+  Resource: '*',
+};
+
+const getAgentAccessTokenPolicyStatement = {
+  Sid: 'GetAgentAccessToken',
+  Action: [
+    'bedrock-agentcore:GetWorkloadAccessToken',
+    'bedrock-agentcore:GetWorkloadAccessTokenForJWT',
+    'bedrock-agentcore:GetWorkloadAccessTokenForUserId',
+  ],
+  Effect: 'Allow',
+  Resource: [
+    {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':bedrock-agentcore:us-east-1:123456789012:workload-identity-directory/default',
+        ],
+      ],
+    },
+    {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':bedrock-agentcore:us-east-1:123456789012:workload-identity-directory/default/workload-identity/*',
+        ],
+      ],
+    },
+  ],
+};
+
+const ecrReadPolicyStatement = {
+  Action: [
+    'ecr:BatchCheckLayerAvailability',
+    'ecr:GetDownloadUrlForLayer',
+    'ecr:BatchGetImage',
+  ],
+  Effect: 'Allow',
+  Resource: {
+    'Fn::GetAtt': ['TestRepositoryC0DA8195', 'Arn'],
+  },
+};
+
+const ecrAuthTokenPolicyStatement = {
+  Action: 'ecr:GetAuthorizationToken',
+  Effect: 'Allow',
+  Resource: '*',
+};
+
+const expectedExecutionRolePolicy = {
+  PolicyDocument: {
+    Statement: [
+      logGroupPolicyStatement,
+      describeLogGroupsPolicyStatement,
+      logStreamPolicyStatement,
+      xrayPolicyStatement,
+      cloudWatchMetricsPolicyStatement,
+      getAgentAccessTokenPolicyStatement,
+      ecrReadPolicyStatement,
+      ecrAuthTokenPolicyStatement,
+    ],
+  },
+};

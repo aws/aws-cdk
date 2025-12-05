@@ -2,8 +2,6 @@ import * as sns from 'aws-cdk-lib/aws-sns';
 import { App, NestedStack, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-/* eslint-disable @cdklabs/no-core-construct */
-
 class YourNestedStack extends NestedStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);

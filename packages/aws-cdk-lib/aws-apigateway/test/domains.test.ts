@@ -4,7 +4,7 @@ import { Bucket } from '../../aws-s3';
 import { Stack } from '../../core';
 import * as apigw from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('domains', () => {
   test('can define either an EDGE or REGIONAL domain name', () => {

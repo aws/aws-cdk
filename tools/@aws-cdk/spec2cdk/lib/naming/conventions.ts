@@ -31,7 +31,6 @@ export function propertyNameFromCloudFormation(name: string): string {
 
   let ret = camelcase(name);
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   const suffixes: { [key: string]: string } = { ARNs: 'Arns', MBs: 'MBs', AZs: 'AZs' };
 
   for (const suffix of Object.keys(suffixes)) {
@@ -63,6 +62,17 @@ export function interfaceNameFromResource(res: Resource, suffix?: string) {
   return `I${classNameFromResource(res, suffix)}`;
 }
 
+export function namespaceFromResource(res: Resource) {
+  return res.cloudFormationType.split('::').slice(0, 2).join('::');
+}
+
+/**
+ * Get the AWS namespace prefix from a resource in PascalCase for use as a type alias prefix.
+ */
+export function typeAliasPrefixFromResource(res: Resource) {
+  return camelcase(res.cloudFormationType.split('::')[1], { pascalCase: true });
+}
+
 export function cfnProducerNameFromType(struct: TypeDeclaration) {
   return `convert${qualifiedName(struct)}ToCloudFormation`;
 }
@@ -73,6 +83,10 @@ export function cfnParserNameFromType(struct: TypeDeclaration) {
 
 export function cfnPropsValidatorNameFromType(struct: TypeDeclaration) {
   return `${qualifiedName(struct)}Validator`;
+}
+
+export function flattenFunctionNameFromType(struct: TypeDeclaration) {
+  return `flatten${qualifiedName(struct)}`;
 }
 
 export function metricsClassNameFromService(namespace: string) {
@@ -104,10 +118,85 @@ export function referencePropertyName(propName: string, resourceName: string) {
   propName = propName.split('/').pop() ?? propName;
 
   if (['arn', 'id', 'name', 'url'].includes(propName.toLowerCase())) {
-    return `${camelcase(resourceName)}${propName.charAt(0).toUpperCase()}${propName.slice(1)}`;
+    return `${camelcase(resourceName)}${propName.charAt(0).toUpperCase()}${propName.slice(1).toLowerCase()}`;
   }
 
   return camelcase(propName);
+}
+
+export function referenceInterfaceName(resourceName: string, suffix?: string) {
+  return `I${resourceName}${suffix ?? ''}Ref`;
+}
+
+export function referenceInterfaceAttributeName(resourceName: string) {
+  return `${camelcase(resourceName)}Ref`;
+}
+
+/**
+ * namespace to module name parts (`AWS::S3` -> ['aws-s3', 'AWS', 'S3'])
+ */
+export function modulePartsFromNamespace(namespace: string) {
+  const [moduleFamily, moduleBaseName] = (namespace === 'AWS::Serverless' ? 'AWS::SAM' : namespace).split('::');
+  const moduleName = `${moduleFamily}-${moduleBaseName}`.toLocaleLowerCase();
+  return {
+    moduleName,
+    moduleFamily,
+    moduleBaseName,
+  };
+}
+
+/**
+ * Submodule identifier from name (`aws-s3` -> `aws_s3`)
+ */
+export function submoduleSymbolFromName(name: string) {
+  return name.replace(/-/g, '_');
+}
+
+/**
+ * Get the namespace name from the event name
+ */
+export function eventNamespaceName(eventName: string) {
+  if ((eventName.match(/@/g) || []).length !== 1) {
+    throw new Error('Input must contain exactly one "@" symbol');
+  }
+
+  // Extract the text after the '@'
+  const extracted = eventName.split('@')[1];
+
+  if (!extracted) {
+    throw new Error('No event name found after "@" symbol');
+  }
+
+  // Check if the extracted string contains only alphanumeric characters
+  if (!/^[a-zA-Z0-9]+$/.test(extracted)) {
+    throw new Error('Event name contains invalid characters');
+  }
+
+  return extracted;
+}
+
+/**
+ * Convert event name to pattern method name (AcknowledgementCompleted -> acknowledgementCompletedPattern)
+ */
+export function eventPatternMethodName(eventName: string) {
+  if (eventName.startsWith('AWS')) {
+    return `aws${eventName.slice(3)}Pattern`;
+  }
+  return `${eventName.charAt(0).toLowerCase()}${eventName.slice(1)}Pattern`;
+}
+
+/**
+ * Get the fully qualified event pattern return type name
+ */
+export function eventPatternTypeName(eventsClassName: string, eventName: string) {
+  return `${eventsClassName}.${eventName}.EventPattern`;
+}
+
+/**
+ * Get the fully qualified event pattern props type name
+ */
+export function eventPatternPropsTypeName(eventsClassName: string, eventName: string) {
+  return `${eventsClassName}.${eventName}.PatternProps`;
 }
 
 /**
@@ -133,3 +222,19 @@ function makeIdentifier(s: string) {
   s = s.replace(/^([^a-zA-Z_])/, '_$1');
   return s;
 }
+
+/**
+ * Sanitize a type name to be a valid TypeScript identifier
+ * Converts kebab-case and other invalid characters to PascalCase
+ *
+ * Also has a list of identifiers we need to avoid because they might cause
+ * problems in some languages. The "Object" one is fixed separately in jsii
+ * but we want to push this out now.
+ */
+export function sanitizeTypeName(name: string): string {
+  const id = makeIdentifier(camelcase(name, { pascalCase: true }));
+
+  return RESERVED_NAMES_LIST.has(id) ? `${id}Type` : id;
+}
+
+const RESERVED_NAMES_LIST = new Set(['Object']);

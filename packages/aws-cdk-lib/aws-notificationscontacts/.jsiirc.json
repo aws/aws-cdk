@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.notificationscontacts"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.NotificationsContacts"
+      "namespace": "Amazon.CDK.AWS.NotificationsContacts"
     },
     "python": {
       "module": "aws_cdk.aws_notificationscontacts"
