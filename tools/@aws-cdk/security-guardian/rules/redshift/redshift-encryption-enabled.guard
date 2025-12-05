@@ -1,0 +1,21 @@
+#
+#####################################
+##       REDSHIFT GUARD RULES       ##
+#####################################
+# Rule: REDSHIFT_ENCRYPTION_ENABLED
+# Service: Amazon Redshift
+# Coverage: Cluster Encryption
+
+let redshift_clusters = Resources.*[
+  Type == 'AWS::Redshift::Cluster'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "REDSHIFT_ENCRYPTION_ENABLED"
+]
+
+# Redshift cluster encryption must be enabled
+rule REDSHIFT_ENCRYPTION_ENABLED when %redshift_clusters !empty {
+    %redshift_clusters {
+        Properties.Encrypted exists
+        Properties.Encrypted == true
+    }
+}
