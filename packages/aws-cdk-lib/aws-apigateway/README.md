@@ -1190,6 +1190,27 @@ new apigateway.DomainName(this, 'custom-domain', {
 });
 ```
 
+AWS recommends using enhanced security policies for improved security. You can specify TLS 1.3 security policies:
+
+```ts
+declare const acmCertificateForExampleCom: any;
+
+// For regional or private APIs
+new apigateway.DomainName(this, 'custom-domain-tls13', {
+  domainName: 'example.com',
+  certificate: acmCertificateForExampleCom,
+  securityPolicy: apigateway.SecurityPolicy.TLS13_1_3_2025_09 // TLS 1.3 (recommended)
+});
+
+// For edge-optimized APIs
+new apigateway.DomainName(this, 'custom-domain-edge-tls13', {
+  domainName: 'example.com',
+  certificate: acmCertificateForExampleCom,
+  endpointType: apigateway.EndpointType.EDGE,
+  securityPolicy: apigateway.SecurityPolicy.TLS13_2025_EDGE // TLS 1.3 for edge
+});
+```
+
 Once you have a domain, you can map base paths of the domain to APIs.
 The following example will map the URL <https://example.com/go-to-api1>
 to the `api1` API and <https://example.com/boom> to the `api2` API.

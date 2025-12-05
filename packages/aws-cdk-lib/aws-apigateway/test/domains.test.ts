@@ -109,6 +109,44 @@ describe('domains', () => {
     });
   });
 
+  test('accepts TLS 1.3 security policies', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // WHEN
+    new apigw.DomainName(stack, 'tls13-domain', {
+      domainName: 'tls13.example.com',
+      certificate: cert,
+      securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
+      'DomainName': 'tls13.example.com',
+      'SecurityPolicy': 'SecurityPolicy_TLS13_1_3_2025_09',
+    });
+  });
+
+  test('allows TLS 1.3 for multi-level base paths', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+    const api = new apigw.RestApi(stack, 'api');
+    api.root.addMethod('GET');
+
+    // WHEN - Should not throw error
+    expect(() => {
+      new apigw.DomainName(stack, 'domain', {
+        domainName: 'api.example.com',
+        certificate: cert,
+        securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+        mapping: api,
+        basePath: 'v1/users',
+      });
+    }).not.toThrow();
+  });
+
   test('"mapping" can be used to automatically map this domain to the deployment stage of an API', () => {
     // GIVEN
     const stack = new Stack();
@@ -201,7 +239,7 @@ describe('domains', () => {
           basePath: 'v1/api',
           securityPolicy: apigw.SecurityPolicy.TLS_1_0,
         });
-      }).toThrow(/securityPolicy must be set to TLS_1_2 if multi-level basePath is provided/);
+      }).toThrow(/securityPolicy must be set to TLS 1.2 or higher if multi-level basePath is provided/);
     });
 
     test('can use addApiMapping', () => {
