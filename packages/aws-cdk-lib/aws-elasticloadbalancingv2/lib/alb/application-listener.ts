@@ -5,6 +5,7 @@ import { ApplicationListenerRule, FixedResponse, RedirectResponse } from './appl
 import { IApplicationLoadBalancer } from './application-load-balancer';
 import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
 import { ListenerCondition } from './conditions';
+import { ListenerTransform } from './transforms';
 import { ITrustStore } from './trust-store';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
@@ -392,7 +393,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    */
   @MethodMetadata()
   public addAction(id: string, props: AddApplicationActionProps): void {
-    checkAddRuleProps(this, props);
+    checkAddActionProps(this, props);
 
     if (props.priority !== undefined) {
       // New rule
@@ -946,6 +947,13 @@ export interface AddApplicationActionProps extends AddRuleProps {
    * @default - use standard logicalId with the `Rule` suffix
    */
   readonly removeSuffix?: boolean;
+
+  /**
+   * Transforms to apply to requests and responses
+   *
+   * @default - No transforms are applied
+   */
+  readonly transforms?: ListenerTransform[];
 }
 
 /**
@@ -1087,6 +1095,36 @@ function checkAddRuleProps(scope: Construct, props: AddRuleProps) {
   const hasPriority = props.priority !== undefined;
   if (hasAnyConditions !== hasPriority) {
     throw new ValidationError('Setting \'conditions\', \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa', scope);
+  }
+}
+
+/**
+ * Validate AddApplicationActionProps
+ * Checks the relationship between priority, conditions, and transforms
+ */
+function checkAddActionProps(scope: Construct, props: AddApplicationActionProps) {
+  const conditionsCount = props.conditions?.length || 0;
+  const hasAnyConditions = conditionsCount !== 0 ||
+    props.hostHeader !== undefined ||
+    props.pathPattern !== undefined ||
+    props.pathPatterns !== undefined;
+  const hasPriority = props.priority !== undefined;
+  const hasTransforms = props.transforms !== undefined && props.transforms.length > 0;
+
+  if (hasPriority || hasAnyConditions) {
+    const hasValidRuleConfig = hasPriority && hasAnyConditions;
+    if (!hasValidRuleConfig) {
+      throw new ValidationError(
+        'Setting \'conditions\', \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa.',
+        scope,
+      );
+    }
+  }
+  if (hasTransforms && !hasPriority) {
+    throw new ValidationError(
+      'Setting \'transforms\' requires \'priority\' and at least one of \'conditions\', \'pathPattern\' or \'hostHeader\' to be set.',
+      scope,
+    );
   }
 }
 
