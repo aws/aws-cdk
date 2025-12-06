@@ -32,6 +32,7 @@ import {
   $this,
 } from '@cdklabs/typewriter';
 import { extractVariablesFromArnFormat, findNonIdentifierArnProperty } from './arn';
+import { ImportPaths } from './aws-cdk-lib';
 import { CDK_CORE, CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
 import { ResourceDecider } from './resource-decider';
@@ -51,7 +52,6 @@ import {
 } from '../naming';
 import { isDefined, splitDocumentation, maybeDeprecated } from '../util';
 import { RelationshipDecider } from './relationship-decider';
-import { ImportPaths } from './aws-cdk-lib';
 
 export interface ITypeHost {
   typeFromSpecType(type: PropertyType): Type;
@@ -63,7 +63,7 @@ export interface Referenceable {
 }
 
 export interface ResourceClassProps {
-  readonly importPaths: ImportPaths,
+  readonly importPaths: ImportPaths;
   readonly interfacesModule: {
     readonly module: Module;
     readonly importLocation: string;
@@ -110,7 +110,7 @@ export class ResourceClass extends ClassType implements Referenceable {
     this.relationshipDecider = new RelationshipDecider(this.resource, db, {
       enableRelationships: true,
       enableNestedRelationships: false,
-      refsImportLocation: this.props.importPaths.interfaces
+      refsImportLocation: this.props.importPaths.interfaces,
     });
     this.converter = TypeConverter.forResource({
       db: db,

@@ -21,29 +21,29 @@ export interface Relationship {
 }
 
 export interface RelationshipDeciderProps {
-    /**
-     * Render relationships
-     */
-    readonly enableRelationships: boolean;
+  /**
+   * Render relationships
+   */
+  readonly enableRelationships: boolean;
 
-    /**
-     * We currently disable the relationship on the properties of types because they would create a backwards incompatible change
-     * by broadening the output type as types are used both in input and output. This represents:
-     * Relationship counts:
-     *   Resource-level (non-nested): 598
-     *   Type-level (nested):         483 <- these are disabled by this flag
-     *   Total:                       1081
-     * Properties with relationships:
-     *   Resource-level (non-nested): 493
-     *   Type-level (nested):         358
-     *   Total:                       851
-     */
-    readonly enableNestedRelationships: boolean;
+  /**
+   * We currently disable the relationship on the properties of types because they would create a backwards incompatible change
+   * by broadening the output type as types are used both in input and output. This represents:
+   * Relationship counts:
+   *   Resource-level (non-nested): 598
+   *   Type-level (nested):         483 <- these are disabled by this flag
+   *   Total:                       1081
+   * Properties with relationships:
+   *   Resource-level (non-nested): 493
+   *   Type-level (nested):         358
+   *   Total:                       851
+   */
+  readonly enableNestedRelationships: boolean;
 
-    /**
-     * The location to import reference interfaces from.
-     */
-    readonly refsImportLocation: string;
+  /**
+   * The location to import reference interfaces from.
+   */
+  readonly refsImportLocation: string;
 }
 
 /**
@@ -102,16 +102,16 @@ export class RelationshipDecider {
       // import the ref module
       const refsAlias = naming.interfaceModuleImportName(targetResource);
       const selectiveImport = new SelectiveModuleImport(CDK_INTERFACES, this.refsImportLocation, [
-        [naming.submoduleSymbolFromResource(targetResource), refsAlias]
+        [naming.submoduleSymbolFromResource(targetResource), refsAlias],
       ]);
       targetModule.addImport(selectiveImport);
-      
+
       // Ignore the suffix part because it's an edge case that happens only for one module
       const interfaceName = naming.referenceInterfaceName(targetResource.name);
       const referenceType = Type.fromName(targetModule, `${refsAlias}.${interfaceName}`);
       const referenceTypeDisplayName = `${naming.typeAliasPrefixFromResource(targetResource).toLowerCase()}.${interfaceName}`;
       const refPropStructName = naming.referenceInterfaceAttributeName(targetResource.name);
-  
+
       parsedRelationships.push({
         refType: referenceType,
         refTypeDisplayName: referenceTypeDisplayName,
