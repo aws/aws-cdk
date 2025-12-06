@@ -5,10 +5,9 @@
       "stacks": [
         "aws-cdk-elbv2-integ-enable-acl"
       ],
-      "diffAssets": true,
       "assertionStack": "cdk-integ-alb-log-enable-acl/DefaultTest/DeployAssert",
       "assertionStackName": "cdkintegalblogenableaclDefaultTestDeployAssert0C7BD67A"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }
