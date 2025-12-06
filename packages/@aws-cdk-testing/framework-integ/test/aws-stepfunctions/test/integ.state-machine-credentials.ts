@@ -1,7 +1,7 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { FakeTask } from './fake-task';
+import { FakeTask, FakeTaskJsonata } from './fake-task';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 
 /*
@@ -13,7 +13,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-state-machine-credentials-integ');
 
 const role = new iam.Role(stack, 'Role', {
-  assumedBy: new iam.AccountPrincipal(stack.account),
+  assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
 });
 
 new sfn.StateMachine(stack, 'StateMachineWithLiteralCredentials', {
@@ -30,6 +30,12 @@ new sfn.StateMachine(stack, 'StateMachineWithCrossAccountLiteralCredentials', {
 
 new sfn.StateMachine(stack, 'StateMachineWithJsonPathCredentials', {
   definition: new FakeTask(stack, 'FakeTaskWithJsonPathCredentials', { credentials: { role: sfn.TaskRole.fromRoleArnJsonPath('$.RoleArn') } }),
+  timeout: cdk.Duration.seconds(30),
+});
+
+new sfn.StateMachine(stack, 'StateMachineWithJSONataCredentials', {
+  definition: new FakeTaskJsonata(stack, 'FakeTaskWithJSONataCredentials', { credentials: { role: sfn.TaskRole.fromRoleArnJsonata('{% $states.input.RoleArn %}') } }),
+  queryLanguage: sfn.QueryLanguage.JSONATA,
   timeout: cdk.Duration.seconds(30),
 });
 
