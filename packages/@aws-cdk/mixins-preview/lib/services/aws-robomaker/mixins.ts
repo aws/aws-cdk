@@ -1,1 +1,1 @@
-export * from './robomaker.generated';
+export * from './cfn-props-mixins.generated';

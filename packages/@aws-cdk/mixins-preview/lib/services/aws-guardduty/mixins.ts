@@ -1,1 +1,1 @@
-export * from './guardduty.generated';
+export * from './cfn-props-mixins.generated';

@@ -1,0 +1,57 @@
+#
+#####################################
+##          S3 GUARD RULES          ##
+#####################################
+# Rule: S3_NO_WORLD_READABLE
+# Service: Amazon Simple Storage Service (S3)
+# Coverage: World Access
+
+let s3_bucket_policies = Resources.*[
+  Type == 'AWS::S3::BucketPolicy'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "S3_NO_WORLD_READABLE"
+]
+
+# EA015: No world readable bucket policies
+rule S3_NO_WORLD_READABLE when %s3_bucket_policies !empty {
+    %s3_bucket_policies {
+        Properties.PolicyDocument.Statement[*] {
+            when Effect == "Allow" {
+                when Action exists {
+                    when Action is_string {
+                        when Action in ["s3:GetObject", "s3:GetObjectVersion", "s3:ListBucket", "*"] {
+                            when Principal exists {
+                                when Principal != "*" {
+                                    when Principal.AWS exists {
+                                        when Principal.AWS is_string {
+                                            Principal.AWS != "*"
+                                        }
+                                        when Principal.AWS is_list {
+                                            Principal.AWS[*] != "*"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    when Action is_list {
+                        when Action[*] in ["s3:GetObject", "s3:GetObjectVersion", "s3:ListBucket", "*"] {
+                            when Principal exists {
+                                when Principal != "*" {
+                                    when Principal.AWS exists {
+                                        when Principal.AWS is_string {
+                                            Principal.AWS != "*"
+                                        }
+                                        when Principal.AWS is_list {
+                                            Principal.AWS[*] != "*"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

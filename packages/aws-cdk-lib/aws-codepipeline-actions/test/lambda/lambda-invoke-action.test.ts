@@ -6,7 +6,7 @@ import * as sns from '../../../aws-sns';
 import { App, Aws, Lazy, SecretValue, Stack, Token } from '../../../core';
 import * as cpactions from '../../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('', () => {
   describe('Lambda invoke Action', () => {
