@@ -1,5 +1,5 @@
 /* eslint-disable quotes */
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 /* eslint-disable @stylistic/comma-dangle */
 /* eslint-disable @cdklabs/no-literal-partition */
 /*
@@ -1599,7 +1599,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "2.0",
     "3.0",
     "4.0",
-    "5.0"
+    "5.0",
+    "5.1"
   ],
   "GraphWidgetView": [
     "timeSeries",
@@ -1782,6 +1783,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "git",
     "docker"
   ],
+  "ImageArchitecture": [
+    "arm64",
+    "x86_64"
+  ],
   "ImageId": [
     "amazonlinux-2-x86_64",
     "amazonlinux-2023-x86_64",
@@ -1804,6 +1809,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "ImageRepositoryType": [
     "ECR_PUBLIC",
     "ECR"
+  ],
+  "ImageType": [
+    "AMI",
+    "DOCKER"
   ],
   "IncludeDetail": [
     "FULL",

@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.232.1](https://github.com/aws/aws-cdk/compare/v2.232.0...v2.232.1) (2025-12-05)
+
+
+### Bug Fixes
+
+* **core:** TypeScript properties missing for types which extend internal interfaces ([#36313](https://github.com/aws/aws-cdk/issues/36313)) ([3e7e17c](https://github.com/aws/aws-cdk/commit/3e7e17c0def24567610a541e39195596f5d83387)), closes [#36310](https://github.com/aws/aws-cdk/issues/36310)
+
+## [2.232.0](https://github.com/aws/aws-cdk/compare/v2.231.0...v2.232.0) (2025-12-04)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#36299](https://github.com/aws/aws-cdk/issues/36299)) ([0945692](https://github.com/aws/aws-cdk/commit/0945692b91b01b6a8c69e844cffe7629cc52695a))
+* **bedrock-agentcore:** add fromImageUri method to AgentRuntimeArtifact ([#36263](https://github.com/aws/aws-cdk/issues/36263)) ([ad25aba](https://github.com/aws/aws-cdk/commit/ad25aba9785c6801085525da4d6adcc8c3204a70))
+* **lambda:** add support for durable functions ([#36282](https://github.com/aws/aws-cdk/issues/36282)) ([599a1d3](https://github.com/aws/aws-cdk/commit/599a1d3b26a1a9edf22f1cde41da323e560145fb))
+* update L1 CloudFormation resource definitions ([#36277](https://github.com/aws/aws-cdk/issues/36277)) ([c4fa99b](https://github.com/aws/aws-cdk/commit/c4fa99b9149b512494c9ae94b8d4aebba4436eb0))
+
+
+### Bug Fixes
+
+* **core:** temp cleanup does not work with jest ([#36238](https://github.com/aws/aws-cdk/issues/36238)) ([1f4a224](https://github.com/aws/aws-cdk/commit/1f4a2249b2651115cf02a26fd4bba09b151f426e)), closes [#36226](https://github.com/aws/aws-cdk/issues/36226)
+
+## [2.231.0](https://github.com/aws/aws-cdk/compare/v2.230.0...v2.231.0) (2025-12-01)
+
+
+### Features
+
+* **lambda:** support for capacity providers ([#36255](https://github.com/aws/aws-cdk/issues/36255)) ([2e4c1cf](https://github.com/aws/aws-cdk/commit/2e4c1cfd461de82e837238ab80eb0be22e9ec4b6))
+* update L1 CloudFormation resource definitions ([#36253](https://github.com/aws/aws-cdk/issues/36253)) ([8410b13](https://github.com/aws/aws-cdk/commit/8410b1392b9e634282dd56e47b4778304c1afa32))
+* **aws-cdk-lib:** add `arnFor<ResourceName>` for 47 more resources ([#36231](https://github.com/aws/aws-cdk/issues/36231)) ([5a8be4f](https://github.com/aws/aws-cdk/commit/5a8be4f22b24b0c0ae72a0cf4f5152c678a19029))
+* **aws-cdk-lib:** all L1s now have a `isCfn<ResourceName>` static helper to check if a value is this L1 resource ([#36243](https://github.com/aws/aws-cdk/issues/36243)) ([dc9db9b](https://github.com/aws/aws-cdk/commit/dc9db9b83d9ff629e4b047da90fbb15935a623ca))
+* **ec2:** expose EC2 instance MetadataOptions ([#35369](https://github.com/aws/aws-cdk/issues/35369)) ([4056e14](https://github.com/aws/aws-cdk/commit/4056e14105f88c27799b00f0eea1f1b671c5b8c8)), closes [#35357](https://github.com/aws/aws-cdk/issues/35357)
+
+
+### Bug Fixes
+
+* **dynamodb:** unsupported actions added to table resource policy ([#36228](https://github.com/aws/aws-cdk/issues/36228)) ([10de047](https://github.com/aws/aws-cdk/commit/10de0470215a6d211983b1457218914bb3c3c388)), closes [#32230](https://github.com/aws/aws-cdk/issues/32230)
+
+
 ## [2.230.0](https://github.com/aws/aws-cdk/compare/v2.229.1...v2.230.0) (2025-11-26)
 
 

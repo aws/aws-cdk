@@ -246,7 +246,6 @@ export function resolve(obj: any, options: IResolveOptions): any {
       result[resolvedKey] = value;
     } else {
       if (!options.allowIntrinsicKeys) {
-        // eslint-disable-next-line max-len
         throw new UnscopedValidationError(`"${String(key)}" is used as the key in a map so must resolve to a string, but it resolves to: ${JSON.stringify(resolvedKey)}. Consider using "CfnJson" to delay resolution to deployment-time`);
       }
 

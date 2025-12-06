@@ -21,7 +21,7 @@ export async function bump(args: BumpOptions, currentVersion: Versions): Promise
   }
 
   const releaseType = getReleaseType(args.prerelease, args.releaseAs, currentVersion.stableVersion);
-  const newStableVersion = semver.inc(currentVersion.stableVersion, releaseType, args.prerelease);
+  const newStableVersion = semver.inc(currentVersion.stableVersion, releaseType, false, args.prerelease);
   if (!newStableVersion) {
     throw new Error('Could not increment version: ' + currentVersion.stableVersion);
   }
