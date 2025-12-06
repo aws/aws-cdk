@@ -51,6 +51,7 @@ import {
 } from '../naming';
 import { isDefined, splitDocumentation, maybeDeprecated } from '../util';
 import { RelationshipDecider } from './relationship-decider';
+import { ImportPaths } from './aws-cdk-lib';
 
 export interface ITypeHost {
   typeFromSpecType(type: PropertyType): Type;
@@ -62,7 +63,8 @@ export interface Referenceable {
 }
 
 export interface ResourceClassProps {
-  readonly interfacesModule?: {
+  readonly importPaths: ImportPaths,
+  readonly interfacesModule: {
     readonly module: Module;
     readonly importLocation: string;
   };
@@ -82,7 +84,7 @@ export class ResourceClass extends ClassType implements Referenceable {
     scope: IScope,
     private readonly db: SpecDatabase,
     private readonly resource: Resource,
-    private readonly props: ResourceClassProps = {},
+    private readonly props: ResourceClassProps,
   ) {
     // A mutable array we pass to super()
     const implements_: Type[] = [CDK_CORE.IInspectable];
@@ -105,7 +107,11 @@ export class ResourceClass extends ClassType implements Referenceable {
 
     this.module = Module.of(this);
 
-    this.relationshipDecider = new RelationshipDecider(this.resource, db);
+    this.relationshipDecider = new RelationshipDecider(this.resource, db, {
+      enableRelationships: true,
+      enableNestedRelationships: false,
+      refsImportLocation: this.props.importPaths.interfaces
+    });
     this.converter = TypeConverter.forResource({
       db: db,
       resource: this.resource,

@@ -20,15 +20,12 @@ export interface Relationship {
   readonly refPropName: string;
 }
 
-/**
- * Extracts resource relationship information from the database for cross-service property references.
- */
-export class RelationshipDecider {
+export interface RelationshipDeciderProps {
+    /**
+     * Render relationships
+     */
+    readonly enableRelationships: boolean;
 
-  constructor(
-    readonly resource: Resource,
-    private readonly db: SpecDatabase,
-    public readonly enableRelationships = true,
     /**
      * We currently disable the relationship on the properties of types because they would create a backwards incompatible change
      * by broadening the output type as types are used both in input and output. This represents:
@@ -41,8 +38,31 @@ export class RelationshipDecider {
      *   Type-level (nested):         358
      *   Total:                       851
      */
-    public readonly enableNestedRelationships = false,
-  ) {}
+    readonly enableNestedRelationships: boolean;
+
+    /**
+     * The location to import reference interfaces from.
+     */
+    readonly refsImportLocation: string;
+}
+
+/**
+ * Extracts resource relationship information from the database for cross-service property references.
+ */
+export class RelationshipDecider {
+  public readonly enableRelationships: boolean;
+  public readonly enableNestedRelationships: boolean;
+  private readonly refsImportLocation: string;
+
+  constructor(
+    readonly resource: Resource,
+    private readonly db: SpecDatabase,
+    props: RelationshipDeciderProps,
+  ) {
+    this.enableRelationships = props.enableRelationships ?? true;
+    this.enableNestedRelationships = props.enableNestedRelationships ?? false;
+    this.refsImportLocation = props.refsImportLocation;
+  }
 
   /**
    * Retrieves the target resource for a relationship.
@@ -81,7 +101,7 @@ export class RelationshipDecider {
 
       // import the ref module
       const refsAlias = naming.interfaceModuleImportName(targetResource);
-      const selectiveImport = new SelectiveModuleImport(CDK_INTERFACES, CDK_INTERFACES.importName, [
+      const selectiveImport = new SelectiveModuleImport(CDK_INTERFACES, this.refsImportLocation, [
         [naming.submoduleSymbolFromResource(targetResource), refsAlias]
       ]);
       targetModule.addImport(selectiveImport);

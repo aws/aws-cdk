@@ -123,7 +123,11 @@ class L1PropsMixin extends ClassType {
       },
     });
 
-    this.relationshipDecider = new RelationshipDecider(this.resource, db, true, true);
+    this.relationshipDecider = new RelationshipDecider(this.resource, db, {
+      enableRelationships: true,
+      enableNestedRelationships: true,
+      refsImportLocation: 'aws-cdk-lib/interfaces'
+    });
     this.converter = TypeConverter.forMixin({
       db: db,
       resource: this.resource,
