@@ -9,7 +9,7 @@ import { ExternalModule, Module, ClassType, Stability, StructType, Type, expr, s
 import { MIXINS_COMMON, MIXINS_CORE, MIXINS_UTILS } from './helpers';
 import type { AddServiceProps, LibraryBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
 import { LibraryBuilder } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
-import type { LocatedModule, SelectiveImport, ServiceSubmoduleProps } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
+import type { LocatedModule, ServiceSubmoduleProps } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 import { BaseServiceSubmodule, relativeImportPath } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 
 class MixinsServiceModule extends BaseServiceSubmodule {
@@ -47,8 +47,6 @@ export class MixinsBuilder extends LibraryBuilder<MixinsServiceModule> {
     submodule.registerResource(resource.cloudFormationType, l1PropsMixin);
 
     l1PropsMixin.build();
-
-    submodule.registerSelectiveImports(...l1PropsMixin.imports);
   }
 
   private createMixinsModule(submodule: MixinsServiceModule, service: Service): LocatedModule<Module> {
@@ -86,7 +84,6 @@ class L1PropsMixin extends ClassType {
   private readonly decider: ResourceDecider;
   private readonly relationshipDecider: RelationshipDecider;
   private readonly converter: TypeConverter;
-  public readonly imports = new Array<SelectiveImport>();
 
   constructor(
     scope: Module,
@@ -133,7 +130,6 @@ class L1PropsMixin extends ClassType {
       resourceClass: this,
       relationshipDecider: this.relationshipDecider,
     });
-    this.imports = this.relationshipDecider.imports;
     this.decider = new ResourceDecider(this.resource, this.converter, this.relationshipDecider);
   }
 

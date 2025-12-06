@@ -1,9 +1,9 @@
 import { Property, RelationshipRef, Resource, RichProperty, SpecDatabase } from '@aws-cdk/service-spec-types';
+import { Module, SelectiveModuleImport, Type } from '@cdklabs/typewriter';
 import * as naming from '../naming';
-import { namespaceFromResource, referenceInterfaceName, referenceInterfaceAttributeName, referencePropertyName, typeAliasPrefixFromResource } from '../naming';
+import { CDK_INTERFACES } from './cdk';
 import { ResourceReference } from './reference-props';
 import { log } from '../util';
-import { SelectiveImport } from './service-submodule';
 
 /**
  * Represents a cross-service property relationship that enables references
@@ -11,21 +11,19 @@ import { SelectiveImport } from './service-submodule';
  */
 export interface Relationship {
   /** The TypeScript interface type that provides the reference (e.g. "IRoleRef") */
-  readonly referenceType: string;
-  /** The property name on the reference interface that holds the reference object (e.g. "roleRef") */
-  readonly referenceName: string;
-  /** The property to extract from the reference object (e.g. "roleArn") */
-  readonly propName: string;
+  readonly refType: Type;
   /** Human friendly name of the reference type for error generation (e.g. "iam.IRoleRef") */
-  readonly typeDisplayName: string;
+  readonly refTypeDisplayName: string;
+  /** The property name on the reference interface that holds the reference object (e.g. "roleRef") */
+  readonly refPropStructName: string;
+  /** The property to extract from the reference object (e.g. "roleArn") */
+  readonly refPropName: string;
 }
 
 /**
  * Extracts resource relationship information from the database for cross-service property references.
  */
 export class RelationshipDecider {
-  private readonly namespace: string;
-  public readonly imports = new Array<SelectiveImport>();
 
   constructor(
     readonly resource: Resource,
@@ -44,30 +42,7 @@ export class RelationshipDecider {
      *   Total:                       851
      */
     public readonly enableNestedRelationships = false,
-  ) {
-    this.namespace = namespaceFromResource(resource);
-  }
-
-  private registerRequiredImport({ namespace, originalType, aliasedType }: {
-    namespace: string;
-    originalType: string;
-    aliasedType: string;
-  }) {
-    const moduleName = naming.modulePartsFromNamespace(namespace).moduleName;
-    const moduleImport = this.imports.find(i => i.moduleName === moduleName);
-    if (!moduleImport) {
-      this.imports.push({
-        moduleName,
-        types: [{ originalType, aliasedType }],
-      });
-    } else {
-      if (!moduleImport.types.find(t =>
-        t.originalType === originalType && t.aliasedType === aliasedType,
-      )) {
-        moduleImport.types.push({ originalType, aliasedType });
-      }
-    }
-  }
+  ) {}
 
   /**
    * Retrieves the target resource for a relationship.
@@ -80,7 +55,7 @@ export class RelationshipDecider {
     }
     const targetResource = this.db.lookup('resource', 'cloudFormationType', 'equals', relationship.cloudFormationType).only();
     const refProps = new ResourceReference(targetResource).referenceProps;
-    const expectedPropName = referencePropertyName(relationship.propertyName, targetResource.name);
+    const expectedPropName = naming.referencePropertyName(relationship.propertyName, targetResource.name);
     const prop = refProps.find(p => p.declaration.name === expectedPropName);
     if (!prop) {
       log.debug(
@@ -93,7 +68,7 @@ export class RelationshipDecider {
     return targetResource;
   }
 
-  public parseRelationship(sourcePropName: string, relationships?: RelationshipRef[]) {
+  public parseRelationship(targetModule: Module, sourcePropName: string, relationships?: RelationshipRef[]) {
     const parsedRelationships: Relationship[] = [];
     if (!relationships) {
       return parsedRelationships;
@@ -103,22 +78,25 @@ export class RelationshipDecider {
       if (!targetResource) {
         continue;
       }
-      // Ignore the suffix part because it's an edge case that happens only for one module
-      const interfaceName = referenceInterfaceName(targetResource.name);
-      const refPropStructName = referenceInterfaceAttributeName(targetResource.name);
 
-      const targetNamespace = namespaceFromResource(targetResource);
-      let aliasedTypeName = undefined;
-      if (this.namespace !== targetNamespace) {
-        // If this is not in our namespace we need to alias the import type
-        aliasedTypeName = `${typeAliasPrefixFromResource(targetResource)}${interfaceName}`;
-        this.registerRequiredImport({ namespace: targetNamespace, originalType: interfaceName, aliasedType: aliasedTypeName });
-      }
+      // import the ref module
+      const refsAlias = naming.interfaceModuleImportName(targetResource);
+      const selectiveImport = new SelectiveModuleImport(CDK_INTERFACES, CDK_INTERFACES.importName, [
+        [naming.submoduleSymbolFromResource(targetResource), refsAlias]
+      ]);
+      targetModule.addImport(selectiveImport);
+      
+      // Ignore the suffix part because it's an edge case that happens only for one module
+      const interfaceName = naming.referenceInterfaceName(targetResource.name);
+      const referenceType = Type.fromName(targetModule, `${refsAlias}.${interfaceName}`);
+      const referenceTypeDisplayName = `${naming.typeAliasPrefixFromResource(targetResource).toLowerCase()}.${interfaceName}`;
+      const refPropStructName = naming.referenceInterfaceAttributeName(targetResource.name);
+  
       parsedRelationships.push({
-        referenceType: aliasedTypeName ?? interfaceName,
-        referenceName: refPropStructName,
-        propName: referencePropertyName(relationship.propertyName, targetResource.name),
-        typeDisplayName: `${typeAliasPrefixFromResource(targetResource).toLowerCase()}.${interfaceName}`,
+        refType: referenceType,
+        refTypeDisplayName: referenceTypeDisplayName,
+        refPropStructName: refPropStructName,
+        refPropName: naming.referencePropertyName(relationship.propertyName, targetResource.name),
       });
     }
     return parsedRelationships;

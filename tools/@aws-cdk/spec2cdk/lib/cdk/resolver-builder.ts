@@ -39,7 +39,7 @@ export class ResolverBuilder {
     const resolvableType = cfnName in NON_RESOLVABLE_PROPERTY_NAMES ? baseType : this.converter.makeTypeResolvable(baseType);
 
     if (shouldGenerateRelationships) {
-      const relationships = this.relationshipDecider.parseRelationship(name, prop.relationshipRefs);
+      const relationships = this.relationshipDecider.parseRelationship(this.module, name, prop.relationshipRefs);
       if (relationships.length > 0) {
         return this.buildRelationshipResolver({ relationships, baseType, name, resolvableType });
       }
@@ -72,13 +72,13 @@ export class ResolverBuilder {
     if (!(baseType === Type.STRING || baseType.arrayOfType === Type.STRING)) {
       throw Error('Trying to map to a non string property');
     }
-    const newTypes = relationships.map(t => Type.fromName(this.module, t.referenceType));
+    const newTypes = relationships.map(t => t.refType);
     const propType = resolvableType.arrayOfType
       ? Type.arrayOf(Type.distinctUnionOf(resolvableType.arrayOfType, ...newTypes))
       : Type.distinctUnionOf(resolvableType, ...newTypes);
 
     const typeDisplayNames = [
-      ...relationships.map(r => r.typeDisplayName),
+      ...relationships.map(r => r.refTypeDisplayName),
       resolvableType.arrayOfType?.toString() ?? resolvableType.toString(),
     ].join(' | ');
 
@@ -86,12 +86,12 @@ export class ResolverBuilder {
     // For single value T | string : (props.xx as IxxxRef)?.xxxRef?.xxxArn ?? cdk.ensureStringOrUndefined(props.xxx, "xxx", "iam.IxxxRef | string");
     // For array <T | string>[]: (props.xx?.forEach((item: T | string, i: number, arr: Array<T | string>) => { arr[i] = (item as T)?.xxxRef?.xx ?? cdk.ensureStringOrUndefined(item, "xxx", "lambda.T | string"); }), props.xxx as Array<string>);
     // Ensures that arn properties always appear first in the chain as they are more general
-    const arnRels = relationships.filter(r => r.propName.toLowerCase().endsWith('arn'));
-    const otherRels = relationships.filter(r => !r.propName.toLowerCase().endsWith('arn'));
+    const arnRels = relationships.filter(r => r.refPropName.toLowerCase().endsWith('arn'));
+    const otherRels = relationships.filter(r => !r.refPropName.toLowerCase().endsWith('arn'));
 
     const buildChain = (itemName: string) => [
       ...[...arnRels, ...otherRels]
-        .map(r => `(${itemName} as ${r.referenceType})?.${r.referenceName}?.${r.propName}`),
+        .map(r => `(${itemName} as ${r.refType})?.${r.refPropStructName}?.${r.refPropName}`),
       `cdk.ensureStringOrUndefined(${itemName}, "${name}", "${typeDisplayNames}")`,
     ].join(' ?? ');
     const resolver = (_: Expression) => {

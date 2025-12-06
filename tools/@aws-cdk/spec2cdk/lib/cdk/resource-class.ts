@@ -51,7 +51,6 @@ import {
 } from '../naming';
 import { isDefined, splitDocumentation, maybeDeprecated } from '../util';
 import { RelationshipDecider } from './relationship-decider';
-import { SelectiveImport } from './service-submodule';
 
 export interface ITypeHost {
   typeFromSpecType(type: PropertyType): Type;
@@ -77,7 +76,6 @@ export class ResourceClass extends ClassType implements Referenceable {
   private readonly relationshipDecider: RelationshipDecider;
   private readonly converter: TypeConverter;
   private readonly module: Module;
-  public readonly imports = new Array<SelectiveImport>();
   public ref: ReferenceInterfaceTypes;
 
   constructor(
@@ -114,8 +112,6 @@ export class ResourceClass extends ClassType implements Referenceable {
       resourceClass: this,
       relationshipDecider: this.relationshipDecider,
     });
-
-    this.imports = this.relationshipDecider.imports;
     this.decider = new ResourceDecider(this.resource, this.converter, this.relationshipDecider);
 
     this.propsType = new StructType(this.scope, {
