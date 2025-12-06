@@ -12,7 +12,7 @@ import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
 import * as autoscaling from '../lib';
 import { OnDemandAllocationStrategy, SpotAllocationStrategy } from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('auto scaling group', () => {
   test('default fleet', () => {
