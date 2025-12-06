@@ -1,10 +1,10 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Job, JobProps } from './job';
-import { Construct } from 'constructs';
-import { JobType, GlueVersion, PythonVersion, MaxCapacity, JobLanguage } from '../constants';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { Job, JobProps } from './job';
+import { JobType, GlueVersion, PythonVersion, MaxCapacity, JobLanguage } from '../constants';
 
 /**
  * Properties for creating a Python Shell job

@@ -7,13 +7,13 @@ import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import { RuntimeNetworkConfiguration } from '../../../lib/network/network-configuration';
 import { Runtime } from '../../../lib/runtime/runtime';
-import { RuntimeEndpoint } from '../../../lib/runtime/runtime-endpoint';
 import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
 import { RuntimeAuthorizerConfiguration } from '../../../lib/runtime/runtime-authorizer-configuration';
-import { RuntimeNetworkConfiguration } from '../../../lib/network/network-configuration';
+import { RuntimeEndpoint } from '../../../lib/runtime/runtime-endpoint';
 import {
   ProtocolType,
 } from '../../../lib/runtime/types';
