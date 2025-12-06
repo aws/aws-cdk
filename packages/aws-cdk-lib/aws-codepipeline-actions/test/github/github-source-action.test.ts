@@ -4,7 +4,7 @@ import * as codepipeline from '../../../aws-codepipeline';
 import { App, SecretValue, Stack } from '../../../core';
 import * as cpactions from '../../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('Github source action', () => {
   describe('GitHub source Action', () => {
