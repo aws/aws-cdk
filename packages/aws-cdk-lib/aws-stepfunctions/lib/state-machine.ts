@@ -219,7 +219,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Collection of grant methods for a StateMachine
    */
-  public grants = StateMachineGrants._fromStateMachine(this);
+  public grants = StateMachineGrants.fromStateMachine(this);
 
   public get stateMachineRef(): StateMachineReference {
     return {
