@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5f1af74537182c9aad6d15713324191d5ff80986eea740e6f91e35cfda9ddf7f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b3e62c0674a305cf61c022fc0802d7e855790f1f35b3ee45ae9c7d4b56b592e2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,9 +37,7 @@
         "/AlbIntegrationTestStack/Vpc": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "natGateways": "*"
-            }
+            "data": "*"
           }
         ],
         "/AlbIntegrationTestStack/Vpc/Resource": [
@@ -51,37 +49,19 @@
         "/AlbIntegrationTestStack/Vpc/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {}
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
+            "data": "*"
           }
         ],
         "/AlbIntegrationTestStack/Vpc/PublicSubnet1/Subnet": [
@@ -123,29 +103,15 @@
         "/AlbIntegrationTestStack/Vpc/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {}
+            "data": "*"
           }
         ],
         "/AlbIntegrationTestStack/Vpc/PublicSubnet2/Subnet": [
@@ -175,29 +141,15 @@
         "/AlbIntegrationTestStack/Vpc/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {}
+            "data": "*"
           }
         ],
         "/AlbIntegrationTestStack/Vpc/PrivateSubnet1/Subnet": [
@@ -227,29 +179,15 @@
         "/AlbIntegrationTestStack/Vpc/PrivateSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {}
+            "data": "*"
           }
         ],
         "/AlbIntegrationTestStack/Vpc/PrivateSubnet2/Subnet": [
@@ -321,18 +259,13 @@
         "/AlbIntegrationTestStack/BackendFunction": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "handler": "*",
-              "code": "*",
-              "vpc": "*"
-            }
+            "data": "*"
           }
         ],
         "/AlbIntegrationTestStack/BackendFunction/ServiceRole": [
           {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
         "/AlbIntegrationTestStack/BackendFunction/ServiceRole/ImportServiceRole": [
@@ -350,12 +283,7 @@
         "/AlbIntegrationTestStack/BackendFunction/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "description": "*",
-              "allowAllOutbound": "*",
-              "allowAllIpv6Outbound": "*"
-            }
+            "data": "*"
           }
         ],
         "/AlbIntegrationTestStack/BackendFunction/SecurityGroup/Resource": [
@@ -373,9 +301,7 @@
         "/AlbIntegrationTestStack/BackendFunction/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "logGroupName": "*"
-            }
+            "data": "*"
           }
         ],
         "/AlbIntegrationTestStack/BackendFunction/LogGroup/Resource": [
@@ -409,26 +335,11 @@
         "/AlbIntegrationTestStack/Alb/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "description": "*",
-              "allowAllOutbound": false
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addIngressRule": [
-                {
-                  "canInlineRule": true,
-                  "connections": "*",
-                  "uniqueId": "*"
-                },
-                {},
-                "*",
-                false
-              ]
-            }
+            "data": "*"
           }
         ],
         "/AlbIntegrationTestStack/Alb/SecurityGroup/Resource": [
@@ -466,12 +377,7 @@
         "/AlbIntegrationTestStack/RestApi": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "cloudWatchRole": true,
-              "deployOptions": {
-                "stageName": "*"
-              }
-            }
+            "data": "*"
           }
         ],
         "/AlbIntegrationTestStack/RestApi/Resource": [
@@ -482,16 +388,12 @@
         ],
         "/AlbIntegrationTestStack/RestApi/CloudWatchRole": [
           {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [CloudWatchRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "applyRemovalPolicy": [
-                "retain"
-              ]
-            }
+            "data": "*"
           }
         ],
         "/AlbIntegrationTestStack/RestApi/CloudWatchRole/ImportCloudWatchRole": [
@@ -515,34 +417,23 @@
         "/AlbIntegrationTestStack/RestApi/Deployment": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "description": "*",
-              "api": "*",
-              "retainDeployments": "*"
-            }
+            "data": "*"
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToLogicalId": [
-                {}
-              ]
-            }
+            "data": "*"
           }
         ],
         "/AlbIntegrationTestStack/RestApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RestApiDeployment180EC503f9ed986751684f4f1af8583773f32262"
+            "data": "RestApiDeployment180EC503bee7dee5e04c00e6d4848fb3fd634988"
           }
         ],
         "/AlbIntegrationTestStack/RestApi/DeploymentStage.prod": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "deployment": "*",
-              "stageName": "*"
-            }
+            "data": "*"
           }
         ],
         "/AlbIntegrationTestStack/RestApi/DeploymentStage.prod/Resource": [
@@ -566,12 +457,7 @@
         "/AlbIntegrationTestStack/RestApi/Default/GET": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "resource": "*",
-              "httpMethod": "*",
-              "integration": "*",
-              "options": "*"
-            }
+            "data": "*"
           }
         ],
         "/AlbIntegrationTestStack/RestApi/Default/GET/Resource": [
@@ -580,7 +466,7 @@
             "data": "RestApiGET0F59260B"
           }
         ],
-        "/AlbIntegrationTestStack/RestApi/VpcLink-AlbIntegrationTestStackAlb53467606": [
+        "/AlbIntegrationTestStack/RestApi/VpcLink-Vpc": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -590,10 +476,10 @@
             "data": "*"
           }
         ],
-        "/AlbIntegrationTestStack/RestApi/VpcLink-AlbIntegrationTestStackAlb53467606/Resource": [
+        "/AlbIntegrationTestStack/RestApi/VpcLink-Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RestApiVpcLinkAlbIntegrationTestStackAlb53467606BA44E004"
+            "data": "RestApiVpcLinkVpc5248D480"
           }
         ],
         "/AlbIntegrationTestStack/Exports/Output{\"Ref\":\"RestApi0C43BF4B\"}": [
@@ -640,7 +526,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/28e98b28786ae0450851d25f62a377db294b2c1b304a4efbdecfc0159336a292.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/11e3c51885850fa7b5146708c222c287c0aae5a051a031c89a3b331adeb9a937.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

@@ -843,7 +843,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "RestApiDeployment180EC503f9ed986751684f4f1af8583773f32262": {
+  "RestApiDeployment180EC503bee7dee5e04c00e6d4848fb3fd634988": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -864,7 +864,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "RestApiDeployment180EC503f9ed986751684f4f1af8583773f32262"
+     "Ref": "RestApiDeployment180EC503bee7dee5e04c00e6d4848fb3fd634988"
     },
     "RestApiId": {
      "Ref": "RestApi0C43BF4B"
@@ -884,7 +884,7 @@
     "HttpMethod": "GET",
     "Integration": {
      "ConnectionId": {
-      "Ref": "RestApiVpcLinkAlbIntegrationTestStackAlb53467606BA44E004"
+      "Ref": "RestApiVpcLinkVpc5248D480"
      },
      "ConnectionType": "VPC_LINK",
      "IntegrationHttpMethod": "GET",
@@ -920,10 +920,10 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "RestApiVpcLinkAlbIntegrationTestStackAlb53467606BA44E004": {
+  "RestApiVpcLinkVpc5248D480": {
    "Type": "AWS::ApiGatewayV2::VpcLink",
    "Properties": {
-    "Name": "AlbIntegrationTestStackRestApi0C346F5B-AlbIntegrationTestStackAlb53467606",
+    "Name": "AlbIntegrationTestStackRestApiVpcLinkVpc52D80BD0",
     "SecurityGroupIds": [],
     "SubnetIds": [
      {

@@ -37,7 +37,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"body\":{\"message\":\"Hello from ALB Integration!\",\"path\":\"/\",\"method\":\"GET\"}}}",
     "flattenResponse": "false",
-    "salt": "1764516390494"
+    "salt": "1765006275018"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -72,7 +72,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ca235e6258b11c240506ff06f79037eca461b8d0d9464a947a386d38d8163515.zip"
+     "S3Key": "8208945b020ee79332597d5ad6dfd363938ca96ad50ae746ae25aed3d2845c8f.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
