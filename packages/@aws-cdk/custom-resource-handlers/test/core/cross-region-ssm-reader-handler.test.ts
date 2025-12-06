@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+
 import { InvalidResourceId } from '@aws-sdk/client-ssm';
 import { handler } from '../../lib/core/cross-region-ssm-reader-handler/index';
 import { SSM_EXPORT_PATH_PREFIX } from '../../lib/core/types';

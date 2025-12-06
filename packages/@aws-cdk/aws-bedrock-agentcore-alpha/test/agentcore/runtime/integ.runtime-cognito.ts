@@ -1,7 +1,7 @@
 import * as path from 'path';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
-import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as agentcore from '../../../lib';
 
 const app = new cdk.App();

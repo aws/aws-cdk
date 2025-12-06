@@ -1,4 +1,4 @@
-/* eslint-disable @cdklabs/no-throw-default-error */
+
 import { App, Stack } from 'aws-cdk-lib';
 import { CfnRule, Rule } from 'aws-cdk-lib/aws-events';
 import type { EventPattern } from 'aws-cdk-lib/aws-events';
@@ -56,6 +56,7 @@ describe.each([
     const asgEvents = AutoScalingGroupEvents.fromAutoScalingGroup(new class extends Construct {
       public readonly autoScalingGroupRef: AutoScalingGroupReference = {
         autoScalingGroupName: 'asdf',
+        autoScalingGroupArn: 'arn:aws:autoscaling:us-west-2:123456789012:autoScalingGroup:1a2b3c4d-5e6f-7a8b-9c0d-123456789012:autoScalingGroupName/MyAutoScalingGroup',
       };
       public readonly env = { account: '11111111111', region: 'us-east-1' };
     }(stack, 'Group'));
