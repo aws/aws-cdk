@@ -489,7 +489,7 @@ export interface RecordingConfig {
 
   /**
    * S3 Location Configuration
-   * @default undefined
+   * @default - undefined
    */
   readonly s3Location?: Location;
 }
