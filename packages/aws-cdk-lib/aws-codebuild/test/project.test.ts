@@ -971,6 +971,7 @@ describe('Environment', () => {
 
   test.each([
     ['Base 14', codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14'],
+    ['Base 15', codebuild.MacBuildImage.BASE_15, 'aws/codebuild/macos-arm-base:15'],
   ])('has build image for %s', (_, buildImage, expected) => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1039,7 +1040,7 @@ describe('Environment', () => {
     });
   });
 
-  test('can set fleet', () => {
+  test('can set macOS fleet with BASE_14', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
@@ -1068,6 +1069,43 @@ describe('Environment', () => {
       Environment: Match.objectLike({
         ComputeType: 'BUILD_GENERAL1_MEDIUM',
         Image: 'aws/codebuild/macos-arm-base:14',
+        Type: 'MAC_ARM',
+        Fleet: {
+          FleetArn: { 'Fn::GetAtt': ['Fleet30813DF3', 'Arn'] },
+        },
+      }),
+    });
+  });
+
+  test('can set macOS fleet with BASE_15', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+    const fleet = new codebuild.Fleet(stack, 'Fleet', {
+      fleetName: 'MyFleet',
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.MEDIUM,
+      environmentType: codebuild.EnvironmentType.MAC_ARM,
+    });
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket,
+        path: 'path',
+      }),
+      environment: {
+        fleet,
+        buildImage: codebuild.MacBuildImage.BASE_15,
+        computeType: codebuild.ComputeType.MEDIUM,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
+        ComputeType: 'BUILD_GENERAL1_MEDIUM',
+        Image: 'aws/codebuild/macos-arm-base:15',
         Type: 'MAC_ARM',
         Fleet: {
           FleetArn: { 'Fn::GetAtt': ['Fleet30813DF3', 'Arn'] },
@@ -1107,7 +1145,7 @@ describe('Environment', () => {
     });
   });
 
-  test('can set imported fleet', () => {
+  test('can set imported macOS fleet with BASE_14', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
@@ -1131,6 +1169,38 @@ describe('Environment', () => {
       Environment: Match.objectLike({
         ComputeType: 'BUILD_GENERAL1_MEDIUM',
         Image: 'aws/codebuild/macos-arm-base:14',
+        Type: 'MAC_ARM',
+        Fleet: {
+          FleetArn: 'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:uuid',
+        },
+      }),
+    });
+  });
+
+  test('can set imported macOS fleet with BASE_15', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket');
+    const fleet = codebuild.Fleet.fromFleetArn(stack, 'Fleet', 'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:uuid');
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket,
+        path: 'path',
+      }),
+      environment: {
+        fleet,
+        buildImage: codebuild.MacBuildImage.BASE_15,
+        computeType: codebuild.ComputeType.MEDIUM,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
+        ComputeType: 'BUILD_GENERAL1_MEDIUM',
+        Image: 'aws/codebuild/macos-arm-base:15',
         Type: 'MAC_ARM',
         Fleet: {
           FleetArn: 'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:uuid',
