@@ -3,15 +3,15 @@ import * as path from 'path';
 import { IConstruct } from 'constructs';
 import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
-import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
+import { Bundler, BundlingOptions, OutputFormat, SourceMapMode } from './types';
 import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime } from './util';
 import { Architecture, AssetCode, Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
 import { LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES } from '../../cx-api';
 
-const ESBUILD_MAJOR_VERSION = '0';
 const ESBUILD_DEFAULT_VERSION = '0.21';
+const ROLLDOWN_DEFAULT_VERSION = '1.0.0-beta.44';
 
 /**
  * Bundling properties
@@ -73,11 +73,16 @@ export class Bundling implements cdk.BundlingOptions {
     this.esbuildInstallation = undefined;
   }
 
+  public static clearRolldownInstallationCache(): void {
+    this.rolldownInstallation = undefined;
+  }
+
   public static clearTscInstallationCache(): void {
     this.tscInstallation = undefined;
   }
 
   private static esbuildInstallation?: PackageInstallation;
+  private static rolldownInstallation?: PackageInstallation;
   private static tscInstallation?: PackageInstallation;
 
   // Core bundling options
@@ -104,7 +109,10 @@ export class Bundling implements cdk.BundlingOptions {
   constructor(scope: IConstruct, private readonly props: BundlingProps) {
     this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath, props.logLevel);
 
+    const bundler = props.bundler ?? Bundler.ESBUILD;
+
     Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? PackageInstallation.detect('esbuild');
+    Bundling.rolldownInstallation = Bundling.rolldownInstallation ?? PackageInstallation.detect('rolldown');
     Bundling.tscInstallation = Bundling.tscInstallation ?? PackageInstallation.detect('typescript');
 
     this.projectRoot = props.projectRoot;
@@ -174,24 +182,29 @@ export class Bundling implements cdk.BundlingOptions {
     ];
 
     // Docker bundling
-    const shouldBuildImage = props.forceDockerBundling || !Bundling.esbuildInstallation;
-    this.image = shouldBuildImage ? props.dockerImage ?? cdk.DockerImage.fromBuild(path.join(__dirname, '..', 'lib'),
-      {
-        buildArgs: {
-          ...props.buildArgs ?? {},
-          // If runtime isn't passed use regional default, lowest common denominator is node18
-          IMAGE: props.runtime.bundlingImage.image,
-          ESBUILD_VERSION: props.esbuildVersion ?? ESBUILD_DEFAULT_VERSION,
-        },
-        platform: props.architecture.dockerPlatform,
-        network: props.network,
-      })
+    const bundlerInstallation = bundler === Bundler.ROLLDOWN ? Bundling.rolldownInstallation : Bundling.esbuildInstallation;
+    const shouldBuildImage = props.forceDockerBundling || !bundlerInstallation;
+    this.image = shouldBuildImage
+      ? props.dockerImage ??
+        cdk.DockerImage.fromBuild(path.join(__dirname, '..', 'lib'), {
+          buildArgs: {
+            ...props.buildArgs,
+            // If runtime isn't passed use regional default, lowest common denominator is node18
+            IMAGE: props.runtime.bundlingImage.image,
+            ESBUILD_VERSION: props.esbuildVersion ?? ESBUILD_DEFAULT_VERSION,
+            ROLLDOWN_VERSION: props.rolldownVersion ?? ROLLDOWN_DEFAULT_VERSION,
+          },
+          platform: props.architecture.dockerPlatform,
+          network: props.network,
+        })
       : cdk.DockerImage.fromRegistry('dummy'); // Do not build if we don't need to
 
     const bundlingCommand = this.createBundlingCommand(scope, {
       inputDir: cdk.AssetStaging.BUNDLING_INPUT_DIR,
       outputDir: cdk.AssetStaging.BUNDLING_OUTPUT_DIR,
+      bundler,
       esbuildRunner: 'esbuild', // esbuild is installed globally in the docker image
+      rolldownRunner: 'rolldown', // rolldown is installed globally in the docker image
       tscRunner: 'tsc', // tsc is installed globally in the docker image
       osPlatform: 'linux', // linux docker image
     });
@@ -209,7 +222,8 @@ export class Bundling implements cdk.BundlingOptions {
     this.bundlingFileAccess = props.bundlingFileAccess;
 
     // Local bundling
-    if (!props.forceDockerBundling) { // only if Docker is not forced
+    if (!props.forceDockerBundling) {
+      // only if Docker is not forced
       this.local = this.getLocalBundlingProvider(scope);
     }
   }
@@ -229,42 +243,17 @@ export class Bundling implements cdk.BundlingOptions {
       relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
     }
 
-    const loaders = Object.entries(this.props.loader ?? {});
-    const defines = Object.entries(this.props.define ?? {});
-
     if (this.props.sourceMap === false && this.props.sourceMapMode) {
-      throw new ValidationError('sourceMapMode cannot be used when sourceMap is false', scope);
+      throw new ValidationError( 'sourceMapMode cannot be used when sourceMap is false', scope);
     }
 
-    const sourceMapEnabled = this.props.sourceMapMode ?? this.props.sourceMap;
-    const sourceMapMode = this.props.sourceMapMode ?? SourceMapMode.DEFAULT;
-    const sourceMapValue = sourceMapMode === SourceMapMode.DEFAULT ? '' : `=${this.props.sourceMapMode}`;
-    const sourcesContent = this.props.sourcesContent ?? true;
-
     const outFile = this.props.format === OutputFormat.ESM ? 'index.mjs' : 'index.js';
-    const esbuildCommand: string[] = [
-      options.esbuildRunner,
-      '--bundle', `"${relativeEntryPath}"`,
-      `--target=${this.props.target ?? toTarget(scope, this.props.runtime)}`,
-      '--platform=node',
-      ...this.props.format ? [`--format=${this.props.format}`] : [],
-      `--outfile="${pathJoin(options.outputDir, outFile)}"`,
-      ...this.props.minify ? ['--minify'] : [],
-      ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
-      ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],
-      ...this.externals.map(external => `--external:${external}`),
-      ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
-      ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
-      ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
-      ...this.props.keepNames ? ['--keep-names'] : [],
-      ...this.relativeTsconfigPath ? [`--tsconfig="${pathJoin(options.inputDir, this.relativeTsconfigPath)}"`] : [],
-      ...this.props.metafile ? [`--metafile="${pathJoin(options.outputDir, 'index.meta.json')}"`] : [],
-      ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
-      ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
-      ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
-      ...this.props.inject ? this.props.inject.map(i => `--inject:"${i}"`) : [],
-      ...this.props.esbuildArgs ? [toCliArgs(this.props.esbuildArgs)] : [],
-    ];
+
+    // Create bundler-specific command
+    const bundlerCommand =
+      options.bundler === Bundler.ROLLDOWN
+        ? this.createRolldownCommand(scope, options, relativeEntryPath, pathJoin, outFile)
+        : this.createEsbuildCommand(scope, options, relativeEntryPath, pathJoin, outFile);
 
     let depsCommand = '';
     if (this.props.nodeModules) {
@@ -297,56 +286,148 @@ export class Bundling implements cdk.BundlingOptions {
     }
 
     return chain([
-      ...this.props.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? [],
+      ...(this.props.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? []),
       tscCommand,
-      esbuildCommand.join(' '),
-      ...(this.props.nodeModules && this.props.commandHooks?.beforeInstall(options.inputDir, options.outputDir)) ?? [],
+      bundlerCommand.join(' '),
+      ...((this.props.nodeModules && this.props.commandHooks?.beforeInstall(options.inputDir, options.outputDir )) ?? []),
       depsCommand,
-      ...this.props.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? [],
+      ...(this.props.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? []),
     ]);
+  }
+
+  private createEsbuildCommand(
+    scope: IConstruct,
+    options: BundlingCommandOptions,
+    relativeEntryPath: string,
+    pathJoin: (...paths: string[]) => string,
+    outFile: string,
+  ): string[] {
+    const loaders = Object.entries(this.props.loader ?? {});
+    const defines = Object.entries(this.props.define ?? {});
+
+    const sourceMapEnabled = this.props.sourceMapMode ?? this.props.sourceMap;
+    const sourceMapMode = this.props.sourceMapMode ?? SourceMapMode.DEFAULT;
+    const sourceMapValue = sourceMapMode === SourceMapMode.DEFAULT ? '' : `=${this.props.sourceMapMode}`;
+    const sourcesContent = this.props.sourcesContent ?? true;
+
+    return [
+      options.esbuildRunner,
+      '--bundle',
+      `"${relativeEntryPath}"`,
+      `--target=${this.props.target ?? toTarget(scope, this.props.runtime)}`,
+      '--platform=node',
+      ...(this.props.format ? [`--format=${this.props.format}`] : []),
+      `--outfile="${pathJoin(options.outputDir, outFile)}"`,
+      ...(this.props.minify ? ['--minify'] : []),
+      ...(sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : []),
+      ...(sourcesContent ? [] : [`--sources-content=${sourcesContent}`]),
+      ...this.externals.map((external) => `--external:${external}`),
+      ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
+      ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
+      ...(this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : []),
+      ...(this.props.keepNames ? ['--keep-names'] : []),
+      ...(this.relativeTsconfigPath ? [`--tsconfig="${pathJoin(options.inputDir, this.relativeTsconfigPath)}"`] : []),
+      ...(this.props.metafile ? [`--metafile="${pathJoin(options.outputDir, 'index.meta.json')}"`] : []),
+      ...(this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : []),
+      ...(this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : []),
+      ...(this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : []),
+      ...(this.props.inject ? this.props.inject.map((i) => `--inject:"${i}"`) : []),
+      ...(this.props.esbuildArgs ? [toCliArgs(this.props.esbuildArgs)] : []),
+    ];
+  }
+
+  private createRolldownCommand(
+    _scope: IConstruct,
+    options: BundlingCommandOptions,
+    relativeEntryPath: string,
+    pathJoin: (...paths: string[]) => string,
+    outFile: string,
+  ): string[] {
+    const loaders = Object.entries(this.props.loader ?? {});
+    const defines = Object.entries(this.props.define ?? {});
+
+    const sourceMapEnabled = this.props.sourceMapMode ?? this.props.sourceMap;
+
+    // Map sourcemap modes to rolldown options
+    let sourceMapArgs: string[] = [];
+    if (sourceMapEnabled) {
+      const sourceMapMode = this.props.sourceMapMode ?? SourceMapMode.DEFAULT;
+      if (sourceMapMode === SourceMapMode.INLINE) {
+        sourceMapArgs = ['--sourcemap=inline'];
+      } else if (sourceMapMode === SourceMapMode.EXTERNAL) {
+        sourceMapArgs = ['--sourcemap=hidden'];
+      } else {
+        // For DEFAULT and BOTH - use default sourcemap generation
+        sourceMapArgs = ['--sourcemap'];
+      }
+    }
+
+    return [
+      options.rolldownRunner,
+      `"${relativeEntryPath}"`,
+      `-o "${pathJoin(options.outputDir, outFile)}"`,
+      '-p node',
+      ...(this.props.format ? [`-f ${this.props.format}`] : []),
+      ...(this.props.minify ? ['-m'] : []),
+      ...this.externals.map((external) => `-e ${external}`),
+      ...loaders.map(([ext, name]) => `--module-types ${ext}=${name}`),
+      ...defines.map(([key, value]) => `--define ${key}=${JSON.stringify(value)}`),
+      ...(this.props.logLevel ? [`--log-level ${this.props.logLevel}`] : []),
+      ...(this.relativeTsconfigPath ? [`--tsconfig "${pathJoin(options.inputDir, this.relativeTsconfigPath)}"`] : []),
+      ...(this.props.banner ? [`--banner ${JSON.stringify(this.props.banner)}`] : []),
+      ...(this.props.footer ? [`--footer ${JSON.stringify(this.props.footer)}`] : []),
+      ...(this.props.mainFields ? [`--main-fields ${this.props.mainFields.join(',')}`] : []),
+      ...(this.props.inject ? this.props.inject.map((i) => `--inject "${i}"`) : []),
+      ...(this.props.rolldownArgs ? [toCliArgs(this.props.rolldownArgs)] : []),
+      // According to rolldown documentation, the sourcemap argument must be last argument...
+      ...sourceMapArgs,
+    ];
   }
 
   private getLocalBundlingProvider(scope: IConstruct): cdk.ILocalBundling {
     const osPlatform = os.platform();
-    const createLocalCommand = (outputDir: string, esbuild: PackageInstallation, tsc?: PackageInstallation) => this.createBundlingCommand(scope, {
-      inputDir: this.projectRoot,
-      outputDir,
-      esbuildRunner: esbuild.isLocal ? this.packageManager.runBinCommand('esbuild') : 'esbuild',
-      tscRunner: tsc && (tsc.isLocal ? this.packageManager.runBinCommand('tsc') : 'tsc'),
-      osPlatform,
-    });
+    const bundler = this.props.bundler ?? Bundler.ESBUILD;
+
+    const createLocalCommand = (outputDir: string, _bundlerInstallation: PackageInstallation, tsc?: PackageInstallation) =>
+      this.createBundlingCommand(scope, {
+        inputDir: this.projectRoot,
+        outputDir,
+        bundler,
+        esbuildRunner: Bundling.esbuildInstallation?.isLocal ? this.packageManager.runBinCommand('esbuild') : 'esbuild',
+        rolldownRunner: Bundling.rolldownInstallation?.isLocal ? this.packageManager.runBinCommand('rolldown') : 'rolldown',
+        tscRunner: tsc && (tsc.isLocal ? this.packageManager.runBinCommand('tsc') : 'tsc'),
+        osPlatform,
+      });
     const environment = this.props.environment ?? {};
     const cwd = this.projectRoot;
 
     return {
       tryBundle(outputDir: string) {
-        if (!Bundling.esbuildInstallation) {
-          process.stderr.write('esbuild cannot run locally. Switching to Docker bundling.\n');
+        const bundlerInstallation = bundler === Bundler.ROLLDOWN ? Bundling.rolldownInstallation : Bundling.esbuildInstallation;
+        const bundlerName = bundler === Bundler.ROLLDOWN ? 'rolldown' : 'esbuild';
+
+        if (!bundlerInstallation) {
+          process.stderr.write(`${bundlerName} cannot run locally. Switching to Docker bundling.\n`);
           return false;
         }
 
-        if (!Bundling.esbuildInstallation.version.startsWith(`${ESBUILD_MAJOR_VERSION}.`)) {
-          throw new ValidationError(`Expected esbuild version ${ESBUILD_MAJOR_VERSION}.x but got ${Bundling.esbuildInstallation.version}`, scope);
-        }
-
-        const localCommand = createLocalCommand(outputDir, Bundling.esbuildInstallation, Bundling.tscInstallation);
+        const localCommand = createLocalCommand(outputDir, bundlerInstallation, Bundling.tscInstallation);
 
         exec(
           osPlatform === 'win32' ? 'cmd' : 'bash',
-          [
-            osPlatform === 'win32' ? '/c' : '-c',
-            localCommand,
-          ],
+          [osPlatform === 'win32' ? '/c' : '-c', localCommand],
           {
             env: { ...process.env, ...environment },
-            stdio: [ // show output
+            stdio: [
+              // show output
               'ignore', // ignore stdio
               process.stderr, // redirect stdout to stderr
               'inherit', // inherit stderr
             ],
             cwd,
             windowsVerbatimArguments: osPlatform === 'win32',
-          });
+          },
+        );
 
         return true;
       },
@@ -357,7 +438,9 @@ export class Bundling implements cdk.BundlingOptions {
 interface BundlingCommandOptions {
   readonly inputDir: string;
   readonly outputDir: string;
+  readonly bundler: Bundler;
   readonly esbuildRunner: string;
+  readonly rolldownRunner: string;
   readonly tscRunner?: string;
   readonly osPlatform: NodeJS.Platform;
 }
@@ -370,7 +453,8 @@ class OsCommand {
 
   public write(filePath: string, data: string): string {
     if (this.osPlatform === 'win32') {
-      if (!data) { // if `data` is empty, echo a blank line, otherwise the file will contain a `^` character
+      if (!data) {
+        // if `data` is empty, echo a blank line, otherwise the file will contain a `^` character
         return `echo. > "${filePath}"`;
       }
       return `echo ^${data}^ > "${filePath}"`;
@@ -418,14 +502,14 @@ class OsCommand {
  * Chain commands
  */
 function chain(commands: string[]): string {
-  return commands.filter(c => !!c).join(' && ');
+  return commands.filter((c) => !!c).join(' && ');
 }
 
 /**
  * Platform specific path join
  */
 function osPathJoin(platform: NodeJS.Platform) {
-  return function(...paths: string[]): string {
+  return function (...paths: string[]): string {
     const joined = path.join(...paths);
     // If we are on win32 but need posix style paths
     if (os.platform() === 'win32' && platform !== 'win32') {
@@ -450,7 +534,13 @@ function toTarget(scope: IConstruct, runtime: Runtime): string {
 
 function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
   const args = new Array<string>();
-  const reSpecifiedKeys = ['--alias', '--drop', '--pure', '--log-override', '--out-extension'];
+  const reSpecifiedKeys = [
+    '--alias',
+    '--drop',
+    '--pure',
+    '--log-override',
+    '--out-extension',
+  ];
 
   for (const [key, value] of Object.entries(esbuildArgs)) {
     if (value === true || value === '') {
@@ -478,5 +568,7 @@ function isEsmRuntime(runtime: Runtime): boolean {
     Runtime.NODEJS_12_X,
   ];
 
-  return !unsupportedRuntimes.some((r) => {return r.family === runtime.family && r.name === runtime.name;});
+  return !unsupportedRuntimes.some((r) => {
+    return r.family === runtime.family && r.name === runtime.name;
+  });
 }
