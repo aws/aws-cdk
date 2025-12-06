@@ -5,6 +5,8 @@
       "stacks": [
         "aws-cdk-sqs-event-target"
       ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true,
       "allowDestroy": [
         "AWS::SQS::Queue",
         "AWS::SQS::QueuePolicy",
