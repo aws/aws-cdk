@@ -3,7 +3,7 @@ import { naming, util } from '@aws-cdk/spec2cdk';
 import { CDK_CORE, CONSTRUCTS } from '@aws-cdk/spec2cdk/lib/cdk/cdk';
 import type { Method } from '@cdklabs/typewriter';
 import { Module, ExternalModule, ClassType, Stability, Type, expr, stmt, ThingSymbol, $this, CallableProxy, NewExpression, $E } from '@cdklabs/typewriter';
-import { CDK_AWS_LOGS, MIXINS_LOGS_DELIVERY, REF_INTERFACES } from './helpers';
+import { MIXINS_LOGS_DELIVERY, REF_INTERFACES } from './helpers';
 import type { ServiceSubmoduleProps, SelectiveImport, LocatedModule } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 import { BaseServiceSubmodule, relativeImportPath } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 import type { AddServiceProps, LibraryBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
@@ -74,7 +74,6 @@ export class LogsDeliveryBuilder extends LibraryBuilder<LogsDeliveryBuilderServi
     CDK_CORE.import(module, 'cdk');
     REF_INTERFACES.import(module, 'interfaces');
     CONSTRUCTS.import(module, 'constructs');
-    CDK_AWS_LOGS.import(module, 'logs');
     MIXINS_CORE.import(module, 'core', { fromLocation: relativeImportPath(filePath, '../core') });
     MIXINS_LOGS_DELIVERY.import(module, 'logsDelivery', { fromLocation: '../aws-logs/logs-delivery' });
     submodule.constructLibModule.import(module, 'service');
@@ -163,7 +162,7 @@ class LogsHelper extends ClassType {
             const permissions = this.resource.vendedLogs!.permissionsVersion === 'V2' ? MIXINS_LOGS_DELIVERY.S3LogsDeliveryPermissionsVersion.V2 : MIXINS_LOGS_DELIVERY.S3LogsDeliveryPermissionsVersion.V1;
             toS3.addBody(stmt.block(
               stmt.ret(
-                mixin.newInstance(expr.str(this.logType), new NewExpression(MIXINS_LOGS_DELIVERY.S3LogsDelivery, paramS3,
+                mixin.newInstance(expr.str(this.logType), expr.str(dest), new NewExpression(MIXINS_LOGS_DELIVERY.S3LogsDelivery, paramS3,
                   expr.object({ permissionsVersion: permissions }))),
               ),
             ));
@@ -184,7 +183,7 @@ class LogsHelper extends ClassType {
 
             toCWL.addBody(stmt.block(
               stmt.ret(
-                mixin.newInstance(expr.str(this.logType), new NewExpression(MIXINS_LOGS_DELIVERY.LogGroupLogsDelivery, paramCWL)),
+                mixin.newInstance(expr.str(this.logType), expr.str(dest), new NewExpression(MIXINS_LOGS_DELIVERY.LogGroupLogsDelivery, paramCWL)),
               ),
             ));
             break;
@@ -204,7 +203,7 @@ class LogsHelper extends ClassType {
 
             toFH.addBody(stmt.block(
               stmt.ret(
-                mixin.newInstance(expr.str(this.logType), new NewExpression(MIXINS_LOGS_DELIVERY.FirehoseLogsDelivery, paramFH)),
+                mixin.newInstance(expr.str(this.logType), expr.str(dest), new NewExpression(MIXINS_LOGS_DELIVERY.FirehoseLogsDelivery, paramFH)),
               ),
             ));
             break;
@@ -219,7 +218,7 @@ class LogsHelper extends ClassType {
 
             toXRAY.addBody(stmt.block(
               stmt.ret(
-                mixin.newInstance(expr.str(this.logType), new NewExpression(MIXINS_LOGS_DELIVERY.XRayLogsDelivery)),
+                mixin.newInstance(expr.str(this.logType), expr.str(dest), new NewExpression(MIXINS_LOGS_DELIVERY.XRayLogsDelivery)),
               ),
             ));
             break;
@@ -287,6 +286,13 @@ class LogsMixin extends ClassType {
     });
 
     this.addProperty({
+      name: 'destinationType',
+      type: Type.STRING,
+      protected: true,
+      immutable: true,
+    });
+
+    this.addProperty({
       name: 'logDelivery',
       type: MIXINS_LOGS_DELIVERY.ILogsDelivery,
       protected: true,
@@ -305,15 +311,22 @@ class LogsMixin extends ClassType {
       documentation: 'Type of logs that are getting vended',
     });
 
+    const destinationType = init.addParameter({
+      name: 'destinationType',
+      type: Type.STRING,
+      documentation: 'Resource type of the delivery destination',
+    });
+
     const delivery = init.addParameter({
       name: 'logDelivery',
       type: MIXINS_LOGS_DELIVERY.ILogsDelivery,
-      documentation: 'Object in charge of setting up the delivery destination and delivery connection',
+      documentation: 'Object in charge of setting up the delivery source, delivery destination, and delivery connection',
     });
 
     init.addBody(
       expr.sym(new ThingSymbol('super', this.scope)).call(),
       stmt.assign($this.logType, logType),
+      stmt.assign($this.destinationType, destinationType),
       stmt.assign($this.logDelivery, delivery),
     );
   }
@@ -362,28 +375,13 @@ class LogsMixin extends ClassType {
     const sourceArn = expr.ident('sourceArn');
     const arnBuilder = $E(expr.sym(this.resourceType.symbol!)).callMethod(`arnFor${this.resource.name}`, resource);
 
-    const prefix = `${this.resource.name}Source-`;
-    const newCfnDeliverySource = CDK_AWS_LOGS.CfnDeliverySource.newInstance(
-      resource,
-      expr.strConcat(expr.str('CdkSource'), CDK_CORE.uniqueId(resource)),
-      expr.object({
-        name: expr.strConcat(expr.str(prefix), CDK_CORE.uniqueResourceName(resource, expr.object({
-          maxLength: expr.binOp(expr.num(60 - (prefix.length + 1)), '-', $this.logType.prop('length')),
-        })), expr.str('-'), $this.logType),
-        resourceArn: sourceArn,
-        logType: $this.logType,
-      }),
-    );
-    const deliverySource = expr.ident('deliverySource');
-
     method.addBody(
       stmt
         .if_(expr.not(CallableProxy.fromMethod(supports).invoke(resource)))
         .then(stmt.block(stmt.ret(resource))),
 
       stmt.constVar(sourceArn, arnBuilder),
-      stmt.constVar(deliverySource, newCfnDeliverySource),
-      $this.logDelivery.callMethod('bind', resource, deliverySource, sourceArn),
+      $this.logDelivery.callMethod('bind', resource, $this.logType, sourceArn),
 
       stmt.ret(resource),
     );

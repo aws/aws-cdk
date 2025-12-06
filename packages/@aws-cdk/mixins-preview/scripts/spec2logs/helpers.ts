@@ -15,10 +15,5 @@ class CdkRefInterfaces extends ExternalModule {
   public readonly IDeliveryStreamRef = Type.fromName(this, 'aws_kinesisfirehose.IDeliveryStreamRef');
 }
 
-class CdkAwsLogs extends ExternalModule {
-  public readonly CfnDeliverySource = Type.fromName(this, 'CfnDeliverySource');
-}
-
 export const MIXINS_LOGS_DELIVERY = new MixinsLogsDelivery('@aws-cdk/mixins-preview/services/aws-logs');
 export const REF_INTERFACES = new CdkRefInterfaces('aws-cdk-lib/interfaces');
-export const CDK_AWS_LOGS = new CdkAwsLogs('aws-cdk-lib/aws-logs');
