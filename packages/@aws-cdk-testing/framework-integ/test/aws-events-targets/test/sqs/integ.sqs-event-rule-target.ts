@@ -3,6 +3,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as cdk from 'aws-cdk-lib';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 // ---------------------------------
 // Define a rule that triggers an SNS topic every 1min.
@@ -30,4 +31,22 @@ event.addTarget(new targets.SqsQueue(queue, {
   deadLetterQueue,
 }));
 
-app.synth();
+// Test messageGroupId support for standard (non-FIFO) queues
+const standardQueue = new sqs.Queue(stack, 'StandardQueue');
+
+const standardQueueEvent = new events.Rule(stack, 'StandardQueueRule', {
+  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+});
+
+standardQueueEvent.addTarget(new targets.SqsQueue(standardQueue, {
+  messageGroupId: 'MyMessageGroupId',
+}));
+
+new IntegTest(app, 'integ.sqs-event-rule-target', {
+  testCases: [stack],
+  allowDestroy: [
+    'AWS::SQS::Queue',
+    'AWS::SQS::QueuePolicy',
+    'AWS::Events::Rule',
+  ],
+});
