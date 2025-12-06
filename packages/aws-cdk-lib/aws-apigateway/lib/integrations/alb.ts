@@ -81,14 +81,11 @@ export class AlbIntegration extends Integration {
   }
 
   public bind(method: Method): IntegrationConfig {
-    // Determine VPC from ALB or vpcLink
-    let vpc: ec2.IVpc | undefined = this.albProps.vpcLink?.vpc;
-    if (!vpc && (this.alb instanceof elbv2.ApplicationLoadBalancer)) {
-      vpc = this.alb.vpc;
-    }
+    // Determine VPC from vpcLink or ALB
+    const vpc = this.albProps.vpcLink?.vpc ?? this.alb.vpc;
     if (!vpc) {
       throw new ValidationError(
-        'The vpcLink property must be specified when using an imported Application Load Balancer.',
+        'Cannot determine VPC from the imported Application Load Balancer. Specify the vpc property when importing the ALB, or provide a vpcLink to AlbIntegration.',
         method,
       );
     }
