@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6e69f749b55f133855ea1ed1e46826896bbaa6585e2b83b70553b39d17a7489f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7dc54ac692b80bcb0251905eb72c91807bad3e9dac09b3e4c38fdea1c4538663.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,7 +37,10 @@
         "/test-efs-permission-integ/Vpc": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "maxAzs": "*",
+              "natGateways": "*"
+            }
           }
         ],
         "/test-efs-permission-integ/Vpc/Resource": [
@@ -144,14 +147,6 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
           }
         ],
         "/test-efs-permission-integ/Vpc/PublicSubnet2/Subnet": [
@@ -176,18 +171,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
-          }
-        ],
-        "/test-efs-permission-integ/Vpc/PublicSubnet2/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2EIP3C605A87"
-          }
-        ],
-        "/test-efs-permission-integ/Vpc/PublicSubnet2/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2NATGateway9182C01D"
           }
         ],
         "/test-efs-permission-integ/Vpc/PrivateSubnet1": [
@@ -339,10 +322,11 @@
         "/test-efs-permission-integ/FileSystem": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "removalPolicy": "destroy"
-            }
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
         "/test-efs-permission-integ/FileSystem/Resource": [
@@ -365,7 +349,7 @@
                 "*",
                 {},
                 "*",
-                false
+                true
               ]
             }
           },
@@ -376,7 +360,7 @@
                 "*",
                 {},
                 "*",
-                false
+                true
               ]
             }
           },
@@ -387,7 +371,7 @@
                 "*",
                 {},
                 "*",
-                false
+                true
               ]
             }
           }
@@ -398,22 +382,22 @@
             "data": "FileSystemEfsSecurityGroup212D3ACB"
           }
         ],
-        "/test-efs-permission-integ/FileSystem/EfsSecurityGroup/from testefspermissionintegWriteInstanceInstanceSecurityGroup8A71A4B2:2049": [
+        "/test-efs-permission-integ/FileSystem/EfsSecurityGroup/from testefspermissionintegWriteLambdaSecurityGroup0BB6D828:2049": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FileSystemEfsSecurityGroupfromtestefspermissionintegWriteInstanceInstanceSecurityGroup8A71A4B22049255111EA"
+            "data": "FileSystemEfsSecurityGroupfromtestefspermissionintegWriteLambdaSecurityGroup0BB6D82820497CCBD8C9"
           }
         ],
-        "/test-efs-permission-integ/FileSystem/EfsSecurityGroup/from testefspermissionintegReadInstanceInstanceSecurityGroupD14710ED:2049": [
+        "/test-efs-permission-integ/FileSystem/EfsSecurityGroup/from testefspermissionintegReadLambdaSecurityGroup619495CD:2049": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FileSystemEfsSecurityGroupfromtestefspermissionintegReadInstanceInstanceSecurityGroupD14710ED20494CAE7A73"
+            "data": "FileSystemEfsSecurityGroupfromtestefspermissionintegReadLambdaSecurityGroup619495CD2049F79DDDAB"
           }
         ],
-        "/test-efs-permission-integ/FileSystem/EfsSecurityGroup/from testefspermissionintegAnonymousInstanceInstanceSecurityGroup64A7B2BD:2049": [
+        "/test-efs-permission-integ/FileSystem/EfsSecurityGroup/from testefspermissionintegAnonymousLambdaSecurityGroup59418B90:2049": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FileSystemEfsSecurityGroupfromtestefspermissionintegAnonymousInstanceInstanceSecurityGroup64A7B2BD2049AF74717E"
+            "data": "FileSystemEfsSecurityGroupfromtestefspermissionintegAnonymousLambdaSecurityGroup59418B902049D48A0291"
           }
         ],
         "/test-efs-permission-integ/FileSystem/EfsMountTarget-PrivateSubnet1": [
@@ -428,38 +412,160 @@
             "data": "FileSystemEfsMountTargetPrivateSubnet265F3ED67"
           }
         ],
-        "/test-efs-permission-integ/WriteInstance": [
+        "/test-efs-permission-integ/FileSystem/AccessPoint": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "vpc": "*",
-              "instanceType": "*",
-              "machineImage": "*",
-              "ssmSessionPermissions": true,
-              "init": "*",
-              "initOptions": {
-                "timeout": "*"
+              "fileSystem": "*",
+              "path": "*",
+              "createAcl": {
+                "ownerGid": "*",
+                "ownerUid": "*",
+                "permissions": "*"
+              },
+              "posixUser": {
+                "gid": "*",
+                "uid": "*"
               }
+            }
+          }
+        ],
+        "/test-efs-permission-integ/FileSystem/AccessPoint/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystemAccessPointF8178182"
+          }
+        ],
+        "/test-efs-permission-integ/WriteLambda": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*",
+              "vpc": "*",
+              "filesystem": "*",
+              "timeout": "*"
+            }
+          }
+        ],
+        "/test-efs-permission-integ/WriteLambda/ServiceRole": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
             }
           },
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "applyCloudFormationInit": [
-                {},
-                {
-                  "timeout": "*"
-                }
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           }
         ],
-        "/test-efs-permission-integ/WriteInstance/InstanceSecurityGroup": [
+        "/test-efs-permission-integ/WriteLambda/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/test-efs-permission-integ/WriteLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WriteLambdaServiceRole903EC6B6"
+          }
+        ],
+        "/test-efs-permission-integ/WriteLambda/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/test-efs-permission-integ/WriteLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WriteLambdaServiceRoleDefaultPolicyEDE3046D"
+          }
+        ],
+        "/test-efs-permission-integ/WriteLambda/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "vpc": "*",
-              "allowAllOutbound": true,
+              "description": "*",
+              "allowAllOutbound": "*",
               "allowAllIpv6Outbound": "*"
             }
           },
@@ -470,36 +576,58 @@
                 "*",
                 {},
                 "*",
-                true
+                false
               ]
             }
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
           }
         ],
-        "/test-efs-permission-integ/WriteInstance/InstanceSecurityGroup/Resource": [
+        "/test-efs-permission-integ/WriteLambda/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WriteInstanceInstanceSecurityGroupBB94A852"
+            "data": "WriteLambdaSecurityGroup4DD8D986"
           }
         ],
-        "/test-efs-permission-integ/WriteInstance/InstanceRole": [
+        "/test-efs-permission-integ/WriteLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WriteLambda0E72B4A4"
+          }
+        ],
+        "/test-efs-permission-integ/WriteLambda/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
+              "logGroupName": "*"
             }
-          },
+          }
+        ],
+        "/test-efs-permission-integ/WriteLambda/LogGroup/Resource": [
           {
-            "type": "aws:cdk:analytics:method",
+            "type": "aws:cdk:logicalId",
+            "data": "WriteLambdaLogGroupED176471"
+          }
+        ],
+        "/test-efs-permission-integ/ReadLambda": [
+          {
+            "type": "aws:cdk:analytics:construct",
             "data": {
-              "addManagedPolicy": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
+              "runtime": "*",
+              "handler": "*",
+              "code": "*",
+              "vpc": "*",
+              "filesystem": "*",
+              "timeout": "*"
             }
+          }
+        ],
+        "/test-efs-permission-integ/ReadLambda/ServiceRole": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -522,6 +650,14 @@
             "data": {
               "attachInlinePolicy": [
                 "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
               ]
             }
           },
@@ -534,19 +670,19 @@
             }
           }
         ],
-        "/test-efs-permission-integ/WriteInstance/InstanceRole/ImportInstanceRole": [
+        "/test-efs-permission-integ/ReadLambda/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/test-efs-permission-integ/WriteInstance/InstanceRole/Resource": [
+        "/test-efs-permission-integ/ReadLambda/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WriteInstanceInstanceRole74D7BFCC"
+            "data": "ReadLambdaServiceRole786C9B4A"
           }
         ],
-        "/test-efs-permission-integ/WriteInstance/InstanceRole/DefaultPolicy": [
+        "/test-efs-permission-integ/ReadLambda/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -582,64 +718,29 @@
                 {}
               ]
             }
-          }
-        ],
-        "/test-efs-permission-integ/WriteInstance/InstanceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "WriteInstanceInstanceRoleDefaultPolicy692CCD00"
-          }
-        ],
-        "/test-efs-permission-integ/WriteInstance/InstanceProfile": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "WriteInstanceInstanceProfile6EEEF088"
-          }
-        ],
-        "/test-efs-permission-integ/WriteInstance/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "WriteInstance7FF20E8Eb90cd3a29a6c7625"
-          }
-        ],
-        "/test-efs-permission-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-arm64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61arm64C96584B6F00A464EAD1953AFF4B05118Parameter"
-          }
-        ],
-        "/test-efs-permission-integ/ReadInstance": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "instanceType": "*",
-              "machineImage": "*",
-              "ssmSessionPermissions": true,
-              "init": "*",
-              "initOptions": {
-                "timeout": "*"
-              }
-            }
           },
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "applyCloudFormationInit": [
-                {},
-                {
-                  "timeout": "*"
-                }
+              "addStatements": [
+                {}
               ]
             }
           }
         ],
-        "/test-efs-permission-integ/ReadInstance/InstanceSecurityGroup": [
+        "/test-efs-permission-integ/ReadLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReadLambdaServiceRoleDefaultPolicy6518FF35"
+          }
+        ],
+        "/test-efs-permission-integ/ReadLambda/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "vpc": "*",
-              "allowAllOutbound": true,
+              "description": "*",
+              "allowAllOutbound": "*",
               "allowAllIpv6Outbound": "*"
             }
           },
@@ -650,36 +751,58 @@
                 "*",
                 {},
                 "*",
-                true
+                false
               ]
             }
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
           }
         ],
-        "/test-efs-permission-integ/ReadInstance/InstanceSecurityGroup/Resource": [
+        "/test-efs-permission-integ/ReadLambda/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ReadInstanceInstanceSecurityGroup4E6DE54D"
+            "data": "ReadLambdaSecurityGroupC61CE255"
           }
         ],
-        "/test-efs-permission-integ/ReadInstance/InstanceRole": [
+        "/test-efs-permission-integ/ReadLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReadLambda25A29444"
+          }
+        ],
+        "/test-efs-permission-integ/ReadLambda/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
+              "logGroupName": "*"
             }
-          },
+          }
+        ],
+        "/test-efs-permission-integ/ReadLambda/LogGroup/Resource": [
           {
-            "type": "aws:cdk:analytics:method",
+            "type": "aws:cdk:logicalId",
+            "data": "ReadLambdaLogGroupE705D38C"
+          }
+        ],
+        "/test-efs-permission-integ/AnonymousLambda": [
+          {
+            "type": "aws:cdk:analytics:construct",
             "data": {
-              "addManagedPolicy": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
+              "runtime": "*",
+              "handler": "*",
+              "code": "*",
+              "vpc": "*",
+              "filesystem": "*",
+              "timeout": "*"
             }
+          }
+        ],
+        "/test-efs-permission-integ/AnonymousLambda/ServiceRole": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -714,19 +837,19 @@
             }
           }
         ],
-        "/test-efs-permission-integ/ReadInstance/InstanceRole/ImportInstanceRole": [
+        "/test-efs-permission-integ/AnonymousLambda/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/test-efs-permission-integ/ReadInstance/InstanceRole/Resource": [
+        "/test-efs-permission-integ/AnonymousLambda/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ReadInstanceInstanceRoleFE151AE8"
+            "data": "AnonymousLambdaServiceRole53D2562D"
           }
         ],
-        "/test-efs-permission-integ/ReadInstance/InstanceRole/DefaultPolicy": [
+        "/test-efs-permission-integ/AnonymousLambda/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -764,56 +887,19 @@
             }
           }
         ],
-        "/test-efs-permission-integ/ReadInstance/InstanceRole/DefaultPolicy/Resource": [
+        "/test-efs-permission-integ/AnonymousLambda/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ReadInstanceInstanceRoleDefaultPolicy54DA36A2"
+            "data": "AnonymousLambdaServiceRoleDefaultPolicyDBBB8B6E"
           }
         ],
-        "/test-efs-permission-integ/ReadInstance/InstanceProfile": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ReadInstanceInstanceProfile8FAC51BA"
-          }
-        ],
-        "/test-efs-permission-integ/ReadInstance/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ReadInstanceE94183C76867391ec2104698"
-          }
-        ],
-        "/test-efs-permission-integ/AnonymousInstance": [
+        "/test-efs-permission-integ/AnonymousLambda/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "vpc": "*",
-              "instanceType": "*",
-              "machineImage": "*",
-              "ssmSessionPermissions": true,
-              "init": "*",
-              "initOptions": {
-                "timeout": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "applyCloudFormationInit": [
-                {},
-                {
-                  "timeout": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/test-efs-permission-integ/AnonymousInstance/InstanceSecurityGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "allowAllOutbound": true,
+              "description": "*",
+              "allowAllOutbound": "*",
               "allowAllIpv6Outbound": "*"
             }
           },
@@ -824,138 +910,57 @@
                 "*",
                 {},
                 "*",
-                true
+                false
               ]
             }
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
           }
         ],
-        "/test-efs-permission-integ/AnonymousInstance/InstanceSecurityGroup/Resource": [
+        "/test-efs-permission-integ/AnonymousLambda/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AnonymousInstanceInstanceSecurityGroup648A5675"
+            "data": "AnonymousLambdaSecurityGroupF33010B2"
           }
         ],
-        "/test-efs-permission-integ/AnonymousInstance/InstanceRole": [
+        "/test-efs-permission-integ/AnonymousLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnonymousLambda6BEDD8C7"
+          }
+        ],
+        "/test-efs-permission-integ/AnonymousLambda/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addManagedPolicy": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
+              "logGroupName": "*"
             }
           }
         ],
-        "/test-efs-permission-integ/AnonymousInstance/InstanceRole/ImportInstanceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/test-efs-permission-integ/AnonymousInstance/InstanceRole/Resource": [
+        "/test-efs-permission-integ/AnonymousLambda/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AnonymousInstanceInstanceRole174145F6"
+            "data": "AnonymousLambdaLogGroupE319B132"
           }
         ],
-        "/test-efs-permission-integ/AnonymousInstance/InstanceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/test-efs-permission-integ/AnonymousInstance/InstanceRole/DefaultPolicy/Resource": [
+        "/test-efs-permission-integ/Exports/Output{\"Ref\":\"WriteLambda0E72B4A4\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AnonymousInstanceInstanceRoleDefaultPolicy7A752F3D"
+            "data": "ExportsOutputRefWriteLambda0E72B4A42765E7AF"
           }
         ],
-        "/test-efs-permission-integ/AnonymousInstance/InstanceProfile": [
+        "/test-efs-permission-integ/Exports/Output{\"Ref\":\"ReadLambda25A29444\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AnonymousInstanceInstanceProfile5C6B5DC3"
+            "data": "ExportsOutputRefReadLambda25A294445B02A7B5"
           }
         ],
-        "/test-efs-permission-integ/AnonymousInstance/Resource": [
+        "/test-efs-permission-integ/Exports/Output{\"Ref\":\"AnonymousLambda6BEDD8C7\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AnonymousInstance51D4C7152602e043eee6300d"
-          }
-        ],
-        "/test-efs-permission-integ/Exports/Output{\"Ref\":\"AnonymousInstance51D4C7152602e043eee6300d\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefAnonymousInstance51D4C7152602e043eee6300d7C50D25E"
-          }
-        ],
-        "/test-efs-permission-integ/Exports/Output{\"Ref\":\"FileSystem8A8E25C0\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefFileSystem8A8E25C0B454ACF3"
-          }
-        ],
-        "/test-efs-permission-integ/Exports/Output{\"Ref\":\"ReadInstanceE94183C76867391ec2104698\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefReadInstanceE94183C76867391ec2104698F9816D55"
+            "data": "ExportsOutputRefAnonymousLambda6BEDD8C7FD349EA7"
           }
         ],
         "/test-efs-permission-integ/BootstrapVersion": [
@@ -990,7 +995,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cc5b1ca406f6e4d7bdecd9ecc44bbeadbfa5f180cab833c9f16c9433bdd7eb93.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/37648e6376d635c9dbf4cd9662cd6fd1d755795fc8a7a41fcabb3c19870d8e92.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1007,7 +1012,7 @@
         "EfsPermissionTestDefaultTestDeployAssert4DFC2F97.assets"
       ],
       "metadata": {
-        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMsendCommand03c1b116df63115fe31278034644bb0d/Default": [
+        "/EfsPermissionTest/DefaultTest/DeployAssert/LambdaInvoke1fd03b5e5f77a064c3e1bb1d46575f2c/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1021,10 +1026,22 @@
             "data": "*"
           }
         ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMsendCommand03c1b116df63115fe31278034644bb0d/Default/Default": [
+        "/EfsPermissionTest/DefaultTest/DeployAssert/LambdaInvoke1fd03b5e5f77a064c3e1bb1d46575f2c/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMsendCommand03c1b116df63115fe31278034644bb0d"
+            "data": "LambdaInvoke1fd03b5e5f77a064c3e1bb1d46575f2c"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/LambdaInvoke1fd03b5e5f77a064c3e1bb1d46575f2c/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke1fd03b5e5f77a064c3e1bb1d46575f2cInvoke7150CDEA"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/LambdaInvoke1fd03b5e5f77a064c3e1bb1d46575f2c/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke1fd03b5e5f77a064c3e1bb1d46575f2c"
           }
         ],
         "/EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -1039,7 +1056,7 @@
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/Default": [
+        "/EfsPermissionTest/DefaultTest/DeployAssert/LambdaInvoke60d18b84c11c66e9414556fc35df6d38/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1053,67 +1070,25 @@
             "data": "*"
           }
         ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/Default/Default": [
+        "/EfsPermissionTest/DefaultTest/DeployAssert/LambdaInvoke60d18b84c11c66e9414556fc35df6d38/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef"
+            "data": "LambdaInvoke60d18b84c11c66e9414556fc35df6d38"
           }
         ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/WaitFor/IsCompleteProvider/Invoke": [
+        "/EfsPermissionTest/DefaultTest/DeployAssert/LambdaInvoke60d18b84c11c66e9414556fc35df6d38/Invoke": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cefWaitForIsCompleteProviderInvoke0E3B9656"
+            "data": "LambdaInvoke60d18b84c11c66e9414556fc35df6d38Invoke3518074E"
           }
         ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/WaitFor/TimeoutProvider/Invoke": [
+        "/EfsPermissionTest/DefaultTest/DeployAssert/LambdaInvoke60d18b84c11c66e9414556fc35df6d38/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cefWaitForTimeoutProviderInvokeB2FF1355"
+            "data": "AssertionResultsLambdaInvoke60d18b84c11c66e9414556fc35df6d38"
           }
         ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cefWaitForRoleCB1932A9"
-          }
-        ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cefWaitFor25410491"
-          }
-        ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef"
-          }
-        ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
-          }
-        ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
-          }
-        ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
-          }
-        ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
-          }
-        ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMsendCommand1c27023c69a32461de2a0ddfc884d23f/Default": [
+        "/EfsPermissionTest/DefaultTest/DeployAssert/LambdaInvokefdb04e42910c7dcf6256870d54fe4a59/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1127,13 +1102,25 @@
             "data": "*"
           }
         ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMsendCommand1c27023c69a32461de2a0ddfc884d23f/Default/Default": [
+        "/EfsPermissionTest/DefaultTest/DeployAssert/LambdaInvokefdb04e42910c7dcf6256870d54fe4a59/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMsendCommand1c27023c69a32461de2a0ddfc884d23f"
+            "data": "LambdaInvokefdb04e42910c7dcf6256870d54fe4a59"
           }
         ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/Default": [
+        "/EfsPermissionTest/DefaultTest/DeployAssert/LambdaInvokefdb04e42910c7dcf6256870d54fe4a59/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvokefdb04e42910c7dcf6256870d54fe4a59InvokeACED3029"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/LambdaInvokefdb04e42910c7dcf6256870d54fe4a59/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvokefdb04e42910c7dcf6256870d54fe4a59"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/LambdaInvoke069b5aed588f50b50dfb3fae8f2be816/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1147,40 +1134,22 @@
             "data": "*"
           }
         ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/Default/Default": [
+        "/EfsPermissionTest/DefaultTest/DeployAssert/LambdaInvoke069b5aed588f50b50dfb3fae8f2be816/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2"
+            "data": "LambdaInvoke069b5aed588f50b50dfb3fae8f2be816"
           }
         ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/WaitFor/IsCompleteProvider/Invoke": [
+        "/EfsPermissionTest/DefaultTest/DeployAssert/LambdaInvoke069b5aed588f50b50dfb3fae8f2be816/Invoke": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2WaitForIsCompleteProviderInvoke0043BB8D"
+            "data": "LambdaInvoke069b5aed588f50b50dfb3fae8f2be816InvokeA9153515"
           }
         ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/WaitFor/TimeoutProvider/Invoke": [
+        "/EfsPermissionTest/DefaultTest/DeployAssert/LambdaInvoke069b5aed588f50b50dfb3fae8f2be816/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2WaitForTimeoutProviderInvokeABA3643B"
-          }
-        ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2WaitForRoleA472C364"
-          }
-        ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2WaitForBC48DF7E"
-          }
-        ],
-        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2"
+            "data": "AssertionResultsLambdaInvoke069b5aed588f50b50dfb3fae8f2be816"
           }
         ],
         "/EfsPermissionTest/DefaultTest/DeployAssert/BootstrapVersion": [
@@ -1210,6 +1179,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -1228,6 +1198,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -1339,7 +1310,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -1678,10 +1649,25 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }

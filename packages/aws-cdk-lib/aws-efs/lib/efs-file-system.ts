@@ -815,8 +815,24 @@ export class FileSystem extends FileSystemBase {
           const denyAnonymousAccessByDefault = denyAnonymousAccessFlag || this._grantedClient;
           const allowAnonymousAccess = props.allowAnonymousAccess ?? !denyAnonymousAccessByDefault;
           if (!allowAnonymousAccess) {
+            // Create a simple ALLOW policy to block anonymous access.
+            // Per AWS documentation, when NO file system policy exists, EFS uses its default behavior
+            // which allows anonymous NFS access without IAM authentication. By creating ANY policy,
+            // EFS switches to IAM enforcement mode, which blocks anonymous clients (they have no IAM
+            // credentials to authenticate).
+            //
+            // We use AccountRootPrincipal instead of AnyPrincipal to restrict access to IAM principals
+            // within this AWS account only. This prevents unintended cross-account access while still
+            // allowing same-account IAM principals to access the file system when explicitly granted
+            // via grantRead(), grantReadWrite(), or grantRootAccess() methods.
+            //
+            // Note: ClientMount is intentionally NOT included in this resource policy. IAM principals
+            // must be explicitly granted ClientMount via identity-based permissions (using grant methods)
+            // to mount the file system. This follows the principle of least privilege.
+            //
+            // See: https://docs.aws.amazon.com/efs/latest/ug/iam-access-control-nfs-efs.html
             this.addToResourcePolicy(new iam.PolicyStatement({
-              principals: [new iam.AnyPrincipal()],
+              principals: [new iam.AccountRootPrincipal()],
               actions: [
                 ClientAction.WRITE,
                 ClientAction.ROOT_ACCESS,
