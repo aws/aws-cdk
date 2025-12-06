@@ -1,10 +1,10 @@
+import * as integ from '@aws-cdk/integ-tests-alpha';
+import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
+import { App, Stack, StackProps } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
-import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
-import * as eks from '../lib';
 import { Construct } from 'constructs';
-import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as eks from '../lib';
 
 interface EksMinimalClusterProps {
   readonly vpc: ec2.Vpc;

@@ -198,7 +198,7 @@ export class Method extends Resource {
 
     // do not use the default authorizer config in case if the provided authorizer type is None
     const authorizer =
-        options.authorizationType === AuthorizationType.NONE
+      options.authorizationType === AuthorizationType.NONE
         && options.authorizer == undefined ? undefined : options.authorizer || defaultMethodOptions.authorizer;
     const authorizerId = authorizer?.authorizerId ? authorizer.authorizerId : undefined;
 
@@ -354,7 +354,7 @@ export class Method extends Resource {
       credentials = options.credentialsRole.roleArn;
     } else if (options.credentialsPassthrough) {
       // arn:aws:iam::*:user/*
-      // eslint-disable-next-line max-len
+
       credentials = Stack.of(this).formatArn({ service: 'iam', region: '', account: '*', resource: 'user', arnFormat: ArnFormat.SLASH_RESOURCE_NAME, resourceName: '*' });
     }
 

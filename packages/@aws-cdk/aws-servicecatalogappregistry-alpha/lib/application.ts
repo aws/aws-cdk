@@ -1,14 +1,14 @@
 import { CfnResourceShare } from 'aws-cdk-lib/aws-ram';
+import { CfnApplication, CfnAttributeGroupAssociation, CfnResourceAssociation } from 'aws-cdk-lib/aws-servicecatalogappregistry';
 import * as cdk from 'aws-cdk-lib/core';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 import { StageStackAssociator } from './aspects/stack-associator';
 import { AttributeGroup, IAttributeGroup } from './attribute-group';
 import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } from './common';
 import { isAccountUnresolved } from './private/utils';
 import { InputValidator } from './private/validation';
-import { CfnApplication, CfnAttributeGroupAssociation, CfnResourceAssociation } from 'aws-cdk-lib/aws-servicecatalogappregistry';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 const APPLICATION_READ_ONLY_RAM_PERMISSION_ARN = `arn:${cdk.Aws.PARTITION}:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly`;
 const APPLICATION_ALLOW_ACCESS_RAM_PERMISSION_ARN = `arn:${cdk.Aws.PARTITION}:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation`;
@@ -335,7 +335,7 @@ export class Application extends ApplicationBase {
     this.nodeAddress = cdk.Names.nodeUniqueId(application.node);
 
     this.applicationManagerUrl =
-        `https://${this.env.region}.console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-${this.applicationName}`;
+      `https://${this.env.region}.console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-${this.applicationName}`;
   }
 
   protected generateUniqueHash(resourceAddress: string): string {
