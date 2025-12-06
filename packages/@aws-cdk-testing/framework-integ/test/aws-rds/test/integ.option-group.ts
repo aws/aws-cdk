@@ -1,0 +1,37 @@
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as cdk from 'aws-cdk-lib';
+import {
+  DatabaseInstanceEngine,
+  OptionGroup,
+  OracleEngineVersion,
+} from 'aws-cdk-lib/aws-rds';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+
+class OptionGroupTestStack extends cdk.Stack {
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
+    const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 2 });
+
+    new OptionGroup(this, 'OptionGroup', {
+      engine: DatabaseInstanceEngine.oracleSe2({
+        version: OracleEngineVersion.VER_19,
+      }),
+      description: 'Custom Option Grouptest',
+      name: 'custom-og-name',
+      configurations: [
+        {
+          name: 'OEM',
+          port: 1158,
+          vpc,
+        },
+      ],
+    });
+  }
+}
+
+const app = new cdk.App();
+const stack = new OptionGroupTestStack(app, 'aws-rds-option-group');
+new IntegTest(app, 'OptionGroupTest', {
+  testCases: [stack],
+});
+app.synth();
