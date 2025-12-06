@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet1"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PublicSubnet2"
      }
     ]
    },
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-elbv2-integ/VPC"
+      "Value": "aws-cdk-elbv2-integ-enable-acl/VPC"
      }
     ]
    }
@@ -391,9 +391,125 @@
     }
    }
   },
+  "VPCRestrictDefaultSecurityGroupCustomResource59474679": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "VPCB9E5F0B4",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": {
+     "Ref": "AWS::AccountId"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ec2:us-west-2:",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":security-group/",
+             {
+              "Fn::GetAtt": [
+               "VPCB9E5F0B4",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2"
+     },
+     "S3Key": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ]
+  },
   "Bucket83908E77": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
+    "AccessControl": "LogDeliveryWrite",
+    "OwnershipControls": {
+     "Rules": [
+      {
+       "ObjectOwnership": "ObjectWriter"
+      }
+     ]
+    },
     "Tags": [
      {
       "Key": "aws-cdk:auto-delete-objects",
@@ -752,7 +868,7 @@
   "LBSecurityGroup8A41EA2B": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "Automatically created Security Group for ELB awscdkelbv2integLB9950B1E4",
+    "GroupDescription": "Automatically created Security Group for ELB awscdkelbv2integenableaclLB206B386F",
     "SecurityGroupEgress": [
      {
       "CidrIp": "255.255.255.255/32",
@@ -822,21 +938,7 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   },
-   "DependsOn": [
-    "VPCPublicSubnet1DefaultRoute91CEF279",
-    "VPCPublicSubnet1EIP6AD938E8",
-    "VPCPublicSubnet1NATGatewayE0556630",
-    "VPCPublicSubnet1RouteTableFEE4B781",
-    "VPCPublicSubnet1RouteTableAssociation0B0896DC",
-    "VPCPublicSubnet1SubnetB4246D30",
-    "VPCPublicSubnet2DefaultRouteB7481BBA",
-    "VPCPublicSubnet2EIP4947BC00",
-    "VPCPublicSubnet2NATGateway3C070193",
-    "VPCPublicSubnet2RouteTable6F1A15F1",
-    "VPCPublicSubnet2RouteTableAssociation5A808732",
-    "VPCPublicSubnet2Subnet74179F39"
-   ]
+   }
   }
  },
  "Parameters": {
