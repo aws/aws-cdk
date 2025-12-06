@@ -1,7 +1,7 @@
 import { Stack } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { AgentCollaborator } from '../../../bedrock/agents/agent-collaborator';
 import { IAgentAlias } from '../../../bedrock/agents/agent-alias';
+import { AgentCollaborator } from '../../../bedrock/agents/agent-collaborator';
 
 describe('AgentCollaborator', () => {
   let stack: Stack;

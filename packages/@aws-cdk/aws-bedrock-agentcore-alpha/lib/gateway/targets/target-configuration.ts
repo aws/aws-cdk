@@ -1,7 +1,7 @@
+import * as fs from 'fs';
 import { Token } from 'aws-cdk-lib';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
-import * as fs from 'fs';
 import { IGateway } from '../gateway-base';
 import { ApiSchema, AssetApiSchema } from './schema/api-schema';
 import { ToolSchema } from './schema/tool-schema';
