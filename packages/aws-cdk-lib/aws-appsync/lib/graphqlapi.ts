@@ -8,7 +8,7 @@ import { IUserPool } from '../../aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, IRoleRef } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack, Token, ValidationError } from '../../core';
+import { Annotations, CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -245,6 +245,68 @@ export interface LogConfig {
 }
 
 /**
+ * Controls how data source metrics will be emitted to CloudWatch.
+ */
+export enum DataSourceLevelMetricsBehavior {
+  /**
+   * Records and emits metric data for all data sources in the request.
+   */
+  FULL_REQUEST_DATA_SOURCE_METRICS = 'FULL_REQUEST_DATA_SOURCE_METRICS',
+  /**
+   * Records and emits metric data for data sources that have the MetricsConfig value set to ENABLED.
+   */
+  PER_DATA_SOURCE_METRICS = 'PER_DATA_SOURCE_METRICS',
+}
+
+/**
+ * Controls how operation metrics will be emitted to CloudWatch.
+ */
+export enum OperationLevelMetricsConfig {
+  /**
+   * Sends operation metrics to CloudWatch.
+   */
+  ENABLED = 'ENABLED',
+  /**
+   * Does not send operation metrics to CloudWatch.
+   */
+  DISABLED = 'DISABLED',
+}
+
+/**
+ * Controls how resolver metrics will be emitted to CloudWatch.
+ */
+export enum ResolverLevelMetricsBehavior {
+  /**
+   * Records and emits metric data for all resolvers in the request.
+   */
+  FULL_REQUEST_RESOLVER_METRICS = 'FULL_REQUEST_RESOLVER_METRICS',
+  /**
+   * Records and emits metric data for resolvers that have the MetricsConfig value set to ENABLED.
+   */
+  PER_RESOLVER_METRICS = 'PER_RESOLVER_METRICS',
+}
+
+/**
+ * Enhanced metrics configuration for AppSync
+ */
+export interface EnhancedMetricsConfig {
+  /**
+   * Controls how data source metrics will be emitted to CloudWatch.
+   */
+  readonly dataSourceLevelMetricsBehavior: DataSourceLevelMetricsBehavior;
+  /**
+   * Controls how operation metrics will be emitted to CloudWatch.
+   *
+   * @default disabled
+   */
+  readonly operationLevelMetricsConfig?: OperationLevelMetricsConfig;
+  /**
+   * Controls how resolver metrics will be emitted to CloudWatch.
+   */
+  readonly resolverLevelMetricsBehavior: ResolverLevelMetricsBehavior;
+}
+
+/**
  * Domain name configuration for AppSync
  */
 export interface DomainOptions {
@@ -450,6 +512,13 @@ export interface GraphqlApiProps {
    * @default - No owner contact.
    */
   readonly ownerContact?: string;
+
+  /**
+   * Enables and controls the enhanced metrics feature.
+   *
+   * @default - Enhanced metrics disabled.
+   */
+  readonly enhancedMetricsConfig?: EnhancedMetricsConfig;
 }
 
 /**
@@ -676,6 +745,7 @@ export class GraphqlApi extends GraphqlApiBase {
       resolverCountLimit: props.resolverCountLimit,
       environmentVariables: Lazy.any({ produce: () => this.renderEnvironmentVariables() }),
       ownerContact: props.ownerContact,
+      enhancedMetricsConfig: this.setupEnhancedMetricsConfig(props.enhancedMetricsConfig),
     });
 
     this.apiId = this.api.attrApiId;
@@ -918,6 +988,25 @@ export class GraphqlApi extends GraphqlApiBase {
         lambdaAuthorizerConfig: this.setupLambdaAuthorizerConfig(mode.lambdaAuthorizerConfig),
       },
     ], []);
+  }
+
+  private setupEnhancedMetricsConfig(config?: EnhancedMetricsConfig) {
+    if (!config) return undefined;
+    const dataSourceLevelMetricsBehavior = config.dataSourceLevelMetricsBehavior;
+    if (dataSourceLevelMetricsBehavior === DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS ) {
+      Annotations.of(this).addWarningV2(this.node.id, 'When DataSourceLevelMetricsBehavior is set to FULL_REQUEST_DATA_SOURCE_METRICS, metrics are sent to CloudWatch for all data sources used in the request, regardless of whether a data source’s MetricsConfig is set to ENABLED or DISABLED.');
+    }
+    const operationLevelMetricsEnabled = config.operationLevelMetricsConfig
+      ? config.operationLevelMetricsConfig: OperationLevelMetricsConfig.DISABLED;
+    const resolverLevelMetricsBehavior = config.resolverLevelMetricsBehavior;
+    if (resolverLevelMetricsBehavior === ResolverLevelMetricsBehavior.FULL_REQUEST_RESOLVER_METRICS ) {
+      Annotations.of(this).addWarningV2(this.node.id, 'When ResolverLevelMetricsBehavior is set to FULL_REQUEST_RESOLVER_METRICS, metrics are sent to CloudWatch for all resolvers used in the request, regardless of whether a resolver’s MetricsConfig is set to ENABLED or DISABLED.');
+    }
+    return {
+      dataSourceLevelMetricsBehavior: dataSourceLevelMetricsBehavior,
+      operationLevelMetricsConfig: operationLevelMetricsEnabled,
+      resolverLevelMetricsBehavior: resolverLevelMetricsBehavior,
+    };
   }
 
   private createAPIKey(config?: ApiKeyConfig) {

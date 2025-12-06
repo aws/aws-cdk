@@ -11,6 +11,21 @@ import { FunctionRuntime } from './runtime';
 import { Token, ValidationError } from '../../core';
 
 /**
+ * Enum for enhanced resolver metrics for specified resolvers
+ */
+export enum ResolverMetricsConfig {
+  /**
+   * Enables enhanced resolver metrics for specified resolvers
+   */
+  ENABLED = 'ENABLED',
+
+  /**
+   * Disables enhanced resolver metrics for specified resolvers
+   */
+  DISABLED = 'DISABLED',
+}
+
+/**
  * Basic properties for an AppSync resolver
  */
 export interface BaseResolverProps {
@@ -66,6 +81,14 @@ export interface BaseResolverProps {
    * @default - no code is used
    */
   readonly code?: Code;
+
+  /**
+   * Whether to enable enhanced metrics
+   * Value will be ignored, if `enhancedMetricsConfig.resolverLevelMetricsBehavior` on AppSync GraphqlApi construct is set to `FULL_REQUEST_RESOLVER_METRICS`
+   *
+   * @default - no metrics configration
+   */
+  readonly metricsConfig?: ResolverMetricsConfig;
 }
 
 /**
@@ -147,6 +170,7 @@ export class Resolver extends Construct {
       responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
       cachingConfig: this.createCachingConfig(props.cachingConfig),
       maxBatchSize: props.maxBatchSize,
+      metricsConfig: props.metricsConfig,
     });
     props.api.addSchemaDependency(this.resolver);
     if (props.dataSource) {
