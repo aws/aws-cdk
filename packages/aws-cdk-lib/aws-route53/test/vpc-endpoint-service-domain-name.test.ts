@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { IVpcEndpointServiceLoadBalancer, VpcEndpointService } from '../../aws-ec2';
 import { Stack } from '../../core';
 import { PublicHostedZone, VpcEndpointServiceDomainName } from '../lib';
@@ -277,4 +277,45 @@ test('endpoint domain name property equals input domain name', () => {
     publicHostedZone: zone,
   });
   expect(dn.domainName).toEqual('name-test.aws-cdk.dev');
+});
+
+test('EnableDns custom resource policy includes vpce:AllowMultiRegion permission scoped to endpoint service', () => {
+  // GIVEN
+  const testVpces = new VpcEndpointService(stack, 'TestVPCES', {
+    vpcEndpointServiceLoadBalancers: [nlb],
+  });
+
+  // WHEN
+  new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
+    endpointService: testVpces,
+    domainName: 'my-stuff.aws-cdk.dev',
+    publicHostedZone: zone,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: [
+            'ec2:ModifyVpcEndpointServiceConfiguration',
+            'vpce:AllowMultiRegion',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': Match.arrayWith([
+              ':',
+              Match.arrayWith([
+                'arn',
+                { Ref: 'AWS::Partition' },
+                'ec2',
+                { Ref: 'AWS::Region' },
+                { Ref: 'AWS::AccountId' },
+              ]),
+            ]),
+          },
+        }),
+      ]),
+    },
+  });
 });
