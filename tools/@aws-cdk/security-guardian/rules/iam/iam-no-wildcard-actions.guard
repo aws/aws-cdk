@@ -1,0 +1,33 @@
+#
+#####################################
+##          IAM GUARD RULES        ##
+#####################################
+# Rule: IAM_NO_WILDCARD_ACTIONS
+# Service: AWS Identity and Access Management (IAM)
+# Coverage: Policies Action Wildcards
+
+let iam_policies = Resources.*[
+  Type in ['AWS::IAM::Policy', 'AWS::IAM::ManagedPolicy']
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "IAM_NO_WILDCARD_ACTIONS"
+]
+
+# Check for service:* action wildcards
+rule IAM_NO_WILDCARD_ACTIONS when %iam_policies !empty {
+    %iam_policies {
+        Properties.PolicyDocument.Statement[*] {
+            when Effect == "Allow" {
+                when Action exists {
+                    when Action is_string {
+                        Action != "*"
+                        Action != /\w+:\*$/
+                    }
+                    when Action is_list {
+                        Action[*] != "*"
+                        Action[*] != /\w+:\*$/
+                    }
+                }
+            }
+        }
+    }
+}
