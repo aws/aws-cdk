@@ -341,10 +341,10 @@ export class EcsTask implements events.IRuleTarget {
 
       ...(this.props.cpu && { cpu: this.props.cpu }),
       ...(this.props.ephemeralStorage && { ephemeralStorage: this.props.ephemeralStorage }),
-      ...(this.props.executionRole?.roleArn && { executionRole: this.props.executionRole.roleArn }),
+      ...(this.props.executionRole?.roleArn && { executionRoleArn: this.props.executionRole.roleArn }),
       ...(this.props.inferenceAcceleratorOverrides && { inferenceAcceleratorOverrides: this.props.inferenceAcceleratorOverrides }),
       ...(this.props.memory && { memory: this.props.memory }),
-      ...(this.props.taskRole?.roleArn && { taskRole: this.props.taskRole.roleArn }),
+      ...(this.props.taskRole?.roleArn && { taskRoleArn: this.props.taskRole.roleArn }),
     };
   }
 
