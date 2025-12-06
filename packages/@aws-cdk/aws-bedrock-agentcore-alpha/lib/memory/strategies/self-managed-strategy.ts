@@ -137,7 +137,7 @@ export interface SelfManagedStrategyProps extends MemoryStrategyCommonProps {
   readonly invocationConfiguration: InvocationConfiguration;
   /**
    * Trigger conditions for self managed memory strategy
-   * @default undefined
+   * @default - undefined
    */
   readonly triggerConditions?: TriggerConditions;
 }
