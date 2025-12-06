@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "MTDistributionPolicies/DefaultTest": {
+      "stacks": [
+        "integ-mt-distribution-policies"
+      ],
+      "assertionStack": "MTDistributionPolicies/DefaultTest/DeployAssert",
+      "assertionStackName": "MTDistributionPoliciesDefaultTestDeployAssert5DB6FCB7"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}
