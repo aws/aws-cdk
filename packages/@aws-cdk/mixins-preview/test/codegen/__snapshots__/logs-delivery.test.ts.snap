@@ -122,6 +122,9 @@ export class CfnThingLogsMixin extends core.Mixin implements core.IMixin {
 
   /**
    * Apply vended logs configuration to the construct
+   *
+   * @param resource Some configuration may be required on the source resource to get Vended Logs to function properly.
+   * See Vended Logs documentation specific to AWS::Some::Resource for more information.
    */
   public applyTo(resource: constructs.IConstruct): constructs.IConstruct {
     if (!this.supports(resource)) {
