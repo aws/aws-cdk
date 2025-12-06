@@ -376,7 +376,7 @@ export interface ClusterCommonOptions {
   /**
    * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
    *
-   * @default - IpFamily.IP_V4
+   * @default IpFamily.IP_V4
    * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
    */
   readonly ipFamily?: IpFamily;
@@ -1015,7 +1015,7 @@ export class Cluster extends ClusterBase {
   /**
    * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
    *
-   * @default - IpFamily.IP_V4
+   * @default IpFamily.IP_V4
    * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
    */
   public readonly ipFamily?: IpFamily;
