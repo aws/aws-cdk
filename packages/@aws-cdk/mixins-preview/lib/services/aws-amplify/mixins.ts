@@ -1,1 +1,1 @@
-export * from './amplify.generated';
+export * from './cfn-props-mixins.generated';

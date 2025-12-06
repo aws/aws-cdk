@@ -1,8 +1,8 @@
 import { Construct, IConstruct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
+import { ClusterGrants } from './cluster-grants';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
-import { ClusterGrants } from './ecs-grants.generated';
 import {
   CfnCluster,
   CfnCapacityProvider,
@@ -239,7 +239,7 @@ export class Cluster extends Resource implements ICluster {
   /**
    * Collection of grant methods for a Cluster
    */
-  public readonly grants = ClusterGrants._fromCluster(this);
+  public readonly grants = ClusterGrants.fromCluster(this);
 
   /**
    * The names of both ASG and Fargate capacity providers associated with the cluster.

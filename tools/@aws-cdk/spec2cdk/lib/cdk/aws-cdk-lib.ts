@@ -1,4 +1,4 @@
-/* eslint-disable @cdklabs/no-throw-default-error */
+
 import { Resource, Service } from '@aws-cdk/service-spec-types';
 import { Module, stmt } from '@cdklabs/typewriter';
 import { AugmentationsModule } from './augmentation-generator';
@@ -159,10 +159,14 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
 
   private createGrantsModule(moduleName: string, service: Service, grantsConfig: string): LocatedModule<GrantsModule> {
     const filePath = this.pathsFor(moduleName, service).grants;
-    return {
-      module: new GrantsModule(service, this.db, JSON.parse(grantsConfig)),
+    const imports = this.resolveImportPaths(filePath);
+
+    const module = {
+      module: new GrantsModule(service, this.db, JSON.parse(grantsConfig), imports.iam),
       filePath,
     };
+
+    return module;
   }
 
   protected addResourceToSubmodule(submodule: AwsCdkLibServiceSubmodule, resource: Resource, props?: AddServiceProps): void {
@@ -182,13 +186,6 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
     submodule.registerResource(resource.cloudFormationType, resourceClass);
     submodule.registerSelectiveImports(...resourceClass.imports);
     submodule.augmentations?.module.augmentResource(resource, resourceClass);
-
-    for (const selectiveImport of submodule.imports) {
-      const sourceModule = new Module(selectiveImport.moduleName);
-      sourceModule.importSelective(submodule.resourcesMod.module, selectiveImport.types.map((t) => `${t.originalType} as ${t.aliasedType}`), {
-        fromLocation: relativeImportPath(submodule.resourcesMod.filePath, sourceModule.name),
-      });
-    }
   }
 
   private createResourceModule(moduleName: string, service: Service): LocatedModule<Module> {
@@ -262,7 +259,15 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
       grantModule.build(Object.fromEntries(submodule.resources), props?.nameSuffix);
     }
 
-    super.postprocessSubmodule(submodule);
+    // Apply selective imports only to resources module
+    for (const selectiveImport of submodule.imports) {
+      const sourceModule = new Module(selectiveImport.moduleName);
+      sourceModule.importSelective(
+        submodule.resourcesMod.module,
+        selectiveImport.types.map((t) => `${t.originalType} as ${t.aliasedType}`),
+        { fromLocation: relativeImportPath(submodule.resourcesMod, sourceModule.name) },
+      );
+    }
 
     // Add an import for the interfaces file to the entry point file (make sure not to do it twice)
     if (!submodule.interfaces?.module.isEmpty() && this.interfacesEntry && submodule.didCreateInterfaceModule) {
@@ -283,6 +288,7 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
         coreHelpers: 'aws-cdk-lib/core/lib/helpers-internal',
         coreErrors: 'aws-cdk-lib/core/lib/errors',
         cloudwatch: 'aws-cdk-lib/aws-cloudwatch',
+        iam: 'aws-cdk-lib/aws-iam',
       };
     }
 
@@ -292,6 +298,7 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
       coreHelpers: relativeImportPath(sourceModule, 'core/lib/helpers-internal'),
       coreErrors: relativeImportPath(sourceModule, 'core/lib/errors'),
       cloudwatch: relativeImportPath(sourceModule, 'aws-cloudwatch'),
+      iam: relativeImportPath(sourceModule, 'aws-iam'),
     };
   }
 
@@ -336,4 +343,9 @@ export interface ImportPaths {
    * The import name used to import the CloudWatch module
    */
   readonly cloudwatch: string;
+
+  /**
+   * The import name used to import the IAM module
+   */
+  readonly iam: string;
 }

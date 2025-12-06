@@ -1,11 +1,11 @@
 import * as cdk from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { BrowserCustom } from '../../../agentcore/tools/browser';
-import { BrowserNetworkConfiguration } from '../../../agentcore/network/network-configuration';
+import { BrowserNetworkConfiguration } from '../../../lib/network/network-configuration';
+import { BrowserCustom, BrowserSigning } from '../../../lib/tools/browser';
 
 describe('BrowserCustom default tests', () => {
   let template: Template;
@@ -56,6 +56,7 @@ describe('BrowserCustom default tests', () => {
     // The resource should have basic properties
     expect(resource.Properties).toHaveProperty('Name');
     expect(resource.Properties).toHaveProperty('NetworkConfiguration');
+    expect(resource.Properties).toHaveProperty('BrowserSigning');
 
     // Tags property handling - the important thing is that the construct works
     // The addPropertyOverride may or may not be visible in the template depending on CDK version
@@ -1358,5 +1359,223 @@ describe('BrowserCustom recording configuration with S3 location tests', () => {
     expect(takeOverCountMetric).toBeDefined();
     expect(takeOverReleaseCountMetric).toBeDefined();
     expect(takeOverDurationMetric).toBeDefined();
+  });
+});
+
+describe('BrowserCustom browser signing configuration tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+  });
+
+  test('Should default to DISABLED when browser signing is not specified', () => {
+    const browser = new BrowserCustom(stack, 'test-browser-default', {
+      browserCustomName: 'test_browser_default',
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
+    });
+
+    expect(browser.browserSigning).toBe(BrowserSigning.DISABLED);
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::BrowserCustom', {
+      BrowserSigning: {
+        Enabled: false,
+      },
+    });
+  });
+
+  test('Should set browser signing to ENABLED when explicitly specified', () => {
+    const browser = new BrowserCustom(stack, 'test-browser-enabled', {
+      browserCustomName: 'test_browser_enabled',
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
+      browserSigning: BrowserSigning.ENABLED,
+    });
+
+    expect(browser.browserSigning).toBe(BrowserSigning.ENABLED);
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::BrowserCustom', {
+      BrowserSigning: {
+        Enabled: true,
+      },
+    });
+  });
+
+  test('Should set browser signing to DISABLED when explicitly specified', () => {
+    const browser = new BrowserCustom(stack, 'test-browser-disabled', {
+      browserCustomName: 'test_browser_disabled',
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
+      browserSigning: BrowserSigning.DISABLED,
+    });
+
+    expect(browser.browserSigning).toBe(BrowserSigning.DISABLED);
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::BrowserCustom', {
+      BrowserSigning: {
+        Enabled: false,
+      },
+    });
+  });
+
+  test('Should have BrowserSigning property in CloudFormation template when default', () => {
+    new BrowserCustom(stack, 'test-browser-default-signing', {
+      browserCustomName: 'test_browser_default_signing',
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    const browserResource = template.findResources('AWS::BedrockAgentCore::BrowserCustom');
+    const resourceId = Object.keys(browserResource)[0];
+    const resource = browserResource[resourceId];
+
+    expect(resource.Properties).toHaveProperty('BrowserSigning');
+    expect(resource.Properties.BrowserSigning).toEqual({
+      Enabled: false,
+    });
+  });
+
+  test('Should have BrowserSigning property with Enabled true when ENABLED', () => {
+    new BrowserCustom(stack, 'test-browser-enabled-signing', {
+      browserCustomName: 'test_browser_enabled_signing',
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
+      browserSigning: BrowserSigning.ENABLED,
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    const browserResource = template.findResources('AWS::BedrockAgentCore::BrowserCustom');
+    const resourceId = Object.keys(browserResource)[0];
+    const resource = browserResource[resourceId];
+
+    expect(resource.Properties).toHaveProperty('BrowserSigning');
+    expect(resource.Properties.BrowserSigning).toEqual({
+      Enabled: true,
+    });
+  });
+
+  test('Should have BrowserSigning property with Enabled false when DISABLED', () => {
+    new BrowserCustom(stack, 'test-browser-disabled-signing', {
+      browserCustomName: 'test_browser_disabled_signing',
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
+      browserSigning: BrowserSigning.DISABLED,
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    const browserResource = template.findResources('AWS::BedrockAgentCore::BrowserCustom');
+    const resourceId = Object.keys(browserResource)[0];
+    const resource = browserResource[resourceId];
+
+    expect(resource.Properties).toHaveProperty('BrowserSigning');
+    expect(resource.Properties.BrowserSigning).toEqual({
+      Enabled: false,
+    });
+  });
+
+  test('Should work with browser signing ENABLED and recording config', () => {
+    const recordingBucket = new s3.Bucket(stack, 'RecordingBucket', {
+      bucketName: 'test-browser-recordings',
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const browser = new BrowserCustom(stack, 'test-browser-signing-recording', {
+      browserCustomName: 'test_browser_signing_recording',
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
+      browserSigning: BrowserSigning.ENABLED,
+      recordingConfig: {
+        enabled: true,
+        s3Location: {
+          bucketName: recordingBucket.bucketName,
+          objectKey: 'recordings/',
+        },
+      },
+    });
+
+    expect(browser.browserSigning).toBe(BrowserSigning.ENABLED);
+    expect(browser.recordingConfig?.enabled).toBe(true);
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::BrowserCustom', {
+      BrowserSigning: {
+        Enabled: true,
+      },
+      RecordingConfig: {
+        Enabled: true,
+      },
+    });
+  });
+
+  test('Should work with browser signing DISABLED and VPC configuration', () => {
+    const vpc = new ec2.Vpc(stack, 'testVPC');
+
+    const browser = new BrowserCustom(stack, 'test-browser-signing-vpc', {
+      browserCustomName: 'test_browser_signing_vpc',
+      networkConfiguration: BrowserNetworkConfiguration.usingVpc(stack, {
+        vpc: vpc,
+      }),
+      browserSigning: BrowserSigning.DISABLED,
+    });
+
+    expect(browser.browserSigning).toBe(BrowserSigning.DISABLED);
+    expect(browser.networkConfiguration.networkMode).toBe('VPC');
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::BrowserCustom', {
+      BrowserSigning: {
+        Enabled: false,
+      },
+      NetworkConfiguration: {
+        NetworkMode: 'VPC',
+      },
+    });
+  });
+
+  test('Should work with browser signing ENABLED and custom execution role', () => {
+    const customRole = new iam.Role(stack, 'CustomExecutionRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+      roleName: 'custom-browser-execution-role',
+    });
+
+    const browser = new BrowserCustom(stack, 'test-browser-signing-role', {
+      browserCustomName: 'test_browser_signing_role',
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
+      browserSigning: BrowserSigning.ENABLED,
+      executionRole: customRole,
+    });
+
+    expect(browser.browserSigning).toBe(BrowserSigning.ENABLED);
+    expect(browser.executionRole).toBe(customRole);
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::BrowserCustom', {
+      BrowserSigning: {
+        Enabled: true,
+      },
+    });
   });
 });
