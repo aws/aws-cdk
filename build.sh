@@ -47,6 +47,10 @@ done
 
 export NODE_OPTIONS="--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
 
+if $ci; then
+  export CI=true
+fi
+
 # Temporary log memory for long builds (this may mess with tests that check stderr)
 # export NODE_OPTIONS="-r $PWD/scripts/log-memory.js ${NODE_OPTIONS:-}"
 
@@ -115,6 +119,10 @@ fi
 echo "============================================================================================="
 echo "building..."
 time npx lerna run $bail --concurrency=$concurrency $runtarget $flags || fail
+
+echo "=============[ MEMORY AND TIMING TRACES ]===================================================="
+cat .traces/*
+echo "============================================================================================="
 
 if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh

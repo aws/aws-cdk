@@ -23,14 +23,14 @@ export async function lintCurrentPackage(
     await shell([
       eslintPath,
       ...fixOption,
-    ], { timers, env });
+    ], { timers, env, traceName: `eslint,${options.currentPackageName}` });
   }
 
   if (!options.pkglint?.disable) {
     await shell([
       'pkglint',
       ...fixOption,
-    ], { timers, env });
+    ], { timers, env, traceName: `pkglint,${options.currentPackageName}` });
   }
 
   if (await fs.pathExists('README.md')) {
@@ -45,5 +45,5 @@ export async function lintCurrentPackage(
     ], { timers });
   }
 
-  await shell([path.join(__dirname, '..', 'bin', 'cdk-awslint')], { timers, env });
+  await shell([path.join(__dirname, '..', 'bin', 'cdk-awslint')], { timers, env, traceName: `awslint,${options.currentPackageName}` });
 }
