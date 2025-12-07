@@ -1,4 +1,4 @@
-import { Stack, Token } from 'aws-cdk-lib';
+import { Names, Stack, Token } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -685,15 +685,12 @@ export class Gateway extends GatewayBase {
    * @internal
    */
   private createDefaultCognitoAuthorizerConfig(): IGatewayAuthorizerConfig {
-    // Create User Pool for M2M authentication
     const userPool = new cognito.UserPool(this, 'UserPool', {
-      userPoolName: `${this.name}-gw-userpool`,
       signInCaseSensitive: false,
     });
 
     const resourceServer = userPool.addResourceServer('ResourceServer', {
-      identifier: `${this.name}-gateway-resource-server`,
-      userPoolResourceServerName: `${this.name}-GatewayResourceServer`,
+      identifier: Names.uniqueResourceName(this, { maxLength: 256, separator: '-' }),
       scopes: [
         {
           scopeName: 'read',
@@ -707,7 +704,6 @@ export class Gateway extends GatewayBase {
     });
 
     const userPoolClient = userPool.addClient('DefaultClient', {
-      userPoolClientName: `${this.name}-gw-client`,
       generateSecret: true,
       oAuth: {
         flows: {
@@ -727,9 +723,12 @@ export class Gateway extends GatewayBase {
     });
 
     // Create Cognito Domain for OAuth2 token endpoint
-    // Use gateway name as domain prefix (already validated to be alphanumeric with hyphens/underscores)
-    // Replace underscores with hyphens and convert to lowercase for Cognito domain requirements
-    const domainPrefix = `${this.name}-gw`.replace(/_/g, '-').toLowerCase();
+    // Use uniqueResourceName to generate a unique domain prefix toLowerCase() is required because the hash portion is uppercase
+    const domainPrefix = Names.uniqueResourceName(this, {
+      maxLength: 63, // Cognito domain prefix max length
+      separator: '-',
+    }).toLowerCase();
+
     const userPoolDomain = userPool.addDomain('Domain', {
       cognitoDomain: {
         domainPrefix: domainPrefix,

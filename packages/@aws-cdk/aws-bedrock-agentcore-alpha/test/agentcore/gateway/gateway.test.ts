@@ -2307,3 +2307,39 @@ describe('MCP Server Target Configuration Tests', () => {
     expect(target.credentialProviderConfigurations).toHaveLength(1);
   });
 });
+
+describe('Gateway M2M Authentication Tests', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should create default Cognito authorizer with M2M support', () => {
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    const template = Template.fromStack(stack);
+    
+    template.hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      AllowedOAuthFlows: ['client_credentials'],
+      AllowedOAuthFlowsUserPoolClient: true,
+      GenerateSecret: true,
+    });
+
+    // Resource Server identifier is auto-generated using Names.uniqueResourceName()
+    template.hasResourceProperties('AWS::Cognito::UserPoolResourceServer', {
+      Scopes: [
+        { ScopeName: 'read', ScopeDescription: 'Read access to gateway tools' },
+        { ScopeName: 'write', ScopeDescription: 'Write access to gateway tools' },
+      ],
+    });
+
+    // Domain name is auto-generated using Names.uniqueResourceName()
+    template.resourceCountIs('AWS::Cognito::UserPoolDomain', 1);
+  });
+});

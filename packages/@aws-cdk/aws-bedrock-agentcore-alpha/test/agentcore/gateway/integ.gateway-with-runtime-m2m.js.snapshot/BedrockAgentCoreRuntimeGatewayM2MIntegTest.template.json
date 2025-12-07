@@ -117,7 +117,6 @@
     "EmailVerificationMessage": "The verification code to your new account is {####}",
     "EmailVerificationSubject": "Verify your new account",
     "SmsVerificationMessage": "The verification code to your new account is {####}",
-    "UserPoolName": "integ-test-runtime-gateway-gw-userpool",
     "UsernameConfiguration": {
      "CaseSensitive": false
     },
@@ -134,8 +133,8 @@
   "TestGatewayUserPoolResourceServer7A34B6B2": {
    "Type": "AWS::Cognito::UserPoolResourceServer",
    "Properties": {
-    "Identifier": "integ-test-runtime-gateway-gateway-resource-server",
-    "Name": "integ-test-runtime-gateway-GatewayResourceServer",
+    "Identifier": "BedrockAgentCoreRuntimeGatewayM2MIntegTest-TestGateway-4F82402F",
+    "Name": "BedrockAgentCoreRuntimeGatewayM2MIntegTest-TestGateway-4F82402F",
     "Scopes": [
      {
       "ScopeDescription": "Read access to gateway tools",
@@ -182,7 +181,6 @@
       ]
      }
     ],
-    "ClientName": "integ-test-runtime-gateway-gw-client",
     "GenerateSecret": true,
     "SupportedIdentityProviders": [
      "COGNITO"
@@ -286,7 +284,7 @@
   "TestGatewayUserPoolDomainB64B616E": {
    "Type": "AWS::Cognito::UserPoolDomain",
    "Properties": {
-    "Domain": "integ-test-runtime-gateway-gw",
+    "Domain": "bedrockagentcoreruntimegatewaym2mintegtest-testgateway-4f82402f",
     "UserPoolId": {
      "Ref": "TestGatewayUserPool545AA49A"
     }
@@ -321,7 +319,6 @@
      }
     },
     "AuthorizerType": "CUSTOM_JWT",
-    "Description": "Gateway for Runtime integration test with M2M auth",
     "Name": "integ-test-runtime-gateway",
     "ProtocolConfiguration": {
      "Mcp": {
@@ -420,8 +417,6 @@
     "Code": {
      "ZipFile": "\n    exports.handler = async (event, context) => {\n      return {\n        statusCode: 200,\n        body: JSON.stringify({\n          message: 'Hello from Gateway Lambda!',\n          timestamp: new Date().toISOString()\n        }),\n      };\n    };\n  "
     },
-    "Description": "Simple test function for Gateway M2M authentication test",
-    "FunctionName": "integ-test-simple-tool",
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
@@ -763,7 +758,6 @@
      }
     },
     "AgentRuntimeName": "integ_test_runtime_with_gateway",
-    "Description": "Runtime using Gateway tools",
     "EnvironmentVariables": {
      "GATEWAY_URL": {
       "Fn::GetAtt": [
@@ -842,7 +836,7 @@
     ]
    },
    "Export": {
-    "Name": "BedrockAgentCoreRuntimeGatewayIntegTest:ExportsOutputFnGetAttTestRuntime65042BB5AgentRuntimeArnE8B3C8DA"
+    "Name": "BedrockAgentCoreRuntimeGatewayM2MIntegTest:ExportsOutputFnGetAttTestRuntime65042BB5AgentRuntimeArnE8B3C8DA"
    }
   }
  },

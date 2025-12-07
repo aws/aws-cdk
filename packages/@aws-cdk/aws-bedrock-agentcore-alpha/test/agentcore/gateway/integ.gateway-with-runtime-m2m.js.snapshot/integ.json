@@ -3,7 +3,7 @@
   "testCases": {
     "RuntimeGatewayIntegTest/DefaultTest": {
       "stacks": [
-        "BedrockAgentCoreRuntimeGatewayIntegTest"
+        "BedrockAgentCoreRuntimeGatewayM2MIntegTest"
       ],
       "assertionStack": "RuntimeGatewayIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "RuntimeGatewayIntegTestDefaultTestDeployAssert1ACA2D2A"

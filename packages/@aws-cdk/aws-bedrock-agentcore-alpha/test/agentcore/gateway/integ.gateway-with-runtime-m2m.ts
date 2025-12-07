@@ -1,20 +1,18 @@
-import * as path from 'path';
 import { randomUUID } from 'crypto';
+import * as path from 'path';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as agentcore from '../../../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'BedrockAgentCoreRuntimeGatewayIntegTest', {});
+const stack = new cdk.Stack(app, 'BedrockAgentCoreRuntimeGatewayM2MIntegTest', {});
 
 const gateway = new agentcore.Gateway(stack, 'TestGateway', {
   gatewayName: 'integ-test-runtime-gateway',
-  description: 'Gateway for Runtime integration test with M2M auth',
 });
 
 const calculatorFunction = new lambda.Function(stack, 'TestFunction', {
-  functionName: 'integ-test-simple-tool',
   runtime: lambda.Runtime.NODEJS_22_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
@@ -28,7 +26,6 @@ const calculatorFunction = new lambda.Function(stack, 'TestFunction', {
       };
     };
   `),
-  description: 'Simple test function for Gateway M2M authentication test',
 });
 
 const toolSchema = agentcore.ToolSchema.fromInline([
@@ -55,7 +52,6 @@ const runtimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
 
 const runtime = new agentcore.Runtime(stack, 'TestRuntime', {
   runtimeName: 'integ_test_runtime_with_gateway',
-  description: 'Runtime using Gateway tools',
   agentRuntimeArtifact: runtimeArtifact,
   protocolConfiguration: agentcore.ProtocolType.HTTP,
   networkConfiguration: agentcore.RuntimeNetworkConfiguration.usingPublicNetwork(),
