@@ -25,17 +25,21 @@ const queue = new sqs.Queue(stack, 'MyQueue', {
   encryptionMasterKey: key,
 });
 // Suppress false positive: queue uses separate QueuePolicy resource (not inline), which is the correct pattern
-(queue.node.defaultChild as cdk.CfnResource).addMetadata('guard', {
-  SuppressedRules: ['SQS_NO_WORLD_ACCESSIBLE_INLINE'],
-});
+(queue.node.defaultChild as cdk.CfnResource).cfnOptions.metadata = {
+  guard: {
+    SuppressedRules: ['SQS_NO_WORLD_ACCESSIBLE_INLINE'],
+  },
+};
 
 const deadLetterQueue = new sqs.Queue(stack, 'MyDeadLetterQueue', {
   encryption: sqs.QueueEncryption.SQS_MANAGED,
 });
 // Suppress false positive: queue uses separate QueuePolicy resource (not inline), which is the correct pattern
-(deadLetterQueue.node.defaultChild as cdk.CfnResource).addMetadata('guard', {
-  SuppressedRules: ['SQS_NO_WORLD_ACCESSIBLE_INLINE'],
-});
+(deadLetterQueue.node.defaultChild as cdk.CfnResource).cfnOptions.metadata = {
+  guard: {
+    SuppressedRules: ['SQS_NO_WORLD_ACCESSIBLE_INLINE'],
+  },
+};
 
 event.addTarget(new targets.SqsQueue(queue, {
   deadLetterQueue,
@@ -46,9 +50,11 @@ const standardQueue = new sqs.Queue(stack, 'StandardQueue', {
   encryption: sqs.QueueEncryption.SQS_MANAGED,
 });
 // Suppress false positive: queue uses separate QueuePolicy resource (not inline), which is the correct pattern
-(standardQueue.node.defaultChild as cdk.CfnResource).addMetadata('guard', {
-  SuppressedRules: ['SQS_NO_WORLD_ACCESSIBLE_INLINE'],
-});
+(standardQueue.node.defaultChild as cdk.CfnResource).cfnOptions.metadata = {
+  guard: {
+    SuppressedRules: ['SQS_NO_WORLD_ACCESSIBLE_INLINE'],
+  },
+};
 
 const standardQueueEvent = new events.Rule(stack, 'StandardQueueRule', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(1)),

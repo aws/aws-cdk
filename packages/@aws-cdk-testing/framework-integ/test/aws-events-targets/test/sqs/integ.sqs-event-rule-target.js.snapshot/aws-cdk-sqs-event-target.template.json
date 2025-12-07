@@ -91,6 +91,13 @@
      ]
     }
    },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "SQS_NO_WORLD_ACCESSIBLE_INLINE"
+     ]
+    }
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -135,6 +142,16 @@
   },
   "MyDeadLetterQueueD997968A": {
    "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "SqsManagedSseEnabled": true
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "SQS_NO_WORLD_ACCESSIBLE_INLINE"
+     ]
+    }
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -179,6 +196,16 @@
   },
   "StandardQueue4A8B3C4D": {
    "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "SqsManagedSseEnabled": true
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "SQS_NO_WORLD_ACCESSIBLE_INLINE"
+     ]
+    }
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
