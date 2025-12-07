@@ -1215,7 +1215,7 @@ describe('tests', () => {
 
       // THEN
       // verify failure in case the access log bucket is encrypted with KMS
-      expect(testFn).toThrow('Encryption key detected. The access logs, connection logs, and health check logs buckets must use Server-Side Encryption with Amazon S3-managed keys (SSE-S3)');
+      expect(testFn).toThrow('Encryption key detected. The health check logs buckets must use Server-Side Encryption with Amazon S3-managed keys (SSE-S3)');
     });
 
     test('health check logging on imported bucket', () => {

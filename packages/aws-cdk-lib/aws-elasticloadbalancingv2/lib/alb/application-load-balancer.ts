@@ -416,7 +416,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
      * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-health-check-logging.html
      */
     if (bucket.encryptionKey) {
-      throw new ValidationError('Encryption key detected. The access logs, connection logs, and health check logs buckets must use Server-Side Encryption with Amazon S3-managed keys (SSE-S3)', this);
+      throw new ValidationError('Encryption key detected. The health check logs buckets must use Server-Side Encryption with Amazon S3-managed keys (SSE-S3)', this);
     }
 
     prefix = prefix || '';
