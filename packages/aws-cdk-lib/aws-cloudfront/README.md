@@ -772,7 +772,7 @@ new cloudfront.Distribution(this, 'Dist', {
 });
 ```
 
-See [Configuring mutual TLS authentication](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-mutual-tls.html) in the CloudFront User Guide.
+See [Configuring mutual TLS authentication](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/mtls-authentication.html) in the CloudFront User Guide.
 
 ### Lambda@Edge
 
