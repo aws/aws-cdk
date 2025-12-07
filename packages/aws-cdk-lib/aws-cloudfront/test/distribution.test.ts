@@ -1871,28 +1871,38 @@ describe('viewer mTLS', () => {
     });
   });
 
-  test.each([
-    ViewerProtocolPolicy.ALLOW_ALL, undefined,
-  ])('throws if mTLS is configured with viewerProtocolPolicy %s in default behavior', (viewerProtocolPolicy) => {
+  test('throws if mTLS is configured with viewerProtocolPolicy ALLOW_ALL in default behavior', () => {
     const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
     expect(() => {
       new Distribution(stack, 'Dist', {
         defaultBehavior: {
           origin: defaultOrigin(),
-          viewerProtocolPolicy,
+          viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
         },
         viewerMtlsConfig: {
           mode: MtlsMode.REQUIRED,
           trustStore,
         },
       });
-    }).toThrow(`'viewerProtocolPolicy' must be 'https-only' or 'redirect-to-https' when 'viewerMtlsConfig' is specified, got 'allow-all' in default behavior`);
+    }).toThrow("'viewerProtocolPolicy' must be 'https-only' or 'redirect-to-https' when 'viewerMtlsConfig' is specified, got 'allow-all' in default behavior");
   });
 
-  test.each([
-    [ViewerProtocolPolicy.ALLOW_ALL, '/api/*'],
-    [undefined, '/images/*'],
-  ])('throws if mTLS is configured with viewerProtocolPolicy %s in additional behavior', (viewerProtocolPolicy, pathPattern) => {
+  test('throws if mTLS is configured with viewerProtocolPolicy undefined in default behavior', () => {
+    const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
+    expect(() => {
+      new Distribution(stack, 'Dist', {
+        defaultBehavior: {
+          origin: defaultOrigin(),
+        },
+        viewerMtlsConfig: {
+          mode: MtlsMode.REQUIRED,
+          trustStore,
+        },
+      });
+    }).toThrow("'viewerProtocolPolicy' must be explicitly set to 'https-only' or 'redirect-to-https' when 'viewerMtlsConfig' is specified. If not specified, it defaults to 'allow-all' which is not compatible with mTLS.");
+  });
+
+  test('throws if mTLS is configured with viewerProtocolPolicy ALLOW_ALL in additional behavior', () => {
     const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
     expect(() => {
       new Distribution(stack, 'Dist', {
@@ -1901,9 +1911,9 @@ describe('viewer mTLS', () => {
           viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
         },
         additionalBehaviors: {
-          [pathPattern]: {
+          '/api/*': {
             origin: defaultOrigin(),
-            viewerProtocolPolicy,
+            viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
           },
         },
         viewerMtlsConfig: {
@@ -1911,6 +1921,27 @@ describe('viewer mTLS', () => {
           trustStore,
         },
       });
-    }).toThrow(`'viewerProtocolPolicy' must be 'https-only' or 'redirect-to-https' when 'viewerMtlsConfig' is specified, got 'allow-all' in behavior for path '${pathPattern}'`);
+    }).toThrow("'viewerProtocolPolicy' must be 'https-only' or 'redirect-to-https' when 'viewerMtlsConfig' is specified, got 'allow-all' in behavior for path '/api/*'");
+  });
+
+  test('throws if mTLS is configured with viewerProtocolPolicy undefined in additional behavior', () => {
+    const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
+    expect(() => {
+      new Distribution(stack, 'Dist', {
+        defaultBehavior: {
+          origin: defaultOrigin(),
+          viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
+        },
+        additionalBehaviors: {
+          '/images/*': {
+            origin: defaultOrigin(),
+          },
+        },
+        viewerMtlsConfig: {
+          mode: MtlsMode.REQUIRED,
+          trustStore,
+        },
+      });
+    }).toThrow("'viewerProtocolPolicy' must be explicitly set to 'https-only' or 'redirect-to-https' when 'viewerMtlsConfig' is specified for behavior at path '/images/*'. If not specified, it defaults to 'allow-all' which is not compatible with mTLS.");
   });
 });

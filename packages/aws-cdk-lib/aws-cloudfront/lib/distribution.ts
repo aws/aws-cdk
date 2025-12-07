@@ -917,9 +917,14 @@ export class Distribution extends Resource implements IDistribution {
     }
 
     // Validate viewerProtocolPolicy - mTLS requires HTTPS.
-    // When viewerProtocolPolicy is not specified, it defaults to ALLOW_ALL which is not compatible with mTLS.
     const validPolicies = [ViewerProtocolPolicy.HTTPS_ONLY, ViewerProtocolPolicy.REDIRECT_TO_HTTPS];
-    const defaultPolicy = props.defaultBehavior.viewerProtocolPolicy ?? ViewerProtocolPolicy.ALLOW_ALL;
+    const defaultPolicy = props.defaultBehavior.viewerProtocolPolicy;
+    if (defaultPolicy === undefined) {
+      throw new ValidationError(
+        `'viewerProtocolPolicy' must be explicitly set to '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified. If not specified, it defaults to '${ViewerProtocolPolicy.ALLOW_ALL}' which is not compatible with mTLS.`,
+        this,
+      );
+    }
     if (!validPolicies.includes(defaultPolicy)) {
       throw new ValidationError(
         `'viewerProtocolPolicy' must be '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified, got '${defaultPolicy}' in default behavior`,
@@ -929,7 +934,13 @@ export class Distribution extends Resource implements IDistribution {
 
     if (props.additionalBehaviors) {
       for (const [pathPattern, behavior] of Object.entries(props.additionalBehaviors)) {
-        const policy = behavior.viewerProtocolPolicy ?? ViewerProtocolPolicy.ALLOW_ALL;
+        const policy = behavior.viewerProtocolPolicy;
+        if (policy === undefined) {
+          throw new ValidationError(
+            `'viewerProtocolPolicy' must be explicitly set to '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified for behavior at path '${pathPattern}'. If not specified, it defaults to '${ViewerProtocolPolicy.ALLOW_ALL}' which is not compatible with mTLS.`,
+            this,
+          );
+        }
         if (!validPolicies.includes(policy)) {
           throw new ValidationError(
             `'viewerProtocolPolicy' must be '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified, got '${policy}' in behavior for path '${pathPattern}'`,
