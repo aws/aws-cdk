@@ -24,15 +24,31 @@ const queue = new sqs.Queue(stack, 'MyQueue', {
   encryption: sqs.QueueEncryption.KMS,
   encryptionMasterKey: key,
 });
+// Suppress false positive: queue uses separate QueuePolicy resource (not inline), which is the correct pattern
+(queue.node.defaultChild as cdk.CfnResource).addMetadata('guard', {
+  SuppressedRules: ['SQS_NO_WORLD_ACCESSIBLE_INLINE'],
+});
 
-const deadLetterQueue = new sqs.Queue(stack, 'MyDeadLetterQueue');
+const deadLetterQueue = new sqs.Queue(stack, 'MyDeadLetterQueue', {
+  encryption: sqs.QueueEncryption.SQS_MANAGED,
+});
+// Suppress false positive: queue uses separate QueuePolicy resource (not inline), which is the correct pattern
+(deadLetterQueue.node.defaultChild as cdk.CfnResource).addMetadata('guard', {
+  SuppressedRules: ['SQS_NO_WORLD_ACCESSIBLE_INLINE'],
+});
 
 event.addTarget(new targets.SqsQueue(queue, {
   deadLetterQueue,
 }));
 
 // Test messageGroupId support for standard (non-FIFO) queues
-const standardQueue = new sqs.Queue(stack, 'StandardQueue');
+const standardQueue = new sqs.Queue(stack, 'StandardQueue', {
+  encryption: sqs.QueueEncryption.SQS_MANAGED,
+});
+// Suppress false positive: queue uses separate QueuePolicy resource (not inline), which is the correct pattern
+(standardQueue.node.defaultChild as cdk.CfnResource).addMetadata('guard', {
+  SuppressedRules: ['SQS_NO_WORLD_ACCESSIBLE_INLINE'],
+});
 
 const standardQueueEvent = new events.Rule(stack, 'StandardQueueRule', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
