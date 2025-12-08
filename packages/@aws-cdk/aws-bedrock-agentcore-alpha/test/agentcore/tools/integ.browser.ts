@@ -4,10 +4,10 @@
 
 /// !cdk-integ aws-cdk-bedrock-agentcore-browser-1
 
-import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as agentcore from '../../../lib';
+import * as cdk from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as agentcore from '../../../lib';
 
 const app = new cdk.App();
 

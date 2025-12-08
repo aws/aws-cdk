@@ -1,4 +1,4 @@
-/* eslint-disable @cdklabs/no-throw-default-error */
+
 import { PropertyType, Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
 import {
   $E,
@@ -194,6 +194,7 @@ export class ResourceClass extends ClassType implements Referenceable {
     });
 
     this.makeFromCloudFormationFactory();
+    this.makeIsAResource();
     this.makeFromArnFactory();
     this.makeFromNameFactory();
     this.addArnForResourceMethod();
@@ -230,6 +231,39 @@ export class ResourceClass extends ClassType implements Referenceable {
     cfnMapping.makeCfnParser(this.module, this.propsType);
 
     this.makeMustRenderStructs();
+  }
+
+  /**
+   * Adds the static isCfn<Resource> method to the class.
+   *
+   * @example
+   * public static isCfnBucket(x: any): construct is CfnBucket {
+   *   return CfnResource.isCfnResource(x) && x.cfnResourceType === this.constructor.CFN_RESOURCE_TYPE_NAME;
+   * }
+   */
+  public makeIsAResource() {
+    // Add the factory method to the outer class
+    const isA = this.addMethod({
+      name: `is${this.name}`,
+      static: true,
+      returnType: Type.ambient(`x is ${this.name}`),
+      docs: {
+        summary: `Checks whether the given object is a ${this.name}`,
+      },
+    });
+
+    const x = isA.addParameter({
+      name: 'x',
+      type: Type.ANY,
+    });
+
+    isA.addBody(
+      stmt.ret(expr.binOp(
+        $T(CDK_CORE.CfnResource).isCfnResource(x),
+        '&&',
+        expr.eq($E(x).cfnResourceType, $T(this.type).CFN_RESOURCE_TYPE_NAME),
+      )),
+    );
   }
 
   /**

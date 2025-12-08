@@ -5,7 +5,7 @@ import * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cdk from '../../core';
 import * as ecr from '../lib';
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('repository', () => {
   describe('lookup', () => {
