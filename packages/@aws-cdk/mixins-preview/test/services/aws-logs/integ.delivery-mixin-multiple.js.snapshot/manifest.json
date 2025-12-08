@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/31aab798c2b4727e5f5f2bf54a82b73555a3bcdcd749eba4d178df87c74de21f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a25147b5f6bdce0150146e35923f7fb589205e140868690ed347d0d44e57c036.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -113,7 +113,8 @@
             "type": "aws:cdk:analytics:construct",
             "data": {
               "removalPolicy": "destroy",
-              "autoDeleteObjects": true
+              "autoDeleteObjects": true,
+              "encryption": "S3_MANAGED"
             }
           }
         ],

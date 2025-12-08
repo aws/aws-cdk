@@ -59,7 +59,7 @@ const deliveryStream = new firehose.CfnDeliveryStream(stack, 'DeliveryStream', {
   },
   deliveryStreamEncryptionConfigurationInput: {
     keyType: 'AWS_OWNED_CMK',
-  }
+  },
 });
 
 // Setup deliveries
