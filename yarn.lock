@@ -58,12 +58,12 @@
     "@aws-cdk/service-spec-types" "^0.0.164"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/aws-service-spec@^0.1.128":
-  version "0.1.128"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.128.tgz#9316530344f91f06b897f4e343e73ec7f699ab7b"
-  integrity sha512-hqE1zdiTJeSFR4fea2G/Oh35yI/7nNKwjA86w5tiq9FQsoww1/pcXF3HozuHC/R54rnKZMxBF/YQeOzye8QjsQ==
+"@aws-cdk/aws-service-spec@^0.1.129":
+  version "0.1.129"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.129.tgz#4fc64d4a79162dcf82817a69aa9a47bc2ba617e5"
+  integrity sha512-ZL0uhiE+tOsOssv/c2ieFWXasbYavCYoTm8O1mCpsWZ5PuamAAYh9P7mRxg4y+AsoG+jlqAZxYNpVft/AeEeXQ==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.194"
+    "@aws-cdk/service-spec-types" "^0.0.195"
     "@cdklabs/tskb" "^0.0.4"
 
 "@aws-cdk/cloud-assembly-schema@^48.20.0":
@@ -149,10 +149,10 @@
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
-"@aws-cdk/service-spec-types@^0.0.194":
-  version "0.0.194"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.194.tgz#42282294ef6554afff2f7b6255d6b62224b1cf4a"
-  integrity sha512-knQpH2youmymBI+5mPrQjKGUAVvNj24+M6hnZNtJukSSNvSIp/CbNWWv9h6S09ow7eEA8Rv0BZRZhWkVa7zNBw==
+"@aws-cdk/service-spec-types@^0.0.195":
+  version "0.0.195"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.195.tgz#8334c976ea7688913ce23a5a2b32fbe5888075c3"
+  integrity sha512-12EFJaeyAGc1g/TCBg3GS+kq8PKCp49rvPE4Ms8Nli7w7/xKfXJhUUdU7PLNc09d798kWYxATvcgAC+ybzl6Tg==
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
