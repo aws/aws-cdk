@@ -96,12 +96,7 @@ export class ResolverBuilder {
     ].join(' ?? ');
     const resolver = (props: Expression) => {
       if (propType.arrayOfType) {
-        // Create empty scope for the arrow function
-        const lambdaScope: CallableDeclaration = { parameters: [], returnType: Type.VOID, name: 'LambdaScope' };
-        const mapper = new Lambda(
-          [new Parameter(lambdaScope, { name: 'item', type: propType.arrayOfType })],
-          expr.directCode(buildChain('item')),
-        );
+        const mapper = this.createMapperLambda(propType.arrayOfType, expr.directCode(buildChain('item')));
         return CDK_CORE.mapArrayInPlace.call(expr.get(props, name), mapper);
       } else {
         return expr.directCode(buildChain(`props.${name}`));
@@ -129,11 +124,7 @@ export class ResolverBuilder {
 
       let flattenCall;
       if (arrayType) {
-        const lambdaScope: CallableDeclaration = { parameters: [], returnType: Type.VOID, name: 'LambdaScope' };
-        const mapper = new Lambda(
-          [new Parameter(lambdaScope, { name: 'item', type: arrayType })],
-          expr.ident(functionName).call(expr.ident('item')),
-        );
+        const mapper = this.createMapperLambda(arrayType, expr.ident(functionName).call(expr.ident('item')));
         flattenCall = CDK_CORE.mapArrayInPlace.call(propValue, mapper);
       } else {
         flattenCall = expr.ident(functionName).call(propValue);
@@ -148,5 +139,15 @@ export class ResolverBuilder {
         : condition;
     };
     return { name, propType: resolvableType, resolvableType, baseType, resolver };
+  }
+
+  /**
+   * Creates an arrow function `(item: T) => body` for use with array mapping.
+   * Parameter requires a CallableDeclaration scope, but Lambda is an anonymous
+   * expression so we provide a placeholder.
+   */
+  private createMapperLambda(itemType: Type, body: Expression): Lambda {
+    const lambdaScope: CallableDeclaration = { parameters: [], returnType: Type.VOID, name: 'LambdaScope' };
+    return new Lambda([new Parameter(lambdaScope, { name: 'item', type: itemType })], body);
   }
 }
