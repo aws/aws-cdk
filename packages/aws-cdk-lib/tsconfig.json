@@ -1,8 +1,32 @@
 {
-  "$": "A tsconfig for all files, for the benefit of the VSCode plugin; necessary because we can't convince the plugin to load anything other than tsconfig.json upwards of the file we are editing, and all tests aren't in a single test/ subdirectory.b",
-  "extends": "./tsconfig.options.json",
   "compilerOptions": {
-    "noEmit": true,
+    "declarationMap": false,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "alwaysStrict": true,
+    "declaration": true,
+    "incremental": true,
+    "lib": [
+      "es2022"
+    ],
+    "module": "commonjs",
+    "noEmitOnError": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "stripInternal": false,
+    "target": "es2022",
+    "composite": true,
+    "esModuleInterop": false,
+    "isolatedModules": true,
     "tsBuildInfoFile": "tsconfig.tsbuildinfo"
   },
   "include": [
@@ -10,6 +34,8 @@
   ],
   "exclude": [
     "node_modules",
+    ".types-compat",
+    "**/test/**/docker-*-handler/*",
     "**/*.d.ts"
   ],
   "references": [

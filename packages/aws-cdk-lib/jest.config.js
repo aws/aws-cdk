@@ -24,6 +24,4 @@ const config = {
   testEnvironment: './testhelpers/jest-bufferedconsole.ts',
 };
 
-(config.globals?.['ts-jest'] ?? {}).tsconfig = 'tsconfig.tests.json';
-
 module.exports = config;
