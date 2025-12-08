@@ -28,6 +28,7 @@ const logGroup = new logs.LogGroup(stack, 'DeliveryLogGroup', {
 const bucket = new s3.Bucket(stack, 'DeliveryBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
+  encryption: s3.BucketEncryption.S3_MANAGED,
 });
 
 // Setup error logs delivery to Cloudwatch

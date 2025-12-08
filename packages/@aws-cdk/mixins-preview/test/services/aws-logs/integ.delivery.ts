@@ -26,6 +26,7 @@ const logType = 'ERROR_LOGS';
 const destinationBucket = new s3.Bucket(stack, 'DeliveryBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
+  encryption: s3.BucketEncryption.S3_MANAGED,
 });
 const destinationLogGroup = new logs.LogGroup(stack, 'DeliveryLogGroup', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -34,6 +35,7 @@ const destinationLogGroup = new logs.LogGroup(stack, 'DeliveryLogGroup', {
 const firehoseBucket = new s3.Bucket(stack, 'FirehoseBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
+  encryption: s3.BucketEncryption.S3_MANAGED,
 });
 
 const deliveryStream = new firehose.CfnDeliveryStream(stack, 'DeliveryStream', {
@@ -55,6 +57,9 @@ const deliveryStream = new firehose.CfnDeliveryStream(stack, 'DeliveryStream', {
       },
     }).roleArn,
   },
+  deliveryStreamEncryptionConfigurationInput: {
+    keyType: 'AWS_OWNED_CMK',
+  }
 });
 
 // Setup deliveries
