@@ -55,7 +55,7 @@ jobs:
           path: node_modules/@aws-cdk/aws-service-spec/db.json.gz
           if-no-files-found: error
 
-      # Build @aws-cdk/spec2cdk and @aws-cdk/mixins-preview, then run L1 gen script to generate base files for new modules
+      # Build @aws-cdk/spec2cdk and run L1 gen script to generate base files for new modules
       - name: Build @aws-cdk/spec2cdk
         run: lerna run build --stream --no-progress --skip-nx-cache --scope @aws-cdk/spec2cdk
       - name: Generate code
