@@ -48,7 +48,7 @@ jobs:
           echo "${{ github.event.pull_request.head.sha }}" > ./test-results/pr_sha
       
       - name: Upload Security Guardian XML Reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: security-guardian-reports
