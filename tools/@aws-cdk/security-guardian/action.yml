@@ -12,7 +12,7 @@ inputs:
     description: "Path to a single .guard file locally"
     required: true
   enhance_xml:
-    description: "Enable XML enhancement for individual failure annotations"
+    description: "Enable XML enhancement for individual failure annotations1"
     required: false
     default: 'true'
 
