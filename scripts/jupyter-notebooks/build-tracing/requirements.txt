@@ -1,0 +1,2 @@
+jupyter==1.1.1
+plotnine==0.13.6

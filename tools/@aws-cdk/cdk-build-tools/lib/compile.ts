@@ -11,7 +11,7 @@ export async function compileCurrentPackage(options: CDKBuildOptions, timers: Ti
   const compiler = packageCompiler(compilers, options);
 
   let compilerName = path.basename(compiler[0]);
-  await shell(compiler, { timers, env, traceName: `${compilerName},${options.currentPackageName}` });
+  await shell(compiler, { timers, env, trace: { command: compilerName, pkg: options.currentPackageName } });
 
   // Find files in bin/ that look like they should be executable, and make them so.
   const scripts = currentPackageJson().bin || {};

@@ -49,7 +49,7 @@ async function main() {
   if (testFiles.length > 0) {
     await shell([args.jest], {
       ...unitTestOptions,
-      traceName: `jest,${options.currentPackageName}`,
+      trace: { command: 'jest', pkg: options.currentPackageName },
     });
   }
 
@@ -57,7 +57,7 @@ async function main() {
   if (await hasIntegTests()) {
     await shell(['integ-runner'], {
       ...defaultShellOptions,
-      traceName: `integ-runner,${options.currentPackageName}`,
+      trace: { command: 'integ-runner', pkg: options.currentPackageName },
     });
   }
 }

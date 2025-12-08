@@ -8,7 +8,10 @@ import { Timers } from './timer';
 interface ShellOptions {
   timers?: Timers;
   env?: child_process.SpawnOptions['env'];
-  traceName?: string;
+  trace?: {
+    command: string;
+    pkg: string;
+  };
 }
 
 /**
@@ -22,11 +25,11 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
   const timeFile = '.time.tmp';
 
   // Try to trace memory usage with /usr/bin/time if we're tracing
-  if (options.traceName && process.platform === 'darwin') {
+  if (options.trace && process.platform === 'darwin') {
     args.unshift('-l', '-o', timeFile, cmd);
     cmd = '/usr/bin/time';
   }
-  if (options.traceName && process.platform === 'linux') {
+  if (options.trace && process.platform === 'linux') {
     args.unshift('-v', '-o', timeFile, cmd);
     cmd = '/usr/bin/time';
   }
@@ -73,18 +76,18 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
       timer.end();
       const endTime = new Date();
 
-      if (options.traceName) {
+      if (options.trace) {
         // The end of stderr contains the timing measurements
         const timing = fs.readFileSync(timeFile, 'utf-8');
         let maxMemMB = 0;
 
-        if (options.traceName && process.platform === 'darwin') {
+        if (process.platform === 'darwin') {
           const f = timing.match(/(\d+)  maximum resident set size/); // Bytes
           if (f) {
             maxMemMB = Number(f[1]) / (1024 * 1024);
           }
         }
-        if (options.traceName && process.platform === 'linux') {
+        if (process.platform === 'linux') {
           const f = timing.match(/Maximum resident set size \(kbytes\): (\d+)/); // kbytes
           if (f) {
             maxMemMB = Number(f[1]) / 1024;
@@ -93,7 +96,7 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
 
         fs.unlinkSync(timeFile);
 
-        writeTrace(options.traceName, startTime, endTime, maxMemMB);
+        writeTrace(options.trace.command, options.trace.pkg, startTime, endTime, maxMemMB);
       }
 
       if (code === 0) {
@@ -224,7 +227,7 @@ async function isShellScript(script: string): Promise<boolean> {
  * We write each to a different file to avoid race conditions appending to a shared file
  * in parallel processes.
  */
-function writeTrace(name: string, start: Date, end: Date, maxMemMB: number) {
+function writeTrace(command: string, pkg: string, start: Date, end: Date, maxMemMB: number) {
   const lernaJson = findUp('lerna.json');
   if (!lernaJson) {
     return;
@@ -233,8 +236,8 @@ function writeTrace(name: string, start: Date, end: Date, maxMemMB: number) {
   fs.mkdirSync(dir, { recursive: true });
 
   fs.writeFileSync(
-    path.join(dir, `${slugify(name)}.csv`),
-    `${name},${Math.floor(start.getTime() / 1000)},${Math.floor(end.getTime() / 1000)},${maxMemMB}\n`,
+    path.join(dir, `${slugify(command)}.csv`),
+    `"${command}","${pkg}",${Math.floor(start.getTime() / 1000)},${Math.floor(end.getTime() / 1000)},${maxMemMB}\n`,
   );
 }
 
