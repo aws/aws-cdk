@@ -1,3 +1,4 @@
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -122,6 +123,29 @@ const service = new ecs.FargateService(stack, 'Service', {
   securityGroups: [ecsSecurityGroup],
   deploymentStrategy: ecs.DeploymentStrategy.BLUE_GREEN,
 });
+
+// Create deployment alarm for CPU utilization
+const alarm1 = new cloudwatch.Alarm(stack, 'MyCustomAlarm', {
+  metric: new cloudwatch.Metric({
+    namespace: 'Custom',
+    metricName: 'MyCustomMetric',
+  }),
+  threshold: 80,
+  evaluationPeriods: 2,
+});
+
+// Create deployment alarm for memory utilization
+const alarm2 = new cloudwatch.Alarm(stack, 'AnotherCustomAlarm', {
+  metric: new cloudwatch.Metric({
+    namespace: 'Custom',
+    metricName: 'AnotherCustomMetric',
+  }),
+  threshold: 80,
+  evaluationPeriods: 2,
+});
+
+// Enable deployment alarms
+service.enableDeploymentAlarms([alarm1.alarmName, alarm2.alarmName]);
 
 service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaHook, 'PreScaleUp', {
   lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
