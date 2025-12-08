@@ -15,3 +15,4 @@ export * from './record-format';
 
 // AWS::KinesisFirehose CloudFormation Resources:
 export * from './kinesisfirehose.generated';
+export * from './kinesisfirehose-grants.generated';

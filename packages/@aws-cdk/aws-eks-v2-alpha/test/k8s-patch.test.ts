@@ -1,6 +1,6 @@
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Names, Stack } from 'aws-cdk-lib/core';
-import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import * as eks from '../lib';
 import { KubernetesPatch, PatchType } from '../lib/k8s-patch';
 

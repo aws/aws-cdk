@@ -21,6 +21,26 @@ export const objectToCloudFormation: Mapper = identity;
 export const numberToCloudFormation: Mapper = identity;
 
 /**
+ * Convert an L2 event pattern to CloudFormation
+ *
+ * This is for usability: the types are mostly the same except for `detail-type`
+ * (which is rendered in the L2 as `detailType`).
+ *
+ * By doing that conversion here, we can make the L2 EventPattern type work at
+ * the L1 level automatically.
+ */
+export function eventPatternToCloudFormation(x: any) {
+  if (x && typeof x === 'object' && 'detailType' in x) {
+    const ret = { ...x };
+    ret['detail-type'] = ret.detailType;
+    delete ret.detailType;
+    return ret;
+  }
+
+  return x;
+}
+
+/**
  * The date needs to be formatted as an ISO date in UTC
  *
  * Some usage sites require a date, some require a timestamp. We'll
@@ -32,7 +52,6 @@ export function dateToCloudFormation(x?: Date): any {
     return undefined;
   }
 
-  // eslint-disable-next-line max-len
   return `${x.getUTCFullYear()}-${pad(x.getUTCMonth() + 1)}-${pad(x.getUTCDate())}T${pad(x.getUTCHours())}:${pad(x.getUTCMinutes())}:${pad(x.getUTCSeconds())}Z`;
 }
 
@@ -399,4 +418,15 @@ function isCloudFormationDynamicReference(x: any) {
 // Cannot be public because JSII gets confused about es5.d.ts
 class CfnSynthesisError extends Error {
   public readonly type = 'CfnSynthesisError';
+}
+
+/**
+ * Ensures that a property is either undefined or a string.
+ * Used in spec2cdk to have better error messages in other languages.
+ */
+export function ensureStringOrUndefined(value: any, propName: string, possibleType: string): string | undefined {
+  if (value !== undefined && typeof value !== 'string') {
+    throw new TypeError(`Property ${propName} should be one of ${possibleType}`);
+  }
+  return value;
 }
