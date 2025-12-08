@@ -3,7 +3,7 @@
   "extends": "./tsconfig.options.json",
   "compilerOptions": {
     "noEmit": true,
-    "tsBuildInfoFile": "tsconfig.tests.tsbuildinfo"
+    "tsBuildInfoFile": "tsconfig.tsbuildinfo"
   },
   "include": [
     "**/*.ts"
