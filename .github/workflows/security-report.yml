@@ -64,3 +64,4 @@ jobs:
           group_suite: true
           include_skipped: false
           check_title_template: '{{TEST_NAME}}'
+          include_empty_in_summary: false
