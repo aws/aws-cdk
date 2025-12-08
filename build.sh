@@ -100,8 +100,8 @@ fi
 if [[ "$concurrency" == "" ]]; then
     # Auto-limit top-level concurrency to:
     # - available CPUs - 1 to limit CPU load
-    # - total memory / 6GB  (N.B: constant here may need to be tweaked, configurable with $CDKBUILD_MEM_PER_PROCESS)
-    mem_per_process=${CDKBUILD_MEM_PER_PROCESS:-6_000_000_000}
+    # - total memory / 8GB  (N.B: constant here may need to be tweaked, configurable with $CDKBUILD_MEM_PER_PROCESS)
+    mem_per_process=${CDKBUILD_MEM_PER_PROCESS:-8_000_000_000}
     concurrency=$(node -p "Math.max(1, Math.min(require('os').cpus().length - 1, Math.round(require('os').totalmem() / $mem_per_process)))")
     echo "Concurrency: $concurrency"
 fi
