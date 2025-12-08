@@ -18,10 +18,8 @@ export interface StateMachineGrantsProps {
 export class StateMachineGrants {
   /**
    * Creates grants for StateMachineGrants
-   *
-   * @internal
    */
-  public static _fromStateMachine(resource: stepfunctions.IStateMachineRef): StateMachineGrants {
+  public static fromStateMachine(resource: stepfunctions.IStateMachineRef): StateMachineGrants {
     return new StateMachineGrants({
       resource: resource,
     });
