@@ -330,7 +330,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "exports.handler = function asgHandler(_event, _context, callback) {\n    let json = JSON.parse(JSON.stringify(_event));\n    let instanceIds = [];\n    json.Instances.forEach((instance) => {\n        instanceIds.push(instance.InstanceId);\n    });\n    // eslint-disable-next-line quote-props\n    const result = { 'InstanceIDs': instanceIds };\n    return callback(undefined, result);\n}"
+     "ZipFile": "exports.handler = function asgHandler(_event, _context, callback) {\n    let json = JSON.parse(JSON.stringify(_event));\n    let instanceIds = [];\n    json.Instances.forEach((instance) => {\n        instanceIds.push(instance.InstanceId);\n    });\n    // eslint-disable-next-line @stylistic/quote-props\n    const result = { 'InstanceIDs': instanceIds };\n    return callback(undefined, result);\n}"
     },
     "Handler": "index.handler",
     "Role": {

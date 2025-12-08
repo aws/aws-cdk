@@ -165,6 +165,8 @@
     "./aws-detective/mixins": "./lib/services/aws-detective/mixins.js",
     "./aws-devicefarm": "./lib/services/aws-devicefarm/index.js",
     "./aws-devicefarm/mixins": "./lib/services/aws-devicefarm/mixins.js",
+    "./aws-devopsagent": "./lib/services/aws-devopsagent/index.js",
+    "./aws-devopsagent/mixins": "./lib/services/aws-devopsagent/mixins.js",
     "./aws-devopsguru": "./lib/services/aws-devopsguru/index.js",
     "./aws-devopsguru/mixins": "./lib/services/aws-devopsguru/mixins.js",
     "./aws-directoryservice": "./lib/services/aws-directoryservice/index.js",
@@ -648,6 +650,7 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
+  "homepage": "https://github.com/aws/aws-cdk",
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
@@ -655,17 +658,22 @@
     "@aws-cdk/integ-runner": "^2.192.2",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@aws-cdk/service-spec-types": "^0.0.193",
+    "@aws-cdk/service-spec-types": "^0.0.195",
     "@aws-cdk/spec2cdk": "0.0.0",
     "@cdklabs/tskb": "^0.0.4",
-    "@cdklabs/typewriter": "^0.0.11",
+    "@cdklabs/typewriter": "^0.0.12",
     "@types/jest": "^29.5.14",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
     "jest": "^29.7.0",
-    "tsx": "^4.20.6"
+    "tsx": "^4.21.0"
   },
-  "homepage": "https://github.com/aws/aws-cdk",
+  "dependencies": {
+    "minimatch": "^3.1.2"
+  },
+  "bundleDependencies": [
+    "minimatch"
+  ],
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"

@@ -150,7 +150,6 @@ export class CloudAssembly implements ICloudAssembly {
     }
 
     if (artifacts.length > 1) {
-      // eslint-disable-next-line max-len
       throw new CloudAssemblyError(`There are multiple stacks with the stack name "${stackName}" (${artifacts.map(a => a.id).join(',')}). Use "getStackArtifact(id)" instead`);
     }
 
