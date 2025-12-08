@@ -234,7 +234,7 @@ function writeTrace(name: string, start: Date, end: Date, maxMemMB: number) {
 
   fs.writeFileSync(
     path.join(dir, `${slugify(name)}.csv`),
-    `"${name}",${Math.floor(start.getTime() / 1000)},${Math.floor(end.getTime() / 1000)},${maxMemMB}\n`,
+    `${name},${Math.floor(start.getTime() / 1000)},${Math.floor(end.getTime() / 1000)},${maxMemMB}\n`,
   );
 }
 
