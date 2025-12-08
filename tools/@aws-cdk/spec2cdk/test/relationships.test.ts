@@ -321,6 +321,6 @@ test('relationship have arns appear first in the constructor chain', () => {
 
   const rendered = renderer.render(module);
 
-  const chain = 'this.roleArn = (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? (props.roleArn as IRoleRef)?.roleRef?.roleName ?? (props.roleArn as IRoleRef)?.roleRef?.otherPrimaryId ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | iam.IRoleRef | iam.IRoleRef | string")';
+  const chain = 'this.roleArn = (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? (props.roleArn as IRoleRef)?.roleRef?.roleName ?? (props.roleArn as IRoleRef)?.roleRef?.otherPrimaryId ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string")';
   expect(rendered).toContain(chain);
 });
