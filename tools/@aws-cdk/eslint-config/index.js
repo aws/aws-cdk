@@ -9,13 +9,18 @@ import jsdoc from 'eslint-plugin-jsdoc';
 import path from 'path';
 import fs from 'fs';
 import { makeRules } from './rules.js';
+import { makeConstructLibRules } from './constructlib-rules.js';
 
-export function makeConfig(/** @type{string} */ tsconfigFile) {
+export function makeConfig(/** @type{string} */ tsconfigFile, /** @type{any} */ options) {
+  options = options ?? {};
   tsconfigFile = path.resolve(tsconfigFile);
   const tsconfigRootDir = path.dirname(tsconfigFile);
   const tsConfig = JSON.parse(fs.readFileSync(tsconfigFile, 'utf-8'));
   const include = tsConfig?.include ?? [];
   const exclude = tsConfig?.exclude ?? [];
+
+  const currentPackageJson = JSON.parse(fs.readFileSync(`${tsconfigRootDir}/package.json`, 'utf-8'));
+  const isConstructLibrary = currentPackageJson.name === 'aws-cdk-lib' || ('aws-cdk-lib' in (currentPackageJson.peerDependencies ?? {}));
 
   for (let i = 0; i < exclude.length; i++) {
     if (isDirectory(exclude[i])) {
@@ -27,12 +32,8 @@ export function makeConfig(/** @type{string} */ tsconfigFile) {
   exclude.push('**/*.d.ts');
   exclude.push('**/*.generated.ts');
 
-  // This cannot reference the build rules from cdk-build-tools as this
-  // package is itself used by cdk-build-tools.
-  return defineConfig(
-    // Ignores must be an object by itself and apply to all rules, otherwise it won't work.
-    { ignores: ['**/*.js'] },
-    {
+  /** @type{ Parameters<typeof defineConfig>[0] }*/
+  const baseConfig = {
     name: 'aws-cdk/eslint-config',
     files: include,
     ignores: exclude,
@@ -69,8 +70,15 @@ export function makeConfig(/** @type{string} */ tsconfigFile) {
         },
       },
     },
-    rules: makeRules(tsconfigRootDir),
-  });
+  };
+
+  return defineConfig(
+    // Ignores must be an object by itself and apply to all rules, otherwise it won't work.
+    { ignores: ['**/*.js'] },
+    { ...baseConfig, rules: makeRules() },
+    // For additional rules for construct libraries, we'll just assume that all source files are in the 'lib' subdirectory (ignores still apply)
+    isConstructLibrary ? { ...baseConfig, files: ['lib/**/*.ts'], rules: makeConstructLibRules() } : {},
+  );
 }
 
 function isDirectory(/** @type{string} */ p) {

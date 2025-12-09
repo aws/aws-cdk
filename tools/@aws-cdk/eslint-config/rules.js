@@ -1,11 +1,6 @@
-import fs from 'fs';
-
 // @ts-check
-export function makeRules(/** @type{string} */ directory) {
-  const currentPackageJson = JSON.parse(fs.readFileSync(`${directory}/package.json`, 'utf-8'));
 
-  const isConstructLibrary = currentPackageJson.name === 'aws-cdk-lib' || ('aws-cdk-lib' in (currentPackageJson.peerDependencies ?? {}));
-
+export function makeRules() {
   /** @type { import("@eslint/core").RulesConfig } */
   const ret = {
     '@cdklabs/no-core-construct': ['error'],
@@ -191,10 +186,6 @@ export function makeRules(/** @type{string} */ directory) {
 
     // Too easy to make mistakes
     '@typescript-eslint/unbound-method': ['error', { ignoreStatic: true } ],
-
-    ...isConstructLibrary ? {
-      '@cdklabs/no-throw-default-error': ['error'],
-    } : undefined,
 
     // Overrides for plugin:jest/recommended
     "jest/expect-expect": "off",
