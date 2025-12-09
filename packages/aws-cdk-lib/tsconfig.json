@@ -36,6 +36,7 @@
     "node_modules",
     ".types-compat",
     "**/test/**/docker-*-handler/*",
+    "aws-lambda/test/layer-code/*",
     "**/*.d.ts"
   ],
   "references": [
