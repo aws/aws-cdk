@@ -76,8 +76,8 @@ export function makeConfig(/** @type{string} */ tsconfigFile, /** @type{any} */ 
     // Ignores must be an object by itself and apply to all rules, otherwise it won't work.
     { ignores: ['**/*.js'] },
     { ...baseConfig, rules: makeRules() },
-    // For additional rules for construct libraries, we'll just assume that all source files are in the 'lib' subdirectory (ignores still apply)
-    isConstructLibrary ? { ...baseConfig, files: ['lib/**/*.ts'], rules: makeConstructLibRules() } : {},
+    // For additional rules for construct libraries, we'll just assume that all source files are in 'lib' subdirectories (ignores still apply)
+    isConstructLibrary ? { ...baseConfig, files: ['lib/**/*.ts', '*/lib/**/*.ts'], rules: makeConstructLibRules() } : {},
   );
 }
 
