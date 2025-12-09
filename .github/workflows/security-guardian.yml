@@ -1,6 +1,6 @@
 name: Security Guardian
 on:
-  pull_request_target: {}
+  pull_request: {}
 
 jobs:
   log-skip:
@@ -19,6 +19,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0  
 
       - name: Install cfn-guard
@@ -47,7 +48,7 @@ jobs:
           echo "${{ github.event.pull_request.head.sha }}" > ./test-results/pr_sha
       
       - name: Upload Security Guardian XML Reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: security-guardian-reports
