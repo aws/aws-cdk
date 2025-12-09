@@ -289,5 +289,8 @@ env:
             {"area":"@aws-cdk/aws-s3tables-alpha", "keywords":["aws-s3tables", "aws-s3tables-alpha"],"labels":["@aws-cdk/aws-s3tables-alpha"]},
             {"area":"@aws-cdk/aws-pipes-enrichments-alpha", "keywords":["aws-pipes-enrichments", "aws-pipes-enrichments-alpha"],"labels":["@aws-cdk/aws-pipes-enrichments-alpha"]},
             {"area":"@aws-cdk/aws-pipes-sources-alpha", "keywords":["aws-pipes-sources", "aws-pipes-sources-alpha"],"labels":["@aws-cdk/aws-pipes-sources-alpha"]},
-            {"area":"@aws-cdk/aws-pipes-targets-alpha", "keywords":["aws-pipes-targets", "aws-pipes-targets-alpha"],"labels":["@aws-cdk/aws-pipes-targets-alpha"]}
+            {"area":"@aws-cdk/aws-pipes-targets-alpha", "keywords":["aws-pipes-targets", "aws-pipes-targets-alpha"],"labels":["@aws-cdk/aws-pipes-targets-alpha"]},
+            {"area":"@aws-cdk/aws-bedrock-alpha", "keywords":["aws-bedrock", "aws-bedrock-alpha"],"labels":["@aws-cdk/aws-bedrock-alpha"]},
+            {"area":"@aws-cdk/aws-bedrock-agentcore-alpha", "keywords":["aws-bedrock-agentcore", "aws-bedrock-agentcore-alpha"],"labels":["@aws-cdk/aws-bedrock-agentcore-alpha"]},
+            {"area":"@aws-cdk/aws-imagebuilder-alpha", "keywords":["aws-imagebuilder", "aws-imagebuilder-alpha"],"labels":["@aws-cdk/aws-imagebuilder-alpha"]}
           ]
