@@ -188,7 +188,6 @@ describe('addMethodMetadata & addConstructMetadata', () => {
   it('addMethodMetadata should trigger addWarningV2 when addMetadata throws an error', () => {
     // Mock addMetadata to throw an error
     jest.spyOn(metadata, 'addMetadata').mockImplementation(() => {
-      // eslint-disable-next-line @cdklabs/no-throw-default-error
       throw new Error('Test Error');
     });
 
@@ -207,7 +206,6 @@ describe('addMethodMetadata & addConstructMetadata', () => {
   it('addConstructMetadata should trigger addWarningV2 when addMetadata throws an error', () => {
     // Mock addMetadata to throw an error
     jest.spyOn(metadata, 'addMetadata').mockImplementation(() => {
-      // eslint-disable-next-line @cdklabs/no-throw-default-error
       throw new Error('Test Error');
     });
 

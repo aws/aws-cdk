@@ -1,4 +1,4 @@
-/* eslint-disable @cdklabs/no-throw-default-error */
+
 import { OutgoingHttpHeaders } from 'http';
 import * as https from 'https';
 import { parse as urlparse } from 'url';

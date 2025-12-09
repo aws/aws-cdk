@@ -1,4 +1,4 @@
-/* eslint-disable @cdklabs/no-throw-default-error */
+
 import { Construct, IConstruct } from 'constructs';
 import * as fc from 'fast-check';
 import * as fs from 'fs-extra';

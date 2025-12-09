@@ -1,4 +1,4 @@
-/* eslint-disable @cdklabs/no-throw-default-error */
+
 import { Construct } from 'constructs';
 import { Annotations, Resource, Stack, Stage } from '../lib';
 import { App } from '../lib/app';

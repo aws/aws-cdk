@@ -1,4 +1,4 @@
-/* eslint-disable @cdklabs/no-throw-default-error */
+
 import { spawnSync, execSync } from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
