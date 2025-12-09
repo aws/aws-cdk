@@ -1,142 +1,139 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "VariablePipelineStack.assets": {
+    "L1L2KeyWithL2Rule.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "VariablePipelineStack.assets.json",
+        "file": "L1L2KeyWithL2Rule.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "VariablePipelineStack": {
+    "L1L2KeyWithL2Rule": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
+      "environment": "aws://unknown-account/us-east-1",
       "properties": {
-        "templateFile": "VariablePipelineStack.template.json",
+        "templateFile": "L1L2KeyWithL2Rule.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b815c8070f45c4b6a4d1c26c65733079f42b188db06b35017dd5fa8d2eb54d20.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/eefae83758fa86f4f4c0e2b0afe66dc733faa0e629f07e2bf8a630ff99e5669c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "VariablePipelineStack.assets"
+          "L1L2KeyWithL2Rule.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
       },
       "dependencies": [
-        "VariablePipelineStack.assets"
+        "L1L2KeyWithL2Rule.assets"
       ],
       "metadata": {
-        "/VariablePipelineStack/SourceBucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy",
-              "autoDeleteObjects": true
-            }
-          }
-        ],
-        "/VariablePipelineStack/SourceBucket/Resource": [
+        "/L1L2KeyWithL2Rule/KeyL1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SourceBucketDDD2130A"
+            "data": "KeyL1"
           }
         ],
-        "/VariablePipelineStack/SourceBucket/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
-          }
-        ],
-        "/VariablePipelineStack/SourceBucket/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SourceBucketPolicy703DFBF9"
-          }
-        ],
-        "/VariablePipelineStack/SourceBucket/AutoDeleteObjectsCustomResource": [
+        "/L1L2KeyWithL2Rule/KeyL2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/VariablePipelineStack/SourceBucket/AutoDeleteObjectsCustomResource/Default": [
+        "/L1L2KeyWithL2Rule/KeyL2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SourceBucketAutoDeleteObjectsCustomResourceC68FC040"
+            "data": "KeyL25E747C61"
           }
         ],
-        "/VariablePipelineStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/VariablePipelineStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-          }
-        ],
-        "/VariablePipelineStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
-          }
-        ],
-        "/VariablePipelineStack/Fleet": [
+        "/L1L2KeyWithL2Rule/MyFuncA": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "baseCapacity": "*",
-              "computeType": "BUILD_GENERAL1_SMALL",
-              "environmentType": "LINUX_CONTAINER"
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
             }
           }
         ],
-        "/VariablePipelineStack/Fleet/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Fleet30813DF3"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline": [
+        "/L1L2KeyWithL2Rule/MyFuncA/ServiceRole": [
           {
             "type": "aws:cdk:warning",
-            "data": "V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`. [ack: @aws-cdk/aws-codepipeline:unspecifiedPipelineType]"
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
           }
         ],
-        "/VariablePipelineStack/Pipeline/Pipeline": [
+        "/L1L2KeyWithL2Rule/MyFuncA/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/L1L2KeyWithL2Rule/MyFuncA/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFuncAServiceRole9A674AAA"
+          }
+        ],
+        "/L1L2KeyWithL2Rule/MyFuncA/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFuncAAF5F3089"
+          }
+        ],
+        "/L1L2KeyWithL2Rule/MyFuncA/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "pipelineName": "*",
-              "pipelineType": "V1",
-              "crossAccountKeys": false,
-              "crossRegionReplicationBuckets": "*",
-              "reuseCrossRegionSupportStacks": "*",
-              "restartExecutionOnUpdate": true,
-              "role": "*",
-              "enableKeyRotation": "*",
-              "artifactBucket": "*",
-              "usePipelineRoleForActions": false
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/L1L2KeyWithL2Rule/MyFuncA/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFuncALogGroupD7C330A5"
+          }
+        ],
+        "/L1L2KeyWithL2Rule/L2RuleForL1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "targets": "*"
             }
           },
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addStage": [
+              "addEventPattern": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addTarget": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
                 {
-                  "stageName": "*"
+                  "source": "*",
+                  "detailType": "*",
+                  "detail": "*",
+                  "version": "*",
+                  "resources": "*",
+                  "region": "*"
                 }
               ]
             }
@@ -144,958 +141,233 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addStage": [
+              "addEventPattern": [
                 {
-                  "stageName": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStage": [
-                {
-                  "stageName": "*"
+                  "source": "*",
+                  "detailType": "*",
+                  "detail": "*",
+                  "version": "*",
+                  "resources": "*",
+                  "region": "*"
                 }
               ]
             }
           }
         ],
-        "/VariablePipelineStack/Pipeline/Pipeline/ArtifactsBucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucketName": "*",
-              "encryptionKey": "*",
-              "encryption": "KMS_MANAGED",
-              "enforceSSL": true,
-              "blockPublicAccess": "*",
-              "removalPolicy": "retain"
-            }
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/ArtifactsBucket/Resource": [
+        "/L1L2KeyWithL2Rule/L2RuleForL1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineArtifactsBucketAEA9A052"
+            "data": "L2RuleForL13AA6354B"
           }
         ],
-        "/VariablePipelineStack/Pipeline/Pipeline/ArtifactsBucket/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/ArtifactsBucket/Policy/Resource": [
+        "/L1L2KeyWithL2Rule/L2RuleForL1/AllowEventRuleL1L2KeyWithL2RuleMyFuncAA6804792": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineArtifactsBucketPolicyF53CCC52"
+            "data": "L2RuleForL1AllowEventRuleL1L2KeyWithL2RuleMyFuncAA680479253AB68ED"
           }
         ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "roleName": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineRoleB27FAA37"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Role/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineRoleDefaultPolicy7BDC1ABB"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Pipeline9850B417"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Source/S3/CodePipelineActionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "grantAssumeRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Source/S3/CodePipelineActionRole/ImportCodePipelineActionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Source/S3/CodePipelineActionRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineSourceS3CodePipelineActionRole83895A58"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Source/S3/CodePipelineActionRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Source/S3/CodePipelineActionRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineSourceS3CodePipelineActionRoleDefaultPolicyB176A07F"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "roleName": "*",
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineBuildSynthCdkBuildProjectRole231EEA2A"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineBuildSynthCdkBuildProjectRoleDefaultPolicyFB6C941C"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Produce/Produce": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Produce/Produce/Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "roleName": "*",
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Produce/Produce/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Produce/Produce/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineMyWaveProduceRole24E3565D"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Produce/Produce/Role/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Produce/Produce/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineMyWaveProduceRoleDefaultPolicy209239D4"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Produce/Produce/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineMyWaveProduce884410D6"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Consume/Consume": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Consume/Consume/Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "roleName": "*",
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Consume/Consume/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Consume/Consume/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineMyWaveConsumeRole2A96FF33"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Consume/Consume/Role/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Consume/Consume/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineMyWaveConsumeRoleDefaultPolicyC80F0194"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/Pipeline/MyWave/Consume/Consume/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineMyWaveConsumeC5D5CCD7"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/CodeBuildActionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "grantAssumeRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "grantAssumeRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "grantAssumeRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/CodeBuildActionRole/ImportCodeBuildActionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/CodeBuildActionRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineCodeBuildActionRole226DB0CB"
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/CodeBuildActionRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/VariablePipelineStack/Pipeline/CodeBuildActionRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineCodeBuildActionRoleDefaultPolicy1D62A6FE"
-          }
-        ],
-        "/VariablePipelineStack/TestCacheBucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/VariablePipelineStack/TestCacheBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestCacheBucketA6BDC126"
-          }
-        ],
-        "/VariablePipelineStack/BootstrapVersion": [
+        "/L1L2KeyWithL2Rule/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/VariablePipelineStack/CheckBootstrapVersion": [
+        "/L1L2KeyWithL2Rule/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "VariablePipelineStack"
+      "displayName": "L1L2KeyWithL2Rule"
     },
-    "VariablePipelineTestDefaultTestDeployAssertC1E57581.assets": {
+    "L2KeyOtherEventsWithL2Rule.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "VariablePipelineTestDefaultTestDeployAssertC1E57581.assets.json",
+        "file": "L2KeyOtherEventsWithL2Rule.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "VariablePipelineTestDefaultTestDeployAssertC1E57581": {
+    "L2KeyOtherEventsWithL2Rule": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-1",
+      "properties": {
+        "templateFile": "L2KeyOtherEventsWithL2Rule.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/f3d39680588fed38e1093ab422a12384709ec654805642d299a1e8a073ececf6.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "L2KeyOtherEventsWithL2Rule.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "L2KeyOtherEventsWithL2Rule.assets"
+      ],
+      "metadata": {
+        "/L2KeyOtherEventsWithL2Rule/Key": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/L2KeyOtherEventsWithL2Rule/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Key961B73FD"
+          }
+        ],
+        "/L2KeyOtherEventsWithL2Rule/MyFuncA": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/L2KeyOtherEventsWithL2Rule/MyFuncA/ServiceRole": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+          }
+        ],
+        "/L2KeyOtherEventsWithL2Rule/MyFuncA/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/L2KeyOtherEventsWithL2Rule/MyFuncA/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFuncAServiceRole9A674AAA"
+          }
+        ],
+        "/L2KeyOtherEventsWithL2Rule/MyFuncA/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFuncAAF5F3089"
+          }
+        ],
+        "/L2KeyOtherEventsWithL2Rule/MyFuncA/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/L2KeyOtherEventsWithL2Rule/MyFuncA/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFuncALogGroupD7C330A5"
+          }
+        ],
+        "/L2KeyOtherEventsWithL2Rule/L2RuleForL1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "targets": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addTarget": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "source": "*",
+                  "detailType": "*",
+                  "detail": "*",
+                  "version": "*",
+                  "resources": "*",
+                  "region": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEventPattern": [
+                {
+                  "source": "*",
+                  "detailType": "*",
+                  "detail": "*",
+                  "version": "*",
+                  "resources": "*",
+                  "region": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/L2KeyOtherEventsWithL2Rule/L2RuleForL1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "L2RuleForL13AA6354B"
+          }
+        ],
+        "/L2KeyOtherEventsWithL2Rule/L2RuleForL1/AllowEventRuleL2KeyOtherEventsWithL2RuleMyFuncADDE2D2B6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "L2RuleForL1AllowEventRuleL2KeyOtherEventsWithL2RuleMyFuncADDE2D2B62248E9C5"
+          }
+        ],
+        "/L2KeyOtherEventsWithL2Rule/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/L2KeyOtherEventsWithL2Rule/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "L2KeyOtherEventsWithL2Rule"
+    },
+    "KeyTestDefaultTestDeployAssert2D3BFAA3.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "KeyTestDefaultTestDeployAssert2D3BFAA3.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "KeyTestDefaultTestDeployAssert2D3BFAA3": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "VariablePipelineTestDefaultTestDeployAssertC1E57581.template.json",
+        "templateFile": "KeyTestDefaultTestDeployAssert2D3BFAA3.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -1104,7 +376,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "VariablePipelineTestDefaultTestDeployAssertC1E57581.assets"
+          "KeyTestDefaultTestDeployAssert2D3BFAA3.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -1113,23 +385,23 @@
         }
       },
       "dependencies": [
-        "VariablePipelineTestDefaultTestDeployAssertC1E57581.assets"
+        "KeyTestDefaultTestDeployAssert2D3BFAA3.assets"
       ],
       "metadata": {
-        "/VariablePipelineTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/Key-Test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/VariablePipelineTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/Key-Test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "VariablePipelineTest/DefaultTest/DeployAssert"
+      "displayName": "Key-Test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -1148,7 +420,6 @@
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
           "@aws-cdk/core:newStyleStackSynthesis": {
-            "userValue": "1",
             "recommendedValue": true,
             "explanation": "Switch to new stack synthesis method which enables CI/CD",
             "unconfiguredBehavesLike": {
@@ -1408,7 +679,7 @@
             "explanation": "Enables Pipeline to set the default value for crossAccountKeys to false."
           },
           "@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2": {
-            "userValue": false,
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Enables Pipeline to set the default pipeline type to V2."
           },
@@ -1554,7 +825,6 @@
             "explanation": "When enabled, CDK will automatically generate a unique role name that is used for s3 object replication."
           },
           "@aws-cdk/pipelines:reduceStageRoleTrustScope": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Remove the root account principal from Stage addActions trust policy",
             "unconfiguredBehavesLike": {
