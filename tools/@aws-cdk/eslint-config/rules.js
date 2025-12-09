@@ -1,6 +1,7 @@
-// @ts-check
+import fs from 'fs';
 
-export function makeRules() {
+// @ts-check
+export function makeRules(/** @type{bool} */ isConstructLibrary) {
   /** @type { import("@eslint/core").RulesConfig } */
   const ret = {
     '@cdklabs/no-core-construct': ['error'],
@@ -187,6 +188,10 @@ export function makeRules() {
     // Too easy to make mistakes
     '@typescript-eslint/unbound-method': ['error', { ignoreStatic: true } ],
 
+    ...isConstructLibrary ? {
+      '@cdklabs/no-throw-default-error': ['error'],
+    } : undefined,
+
     // Overrides for plugin:jest/recommended
     "jest/expect-expect": "off",
     "jest/no-conditional-expect": "off",
@@ -197,6 +202,14 @@ export function makeRules() {
     "jest/no-identical-title": "off", // TEMPORARY - Disabling this until https://github.com/jest-community/eslint-plugin-jest/issues/836 is resolved
     'jest/no-disabled-tests': 'error', // Skipped tests are easily missed in PR reviews
     'jest/no-focused-tests': 'error', // Focused tests are easily missed in PR reviews
+  };
+  return ret;
+}
+
+export function makeTestRules(/** @type{bool} */ isConstructLibrary) {
+  /** @type { import("@eslint/core").RulesConfig } */
+  const ret = {
+    '@cdklabs/no-throw-default-error': ['off'],
   };
   return ret;
 }

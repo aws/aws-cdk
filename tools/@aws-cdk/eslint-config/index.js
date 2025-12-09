@@ -8,8 +8,7 @@ import jest from 'eslint-plugin-jest';
 import jsdoc from 'eslint-plugin-jsdoc';
 import path from 'path';
 import fs from 'fs';
-import { makeRules } from './rules.js';
-import { makeConstructLibRules } from './constructlib-rules.js';
+import { makeRules, makeTestRules } from './rules.js';
 
 export function makeConfig(/** @type{string} */ tsconfigFile, /** @type{any} */ options) {
   options = options ?? {};
@@ -75,9 +74,9 @@ export function makeConfig(/** @type{string} */ tsconfigFile, /** @type{any} */ 
   return defineConfig(
     // Ignores must be an object by itself and apply to all rules, otherwise it won't work.
     { ignores: ['**/*.js'] },
-    { ...baseConfig, rules: makeRules() },
-    // For additional rules for construct libraries, we'll just assume that all source files are in 'lib' subdirectories (ignores still apply)
-    isConstructLibrary ? { ...baseConfig, files: ['lib/**/*.ts', '*/lib/**/*.ts'], rules: makeConstructLibRules() } : {},
+    { ...baseConfig, rules: makeRules(isConstructLibrary) },
+    // Apply some more rules to test files (used to switch some rules off again)
+    isConstructLibrary ? { ...baseConfig, files: ['test/**/*.ts', '*/test/**/*.ts'], rules: makeTestRules(isConstructLibrary) } : {},
   );
 }
 
