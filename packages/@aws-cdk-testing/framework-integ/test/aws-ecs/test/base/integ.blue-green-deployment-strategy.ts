@@ -116,15 +116,7 @@ taskDefinition.addContainer('container', {
   }],
 });
 
-// Create Fargate service with escape hatching for B/G deployment
-const service = new ecs.FargateService(stack, 'Service', {
-  cluster,
-  taskDefinition,
-  securityGroups: [ecsSecurityGroup],
-  deploymentStrategy: ecs.DeploymentStrategy.BLUE_GREEN,
-});
-
-// Create deployment alarm for CPU utilization
+// Create first deployment alarm
 const alarm1 = new cloudwatch.Alarm(stack, 'MyCustomAlarm', {
   metric: new cloudwatch.Metric({
     namespace: 'Custom',
@@ -134,7 +126,7 @@ const alarm1 = new cloudwatch.Alarm(stack, 'MyCustomAlarm', {
   evaluationPeriods: 2,
 });
 
-// Create deployment alarm for memory utilization
+// Create second deployment alarm
 const alarm2 = new cloudwatch.Alarm(stack, 'AnotherCustomAlarm', {
   metric: new cloudwatch.Metric({
     namespace: 'Custom',
@@ -144,8 +136,19 @@ const alarm2 = new cloudwatch.Alarm(stack, 'AnotherCustomAlarm', {
   evaluationPeriods: 2,
 });
 
-// Enable deployment alarms
-service.enableDeploymentAlarms([alarm1.alarmName, alarm2.alarmName]);
+// Create Fargate service with escape hatching for B/G deployment
+const service = new ecs.FargateService(stack, 'Service', {
+  cluster,
+  taskDefinition,
+  securityGroups: [ecsSecurityGroup],
+  deploymentStrategy: ecs.DeploymentStrategy.BLUE_GREEN,
+  deploymentAlarms: {
+    alarmNames: [alarm1.alarmName], // First deployment alarm
+  },
+});
+
+// Enable second deployment alarm
+service.enableDeploymentAlarms([alarm2.alarmName]);
 
 service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaHook, 'PreScaleUp', {
   lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
