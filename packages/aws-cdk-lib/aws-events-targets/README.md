@@ -741,8 +741,6 @@ rule.addTarget(new targets.SqsQueue(queue));
 You can specify a `messageGroupId` to ensure messages are processed in order. This parameter is required for FIFO queues and optional for standard queues:
 
 ```ts
-import * as sqs from 'aws-cdk-lib/aws-sqs';
-
 // FIFO queue - messageGroupId required
 const fifoQueue = new sqs.Queue(this, 'MyFifoQueue', {
   fifo: true,
