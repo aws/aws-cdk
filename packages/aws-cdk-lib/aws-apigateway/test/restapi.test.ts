@@ -1,5 +1,4 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { cx_api } from '../..';
 import { Template, Match } from '../../assertions';
 import { UserPool } from '../../aws-cognito';
 import { GatewayVpcEndpoint } from '../../aws-ec2';
@@ -7,6 +6,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import { App, CfnElement, CfnResource, Lazy, RemovalPolicy, Size, Stack } from '../../core';
 import { JSII_RUNTIME_SYMBOL } from '../../core/lib/constants';
+import * as cx_api from '../../cx-api';
 import * as apigw from '../lib';
 
 let stack: Stack;
