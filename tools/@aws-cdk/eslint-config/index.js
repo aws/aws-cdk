@@ -32,7 +32,7 @@ export function makeConfig(/** @type{string} */ tsconfigFile, /** @type{any} */ 
   exclude.push('**/*.generated.ts');
 
   /** @type{ Parameters<typeof defineConfig>[0] }*/
-  const baseConfig = {
+  const prodConfig = {
     name: 'aws-cdk/eslint-config',
     files: include,
     ignores: exclude,
@@ -71,12 +71,29 @@ export function makeConfig(/** @type{string} */ tsconfigFile, /** @type{any} */ 
     },
   };
 
+  const testConfig = {
+    name: 'aws-cdk/eslint-config/tests',
+    files: [
+      'test/**/*.ts',
+      '*/test/**/*.ts',
+      'build-tools/**/*.ts',
+      '*/build-tools/**/*.ts',
+      'scripts/**/*.ts',
+      '*/scripts/**/*.ts',
+    ],
+    ignores: exclude,
+    plugins: {
+      // Prefixes must match (legacy) rule prefixes
+      '@cdklabs': cdklabs,
+    },
+  };
+
   return defineConfig(
     // Ignores must be an object by itself and apply to all rules, otherwise it won't work.
     { ignores: ['**/*.js'] },
-    { ...baseConfig, rules: makeRules(isConstructLibrary) },
+    { ...prodConfig, rules: makeRules(isConstructLibrary) },
     // Apply some more rules to test files (used to switch some rules off again)
-    isConstructLibrary ? { ...baseConfig, files: ['test/**/*.ts', '*/test/**/*.ts'], rules: makeTestRules(isConstructLibrary) } : {},
+    isConstructLibrary ? { ...testConfig, rules: makeTestRules(isConstructLibrary) } : {},
   );
 }
 

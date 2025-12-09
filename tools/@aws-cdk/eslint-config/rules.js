@@ -206,10 +206,13 @@ export function makeRules(/** @type{bool} */ isConstructLibrary) {
   return ret;
 }
 
+/**
+ * Override some rules from the above, and/or add some new ones.
+ */
 export function makeTestRules(/** @type{bool} */ isConstructLibrary) {
   /** @type { import("@eslint/core").RulesConfig } */
   const ret = {
-    '@cdklabs/no-throw-default-error': ['off'],
+    '@cdklabs/no-throw-default-error': 'off',
   };
   return ret;
 }
