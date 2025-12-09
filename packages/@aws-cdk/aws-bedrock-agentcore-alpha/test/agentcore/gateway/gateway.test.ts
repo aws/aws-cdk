@@ -2324,7 +2324,7 @@ describe('Gateway M2M Authentication Tests', () => {
     });
 
     const template = Template.fromStack(stack);
-    
+
     template.hasResourceProperties('AWS::Cognito::UserPoolClient', {
       AllowedOAuthFlows: ['client_credentials'],
       AllowedOAuthFlowsUserPoolClient: true,
