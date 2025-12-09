@@ -164,6 +164,12 @@ test('CodeBuild: environment variables specified in multiple places are correctl
   const securityGroup = new ec2.SecurityGroup(pipelineStack, 'SecurityGroup', {
     vpc,
   });
+  const bucket = s3.Bucket.fromBucketArn(pipelineStack, 'Bucket', 'arn:aws:s3:::this-particular-bucket');
+  const fleet = new cbuild.Fleet(pipelineStack, 'Fleet', {
+    baseCapacity: 1,
+    computeType: cbuild.FleetComputeType.SMALL,
+    environmentType: cbuild.EnvironmentType.LINUX_CONTAINER,
+  });
 
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk-1', {
     synth: new CodeBuildStep('Synth', {
@@ -186,6 +192,8 @@ test('CodeBuild: environment variables specified in multiple places are correctl
           computeType: cbuild.DockerServerComputeType.SMALL,
           securityGroups: [securityGroup],
         },
+        certificate: { bucket, objectKey: 'my-certificate' },
+        fleet,
       },
     }),
   });
@@ -232,6 +240,10 @@ test('CodeBuild: environment variables specified in multiple places are correctl
         SecurityGroupIds: [{
           'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'],
         }],
+      },
+      Certificate: 'arn:aws:s3:::this-particular-bucket/my-certificate',
+      Fleet: {
+        FleetArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('Fleet.*'), 'Arn'] },
       },
     }),
     Source: {
