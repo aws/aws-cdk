@@ -22,7 +22,7 @@ export class CfnThingApplicationLogs {
    */
   public toLogGroup(logGroup: interfaces.aws_logs.ILogGroupRef): CfnThingLogsMixin {
     {
-      return new CfnThingLogsMixin("APPLICATION_LOGS", "CWL", new logsDelivery.LogGroupLogsDelivery(logGroup));
+      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.LogGroupLogsDelivery(logGroup));
     }
   }
 
@@ -31,7 +31,7 @@ export class CfnThingApplicationLogs {
    */
   public toFirehose(deliveryStream: interfaces.aws_kinesisfirehose.IDeliveryStreamRef): CfnThingLogsMixin {
     {
-      return new CfnThingLogsMixin("APPLICATION_LOGS", "FH", new logsDelivery.FirehoseLogsDelivery(deliveryStream));
+      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.FirehoseLogsDelivery(deliveryStream));
     }
   }
 
@@ -40,7 +40,7 @@ export class CfnThingApplicationLogs {
    */
   public toS3(bucket: interfaces.aws_s3.IBucketRef): CfnThingLogsMixin {
     {
-      return new CfnThingLogsMixin("APPLICATION_LOGS", "S3", new logsDelivery.S3LogsDelivery(bucket, {
+      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.S3LogsDelivery(bucket, {
         permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2
       }));
     }
@@ -60,7 +60,7 @@ export class CfnThingAccessLogs {
    */
   public toLogGroup(logGroup: interfaces.aws_logs.ILogGroupRef): CfnThingLogsMixin {
     {
-      return new CfnThingLogsMixin("ACCESS_LOGS", "CWL", new logsDelivery.LogGroupLogsDelivery(logGroup));
+      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.LogGroupLogsDelivery(logGroup));
     }
   }
 
@@ -69,7 +69,7 @@ export class CfnThingAccessLogs {
    */
   public toFirehose(deliveryStream: interfaces.aws_kinesisfirehose.IDeliveryStreamRef): CfnThingLogsMixin {
     {
-      return new CfnThingLogsMixin("ACCESS_LOGS", "FH", new logsDelivery.FirehoseLogsDelivery(deliveryStream));
+      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.FirehoseLogsDelivery(deliveryStream));
     }
   }
 
@@ -78,7 +78,7 @@ export class CfnThingAccessLogs {
    */
   public toS3(bucket: interfaces.aws_s3.IBucketRef): CfnThingLogsMixin {
     {
-      return new CfnThingLogsMixin("ACCESS_LOGS", "S3", new logsDelivery.S3LogsDelivery(bucket, {
+      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.S3LogsDelivery(bucket, {
         permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2
       }));
     }
@@ -98,21 +98,17 @@ export class CfnThingLogsMixin extends core.Mixin implements core.IMixin {
 
   protected readonly logType: string;
 
-  protected readonly destinationType: string;
-
   protected readonly logDelivery: logsDelivery.ILogsDelivery;
 
   /**
    * Create a mixin to enable vended logs for \`AWS::Some::Resource\`.
    *
    * @param logType Type of logs that are getting vended
-   * @param destinationType Resource type of the delivery destination
    * @param logDelivery Object in charge of setting up the delivery source, delivery destination, and delivery connection
    */
-  public constructor(logType: string, destinationType: string, logDelivery: logsDelivery.ILogsDelivery) {
+  public constructor(logType: string, logDelivery: logsDelivery.ILogsDelivery) {
     super();
     this.logType = logType;
-    this.destinationType = destinationType;
     this.logDelivery = logDelivery;
   }
 

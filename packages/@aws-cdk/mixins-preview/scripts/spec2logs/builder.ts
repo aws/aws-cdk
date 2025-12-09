@@ -162,7 +162,7 @@ class LogsHelper extends ClassType {
             const permissions = this.resource.vendedLogs!.permissionsVersion === 'V2' ? MIXINS_LOGS_DELIVERY.S3LogsDeliveryPermissionsVersion.V2 : MIXINS_LOGS_DELIVERY.S3LogsDeliveryPermissionsVersion.V1;
             toS3.addBody(stmt.block(
               stmt.ret(
-                mixin.newInstance(expr.str(this.logType), expr.str(dest), new NewExpression(MIXINS_LOGS_DELIVERY.S3LogsDelivery, paramS3,
+                mixin.newInstance(expr.str(this.logType), new NewExpression(MIXINS_LOGS_DELIVERY.S3LogsDelivery, paramS3,
                   expr.object({ permissionsVersion: permissions }))),
               ),
             ));
@@ -183,7 +183,7 @@ class LogsHelper extends ClassType {
 
             toCWL.addBody(stmt.block(
               stmt.ret(
-                mixin.newInstance(expr.str(this.logType), expr.str(dest), new NewExpression(MIXINS_LOGS_DELIVERY.LogGroupLogsDelivery, paramCWL)),
+                mixin.newInstance(expr.str(this.logType), new NewExpression(MIXINS_LOGS_DELIVERY.LogGroupLogsDelivery, paramCWL)),
               ),
             ));
             break;
@@ -203,7 +203,7 @@ class LogsHelper extends ClassType {
 
             toFH.addBody(stmt.block(
               stmt.ret(
-                mixin.newInstance(expr.str(this.logType), expr.str(dest), new NewExpression(MIXINS_LOGS_DELIVERY.FirehoseLogsDelivery, paramFH)),
+                mixin.newInstance(expr.str(this.logType), new NewExpression(MIXINS_LOGS_DELIVERY.FirehoseLogsDelivery, paramFH)),
               ),
             ));
             break;
@@ -218,7 +218,7 @@ class LogsHelper extends ClassType {
 
             toXRAY.addBody(stmt.block(
               stmt.ret(
-                mixin.newInstance(expr.str(this.logType), expr.str(dest), new NewExpression(MIXINS_LOGS_DELIVERY.XRayLogsDelivery)),
+                mixin.newInstance(expr.str(this.logType), new NewExpression(MIXINS_LOGS_DELIVERY.XRayLogsDelivery)),
               ),
             ));
             break;
@@ -286,13 +286,6 @@ class LogsMixin extends ClassType {
     });
 
     this.addProperty({
-      name: 'destinationType',
-      type: Type.STRING,
-      protected: true,
-      immutable: true,
-    });
-
-    this.addProperty({
       name: 'logDelivery',
       type: MIXINS_LOGS_DELIVERY.ILogsDelivery,
       protected: true,
@@ -311,12 +304,6 @@ class LogsMixin extends ClassType {
       documentation: 'Type of logs that are getting vended',
     });
 
-    const destinationType = init.addParameter({
-      name: 'destinationType',
-      type: Type.STRING,
-      documentation: 'Resource type of the delivery destination',
-    });
-
     const delivery = init.addParameter({
       name: 'logDelivery',
       type: MIXINS_LOGS_DELIVERY.ILogsDelivery,
@@ -326,7 +313,6 @@ class LogsMixin extends ClassType {
     init.addBody(
       expr.sym(new ThingSymbol('super', this.scope)).call(),
       stmt.assign($this.logType, logType),
-      stmt.assign($this.destinationType, destinationType),
       stmt.assign($this.logDelivery, delivery),
     );
   }
