@@ -18,8 +18,11 @@ export class CdkCore extends ExternalModule {
   public readonly ITaggableV2 = Type.fromName(this, 'ITaggableV2');
   public readonly IResolvable = Type.fromName(this, 'IResolvable');
   public readonly Stack = Type.fromName(this, 'Stack');
+  public readonly Names = $T(Type.fromName(this, 'Names'));
+  public readonly Arn = $T(Type.fromName(this, 'Arn'));
 
   public readonly objectToCloudFormation = makeCallableExpr(this, 'objectToCloudFormation');
+  public readonly eventPatternToCloudFormation = makeCallableExpr(this, 'eventPatternToCloudFormation');
   public readonly stringToCloudFormation = makeCallableExpr(this, 'stringToCloudFormation');
   public readonly dateToCloudFormation = makeCallableExpr(this, 'dateToCloudFormation');
   public readonly booleanToCloudFormation = makeCallableExpr(this, 'booleanToCloudFormation');
@@ -31,6 +34,7 @@ export class CdkCore extends ExternalModule {
   public readonly unionMapper = makeCallableExpr(this, 'unionMapper');
   public readonly requireProperty = makeCallableExpr(this, 'requireProperty');
   public readonly isResolvableObject = makeCallableExpr(this, 'isResolvableObject');
+  public readonly mapArrayInPlace = makeCallableExpr(this, 'mapArrayInPlace');
 
   public readonly ValidationResult = $T(Type.fromName(this, 'ValidationResult'));
   public readonly VALIDATION_SUCCESS = makeCallableExpr(this, 'VALIDATION_SUCCESS');
@@ -48,6 +52,9 @@ export class CdkCore extends ExternalModule {
   public readonly validateNumber = makeCallableExpr(this, 'validateNumber');
   public readonly validateString = makeCallableExpr(this, 'validateString');
 
+  public readonly AWSEventMetadata = Type.fromName(this, 'AWSEventMetadata');
+  public readonly AWSEventMetadataProps = Type.fromName(this, 'AWSEventMetadataProps');
+
   constructor(fqn: string) {
     super(fqn);
   }
@@ -62,6 +69,18 @@ export class CdkCore extends ExternalModule {
 
   public tokenAsList(arg: Expression) {
     return this.Token.asList(arg);
+  }
+
+  public uniqueId(arg: Expression) {
+    return this.Names.uniqueId(arg);
+  }
+
+  public uniqueResourceName(...args: Expression[]) {
+    return this.Names.uniqueResourceName(...args);
+  }
+
+  public arnFormat(...args: Expression[]) {
+    return this.Arn.format(...args);
   }
 }
 

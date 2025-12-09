@@ -1,10 +1,10 @@
-import { Resource, Stack, IResource, Duration } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import * as iot from 'aws-cdk-lib/aws-iot';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as iot from 'aws-cdk-lib/aws-iot';
 import * as sns from 'aws-cdk-lib/aws-sns';
+import { Resource, Stack, IResource, Duration } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
 
 /**
  * Represents AWS IoT Audit Configuration

@@ -1,5 +1,5 @@
 import { DefinitionReference, Property } from '@aws-cdk/service-spec-types';
-import { expr, Expression, Module, Type } from '@cdklabs/typewriter';
+import { CallableDeclaration, expr, Expression, Lambda, Module, Parameter, Type } from '@cdklabs/typewriter';
 import { CDK_CORE } from './cdk';
 import { RelationshipDecider, Relationship, GENERATE_RELATIONSHIPS_ON_TYPES } from './relationship-decider';
 import { NON_RESOLVABLE_PROPERTY_NAMES } from './tagging';
@@ -78,13 +78,13 @@ export class ResolverBuilder {
       : Type.distinctUnionOf(resolvableType, ...newTypes);
 
     const typeDisplayNames = [
-      ...relationships.map(r => r.typeDisplayName),
+      ...[...new Set(relationships.map(r => r.typeDisplayName))],
       resolvableType.arrayOfType?.toString() ?? resolvableType.toString(),
     ].join(' | ');
 
     // Generates code like:
     // For single value T | string : (props.xx as IxxxRef)?.xxxRef?.xxxArn ?? cdk.ensureStringOrUndefined(props.xxx, "xxx", "iam.IxxxRef | string");
-    // For array <T | string>[]: (props.xx?.forEach((item: T | string, i: number, arr: Array<T | string>) => { arr[i] = (item as T)?.xxxRef?.xx ?? cdk.ensureStringOrUndefined(item, "xxx", "lambda.T | string"); }), props.xxx as Array<string>);
+    // For array <T | string>[]: cdk.mapArrayInPlace(props.layers, (item: IxxxRef | string) => (item as IxxxRef)?.xxxRef?.xxxArn ?? cdk.ensureStringOrUndefined(item, "xxx", "lambda.IxxxRef | string"))
     // Ensures that arn properties always appear first in the chain as they are more general
     const arnRels = relationships.filter(r => r.propName.toLowerCase().endsWith('arn'));
     const otherRels = relationships.filter(r => !r.propName.toLowerCase().endsWith('arn'));
@@ -94,11 +94,10 @@ export class ResolverBuilder {
         .map(r => `(${itemName} as ${r.referenceType})?.${r.referenceName}?.${r.propName}`),
       `cdk.ensureStringOrUndefined(${itemName}, "${name}", "${typeDisplayNames}")`,
     ].join(' ?? ');
-    const resolver = (_: Expression) => {
-      if (resolvableType.arrayOfType) {
-        return expr.directCode(
-          `(props.${name}?.forEach((item: ${propType.arrayOfType!.toString()}, i: number, arr: ${propType.toString()}) => { arr[i] = ${buildChain('item')}; }), props.${name} as ${resolvableType.toString()})`,
-        );
+    const resolver = (props: Expression) => {
+      if (propType.arrayOfType) {
+        const mapper = this.createMapperLambda(propType.arrayOfType, expr.directCode(buildChain('item')));
+        return CDK_CORE.mapArrayInPlace.call(expr.get(props, name), mapper);
       } else {
         return expr.directCode(buildChain(`props.${name}`));
       }
@@ -120,20 +119,35 @@ export class ResolverBuilder {
 
     const resolver = (props: Expression) => {
       const propValue = expr.get(props, name);
-      const isArray = baseType.arrayOfType !== undefined;
+      // Prop can be of type IResolvable | Array<IResolvable | CfnProperty>
+      const arrayType = resolvableType.unionOfTypes?.find(t => t.arrayOfType)?.arrayOfType;
 
-      const flattenCall = isArray
-        ? expr.directCode(`props.${name}.forEach((item: any, i: number, arr: any[]) => { arr[i] = ${functionName}(item) }), props.${name}`)
-        : expr.ident(functionName).call(propValue);
+      let flattenCall;
+      if (arrayType) {
+        const mapper = this.createMapperLambda(arrayType, expr.ident(functionName).call(expr.ident('item')));
+        flattenCall = CDK_CORE.mapArrayInPlace.call(propValue, mapper);
+      } else {
+        flattenCall = expr.ident(functionName).call(propValue);
+      }
 
       const condition = optional
         ? expr.cond(expr.not(propValue)).then(expr.UNDEFINED).else(flattenCall)
         : flattenCall;
 
-      return isArray
+      return arrayType
         ? expr.cond(CDK_CORE.isResolvableObject(propValue)).then(propValue).else(condition)
         : condition;
     };
     return { name, propType: resolvableType, resolvableType, baseType, resolver };
+  }
+
+  /**
+   * Creates an arrow function `(item: T) => body` for use with array mapping.
+   * Parameter requires a CallableDeclaration scope, but Lambda is an anonymous
+   * expression so we provide a placeholder.
+   */
+  private createMapperLambda(itemType: Type, body: Expression): Lambda {
+    const lambdaScope: CallableDeclaration = { parameters: [], returnType: Type.VOID, name: 'LambdaScope' };
+    return new Lambda([new Parameter(lambdaScope, { name: 'item', type: itemType })], body);
   }
 }

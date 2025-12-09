@@ -4,7 +4,7 @@ import * as s3 from '../../aws-s3';
 import { App, CfnResource, Resource, Stack } from '../../core';
 import { AddToPrincipalPolicyResult, AnyPrincipal, CfnPolicy, Grant, Group, IResourceWithPolicy, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('IAM policy', () => {
   let app: App;

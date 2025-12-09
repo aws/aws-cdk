@@ -1,1 +1,1 @@
-export * from './budgets.generated';
+export * from './cfn-props-mixins.generated';
