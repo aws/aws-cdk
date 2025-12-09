@@ -1,5 +1,5 @@
-import * as elbv2 from '../../../aws-cdk-lib/aws-elasticloadbalancingv2';
 import { Template } from '../../assertions';
+import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { ArnPrincipal } from '../../aws-iam';
 import { Stack } from '../../core';
 
