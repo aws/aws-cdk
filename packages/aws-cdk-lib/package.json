@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "description": "Version 2 of the AWS Cloud Development Kit library",
   "main": "index.js",
-  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
