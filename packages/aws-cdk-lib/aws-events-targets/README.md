@@ -725,8 +725,6 @@ Use the `SqsQueue` target to send events to an SQS queue.
 The code snippet below creates an event rule that sends events to an SQS queue every hour:
 
 ```ts
-import * as sqs from 'aws-cdk-lib/aws-sqs';
-
 const queue = new sqs.Queue(this, 'MyQueue');
 
 const rule = new events.Rule(this, 'Rule', {
