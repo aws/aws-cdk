@@ -3144,6 +3144,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'architecture': '*',
       'runtimeManagementMode': '*',
       'tenancyConfig': '*',
+      'durableConfig': {
+        'executionTimeout': '*'
+      },
       'logGroup': {
         'logGroupArn': '*',
         'logGroupName': '*',
@@ -3404,6 +3407,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'architecture': '*',
       'runtimeManagementMode': '*',
       'tenancyConfig': '*',
+      'durableConfig': {
+        'executionTimeout': '*'
+      },
       'logGroup': {
         'logGroupArn': '*',
         'logGroupName': '*',
@@ -18128,6 +18134,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'architecture': '*',
       'runtimeManagementMode': '*',
       'tenancyConfig': '*',
+      'durableConfig': {
+        'executionTimeout': '*'
+      },
       'logGroup': {
         'logGroupArn': '*',
         'logGroupName': '*',
@@ -18438,6 +18447,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'architecture': '*',
       'runtimeManagementMode': '*',
       'tenancyConfig': '*',
+      'durableConfig': {
+        'executionTimeout': '*'
+      },
       'logGroup': {
         'logGroupArn': '*',
         'logGroupName': '*',
@@ -18791,6 +18803,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'architecture': '*',
       'runtimeManagementMode': '*',
       'tenancyConfig': '*',
+      'durableConfig': {
+        'executionTimeout': '*'
+      },
       'logGroup': {
         'logGroupArn': '*',
         'logGroupName': '*',
@@ -19127,6 +19142,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'architecture': '*',
       'runtimeManagementMode': '*',
       'tenancyConfig': '*',
+      'durableConfig': {
+        'executionTimeout': '*'
+      },
       'logGroup': {
         'logGroupArn': '*',
         'logGroupName': '*',
@@ -24365,6 +24383,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'architecture': '*',
       'runtimeManagementMode': '*',
       'tenancyConfig': '*',
+      'durableConfig': {
+        'executionTimeout': '*'
+      },
       'logGroup': {
         'logGroupArn': '*',
         'logGroupName': '*',
@@ -26724,6 +26745,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'architecture': '*',
       'runtimeManagementMode': '*',
       'tenancyConfig': '*',
+      'durableConfig': {
+        'executionTimeout': '*'
+      },
       'logGroup': {
         'logGroupArn': '*',
         'logGroupName': '*',

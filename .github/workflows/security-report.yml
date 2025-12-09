@@ -1,0 +1,66 @@
+name: Security Report
+on:
+  workflow_run:
+    workflows: ["Security Guardian"]
+    types: [completed]
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+      actions: read
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v6
+        with:
+          name: security-guardian-reports
+          path: test-results/
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+          repository: ${{ github.repository }}
+      
+      - name: Get PR info
+        id: pr_info
+        run: |
+          echo "pr_number=$(cat test-results/pr_number)" >> "$GITHUB_OUTPUT"
+          echo "pr_sha=$(cat test-results/pr_sha)" >> "$GITHUB_OUTPUT"
+          echo "PR: $(cat test-results/pr_number), SHA: $(cat test-results/pr_sha)"
+      - name: Publish Security Test Results 
+        uses: mikepenz/action-junit-report@v6
+        if: always()
+        with:
+          report_paths: 'test-results/**/cfn-guard-static.xml'
+          check_name: 'Security Guardian Results'
+          exclude_sources: 'node_modules,dist'
+          commit: ${{ steps.pr_info.outputs.pr_sha }}
+          check_annotations: true
+          comment: true
+          pr_id: ${{ steps.pr_info.outputs.pr_number }}
+          detailed_summary: true
+          include_passed: false
+          fail_on_failure: false
+          group_suite: true
+          include_skipped: false
+          check_title_template: '{{TEST_NAME}}'
+          include_empty_in_summary: false
+
+      - name: Publish Security Test Results for resolved templates
+        uses: mikepenz/action-junit-report@v6
+        if: always()
+        with:
+          report_paths: 'test-results/**/cfn-guard-resolved.xml'
+          check_name: 'Security Guardian Results with resolved templates'
+          exclude_sources: 'node_modules,dist'
+          commit: ${{ steps.pr_info.outputs.pr_sha }}
+          check_annotations: true
+          comment: true
+          pr_id: ${{ steps.pr_info.outputs.pr_number }}
+          detailed_summary: true
+          include_passed: false
+          fail_on_failure: false
+          group_suite: true
+          include_skipped: false
+          check_title_template: '{{TEST_NAME}}'
+          include_empty_in_summary: false
