@@ -223,7 +223,7 @@ policy is set to `RemovalPolicy.DESTROY`, the repository will be deleted as long
 as it does not contain any images.
 
 To override this and force all images to get deleted during repository deletion,
-enable the `emptyOnDelete` option as well as setting the removal policy to  
+enable the `emptyOnDelete` option as well as setting the removal policy to 
 `RemovalPolicy.DESTROY`.
 
 ```ts
