@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/7b67fe9eaa7086fd07edddfb8d2ab1c6328babe110d96e9d587ef2c0f3e309f7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/40a193663ce8317c17852773ad561f3338a86d2f865ac8bc3e8cc9f313891b04.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -59,21 +59,30 @@
             "type": "aws:cdk:analytics:construct",
             "data": {
               "defaultRootObject": "*",
-              "defaultBehavior": {
-                "origin": "*",
-                "viewerProtocolPolicy": "redirect-to-https"
-              },
-              "domainNames": "*",
-              "certificate": "*",
+              "originConfigs": [
+                {
+                  "behaviors": [
+                    {
+                      "isDefaultBehavior": true
+                    }
+                  ],
+                  "customOriginSource": {
+                    "domainName": "*",
+                    "originProtocolPolicy": "http-only"
+                  }
+                }
+              ],
+              "viewerCertificate": "*",
               "comment": "*",
-              "priceClass": "PriceClass_All"
+              "priceClass": "PriceClass_All",
+              "viewerProtocolPolicy": "redirect-to-https"
             }
           }
         ],
-        "/integ-https-redirect/redirect/RedirectDistribution/Resource": [
+        "/integ-https-redirect/redirect/RedirectDistribution/CFDistribution": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "redirectRedirectDistribution5423F951"
+            "data": "redirectRedirectDistributionCFDistribution1A4C48E3"
           }
         ],
         "/integ-https-redirect/redirect/RedirectAliasRecord700dc5": [
@@ -174,6 +183,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "redirectRedirectDistribution5423F951": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "redirectRedirectDistribution5423F951",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -818,11 +836,6 @@
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
-          },
-          "@aws-cdk/aws-route53-patterns:useDistribution": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
         }
       }

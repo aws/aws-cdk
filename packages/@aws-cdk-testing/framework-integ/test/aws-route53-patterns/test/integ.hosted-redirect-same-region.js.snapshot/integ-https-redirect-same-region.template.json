@@ -54,7 +54,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "redirectRedirectDistribution5423F951": {
+  "redirectRedirectDistributionCFDistribution1A4C48E3": {
    "Type": "AWS::CloudFront::Distribution",
    "Properties": {
     "DistributionConfig": {
@@ -63,9 +63,22 @@
      ],
      "Comment": "Redirect to aws.amazon.com from integ-same-region.example.com",
      "DefaultCacheBehavior": {
-      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "AllowedMethods": [
+       "GET",
+       "HEAD"
+      ],
+      "CachedMethods": [
+       "GET",
+       "HEAD"
+      ],
       "Compress": true,
-      "TargetOriginId": "integhttpsredirectsameregionredirectRedirectDistributionOrigin1609D30F4",
+      "ForwardedValues": {
+       "Cookies": {
+        "Forward": "none"
+       },
+       "QueryString": false
+      },
+      "TargetOriginId": "origin1",
       "ViewerProtocolPolicy": "redirect-to-https"
      },
      "DefaultRootObject": "",
@@ -74,8 +87,14 @@
      "IPV6Enabled": true,
      "Origins": [
       {
+       "ConnectionAttempts": 3,
+       "ConnectionTimeout": 10,
        "CustomOriginConfig": {
+        "HTTPPort": 80,
+        "HTTPSPort": 443,
+        "OriginKeepaliveTimeout": 5,
         "OriginProtocolPolicy": "http-only",
+        "OriginReadTimeout": 30,
         "OriginSSLProtocols": [
          "TLSv1.2"
         ]
@@ -96,7 +115,7 @@
          }
         ]
        },
-       "Id": "integhttpsredirectsameregionredirectRedirectDistributionOrigin1609D30F4"
+       "Id": "origin1"
       }
      ],
      "PriceClass": "PriceClass_All",
@@ -104,7 +123,6 @@
       "AcmCertificateArn": {
        "Ref": "redirectRedirectCertificateD6C59F7F"
       },
-      "MinimumProtocolVersion": "TLSv1.2_2021",
       "SslSupportMethod": "sni-only"
      }
     }
@@ -116,7 +134,7 @@
     "AliasTarget": {
      "DNSName": {
       "Fn::GetAtt": [
-       "redirectRedirectDistribution5423F951",
+       "redirectRedirectDistributionCFDistribution1A4C48E3",
        "DomainName"
       ]
      },
@@ -141,7 +159,7 @@
     "AliasTarget": {
      "DNSName": {
       "Fn::GetAtt": [
-       "redirectRedirectDistribution5423F951",
+       "redirectRedirectDistributionCFDistribution1A4C48E3",
        "DomainName"
       ]
      },

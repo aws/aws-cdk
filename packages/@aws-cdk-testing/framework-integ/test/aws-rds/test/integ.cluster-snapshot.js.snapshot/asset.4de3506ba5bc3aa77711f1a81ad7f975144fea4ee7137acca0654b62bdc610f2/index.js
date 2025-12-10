@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.onEventHandler = onEventHandler;
 exports.isCompleteHandler = isCompleteHandler;
-/* eslint-disable no-console */
 /// <reference path="../../../../../../../node_modules/aws-cdk-lib/custom-resources/lib/provider-framework/types.d.ts" />
 const client_rds_1 = require("@aws-sdk/client-rds");
 async function onEventHandler(event) {

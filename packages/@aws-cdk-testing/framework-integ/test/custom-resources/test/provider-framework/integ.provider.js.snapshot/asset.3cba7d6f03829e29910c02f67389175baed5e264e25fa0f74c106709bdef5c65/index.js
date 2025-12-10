@@ -4,7 +4,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.onEvent = onEvent;
 exports.putObject = putObject;
 exports.deleteObject = deleteObject;
-/* eslint-disable no-console */
 const client_s3_1 = require("@aws-sdk/client-s3");
 const api = require("./api");
 const s3 = new client_s3_1.S3();
