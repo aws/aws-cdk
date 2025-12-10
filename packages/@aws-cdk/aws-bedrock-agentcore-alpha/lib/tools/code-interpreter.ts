@@ -3,7 +3,9 @@ import {
   ArnFormat,
   IResource,
   Lazy,
+  Names,
   Resource,
+  ResourceProps,
   ValidationError,
 } from 'aws-cdk-lib';
 import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
@@ -194,8 +196,8 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
    */
   protected _connections: ec2.Connections | undefined;
 
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
   }
 
   /**
@@ -424,9 +426,9 @@ export interface CodeInterpreterCustomProps {
    * Valid characters are a-z, A-Z, 0-9, _ (underscore)
    * The name must start with a letter and can be up to 48 characters long
    * Pattern: [a-zA-Z][a-zA-Z0-9_]{0,47}
-   * @required - Yes
+   * @default - auto generate
    */
-  readonly codeInterpreterCustomName: string;
+  readonly codeInterpreterCustomName?: string;
 
   /**
    * Optional description for the code interpreter
@@ -618,15 +620,20 @@ export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
   // ------------------------------------------------------
   private readonly __resource: agent_core.CfnCodeInterpreterCustom;
 
-  constructor(scope: Construct, id: string, props: CodeInterpreterCustomProps) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: CodeInterpreterCustomProps = {}) {
+    super(scope, id, {
+      physicalName: props.codeInterpreterCustomName ??
+        Lazy.string({
+          produce: () => Names.uniqueResourceName(this, { maxLength: 48 }).toLowerCase(),
+        }),
+    });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
     // ------------------------------------------------------
     // Set properties and defaults
     // ------------------------------------------------------
-    this.name = props.codeInterpreterCustomName;
+    this.name = this.physicalName;
     this.description = props.description;
     this.networkConfiguration = props.networkConfiguration ?? CodeInterpreterNetworkConfiguration.usingPublicNetwork();
     this.executionRole = props.executionRole ?? this._createCodeInterpreterRole();

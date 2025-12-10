@@ -4,9 +4,11 @@ import {
   IResource,
   Lazy,
   Resource,
+  ResourceProps,
   Token,
   Stack,
   ValidationError,
+  Names,
 } from 'aws-cdk-lib';
 import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
 import {
@@ -229,8 +231,8 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
    */
   protected _connections: ec2.Connections | undefined;
 
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
   }
 
   /**
@@ -506,9 +508,9 @@ export interface BrowserCustomProps {
    * Valid characters are a-z, A-Z, 0-9, _ (underscore)
    * The name must start with a letter and can be up to 48 characters long
    * Pattern: [a-zA-Z][a-zA-Z0-9_]{0,47}
-   * @required - Yes
+   * @default - auto generate
    */
-  readonly browserCustomName: string;
+  readonly browserCustomName?: string;
 
   /**
    * Optional description for the browser
@@ -724,22 +726,27 @@ export class BrowserCustom extends BrowserCustomBase {
   // ------------------------------------------------------
   // CONSTRUCTOR
   // ------------------------------------------------------
-  constructor(scope: Construct, id: string, props: BrowserCustomProps) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: BrowserCustomProps = {}) {
+    super(scope, id, {
+      physicalName: props?.browserCustomName ??
+        Lazy.string({
+          produce: () => Names.uniqueResourceName(this, { maxLength: 48 }).toLowerCase(),
+        }),
+    });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
     // ------------------------------------------------------
     // Set properties and defaults
     // ------------------------------------------------------
-    this.name = props.browserCustomName;
-    this.description = props.description;
-    this.networkConfiguration = props.networkConfiguration ?? BrowserNetworkConfiguration.usingPublicNetwork();
-    this.recordingConfig = props.recordingConfig ?? { enabled: false };
-    this.executionRole = props.executionRole ?? this._createBrowserRole();
+    this.name = this.physicalName;
+    this.description = props?.description;
+    this.networkConfiguration = props?.networkConfiguration ?? BrowserNetworkConfiguration.usingPublicNetwork();
+    this.recordingConfig = props?.recordingConfig ?? { enabled: false };
+    this.executionRole = props?.executionRole ?? this._createBrowserRole();
     this.grantPrincipal = this.executionRole;
-    this.tags = props.tags;
-    this.browserSigning = props.browserSigning ?? BrowserSigning.DISABLED;
+    this.tags = props?.tags;
+    this.browserSigning = props?.browserSigning ?? BrowserSigning.DISABLED;
 
     // Validate browser name
     throwIfInvalid(this._validateBrowserName, this.name);
