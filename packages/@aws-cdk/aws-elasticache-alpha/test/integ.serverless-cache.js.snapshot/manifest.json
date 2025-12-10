@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/98b5d45a8ef7bf850057971541951c35dc0581f59fbb35245b1702ab39b3ffb2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/42315d41db60e2a391348b860c0404982c771fe1d9f77a6e01f32a24d92dca03.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -354,12 +354,29 @@
             "data": {
               "vpc": "*"
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
           }
         ],
         "/aws-cdk-serverless-cache/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SecurityGroupDD263621"
+          }
+        ],
+        "/aws-cdk-serverless-cache/SecurityGroup/from awscdkserverlesscacheClientSG6D18D5F9:{IndirectPort}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityGroupfromawscdkserverlesscacheClientSG6D18D5F9IndirectPortFE633A67"
           }
         ],
         "/aws-cdk-serverless-cache/User": [
@@ -398,6 +415,35 @@
             "data": "Cache18F6EE16"
           }
         ],
+        "/aws-cdk-serverless-cache/ClientSG": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
+          }
+        ],
+        "/aws-cdk-serverless-cache/ClientSG/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClientSG4CAE4F40"
+          }
+        ],
         "/aws-cdk-serverless-cache/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -430,7 +476,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/882cfe33218bc8388b9f6a6738bebef45314ad13d87027c03bad0b425bd09ff7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/202986426932f26cd0a903424d9e70d3f334cb55dc567dcd403f640a614998bc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -506,6 +552,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/aws-cdk-serverless-cache-integ/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-cdk-serverless-cache-integ/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
