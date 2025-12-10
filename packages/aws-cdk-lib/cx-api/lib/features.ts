@@ -1727,7 +1727,6 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
-<<<<<<< HEAD
   [CLOUDFRONT_STABLE_PUBLIC_KEY_CALLER_REFERENCE]: {
     type: FlagType.BugFix,
     summary: 'Use stable caller reference for CloudFront PublicKey to prevent update failures',

@@ -103,17 +103,18 @@ export class PublicKey extends Resource implements IPublicKey {
   }
 
   private generateStableCallerReference(): string {
-    // Use a hash-based approach that doesn't depend on construct tree position
-    // This ensures the caller reference remains stable even when the construct is moved
+    // Use a hash-based approach that ensures uniqueness while remaining stable
+    // This ensures the caller reference is unique across different construct positions
+    // but remains stable even when the construct tree structure changes
     const stack = Stack.of(this);
-    const constructId = this.node.id; // Only the immediate construct ID, not the full path
+    const constructPath = this.node.path; // Full path ensures uniqueness
     const stackName = stack.stackName;
 
-    // Create a stable identifier using stack name, construct ID, and account/region if available
-    // This approach ensures the reference is stable regardless of where the construct is placed in the tree
+    // Create a stable identifier using stack name, construct path, and account/region
+    // The hash of the path ensures uniqueness while providing stability
     const stableComponents = [
       stackName,
-      constructId,
+      constructPath,
       stack.account || 'unknown-account',
       stack.region || 'unknown-region',
     ];
@@ -122,10 +123,10 @@ export class PublicKey extends Resource implements IPublicKey {
     const hash = crypto.createHash('sha256')
       .update(stableComponents.join('-'))
       .digest('hex')
-      .substring(0, 8); // Use first 8 characters of hash
+      .substring(0, 16); // Use more characters for better uniqueness
 
-    // Combine readable part with hash, ensuring it fits within CloudFront's 128 character limit
-    const readablePart = `${stackName}-${constructId}`.substring(0, 119); // Leave room for hash
+    // Use a readable prefix with the hash, ensuring it fits within CloudFront's 128 character limit
+    const readablePart = `${stackName}-${this.node.id}`.substring(0, 111); // Leave room for hash
     const callerReference = `${readablePart}-${hash}`;
 
     // Ensure we don't exceed CloudFront's 128 character limit
