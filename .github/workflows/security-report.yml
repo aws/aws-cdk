@@ -10,7 +10,6 @@ jobs:
     permissions:
       checks: write
       pull-requests: write
-      id-token: write
       actions: read
     steps:
       - name: Download artifacts
