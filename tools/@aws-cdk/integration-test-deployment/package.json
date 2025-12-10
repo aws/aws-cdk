@@ -19,7 +19,7 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-sdk/client-sts": "3.632.0",
-    "@cdklabs/cdk-atmosphere-client": "^0.0.77",
+    "@cdklabs/cdk-atmosphere-client": "^0.0.78",
     "jest": "^29",
     "ts-jest": "^29.4.6",
     "typescript": "~5.5.4"
