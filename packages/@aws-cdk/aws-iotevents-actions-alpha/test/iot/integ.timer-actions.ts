@@ -4,8 +4,8 @@
  *   * aws iotevents-data batch-put-message --region=us-east-1 --messages=messageId=(date | md5),inputName=test_input,payload=(echo '{"payload":{"deviceId":"000"}}' | base64)
  */
 import * as iotevents from '@aws-cdk/aws-iotevents-alpha';
-import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as actions from '../../lib';
 
 /**
