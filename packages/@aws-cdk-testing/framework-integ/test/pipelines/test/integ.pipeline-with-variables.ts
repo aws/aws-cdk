@@ -23,6 +23,19 @@ class PipelineStack extends Stack {
         // }),
         commands: ['mkdir cdk.out', 'touch cdk.out/dummy'],
       }),
+      codeBuildDefaults: {
+        buildEnvironment: {
+          fleet: new codebuild.Fleet(this, 'Fleet', {
+            baseCapacity: 1,
+            computeType: codebuild.FleetComputeType.SMALL,
+            environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+          }),
+          certificate: {
+            bucket: sourceBucket,
+            objectKey: 'my-certificate.pem',
+          },
+        },
+      },
       selfMutation: false,
     });
 

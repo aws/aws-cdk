@@ -86,6 +86,10 @@ export class CdkCore extends ExternalModule {
 
 export class Interfaces extends ExternalModule {
   public readonly IEnvironmentAware = Type.fromName(this, 'IEnvironmentAware');
+
+  public readonly IBucketRef = Type.fromName(this, 'aws_s3.IBucketRef');
+  public readonly ILogGroupRef = Type.fromName(this, 'aws_logs.ILogGroupRef');
+  public readonly IDeliveryStreamRef = Type.fromName(this, 'aws_kinesisfirehose.IDeliveryStreamRef');
 }
 
 export class CdkInternalHelpers extends ExternalModule {
@@ -122,6 +126,7 @@ export class CdkCloudWatch extends ExternalModule {
   public readonly MetricOptions = Type.fromName(this, 'MetricOptions');
 }
 
+export const CDK_INTERFACES = new Interfaces('aws-cdk-lib/interfaces');
 export const CDK_INTERFACES_ENVIRONMENT_AWARE = new Interfaces('aws-cdk-lib/interfaces/environment-aware');
 export const CDK_CORE = new CdkCore('aws-cdk-lib/core');
 export const CDK_CLOUDWATCH = new CdkCloudWatch('aws-cdk-lib/aws-cloudwatch');
