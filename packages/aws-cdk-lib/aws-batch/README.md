@@ -138,10 +138,10 @@ const computeEnv = new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2Compute
 | Use only specific instance types | `useOptimalInstanceClasses: false` + `instanceTypes: [...]` |
 | Use optimal + additional instances | `instanceClasses: [...]` or `instanceTypes: [...]` |
 
-_Note_: Batch does not allow specifying instance types or classes with different architectures.
+**Note**: Batch does not allow specifying instance types or classes with different architectures.
 For example, `InstanceClass.A1` (ARM) cannot be specified alongside `optimal` (x86_64).
 
-_Note_: `useOptimalInstanceClasses` and `defaultInstanceClasses` cannot be used together.
+**Note**: `useOptimalInstanceClasses` and `defaultInstanceClasses` cannot be used together.
 
 #### Configure AMIs
 
