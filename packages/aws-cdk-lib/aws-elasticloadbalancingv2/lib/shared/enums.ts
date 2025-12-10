@@ -1,3 +1,7 @@
+import { Construct } from 'constructs';
+import { FeatureFlags } from '../../../core';
+import * as cxapi from '../../../cx-api';
+
 /**
  * What kind of addresses to allocate to the load balancer
  */
@@ -107,6 +111,9 @@ export enum SslPolicy {
    * This is the default policy for listeners created using the AWS Management Console
    *
    * This policy includes TLS 1.3, and is backwards compatible with TLS 1.2
+   * 
+   * When feature flag @aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy is enabled,
+   * use getRecommendedTlsPolicy() function to get the post-quantum policy instead.
    */
   RECOMMENDED_TLS = 'ELBSecurityPolicy-TLS13-1-2-2021-06',
 
@@ -426,4 +433,17 @@ export enum DesyncMitigationMode {
    * Receives only requests that comply with RFC 7230
    */
   STRICTEST = 'strictest',
+}
+
+/**
+ * Get the recommended TLS policy based on feature flags
+ * 
+ * @param scope The construct scope to check feature flags against
+ * @returns The appropriate SSL policy string
+ */
+export function getRecommendedTlsPolicy(scope: Construct): string {
+  if (FeatureFlags.of(scope).isEnabled(cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY)) {
+    return SslPolicy.TLS13_12_RES_PQ;
+  }
+  return SslPolicy.RECOMMENDED_TLS;
 }

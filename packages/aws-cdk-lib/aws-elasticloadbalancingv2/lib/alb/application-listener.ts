@@ -15,7 +15,7 @@ import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { ApplicationProtocol, ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType, IpAddressType, SslPolicy } from '../shared/enums';
+import { ApplicationProtocol, ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType, IpAddressType, SslPolicy, getRecommendedTlsPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
 
@@ -282,7 +282,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
       protocol,
       port,
-      sslPolicy: props.sslPolicy,
+      sslPolicy: props.sslPolicy ?? (protocol === ApplicationProtocol.HTTPS ? getRecommendedTlsPolicy(scope) : undefined),
       mutualAuthentication: props.mutualAuthentication ? {
         advertiseTrustStoreCaNames,
         ignoreClientCertificateExpiry: props.mutualAuthentication?.ignoreClientCertificateExpiry,

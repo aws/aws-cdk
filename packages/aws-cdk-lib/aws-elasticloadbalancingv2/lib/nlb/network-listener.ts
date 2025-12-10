@@ -10,7 +10,7 @@ import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { AlpnPolicy, Protocol, SslPolicy } from '../shared/enums';
+import { AlpnPolicy, Protocol, SslPolicy, getRecommendedTlsPolicy } from '../shared/enums';
 import { IListenerCertificate } from '../shared/listener-certificate';
 import { validateNetworkProtocol } from '../shared/util';
 
@@ -208,7 +208,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       protocol: proto,
       port: props.port,
-      sslPolicy: props.sslPolicy,
+      sslPolicy: props.sslPolicy ?? (proto === Protocol.TLS ? getRecommendedTlsPolicy(scope) : undefined),
       certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
       alpnPolicy: props.alpnPolicy ? [props.alpnPolicy] : undefined,
     });

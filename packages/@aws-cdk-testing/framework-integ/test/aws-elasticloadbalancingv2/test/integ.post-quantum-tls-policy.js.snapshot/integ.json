@@ -1,0 +1,22 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "PostQuantumTlsPolicyIntegTest/DefaultTest": {
+      "stacks": [
+        "PostQuantumTlsPolicyIntegStack"
+      ],
+      "diffAssets": true,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": false
+          }
+        }
+      },
+      "stackUpdateWorkflow": true,
+      "assertionStack": "PostQuantumTlsPolicyIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PostQuantumTlsPolicyIntegTestDefaultTestDeployAssert15FD2023"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
