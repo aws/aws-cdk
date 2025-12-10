@@ -2329,6 +2329,14 @@ export class MacBuildImage implements IBuildImage {
   });
 
   /**
+   * Corresponds to the CodeBuild image `aws/codebuild/macos-arm-base:15`.
+   */
+  public static readonly BASE_15: IBuildImage = new MacBuildImage({
+    imageId: 'aws/codebuild/macos-arm-base:15',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+  });
+
+  /**
    * Makes an ARM MacOS build image from a Docker Hub image.
    */
   public static fromDockerRegistry(name: string, options: DockerImageOptions = {}): IBuildImage {
