@@ -1,0 +1,21 @@
+#
+#####################################
+##        NEPTUNE GUARD RULES       ##
+#####################################
+# Rule: NEPTUNE_ENCRYPTION_ENABLED
+# Service: Amazon Neptune
+# Coverage: Cluster Encryption
+
+let neptune_clusters = Resources.*[
+  Type == 'AWS::Neptune::DBCluster'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "NEPTUNE_ENCRYPTION_ENABLED"
+]
+
+# Neptune cluster encryption must be enabled
+rule NEPTUNE_ENCRYPTION_ENABLED when %neptune_clusters !empty {
+    %neptune_clusters {
+        Properties.StorageEncrypted exists
+        Properties.StorageEncrypted == true
+    }
+}
