@@ -12,7 +12,7 @@ import * as cxapi from '../../../cx-api';
 import { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { AlpnPolicy, Protocol, SslPolicy } from '../shared/enums';
+import { AlpnPolicy, Protocol, SslPolicy, getRecommendedTlsPolicy } from '../shared/enums';
 import { IListenerCertificate } from '../shared/listener-certificate';
 import { validateNetworkProtocol } from '../shared/util';
 

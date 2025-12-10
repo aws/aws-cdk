@@ -693,7 +693,7 @@ describe('tests', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
-        SslPolicy: 'ELBSecurityPolicy-TLS13-1-2-PQ-2025-09',
+        SslPolicy: 'ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09',
       });
     });
 

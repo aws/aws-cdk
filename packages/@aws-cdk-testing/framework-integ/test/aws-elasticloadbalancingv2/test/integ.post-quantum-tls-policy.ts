@@ -113,7 +113,7 @@ alb.addListener('ExplicitSslListener', {
   port: 8443,
   protocol: elbv2.ApplicationProtocol.HTTPS,
   certificates: [elbv2.ListenerCertificate.fromArn(certificateArn)],
-  sslPolicy: elbv2.SslPolicy.RECOMMENDED_TLS_PQ, // Explicit post-quantum policy should override feature flag
+  sslPolicy: elbv2.SslPolicy.TLS13_12_PQ, // Explicit post-quantum policy should override feature flag
   defaultAction: elbv2.ListenerAction.fixedResponse(200, {
     contentType: 'text/plain',
     messageBody: 'ALB with Explicit Post-Quantum Policy',

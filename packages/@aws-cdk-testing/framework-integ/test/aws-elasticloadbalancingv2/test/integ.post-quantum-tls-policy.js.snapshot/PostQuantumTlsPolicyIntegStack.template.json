@@ -453,7 +453,8 @@
      "Ref": "ALBAEE750D2"
     },
     "Port": 443,
-    "Protocol": "HTTPS"
+    "Protocol": "HTTPS",
+    "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09"
    }
   },
   "ALBHttpListener04CE8CD0": {
@@ -498,7 +499,8 @@
      "Ref": "ALBAEE750D2"
     },
     "Port": 8443,
-    "Protocol": "HTTPS"
+    "Protocol": "HTTPS",
+    "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-PQ-2025-09"
    }
   },
   "NLB55158F82": {
@@ -548,7 +550,8 @@
      "Ref": "NLB55158F82"
     },
     "Port": 443,
-    "Protocol": "TLS"
+    "Protocol": "TLS",
+    "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09"
    }
   },
   "NLBTcpListener14676C94": {
