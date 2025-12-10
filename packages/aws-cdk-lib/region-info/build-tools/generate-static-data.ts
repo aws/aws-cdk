@@ -189,7 +189,6 @@ function before(region: string, ruleOrRegion: string | symbol) {
 }
 
 main().catch(e => {
-  // eslint-disable-next-line no-console
   console.error(e);
   process.exit(-1);
 });

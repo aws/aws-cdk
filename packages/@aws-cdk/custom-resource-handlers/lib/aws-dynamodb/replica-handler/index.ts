@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+
 /* eslint-disable import/no-extraneous-dependencies */
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
 import { OnEventResponse, OnEventRequest, IsCompleteRequest, IsCompleteResponse } from '../../copied-from-aws-cdk-lib/provider-framework-types';

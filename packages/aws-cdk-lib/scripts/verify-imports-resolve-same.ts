@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+
 /**
  * Verify that the two styles of imports we support:
  *

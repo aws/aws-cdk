@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 
 import { LambdaClient, DeleteFunctionCommand } from '@aws-sdk/client-lambda';
 import { SyntheticsClient, GetCanaryCommand } from '@aws-sdk/client-synthetics';
