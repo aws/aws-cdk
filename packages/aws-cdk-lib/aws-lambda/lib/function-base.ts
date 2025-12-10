@@ -5,20 +5,21 @@ import { Architecture } from './architecture';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
-import { FunctionUrlAuthType, FunctionUrlOptions, FunctionUrl } from './function-url';
+import { FunctionUrl, FunctionUrlAuthType, FunctionUrlOptions } from './function-url';
 import { IVersion } from './lambda-version';
-import { CfnPermission } from './lambda.generated';
+import { CfnPermission, FunctionReference, IFunctionRef, VersionReference } from './lambda.generated';
 import { Permission } from './permission';
+import { TenancyConfig } from './tenancy-config';
 import { addAlias, flatMap } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { Annotations, ArnFormat, IResource, Resource, Token, Stack, FeatureFlags } from '../../core';
+import { Annotations, ArnFormat, FeatureFlags, IResource, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { MethodMetadata } from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
-export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
+export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable, IFunctionRef {
 
   /**
    * The name of the function.
@@ -62,6 +63,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
    * The construct node where permissions are attached.
    */
   readonly permissionsNode: Node;
+
+  /**
+   * The tenancy configuration for this function.
+   */
+  readonly tenancyConfig?: TenancyConfig;
 
   /**
    * The system architectures compatible with this lambda function.
@@ -239,6 +245,12 @@ export interface FunctionAttributes {
    * @default - Architecture.X86_64
    */
   readonly architecture?: Architecture;
+
+  /**
+   * The tenancy configuration of this Lambda Function.
+   * @default - Tenant isolation is not enabled
+   */
+  readonly tenancyConfig?: TenancyConfig;
 }
 
 export abstract class FunctionBase extends Resource implements IFunction, ec2.IClientVpnConnectionHandler {
@@ -273,6 +285,11 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * The architecture of this Lambda Function.
    */
   public abstract readonly architecture: Architecture;
+
+  /**
+   * The tenancy configuration for this function.
+   */
+  public abstract readonly tenancyConfig?: TenancyConfig;
 
   /**
    * Whether the addPermission() call adds any permissions
@@ -342,6 +359,13 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    */
   private _hasAddedArrayTokenStatements: boolean = false;
 
+  public get functionRef(): FunctionReference {
+    return {
+      functionName: this.functionName,
+      functionArn: this.functionArn,
+    };
+  }
+
   /**
    * A warning will be added to functions under the following conditions:
    * - permissions that include `lambda:InvokeFunction` are added to the unqualified function.
@@ -400,6 +424,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       sourceArn: permission.sourceArn ?? sourceArn,
       principalOrgId: permission.organizationId ?? principalOrgID,
       functionUrlAuthType: permission.functionUrlAuthType,
+      invokedViaFunctionUrl: permission.invokedViaFunctionUrl,
     });
   }
 
@@ -444,7 +469,6 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      // eslint-disable-next-line max-len
       throw new ValidationError('Only VPC-associated Lambda Functions have security groups to manage. Supply the "vpc" parameter when creating the Lambda, or "securityGroupId" when importing it.', this);
     }
     return this._connections;
@@ -533,13 +557,48 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    */
   public grantInvokeUrl(grantee: iam.IGrantable): iam.Grant {
     const identifier = `InvokeFunctionUrl${grantee.grantPrincipal}`; // calls the .toString() of the principal
+    const identifierDualAuth = `${identifier}-DualAuth`;
 
     // Memoize the result so subsequent grantInvoke() calls are idempotent
     let grant = this._functionUrlInvocationGrants[identifier];
     if (!grant) {
-      grant = this.grant(grantee, identifier, 'lambda:InvokeFunctionUrl', [this.functionArn], {
-        functionUrlAuthType: FunctionUrlAuthType.AWS_IAM,
-      });
+      // Build conditions for function URL with AWS_IAM auth type
+      const functionUrlConditions: Record<string, Record<string, unknown>> = {
+        StringEquals: {
+          'lambda:FunctionUrlAuthType': FunctionUrlAuthType.AWS_IAM,
+        },
+      };
+
+      grant = this.grant(
+        grantee,
+        identifier,
+        'lambda:InvokeFunctionUrl',
+        [this.functionArn],
+        {
+          functionUrlAuthType: FunctionUrlAuthType.AWS_IAM,
+        },
+        functionUrlConditions,
+      );
+
+      // Build conditions for dual auth (invoked via function URL)
+      const dualAuthConditions: Record<string, Record<string, unknown>> = {
+        Bool: {
+          'lambda:InvokedViaFunctionUrl': true,
+        },
+      };
+
+      // proceed to grant invokefunction for FURL Dual auth
+      grant = this.grant(
+        grantee,
+        identifierDualAuth,
+        'lambda:InvokeFunction',
+        [this.functionArn],
+        {
+          invokedViaFunctionUrl: true,
+        },
+        dualAuthConditions,
+      );
+
       this._functionUrlInvocationGrants[identifier] = grant;
     }
     return grant;
@@ -553,6 +612,9 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   }
 
   public addEventSource(source: IEventSource) {
+    if (this.tenancyConfig?.tenancyConfigProperty?.tenantIsolationMode !== undefined && source.constructor.name !== 'ApiEventSource') {
+      throw new ValidationError(`Event source ${source.constructor.name} is not supported for functions with tenant isolation mode`, this);
+    }
     source.bind(this);
   }
 
@@ -610,11 +672,13 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     action: string,
     resourceArns: string[],
     permissionOverrides?: Partial<Permission>,
+    conditions?: Record<string, Record<string, unknown>>,
   ): iam.Grant {
     const grant = iam.Grant.addToPrincipalOrResource({
       grantee,
       actions: [action],
       resourceArns,
+      conditions,
 
       // Fake resource-like object on which to call addToResourcePolicy(), which actually
       // calls addPermission()
@@ -635,10 +699,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
           }
           return { statementAdded: true, policyDependable: permissionNode };
         },
-        node: this.node,
-        stack: this.stack,
         env: this.env,
-        applyRemovalPolicy: x => this.applyRemovalPolicy(x),
       },
     });
 
@@ -820,6 +881,10 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
     return this.lambda.latestVersion;
   }
 
+  public get tenancyConfig() {
+    return this.lambda.tenancyConfig;
+  }
+
   public get resourceArnsForGrantInvoke() {
     return [this.functionArn];
   }
@@ -857,6 +922,19 @@ class LatestVersion extends FunctionBase implements IVersion {
     this.lambda = lambda;
   }
 
+  public get versionRef(): VersionReference {
+    return {
+      functionArn: this.functionArn,
+    };
+  }
+
+  public get functionRef(): FunctionReference {
+    return {
+      functionArn: this.functionArn,
+      functionName: this.functionName,
+    };
+  }
+
   public get functionArn() {
     return `${this.lambda.functionArn}:${this.version}`;
   }
@@ -879,6 +957,10 @@ class LatestVersion extends FunctionBase implements IVersion {
 
   public get role() {
     return this.lambda.role;
+  }
+
+  public get tenancyConfig() {
+    return this.lambda.tenancyConfig;
   }
 
   public get edgeArn(): never {

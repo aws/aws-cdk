@@ -28,7 +28,7 @@
     "Role": {
      "Ref": "referencetoEKSTagStackClusterKubectlHandlerRole1503CA85Arn"
     },
-    "Runtime": "python3.11",
+    "Runtime": "python3.13",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [

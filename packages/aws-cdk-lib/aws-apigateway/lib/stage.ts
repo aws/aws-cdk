@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
 import { AccessLogFormat, IAccessLogDestination } from './access-log';
-import { IApiKey, ApiKeyOptions, ApiKey } from './api-key';
+import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
 import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
-import { CfnStage } from './apigateway.generated';
+import { CfnStage, IStageRef, StageReference } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { IRestApi, RestApiBase } from './restapi';
 import { parseMethodOptionsPath } from './util';
@@ -15,7 +15,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents an APIGateway Stage.
  */
-export interface IStage extends IResource {
+export interface IStage extends IResource, IStageRef {
   /**
    * Name of this stage.
    * @attribute
@@ -356,6 +356,13 @@ export abstract class StageBase extends Resource implements IStage {
       ...fn({ ApiName: this.restApi.restApiName, Stage: this.stageName }),
       ...props,
     }).attachTo(this);
+  }
+
+  public get stageRef(): StageReference {
+    return {
+      stageName: this.stageName,
+      restApiId: this.restApi.restApiId,
+    };
   }
 }
 

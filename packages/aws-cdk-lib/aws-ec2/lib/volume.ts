@@ -1,9 +1,21 @@
 import { Construct } from 'constructs';
-import { CfnVolume } from './ec2.generated';
-import { IInstance } from './instance';
+import { CfnVolume, IInstanceRef, IVolumeRef, VolumeReference } from './ec2.generated';
 import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IKey, ViaServicePrincipal } from '../../aws-kms';
-import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy, FeatureFlags, UnscopedValidationError, ValidationError } from '../../core';
+import {
+  FeatureFlags,
+  IResource,
+  Names,
+  RemovalPolicy,
+  Resource,
+  Size,
+  SizeRoundingBehavior,
+  Stack,
+  Tags,
+  Token,
+  UnscopedValidationError,
+  ValidationError,
+} from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -76,7 +88,7 @@ export interface EbsDeviceOptionsBase {
   /**
    * The throughput to provision for a `gp3` volume.
    *
-   * Valid Range: Minimum value of 125. Maximum value of 1000.
+   * Valid Range: Minimum value of 125. Maximum value of 2000.
    *
    * `gp3` volumes deliver a consistent baseline throughput performance of 125 MiB/s.
    * You can provision additional throughput for an additional cost at a ratio of 0.25 MiB/s per provisioned IOPS.
@@ -265,7 +277,7 @@ export enum EbsDeviceVolumeType {
 /**
  * An EBS Volume in AWS EC2.
  */
-export interface IVolume extends IResource {
+export interface IVolume extends IResource, IVolumeRef {
   /**
    * The EBS Volume's ID
    *
@@ -297,7 +309,7 @@ export interface IVolume extends IResource {
    *                 volume to. If not specified, then permission is granted to attach
    *                 to all instances in this account.
    */
-  grantAttachVolume(grantee: IGrantable, instances?: IInstance[]): Grant;
+  grantAttachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant;
 
   /**
    * Grants permission to attach the Volume by a ResourceTag condition. If you are looking to
@@ -328,7 +340,7 @@ export interface IVolume extends IResource {
    *                 volume from. If not specified, then permission is granted to detach
    *                 from all instances in this account.
    */
-  grantDetachVolume(grantee: IGrantable, instances?: IInstance[]): Grant;
+  grantDetachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant;
 
   /**
    * Grants permission to detach the Volume by a ResourceTag condition.
@@ -463,7 +475,7 @@ export interface VolumeProps {
 
   /**
    * The throughput that the volume supports, in MiB/s
-   * Takes a minimum of 125 and maximum of 1000.
+   * Takes a minimum of 125 and maximum of 2000.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-throughput
    * @default - 125 MiB/s. Only valid on gp3 volumes.
    */
@@ -514,7 +526,13 @@ abstract class VolumeBase extends Resource implements IVolume {
   public abstract readonly availabilityZone: string;
   public abstract readonly encryptionKey?: IKey;
 
-  public grantAttachVolume(grantee: IGrantable, instances?: IInstance[]): Grant {
+  public get volumeRef(): VolumeReference {
+    return {
+      volumeId: this.volumeId,
+    };
+  }
+
+  public grantAttachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
       actions: ['ec2:AttachVolume'],
@@ -560,7 +578,7 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
-  public grantDetachVolume(grantee: IGrantable, instances?: IInstance[]): Grant {
+  public grantDetachVolume(grantee: IGrantable, instances?: IInstanceRef[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
       actions: ['ec2:DetachVolume'],
@@ -589,14 +607,14 @@ abstract class VolumeBase extends Resource implements IVolume {
     return result;
   }
 
-  private collectGrantResourceArns(instances?: IInstance[]): string[] {
+  private collectGrantResourceArns(instances?: IInstanceRef[]): string[] {
     const stack = Stack.of(this);
     const resourceArns: string[] = [
       `arn:${stack.partition}:ec2:${stack.region}:${stack.account}:volume/${this.volumeId}`,
     ];
     const instanceArnPrefix = `arn:${stack.partition}:ec2:${stack.region}:${stack.account}:instance`;
     if (instances) {
-      instances.forEach(instance => resourceArns.push(`${instanceArnPrefix}/${instance?.instanceId}`));
+      instances.forEach(instance => resourceArns.push(`${instanceArnPrefix}/${instance?.instanceRef.instanceId}`));
     } else {
       resourceArns.push(`${instanceArnPrefix}/*`);
     }
@@ -738,7 +756,7 @@ export class Volume extends VolumeBase {
       // Enforce minimum & maximum IOPS:
       // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html
       const iopsRanges: { [key: string]: { Min: number; Max: number } } = {};
-      iopsRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 3000, Max: 16000 };
+      iopsRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 3000, Max: 80000 };
       iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 100, Max: 64000 };
       iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 100, Max: 256000 };
       const { Min, Max } = iopsRanges[volumeType];
@@ -800,7 +818,7 @@ export class Volume extends VolumeBase {
     }
 
     if (props.throughput) {
-      const throughputRange = { Min: 125, Max: 1000 };
+      const throughputRange = { Min: 125, Max: 2000 };
       const { Min, Max } = throughputRange;
       if (props.volumeType != EbsDeviceVolumeType.GP3) {
         throw new ValidationError(

@@ -188,7 +188,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
 
     return this.fromDatabaseInstanceAttributes(scope, id, {
       instanceEndpointAddress: instance['Endpoint.Address'],
-      port: instance['Endpoint.Port'],
+      port: Number(instance['Endpoint.Port']),
       instanceIdentifier: options.instanceIdentifier,
       securityGroups: securityGroups,
       instanceResourceId: instance.DbiResourceId,
@@ -437,11 +437,12 @@ export interface DatabaseInstanceNewProps {
   readonly availabilityZone?: string;
 
   /**
-   * The storage type. Storage types supported are gp2, io1, standard.
+   * The storage type to associate with the DB instance.
+   * Storage types supported are gp2, gp3, io1, io2, and standard.
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#Concepts.Storage.GeneralSSD
    *
-   * @default GP2
+   * @default StorageType.GP2
    */
   readonly storageType?: StorageType;
 
@@ -597,7 +598,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - A role is automatically created for you
    */
-  readonly monitoringRole?: iam.IRole;
+  readonly monitoringRole?: iam.IRoleRef;
 
   /**
    * Whether to enable Performance Insights for the DB instance.
@@ -620,7 +621,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - default master key
    */
-  readonly performanceInsightEncryptionKey?: kms.IKey;
+  readonly performanceInsightEncryptionKey?: kms.IKeyRef;
 
   /**
    * The database insights mode.
@@ -709,7 +710,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - The role will be created for you if `DatabaseInstanceNewProps#domain` is specified
    */
-  readonly domainRole?: iam.IRole;
+  readonly domainRole?: iam.IRoleRef;
 
   /**
    * Existing subnet group for the instance.
@@ -863,7 +864,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
   private readonly cloudwatchLogsRetentionRole?: iam.IRole;
 
   private readonly domainId?: string;
-  private readonly domainRole?: iam.IRole;
+  private readonly domainRole?: iam.IRoleRef;
 
   protected enableIamAuthentication?: boolean;
 
@@ -976,11 +977,11 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set,
       iops,
       monitoringInterval: props.monitoringInterval?.toSeconds(),
-      monitoringRoleArn: monitoringRole?.roleArn,
+      monitoringRoleArn: monitoringRole?.roleRef.roleArn,
       multiAz: props.multiAz,
       dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
       optionGroupName: props.optionGroup?.optionGroupName,
-      performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyArn,
+      performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyRef.keyArn,
       performanceInsightsRetentionPeriod: enablePerformanceInsights
         ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
         : undefined,
@@ -995,7 +996,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
       maxAllocatedStorage: props.maxAllocatedStorage,
       domain: this.domainId,
-      domainIamRoleName: this.domainRole?.roleName,
+      domainIamRoleName: this.domainRole?.roleRef.roleName,
       networkType: props.networkType,
       caCertificateIdentifier: props.caCertificate ? props.caCertificate.toString() : undefined,
       applyImmediately: props.applyImmediately,
@@ -1269,7 +1270,7 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
    *
    * @default - default master key if storageEncrypted is true, no key otherwise
    */
-  readonly storageEncryptionKey?: kms.IKey;
+  readonly storageEncryptionKey?: kms.IKeyRef;
 }
 
 /**
@@ -1305,7 +1306,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.sourceCfnProps,
       characterSetName: props.characterSetName,
-      kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
+      kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyRef.keyArn,
       masterUsername: credentials.username,
       masterUserPassword: credentials.password?.unsafeUnwrap(),
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
@@ -1478,7 +1479,7 @@ export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceNewPro
    *
    * @default - default master key if storageEncrypted is true, no key otherwise
    */
-  readonly storageEncryptionKey?: kms.IKey;
+  readonly storageEncryptionKey?: kms.IKeyRef;
   /**
    * The allocated storage size, specified in gibibytes (GiB).
    *
@@ -1539,7 +1540,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       ...this.newCfnProps,
       // this must be ARN, not ID, because of https://github.com/terraform-providers/terraform-provider-aws/issues/528#issuecomment-391169012
       sourceDbInstanceIdentifier: props.sourceDatabaseInstance.instanceArn,
-      kmsKeyId: props.storageEncryptionKey?.keyArn,
+      kmsKeyId: props.storageEncryptionKey?.keyRef.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
       engine: shouldPassEngine ? engineType : undefined,
       allocatedStorage: props.allocatedStorage?.toString(),

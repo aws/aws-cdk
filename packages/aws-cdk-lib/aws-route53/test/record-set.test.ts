@@ -1,5 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Annotations, Template } from '../../assertions';
+import { Annotations, Template, Match } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
 import * as origins from '../../aws-cloudfront-origins';
 import * as iam from '../../aws-iam';
@@ -1242,6 +1242,232 @@ describe('record set', () => {
     }
   });
 
+  test('SVCB record, AliasMode', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.SvcbRecord(stack, 'SVCB', {
+      zone,
+      recordName: '_8443._foo',
+      values: [route53.SvcbRecordValue.alias('service.example.com')],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: '_8443._foo.myzone.',
+      Type: 'SVCB',
+      HostedZoneId: { Ref: 'HostedZoneDB99F866' },
+      ResourceRecords: ['0 service.example.com'],
+      TTL: '1800',
+    });
+  });
+
+  test('SVCB record, service mode', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.SvcbRecord(stack, 'SVCB', {
+      zone,
+      recordName: '_8443._foo',
+      values: [route53.SvcbRecordValue.service()],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: '_8443._foo.myzone.',
+      Type: 'SVCB',
+      HostedZoneId: { Ref: 'HostedZoneDB99F866' },
+      ResourceRecords: ['1 .'],
+      TTL: '1800',
+    });
+  });
+
+  test('SVCB record, service mode, additional parameters', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.SvcbRecord(stack, 'SVCB', {
+      zone,
+      recordName: '_8443._foo',
+      values: [route53.SvcbRecordValue.service({
+        priority: 2,
+        targetName: 'service.example.com',
+        mandatory: ['alpn'],
+        alpn: [route53.Alpn.H3, route53.Alpn.H2, route53.Alpn.of('h3-29')],
+        noDefaultAlpn: true,
+        port: 8443,
+        ipv4hint: ['127.0.0.1'],
+        ipv6hint: ['::1'],
+      })],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: '_8443._foo.myzone.',
+      Type: 'SVCB',
+      HostedZoneId: { Ref: 'HostedZoneDB99F866' },
+      ResourceRecords: ['2 service.example.com mandatory="alpn" alpn="h3,h2,h3-29" no-default-alpn port=8443 ipv4hint="127.0.0.1" ipv6hint="::1"'],
+      TTL: '1800',
+    });
+  });
+
+  test('HTTPS record, AliasMode', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.HttpsRecord(stack, 'HTTPS', {
+      zone,
+      values: [route53.HttpsRecordValue.alias('service.example.com')],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'myzone.',
+      Type: 'HTTPS',
+      HostedZoneId: { Ref: 'HostedZoneDB99F866' },
+      ResourceRecords: ['0 service.example.com'],
+      TTL: '1800',
+    });
+  });
+
+  test('HTTPS record, service mode', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.HttpsRecord(stack, 'HTTPS', {
+      zone,
+      values: [route53.HttpsRecordValue.service()],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'myzone.',
+      Type: 'HTTPS',
+      HostedZoneId: { Ref: 'HostedZoneDB99F866' },
+      ResourceRecords: ['1 .'],
+      TTL: '1800',
+    });
+  });
+
+  test('HTTPS record, service mode, additional parameters', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.HttpsRecord(stack, 'HTTPS', {
+      zone,
+      values: [route53.HttpsRecordValue.service({
+        priority: 2,
+        targetName: 'service.example.com',
+        mandatory: ['alpn'],
+        alpn: [route53.Alpn.H3, route53.Alpn.H2, route53.Alpn.of('h3-29')],
+        noDefaultAlpn: true,
+        port: 8443,
+        ipv4hint: ['127.0.0.1'],
+        ipv6hint: ['::1'],
+      })],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'myzone.',
+      Type: 'HTTPS',
+      HostedZoneId: { Ref: 'HostedZoneDB99F866' },
+      ResourceRecords: ['2 service.example.com mandatory="alpn" alpn="h3,h2,h3-29" no-default-alpn port=8443 ipv4hint="127.0.0.1" ipv6hint="::1"'],
+      TTL: '1800',
+    });
+  });
+
+  test('HTTPS record, alias for CloudFront', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: {
+        origin: new origins.HttpOrigin('www.example.com'),
+      },
+    });
+
+    // WHEN
+    new route53.HttpsRecord(stack, 'HTTPS', {
+      zone,
+      target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'myzone.',
+      Type: 'HTTPS',
+      HostedZoneId: { Ref: 'HostedZoneDB99F866' },
+      AliasTarget: {
+        DNSName: { 'Fn::GetAtt': ['Distribution830FAC52', 'DomainName'] },
+        HostedZoneId: { 'Fn::FindInMap': ['AWSCloudFrontPartitionHostedZoneIdMap', { Ref: 'AWS::Partition' }, 'zoneId'] },
+      },
+    });
+  });
+
+  test('HTTPS record throws with neither values nor target', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // THEN
+    expect(() => {
+      new route53.HttpsRecord(stack, 'HTTPS', {
+        zone,
+      });
+    }).toThrow('Specify exactly one of either values or target.');
+  });
+
+  test('HTTPS record throws with both values and target', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: {
+        origin: new origins.HttpOrigin('www.example.com'),
+      },
+    });
+
+    // THEN
+    expect(() => {
+      new route53.HttpsRecord(stack, 'HTTPS', {
+        zone,
+        values: [route53.HttpsRecordValue.service()],
+        target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+      });
+    }).toThrow('Specify exactly one of either values or target.');
+  });
+
   test('Delete existing record', () => {
     // GIVEN
     const stack = new Stack();
@@ -1507,7 +1733,7 @@ describe('record set', () => {
       target: route53.RecordTarget.fromValues('zzz'),
       setIdentifier: 'uniqueId',
       ...props,
-    })).toThrow('Only one of region, weight, multiValueAnswer, geoLocation or cidrRoutingConfig can be defined');
+    })).toThrow('Only one of region, weight, multiValueAnswer, geoLocation, cidrRoutingConfig, or failover can be defined');
   });
 
   test('throw error for the definition of setIdentifier without weight, geoLocation or region', () => {
@@ -1576,5 +1802,150 @@ describe('record set', () => {
       target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
       multiValueAnswer: true,
     })).toThrow('multiValueAnswer cannot be specified for alias record');
+  });
+
+  test('A record with PRIMARY failover and health check', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    const healthCheck = new route53.HealthCheck(stack, 'HealthCheck', {
+      type: route53.HealthCheckType.HTTP,
+      fqdn: 'example.com',
+    });
+
+    // WHEN
+    new route53.ARecord(stack, 'PrimaryFailover', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+      failover: route53.Failover.PRIMARY,
+      healthCheck,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Failover: 'PRIMARY',
+      HealthCheckId: stack.resolve(healthCheck.healthCheckId),
+      SetIdentifier: 'FAILOVER_PRIMARY_ID_PrimaryFailover',
+    });
+  });
+
+  test('A record with SECONDARY failover and no health check', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // WHEN
+    new route53.ARecord(stack, 'SecondaryFailover', {
+      zone,
+      recordName: 'backup',
+      target: route53.RecordTarget.fromIpAddresses('5.6.7.8'),
+      failover: route53.Failover.SECONDARY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Failover: 'SECONDARY',
+      SetIdentifier: 'FAILOVER_SECONDARY_ID_SecondaryFailover',
+    });
+  });
+
+  test('throws when PRIMARY failover has no health check', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // THEN
+    expect(() => new route53.ARecord(stack, 'PrimaryFailover', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+      failover: route53.Failover.PRIMARY,
+    })).toThrow('PRIMARY failover record sets must include a health check');
+  });
+
+  test('throws when failover alias target does not set EvaluateTargetHealth=true', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    const target: route53.IAliasRecordTarget = {
+      bind: () => ({
+        hostedZoneId: 'Z111',
+        dnsName: 'alias.example.com',
+        evaluateTargetHealth: false,
+      }),
+    };
+
+    // THEN
+    expect(() => new route53.ARecord(stack, 'AliasFailover', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromAlias(target),
+      failover: route53.Failover.PRIMARY,
+    })).toThrow('Failover alias record sets must set EvaluateTargetHealth to true');
+  });
+
+  test('allows failover alias target when EvaluateTargetHealth=true', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    const target: route53.IAliasRecordTarget = {
+      bind: () => ({
+        hostedZoneId: 'Z111',
+        dnsName: 'alias.example.com',
+        evaluateTargetHealth: true,
+      }),
+    };
+
+    // WHEN
+    new route53.ARecord(stack, 'AliasFailover', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromAlias(target),
+      failover: route53.Failover.PRIMARY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Failover: 'PRIMARY',
+      AliasTarget: {
+        DNSName: 'alias.example.com',
+        HostedZoneId: 'Z111',
+        EvaluateTargetHealth: true,
+      },
+    });
+  });
+
+  test('throws when failover is combined with another routing policy', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // THEN
+    expect(() => new route53.ARecord(stack, 'InvalidFailover', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+      failover: route53.Failover.PRIMARY,
+      weight: 10,
+    })).toThrow('Only one of region, weight, multiValueAnswer, geoLocation, cidrRoutingConfig, or failover can be defined');
+  });
+
+  test('throws when failover is combined with multiValueAnswer', () => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // THEN
+    expect(() => new route53.ARecord(stack, 'InvalidFailover', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+      failover: route53.Failover.PRIMARY,
+      multiValueAnswer: true,
+    })).toThrow('Cannot use both failover and multiValueAnswer routing policies');
   });
 });

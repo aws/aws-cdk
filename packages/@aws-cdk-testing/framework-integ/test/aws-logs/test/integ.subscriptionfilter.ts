@@ -11,7 +11,7 @@ class SubscriptionFilterIntegStack extends Stack {
     const logGroup = new LogGroup(this, 'LogGroup');
 
     const fn = new Function(this, 'Function', {
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: Code.fromInline('foo'),
     });

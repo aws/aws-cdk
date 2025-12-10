@@ -24,6 +24,7 @@ import {
   SecurityPolicyProtocol,
   SSLMethod,
 } from '../lib';
+import { DistributionGrants } from '../lib/cloudfront-grants.generated';
 
 let app: App;
 let stack: Stack;
@@ -1272,6 +1273,38 @@ test('grants createInvalidation', () => {
   });
 });
 
+test('grants createInvalidation to L1', () => {
+  const distribution = new Distribution(stack, 'Distribution', {
+    defaultBehavior: { origin: defaultOrigin() },
+  });
+
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.AccountRootPrincipal(),
+  });
+
+  DistributionGrants.
+    fromDistribution(distribution.node.defaultChild as CfnDistribution)
+    .createInvalidation(role);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'cloudfront:CreateInvalidation',
+          Resource: {
+            'Fn::Join': [
+              '', [
+                'arn:', { Ref: 'AWS::Partition' }, ':cloudfront::1234:distribution/',
+                { Ref: 'Distribution830FAC52' },
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  });
+});
+
 test('render distribution behavior with realtime log config', () => {
   const role = new iam.Role(stack, 'Role', {
     assumedBy: new iam.ServicePrincipal('cloudfront.amazonaws.com'),
@@ -1303,7 +1336,7 @@ test('render distribution behavior with realtime log config', () => {
       DistributionConfig: {
         DefaultCacheBehavior: {
           RealtimeLogConfigArn: {
-            'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+            Ref: 'RealtimeConfigB6004E8E',
           },
         },
       },
@@ -1349,14 +1382,14 @@ test('render distribution behavior with realtime log config - multiple behaviors
       DistributionConfig: {
         DefaultCacheBehavior: {
           RealtimeLogConfigArn: {
-            'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+            Ref: 'RealtimeConfigB6004E8E',
           },
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
         },
         CacheBehaviors: [{
           PathPattern: '/api/*',
           RealtimeLogConfigArn: {
-            'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+            Ref: 'RealtimeConfigB6004E8E',
           },
           TargetOriginId: 'StackMyDistOrigin20B96F3AD',
         }],

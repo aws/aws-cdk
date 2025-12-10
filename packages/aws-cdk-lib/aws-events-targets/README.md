@@ -15,9 +15,11 @@ Currently supported are:
   - [Start a StepFunctions state machine](#start-a-stepfunctions-state-machine)
   - [Queue a Batch job](#queue-a-batch-job)
   - [Invoke an API Gateway REST API](#invoke-an-api-gateway-rest-api)
+  - [Invoke an AWS API](#invoke-an-aws-api)
   - [Invoke an API Destination](#invoke-an-api-destination)
   - [Invoke an AppSync GraphQL API](#invoke-an-appsync-graphql-api)
   - [Put an event on an EventBridge bus](#put-an-event-on-an-eventbridge-bus)
+  - [Put an event on a Firehose delivery stream](#put-an-event-on-a-firehose-delivery-stream)
   - [Run an ECS Task](#run-an-ecs-task)
     - [Tagging Tasks](#tagging-tasks)
     - [Launch type for ECS Task](#launch-type-for-ecs-task)
@@ -333,6 +335,67 @@ declare const rule: events.Rule;
 rule.addTarget(new targets.ApiGatewayV2(httpApi));
 ```
 
+## Invoke an AWS API
+
+Use the `AwsApi` target to make direct AWS API calls from EventBridge rules. This is useful for invoking AWS services that don't have a dedicated EventBridge target.
+
+### Basic Usage
+
+The following example shows how to update an ECS service when a rule is triggered:
+
+```ts
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(Duration.hours(1)),
+});
+
+rule.addTarget(new targets.AwsApi({
+  service: 'ECS',
+  action: 'updateService',
+  parameters: {
+    service: 'my-service',
+    forceNewDeployment: true,
+  },
+}));
+```
+
+### IAM Permissions
+
+By default, the AwsApi target automatically creates the necessary IAM permissions based on the service and action you specify. The permission format follows the pattern: `service:Action`.
+
+For example:
+
+- `ECS` service with `updateService` action → `ecs:UpdateService` permission
+- `RDS` service with `createDBSnapshot` action → `rds:CreateDBSnapshot` permission
+
+### Custom IAM Policy
+
+In some cases, you may need to provide a custom IAM policy statement, especially when:
+
+- You need to restrict permissions to specific resources (instead of `*`)
+- The service requires additional permissions beyond the main action
+- You want more granular control over the permissions
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+declare const rule: events.Rule;
+declare const bucket: s3.Bucket;
+
+rule.addTarget(new targets.AwsApi({
+  service: 's3',
+  action: 'GetBucketEncryption',
+  parameters: {
+    Bucket: bucket.bucketName,
+  },
+  policyStatement: new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    actions: ['s3:GetEncryptionConfiguration'],
+    resources: [bucket.bucketArn],
+  }),
+}));
+```
+
 ## Invoke an API Destination
 
 Use the `targets.ApiDestination` target to trigger an external API. You need to
@@ -464,6 +527,27 @@ rule.addTarget(new targets.EventBus(
     `arn:aws:events:eu-west-1:999999999999:event-bus/test-bus`,
   ),
 ));
+```
+
+## Put an event on a Firehose delivery stream
+
+Use the `FirehoseDeliveryStream` target to put event to an Amazon Data Firehose delivery stream.
+
+The code snippet below creates the scheduled event rule that put events to an Amazon Data Firehose delivery stream.
+
+```ts
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+declare const bucket: s3.Bucket;
+const stream = new firehose.DeliveryStream(this, 'DeliveryStream', {
+  destination: new firehose.S3Bucket(bucket),
+});
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.expression('rate(1 minute)'),
+});
+rule.addTarget(new targets.FirehoseDeliveryStream(stream));
 ```
 
 ## Run an ECS Task
@@ -636,7 +720,7 @@ rule.addTarget(new targets.RedshiftQuery(workgroup.attrWorkgroupWorkgroupArn, {
 
 ## Publish to an SNS Topic
 
-Use the `SnsTopic` target to publish to an SNS Topic. 
+Use the `SnsTopic` target to publish to an SNS Topic.
 
 The code snippet below creates the scheduled event rule that publishes to an SNS Topic using a resource policy.
 

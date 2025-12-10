@@ -163,7 +163,7 @@ export interface ProviderProps {
    *
    * @default -  AWS Lambda creates and uses an AWS managed customer master key (CMK)
    */
-  readonly providerFunctionEnvEncryption?: kms.IKey;
+  readonly providerFunctionEnvEncryption?: kms.IKeyRef;
 
   /**
    * Defines what execution history events of the waiter state machine are logged and where they are logged.
@@ -222,7 +222,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
   private readonly vpcSubnets?: ec2.SubnetSelection;
   private readonly securityGroups?: ec2.ISecurityGroup[];
   private readonly role?: iam.IRole;
-  private readonly providerFunctionEnvEncryption?: kms.IKey;
+  private readonly providerFunctionEnvEncryption?: kms.IKeyRef;
   private readonly frameworkLambdaLoggingLevel?: lambda.ApplicationLogLevel;
 
   constructor(scope: Construct, id: string, props: ProviderProps) {

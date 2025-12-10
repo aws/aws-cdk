@@ -229,4 +229,152 @@ describe('lambda version', () => {
       version.addFunctionUrl();
     }).toThrow(/FunctionUrl cannot be used with a Version/);
   });
+
+  test('version\'s implementation of IFunctionRef should point to the version', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    });
+
+    // WHEN
+    const ver = new lambda.Version(stack, 'Version', {
+      lambda: fn,
+    });
+
+    // THEN
+    expect(ver.functionRef.functionArn).toEqual(ver.functionArn);
+  });
+
+  test('should throw error when version has provisioned concurrency and function has tenancy config', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+    });
+
+    // WHEN & THEN
+    expect(() => new lambda.Version(stack, 'Version', {
+      lambda: fn,
+      provisionedConcurrentExecutions: 10,
+    })).toThrow('Provisioned Concurrency is not supported for functions with tenant isolation mode');
+  });
+
+  describe('version scaling configuration', () => {
+    test('version with min and max execution environments', () => {
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Fn', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      new lambda.Version(stack, 'Version', {
+        lambda: fn,
+        minExecutionEnvironments: 1,
+        maxExecutionEnvironments: 10,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
+        FunctionScalingConfig: {
+          MinExecutionEnvironments: 1,
+          MaxExecutionEnvironments: 10,
+        },
+      });
+    });
+
+    test('version with only min execution environments', () => {
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Fn', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      new lambda.Version(stack, 'Version', {
+        lambda: fn,
+        minExecutionEnvironments: 2,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
+        FunctionScalingConfig: {
+          MinExecutionEnvironments: 2,
+        },
+      });
+    });
+
+    test('version with only max execution environments', () => {
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Fn', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      new lambda.Version(stack, 'Version', {
+        lambda: fn,
+        maxExecutionEnvironments: 5,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
+        FunctionScalingConfig: {
+          MaxExecutionEnvironments: 5,
+        },
+      });
+    });
+
+    test('throws when minExecutionEnvironments is negative', () => {
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Fn', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      expect(() => {
+        new lambda.Version(stack, 'Version', {
+          lambda: fn,
+          minExecutionEnvironments: -1,
+        });
+      }).toThrow(/minExecutionEnvironments must be a non-negative integer/);
+    });
+
+    test('throws when maxExecutionEnvironments is negative', () => {
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Fn', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      expect(() => {
+        new lambda.Version(stack, 'Version', {
+          lambda: fn,
+          maxExecutionEnvironments: -1,
+        });
+      }).toThrow(/maxExecutionEnvironments must be a non-negative integer/);
+    });
+
+    test('throws when minExecutionEnvironments is greater than capacityProviderMaxExecutionEnvironments', () => {
+      const stack = new cdk.Stack();
+      const fn = new lambda.Function(stack, 'Fn', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      expect(() => {
+        new lambda.Version(stack, 'Version', {
+          lambda: fn,
+          minExecutionEnvironments: 10,
+          maxExecutionEnvironments: 5,
+        });
+      }).toThrow(/minExecutionEnvironments must be less than or equal to maxExecutionEnvironments/);
+    });
+  });
 });

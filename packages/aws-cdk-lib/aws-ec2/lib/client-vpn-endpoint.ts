@@ -1,13 +1,22 @@
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { ClientVpnAuthorizationRule, ClientVpnAuthorizationRuleOptions } from './client-vpn-authorization-rule';
-import { IClientVpnConnectionHandler, IClientVpnEndpoint, TransportProtocol, VpnPort } from './client-vpn-endpoint-types';
+import {
+  IClientVpnConnectionHandler,
+  IClientVpnEndpoint,
+  TransportProtocol,
+  VpnPort,
+} from './client-vpn-endpoint-types';
 import { ClientVpnRoute, ClientVpnRouteOptions } from './client-vpn-route';
 import { Connections } from './connections';
-import { CfnClientVpnEndpoint, CfnClientVpnTargetNetworkAssociation } from './ec2.generated';
+import {
+  CfnClientVpnEndpoint,
+  CfnClientVpnTargetNetworkAssociation,
+  ClientVpnEndpointReference,
+} from './ec2.generated';
 import { CidrBlock } from './network-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { IVpc, SubnetSelection } from './vpc';
-import { ISamlProvider } from '../../aws-iam';
+import { ISAMLProviderRef } from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import { CfnOutput, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -172,6 +181,17 @@ export interface ClientVpnEndpointOptions {
   readonly sessionTimeout?: ClientVpnSessionTimeout;
 
   /**
+   * Indicates whether the client VPN session is disconnected after the maximum `sessionTimeout` is reached.
+   *
+   * If `true`, users are prompted to reconnect client VPN.
+   * If `false`, client VPN attempts to reconnect automatically.
+   *
+   * @default undefined - AWS Client VPN default is true
+   * @see https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-max-duration.html
+   */
+  readonly disconnectOnSessionTimeout?: boolean;
+
+  /**
    * Customizable text that will be displayed in a banner on AWS provided clients
    * when a VPN session is established.
    *
@@ -220,7 +240,7 @@ export abstract class ClientVpnUserBasedAuthentication {
   }
 
   /** Federated authentication */
-  public static federated(samlProvider: ISamlProvider, selfServiceSamlProvider?: ISamlProvider): ClientVpnUserBasedAuthentication {
+  public static federated(samlProvider: ISAMLProviderRef, selfServiceSamlProvider?: ISAMLProviderRef): ClientVpnUserBasedAuthentication {
     return new FederatedAuthentication(samlProvider, selfServiceSamlProvider);
   }
 
@@ -248,7 +268,7 @@ class ActiveDirectoryAuthentication extends ClientVpnUserBasedAuthentication {
  * Federated authentication
  */
 class FederatedAuthentication extends ClientVpnUserBasedAuthentication {
-  constructor(private readonly samlProvider: ISamlProvider, private readonly selfServiceSamlProvider?: ISamlProvider) {
+  constructor(private readonly samlProvider: ISAMLProviderRef, private readonly selfServiceSamlProvider?: ISAMLProviderRef) {
     super();
   }
 
@@ -256,8 +276,8 @@ class FederatedAuthentication extends ClientVpnUserBasedAuthentication {
     return {
       type: 'federated-authentication',
       federatedAuthentication: {
-        samlProviderArn: this.samlProvider.samlProviderArn,
-        selfServiceSamlProviderArn: this.selfServiceSamlProvider?.samlProviderArn,
+        samlProviderArn: this.samlProvider.samlProviderRef.samlProviderArn,
+        selfServiceSamlProviderArn: this.selfServiceSamlProvider?.samlProviderRef.samlProviderArn,
       },
     };
   }
@@ -306,6 +326,12 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       public readonly endpointId = attrs.endpointId;
       public readonly connections = new Connections({ securityGroups: attrs.securityGroups });
       public readonly targetNetworksAssociated: IDependable = new DependencyGroup();
+
+      public get clientVpnEndpointRef(): ClientVpnEndpointReference {
+        return {
+          clientVpnEndpointId: this.endpointId,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -396,6 +422,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       vpcId: props.vpc.vpcId,
       vpnPort: props.port,
       sessionTimeoutHours: props.sessionTimeout,
+      disconnectOnSessionTimeout: props.disconnectOnSessionTimeout,
       clientLoginBannerOptions: props.clientLoginBanner
         ? {
           enabled: true,
@@ -433,6 +460,12 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
         cidr: props.vpc.vpcCidrBlock,
       });
     }
+  }
+
+  public get clientVpnEndpointRef(): ClientVpnEndpointReference {
+    return {
+      clientVpnEndpointId: this.endpointId,
+    };
   }
 
   /**

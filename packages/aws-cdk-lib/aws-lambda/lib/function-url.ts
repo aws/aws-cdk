@@ -234,6 +234,10 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
       throw new ValidationError('FunctionUrl cannot be used with a Version', this);
     }
 
+    if (props.function.tenancyConfig?.tenancyConfigProperty?.tenantIsolationMode !== undefined) {
+      throw new ValidationError('FunctionUrl is not supported for functions with tenant isolation mode', this);
+    }
+
     // If the target function is an alias, then it must be configured using the underlying function
     // ARN, and the alias name as a qualifier.
     const { targetFunction, alias } = this.instanceOfAlias(props.function)
@@ -264,6 +268,12 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
         principal: new iam.AnyPrincipal(),
         action: 'lambda:InvokeFunctionUrl',
         functionUrlAuthType: props.authType,
+      });
+
+      props.function.addPermission('invoke-function', {
+        principal: new iam.AnyPrincipal(),
+        action: 'lambda:InvokeFunction',
+        invokedViaFunctionUrl: true,
       });
     }
   }

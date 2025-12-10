@@ -1,5 +1,5 @@
 import { Connections, IConnectable, ISecurityGroup, IVpc } from '../../aws-ec2';
-import { IKey } from '../../aws-kms';
+import { IKeyRef } from '../../aws-kms';
 import { RemovalPolicy, Resource } from '../../core';
 
 /**
@@ -54,7 +54,7 @@ export interface FileSystemProps {
    *
    * @default - the aws/fsx default KMS key for the AWS account being deployed into.
    */
-  readonly kmsKey?: IKey;
+  readonly kmsKey?: IKeyRef;
 
   /**
    * Security Group to assign to this file system.

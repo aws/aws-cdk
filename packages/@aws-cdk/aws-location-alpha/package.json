@@ -6,13 +6,10 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "projectReferences": true,
     "targets": {
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Location.Alpha",
         "packageId": "Amazon.CDK.AWS.Location.Alpha",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
@@ -41,7 +38,9 @@
           "strict": true
         }
       }
-    }
+    },
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal"
   },
   "repository": {
     "type": "git",
@@ -85,7 +84,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.190.0",
+    "@aws-cdk/integ-runner": "^2.192.2",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.14",
     "aws-cdk-lib": "0.0.0",

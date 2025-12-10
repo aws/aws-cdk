@@ -245,7 +245,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     return {
       TransformOutput: {
         S3OutputPath: output.s3OutputPath,
-        ...(output.encryptionKey ? { KmsKeyId: output.encryptionKey.keyArn } : {}),
+        ...(output.encryptionKey ? { KmsKeyId: output.encryptionKey.keyRef.keyArn } : {}),
         ...(output.accept ? { Accept: output.accept } : {}),
         ...(output.assembleWith ? { AssembleWith: output.assembleWith } : {}),
       },
@@ -258,7 +258,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
         InstanceCount: resources.instanceCount,
         InstanceType: isJsonPathOrJsonataExpression(resources.instanceType.toString())
           ? resources.instanceType.toString() : `ml.${resources.instanceType}`,
-        ...(resources.volumeEncryptionKey ? { VolumeKmsKeyId: resources.volumeEncryptionKey.keyArn } : {}),
+        ...(resources.volumeEncryptionKey ? { VolumeKmsKeyId: resources.volumeEncryptionKey.keyRef.keyArn } : {}),
       },
     };
   }

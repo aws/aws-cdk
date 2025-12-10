@@ -1,11 +1,11 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
 import { CfnGeofenceCollection } from 'aws-cdk-lib/aws-location';
-import { generateUniqueId } from './util';
+import { ArnFormat, IResource, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { generateUniqueId } from './util';
 
 /**
  * A Geofence Collection
@@ -53,7 +53,7 @@ export interface GeofenceCollectionProps {
    * @default - Use an AWS managed key
    * @see https://docs.aws.amazon.com/location/latest/developerguide/encryption-at-rest.html
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 }
 
 /**
@@ -141,7 +141,7 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
     const geofenceCollection = new CfnGeofenceCollection(this, 'Resource', {
       collectionName: this.physicalName,
       description: props.description,
-      kmsKeyId: props.kmsKey?.keyArn,
+      kmsKeyId: props.kmsKey?.keyRef.keyArn,
     });
 
     this.geofenceCollectionName = geofenceCollection.ref;

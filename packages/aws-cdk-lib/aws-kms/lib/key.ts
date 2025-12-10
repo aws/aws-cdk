@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { Alias } from './alias';
 import { KeyLookupOptions } from './key-lookup';
-import { CfnKey } from './kms.generated';
+import { CfnKey, IKeyRef, KeyReference } from './kms.generated';
 import * as perms from './private/perms';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
@@ -26,8 +26,11 @@ import * as cxapi from '../../cx-api';
 
 /**
  * A KMS Key, either managed by this CDK app, or imported.
+ *
+ * This interface does double duty: it represents an actual KMS keys, but it
+ * also represents things that can behave like KMS keys, like a key alias.
  */
-export interface IKey extends IResource {
+export interface IKey extends IResource, IKeyRef {
   /**
    * The ARN of the key.
    *
@@ -139,6 +142,13 @@ abstract class KeyBase extends Resource implements IKey {
     super(scope, id, props);
 
     this.node.addValidation({ validate: () => this.policy?.validateForResourcePolicy() ?? [] });
+  }
+
+  public get keyRef(): KeyReference {
+    return {
+      keyArn: this.keyArn,
+      keyId: this.keyId,
+    };
   }
 
   /**
@@ -784,8 +794,8 @@ export class Key extends KeyBase {
    * This method can only be used if the `returnDummyKeyOnMissing` option
    * is set to `true` in the `options` for the `Key.fromLookup()` method.
    */
-  public static isLookupDummy(key: IKey): boolean {
-    return key.keyId === Key.DEFAULT_DUMMY_KEY_ID;
+  public static isLookupDummy(key: IKeyRef): boolean {
+    return key.keyRef.keyId === Key.DEFAULT_DUMMY_KEY_ID;
   }
 
   public readonly keyArn: string;
@@ -809,6 +819,9 @@ export class Key extends KeyBase {
         KeySpec.HMAC_256,
         KeySpec.HMAC_384,
         KeySpec.HMAC_512,
+        KeySpec.ML_DSA_44,
+        KeySpec.ML_DSA_65,
+        KeySpec.ML_DSA_87,
       ],
       [KeyUsage.SIGN_VERIFY]: [
         KeySpec.SYMMETRIC_DEFAULT,
@@ -827,6 +840,9 @@ export class Key extends KeyBase {
         KeySpec.ECC_SECG_P256K1,
         KeySpec.SYMMETRIC_DEFAULT,
         KeySpec.SM2,
+        KeySpec.ML_DSA_44,
+        KeySpec.ML_DSA_65,
+        KeySpec.ML_DSA_87,
       ],
       [KeyUsage.KEY_AGREEMENT]: [
         KeySpec.SYMMETRIC_DEFAULT,
@@ -838,6 +854,9 @@ export class Key extends KeyBase {
         KeySpec.HMAC_256,
         KeySpec.HMAC_384,
         KeySpec.HMAC_512,
+        KeySpec.ML_DSA_44,
+        KeySpec.ML_DSA_65,
+        KeySpec.ML_DSA_87,
       ],
     };
     const keySpec = props.keySpec ?? KeySpec.SYMMETRIC_DEFAULT;

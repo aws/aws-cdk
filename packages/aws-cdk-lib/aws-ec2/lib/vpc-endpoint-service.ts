@@ -1,5 +1,10 @@
 import { Construct } from 'constructs';
-import { CfnVPCEndpointService, CfnVPCEndpointServicePermissions } from './ec2.generated';
+import {
+  CfnVPCEndpointService,
+  CfnVPCEndpointServicePermissions,
+  IVPCEndpointServiceRef,
+  VPCEndpointServiceReference,
+} from './ec2.generated';
 import { ArnPrincipal } from '../../aws-iam';
 import { Aws, Fn, IResource, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -38,7 +43,7 @@ export interface IVpcEndpointServiceLoadBalancer {
  * A VPC endpoint service.
  *
  */
-export interface IVpcEndpointService extends IResource {
+export interface IVpcEndpointService extends IResource, IVPCEndpointServiceRef {
   /**
    * The service name of the VPC Endpoint Service that clients use to connect to,
    * like com.amazonaws.vpce.<region>.vpce-svc-xxxxxxxxxxxxxxxx
@@ -171,6 +176,10 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
         allowedPrincipals: this.allowedPrincipals.map(x => x.arn),
       });
     }
+  }
+
+  public get vpcEndpointServiceRef(): VPCEndpointServiceReference {
+    return this.endpointService.vpcEndpointServiceRef;
   }
 }
 

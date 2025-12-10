@@ -1,7 +1,9 @@
+import { Construct, IConstruct } from 'constructs';
+import type { GlobalSecondaryIndexProps } from './table';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { IResource } from '../../core';
+import { IResource, ValidationError } from '../../core';
 
 /**
  * Supported DynamoDB table operations.
@@ -155,6 +157,38 @@ export enum BillingMode {
    * Explicitly specified Read/Write capacity units.
    */
   PROVISIONED = 'PROVISIONED',
+}
+
+/**
+ * DynamoDB's Contributor Insights Mode
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-dynamodb-table-contributorinsightsspecification.html
+ */
+export enum ContributorInsightsMode {
+  /**
+   * Emits metrics for all read and write requests, whether successful or throttled.
+   */
+  ACCESSED_AND_THROTTLED_KEYS = 'ACCESSED_AND_THROTTLED_KEYS',
+
+  /**
+   * Emits metrics for read and write requests that were throttled.
+   */
+  THROTTLED_KEYS = 'THROTTLED_KEYS',
+}
+
+/**
+ * Reference to ContributorInsightsSpecification
+ */
+export interface ContributorInsightsSpecification {
+  /**
+   * Indicates whether contributor insights is enabled.
+   * @default false
+   */
+  readonly enabled: boolean;
+  /**
+   * Indicates the type of metrics captured by contributor insights.
+   * @default ACCESSED_AND_THROTTLED_KEYS
+   */
+  readonly mode?: ContributorInsightsMode;
 }
 
 /**
@@ -494,4 +528,74 @@ export interface ITable extends IResource {
    *
    */
   metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+}
+
+export function validateContributorInsights(
+  contributorInsights: boolean | undefined,
+  contributorInsightsSpecification: ContributorInsightsSpecification | undefined,
+  deprecatedPropertyName: string,
+  construct: Construct,
+): ContributorInsightsSpecification | undefined {
+  if (contributorInsightsSpecification !== undefined && contributorInsights !== undefined) {
+    throw new ValidationError(`\`contributorInsightsSpecification\` and \`${deprecatedPropertyName}\` are set. Use \`contributorInsightsSpecification\` only.`, construct);
+  }
+
+  return contributorInsightsSpecification ??
+    (contributorInsights !== undefined ? { enabled: contributorInsights } : undefined);
+}
+
+/**
+ * A description of a key schema of an LSI, GSI or Table
+ */
+export interface KeySchema {
+  /**
+   * Partition key definition
+   *
+   * This array has at least one, but potentially multiple entries.  Together,
+   * they form the partition key.
+   */
+  readonly partitionKeys: Attribute[];
+
+  /**
+   * Sort key definition
+   *
+   * This array has zero or more entries. Together, they form the sort key.
+   */
+  readonly sortKeys: Attribute[];
+}
+
+/**
+ * A key schema that combines the legacy properties (singular keys) with the modern properties (multi-attribute keys)
+ *
+ * Picking from an existing type is an easy way to get these without having to copy/paste them all, but we could
+ * have also done the copy/pasting. This type is never exported.
+ */
+type CompatibleKeySchema = Pick<GlobalSecondaryIndexProps, 'partitionKey' | 'partitionKeys' | 'sortKey' | 'sortKeys'>;
+
+/**
+ * Parse a backwards compatible key schema to a strictly multi-attribute key schema, and validate the contents
+ */
+export function parseKeySchema(schema: CompatibleKeySchema, scope: IConstruct): KeySchema {
+  if ((schema.partitionKey === undefined) === (schema.partitionKeys === undefined)) {
+    throw new ValidationError('Exactly one of \'partitionKey\', \'partitionKeys\' must be specified', scope);
+  }
+  if ((schema.sortKey !== undefined) && (schema.sortKeys !== undefined)) {
+    throw new ValidationError('At most one of \'sortKey\', \'sortKeys\' may be specified', scope);
+  }
+
+  const partitionKeys = schema.partitionKeys ?? (schema.partitionKey ? [schema.partitionKey] : []);
+  const sortKeys = schema.sortKeys ?? (schema.sortKey ? [schema.sortKey] : []);
+
+  if (partitionKeys.length === 0) {
+    throw new ValidationError('\'partitionKeys\' must contain at least one element', scope);
+  }
+
+  if (partitionKeys.length > 4) {
+    throw new ValidationError('Maximum of 4 partition keys allowed', scope);
+  }
+  if (sortKeys.length > 4) {
+    throw new ValidationError('Maximum of 4 sort keys allowed', scope);
+  }
+
+  return { partitionKeys, sortKeys };
 }

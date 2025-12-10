@@ -46,6 +46,11 @@ export abstract class StageBase extends Resource implements IStage {
   abstract get url(): string;
 
   /**
+   * The default Access Logging format of this stage.
+   */
+  abstract defaultAccessLogFormat(): AccessLogFormat;
+
+  /**
    * @internal
    */
   protected _addDomainMapping(domainMapping: DomainMappingOptions) {
@@ -79,7 +84,7 @@ export abstract class StageBase extends Resource implements IStage {
 
     return {
       destinationArn: props.destination.bind(this).destinationArn,
-      format: format ? format.toString() : AccessLogFormat.clf().toString(),
+      format: format ? format.toString() : this.defaultAccessLogFormat().toString(),
     };
   }
 

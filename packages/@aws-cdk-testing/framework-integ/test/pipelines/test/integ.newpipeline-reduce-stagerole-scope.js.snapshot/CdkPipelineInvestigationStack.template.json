@@ -305,7 +305,7 @@
          "ProjectName": {
           "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
          },
-         "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"76b9f731e95c981d417f208b4452ab04e2345eb9c4ab92c982d58b621780baee\"}]"
+         "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"55bd157e831743fd61e3cad58c2517e5687f4c99c5400d20ae64ec0c4ce3bb03\"}]"
         },
         "InputArtifacts": [
          {
@@ -342,7 +342,7 @@
          "ProjectName": {
           "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
          },
-         "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"a4e7411b5ed499cff975c59a581a131b24f2c826e6aa90166b756ce916838559\"}]"
+         "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"bf4850dfd12d8ed10bcb77b76fd260d3421b9be9d2d68068f840ff53d3f1082d\"}]"
         },
         "InputArtifacts": [
          {
@@ -739,10 +739,13 @@
     "EncryptionKey": "alias/aws/s3",
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/amazonlinux2-aarch64-standard:3.0",
+     "DockerServer": {
+      "ComputeType": "BUILD_GENERAL1_SMALL"
+     },
+     "Image": "aws/codebuild/amazonlinux-x86_64-standard:5.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": true,
-     "Type": "ARM_CONTAINER"
+     "Type": "LINUX_CONTAINER"
     },
     "ServiceRole": {
      "Fn::GetAtt": [
@@ -1041,10 +1044,13 @@
     "EncryptionKey": "alias/aws/s3",
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/amazonlinux2-aarch64-standard:3.0",
+     "DockerServer": {
+      "ComputeType": "BUILD_GENERAL1_SMALL"
+     },
+     "Image": "aws/codebuild/amazonlinux-x86_64-standard:5.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
-     "Type": "ARM_CONTAINER"
+     "Type": "LINUX_CONTAINER"
     },
     "Name": "pipeline-name-selfupdate",
     "ServiceRole": {

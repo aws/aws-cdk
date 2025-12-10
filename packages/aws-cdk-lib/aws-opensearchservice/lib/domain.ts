@@ -3,7 +3,8 @@ import { URL } from 'url';
 import { Construct } from 'constructs';
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
 import { OpenSearchAccessPolicy } from './opensearch-access-policy';
-import { CfnDomain } from './opensearchservice.generated';
+import { DomainGrants } from './opensearchservice-grants.generated';
+import { CfnDomain, DomainReference, IDomainRef } from './opensearchservice.generated';
 import * as perms from './perms';
 import { EngineVersion } from './version';
 import * as acm from '../../aws-certificatemanager';
@@ -258,7 +259,7 @@ export interface EncryptionAtRestOptions {
    *
    * @default - uses default aws/es KMS key.
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 }
 
 /**
@@ -276,7 +277,7 @@ export interface CognitoOptions {
    *
    * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cognito-auth.html#cognito-auth-prereq
    */
-  readonly role: iam.IRole;
+  readonly role: iam.IRoleRef;
 
   /**
    * The Amazon Cognito user pool ID that you want Amazon OpenSearch Service to use for OpenSearch Dashboards authentication.
@@ -760,7 +761,7 @@ export interface DomainProps {
 /**
  * An interface that represents an Amazon OpenSearch Service domain - either created with the CDK, or an existing one.
  */
-export interface IDomain extends cdk.IResource {
+export interface IDomain extends cdk.IResource, IDomainRef {
   /**
    * Arn of the Amazon OpenSearch Service domain.
    *
@@ -986,6 +987,17 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   public abstract readonly domainName: string;
   public abstract readonly domainId: string;
   public abstract readonly domainEndpoint: string;
+  /**
+   * Collection of grant methods for a Domain
+   */
+  public readonly grants = DomainGrants.fromDomain(this);
+
+  public get domainRef(): DomainReference {
+    return {
+      domainArn: this.domainArn,
+      domainName: this.domainName,
+    };
+  }
 
   /**
    * Grant read permissions for this domain and its contents to an IAM
@@ -994,12 +1006,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @param identity The principal
    */
   grantRead(identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_READ_ACTIONS,
-      this.domainArn,
-      `${this.domainArn}/*`,
-    );
+    return this.grants.read(identity);
   }
 
   /**
@@ -1009,12 +1016,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @param identity The principal
    */
   grantWrite(identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_WRITE_ACTIONS,
-      this.domainArn,
-      `${this.domainArn}/*`,
-    );
+    return this.grants.write(identity);
   }
 
   /**
@@ -1024,12 +1026,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * @param identity The principal
    */
   grantReadWrite(identity: iam.IGrantable): iam.Grant {
-    return this.grant(
-      identity,
-      perms.ES_READ_WRITE_ACTIONS,
-      this.domainArn,
-      `${this.domainArn}/*`,
-    );
+    return this.grants.readWrite(identity);
   }
 
   /**
@@ -1328,7 +1325,6 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
       grantee,
       actions: domainActions,
       resourceArns,
-      scope: this,
     });
 
     return grant;
@@ -1649,8 +1645,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       ec2.InstanceClass.R6GD,
       ec2.InstanceClass.I4G,
       ec2.InstanceClass.I4I,
+      ec2.InstanceClass.I8G,
       ec2.InstanceClass.IM4GN,
       ec2.InstanceClass.R7GD,
+      ec2.InstanceClass.R8GD,
     ];
 
     const supportInstanceStorageInstanceType = [
@@ -1988,7 +1986,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       encryptionAtRestOptions: {
         enabled: encryptionAtRestEnabled,
         kmsKeyId: encryptionAtRestEnabled
-          ? props.encryptionAtRest?.kmsKey?.keyId
+          ? props.encryptionAtRest?.kmsKey?.keyRef.keyId
           : undefined,
       },
       nodeToNodeEncryptionOptions: { enabled: nodeToNodeEncryptionEnabled },
@@ -1996,7 +1994,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       cognitoOptions: props.cognitoDashboardsAuth ? {
         enabled: true,
         identityPoolId: props.cognitoDashboardsAuth?.identityPoolId,
-        roleArn: props.cognitoDashboardsAuth?.role.roleArn,
+        roleArn: props.cognitoDashboardsAuth?.role.roleRef.roleArn,
         userPoolId: props.cognitoDashboardsAuth?.userPoolId,
       } : undefined,
       vpcOptions: cfnVpcOptions,
@@ -2188,7 +2186,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           // empircal evidence shows this is indeed required: https://github.com/aws/aws-cdk/issues/11412
           this.accessPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
             actions: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
-            resources: [this.encryptionAtRestOptions.kmsKey.keyArn],
+            resources: [this.encryptionAtRestOptions.kmsKey.keyRef.keyArn],
             effect: iam.Effect.ALLOW,
           }));
         }

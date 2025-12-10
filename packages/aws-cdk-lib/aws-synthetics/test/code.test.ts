@@ -227,6 +227,46 @@ describe(synthetics.Code.fromAsset, () => {
       .toThrow(`The canary resource requires that the handler is present at "nodejs/node_modules/incorrect.js" but not found at ${assetPath} (https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary_Nodejs.html)`);
   });
 
+  test('puppeteer runtime >= 11.0 allows JS files in root path', () => {
+    // GIVEN
+    const stack = new Stack(new App(), 'canaries');
+    const assetPath = path.join(__dirname, 'canaries', 'puppeteer');
+
+    // WHEN/THEN - should not throw for puppeteer 11.0+
+    expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_11_0.name))
+      .not.toThrow();
+  });
+
+  test('puppeteer runtime >= 11.0 also allows nodejs/node_modules structure', () => {
+    // GIVEN
+    const stack = new Stack(new App(), 'canaries');
+    const assetPath = path.join(__dirname, 'canaries');
+
+    // WHEN/THEN - should not throw for puppeteer 11.0+ with nodejs structure (has both root canary.js and nodejs/node_modules/canary.js)
+    expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_11_0.name))
+      .not.toThrow();
+  });
+
+  test('puppeteer runtime < 11.0 requires nodejs/node_modules structure', () => {
+    // GIVEN
+    const stack = new Stack(new App(), 'canaries');
+    const assetPath = path.join(__dirname, 'canaries');
+
+    // WHEN/THEN - should not throw for puppeteer < 11.0 since nodejs/node_modules/canary.js exists
+    expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0.name))
+      .not.toThrow();
+  });
+
+  test('puppeteer runtime < 11.0 fails without nodejs/node_modules structure', () => {
+    // GIVEN
+    const stack = new Stack(new App(), 'canaries');
+    const assetPath = path.join(__dirname, 'canaries', 'puppeteer'); // Only has root-level files
+
+    // WHEN/THEN - should throw for puppeteer < 11.0 without nodejs/node_modules structure
+    expect(() => synthetics.Code.fromAsset(assetPath).bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_10_0.name))
+      .toThrow(`The canary resource requires that the handler is present at "nodejs/node_modules/canary.js" but not found at ${assetPath}`);
+  });
+
   test('passes if bundling is specified', () => {
     // GIVEN
     const stack = new Stack(new App(), 'canaries');
@@ -250,6 +290,28 @@ describe(synthetics.Code.fromAsset, () => {
 
     // THEN
     expect(() => code.bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1.name))
+      .not.toThrow();
+  });
+
+  test('puppeteer 11.0+ with bundling allows root-level JS files', () => {
+    // GIVEN
+    const stack = new Stack(new App(), 'canaries');
+    const assetPath = path.join(__dirname, 'canaries', 'nodejs', 'node_modules');
+    const code = synthetics.Code.fromAsset(assetPath, {
+      bundling: {
+        image: DockerImage.fromRegistry('dummy'),
+        local: {
+          tryBundle(outputDir) {
+            // Create JS file in root for puppeteer 11.0+
+            fs.copyFileSync(path.join(assetPath, 'canary.js'), path.join(outputDir, 'canary.js'));
+            return true;
+          },
+        },
+      },
+    });
+
+    // THEN - should not throw for puppeteer 11.0+ with root-level file
+    expect(() => code.bind(stack, 'canary.handler', synthetics.RuntimeFamily.NODEJS, synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_11_0.name))
       .not.toThrow();
   });
 

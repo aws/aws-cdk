@@ -1,798 +1,1948 @@
 {
-  "alexa-ask": [
-    "Alexa::ASK"
-  ],
-  "aws-accessanalyzer": [
-    "AWS::AccessAnalyzer"
-  ],
-  "aws-acmpca": [
-    "AWS::ACMPCA"
-  ],
-  "aws-aiops": [
-    "AWS::AIOps"
-  ],
-  "aws-amazonmq": [
-    "AWS::AmazonMQ"
-  ],
-  "aws-amplify": [
-    "AWS::Amplify"
-  ],
-  "aws-amplifyuibuilder": [
-    "AWS::AmplifyUIBuilder"
-  ],
-  "aws-apigateway": [
-    "AWS::ApiGateway"
-  ],
-  "aws-apigatewayv2": [
-    "AWS::ApiGatewayV2"
-  ],
-  "aws-appconfig": [
-    "AWS::AppConfig"
-  ],
-  "aws-appflow": [
-    "AWS::AppFlow"
-  ],
-  "aws-appintegrations": [
-    "AWS::AppIntegrations"
-  ],
-  "aws-applicationautoscaling": [
-    "AWS::ApplicationAutoScaling"
-  ],
-  "aws-applicationinsights": [
-    "AWS::ApplicationInsights"
-  ],
-  "aws-applicationsignals": [
-    "AWS::ApplicationSignals"
-  ],
-  "aws-appmesh": [
-    "AWS::AppMesh"
-  ],
-  "aws-apprunner": [
-    "AWS::AppRunner"
-  ],
-  "aws-appstream": [
-    "AWS::AppStream"
-  ],
-  "aws-appsync": [
-    "AWS::AppSync"
-  ],
-  "aws-apptest": [
-    "AWS::AppTest"
-  ],
-  "aws-aps": [
-    "AWS::APS"
-  ],
-  "aws-arcregionswitch": [
-    "AWS::ARCRegionSwitch"
-  ],
-  "aws-arczonalshift": [
-    "AWS::ARCZonalShift"
-  ],
-  "aws-athena": [
-    "AWS::Athena"
-  ],
-  "aws-auditmanager": [
-    "AWS::AuditManager"
-  ],
-  "aws-autoscaling": [
-    "AWS::AutoScaling"
-  ],
-  "aws-autoscalingplans": [
-    "AWS::AutoScalingPlans"
-  ],
-  "aws-b2bi": [
-    "AWS::B2BI"
-  ],
-  "aws-backup": [
-    "AWS::Backup"
-  ],
-  "aws-backupgateway": [
-    "AWS::BackupGateway"
-  ],
-  "aws-batch": [
-    "AWS::Batch"
-  ],
-  "aws-bcmdataexports": [
-    "AWS::BCMDataExports"
-  ],
-  "aws-bedrock": [
-    "AWS::Bedrock"
-  ],
-  "aws-billing": [
-    "AWS::Billing"
-  ],
-  "aws-billingconductor": [
-    "AWS::BillingConductor"
-  ],
-  "aws-budgets": [
-    "AWS::Budgets"
-  ],
-  "aws-cassandra": [
-    "AWS::Cassandra"
-  ],
-  "aws-ce": [
-    "AWS::CE"
-  ],
-  "aws-certificatemanager": [
-    "AWS::CertificateManager"
-  ],
-  "aws-chatbot": [
-    "AWS::Chatbot"
-  ],
-  "aws-cleanrooms": [
-    "AWS::CleanRooms"
-  ],
-  "aws-cleanroomsml": [
-    "AWS::CleanRoomsML"
-  ],
-  "aws-cloud9": [
-    "AWS::Cloud9"
-  ],
-  "aws-cloudformation": [
-    "AWS::CloudFormation"
-  ],
-  "aws-cloudfront": [
-    "AWS::CloudFront"
-  ],
-  "aws-cloudtrail": [
-    "AWS::CloudTrail"
-  ],
-  "aws-cloudwatch": [
-    "AWS::CloudWatch"
-  ],
-  "aws-codeartifact": [
-    "AWS::CodeArtifact"
-  ],
-  "aws-codebuild": [
-    "AWS::CodeBuild"
-  ],
-  "aws-codecommit": [
-    "AWS::CodeCommit"
-  ],
-  "aws-codeconnections": [
-    "AWS::CodeConnections"
-  ],
-  "aws-codedeploy": [
-    "AWS::CodeDeploy"
-  ],
-  "aws-codeguruprofiler": [
-    "AWS::CodeGuruProfiler"
-  ],
-  "aws-codegurureviewer": [
-    "AWS::CodeGuruReviewer"
-  ],
-  "aws-codepipeline": [
-    "AWS::CodePipeline"
-  ],
-  "aws-codestar": [
-    "AWS::CodeStar"
-  ],
-  "aws-codestarconnections": [
-    "AWS::CodeStarConnections"
-  ],
-  "aws-codestarnotifications": [
-    "AWS::CodeStarNotifications"
-  ],
-  "aws-cognito": [
-    "AWS::Cognito"
-  ],
-  "aws-comprehend": [
-    "AWS::Comprehend"
-  ],
-  "aws-config": [
-    "AWS::Config"
-  ],
-  "aws-connect": [
-    "AWS::Connect"
-  ],
-  "aws-connectcampaigns": [
-    "AWS::ConnectCampaigns"
-  ],
-  "aws-connectcampaignsv2": [
-    "AWS::ConnectCampaignsV2"
-  ],
-  "aws-controltower": [
-    "AWS::ControlTower"
-  ],
-  "aws-cur": [
-    "AWS::CUR"
-  ],
-  "aws-customerprofiles": [
-    "AWS::CustomerProfiles"
-  ],
-  "aws-databrew": [
-    "AWS::DataBrew"
-  ],
-  "aws-datapipeline": [
-    "AWS::DataPipeline"
-  ],
-  "aws-datasync": [
-    "AWS::DataSync"
-  ],
-  "aws-datazone": [
-    "AWS::DataZone"
-  ],
-  "aws-dax": [
-    "AWS::DAX"
-  ],
-  "aws-deadline": [
-    "AWS::Deadline"
-  ],
-  "aws-detective": [
-    "AWS::Detective"
-  ],
-  "aws-devicefarm": [
-    "AWS::DeviceFarm"
-  ],
-  "aws-devopsguru": [
-    "AWS::DevOpsGuru"
-  ],
-  "aws-directoryservice": [
-    "AWS::DirectoryService"
-  ],
-  "aws-dlm": [
-    "AWS::DLM"
-  ],
-  "aws-dms": [
-    "AWS::DMS"
-  ],
-  "aws-docdb": [
-    "AWS::DocDB"
-  ],
-  "aws-docdbelastic": [
-    "AWS::DocDBElastic"
-  ],
-  "aws-dsql": [
-    "AWS::DSQL"
-  ],
-  "aws-dynamodb": [
-    "AWS::DynamoDB"
-  ],
-  "aws-ec2": [
-    "AWS::EC2"
-  ],
-  "aws-ecr": [
-    "AWS::ECR"
-  ],
-  "aws-ecs": [
-    "AWS::ECS"
-  ],
-  "aws-efs": [
-    "AWS::EFS"
-  ],
-  "aws-eks": [
-    "AWS::EKS"
-  ],
-  "aws-elasticache": [
-    "AWS::ElastiCache"
-  ],
-  "aws-elasticbeanstalk": [
-    "AWS::ElasticBeanstalk"
-  ],
-  "aws-elasticloadbalancing": [
-    "AWS::ElasticLoadBalancing"
-  ],
-  "aws-elasticloadbalancingv2": [
-    "AWS::ElasticLoadBalancingV2"
-  ],
-  "aws-elasticsearch": [
-    "AWS::Elasticsearch"
-  ],
-  "aws-emr": [
-    "AWS::EMR"
-  ],
-  "aws-emrcontainers": [
-    "AWS::EMRContainers"
-  ],
-  "aws-emrserverless": [
-    "AWS::EMRServerless"
-  ],
-  "aws-entityresolution": [
-    "AWS::EntityResolution"
-  ],
-  "aws-events": [
-    "AWS::Events"
-  ],
-  "aws-eventschemas": [
-    "AWS::EventSchemas"
-  ],
-  "aws-evidently": [
-    "AWS::Evidently"
-  ],
-  "aws-evs": [
-    "AWS::EVS"
-  ],
-  "aws-finspace": [
-    "AWS::FinSpace"
-  ],
-  "aws-fis": [
-    "AWS::FIS"
-  ],
-  "aws-fms": [
-    "AWS::FMS"
-  ],
-  "aws-forecast": [
-    "AWS::Forecast"
-  ],
-  "aws-frauddetector": [
-    "AWS::FraudDetector"
-  ],
-  "aws-fsx": [
-    "AWS::FSx"
-  ],
-  "aws-gamelift": [
-    "AWS::GameLift"
-  ],
-  "aws-gameliftstreams": [
-    "AWS::GameLiftStreams"
-  ],
-  "aws-globalaccelerator": [
-    "AWS::GlobalAccelerator"
-  ],
-  "aws-glue": [
-    "AWS::Glue"
-  ],
-  "aws-grafana": [
-    "AWS::Grafana"
-  ],
-  "aws-greengrass": [
-    "AWS::Greengrass"
-  ],
-  "aws-greengrassv2": [
-    "AWS::GreengrassV2"
-  ],
-  "aws-groundstation": [
-    "AWS::GroundStation"
-  ],
-  "aws-guardduty": [
-    "AWS::GuardDuty"
-  ],
-  "aws-healthimaging": [
-    "AWS::HealthImaging"
-  ],
-  "aws-healthlake": [
-    "AWS::HealthLake"
-  ],
-  "aws-iam": [
-    "AWS::IAM"
-  ],
-  "aws-identitystore": [
-    "AWS::IdentityStore"
-  ],
-  "aws-imagebuilder": [
-    "AWS::ImageBuilder"
-  ],
-  "aws-inspector": [
-    "AWS::Inspector"
-  ],
-  "aws-inspectorv2": [
-    "AWS::InspectorV2"
-  ],
-  "aws-internetmonitor": [
-    "AWS::InternetMonitor"
-  ],
-  "aws-invoicing": [
-    "AWS::Invoicing"
-  ],
-  "aws-iot": [
-    "AWS::IoT"
-  ],
-  "aws-iotanalytics": [
-    "AWS::IoTAnalytics"
-  ],
-  "aws-iotcoredeviceadvisor": [
-    "AWS::IoTCoreDeviceAdvisor"
-  ],
-  "aws-iotevents": [
-    "AWS::IoTEvents"
-  ],
-  "aws-iotfleethub": [
-    "AWS::IoTFleetHub"
-  ],
-  "aws-iotfleetwise": [
-    "AWS::IoTFleetWise"
-  ],
-  "aws-iotsitewise": [
-    "AWS::IoTSiteWise"
-  ],
-  "aws-iotthingsgraph": [
-    "AWS::IoTThingsGraph"
-  ],
-  "aws-iottwinmaker": [
-    "AWS::IoTTwinMaker"
-  ],
-  "aws-iotwireless": [
-    "AWS::IoTWireless"
-  ],
-  "aws-ivs": [
-    "AWS::IVS"
-  ],
-  "aws-ivschat": [
-    "AWS::IVSChat"
-  ],
-  "aws-kafkaconnect": [
-    "AWS::KafkaConnect"
-  ],
-  "aws-kendra": [
-    "AWS::Kendra"
-  ],
-  "aws-kendraranking": [
-    "AWS::KendraRanking"
-  ],
-  "aws-kinesis": [
-    "AWS::Kinesis"
-  ],
-  "aws-kinesisanalytics": [
-    "AWS::KinesisAnalytics",
-    "AWS::KinesisAnalyticsV2"
-  ],
-  "aws-kinesisanalyticsv2": [
-    "AWS::KinesisAnalyticsV2"
-  ],
-  "aws-kinesisfirehose": [
-    "AWS::KinesisFirehose"
-  ],
-  "aws-kinesisvideo": [
-    "AWS::KinesisVideo"
-  ],
-  "aws-kms": [
-    "AWS::KMS"
-  ],
-  "aws-lakeformation": [
-    "AWS::LakeFormation"
-  ],
-  "aws-lambda": [
-    "AWS::Lambda"
-  ],
-  "aws-launchwizard": [
-    "AWS::LaunchWizard"
-  ],
-  "aws-lex": [
-    "AWS::Lex"
-  ],
-  "aws-licensemanager": [
-    "AWS::LicenseManager"
-  ],
-  "aws-lightsail": [
-    "AWS::Lightsail"
-  ],
-  "aws-location": [
-    "AWS::Location"
-  ],
-  "aws-logs": [
-    "AWS::Logs"
-  ],
-  "aws-lookoutequipment": [
-    "AWS::LookoutEquipment"
-  ],
-  "aws-lookoutmetrics": [
-    "AWS::LookoutMetrics"
-  ],
-  "aws-lookoutvision": [
-    "AWS::LookoutVision"
-  ],
-  "aws-m2": [
-    "AWS::M2"
-  ],
-  "aws-macie": [
-    "AWS::Macie"
-  ],
-  "aws-managedblockchain": [
-    "AWS::ManagedBlockchain"
-  ],
-  "aws-mediaconnect": [
-    "AWS::MediaConnect"
-  ],
-  "aws-mediaconvert": [
-    "AWS::MediaConvert"
-  ],
-  "aws-medialive": [
-    "AWS::MediaLive"
-  ],
-  "aws-mediapackage": [
-    "AWS::MediaPackage"
-  ],
-  "aws-mediapackagev2": [
-    "AWS::MediaPackageV2"
-  ],
-  "aws-mediastore": [
-    "AWS::MediaStore"
-  ],
-  "aws-mediatailor": [
-    "AWS::MediaTailor"
-  ],
-  "aws-memorydb": [
-    "AWS::MemoryDB"
-  ],
-  "aws-mpa": [
-    "AWS::MPA"
-  ],
-  "aws-msk": [
-    "AWS::MSK"
-  ],
-  "aws-mwaa": [
-    "AWS::MWAA"
-  ],
-  "aws-neptune": [
-    "AWS::Neptune"
-  ],
-  "aws-neptunegraph": [
-    "AWS::NeptuneGraph"
-  ],
-  "aws-networkfirewall": [
-    "AWS::NetworkFirewall"
-  ],
-  "aws-networkmanager": [
-    "AWS::NetworkManager"
-  ],
-  "aws-nimblestudio": [
-    "AWS::NimbleStudio"
-  ],
-  "aws-notifications": [
-    "AWS::Notifications"
-  ],
-  "aws-notificationscontacts": [
-    "AWS::NotificationsContacts"
-  ],
-  "aws-oam": [
-    "AWS::Oam"
-  ],
-  "aws-observabilityadmin": [
-    "AWS::ObservabilityAdmin"
-  ],
-  "aws-odb": [
-    "AWS::ODB"
-  ],
-  "aws-omics": [
-    "AWS::Omics"
-  ],
-  "aws-opensearchserverless": [
-    "AWS::OpenSearchServerless"
-  ],
-  "aws-opensearchservice": [
-    "AWS::OpenSearchService"
-  ],
-  "aws-opsworks": [
-    "AWS::OpsWorks"
-  ],
-  "aws-opsworkscm": [
-    "AWS::OpsWorksCM"
-  ],
-  "aws-organizations": [
-    "AWS::Organizations"
-  ],
-  "aws-osis": [
-    "AWS::OSIS"
-  ],
-  "aws-panorama": [
-    "AWS::Panorama"
-  ],
-  "aws-paymentcryptography": [
-    "AWS::PaymentCryptography"
-  ],
-  "aws-pcaconnectorad": [
-    "AWS::PCAConnectorAD"
-  ],
-  "aws-pcaconnectorscep": [
-    "AWS::PCAConnectorSCEP"
-  ],
-  "aws-pcs": [
-    "AWS::PCS"
-  ],
-  "aws-personalize": [
-    "AWS::Personalize"
-  ],
-  "aws-pinpoint": [
-    "AWS::Pinpoint"
-  ],
-  "aws-pinpointemail": [
-    "AWS::PinpointEmail"
-  ],
-  "aws-pipes": [
-    "AWS::Pipes"
-  ],
-  "aws-proton": [
-    "AWS::Proton"
-  ],
-  "aws-qbusiness": [
-    "AWS::QBusiness"
-  ],
-  "aws-qldb": [
-    "AWS::QLDB"
-  ],
-  "aws-quicksight": [
-    "AWS::QuickSight"
-  ],
-  "aws-ram": [
-    "AWS::RAM"
-  ],
-  "aws-rbin": [
-    "AWS::Rbin"
-  ],
-  "aws-rds": [
-    "AWS::RDS"
-  ],
-  "aws-redshift": [
-    "AWS::Redshift"
-  ],
-  "aws-redshiftserverless": [
-    "AWS::RedshiftServerless"
-  ],
-  "aws-refactorspaces": [
-    "AWS::RefactorSpaces"
-  ],
-  "aws-rekognition": [
-    "AWS::Rekognition"
-  ],
-  "aws-resiliencehub": [
-    "AWS::ResilienceHub"
-  ],
-  "aws-resourceexplorer2": [
-    "AWS::ResourceExplorer2"
-  ],
-  "aws-resourcegroups": [
-    "AWS::ResourceGroups"
-  ],
-  "aws-robomaker": [
-    "AWS::RoboMaker"
-  ],
-  "aws-rolesanywhere": [
-    "AWS::RolesAnywhere"
-  ],
-  "aws-route53": [
-    "AWS::Route53"
-  ],
-  "aws-route53profiles": [
-    "AWS::Route53Profiles"
-  ],
-  "aws-route53recoverycontrol": [
-    "AWS::Route53RecoveryControl"
-  ],
-  "aws-route53recoveryreadiness": [
-    "AWS::Route53RecoveryReadiness"
-  ],
-  "aws-route53resolver": [
-    "AWS::Route53Resolver"
-  ],
-  "aws-rum": [
-    "AWS::RUM"
-  ],
-  "aws-s3": [
-    "AWS::S3"
-  ],
-  "aws-s3express": [
-    "AWS::S3Express"
-  ],
-  "aws-s3objectlambda": [
-    "AWS::S3ObjectLambda"
-  ],
-  "aws-s3outposts": [
-    "AWS::S3Outposts"
-  ],
-  "aws-s3tables": [
-    "AWS::S3Tables"
-  ],
-  "aws-sagemaker": [
-    "AWS::SageMaker"
-  ],
-  "aws-sam": [
-    "AWS::Serverless"
-  ],
-  "aws-scheduler": [
-    "AWS::Scheduler"
-  ],
-  "aws-sdb": [
-    "AWS::SDB"
-  ],
-  "aws-secretsmanager": [
-    "AWS::SecretsManager"
-  ],
-  "aws-securityhub": [
-    "AWS::SecurityHub"
-  ],
-  "aws-securitylake": [
-    "AWS::SecurityLake"
-  ],
-  "aws-servicecatalog": [
-    "AWS::ServiceCatalog"
-  ],
-  "aws-servicecatalogappregistry": [
-    "AWS::ServiceCatalogAppRegistry"
-  ],
-  "aws-servicediscovery": [
-    "AWS::ServiceDiscovery"
-  ],
-  "aws-ses": [
-    "AWS::SES"
-  ],
-  "aws-shield": [
-    "AWS::Shield"
-  ],
-  "aws-signer": [
-    "AWS::Signer"
-  ],
-  "aws-simspaceweaver": [
-    "AWS::SimSpaceWeaver"
-  ],
-  "aws-sns": [
-    "AWS::SNS"
-  ],
-  "aws-sqs": [
-    "AWS::SQS"
-  ],
-  "aws-ssm": [
-    "AWS::SSM"
-  ],
-  "aws-ssmcontacts": [
-    "AWS::SSMContacts"
-  ],
-  "aws-ssmguiconnect": [
-    "AWS::SSMGuiConnect"
-  ],
-  "aws-ssmincidents": [
-    "AWS::SSMIncidents"
-  ],
-  "aws-ssmquicksetup": [
-    "AWS::SSMQuickSetup"
-  ],
-  "aws-sso": [
-    "AWS::SSO"
-  ],
-  "aws-stepfunctions": [
-    "AWS::StepFunctions"
-  ],
-  "aws-supportapp": [
-    "AWS::SupportApp"
-  ],
-  "aws-synthetics": [
-    "AWS::Synthetics"
-  ],
-  "aws-systemsmanagersap": [
-    "AWS::SystemsManagerSAP"
-  ],
-  "aws-timestream": [
-    "AWS::Timestream"
-  ],
-  "aws-transfer": [
-    "AWS::Transfer"
-  ],
-  "aws-verifiedpermissions": [
-    "AWS::VerifiedPermissions"
-  ],
-  "aws-voiceid": [
-    "AWS::VoiceID"
-  ],
-  "aws-vpclattice": [
-    "AWS::VpcLattice"
-  ],
-  "aws-waf": [
-    "AWS::WAF"
-  ],
-  "aws-wafregional": [
-    "AWS::WAFRegional"
-  ],
-  "aws-wafv2": [
-    "AWS::WAFv2"
-  ],
-  "aws-wisdom": [
-    "AWS::Wisdom"
-  ],
-  "aws-workspaces": [
-    "AWS::WorkSpaces"
-  ],
-  "aws-workspacesinstances": [
-    "AWS::WorkspacesInstances"
-  ],
-  "aws-workspacesthinclient": [
-    "AWS::WorkSpacesThinClient"
-  ],
-  "aws-workspacesweb": [
-    "AWS::WorkSpacesWeb"
-  ],
-  "aws-xray": [
-    "AWS::XRay"
-  ],
-  "core": [
-    "AWS::CloudFormation"
-  ]
+  "alexa-ask": {
+    "scopes": [
+      {
+        "namespace": "Alexa::ASK"
+      }
+    ],
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.Alexa.Ask"
+      },
+      "java": {
+        "package": "software.amazon.awscdk.alexa.ask"
+      }
+    }
+  },
+  "aws-accessanalyzer": {
+    "scopes": [
+      {
+        "namespace": "AWS::AccessAnalyzer"
+      }
+    ]
+  },
+  "aws-acmpca": {
+    "scopes": [
+      {
+        "namespace": "AWS::ACMPCA"
+      }
+    ]
+  },
+  "aws-aiops": {
+    "scopes": [
+      {
+        "namespace": "AWS::AIOps"
+      }
+    ]
+  },
+  "aws-amazonmq": {
+    "scopes": [
+      {
+        "namespace": "AWS::AmazonMQ"
+      }
+    ]
+  },
+  "aws-amplify": {
+    "scopes": [
+      {
+        "namespace": "AWS::Amplify"
+      }
+    ]
+  },
+  "aws-amplifyuibuilder": {
+    "scopes": [
+      {
+        "namespace": "AWS::AmplifyUIBuilder"
+      }
+    ]
+  },
+  "aws-apigateway": {
+    "scopes": [
+      {
+        "namespace": "AWS::ApiGateway"
+      }
+    ],
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.APIGateway"
+      }
+    }
+  },
+  "aws-apigatewayv2": {
+    "scopes": [
+      {
+        "namespace": "AWS::ApiGatewayV2"
+      }
+    ],
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Apigatewayv2"
+      }
+    }
+  },
+  "aws-appconfig": {
+    "scopes": [
+      {
+        "namespace": "AWS::AppConfig"
+      }
+    ]
+  },
+  "aws-appflow": {
+    "scopes": [
+      {
+        "namespace": "AWS::AppFlow"
+      }
+    ]
+  },
+  "aws-appintegrations": {
+    "scopes": [
+      {
+        "namespace": "AWS::AppIntegrations"
+      }
+    ]
+  },
+  "aws-applicationautoscaling": {
+    "scopes": [
+      {
+        "namespace": "AWS::ApplicationAutoScaling"
+      }
+    ]
+  },
+  "aws-applicationinsights": {
+    "scopes": [
+      {
+        "namespace": "AWS::ApplicationInsights"
+      }
+    ]
+  },
+  "aws-applicationsignals": {
+    "scopes": [
+      {
+        "namespace": "AWS::ApplicationSignals"
+      }
+    ]
+  },
+  "aws-appmesh": {
+    "scopes": [
+      {
+        "namespace": "AWS::AppMesh"
+      }
+    ]
+  },
+  "aws-apprunner": {
+    "scopes": [
+      {
+        "namespace": "AWS::AppRunner"
+      }
+    ]
+  },
+  "aws-appstream": {
+    "scopes": [
+      {
+        "namespace": "AWS::AppStream"
+      }
+    ]
+  },
+  "aws-appsync": {
+    "scopes": [
+      {
+        "namespace": "AWS::AppSync"
+      }
+    ]
+  },
+  "aws-apptest": {
+    "scopes": [
+      {
+        "namespace": "AWS::AppTest"
+      }
+    ]
+  },
+  "aws-aps": {
+    "scopes": [
+      {
+        "namespace": "AWS::APS"
+      }
+    ]
+  },
+  "aws-arcregionswitch": {
+    "scopes": [
+      {
+        "namespace": "AWS::ARCRegionSwitch"
+      }
+    ]
+  },
+  "aws-arczonalshift": {
+    "scopes": [
+      {
+        "namespace": "AWS::ARCZonalShift"
+      }
+    ]
+  },
+  "aws-athena": {
+    "scopes": [
+      {
+        "namespace": "AWS::Athena"
+      }
+    ]
+  },
+  "aws-auditmanager": {
+    "scopes": [
+      {
+        "namespace": "AWS::AuditManager"
+      }
+    ]
+  },
+  "aws-autoscaling": {
+    "scopes": [
+      {
+        "namespace": "AWS::AutoScaling"
+      }
+    ]
+  },
+  "aws-autoscalingplans": {
+    "scopes": [
+      {
+        "namespace": "AWS::AutoScalingPlans"
+      }
+    ]
+  },
+  "aws-b2bi": {
+    "scopes": [
+      {
+        "namespace": "AWS::B2BI"
+      }
+    ]
+  },
+  "aws-backup": {
+    "scopes": [
+      {
+        "namespace": "AWS::Backup"
+      }
+    ]
+  },
+  "aws-backupgateway": {
+    "scopes": [
+      {
+        "namespace": "AWS::BackupGateway"
+      }
+    ]
+  },
+  "aws-batch": {
+    "scopes": [
+      {
+        "namespace": "AWS::Batch"
+      }
+    ]
+  },
+  "aws-bcmdataexports": {
+    "scopes": [
+      {
+        "namespace": "AWS::BCMDataExports"
+      }
+    ]
+  },
+  "aws-bedrock": {
+    "scopes": [
+      {
+        "namespace": "AWS::Bedrock"
+      }
+    ]
+  },
+  "aws-bedrockagentcore": {
+    "scopes": [
+      {
+        "namespace": "AWS::BedrockAgentCore"
+      }
+    ]
+  },
+  "aws-billing": {
+    "scopes": [
+      {
+        "namespace": "AWS::Billing"
+      }
+    ]
+  },
+  "aws-billingconductor": {
+    "scopes": [
+      {
+        "namespace": "AWS::BillingConductor"
+      }
+    ]
+  },
+  "aws-budgets": {
+    "scopes": [
+      {
+        "namespace": "AWS::Budgets"
+      }
+    ]
+  },
+  "aws-cassandra": {
+    "scopes": [
+      {
+        "namespace": "AWS::Cassandra"
+      }
+    ]
+  },
+  "aws-ce": {
+    "scopes": [
+      {
+        "namespace": "AWS::CE"
+      }
+    ]
+  },
+  "aws-certificatemanager": {
+    "scopes": [
+      {
+        "namespace": "AWS::CertificateManager"
+      }
+    ]
+  },
+  "aws-chatbot": {
+    "scopes": [
+      {
+        "namespace": "AWS::Chatbot"
+      }
+    ]
+  },
+  "aws-cleanrooms": {
+    "scopes": [
+      {
+        "namespace": "AWS::CleanRooms"
+      }
+    ]
+  },
+  "aws-cleanroomsml": {
+    "scopes": [
+      {
+        "namespace": "AWS::CleanRoomsML"
+      }
+    ]
+  },
+  "aws-cloud9": {
+    "scopes": [
+      {
+        "namespace": "AWS::Cloud9"
+      }
+    ]
+  },
+  "aws-cloudformation": {
+    "scopes": [
+      {
+        "namespace": "AWS::CloudFormation"
+      }
+    ]
+  },
+  "aws-cloudfront": {
+    "scopes": [
+      {
+        "namespace": "AWS::CloudFront"
+      }
+    ]
+  },
+  "aws-cloudtrail": {
+    "scopes": [
+      {
+        "namespace": "AWS::CloudTrail"
+      }
+    ]
+  },
+  "aws-cloudwatch": {
+    "scopes": [
+      {
+        "namespace": "AWS::CloudWatch"
+      }
+    ]
+  },
+  "aws-codeartifact": {
+    "scopes": [
+      {
+        "namespace": "AWS::CodeArtifact"
+      }
+    ]
+  },
+  "aws-codebuild": {
+    "scopes": [
+      {
+        "namespace": "AWS::CodeBuild"
+      }
+    ]
+  },
+  "aws-codecommit": {
+    "scopes": [
+      {
+        "namespace": "AWS::CodeCommit"
+      }
+    ]
+  },
+  "aws-codeconnections": {
+    "scopes": [
+      {
+        "namespace": "AWS::CodeConnections"
+      }
+    ]
+  },
+  "aws-codedeploy": {
+    "scopes": [
+      {
+        "namespace": "AWS::CodeDeploy"
+      }
+    ]
+  },
+  "aws-codeguruprofiler": {
+    "scopes": [
+      {
+        "namespace": "AWS::CodeGuruProfiler"
+      }
+    ]
+  },
+  "aws-codegurureviewer": {
+    "scopes": [
+      {
+        "namespace": "AWS::CodeGuruReviewer"
+      }
+    ]
+  },
+  "aws-codepipeline": {
+    "scopes": [
+      {
+        "namespace": "AWS::CodePipeline"
+      }
+    ]
+  },
+  "aws-codestar": {
+    "scopes": [
+      {
+        "namespace": "AWS::CodeStar"
+      }
+    ],
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Codestar"
+      }
+    }
+  },
+  "aws-codestarconnections": {
+    "scopes": [
+      {
+        "namespace": "AWS::CodeStarConnections"
+      }
+    ]
+  },
+  "aws-codestarnotifications": {
+    "scopes": [
+      {
+        "namespace": "AWS::CodeStarNotifications"
+      }
+    ]
+  },
+  "aws-cognito": {
+    "scopes": [
+      {
+        "namespace": "AWS::Cognito"
+      }
+    ]
+  },
+  "aws-comprehend": {
+    "scopes": [
+      {
+        "namespace": "AWS::Comprehend"
+      }
+    ]
+  },
+  "aws-config": {
+    "scopes": [
+      {
+        "namespace": "AWS::Config"
+      }
+    ]
+  },
+  "aws-connect": {
+    "scopes": [
+      {
+        "namespace": "AWS::Connect"
+      }
+    ]
+  },
+  "aws-connectcampaigns": {
+    "scopes": [
+      {
+        "namespace": "AWS::ConnectCampaigns"
+      }
+    ]
+  },
+  "aws-connectcampaignsv2": {
+    "scopes": [
+      {
+        "namespace": "AWS::ConnectCampaignsV2"
+      }
+    ]
+  },
+  "aws-controltower": {
+    "scopes": [
+      {
+        "namespace": "AWS::ControlTower"
+      }
+    ]
+  },
+  "aws-cur": {
+    "scopes": [
+      {
+        "namespace": "AWS::CUR"
+      }
+    ]
+  },
+  "aws-customerprofiles": {
+    "scopes": [
+      {
+        "namespace": "AWS::CustomerProfiles"
+      }
+    ]
+  },
+  "aws-databrew": {
+    "scopes": [
+      {
+        "namespace": "AWS::DataBrew"
+      }
+    ]
+  },
+  "aws-datapipeline": {
+    "scopes": [
+      {
+        "namespace": "AWS::DataPipeline"
+      }
+    ]
+  },
+  "aws-datasync": {
+    "scopes": [
+      {
+        "namespace": "AWS::DataSync"
+      }
+    ]
+  },
+  "aws-datazone": {
+    "scopes": [
+      {
+        "namespace": "AWS::DataZone"
+      }
+    ]
+  },
+  "aws-dax": {
+    "scopes": [
+      {
+        "namespace": "AWS::DAX"
+      }
+    ]
+  },
+  "aws-deadline": {
+    "scopes": [
+      {
+        "namespace": "AWS::Deadline"
+      }
+    ]
+  },
+  "aws-detective": {
+    "scopes": [
+      {
+        "namespace": "AWS::Detective"
+      }
+    ]
+  },
+  "aws-devicefarm": {
+    "scopes": [
+      {
+        "namespace": "AWS::DeviceFarm"
+      }
+    ]
+  },
+  "aws-devopsagent": {
+    "scopes": [
+      {
+        "namespace": "AWS::DevOpsAgent"
+      }
+    ]
+  },
+  "aws-devopsguru": {
+    "scopes": [
+      {
+        "namespace": "AWS::DevOpsGuru"
+      }
+    ]
+  },
+  "aws-directoryservice": {
+    "scopes": [
+      {
+        "namespace": "AWS::DirectoryService"
+      }
+    ]
+  },
+  "aws-dlm": {
+    "scopes": [
+      {
+        "namespace": "AWS::DLM"
+      }
+    ]
+  },
+  "aws-dms": {
+    "scopes": [
+      {
+        "namespace": "AWS::DMS"
+      }
+    ]
+  },
+  "aws-docdb": {
+    "scopes": [
+      {
+        "namespace": "AWS::DocDB"
+      }
+    ]
+  },
+  "aws-docdbelastic": {
+    "scopes": [
+      {
+        "namespace": "AWS::DocDBElastic"
+      }
+    ]
+  },
+  "aws-dsql": {
+    "scopes": [
+      {
+        "namespace": "AWS::DSQL"
+      }
+    ]
+  },
+  "aws-dynamodb": {
+    "scopes": [
+      {
+        "namespace": "AWS::DynamoDB"
+      }
+    ]
+  },
+  "aws-ec2": {
+    "scopes": [
+      {
+        "namespace": "AWS::EC2"
+      }
+    ]
+  },
+  "aws-ecr": {
+    "scopes": [
+      {
+        "namespace": "AWS::ECR"
+      }
+    ]
+  },
+  "aws-ecs": {
+    "scopes": [
+      {
+        "namespace": "AWS::ECS"
+      }
+    ]
+  },
+  "aws-efs": {
+    "scopes": [
+      {
+        "namespace": "AWS::EFS"
+      }
+    ]
+  },
+  "aws-eks": {
+    "scopes": [
+      {
+        "namespace": "AWS::EKS"
+      }
+    ]
+  },
+  "aws-elasticache": {
+    "scopes": [
+      {
+        "namespace": "AWS::ElastiCache"
+      }
+    ]
+  },
+  "aws-elasticbeanstalk": {
+    "scopes": [
+      {
+        "namespace": "AWS::ElasticBeanstalk"
+      }
+    ]
+  },
+  "aws-elasticloadbalancing": {
+    "scopes": [
+      {
+        "namespace": "AWS::ElasticLoadBalancing"
+      }
+    ]
+  },
+  "aws-elasticloadbalancingv2": {
+    "scopes": [
+      {
+        "namespace": "AWS::ElasticLoadBalancingV2"
+      }
+    ]
+  },
+  "aws-elasticsearch": {
+    "scopes": [
+      {
+        "namespace": "AWS::Elasticsearch"
+      }
+    ]
+  },
+  "aws-emr": {
+    "scopes": [
+      {
+        "namespace": "AWS::EMR"
+      }
+    ]
+  },
+  "aws-emrcontainers": {
+    "scopes": [
+      {
+        "namespace": "AWS::EMRContainers"
+      }
+    ]
+  },
+  "aws-emrserverless": {
+    "scopes": [
+      {
+        "namespace": "AWS::EMRServerless"
+      }
+    ]
+  },
+  "aws-entityresolution": {
+    "scopes": [
+      {
+        "namespace": "AWS::EntityResolution"
+      }
+    ]
+  },
+  "aws-events": {
+    "scopes": [
+      {
+        "namespace": "AWS::Events"
+      }
+    ]
+  },
+  "aws-eventschemas": {
+    "scopes": [
+      {
+        "namespace": "AWS::EventSchemas"
+      }
+    ]
+  },
+  "aws-evidently": {
+    "scopes": [
+      {
+        "namespace": "AWS::Evidently"
+      }
+    ]
+  },
+  "aws-evs": {
+    "scopes": [
+      {
+        "namespace": "AWS::EVS"
+      }
+    ]
+  },
+  "aws-finspace": {
+    "scopes": [
+      {
+        "namespace": "AWS::FinSpace"
+      }
+    ]
+  },
+  "aws-fis": {
+    "scopes": [
+      {
+        "namespace": "AWS::FIS"
+      }
+    ]
+  },
+  "aws-fms": {
+    "scopes": [
+      {
+        "namespace": "AWS::FMS"
+      }
+    ]
+  },
+  "aws-forecast": {
+    "scopes": [
+      {
+        "namespace": "AWS::Forecast"
+      }
+    ]
+  },
+  "aws-frauddetector": {
+    "scopes": [
+      {
+        "namespace": "AWS::FraudDetector"
+      }
+    ]
+  },
+  "aws-fsx": {
+    "scopes": [
+      {
+        "namespace": "AWS::FSx"
+      }
+    ]
+  },
+  "aws-gamelift": {
+    "scopes": [
+      {
+        "namespace": "AWS::GameLift"
+      }
+    ]
+  },
+  "aws-gameliftstreams": {
+    "scopes": [
+      {
+        "namespace": "AWS::GameLiftStreams"
+      }
+    ]
+  },
+  "aws-globalaccelerator": {
+    "scopes": [
+      {
+        "namespace": "AWS::GlobalAccelerator"
+      }
+    ]
+  },
+  "aws-glue": {
+    "scopes": [
+      {
+        "namespace": "AWS::Glue"
+      }
+    ]
+  },
+  "aws-grafana": {
+    "scopes": [
+      {
+        "namespace": "AWS::Grafana"
+      }
+    ]
+  },
+  "aws-greengrass": {
+    "scopes": [
+      {
+        "namespace": "AWS::Greengrass"
+      }
+    ]
+  },
+  "aws-greengrassv2": {
+    "scopes": [
+      {
+        "namespace": "AWS::GreengrassV2"
+      }
+    ]
+  },
+  "aws-groundstation": {
+    "scopes": [
+      {
+        "namespace": "AWS::GroundStation"
+      }
+    ]
+  },
+  "aws-guardduty": {
+    "scopes": [
+      {
+        "namespace": "AWS::GuardDuty"
+      }
+    ]
+  },
+  "aws-healthimaging": {
+    "scopes": [
+      {
+        "namespace": "AWS::HealthImaging"
+      }
+    ]
+  },
+  "aws-healthlake": {
+    "scopes": [
+      {
+        "namespace": "AWS::HealthLake"
+      }
+    ]
+  },
+  "aws-iam": {
+    "scopes": [
+      {
+        "namespace": "AWS::IAM"
+      }
+    ]
+  },
+  "aws-identitystore": {
+    "scopes": [
+      {
+        "namespace": "AWS::IdentityStore"
+      }
+    ]
+  },
+  "aws-imagebuilder": {
+    "scopes": [
+      {
+        "namespace": "AWS::ImageBuilder"
+      }
+    ]
+  },
+  "aws-inspector": {
+    "scopes": [
+      {
+        "namespace": "AWS::Inspector"
+      }
+    ]
+  },
+  "aws-inspectorv2": {
+    "scopes": [
+      {
+        "namespace": "AWS::InspectorV2"
+      }
+    ]
+  },
+  "aws-internetmonitor": {
+    "scopes": [
+      {
+        "namespace": "AWS::InternetMonitor"
+      }
+    ]
+  },
+  "aws-invoicing": {
+    "scopes": [
+      {
+        "namespace": "AWS::Invoicing"
+      }
+    ]
+  },
+  "aws-iot": {
+    "scopes": [
+      {
+        "namespace": "AWS::IoT"
+      }
+    ]
+  },
+  "aws-iotanalytics": {
+    "scopes": [
+      {
+        "namespace": "AWS::IoTAnalytics"
+      }
+    ]
+  },
+  "aws-iotcoredeviceadvisor": {
+    "scopes": [
+      {
+        "namespace": "AWS::IoTCoreDeviceAdvisor"
+      }
+    ]
+  },
+  "aws-iotevents": {
+    "scopes": [
+      {
+        "namespace": "AWS::IoTEvents"
+      }
+    ]
+  },
+  "aws-iotfleethub": {
+    "scopes": [
+      {
+        "namespace": "AWS::IoTFleetHub"
+      }
+    ]
+  },
+  "aws-iotfleetwise": {
+    "scopes": [
+      {
+        "namespace": "AWS::IoTFleetWise"
+      }
+    ]
+  },
+  "aws-iotsitewise": {
+    "scopes": [
+      {
+        "namespace": "AWS::IoTSiteWise"
+      }
+    ]
+  },
+  "aws-iotthingsgraph": {
+    "scopes": [
+      {
+        "namespace": "AWS::IoTThingsGraph"
+      }
+    ]
+  },
+  "aws-iottwinmaker": {
+    "scopes": [
+      {
+        "namespace": "AWS::IoTTwinMaker"
+      }
+    ]
+  },
+  "aws-iotwireless": {
+    "scopes": [
+      {
+        "namespace": "AWS::IoTWireless"
+      }
+    ]
+  },
+  "aws-ivs": {
+    "scopes": [
+      {
+        "namespace": "AWS::IVS"
+      }
+    ],
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Ivs"
+      }
+    }
+  },
+  "aws-ivschat": {
+    "scopes": [
+      {
+        "namespace": "AWS::IVSChat"
+      }
+    ]
+  },
+  "aws-kafkaconnect": {
+    "scopes": [
+      {
+        "namespace": "AWS::KafkaConnect"
+      }
+    ]
+  },
+  "aws-kendra": {
+    "scopes": [
+      {
+        "namespace": "AWS::Kendra"
+      }
+    ]
+  },
+  "aws-kendraranking": {
+    "scopes": [
+      {
+        "namespace": "AWS::KendraRanking"
+      }
+    ]
+  },
+  "aws-kinesis": {
+    "scopes": [
+      {
+        "namespace": "AWS::Kinesis"
+      }
+    ]
+  },
+  "aws-kinesisanalytics": {
+    "scopes": [
+      {
+        "namespace": "AWS::KinesisAnalytics"
+      },
+      {
+        "namespace": "AWS::KinesisAnalyticsV2",
+        "suffix": "V2",
+        "deprecated": "use `aws-kinesisanalyticsv2` instead"
+      }
+    ]
+  },
+  "aws-kinesisanalyticsv2": {
+    "scopes": [
+      {
+        "namespace": "AWS::KinesisAnalyticsV2"
+      }
+    ]
+  },
+  "aws-kinesisfirehose": {
+    "scopes": [
+      {
+        "namespace": "AWS::KinesisFirehose"
+      }
+    ]
+  },
+  "aws-kinesisvideo": {
+    "scopes": [
+      {
+        "namespace": "AWS::KinesisVideo"
+      }
+    ]
+  },
+  "aws-kms": {
+    "scopes": [
+      {
+        "namespace": "AWS::KMS"
+      }
+    ]
+  },
+  "aws-lakeformation": {
+    "scopes": [
+      {
+        "namespace": "AWS::LakeFormation"
+      }
+    ]
+  },
+  "aws-lambda": {
+    "scopes": [
+      {
+        "namespace": "AWS::Lambda"
+      }
+    ]
+  },
+  "aws-launchwizard": {
+    "scopes": [
+      {
+        "namespace": "AWS::LaunchWizard"
+      }
+    ]
+  },
+  "aws-lex": {
+    "scopes": [
+      {
+        "namespace": "AWS::Lex"
+      }
+    ]
+  },
+  "aws-licensemanager": {
+    "scopes": [
+      {
+        "namespace": "AWS::LicenseManager"
+      }
+    ]
+  },
+  "aws-lightsail": {
+    "scopes": [
+      {
+        "namespace": "AWS::Lightsail"
+      }
+    ]
+  },
+  "aws-location": {
+    "scopes": [
+      {
+        "namespace": "AWS::Location"
+      }
+    ]
+  },
+  "aws-logs": {
+    "scopes": [
+      {
+        "namespace": "AWS::Logs"
+      }
+    ]
+  },
+  "aws-lookoutequipment": {
+    "scopes": [
+      {
+        "namespace": "AWS::LookoutEquipment"
+      }
+    ]
+  },
+  "aws-lookoutmetrics": {
+    "scopes": [
+      {
+        "namespace": "AWS::LookoutMetrics"
+      }
+    ]
+  },
+  "aws-lookoutvision": {
+    "scopes": [
+      {
+        "namespace": "AWS::LookoutVision"
+      }
+    ]
+  },
+  "aws-m2": {
+    "scopes": [
+      {
+        "namespace": "AWS::M2"
+      }
+    ]
+  },
+  "aws-macie": {
+    "scopes": [
+      {
+        "namespace": "AWS::Macie"
+      }
+    ]
+  },
+  "aws-managedblockchain": {
+    "scopes": [
+      {
+        "namespace": "AWS::ManagedBlockchain"
+      }
+    ]
+  },
+  "aws-mediaconnect": {
+    "scopes": [
+      {
+        "namespace": "AWS::MediaConnect"
+      }
+    ]
+  },
+  "aws-mediaconvert": {
+    "scopes": [
+      {
+        "namespace": "AWS::MediaConvert"
+      }
+    ]
+  },
+  "aws-medialive": {
+    "scopes": [
+      {
+        "namespace": "AWS::MediaLive"
+      }
+    ]
+  },
+  "aws-mediapackage": {
+    "scopes": [
+      {
+        "namespace": "AWS::MediaPackage"
+      }
+    ]
+  },
+  "aws-mediapackagev2": {
+    "scopes": [
+      {
+        "namespace": "AWS::MediaPackageV2"
+      }
+    ]
+  },
+  "aws-mediastore": {
+    "scopes": [
+      {
+        "namespace": "AWS::MediaStore"
+      }
+    ]
+  },
+  "aws-mediatailor": {
+    "scopes": [
+      {
+        "namespace": "AWS::MediaTailor"
+      }
+    ]
+  },
+  "aws-memorydb": {
+    "scopes": [
+      {
+        "namespace": "AWS::MemoryDB"
+      }
+    ]
+  },
+  "aws-mpa": {
+    "scopes": [
+      {
+        "namespace": "AWS::MPA"
+      }
+    ]
+  },
+  "aws-msk": {
+    "scopes": [
+      {
+        "namespace": "AWS::MSK"
+      }
+    ]
+  },
+  "aws-mwaa": {
+    "scopes": [
+      {
+        "namespace": "AWS::MWAA"
+      }
+    ]
+  },
+  "aws-neptune": {
+    "scopes": [
+      {
+        "namespace": "AWS::Neptune"
+      }
+    ]
+  },
+  "aws-neptunegraph": {
+    "scopes": [
+      {
+        "namespace": "AWS::NeptuneGraph"
+      }
+    ]
+  },
+  "aws-networkfirewall": {
+    "scopes": [
+      {
+        "namespace": "AWS::NetworkFirewall"
+      }
+    ]
+  },
+  "aws-networkmanager": {
+    "scopes": [
+      {
+        "namespace": "AWS::NetworkManager"
+      }
+    ]
+  },
+  "aws-nimblestudio": {
+    "scopes": [
+      {
+        "namespace": "AWS::NimbleStudio"
+      }
+    ]
+  },
+  "aws-notifications": {
+    "scopes": [
+      {
+        "namespace": "AWS::Notifications"
+      }
+    ]
+  },
+  "aws-notificationscontacts": {
+    "scopes": [
+      {
+        "namespace": "AWS::NotificationsContacts"
+      }
+    ]
+  },
+  "aws-oam": {
+    "scopes": [
+      {
+        "namespace": "AWS::Oam"
+      }
+    ]
+  },
+  "aws-observabilityadmin": {
+    "scopes": [
+      {
+        "namespace": "AWS::ObservabilityAdmin"
+      }
+    ]
+  },
+  "aws-odb": {
+    "scopes": [
+      {
+        "namespace": "AWS::ODB"
+      }
+    ]
+  },
+  "aws-omics": {
+    "scopes": [
+      {
+        "namespace": "AWS::Omics"
+      }
+    ]
+  },
+  "aws-opensearchserverless": {
+    "scopes": [
+      {
+        "namespace": "AWS::OpenSearchServerless"
+      }
+    ]
+  },
+  "aws-opensearchservice": {
+    "scopes": [
+      {
+        "namespace": "AWS::OpenSearchService"
+      }
+    ]
+  },
+  "aws-opsworks": {
+    "scopes": [
+      {
+        "namespace": "AWS::OpsWorks"
+      }
+    ]
+  },
+  "aws-opsworkscm": {
+    "scopes": [
+      {
+        "namespace": "AWS::OpsWorksCM"
+      }
+    ]
+  },
+  "aws-organizations": {
+    "scopes": [
+      {
+        "namespace": "AWS::Organizations"
+      }
+    ]
+  },
+  "aws-osis": {
+    "scopes": [
+      {
+        "namespace": "AWS::OSIS"
+      }
+    ]
+  },
+  "aws-panorama": {
+    "scopes": [
+      {
+        "namespace": "AWS::Panorama"
+      }
+    ]
+  },
+  "aws-paymentcryptography": {
+    "scopes": [
+      {
+        "namespace": "AWS::PaymentCryptography"
+      }
+    ]
+  },
+  "aws-pcaconnectorad": {
+    "scopes": [
+      {
+        "namespace": "AWS::PCAConnectorAD"
+      }
+    ]
+  },
+  "aws-pcaconnectorscep": {
+    "scopes": [
+      {
+        "namespace": "AWS::PCAConnectorSCEP"
+      }
+    ]
+  },
+  "aws-pcs": {
+    "scopes": [
+      {
+        "namespace": "AWS::PCS"
+      }
+    ]
+  },
+  "aws-personalize": {
+    "scopes": [
+      {
+        "namespace": "AWS::Personalize"
+      }
+    ]
+  },
+  "aws-pinpoint": {
+    "scopes": [
+      {
+        "namespace": "AWS::Pinpoint"
+      }
+    ]
+  },
+  "aws-pinpointemail": {
+    "scopes": [
+      {
+        "namespace": "AWS::PinpointEmail"
+      }
+    ]
+  },
+  "aws-pipes": {
+    "scopes": [
+      {
+        "namespace": "AWS::Pipes"
+      }
+    ]
+  },
+  "aws-proton": {
+    "scopes": [
+      {
+        "namespace": "AWS::Proton"
+      }
+    ]
+  },
+  "aws-qbusiness": {
+    "scopes": [
+      {
+        "namespace": "AWS::QBusiness"
+      }
+    ]
+  },
+  "aws-qldb": {
+    "scopes": [
+      {
+        "namespace": "AWS::QLDB"
+      }
+    ]
+  },
+  "aws-quicksight": {
+    "scopes": [
+      {
+        "namespace": "AWS::QuickSight"
+      }
+    ]
+  },
+  "aws-ram": {
+    "scopes": [
+      {
+        "namespace": "AWS::RAM"
+      }
+    ]
+  },
+  "aws-rbin": {
+    "scopes": [
+      {
+        "namespace": "AWS::Rbin"
+      }
+    ]
+  },
+  "aws-rds": {
+    "scopes": [
+      {
+        "namespace": "AWS::RDS"
+      }
+    ]
+  },
+  "aws-redshift": {
+    "scopes": [
+      {
+        "namespace": "AWS::Redshift"
+      }
+    ]
+  },
+  "aws-redshiftserverless": {
+    "scopes": [
+      {
+        "namespace": "AWS::RedshiftServerless"
+      }
+    ]
+  },
+  "aws-refactorspaces": {
+    "scopes": [
+      {
+        "namespace": "AWS::RefactorSpaces"
+      }
+    ]
+  },
+  "aws-rekognition": {
+    "scopes": [
+      {
+        "namespace": "AWS::Rekognition"
+      }
+    ]
+  },
+  "aws-resiliencehub": {
+    "scopes": [
+      {
+        "namespace": "AWS::ResilienceHub"
+      }
+    ]
+  },
+  "aws-resourceexplorer2": {
+    "scopes": [
+      {
+        "namespace": "AWS::ResourceExplorer2"
+      }
+    ]
+  },
+  "aws-resourcegroups": {
+    "scopes": [
+      {
+        "namespace": "AWS::ResourceGroups"
+      }
+    ]
+  },
+  "aws-robomaker": {
+    "scopes": [
+      {
+        "namespace": "AWS::RoboMaker"
+      }
+    ]
+  },
+  "aws-rolesanywhere": {
+    "scopes": [
+      {
+        "namespace": "AWS::RolesAnywhere"
+      }
+    ]
+  },
+  "aws-route53": {
+    "scopes": [
+      {
+        "namespace": "AWS::Route53"
+      }
+    ]
+  },
+  "aws-route53profiles": {
+    "scopes": [
+      {
+        "namespace": "AWS::Route53Profiles"
+      }
+    ]
+  },
+  "aws-route53recoverycontrol": {
+    "scopes": [
+      {
+        "namespace": "AWS::Route53RecoveryControl"
+      }
+    ]
+  },
+  "aws-route53recoveryreadiness": {
+    "scopes": [
+      {
+        "namespace": "AWS::Route53RecoveryReadiness"
+      }
+    ]
+  },
+  "aws-route53resolver": {
+    "scopes": [
+      {
+        "namespace": "AWS::Route53Resolver"
+      }
+    ]
+  },
+  "aws-rtbfabric": {
+    "scopes": [
+      {
+        "namespace": "AWS::RTBFabric"
+      }
+    ]
+  },
+  "aws-rum": {
+    "scopes": [
+      {
+        "namespace": "AWS::RUM"
+      }
+    ]
+  },
+  "aws-s3": {
+    "scopes": [
+      {
+        "namespace": "AWS::S3"
+      }
+    ]
+  },
+  "aws-s3express": {
+    "scopes": [
+      {
+        "namespace": "AWS::S3Express"
+      }
+    ]
+  },
+  "aws-s3objectlambda": {
+    "scopes": [
+      {
+        "namespace": "AWS::S3ObjectLambda"
+      }
+    ]
+  },
+  "aws-s3outposts": {
+    "scopes": [
+      {
+        "namespace": "AWS::S3Outposts"
+      }
+    ]
+  },
+  "aws-s3tables": {
+    "scopes": [
+      {
+        "namespace": "AWS::S3Tables"
+      }
+    ]
+  },
+  "aws-s3vectors": {
+    "scopes": [
+      {
+        "namespace": "AWS::S3Vectors"
+      }
+    ]
+  },
+  "aws-sagemaker": {
+    "scopes": [
+      {
+        "namespace": "AWS::SageMaker"
+      }
+    ],
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Sagemaker"
+      }
+    }
+  },
+  "aws-sam": {
+    "scopes": [
+      {
+        "namespace": "AWS::Serverless"
+      }
+    ]
+  },
+  "aws-scheduler": {
+    "scopes": [
+      {
+        "namespace": "AWS::Scheduler"
+      }
+    ]
+  },
+  "aws-sdb": {
+    "scopes": [
+      {
+        "namespace": "AWS::SDB"
+      }
+    ]
+  },
+  "aws-secretsmanager": {
+    "scopes": [
+      {
+        "namespace": "AWS::SecretsManager"
+      }
+    ]
+  },
+  "aws-securityhub": {
+    "scopes": [
+      {
+        "namespace": "AWS::SecurityHub"
+      }
+    ]
+  },
+  "aws-securitylake": {
+    "scopes": [
+      {
+        "namespace": "AWS::SecurityLake"
+      }
+    ]
+  },
+  "aws-servicecatalog": {
+    "scopes": [
+      {
+        "namespace": "AWS::ServiceCatalog"
+      }
+    ],
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Servicecatalog"
+      }
+    }
+  },
+  "aws-servicecatalogappregistry": {
+    "scopes": [
+      {
+        "namespace": "AWS::ServiceCatalogAppRegistry"
+      }
+    ],
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Servicecatalogappregistry"
+      }
+    }
+  },
+  "aws-servicediscovery": {
+    "scopes": [
+      {
+        "namespace": "AWS::ServiceDiscovery"
+      }
+    ]
+  },
+  "aws-ses": {
+    "scopes": [
+      {
+        "namespace": "AWS::SES"
+      }
+    ]
+  },
+  "aws-shield": {
+    "scopes": [
+      {
+        "namespace": "AWS::Shield"
+      }
+    ]
+  },
+  "aws-signer": {
+    "scopes": [
+      {
+        "namespace": "AWS::Signer"
+      }
+    ]
+  },
+  "aws-simspaceweaver": {
+    "scopes": [
+      {
+        "namespace": "AWS::SimSpaceWeaver"
+      }
+    ]
+  },
+  "aws-smsvoice": {
+    "scopes": [
+      {
+        "namespace": "AWS::SMSVOICE"
+      }
+    ]
+  },
+  "aws-sns": {
+    "scopes": [
+      {
+        "namespace": "AWS::SNS"
+      }
+    ]
+  },
+  "aws-sqs": {
+    "scopes": [
+      {
+        "namespace": "AWS::SQS"
+      }
+    ]
+  },
+  "aws-ssm": {
+    "scopes": [
+      {
+        "namespace": "AWS::SSM"
+      }
+    ]
+  },
+  "aws-ssmcontacts": {
+    "scopes": [
+      {
+        "namespace": "AWS::SSMContacts"
+      }
+    ]
+  },
+  "aws-ssmguiconnect": {
+    "scopes": [
+      {
+        "namespace": "AWS::SSMGuiConnect"
+      }
+    ]
+  },
+  "aws-ssmincidents": {
+    "scopes": [
+      {
+        "namespace": "AWS::SSMIncidents"
+      }
+    ]
+  },
+  "aws-ssmquicksetup": {
+    "scopes": [
+      {
+        "namespace": "AWS::SSMQuickSetup"
+      }
+    ]
+  },
+  "aws-sso": {
+    "scopes": [
+      {
+        "namespace": "AWS::SSO"
+      }
+    ]
+  },
+  "aws-stepfunctions": {
+    "scopes": [
+      {
+        "namespace": "AWS::StepFunctions"
+      }
+    ]
+  },
+  "aws-supportapp": {
+    "scopes": [
+      {
+        "namespace": "AWS::SupportApp"
+      }
+    ]
+  },
+  "aws-synthetics": {
+    "scopes": [
+      {
+        "namespace": "AWS::Synthetics"
+      }
+    ]
+  },
+  "aws-systemsmanagersap": {
+    "scopes": [
+      {
+        "namespace": "AWS::SystemsManagerSAP"
+      }
+    ]
+  },
+  "aws-timestream": {
+    "scopes": [
+      {
+        "namespace": "AWS::Timestream"
+      }
+    ]
+  },
+  "aws-transfer": {
+    "scopes": [
+      {
+        "namespace": "AWS::Transfer"
+      }
+    ]
+  },
+  "aws-verifiedpermissions": {
+    "scopes": [
+      {
+        "namespace": "AWS::VerifiedPermissions"
+      }
+    ]
+  },
+  "aws-voiceid": {
+    "scopes": [
+      {
+        "namespace": "AWS::VoiceID"
+      }
+    ]
+  },
+  "aws-vpclattice": {
+    "scopes": [
+      {
+        "namespace": "AWS::VpcLattice"
+      }
+    ]
+  },
+  "aws-waf": {
+    "scopes": [
+      {
+        "namespace": "AWS::WAF"
+      }
+    ]
+  },
+  "aws-wafregional": {
+    "scopes": [
+      {
+        "namespace": "AWS::WAFRegional"
+      }
+    ],
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.waf.regional"
+      }
+    }
+  },
+  "aws-wafv2": {
+    "scopes": [
+      {
+        "namespace": "AWS::WAFv2"
+      }
+    ]
+  },
+  "aws-wisdom": {
+    "scopes": [
+      {
+        "namespace": "AWS::Wisdom"
+      }
+    ]
+  },
+  "aws-workspaces": {
+    "scopes": [
+      {
+        "namespace": "AWS::WorkSpaces"
+      }
+    ]
+  },
+  "aws-workspacesinstances": {
+    "scopes": [
+      {
+        "namespace": "AWS::WorkspacesInstances"
+      }
+    ]
+  },
+  "aws-workspacesthinclient": {
+    "scopes": [
+      {
+        "namespace": "AWS::WorkSpacesThinClient"
+      }
+    ]
+  },
+  "aws-workspacesweb": {
+    "scopes": [
+      {
+        "namespace": "AWS::WorkSpacesWeb"
+      }
+    ]
+  },
+  "aws-xray": {
+    "scopes": [
+      {
+        "namespace": "AWS::XRay"
+      }
+    ]
+  },
+  "core": {
+    "scopes": [
+      {
+        "namespace": "AWS::CloudFormation"
+      }
+    ]
+  },
+  "interfaces": {
+    "scopes": []
+  }
 }

@@ -24,7 +24,7 @@ export interface CrossAccountDestinationProps {
    *
    * The role must be assumable by 'logs.{REGION}.amazonaws.com'.
    */
-  readonly role: iam.IRole;
+  readonly role: iam.IRoleRef;
 
   /**
    * The log destination target's ARN
@@ -84,7 +84,7 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
       destinationName: this.physicalName!,
       // Must be stringified policy
       destinationPolicy: this.lazyStringifiedPolicyDocument(),
-      roleArn: props.role.roleArn,
+      roleArn: props.role.roleRef.roleArn,
       targetArn: props.targetArn,
     });
 

@@ -402,7 +402,6 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
       grantee,
       actions,
       resourceArns: resources.resourceArns(this),
-      scope: this,
     });
   }
 
@@ -756,11 +755,11 @@ export class EventApi extends EventApiBase {
   private setupLogConfig(config?: AppSyncLogConfig) {
     if (!config) return;
     const logsRoleArn: string =
-      config.role?.roleArn ??
+      config.role?.roleRef.roleArn ??
       new Role(this, 'ApiLogsRole', {
         assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
         managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs')],
-      }).roleArn;
+      }).roleRef.roleArn;
     const fieldLogLevel: AppSyncFieldLogLevel = config.fieldLogLevel ?? AppSyncFieldLogLevel.NONE;
     return {
       cloudWatchLogsRoleArn: logsRoleArn,

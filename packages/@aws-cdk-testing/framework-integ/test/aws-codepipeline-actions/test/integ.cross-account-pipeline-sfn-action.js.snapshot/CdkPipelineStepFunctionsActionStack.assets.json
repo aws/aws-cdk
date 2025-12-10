@@ -61,16 +61,16 @@
         }
       }
     },
-    "06cc318073d286821a4a4e4f379a9b4eb54c1fe286d146036d3061852e43fdad": {
+    "59e67792163c8bbd763f4353227011ad677a5f9930388c7c64c42588ae5d8b1f": {
       "displayName": "CdkPipelineStepFunctionsActionStack Template",
       "source": {
         "path": "CdkPipelineStepFunctionsActionStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "12345678-test-region-668e9758": {
+        "12345678-test-region-c4452115": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "06cc318073d286821a4a4e4f379a9b4eb54c1fe286d146036d3061852e43fdad.json",
+          "objectKey": "59e67792163c8bbd763f4353227011ad677a5f9930388c7c64c42588ae5d8b1f.json",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
         }

@@ -1,12 +1,11 @@
 import { Construct } from 'constructs';
-import { CfnDomainName } from './apigateway.generated';
+import { CfnDomainName, DomainNameReference, IDomainNameRef, IRestApiRef, IStageRef } from './apigateway.generated';
 import { BasePathMapping, BasePathMappingOptions } from './base-path-mapping';
 import { EndpointType, IRestApi } from './restapi';
-import { IStage } from './stage';
 import * as apigwv2 from '../../aws-apigatewayv2';
 import * as acm from '../../aws-certificatemanager';
 import { IBucket } from '../../aws-s3';
-import { IResource, Names, Resource, Token } from '../../core';
+import { Arn, IResource, Names, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -94,7 +93,7 @@ export interface DomainNameProps extends DomainNameOptions {
   readonly mapping?: IRestApi;
 }
 
-export interface IDomainName extends IResource {
+export interface IDomainName extends IResource, IDomainNameRef {
   /**
    * The domain name (e.g. `example.com`)
    *
@@ -132,12 +131,22 @@ export class DomainName extends Resource implements IDomainName {
       public readonly domainName = attrs.domainName;
       public readonly domainNameAliasDomainName = attrs.domainNameAliasTarget;
       public readonly domainNameAliasHostedZoneId = attrs.domainNameAliasHostedZoneId;
+
+      public readonly domainNameRef = {
+        domainName: this.domainName,
+        domainNameArn: Arn.format({
+          service: 'apigateway',
+          resource: 'domainnames',
+          resourceName: attrs.domainName,
+        }, Stack.of(scope)),
+      };
     }
 
     return new Import(scope, id);
   }
 
   public readonly domainName: string;
+  public readonly domainNameRef: DomainNameReference;
   public readonly domainNameAliasDomainName: string;
   public readonly domainNameAliasHostedZoneId: string;
   private readonly basePaths = new Set<string | undefined>();
@@ -168,6 +177,7 @@ export class DomainName extends Resource implements IDomainName {
     });
 
     this.domainName = resource.ref;
+    this.domainNameRef = resource.domainNameRef;
 
     this.domainNameAliasDomainName = edge
       ? resource.attrDistributionDomainName
@@ -217,7 +227,7 @@ export class DomainName extends Resource implements IDomainName {
    * @param options Options for mapping to base path with or without a stage
    */
   @MethodMetadata()
-  public addBasePathMapping(targetApi: IRestApi, options: BasePathMappingOptions = {}): BasePathMapping {
+  public addBasePathMapping(targetApi: IRestApiRef, options: BasePathMappingOptions = {}): BasePathMapping {
     if (this.basePaths.has(options.basePath)) {
       throw new ValidationError(`DomainName ${this.node.id} already has a mapping for path ${options.basePath}`, this);
     }
@@ -247,7 +257,7 @@ export class DomainName extends Resource implements IDomainName {
    * @param options Options for mapping to a stage
    */
   @MethodMetadata()
-  public addApiMapping(targetStage: IStage, options: ApiMappingOptions = {}): void {
+  public addApiMapping(targetStage: IStageRef, options: ApiMappingOptions = {}): void {
     if (this.basePaths.has(options.basePath)) {
       throw new ValidationError(`DomainName ${this.node.id} already has a mapping for path ${options.basePath}`, this);
     }
@@ -255,8 +265,8 @@ export class DomainName extends Resource implements IDomainName {
     this.basePaths.add(options.basePath);
     const id = `Map:${options.basePath ?? 'none'}=>${Names.nodeUniqueId(targetStage.node)}`;
     new apigwv2.CfnApiMapping(this, id, {
-      apiId: targetStage.restApi.restApiId,
-      stage: targetStage.stageName,
+      apiId: targetStage.stageRef.restApiId,
+      stage: targetStage.stageRef.stageName,
       domainName: this.domainName,
       apiMappingKey: options.basePath,
     });

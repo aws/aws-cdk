@@ -38,7 +38,7 @@ Flags come in three types:
 | [@aws-cdk/core:enablePartitionLiterals](#aws-cdkcoreenablepartitionliterals) | Make ARNs concrete if AWS partition is known | 2.38.0 | fix |
 | [@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker](#aws-cdkaws-ecsdisableexplicitdeploymentcontrollerforcircuitbreaker) | Avoid setting the "ECS" deployment controller when adding a circuit breaker | 2.51.0 | fix |
 | [@aws-cdk/aws-events:eventsTargetQueueSameAccount](#aws-cdkaws-eventseventstargetqueuesameaccount) | Event Rules may only push to encrypted SQS queues in the same account | 2.51.0 | fix |
-| [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in. | 2.60.0 | fix |
+| [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to create default policy names for imported roles that depend on the stack the role is in. | 2.60.0 | fix |
 | [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.60.0 | fix |
 | [@aws-cdk/customresources:installLatestAwsSdkDefault](#aws-cdkcustomresourcesinstalllatestawssdkdefault) | Whether to install the latest SDK by default in AwsCustomResource | 2.60.0 | new default |
 | [@aws-cdk/aws-route53-patters:useCertificate](#aws-cdkaws-route53-pattersusecertificate) | Use the official `Certificate` resource instead of `DnsValidatedCertificate` | 2.61.0 | new default |
@@ -107,7 +107,10 @@ Flags come in three types:
 | [@aws-cdk/core:explicitStackTags](#aws-cdkcoreexplicitstacktags) | When enabled, stack tags need to be assigned explicitly on a Stack. | 2.205.0 | new default |
 | [@aws-cdk/aws-signer:signingProfileNamePassedToCfn](#aws-cdkaws-signersigningprofilenamepassedtocfn) | Pass signingProfileName to CfnSigningProfile | 2.212.0 | fix |
 | [@aws-cdk/aws-cloudfront:stablePublicKeyCallerReference](#aws-cdkaws-cloudfrontstablepublickeycallerreference) | Use stable caller reference for CloudFront PublicKey to prevent update failures | V2NEXT | fix |
-| [@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener](#aws-cdkaws-ecs-patternssecgroupsdisablesimplicitopenlistener) | Disable implicit openListener when custom security groups are provided | V2NEXT | new default |
+| [@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener](#aws-cdkaws-ecs-patternssecgroupsdisablesimplicitopenlistener) | Disable implicit openListener when custom security groups are provided | 2.214.0 | new default |
+| [@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId](#aws-cdkaws-ecs-patternsuniquetargetgroupid) | When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement | 2.221.0 | fix |
+| [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | 2.221.0 | fix |
+| [@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault](#aws-cdkaws-elasticloadbalancingv2networkloadbalancerwithsecuritygroupbydefault) | When enabled, Network Load Balancer will be created with a security group by default. | 2.222.0 | new default |
 
 <!-- END table -->
 
@@ -199,7 +202,9 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
     "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
-    "@aws-cdk/aws-cloudfront:stablePublicKeyCallerReference": true
+    "@aws-cdk/aws-cloudfront:stablePublicKeyCallerReference": true,
+    "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": true,
+    "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true
   }
 }
 ```
@@ -247,6 +252,7 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 | [@aws-cdk/core:aspectStabilization](#aws-cdkcoreaspectstabilization) | When enabled, a stabilization loop will be run when invoking Aspects during synthesis. | config |  | `false` | `true` |
 | [@aws-cdk/pipelines:reduceStageRoleTrustScope](#aws-cdkpipelinesreducestageroletrustscope) | Remove the root account principal from Stage addActions trust policy | new default |  | `false` | `true` |
 | [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | new default |  | `false` | `true` |
+| [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | fix |  | `false` | `true` |
 
 <!-- END diff -->
 
@@ -875,7 +881,7 @@ always apply, regardless of the value of this flag.
 
 ### @aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName
 
-*Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in.*
+*Enable this feature to create default policy names for imported roles that depend on the stack the role is in.*
 
 Flag type: Backwards incompatible bugfix
 
@@ -898,7 +904,7 @@ This new implementation creates default policy names based on the constructs nod
 
 Flag type: Backwards incompatible bugfix
 
-Enable this feature flag to use S3 Bucket Policy for granting permission fo Server Access Logging
+Enable this feature flag to use S3 Bucket Policy for granting permission for Server Access Logging
 rather than using the canned `LogDeliveryWrite` ACL. ACLs do not work when Object Ownership is
 enabled on the bucket.
 
@@ -1278,7 +1284,7 @@ Set this flag to false for existing mount targets.
 Flag type: New default behavior
 
 If this is set, and a `runtime` prop is not passed to, Lambda NodeJs
-functions will us the latest version of the runtime provided by the Lambda
+functions will use the latest version of the runtime provided by the Lambda
 service. Do not use this if you your lambda function is reliant on dependencies
 shipped as part of the runtime environment.
 
@@ -1500,7 +1506,7 @@ When this feature flag is disabled, it will keep the root account principal in t
 
 Flag type: New default behavior
 
-When this featuer flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
+When this feature flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
 
 
 | Since | Unset behaves like | Recommended value |
@@ -1751,8 +1757,8 @@ the latest Amazon Linux 2023 version will be used instead of Amazon Linux 2.
 
 Flag type: Configuration option
 
-Currently, when Aspects are invoked in one single pass of the construct tree.
-This means that the Aspects that create other Aspects are not run and Aspects that create new nodes of the tree sometimes do not inherit their parent Aspects.
+Previously, Aspects were invoked in a single pass of the construct tree.
+This meant that Aspects which created other Aspects were not run, and Aspects that created new nodes in the tree sometimes did not inherit their parent Aspects.
 
 When this feature flag is enabled, a stabilization loop is run to recurse the construct tree multiple times when invoking Aspects.
 
@@ -1991,7 +1997,7 @@ When enabled, table replica will be default to the removal policy of source tabl
 
 Flag type: New default behavior
 
-When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom
+When this feature flag is enabled, the SDK API call response to describe user pool client values will be logged in the custom
 resource lambda function logs.
 
 When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom
@@ -2170,7 +2176,7 @@ When this feature flag is disabled, a loggroup is created by Lambda service on f
 of the function (existing behavior).
 LogGroups created in this way do not support Tag propagation, Property Injectors, Aspects.
 
-DO NOT ENABLE: If you have and existing app defining a lambda function and
+DO NOT ENABLE: If you have an existing app defining a lambda function and
 have not supplied a logGroup or logRetention prop and your lambda function has
 executed at least once, the logGroup has been already created with the same name
 so your deployment will start failing.
@@ -2300,9 +2306,64 @@ override this behavior.
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.214.0 | `false` | `true` |
 
 **Compatibility with old behavior:** You can pass `openListener: true` explicitly to maintain the old behavior.
+
+
+### @aws-cdk/aws-ecs-patterns:uniqueTargetGroupId
+
+*When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement*
+
+Flag type: Backwards incompatible bugfix
+
+When this feature flag is enabled, ECS patterns will generate unique target group IDs that include
+both the load balancer type (public/private) and load balancer name. This prevents CloudFormation
+conflicts when switching between public and private load balancers or when changing load balancer names.
+
+Without this flag, target groups use generic IDs like 'ECS' which can cause conflicts when the
+underlying load balancer is replaced due to changes in internetFacing or loadBalancerName properties.
+
+This is a breaking change as it will cause target group replacement when the flag is enabled.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.221.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint
+
+*When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.*
+
+Flag type: Backwards incompatible bugfix
+
+When this feature flag is enabled, the JSONPath apiEndpoint value will be resolved dynamically at runtime, while slightly increasing the size of the state machine definition.
+When disabled, the JSONPath apiEndpoint property will only support a static string value.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.221.0 | `true` | `true` |
+
+
+### @aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault
+
+*When enabled, Network Load Balancer will be created with a security group by default.*
+
+Flag type: New default behavior
+
+When this feature flag is enabled, Network Load Balancer will be created with a security group by default.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.222.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to create Network Load Balancer without a security group by default.
 
 
 <!-- END details -->

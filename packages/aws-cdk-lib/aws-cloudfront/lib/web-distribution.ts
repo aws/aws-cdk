@@ -1,6 +1,16 @@
 import { Construct } from 'constructs';
-import { CfnDistribution } from './cloudfront.generated';
-import { HttpVersion, IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol } from './distribution';
+import { DistributionGrants } from './cloudfront-grants.generated';
+import { CfnDistribution, DistributionReference } from './cloudfront.generated';
+import {
+  HttpVersion,
+  IDistribution,
+  LambdaEdgeEventType,
+  OriginProtocolPolicy,
+  PriceClass,
+  SecurityPolicyProtocol,
+  SSLMethod,
+  ViewerProtocolPolicy,
+} from './distribution';
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
@@ -760,6 +770,9 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       public readonly domainName: string;
       public readonly distributionDomainName: string;
       public readonly distributionId: string;
+      public readonly distributionRef = {
+        distributionId: attrs.distributionId,
+      };
 
       constructor() {
         super(scope, id);
@@ -775,10 +788,15 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         return iam.Grant.addToPrincipal({ grantee, actions, resourceArns: [formatDistributionArn(this)] });
       }
       public grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
-        return this.grant(identity, 'cloudfront:CreateInvalidation');
+        return DistributionGrants.fromDistribution(this).createInvalidation(identity);
       }
     }();
   }
+
+  /**
+   * Collection of grant methods for a Distribution
+   */
+  public readonly grants = DistributionGrants.fromDistribution(this);
 
   /**
    * The logging bucket for this CloudFront distribution.
@@ -806,6 +824,8 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
    * The distribution ID for this distribution.
    */
   public readonly distributionId: string;
+
+  public readonly distributionRef: DistributionReference;
 
   /**
    * Maps our methods to the string arrays they are
@@ -926,7 +946,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
       priceClass: props.priceClass || PriceClass.PRICE_CLASS_100,
       ipv6Enabled: props.enableIpV6 ?? true,
-      // eslint-disable-next-line max-len
+
       customErrorResponses: props.errorConfigurations, // TODO: validation : https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-customerrorresponse.html#cfn-cloudfront-distribution-customerrorresponse-errorcachingminttl
       webAclId: props.webACLId,
 
@@ -1001,6 +1021,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     }
 
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig });
+    this.distributionRef = distribution.distributionRef;
     this.node.defaultChild = distribution;
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
@@ -1029,7 +1050,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
    * @param identity The principal
    */
   grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
-    return this.grant(identity, 'cloudfront:CreateInvalidation');
+    return this.grants.createInvalidation(identity);
   }
 
   private toBehavior(input: BehaviorWithOrigin, protoPolicy?: ViewerProtocolPolicy) {
@@ -1052,7 +1073,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     if (input.functionAssociations) {
       toReturn = Object.assign(toReturn, {
         functionAssociations: input.functionAssociations.map(association => ({
-          functionArn: association.function.functionArn,
+          functionArn: association.function.functionRef.functionArn,
           eventType: association.eventType.toString(),
         })),
       });

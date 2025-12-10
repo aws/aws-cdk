@@ -3,7 +3,7 @@ import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
 import { ClientAttributes } from './user-pool-attr';
 import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
-import { IRole } from '../../aws-iam';
+import { IRoleRef } from '../../aws-iam';
 import { CfnApp } from '../../aws-pinpoint';
 import { IResource, Resource, Duration, Stack, SecretValue, Token, FeatureFlags } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -407,7 +407,7 @@ export interface AnalyticsConfiguration {
    * The IAM role that has the permissions required for Amazon Cognito to publish events to Amazon Pinpoint analytics.
    * @default - no configuration, you need to specify either this property along with `applicationId` and `externalId` or `application`.
    */
-  readonly role?: IRole;
+  readonly role?: IRoleRef;
 
   /**
    * If `true`, Amazon Cognito includes user data in the events that it publishes to Amazon Pinpoint analytics.
@@ -722,7 +722,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       applicationArn: analytics.application?.attrArn,
       applicationId: analytics.applicationId,
       externalId: analytics.externalId,
-      roleArn: analytics.role?.roleArn,
+      roleArn: analytics.role?.roleRef.roleArn,
       userDataShared: analytics.shareUserData,
     };
   }

@@ -9,8 +9,8 @@ import { UserPoolEmail, UserPoolEmailConfig } from './user-pool-email';
 import { UserPoolGroup, UserPoolGroupOptions } from './user-pool-group';
 import { IUserPoolIdentityProvider } from './user-pool-idp';
 import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
-import { Grant, IGrantable, IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { IKey } from '../../aws-kms';
+import { Grant, IGrantable, IRoleRef, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
+import { IKeyRef } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -707,7 +707,7 @@ export interface UserPoolProps {
    *
    * @default - a new IAM role is created.
    */
-  readonly smsRole?: IRole;
+  readonly smsRole?: IRoleRef;
 
   /**
    * The 'ExternalId' that Cognito service must be using when assuming the `smsRole`, if the role is restricted with an 'sts:ExternalId' conditional.
@@ -898,7 +898,7 @@ export interface UserPoolProps {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sender-triggers.html
    * @default - no key ID configured
    */
-  readonly customSenderKmsKey?: IKey;
+  readonly customSenderKmsKey?: IKeyRef;
 
   /**
    * The user pool's Advanced Security Mode
@@ -1049,7 +1049,6 @@ abstract class UserPoolBase extends Resource implements IUserPool {
       grantee,
       actions,
       resourceArns: [this.userPoolArn],
-      scope: this,
     });
   }
 }
@@ -1141,7 +1140,7 @@ export class UserPool extends UserPoolBase {
 
     if (props.customSenderKmsKey) {
       const kmsKey = props.customSenderKmsKey;
-      (this.triggers as any).kmsKeyId = kmsKey.keyArn;
+      (this.triggers as any).kmsKeyId = kmsKey.keyRef.keyArn;
     }
 
     if (props.lambdaTriggers) {
@@ -1211,24 +1210,13 @@ export class UserPool extends UserPoolBase {
     });
     this.emailConfiguration = emailConfiguration;
 
-    if (
-      props.featurePlan !== FeaturePlan.PLUS &&
-      (props.advancedSecurityMode && (props.advancedSecurityMode !== AdvancedSecurityMode.OFF))
-    ) {
-      throw new ValidationError('you cannot enable Advanced Security when feature plan is not Plus.', this);
-    }
+    // Note: We do not validate feature plan requirements for threat protection at CDK synthesis time.
+    // CloudFormation will validate these requirements at deployment time, which allows existing user pools
+    // that are grandfathered on LITE plan with threat protection to continue working.
 
     const advancedSecurityAdditionalFlows = undefinedIfNoKeys({
       customAuthMode: props.customThreatProtectionMode,
     });
-
-    if (
-      (props.featurePlan !== FeaturePlan.PLUS) &&
-      (props.standardThreatProtectionMode && (props.standardThreatProtectionMode !== StandardThreatProtectionMode.NO_ENFORCEMENT) ||
-      advancedSecurityAdditionalFlows)
-    ) {
-      throw new ValidationError('you cannot enable Threat Protection when feature plan is not Plus.', this);
-    }
 
     if (
       props.advancedSecurityMode &&
@@ -1436,7 +1424,7 @@ export class UserPool extends UserPoolBase {
 
     if (props.smsRole) {
       return {
-        snsCallerArn: props.smsRole.roleArn,
+        snsCallerArn: props.smsRole.roleRef.roleArn,
         externalId: props.smsRoleExternalId,
         snsRegion: props.snsRegion,
       };
@@ -1478,7 +1466,7 @@ export class UserPool extends UserPoolBase {
     });
     return {
       externalId: smsRoleExternalId,
-      snsCallerArn: smsRole.roleArn,
+      snsCallerArn: smsRole.roleRef.roleArn,
       snsRegion: props.snsRegion,
     };
   }

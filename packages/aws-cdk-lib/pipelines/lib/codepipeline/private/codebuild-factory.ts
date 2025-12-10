@@ -132,7 +132,6 @@ export interface CodeBuildFactoryProps {
  * a CodeBuild project, as well as the `CodeBuildStep` straight up.
  */
 export class CodeBuildFactory implements ICodePipelineActionFactory {
-  // eslint-disable-next-line max-len
   public static fromShellStep(constructId: string, shellStep: ShellStep, additional?: Partial<CodeBuildFactoryProps>): ICodePipelineActionFactory {
     return new CodeBuildFactory(constructId, {
       commands: shellStep.commands,
@@ -440,7 +439,7 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildOptions | undefine
       cache: b.cache ?? a.cache,
       fileSystemLocations: definedArray([...a.fileSystemLocations ?? [], ...b.fileSystemLocations ?? []]),
       logging: b.logging ?? a.logging,
-    };
+    } satisfies OptionalToUndefined<CodeBuildOptions>;
   }
 }
 
@@ -453,13 +452,24 @@ function mergeBuildEnvironments(a?: codebuild.BuildEnvironment, b?: codebuild.Bu
   return {
     buildImage: b.buildImage ?? a.buildImage,
     computeType: b.computeType ?? a.computeType,
+    dockerServer: b.dockerServer ?? a.dockerServer,
+    fleet: b.fleet ?? a.fleet,
+    privileged: b.privileged ?? a.privileged,
+    certificate: b.certificate ?? a.certificate,
     environmentVariables: {
       ...a.environmentVariables,
       ...b.environmentVariables,
     },
-    privileged: b.privileged ?? a.privileged,
-  };
+  } satisfies OptionalToUndefined<codebuild.BuildEnvironment>;
 }
+
+// Turns `{ foo?: boolean, bar: number }` into `{ foo: boolean | undefined, bar:
+// number }`. Lets us assert that we are enumerating all properties on a type.
+//
+// Ref: https://stackoverflow.com/a/52973675
+type OptionalToUndefined<T> = {
+  [K in keyof Required<T>]: T[K];
+};
 
 function isDefined<A>(x: A | undefined): x is NonNullable<A> {
   return x !== undefined;

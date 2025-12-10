@@ -1,5 +1,6 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import * as path from 'path';
+/* eslint-disable import/no-extraneous-dependencies */
+import { MemberVisibility } from '@cdklabs/typewriter';
 
 /**
  * Handler framework runtimes used for code generation.
@@ -8,7 +9,7 @@ export enum Runtime {
   /**
    * The NodeJs 18.x runtime
    */
-  NODEJS_18_X = 'nodejs18.x',
+  NODEJS_20_X = 'nodejs20.x',
 
   /**
    * The Python 3.9 runtime
@@ -24,6 +25,16 @@ export enum Runtime {
    * The Python 3.11 runtime
    */
   PYTHON_3_11 = 'python3.11',
+
+  /**
+   * The Python 3.13 runtime
+   */
+  PYTHON_3_13 = 'python3.13',
+
+  /**
+   * The latest Python runtime available in all regions
+   */
+  PYTHON_LATEST = PYTHON_3_13,
 }
 
 /**
@@ -87,6 +98,13 @@ export interface ComponentProps {
    * @default true
    */
   readonly minifyAndBundle?: boolean;
+
+  /**
+   * Visibility for the constructor.
+   *
+   * @default MemberVisibility.Public
+   */
+  readonly constructorVisibility?: MemberVisibility;
 }
 
 export type HandlerFrameworkConfig = { [module: string]: { [identifier: string]: ComponentProps[] } };
@@ -158,7 +176,7 @@ export const config: HandlerFrameworkConfig = {
       {
         type: ComponentType.FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-ecs', 'lambda-source', 'index.py'),
-        runtime: Runtime.PYTHON_3_11,
+        runtime: Runtime.PYTHON_LATEST,
         handler: 'index.lambda_handler',
         minifyAndBundle: false,
       },
@@ -181,31 +199,31 @@ export const config: HandlerFrameworkConfig = {
       {
         type: ComponentType.FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'index.py'),
-        runtime: Runtime.PYTHON_3_11,
+        runtime: Runtime.PYTHON_LATEST,
         minifyAndBundle: false,
       },
       {
         type: ComponentType.NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'apply', '__init__.py'),
-        runtime: Runtime.PYTHON_3_11,
+        runtime: Runtime.PYTHON_LATEST,
         minifyAndBundle: false,
       },
       {
         type: ComponentType.NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'get', '__init__.py'),
-        runtime: Runtime.PYTHON_3_11,
+        runtime: Runtime.PYTHON_LATEST,
         minifyAndBundle: false,
       },
       {
         type: ComponentType.NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'helm', '__init__.py'),
-        runtime: Runtime.PYTHON_3_11,
+        runtime: Runtime.PYTHON_LATEST,
         minifyAndBundle: false,
       },
       {
         type: ComponentType.NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'patch', '__init__.py'),
-        runtime: Runtime.PYTHON_3_11,
+        runtime: Runtime.PYTHON_LATEST,
         minifyAndBundle: false,
       },
     ],
@@ -267,7 +285,7 @@ export const config: HandlerFrameworkConfig = {
       {
         type: ComponentType.NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-s3', 'notifications-resource-handler', 'index.py'),
-        runtime: Runtime.PYTHON_3_11,
+        runtime: Runtime.PYTHON_LATEST,
         minifyAndBundle: false,
       },
     ],
@@ -277,7 +295,7 @@ export const config: HandlerFrameworkConfig = {
       {
         type: ComponentType.SINGLETON_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-s3-deployment', 'bucket-deployment-handler', 'index.py'),
-        runtime: Runtime.PYTHON_3_11,
+        runtime: Runtime.PYTHON_LATEST,
         minifyAndBundle: false,
       },
     ],
@@ -307,7 +325,7 @@ export const config: HandlerFrameworkConfig = {
       {
         type: ComponentType.SINGLETON_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-stepfunctions-tasks', 'role-policy-handler', 'index.py'),
-        runtime: Runtime.PYTHON_3_11,
+        runtime: Runtime.PYTHON_LATEST,
         minifyAndBundle: false,
       },
     ],
@@ -331,6 +349,7 @@ export const config: HandlerFrameworkConfig = {
       {
         type: ComponentType.CUSTOM_RESOURCE_PROVIDER,
         sourceCode: path.resolve(__dirname, '..', 'core', 'cross-region-ssm-writer-handler', 'index.ts'),
+        constructorVisibility: MemberVisibility.Public,
       },
     ],
     'cross-region-ssm-reader-provider': [

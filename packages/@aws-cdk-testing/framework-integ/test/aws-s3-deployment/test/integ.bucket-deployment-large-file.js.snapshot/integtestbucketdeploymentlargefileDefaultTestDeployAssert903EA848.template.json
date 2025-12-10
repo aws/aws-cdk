@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "TestBucketDeploymentLargeFile:ExportsOutputRefBucket83908E7781C90AC0"
+         "Fn::ImportValue": "test-bucket-deployment-large-file:ExportsOutputRefBucket83908E7781C90AC0"
         },
         "\""
        ]
@@ -28,7 +28,7 @@
      "Key": "\"my-json/secret-config.json\""
     },
     "flattenResponse": "false",
-    "salt": "1755622777617"
+    "salt": "1762211959826"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -127,7 +127,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4cbd7cdb5600b1d8c000087fcff345214c258e0476ef89eb6b39a89b7de1b656.zip"
+     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -158,7 +158,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "TestBucketDeploymentLargeFile:ExportsOutputRefBucket83908E7781C90AC0"
+         "Fn::ImportValue": "test-bucket-deployment-large-file:ExportsOutputRefBucket83908E7781C90AC0"
         },
         "\""
        ]
@@ -167,7 +167,7 @@
      "Key": "\"my-json/secret-config-no-escape.json\""
     },
     "flattenResponse": "false",
-    "salt": "1755622777618"
+    "salt": "1762211959826"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -194,7 +194,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "TestBucketDeploymentLargeFile:ExportsOutputRefBucket83908E7781C90AC0"
+         "Fn::ImportValue": "test-bucket-deployment-large-file:ExportsOutputRefBucket83908E7781C90AC0"
         },
         "\""
        ]
@@ -204,7 +204,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1755622777619"
+    "salt": "1762211959826"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -404,7 +404,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4cbd7cdb5600b1d8c000087fcff345214c258e0476ef89eb6b39a89b7de1b656.zip"
+     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -446,7 +446,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4cbd7cdb5600b1d8c000087fcff345214c258e0476ef89eb6b39a89b7de1b656.zip"
+     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -480,7 +480,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "TestBucketDeploymentLargeFile:ExportsOutputRefBucket83908E7781C90AC0"
+         "Fn::ImportValue": "test-bucket-deployment-large-file:ExportsOutputRefBucket83908E7781C90AC0"
         },
         "\""
        ]
@@ -490,7 +490,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1755622777625"
+    "salt": "1762211959827"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

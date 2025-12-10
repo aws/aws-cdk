@@ -455,6 +455,13 @@ export interface IEcsContainerDefinition extends IConstruct {
   readonly volumes: EcsVolume[];
 
   /**
+   * Whether to enable ecs exec for this container.
+   *
+   * @default undefined - AWS Batch default is false
+   */
+  readonly enableExecuteCommand?: boolean;
+
+  /**
    * Renders this container to CloudFormation
    *
    * @internal
@@ -570,6 +577,20 @@ export interface EcsContainerDefinitionProps {
    * @default - no volumes
    */
   readonly volumes?: EcsVolume[];
+
+  /**
+   * Determines whether execute command functionality is turned on for this task.
+   *
+   * If true, execute command functionality is turned on all the containers in the task.
+   *
+   * This allows you to use ECS Exec to access containers interactively.
+   * When enabled, a job role with required SSM permissions will be created automatically if no job role is provided.
+   * If a job role is alreadyprovided, the required permissions will be added to it.
+   *
+   * @default undefined - AWS Batch default is false
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-exec.html
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
@@ -589,6 +610,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   public readonly secrets?: { [envVarName: string]: Secret };
   public readonly user?: string;
   public readonly volumes: EcsVolume[];
+  public readonly enableExecuteCommand?: boolean;
 
   private readonly imageConfig: ecs.ContainerImageConfig;
 
@@ -600,7 +622,8 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.command = props.command;
     this.environment = props.environment;
     this.executionRole = props.executionRole ?? createExecutionRole(this, 'ExecutionRole', props.logging ? true : false);
-    this.jobRole = props.jobRole;
+    this.enableExecuteCommand = props.enableExecuteCommand;
+    this.jobRole = this.handleJobRoleForEcsExec(props);
     this.linuxParameters = props.linuxParameters;
     this.memory = props.memory;
 
@@ -701,6 +724,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
         },
       }),
       user: this.user,
+      enableExecuteCommand: this.enableExecuteCommand,
     };
   }
 
@@ -725,6 +749,57 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     });
 
     return resourceRequirements;
+  }
+
+  /**
+   * Handles job role setup for ECS Exec functionality
+   * @internal
+   */
+  private handleJobRoleForEcsExec(props: EcsContainerDefinitionProps): iam.IRole | undefined {
+    if (props.enableExecuteCommand) {
+      if (props.jobRole) {
+        // If job role is provided and ECS Exec is enabled, add required permissions
+        this.addEcsExecPermissions(props.jobRole);
+        return props.jobRole;
+      } else {
+        // If no job role is provided but ECS Exec is enabled, create one with required permissions
+        return this.createJobRoleWithEcsExecPermissions();
+      }
+    } else {
+      // If ECS Exec is not enabled, just use the provided job role (if any)
+      return props.jobRole;
+    }
+  }
+
+  /**
+   * Creates a new job role with ECS Exec permissions
+   * @internal
+   */
+  private createJobRoleWithEcsExecPermissions(): iam.IRole {
+    const role = new iam.Role(this, 'JobRole', {
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
+    });
+
+    this.addEcsExecPermissions(role);
+    return role;
+  }
+
+  /**
+   * Adds ECS Exec required permissions to a role
+   * @internal
+   */
+  private addEcsExecPermissions(role: iam.IRole): void {
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
+        'ssmmessages:CreateControlChannel',
+        'ssmmessages:CreateDataChannel',
+        'ssmmessages:OpenControlChannel',
+        'ssmmessages:OpenDataChannel',
+      ],
+      resources: ['*'],
+    }));
   }
 }
 

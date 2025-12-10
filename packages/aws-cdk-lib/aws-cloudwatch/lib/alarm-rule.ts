@@ -1,4 +1,5 @@
 import { IAlarm, IAlarmRule } from './alarm-base';
+import { UnscopedValidationError } from '../../core';
 
 /**
  * Enumeration indicates state of Alarm used in building Alarm Rule.
@@ -111,6 +112,10 @@ export class AlarmRule {
   private static concat(operator: Operator, ...operands: IAlarmRule[]): IAlarmRule {
     return new class implements IAlarmRule {
       public renderAlarmRule(): string {
+        if (operands.length === 0) {
+          throw new UnscopedValidationError(`Did not detect any operands for AlarmRule.${operator === Operator.AND ? 'allOf' : 'anyOf'}()`);
+        }
+
         const expression = operands
           .map(operand => `${operand.renderAlarmRule()}`)
           .join(` ${operator} `);

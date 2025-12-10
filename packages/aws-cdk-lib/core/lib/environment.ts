@@ -30,3 +30,6 @@ export interface Environment {
    */
   readonly region?: string;
 }
+
+// For backwards compatibility with TypeScript users
+export type { IEnvironmentAware, ResourceEnvironment } from '../../interfaces/environment-aware';

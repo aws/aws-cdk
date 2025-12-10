@@ -135,12 +135,8 @@ export class BucketNotifications extends Construct {
         managed = false;
       }
 
-      if (!managed) {
-        handler.addToRolePolicy(new iam.PolicyStatement({
-          actions: ['s3:GetBucketNotification'],
-          resources: ['*'],
-        }));
-      }
+      // Add permissions for this bucket to the handler
+      this.addHandlerPermissions(handler, managed);
 
       this.resource = new cdk.CfnResource(this, 'Resource', {
         type: 'Custom::S3BucketNotifications',
@@ -169,6 +165,34 @@ export class BucketNotifications extends Construct {
     }
 
     return this.resource;
+  }
+
+  /**
+   * Add scoped permissions for managing bucket notifications to the handler's role.
+   *
+   * Grants specific IAM permissions to the bucket ARN instead of using wildcard permissions.
+   * This implements the principle of least privilege by limiting the handler's access to only
+   * the buckets it needs to manage.
+   *
+   * @param handler The notifications resource handler
+   * @param managed Whether this is a managed (CDK-created) bucket
+   */
+  private addHandlerPermissions(handler: NotificationsResourceHandler, managed: boolean): void {
+    // All buckets need PutBucketNotification to set/update notification configurations
+    handler.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['s3:PutBucketNotification'],
+      resources: [this.bucket.bucketArn],
+    }));
+
+    // Unmanaged (imported) buckets need GetBucketNotification to read existing configurations
+    // before merging with new notifications. Managed buckets don't need this since CDK
+    // controls their complete notification state from creation.
+    if (!managed) {
+      handler.addToRolePolicy(new iam.PolicyStatement({
+        actions: ['s3:GetBucketNotification'],
+        resources: [this.bucket.bucketArn],
+      }));
+    }
   }
 }
 

@@ -1,3 +1,4 @@
+import { CfnService } from 'aws-cdk-lib/aws-apprunner';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -6,13 +7,12 @@ import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as cdk from 'aws-cdk-lib/core';
 import { Lazy } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { CfnService } from 'aws-cdk-lib/aws-apprunner';
-import { IVpcConnector } from './vpc-connector';
-import { IAutoScalingConfiguration } from './auto-scaling-configuration';
-import { IObservabilityConfiguration } from './observability-configuration';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { IAutoScalingConfiguration } from './auto-scaling-configuration';
+import { IObservabilityConfiguration } from './observability-configuration';
+import { IVpcConnector } from './vpc-connector';
 
 /**
  * The image repository types
@@ -761,7 +761,7 @@ export interface ServiceProps {
    *
    * @default - Use an AWS managed key
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 
   /**
    * The IP address type for your incoming public network configuration.
@@ -1338,7 +1338,7 @@ export class Service extends cdk.Resource implements IService, iam.IGrantable {
           undefined,
       },
       encryptionConfiguration: this.props.kmsKey ? {
-        kmsKey: this.props.kmsKey.keyArn,
+        kmsKey: this.props.kmsKey.keyRef.keyArn,
       } : undefined,
       autoScalingConfigurationArn: this.props.autoScalingConfiguration?.autoScalingConfigurationArn,
       networkConfiguration: {

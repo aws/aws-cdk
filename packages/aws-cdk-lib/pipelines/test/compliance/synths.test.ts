@@ -160,6 +160,17 @@ test('Magic CodePipeline variables passed to synth envvars must be rendered in t
 });
 
 test('CodeBuild: environment variables specified in multiple places are correctly merged', () => {
+  const vpc = new ec2.Vpc(pipelineStack, 'Vpc');
+  const securityGroup = new ec2.SecurityGroup(pipelineStack, 'SecurityGroup', {
+    vpc,
+  });
+  const bucket = s3.Bucket.fromBucketArn(pipelineStack, 'Bucket', 'arn:aws:s3:::this-particular-bucket');
+  const fleet = new cbuild.Fleet(pipelineStack, 'Fleet', {
+    baseCapacity: 1,
+    computeType: cbuild.FleetComputeType.SMALL,
+    environmentType: cbuild.EnvironmentType.LINUX_CONTAINER,
+  });
+
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk-1', {
     synth: new CodeBuildStep('Synth', {
       env: {
@@ -177,6 +188,12 @@ test('CodeBuild: environment variables specified in multiple places are correctl
           INNER_VAR: { value: 'InnerValue' },
         },
         privileged: true,
+        dockerServer: {
+          computeType: cbuild.DockerServerComputeType.SMALL,
+          securityGroups: [securityGroup],
+        },
+        certificate: { bucket, objectKey: 'my-certificate' },
+        fleet,
       },
     }),
   });
@@ -218,6 +235,16 @@ test('CodeBuild: environment variables specified in multiple places are correctl
           Value: 'SomeValue',
         },
       ]),
+      DockerServer: {
+        ComputeType: 'BUILD_GENERAL1_SMALL',
+        SecurityGroupIds: [{
+          'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'],
+        }],
+      },
+      Certificate: 'arn:aws:s3:::this-particular-bucket/my-certificate',
+      Fleet: {
+        FleetArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('Fleet.*'), 'Arn'] },
+      },
     }),
     Source: {
       BuildSpec: Match.serializedJson(Match.objectLike({

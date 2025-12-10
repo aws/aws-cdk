@@ -187,7 +187,8 @@ export async function coerceSdkv3Response(value: unknown): Promise<unknown> {
     return value.toString('utf8');
   }
   if (ArrayBuffer.isView(value)) {
-    return decoder.decode(value.buffer);
+    // Don't know why I can't get this to typecheck, but casting it away
+    return decoder.decode(value.buffer as any);
   }
 
   if (Array.isArray(value)) {

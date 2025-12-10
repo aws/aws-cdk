@@ -911,6 +911,19 @@ test('aliasArn should be a valid ARN', () => {
   }, stack));
 });
 
+test('Alias keyRef should reference the Alias, not the underlying key', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Test');
+  const key = new Key(stack, 'Key');
+
+  // WHEN
+  const alias = key.addAlias('alias/foo');
+
+  // THEN
+  expect(alias.keyRef.keyArn).toEqual(alias.aliasArn);
+});
+
 class AliasOutputsConstruct extends Construct {
   constructor(scope: Construct, id: string, key: IKey) {
     super(scope, id);

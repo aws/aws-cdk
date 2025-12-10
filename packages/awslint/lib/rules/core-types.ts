@@ -14,7 +14,6 @@ enum CoreTypesFqn {
 }
 
 export class CoreTypes {
-
   /**
    * @returns true if assembly has the Core module
    */
@@ -44,11 +43,7 @@ export class CoreTypes {
       return false;
     }
 
-    if (!c.name.startsWith('Cfn')) {
-      return false;
-    }
-
-    return true;
+    return c.name.startsWith('Cfn');
   }
 
   /**
@@ -86,13 +81,38 @@ export class CoreTypes {
   }
 
   /**
-   * Return true if the given interface type is a CFN class or prop type
+   * Return true if the given interface type is a CFN class, prop type or interface
    */
-  public static isCfnType(interfaceType: reflect.Type) {
-    return interfaceType.name.startsWith('Cfn')
-      || (interfaceType.namespace && interfaceType.namespace.startsWith('Cfn'))
+  public static isCfnType(interfaceType: reflect.Type): boolean {
+    // aws_service.CfnTheResource
+    if (interfaceType.name.startsWith('Cfn')) {
+      return true;
+    }
+
+    // aws_service.ITheResourceRf
+    if (/^I\w+Ref/.test(interfaceType.name)) {
+      return true;
+    }
+
+    if (interfaceType.namespace) {
+      if (interfaceType.namespace.startsWith('Cfn')) {
+        return true;
+      }
+
+      const namespaceParts = interfaceType.namespace.split('.');
+
       // aws_service.CfnTheResource.SubType
-      || (interfaceType.namespace && interfaceType.namespace.split('.', 2).at(1)?.startsWith('Cfn'));
+      if (namespaceParts.at(1)?.startsWith('Cfn')) {
+        return true;
+      }
+
+      // aws_service.mixins.CfnTheResource.SubType
+      if (namespaceParts.at(1) === 'mixins' && namespaceParts.at(2)?.startsWith('Cfn')) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**

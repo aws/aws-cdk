@@ -47,6 +47,41 @@ httpApi.addRoutes({
 });
 ```
 
+#### Lambda Integration Permissions
+
+By default, creating a `HttpLambdaIntegration` will add a permission for API Gateway to invoke your AWS Lambda function, scoped to the specific route which uses the integration.
+
+If you reuse the same AWS Lambda function for many integrations, the AWS Lambda permission policy size can be exceeded by adding a separate policy statement for each route which invokes the AWS Lambda function. To avoid this, you can opt to scope permissions to any route on the API by setting `scopePermissionToRoute` to `false`, and this will ensure only a single policy statement is added to the AWS Lambda permission policy.
+
+```ts
+import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+
+declare const booksDefaultFn: lambda.Function;
+
+const httpApi = new apigwv2.HttpApi(this, 'HttpApi');
+
+const getBooksIntegration = new HttpLambdaIntegration('GetBooksIntegration', booksDefaultFn, {
+  scopePermissionToRoute: false,
+});
+const createBookIntegration = new HttpLambdaIntegration('CreateBookIntegration', booksDefaultFn, {
+  scopePermissionToRoute: false,
+});
+
+httpApi.addRoutes({
+  path: '/books',
+  methods: [ apigwv2.HttpMethod.GET ],
+  integration: getBooksIntegration,
+});
+
+httpApi.addRoutes({
+  path: '/books',
+  methods: [ apigwv2.HttpMethod.POST ],
+  integration: createBookIntegration,
+});
+```
+
+In the above example, a single permission is added, shared by both `getBookIntegration` and `createBookIntegration`.
+
 ### HTTP Proxy
 
 HTTP Proxy integrations enables connecting an HTTP API route to a publicly routable HTTP endpoint. When a client

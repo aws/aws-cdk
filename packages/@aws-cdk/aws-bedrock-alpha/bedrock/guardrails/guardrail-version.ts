@@ -1,6 +1,8 @@
 import { IResource, Resource } from 'aws-cdk-lib';
 import { CfnGuardrailVersion } from 'aws-cdk-lib/aws-bedrock';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
 // Internal Libs
 import { Guardrail, IGuardrail } from './guardrails';
@@ -89,7 +91,11 @@ export interface GuardrailVersionAttributes {
  * Class to create a Guardrail Version with CDK.
  * @cloudformationResource AWS::Bedrock::GuardrailVersion
  */
+@propertyInjectable
 export class GuardrailVersion extends GuardrailVersionBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-alpha.GuardrailVersion';
+
   /**
    * Import a Guardrail Version from its attributes.
    */
@@ -120,6 +126,8 @@ export class GuardrailVersion extends GuardrailVersionBase {
    */
   constructor(scope: Construct, id: string, props: GuardrailVersionProps) {
     super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.guardrail = props.guardrail;
 
     // Compute hash from guardrail, to recreate the resource when guardrail has changed

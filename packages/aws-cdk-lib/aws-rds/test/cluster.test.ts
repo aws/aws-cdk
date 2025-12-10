@@ -712,6 +712,27 @@ describe('cluster new api', () => {
         PreferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
       }));
     });
+
+    test.each([true, false])('deleteAutomatedBackups set to %s', (deleteAutomatedBackups) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        instanceProps: {
+          vpc,
+        },
+        deleteAutomatedBackups,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', Match.objectLike({
+        DeleteAutomatedBackups: deleteAutomatedBackups,
+      }));
+    });
   });
 
   describe('migrate from instanceProps', () => {
@@ -4436,12 +4457,12 @@ describe('cluster', () => {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
       },
-      cloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit'],
+      cloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit', 'instance', 'iam-db-auth-error'],
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
-      EnableCloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit'],
+      EnableCloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit', 'instance', 'iam-db-auth-error'],
     });
   });
 
