@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+
 /// <reference path="../../../../../../../node_modules/aws-cdk-lib/custom-resources/lib/provider-framework/types.d.ts" />
 import { RDS } from '@aws-sdk/client-rds';
 
