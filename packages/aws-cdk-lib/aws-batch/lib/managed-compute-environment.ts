@@ -518,7 +518,6 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    * C4, M4, and R4 instance classes. You can specify other instance classes
    * (of the same architecture) in addition to the optimal instance classes.
    *
-   * @deprecated use defaultInstanceClasses instead
    * @default true
    */
   readonly useOptimalInstanceClasses?: boolean;
@@ -936,7 +935,6 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    * C4, M4, and R4 instance classes. You can specify other instance classes
    * (of the same architecture) in addition to the optimal instance classes.
    *
-   * @deprecated use defaultInstanceClasses instead
    * @default true
    */
   readonly useOptimalInstanceClasses?: boolean;
