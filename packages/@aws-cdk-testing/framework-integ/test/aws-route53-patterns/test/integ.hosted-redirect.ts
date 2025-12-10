@@ -1,6 +1,7 @@
 import { PublicHostedZone } from 'aws-cdk-lib/aws-route53';
+import { CfnBucket } from 'aws-cdk-lib/aws-s3';
 import { Stack, App } from 'aws-cdk-lib';
-// import { ROUTE53_PATTERNS_USE_CERTIFICATE } from '@aws-cdk/cx-api';
+import { ROUTE53_PATTERNS_USE_DISTRIBUTION } from 'aws-cdk-lib/cx-api';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { HttpsRedirect } from 'aws-cdk-lib/aws-route53-patterns';
 const hostedZoneId = process.env.CDK_INTEG_HOSTED_ZONE_ID ?? process.env.HOSTED_ZONE_ID;
@@ -11,10 +12,9 @@ const domainName = process.env.CDK_INTEG_DOMAIN_NAME ?? process.env.DOMAIN_NAME;
 if (!domainName) throw new Error('For this test you must provide your own DomainName as an env var "DOMAIN_NAME". See framework-integ/README.md for details.');
 
 const app = new App({
-  // uncomment this to test the old behavior
-  // postCliContext: {
-  //   [ROUTE53_PATTERNS_USE_CERTIFICATE]: false,
-  // },
+  postCliContext: {
+    [ROUTE53_PATTERNS_USE_DISTRIBUTION]: true,
+  },
 });
 const testCase = new Stack(app, 'integ-https-redirect', {
   crossRegionReferences: true,
@@ -28,10 +28,19 @@ const hostedZone = PublicHostedZone.fromHostedZoneAttributes(testCase, 'HostedZo
   hostedZoneId,
   zoneName: hostedZoneName,
 });
-new HttpsRedirect(testCase, 'redirect', {
+const redirect = new HttpsRedirect(testCase, 'redirect', {
   zone: hostedZone,
   recordNames: [`integ.${hostedZoneName}`],
   targetDomain: 'aws.amazon.com',
+});
+
+const redirectBucket = redirect.node.findChild('RedirectBucket').node.defaultChild as CfnBucket;
+redirectBucket.addPropertyOverride('BucketEncryption', {
+  ServerSideEncryptionConfiguration: [{
+    ServerSideEncryptionByDefault: {
+      SSEAlgorithm: 'aws:kms',
+    },
+  }],
 });
 
 new IntegTest(app, 'integ-test', {
