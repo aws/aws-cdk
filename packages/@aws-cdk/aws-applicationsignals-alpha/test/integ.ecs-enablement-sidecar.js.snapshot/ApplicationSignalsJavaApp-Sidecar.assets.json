@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "1a9a446b9fded65ea80186ef4ba27c565829a043684316486b051aaff97e7520": {
+    "8ad25999f63a5a3568aa06589ad512b4243dde125eac33f3b13e78dd791a58e2": {
       "displayName": "ApplicationSignalsJavaApp-Sidecar Template",
       "source": {
         "path": "ApplicationSignalsJavaApp-Sidecar.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-4a4d44e8": {
+        "current_account-current_region-e93725fb": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1a9a446b9fded65ea80186ef4ba27c565829a043684316486b051aaff97e7520.json",
+          "objectKey": "8ad25999f63a5a3568aa06589ad512b4243dde125eac33f3b13e78dd791a58e2.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

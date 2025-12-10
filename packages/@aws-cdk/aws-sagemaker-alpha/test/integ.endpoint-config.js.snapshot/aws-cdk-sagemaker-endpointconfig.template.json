@@ -717,6 +717,117 @@
      }
     ]
    }
+  },
+  "ServerlessEndpointConfig0EF1560E": {
+   "Type": "AWS::SageMaker::EndpointConfig",
+   "Properties": {
+    "ProductionVariants": [
+     {
+      "InitialVariantWeight": 1,
+      "ModelName": {
+       "Fn::GetAtt": [
+        "ModelWithoutArtifactAndVpcModel9A8AD144",
+        "ModelName"
+       ]
+      },
+      "ServerlessConfig": {
+       "MaxConcurrency": 10,
+       "MemorySizeInMB": 2048,
+       "ProvisionedConcurrency": 5
+      },
+      "VariantName": "serverlessVariant"
+     }
+    ]
+   }
+  },
+  "MinimalServerlessEndpointConfig68CC9C3F": {
+   "Type": "AWS::SageMaker::EndpointConfig",
+   "Properties": {
+    "ProductionVariants": [
+     {
+      "InitialVariantWeight": 1,
+      "ModelName": {
+       "Fn::GetAtt": [
+        "ModelWithoutArtifactAndVpcModel9A8AD144",
+        "ModelName"
+       ]
+      },
+      "ServerlessConfig": {
+       "MaxConcurrency": 1,
+       "MemorySizeInMB": 1024
+      },
+      "VariantName": "minimalServerlessVariant"
+     }
+    ]
+   }
+  },
+  "BoundaryServerlessEndpointConfig0B181608": {
+   "Type": "AWS::SageMaker::EndpointConfig",
+   "Properties": {
+    "ProductionVariants": [
+     {
+      "InitialVariantWeight": 1,
+      "ModelName": {
+       "Fn::GetAtt": [
+        "ModelWithoutArtifactAndVpcModel9A8AD144",
+        "ModelName"
+       ]
+      },
+      "ServerlessConfig": {
+       "MaxConcurrency": 200,
+       "MemorySizeInMB": 6144,
+       "ProvisionedConcurrency": 200
+      },
+      "VariantName": "boundaryServerlessVariant"
+     }
+    ]
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttEndpointConfigFD7B6F91EndpointConfigName60C5B163": {
+   "Value": {
+    "Fn::GetAtt": [
+     "EndpointConfigFD7B6F91",
+     "EndpointConfigName"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-sagemaker-endpointconfig:ExportsOutputFnGetAttEndpointConfigFD7B6F91EndpointConfigName60C5B163"
+   }
+  },
+  "ExportsOutputFnGetAttServerlessEndpointConfig0EF1560EEndpointConfigNameA7681BAF": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ServerlessEndpointConfig0EF1560E",
+     "EndpointConfigName"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-sagemaker-endpointconfig:ExportsOutputFnGetAttServerlessEndpointConfig0EF1560EEndpointConfigNameA7681BAF"
+   }
+  },
+  "ExportsOutputFnGetAttMinimalServerlessEndpointConfig68CC9C3FEndpointConfigName452A76B6": {
+   "Value": {
+    "Fn::GetAtt": [
+     "MinimalServerlessEndpointConfig68CC9C3F",
+     "EndpointConfigName"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-sagemaker-endpointconfig:ExportsOutputFnGetAttMinimalServerlessEndpointConfig68CC9C3FEndpointConfigName452A76B6"
+   }
+  },
+  "ExportsOutputFnGetAttBoundaryServerlessEndpointConfig0B181608EndpointConfigName73B652E2": {
+   "Value": {
+    "Fn::GetAtt": [
+     "BoundaryServerlessEndpointConfig0B181608",
+     "EndpointConfigName"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-sagemaker-endpointconfig:ExportsOutputFnGetAttBoundaryServerlessEndpointConfig0B181608EndpointConfigName73B652E2"
+   }
   }
  },
  "Parameters": {
