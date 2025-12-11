@@ -617,6 +617,258 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "ClusterVersion260SecurityGroup7EE4C4B9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion260SecurityGroup7EE4C4B9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion260FB26AA6A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion260FB26AA6A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion261SecurityGroupA9CF6B0F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion261SecurityGroupA9CF6B0F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion261D43B824F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion261D43B824F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion262SecurityGroup1F74C57D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion262SecurityGroup1F74C57D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion2622894BF48": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion2622894BF48",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion263SecurityGroupE3FAA85B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion263SecurityGroupE3FAA85B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion263DC77D2ED": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion263DC77D2ED",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion270SecurityGroupC310BF35": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion270SecurityGroupC310BF35",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion27010CB5FBF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion27010CB5FBF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion271SecurityGroup1487C17C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion271SecurityGroup1487C17C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion271AA1304B7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion271AA1304B7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion272SecurityGroupB8AE57F0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion272SecurityGroupB8AE57F0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion272BEE37AA9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion272BEE37AA9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion280SecurityGroup7A071E33": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion280SecurityGroup7A071E33",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion280A292F8BA": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion280A292F8BA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion281SecurityGroup58456B77": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion281SecurityGroup58456B77",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion281E912F3B9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion281E912F3B9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion282tieredSecurityGroup3FA6200D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion282tieredSecurityGroup3FA6200D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion282tiered485A19BE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion282tiered485A19BE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion311SecurityGroupFFD16098": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion311SecurityGroupFFD16098",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion311273A2535": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion311273A2535",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion320SecurityGroupF51F054B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion320SecurityGroupF51F054B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion3202AA95F49": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion3202AA95F49",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion331SecurityGroupE349B3D7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion331SecurityGroupE349B3D7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion331008AC95F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion331008AC95F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion332SecurityGroup75E967C6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion332SecurityGroup75E967C6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterVersion332A4AB4092": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion332A4AB4092",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "KafkaVersionTestStack"
@@ -681,6 +933,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -699,6 +952,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -810,7 +1064,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -1149,10 +1403,25 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }
