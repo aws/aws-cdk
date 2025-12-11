@@ -174,12 +174,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
     "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
     "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
-<<<<<<< HEAD
     "@aws-cdk/core:explicitStackTags": true,
-    "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": false,
-    "@aws-cdk/aws-ecs:disableEcsImdsBlocking": true,
-=======
->>>>>>> b33aadd2f9 (commit auto-generated files)
     "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true,
     "@aws-cdk/aws-dynamodb:resourcePolicyPerReplica": true,
     "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true,
@@ -201,15 +196,11 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true,
     "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
-<<<<<<< HEAD
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
     "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
     "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": true,
     "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true,
     "@aws-cdk/aws-route53-patterns:useDistribution": true
-=======
-    "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true
->>>>>>> b33aadd2f9 (commit auto-generated files)
   }
 }
 ```
@@ -1792,52 +1783,6 @@ If the flag is set to false then a custom resource will be created when using `U
 | 2.174.0 | `false` | `true` |
 
 
-<<<<<<< HEAD
-### @aws-cdk/aws-ecs:disableEcsImdsBlocking
-
-*When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)***
-
-Flag type: Temporary flag
-
-In an ECS Cluster with `MachineImageType.AMAZON_LINUX_2`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
-accessing IMDS. CDK cannot guarantee the correct execution of the feature in all platforms. Setting this feature flag
-to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the
-IMDS blocking feature. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
-
-It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| 2.175.0 | `false` | `true` |
-
-**Compatibility with old behavior:** It is strongly recommended to set this flag to true. However, if necessary, set this flag to false to continue using the old implementation.
-
-
-### @aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature
-
-*When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)***
-
-Flag type: Temporary flag
-
-In an ECS Cluster with `MachineImageType.AMAZON_LINUX_2`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
-accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this
-feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot
-guarantee the correct execution of the feature in all platforms. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
-It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| 2.175.0 | `false` | `false` |
-
-**Compatibility with old behavior:** Set this flag to false in order to continue using old and outdated commands. However, it is **not** recommended.
-
-
-=======
->>>>>>> b33aadd2f9 (commit auto-generated files)
 ### @aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault
 
 *When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere*
@@ -2116,26 +2061,7 @@ When this feature flag is enabled, a S3 trust policy will be added to the KMS ke
 | 2.195.0 | `false` | `true` |
 
 
-<<<<<<< HEAD
 ### @aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration
-=======
-### @aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway
-
-*When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC.*
-
-Flag type: Backwards incompatible bugfix
-
-When this feature flag is enabled, EgressOnlyGateway resource will not be created when you create a vpc with only public subnets.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
-
-
-### @aws-cdk/aws-s3:publicAccessBlockedByDefault
->>>>>>> b33aadd2f9 (commit auto-generated files)
 
 *When enabled, use resource IDs for VPC V2 migration*
 
