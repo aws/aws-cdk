@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "909b71260b2efa27c1510349761f11495a2cb2196f6e7427fb350b981be877b7": {
-      "displayName": "VendedLogsMultiplesTest Template",
+    "00b4f9b3de59c2205fd0baa927de62d61402e43c735d904a211db086e14f95e3": {
+      "displayName": "aws-cdk-project-macos-base15 Template",
       "source": {
-        "path": "VendedLogsMultiplesTest.template.json",
+        "path": "aws-cdk-project-macos-base15.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-68cf6780": {
+        "current_account-current_region-5187095b": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "909b71260b2efa27c1510349761f11495a2cb2196f6e7427fb350b981be877b7.json",
+          "objectKey": "00b4f9b3de59c2205fd0baa927de62d61402e43c735d904a211db086e14f95e3.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

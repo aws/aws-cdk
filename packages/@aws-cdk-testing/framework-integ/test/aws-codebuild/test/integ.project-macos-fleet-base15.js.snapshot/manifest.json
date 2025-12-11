@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "VendedLogsTest.assets": {
+    "aws-cdk-project-macos-base15.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "VendedLogsTest.assets.json",
+        "file": "aws-cdk-project-macos-base15.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "VendedLogsTest": {
+    "aws-cdk-project-macos-base15": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "VendedLogsTest.template.json",
+        "templateFile": "aws-cdk-project-macos-base15.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4fcc6dd684032b0ae7b632a3de55f21d10a0d584a5f3dd5e43ead675711014ac.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/00b4f9b3de59c2205fd0baa927de62d61402e43c735d904a211db086e14f95e3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "VendedLogsTest.assets"
+          "aws-cdk-project-macos-base15.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,252 +31,201 @@
         }
       },
       "dependencies": [
-        "VendedLogsTest.assets"
+        "aws-cdk-project-macos-base15.assets"
       ],
       "metadata": {
-        "/VendedLogsTest/EventBus": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventBus"
-          }
-        ],
-        "/VendedLogsTest/DeliveryBucket": [
+        "/aws-cdk-project-macos-base15/MacOsFleet": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "removalPolicy": "destroy",
-              "autoDeleteObjects": true,
-              "encryption": "S3_MANAGED"
+              "fleetName": "*",
+              "baseCapacity": "*",
+              "computeType": "BUILD_GENERAL1_MEDIUM",
+              "environmentType": "MAC_ARM"
             }
           }
         ],
-        "/VendedLogsTest/DeliveryBucket/Resource": [
+        "/aws-cdk-project-macos-base15/MacOsFleet/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeliveryBucketA9AE6474"
+            "data": "MacOsFleet804A3B5D"
           }
         ],
-        "/VendedLogsTest/DeliveryBucket/Policy": [
+        "/aws-cdk-project-macos-base15/MacOsProject": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "bucket": "*"
+              "buildSpec": "*",
+              "environment": {
+                "fleet": "*",
+                "buildImage": {
+                  "type": "*",
+                  "defaultComputeType": "BUILD_GENERAL1_MEDIUM",
+                  "imageId": "*",
+                  "imagePullPrincipalType": "CODEBUILD",
+                  "secretsManagerCredentials": "*",
+                  "repository": "*"
+                },
+                "computeType": "BUILD_GENERAL1_MEDIUM"
+              }
             }
           }
         ],
-        "/VendedLogsTest/DeliveryBucket/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryBucketPolicyB86375F3"
-          }
-        ],
-        "/VendedLogsTest/DeliveryBucket/AutoDeleteObjectsCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/VendedLogsTest/DeliveryBucket/AutoDeleteObjectsCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryBucketAutoDeleteObjectsCustomResource70EC3C75"
-          }
-        ],
-        "/VendedLogsTest/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/VendedLogsTest/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-          }
-        ],
-        "/VendedLogsTest/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
-          }
-        ],
-        "/VendedLogsTest/DeliveryLogGroup": [
+        "/aws-cdk-project-macos-base15/MacOsProject/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/VendedLogsTest/DeliveryLogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryLogGroup2A53FD53"
-          }
-        ],
-        "/VendedLogsTest/FirehoseBucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy",
-              "autoDeleteObjects": true,
-              "encryption": "S3_MANAGED"
-            }
-          }
-        ],
-        "/VendedLogsTest/FirehoseBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FirehoseBucket407758F1"
-          }
-        ],
-        "/VendedLogsTest/FirehoseBucket/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
-          }
-        ],
-        "/VendedLogsTest/FirehoseBucket/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FirehoseBucketPolicy005BD2F0"
-          }
-        ],
-        "/VendedLogsTest/FirehoseBucket/AutoDeleteObjectsCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/VendedLogsTest/FirehoseBucket/AutoDeleteObjectsCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FirehoseBucketAutoDeleteObjectsCustomResourceD3E44B23"
-          }
-        ],
-        "/VendedLogsTest/FirehoseRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
+              "roleName": "*",
               "assumedBy": {
                 "principalAccount": "*",
                 "assumeRoleAction": "*"
-              },
-              "inlinePolicies": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
             }
           }
         ],
-        "/VendedLogsTest/FirehoseRole/ImportFirehoseRole": [
+        "/aws-cdk-project-macos-base15/MacOsProject/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/VendedLogsTest/FirehoseRole/Resource": [
+        "/aws-cdk-project-macos-base15/MacOsProject/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FirehoseRoleAA67C190"
+            "data": "MacOsProjectRole1708711E"
           }
         ],
-        "/VendedLogsTest/DeliveryStream": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStream"
-          }
-        ],
-        "/VendedLogsTest/CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247/Dest": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247DestE1C5E99F"
-          }
-        ],
-        "/VendedLogsTest/CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247/Delivery": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247Delivery5E0B21AA"
-          }
-        ],
-        "/VendedLogsTest/CDKSourceERROR_LOGSVendedLogsTest": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CDKSourceERRORLOGSVendedLogsTest"
-          }
-        ],
-        "/VendedLogsTest/CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9/Dest": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Dest07565F4E"
-          }
-        ],
-        "/VendedLogsTest/CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9/Delivery": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Delivery0C51C7A6"
-          }
-        ],
-        "/VendedLogsTest/CdkLogGroupLogsDeliveryPolicy": [
+        "/aws-cdk-project-macos-base15/MacOsProject/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": {}
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
-        "/VendedLogsTest/CdkLogGroupLogsDeliveryPolicy/ResourcePolicy": [
+        "/aws-cdk-project-macos-base15/MacOsProject/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857"
+            "data": "MacOsProjectRoleDefaultPolicy76A4A56E"
           }
         ],
-        "/VendedLogsTest/CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60D/Dest": [
+        "/aws-cdk-project-macos-base15/MacOsProject/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDestA14731EA"
+            "data": "MacOsProjectCFCE4F6B"
           }
         ],
-        "/VendedLogsTest/CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60D/Delivery": [
+        "/aws-cdk-project-macos-base15/Exports/Output{\"Fn::GetAtt\":[\"MacOsFleet804A3B5D\",\"Arn\"]}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDeliveryF5EFF358"
+            "data": "ExportsOutputFnGetAttMacOsFleet804A3B5DArn01D9C584"
           }
         ],
-        "/VendedLogsTest/BootstrapVersion": [
+        "/aws-cdk-project-macos-base15/Exports/Output{\"Ref\":\"MacOsProjectCFCE4F6B\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefMacOsProjectCFCE4F6BC768DECD"
+          }
+        ],
+        "/aws-cdk-project-macos-base15/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/VendedLogsTest/CheckBootstrapVersion": [
+        "/aws-cdk-project-macos-base15/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "VendedLogsTest"
+      "displayName": "aws-cdk-project-macos-base15"
     },
-    "DeliveryTestDefaultTestDeployAssert48416031.assets": {
+    "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "DeliveryTestDefaultTestDeployAssert48416031.assets.json",
+        "file": "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "DeliveryTestDefaultTestDeployAssert48416031": {
+    "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "DeliveryTestDefaultTestDeployAssert48416031.template.json",
+        "templateFile": "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7e90f62eae092e8edddb5fcc7c8a1e29992d536a9f56a0ef8bab94559a70552d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "DeliveryTestDefaultTestDeployAssert48416031.assets"
+          "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -285,23 +234,156 @@
         }
       },
       "dependencies": [
-        "DeliveryTestDefaultTestDeployAssert48416031.assets"
+        "aws-cdk-project-macos-base15",
+        "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4.assets"
       ],
       "metadata": {
-        "/DeliveryTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildlistFleets/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildlistFleets/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodebuildlistFleets"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildlistFleets/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCodebuildlistFleets"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildcbfff4de4622af655217157205222fac/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildstartBuildcbfff4de4622af655217157205222fac/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodebuildstartBuildcbfff4de4622af655217157205222fac"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fc/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fc/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fc"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fc/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fcWaitForIsCompleteProviderInvoke4A953737"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fc/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fcWaitForTimeoutProviderInvoke43A4EB35"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fc/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fcWaitForRole9199F2C8"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fc/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fcWaitForA46C07AC"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fc/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCodeBuildbatchGetBuildsca7a972abba879df6e6f630c076385fc"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/DeliveryTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/MacOsProjectIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "DeliveryTest/DefaultTest/DeployAssert"
+      "displayName": "MacOsProjectIntegTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -315,7 +397,6 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -334,7 +415,6 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -446,7 +526,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -786,10 +866,6 @@
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
-          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
-            "recommendedValue": true,
-            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
-          },
           "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
             "recommendedValue": true,
             "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
@@ -805,5 +881,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1027.0"
 }
