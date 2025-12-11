@@ -5,7 +5,13 @@
    "Properties": {
     "Name": "test-apigwv2-add-subroute-integration",
     "ProtocolType": "HTTP"
-   }
+   },
+   "DependsOn": [
+    "secondlambdafunction075D9D2B",
+    "secondlambdafunctionServiceRole23FEE383",
+    "thirdlambdafunctionF08420CD",
+    "thirdlambdafunctionServiceRole1CA82110"
+   ]
   },
   "testapigwv2addsubrouteintegrationDefaultStage95CBB85F": {
    "Type": "AWS::ApiGatewayV2::Stage",
@@ -15,7 +21,13 @@
     },
     "AutoDeploy": true,
     "StageName": "$default"
-   }
+   },
+   "DependsOn": [
+    "secondlambdafunction075D9D2B",
+    "secondlambdafunctionServiceRole23FEE383",
+    "thirdlambdafunctionF08420CD",
+    "thirdlambdafunctionServiceRole1CA82110"
+   ]
   },
   "testapigwv2addsubrouteintegrationGETfirstroutemylambdaintegration9AC16429": {
    "Type": "AWS::ApiGatewayV2::Integration",
@@ -31,7 +43,13 @@
      ]
     },
     "PayloadFormatVersion": "2.0"
-   }
+   },
+   "DependsOn": [
+    "secondlambdafunction075D9D2B",
+    "secondlambdafunctionServiceRole23FEE383",
+    "thirdlambdafunctionF08420CD",
+    "thirdlambdafunctionServiceRole1CA82110"
+   ]
   },
   "testapigwv2addsubrouteintegrationGETfirstroutemylambdaintegrationPermissionA652DC1D": {
    "Type": "AWS::Lambda::Permission",
@@ -68,7 +86,13 @@
       ]
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "secondlambdafunction075D9D2B",
+    "secondlambdafunctionServiceRole23FEE383",
+    "thirdlambdafunctionF08420CD",
+    "thirdlambdafunctionServiceRole1CA82110"
+   ]
   },
   "testapigwv2addsubrouteintegrationGETfirstrouteA8B45A0F": {
    "Type": "AWS::ApiGatewayV2::Route",
@@ -89,7 +113,13 @@
       ]
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "secondlambdafunction075D9D2B",
+    "secondlambdafunctionServiceRole23FEE383",
+    "thirdlambdafunctionF08420CD",
+    "thirdlambdafunctionServiceRole1CA82110"
+   ]
   },
   "testapigwv2addsubrouteintegrationGETfirstroutesubroutemylambdaintegrationPermissionCCC6B203": {
    "Type": "AWS::Lambda::Permission",
@@ -126,7 +156,13 @@
       ]
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "secondlambdafunction075D9D2B",
+    "secondlambdafunctionServiceRole23FEE383",
+    "thirdlambdafunctionF08420CD",
+    "thirdlambdafunctionServiceRole1CA82110"
+   ]
   },
   "testapigwv2addsubrouteintegrationGETfirstroutesubroute1247B83F": {
    "Type": "AWS::ApiGatewayV2::Route",
@@ -147,7 +183,13 @@
       ]
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "secondlambdafunction075D9D2B",
+    "secondlambdafunctionServiceRole23FEE383",
+    "thirdlambdafunctionF08420CD",
+    "thirdlambdafunctionServiceRole1CA82110"
+   ]
   },
   "testapigwv2addsubrouteintegrationGETsecondroutemyreferencedlambdaintegration6C087A72": {
    "Type": "AWS::ApiGatewayV2::Integration",
@@ -163,7 +205,13 @@
      ]
     },
     "PayloadFormatVersion": "2.0"
-   }
+   },
+   "DependsOn": [
+    "secondlambdafunction075D9D2B",
+    "secondlambdafunctionServiceRole23FEE383",
+    "thirdlambdafunctionF08420CD",
+    "thirdlambdafunctionServiceRole1CA82110"
+   ]
   },
   "testapigwv2addsubrouteintegrationGETsecondroutemyreferencedlambdaintegrationPermissionC21831D2": {
    "Type": "AWS::Lambda::Permission",
@@ -200,7 +248,13 @@
       ]
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "secondlambdafunction075D9D2B",
+    "secondlambdafunctionServiceRole23FEE383",
+    "thirdlambdafunctionF08420CD",
+    "thirdlambdafunctionServiceRole1CA82110"
+   ]
   },
   "testapigwv2addsubrouteintegrationGETsecondroute4AF1E609": {
    "Type": "AWS::ApiGatewayV2::Route",
@@ -221,7 +275,13 @@
       ]
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "secondlambdafunction075D9D2B",
+    "secondlambdafunctionServiceRole23FEE383",
+    "thirdlambdafunctionF08420CD",
+    "thirdlambdafunctionServiceRole1CA82110"
+   ]
   },
   "testapigwv2addsubrouteintegrationGETsecondroutesubroutemyreferencedlambdaintegrationPermissionBC2FB67A": {
    "Type": "AWS::Lambda::Permission",
@@ -258,7 +318,13 @@
       ]
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "secondlambdafunction075D9D2B",
+    "secondlambdafunctionServiceRole23FEE383",
+    "thirdlambdafunctionF08420CD",
+    "thirdlambdafunctionServiceRole1CA82110"
+   ]
   },
   "testapigwv2addsubrouteintegrationGETsecondroutesubrouteB60A5707": {
    "Type": "AWS::ApiGatewayV2::Route",
@@ -279,7 +345,13 @@
       ]
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "secondlambdafunction075D9D2B",
+    "secondlambdafunctionServiceRole23FEE383",
+    "thirdlambdafunctionF08420CD",
+    "thirdlambdafunctionServiceRole1CA82110"
+   ]
   },
   "testapigwv2addsubrouteintegrationGETthirdroutemyreferencedlambdaintegrationD0FF024E": {
    "Type": "AWS::ApiGatewayV2::Integration",
@@ -309,7 +381,13 @@
      ]
     },
     "PayloadFormatVersion": "2.0"
-   }
+   },
+   "DependsOn": [
+    "secondlambdafunction075D9D2B",
+    "secondlambdafunctionServiceRole23FEE383",
+    "thirdlambdafunctionF08420CD",
+    "thirdlambdafunctionServiceRole1CA82110"
+   ]
   },
   "testapigwv2addsubrouteintegrationGETthirdroutemyreferencedlambdaintegrationPermission020AA386": {
    "Type": "AWS::Lambda::Permission",
@@ -360,7 +438,13 @@
       ]
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "secondlambdafunction075D9D2B",
+    "secondlambdafunctionServiceRole23FEE383",
+    "thirdlambdafunctionF08420CD",
+    "thirdlambdafunctionServiceRole1CA82110"
+   ]
   },
   "testapigwv2addsubrouteintegrationGETthirdroute55217764": {
    "Type": "AWS::ApiGatewayV2::Route",
@@ -381,7 +465,13 @@
       ]
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "secondlambdafunction075D9D2B",
+    "secondlambdafunctionServiceRole23FEE383",
+    "thirdlambdafunctionF08420CD",
+    "thirdlambdafunctionServiceRole1CA82110"
+   ]
   },
   "testapigwv2addsubrouteintegrationGETthirdroutesubroutemyreferencedlambdaintegrationPermissionDE3E4E26": {
    "Type": "AWS::Lambda::Permission",
@@ -432,7 +522,13 @@
       ]
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "secondlambdafunction075D9D2B",
+    "secondlambdafunctionServiceRole23FEE383",
+    "thirdlambdafunctionF08420CD",
+    "thirdlambdafunctionServiceRole1CA82110"
+   ]
   },
   "testapigwv2addsubrouteintegrationGETthirdroutesubroute4E0397C0": {
    "Type": "AWS::ApiGatewayV2::Route",
@@ -453,7 +549,13 @@
       ]
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "secondlambdafunction075D9D2B",
+    "secondlambdafunctionServiceRole23FEE383",
+    "thirdlambdafunctionF08420CD",
+    "thirdlambdafunctionServiceRole1CA82110"
+   ]
   },
   "firstlambdafunctionServiceRoleC4FD6C93": {
    "Type": "AWS::IAM::Role",
@@ -499,7 +601,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "firstlambdafunctionServiceRoleC4FD6C93"
@@ -549,7 +651,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "secondlambdafunctionServiceRole23FEE383"
@@ -600,7 +702,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "thirdlambdafunctionServiceRole1CA82110"

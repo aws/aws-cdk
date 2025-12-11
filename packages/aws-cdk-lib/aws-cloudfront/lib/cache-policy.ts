@@ -1,4 +1,4 @@
-import { Construct, Node } from 'constructs';
+import { Construct } from 'constructs';
 import { CachePolicyReference, CfnCachePolicy, ICachePolicyRef } from './cloudfront.generated';
 import {
   Duration,
@@ -11,6 +11,7 @@ import {
   withResolved,
 } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { DetachedConstruct } from '../../core/lib/private/detached-construct';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -147,15 +148,14 @@ export class CachePolicy extends Resource implements ICachePolicy {
 
   /** Use an existing managed cache policy. */
   private static fromManagedCachePolicy(managedCachePolicyId: string): ICachePolicy {
-    return new class implements ICachePolicy {
-      public get node(): Node {
-        throw new UnscopedValidationError('The result of fromManagedCachePolicy can not be used in this API');
-      }
-
+    return new class extends DetachedConstruct implements ICachePolicy {
       public readonly cachePolicyId = managedCachePolicyId;
       public readonly cachePolicyRef = {
         cachePolicyId: managedCachePolicyId,
       };
+      constructor() {
+        super('The result of fromManagedCachePolicy can not be used in this API');
+      }
     }();
   }
 

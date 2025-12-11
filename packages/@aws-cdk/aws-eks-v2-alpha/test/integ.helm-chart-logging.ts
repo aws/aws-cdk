@@ -1,9 +1,9 @@
 /// !cdk-integ pragma:disable-update-workflow
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as eks from '../lib';
 import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
+import { App, Stack } from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as eks from '../lib';
 
 /**
  * Integration test for improved Helm chart error logging in aws-eks-v2-alpha

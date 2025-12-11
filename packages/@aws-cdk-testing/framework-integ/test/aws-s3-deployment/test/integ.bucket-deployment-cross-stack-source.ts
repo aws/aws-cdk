@@ -6,6 +6,11 @@ import { Construct } from 'constructs';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 
+/**
+ * Integration test for bucket deployment with cross-stack references:
+ * - Tests that Source.data() can use values from resources in other stacks
+ * - Validates that cross-stack token resolution works correctly
+ */
 class Stack2 extends Stack {
   userPool: UserPool;
 
@@ -21,7 +26,7 @@ class Stack1 extends Stack {
   constructor (scope: Construct, id: string, props: { userPool: UserPool }) {
     super(scope, id);
     this.bucket = new Bucket(this, 'bucket');
-    new BucketDeployment(this, 'XXXXXXXXXX', {
+    new BucketDeployment(this, 'DeployWithCrossStackSource', {
       destinationBucket: this.bucket,
       sources: [
         Source.data('test.txt', props.userPool.userPoolId),

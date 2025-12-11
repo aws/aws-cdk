@@ -9,7 +9,7 @@ import { toCloudFormation } from '../util';
 
 const TEST_HANDLER = `${__dirname}/mock-provider`;
 // current node runtime available in ALL AWS regions
-const DEFAULT_PROVIDER_RUNTIME = CustomResourceProviderRuntime.NODEJS_18_X;
+const DEFAULT_PROVIDER_RUNTIME = CustomResourceProviderRuntime.NODEJS_20_X;
 
 describe('custom resource provider', () => {
   describe('customize roles', () => {

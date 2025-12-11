@@ -1,8 +1,9 @@
 import { Match, Template } from '../../assertions';
 import { ArnPrincipal, PolicyDocument, PolicyStatement } from '../../aws-iam';
+import * as iam from '../../aws-iam';
 import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
-import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack, Tags } from '../../core';
+import { CfnDeletionPolicy, Fn, Lazy, RemovalPolicy, Stack, Tags } from '../../core';
 import {
   AttributeType, Billing, Capacity, GlobalSecondaryIndexPropsV2, TableV2,
   LocalSecondaryIndexProps, ProjectionType, StreamViewType, TableClass, TableEncryptionV2,
@@ -1253,6 +1254,49 @@ describe('table', () => {
       ],
     });
     Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
+  });
+});
+
+describe('grants', () => {
+  test('grantReadData with AccountRootPrincipal uses wildcard resources', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+    });
+
+    // WHEN
+    table.grantReadData(new iam.AccountRootPrincipal());
+
+    // THEN - Should create resource policy with wildcard to avoid circular dependency
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: Match.arrayWith([
+        Match.objectLike({
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: Match.arrayWith([
+                Match.objectLike({
+                  Action: [
+                    'dynamodb:BatchGetItem',
+                    'dynamodb:Query',
+                    'dynamodb:GetItem',
+                    'dynamodb:Scan',
+                    'dynamodb:ConditionCheckItem',
+                    'dynamodb:DescribeTable',
+                  ],
+                  Effect: 'Allow',
+                  Resource: '*', // Wildcard to avoid circular dependency
+                  Principal: Match.anyValue(), // AccountRootPrincipal
+                }),
+              ]),
+            },
+          },
+        }),
+      ]),
+    });
   });
 });
 
@@ -3416,6 +3460,99 @@ describe('MRSC global tables validation', () => {
   });
 });
 
+test('TableV2 addToResourcePolicy works with wildcard resources', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  table.addToResourcePolicy(new iam.PolicyStatement({
+    actions: ['dynamodb:GetItem', 'dynamodb:PutItem'],
+    principals: [new iam.AccountRootPrincipal()],
+    resources: ['*'], // Wildcard avoids circular dependency - same pattern as KMS
+  }));
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        Region: {
+          Ref: 'AWS::Region',
+        },
+        ResourcePolicy: {
+          PolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Principal: {
+                  AWS: Match.anyValue(),
+                },
+                Action: ['dynamodb:GetItem', 'dynamodb:PutItem'],
+                Resource: '*',
+              },
+            ],
+          },
+        },
+      },
+    ],
+  });
+});
+
+test('TableV2 addToResourcePolicy allows scoped ARN resources when table has explicit name', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'Stack');
+
+  // WHEN - Create table with explicit name (enables scoped resource policies)
+  const table = new TableV2(stack, 'Table', {
+    tableName: 'my-explicit-table-name', // Explicit name enables scoped ARN construction
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+  });
+
+  // With explicit table name, we can use scoped resources without circular dependency
+  table.addToResourcePolicy(new iam.PolicyStatement({
+    actions: ['dynamodb:GetItem', 'dynamodb:Query'],
+    principals: [new iam.AccountRootPrincipal()],
+    resources: [
+      // This works because table name is known at synthesis time
+      Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/my-explicit-table-name'),
+    ],
+  }));
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        Region: {
+          Ref: 'AWS::Region',
+        },
+        ResourcePolicy: {
+          PolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Principal: {
+                  AWS: Match.anyValue(),
+                },
+                Action: ['dynamodb:GetItem', 'dynamodb:Query'],
+                Resource: {
+                  'Fn::Sub': 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/my-explicit-table-name',
+                },
+              },
+            ],
+          },
+        },
+      },
+    ],
+  });
+});
+
 test('Contributor Insights Specification - tableV2', () => {
   const stack = new Stack();
 
@@ -3579,3 +3716,181 @@ test('ContributorInsightsSpecification && ContributorInsights - v2', () => {
   }).toThrow('`contributorInsightsSpecification` and `contributorInsights` are set. Use `contributorInsightsSpecification` only.');
 });
 
+test('can add GSI with multi-attribute partition keys', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  table.addGlobalSecondaryIndex({
+    indexName: 'GSI1',
+    partitionKeys: [
+      { name: 'gsi1pk1', type: AttributeType.STRING },
+      { name: 'gsi1pk2', type: AttributeType.NUMBER },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    AttributeDefinitions: [
+      { AttributeName: 'pk', AttributeType: 'S' },
+      { AttributeName: 'gsi1pk1', AttributeType: 'S' },
+      { AttributeName: 'gsi1pk2', AttributeType: 'N' },
+    ],
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'GSI1',
+        KeySchema: [
+          { AttributeName: 'gsi1pk1', KeyType: 'HASH' },
+          { AttributeName: 'gsi1pk2', KeyType: 'HASH' },
+        ],
+      },
+    ],
+  });
+});
+
+test('can add GSI with multi-attribute sort keys', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  table.addGlobalSecondaryIndex({
+    indexName: 'GSI1',
+    partitionKey: { name: 'gsi1pk', type: AttributeType.STRING },
+    sortKeys: [
+      { name: 'gsi1sk1', type: AttributeType.STRING },
+      { name: 'gsi1sk2', type: AttributeType.NUMBER },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'GSI1',
+        KeySchema: [
+          { AttributeName: 'gsi1pk', KeyType: 'HASH' },
+          { AttributeName: 'gsi1sk1', KeyType: 'RANGE' },
+          { AttributeName: 'gsi1sk2', KeyType: 'RANGE' },
+        ],
+      },
+    ],
+  });
+});
+
+test('throws when both partitionKey and partitionKeys defined', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    table.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      partitionKey: { name: 'gsi1pk', type: AttributeType.STRING },
+      partitionKeys: [{ name: 'gsi1pk2', type: AttributeType.NUMBER }],
+    });
+  }).toThrow('Exactly one of \'partitionKey\', \'partitionKeys\' must be specified');
+});
+
+test('throws when both sortKey and sortKeys defined', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    table.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      partitionKey: { name: 'gsi1pk', type: AttributeType.STRING },
+      sortKey: { name: 'gsi1sk', type: AttributeType.STRING },
+      sortKeys: [{ name: 'gsi1sk2', type: AttributeType.NUMBER }],
+    });
+  }).toThrow('At most one of \'sortKey\', \'sortKeys\' may be specified');
+});
+test('throws when more than 4 partition keys', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    table.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      partitionKeys: [
+        { name: 'pk1', type: AttributeType.STRING },
+        { name: 'pk2', type: AttributeType.STRING },
+        { name: 'pk3', type: AttributeType.STRING },
+        { name: 'pk4', type: AttributeType.STRING },
+        { name: 'pk5', type: AttributeType.STRING },
+      ],
+    });
+  }).toThrow('Maximum of 4 partition keys allowed');
+});
+
+test('throws when more than 4 sort keys', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    table.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      partitionKey: { name: 'gsi1pk', type: AttributeType.STRING },
+      sortKeys: [
+        { name: 'sk1', type: AttributeType.STRING },
+        { name: 'sk2', type: AttributeType.STRING },
+        { name: 'sk3', type: AttributeType.STRING },
+        { name: 'sk4', type: AttributeType.STRING },
+        { name: 'sk5', type: AttributeType.STRING },
+      ],
+    });
+  }).toThrow('Maximum of 4 sort keys allowed');
+});
+
+test('throws when no partition key specified', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    table.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      sortKey: { name: 'sk', type: AttributeType.STRING },
+    });
+  }).toThrow('Exactly one of \'partitionKey\', \'partitionKeys\' must be specified');
+});
+
+test('can add GSI with both multi-attribute partition and sort keys', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  table.addGlobalSecondaryIndex({
+    indexName: 'GSI1',
+    partitionKeys: [
+      { name: 'gsi1pk1', type: AttributeType.STRING },
+      { name: 'gsi1pk2', type: AttributeType.NUMBER },
+    ],
+    sortKeys: [
+      { name: 'gsi1sk1', type: AttributeType.STRING },
+      { name: 'gsi1sk2', type: AttributeType.BINARY },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'GSI1',
+        KeySchema: [
+          { AttributeName: 'gsi1pk1', KeyType: 'HASH' },
+          { AttributeName: 'gsi1pk2', KeyType: 'HASH' },
+          { AttributeName: 'gsi1sk1', KeyType: 'RANGE' },
+          { AttributeName: 'gsi1sk2', KeyType: 'RANGE' },
+        ],
+      },
+    ],
+  });
+});

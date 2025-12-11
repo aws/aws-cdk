@@ -637,7 +637,7 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
   /**
    * The secret attached to this cluster
    */
-  public abstract readonly secret?: secretsmanager.ISecret
+  public abstract readonly secret?: secretsmanager.ISecret;
 
   protected abstract enableDataApi?: boolean;
 
@@ -699,7 +699,6 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
       grantee,
       actions: DATA_API_ACTIONS,
       resourceArns: [this.clusterArn],
-      scope: this,
     });
     this.secret?.grantRead(grantee);
     return ret;

@@ -1,4 +1,3 @@
-/* eslint-disable import/order */
 // A not-so-fake filesystem mock similar to mock-fs
 //
 // mock-fs is super convenient but we can't always use it:
@@ -75,5 +74,9 @@ namespace bockfs {
     fs.removeSync(bockFsRoot);
   }
 }
+
+process.on('exit', () => {
+  fs.removeSync(bockFsRoot);
+});
 
 export = bockfs;
