@@ -768,6 +768,34 @@ declare const cluster: eks.Cluster;
 const clusterSecurityGroupId = cluster.clusterSecurityGroupId;
 ```
 
+## Service Accounts
+
+You can create service accounts with EKS Pod Identity for associating IAM roles with Kubernetes service accounts:
+
+```ts
+declare const cluster: eks.Cluster;
+
+// Basic service account with Pod Identity
+cluster.addServiceAccount('MyServiceAccount', {
+  identityType: eks.IdentityType.POD_IDENTITY,
+});
+```
+
+You can also specify a target role for role chaining scenarios:
+
+```ts
+declare const cluster: eks.Cluster;
+declare const targetRole: iam.Role;
+
+// Service account that assumes a target role
+cluster.addServiceAccount('ServiceAccountWithTargetRole', {
+  identityType: eks.IdentityType.POD_IDENTITY,
+  targetRole: targetRole,
+});
+```
+
+When `targetRole` is specified, EKS creates a service account role that can assume the target role. This enables cross-account access or role chaining within the same account.
+
 ## Applying Kubernetes Resources
 
 To apply kubernetes resource, kubectl provider needs to be created for the cluster. You can use `kubectlProviderOptions` to create the kubectl Provider.
