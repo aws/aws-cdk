@@ -83,6 +83,7 @@ export * as aws_dax from './aws-dax';
 export * as aws_deadline from './aws-deadline';
 export * as aws_detective from './aws-detective';
 export * as aws_devicefarm from './aws-devicefarm';
+export * as aws_devopsagent from './aws-devopsagent';
 export * as aws_devopsguru from './aws-devopsguru';
 export * as aws_directoryservice from './aws-directoryservice';
 export * as aws_dlm from './aws-dlm';

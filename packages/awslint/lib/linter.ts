@@ -238,7 +238,7 @@ export class Evaluation<T> {
   }
 }
 export interface Rule {
-  code: string,
+  code: string;
   message: string;
   warning?: boolean;
 }

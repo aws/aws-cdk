@@ -3,8 +3,8 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { AgentAlias } from '../../../bedrock/agents/agent-alias';
 import { IAgent } from '../../../bedrock/agents/agent';
+import { AgentAlias } from '../../../bedrock/agents/agent-alias';
 
 describe('AgentAlias', () => {
   let stack: Stack;

@@ -664,6 +664,8 @@ export class MariaDbEngineVersion {
 
   /** Version "11.8.3". */
   public static readonly VER_11_8_3 = MariaDbEngineVersion.of('11.8.3', '11.8');
+  /** Version "11.8.5". */
+  public static readonly VER_11_8_5 = MariaDbEngineVersion.of('11.8.5', '11.8');
 
   /**
    * Create a new MariaDbEngineVersion with an arbitrary version.

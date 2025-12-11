@@ -2,8 +2,8 @@
 
 exports[`can generate interface types into a separate module 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import { IEnvironmentAware } from "aws-cdk-lib/interfaces";
 import * as constructs from "constructs";
+import { IEnvironmentAware } from "aws-cdk-lib/interfaces/environment-aware";
 
 /**
  * Indicates that this resource can be referenced as a Resource.
@@ -72,6 +72,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnResource
+   */
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
 
   /**
@@ -226,6 +233,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   }
 
   /**
+   * Checks whether the given object is a CfnResource
+   */
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
+  }
+
+  /**
    * The identifier of the resource.
    */
   public id?: string;
@@ -377,6 +391,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   }
 
   /**
+   * Checks whether the given object is a CfnResource
+   */
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
+  }
+
+  /**
    * The identifier of the resource
    *
    * @cloudformationAttribute Id
@@ -516,6 +537,13 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnSomething
+   */
+  public static isCfnSomething(x: any): x is CfnSomething {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnSomething.CFN_RESOURCE_TYPE_NAME));
   }
 
   public static arnForSomething(resource: ISomethingRef): string {
@@ -673,6 +701,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     return ret;
   }
 
+  /**
+   * Checks whether the given object is a CfnResource
+   */
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
+  }
+
   public static arnForResource(resource: IResourceRef): string {
     return resource.resourceRef.resourceArn;
   }
@@ -826,6 +861,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnResource
+   */
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
 
   /**
@@ -987,6 +1029,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     return ret;
   }
 
+  /**
+   * Checks whether the given object is a CfnResource
+   */
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
+  }
+
   public static arnForResource(resource: IResourceRef): string {
     return resource.resourceRef.resourceArn;
   }
@@ -1131,6 +1180,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnResource
+   */
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
 
   /**
@@ -1282,6 +1338,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnResource
+   */
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
 
   /**
@@ -1469,6 +1532,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   }
 
   /**
+   * Checks whether the given object is a CfnResource
+   */
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
+  }
+
+  /**
    * Another identifier of the resource.
    */
   public anotherId?: string;
@@ -1635,6 +1705,13 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     }
     options.parser.handleAttributes(ret, resourceAttributes, id);
     return ret;
+  }
+
+  /**
+   * Checks whether the given object is a CfnResource
+   */
+  public static isCfnResource(x: any): x is CfnResource {
+    return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
 
   /**

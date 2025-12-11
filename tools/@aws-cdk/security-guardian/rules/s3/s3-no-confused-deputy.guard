@@ -1,0 +1,31 @@
+#
+#####################################
+##          S3 GUARD RULES          ##
+#####################################
+# Rule: S3_NO_CONFUSED_DEPUTY
+# Service: Amazon Simple Storage Service (S3)
+# Coverage: Confused Deputy
+
+let s3_bucket_policies = Resources.*[
+  Type == 'AWS::S3::BucketPolicy'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "S3_NO_CONFUSED_DEPUTY"
+]
+
+# S3 confused deputy protection
+rule S3_NO_CONFUSED_DEPUTY when %s3_bucket_policies !empty {
+    %s3_bucket_policies {
+        Properties.PolicyDocument.Statement[*] {
+            when Effect == "Allow" {
+                when Principal.Service exists {
+                    when Condition exists {
+                        Condition.StringEquals exists or
+                        Condition.StringLike exists or
+                        Condition.ArnEquals exists or
+                        Condition.ArnLike exists
+                    }
+                }
+            }
+        }
+    }
+}

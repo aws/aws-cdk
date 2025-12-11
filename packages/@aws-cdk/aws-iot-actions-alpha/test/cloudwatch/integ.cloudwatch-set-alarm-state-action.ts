@@ -1,6 +1,6 @@
-import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as iot from '@aws-cdk/aws-iot-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as actions from '../../lib';
 
 const app = new cdk.App();
