@@ -2,7 +2,7 @@
   "version": "48.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
-      "displayName": "VendedLogsTest/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "displayName": "VendedLogsMixinTest/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
       "source": {
         "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
         "packaging": "zip"
@@ -15,16 +15,16 @@
         }
       }
     },
-    "4fcc6dd684032b0ae7b632a3de55f21d10a0d584a5f3dd5e43ead675711014ac": {
-      "displayName": "VendedLogsTest Template",
+    "a25147b5f6bdce0150146e35923f7fb589205e140868690ed347d0d44e57c036": {
+      "displayName": "VendedLogsMixinTest Template",
       "source": {
-        "path": "VendedLogsTest.template.json",
+        "path": "VendedLogsMixinTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-5fbb96d1": {
+        "current_account-current_region-4958e8fa": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4fcc6dd684032b0ae7b632a3de55f21d10a0d584a5f3dd5e43ead675711014ac.json",
+          "objectKey": "a25147b5f6bdce0150146e35923f7fb589205e140868690ed347d0d44e57c036.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
