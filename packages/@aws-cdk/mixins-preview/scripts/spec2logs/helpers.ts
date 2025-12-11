@@ -9,9 +9,4 @@ class MixinsLogsDelivery extends ExternalModule {
   public readonly S3LogsDeliveryPermissionsVersion = $T(Type.fromName(this, 'S3LogsDeliveryPermissionsVersion'));
 }
 
-class CdkAwsLogs extends ExternalModule {
-  public readonly CfnDeliverySource = Type.fromName(this, 'CfnDeliverySource');
-}
-
 export const MIXINS_LOGS_DELIVERY = new MixinsLogsDelivery('@aws-cdk/mixins-preview/services/aws-logs');
-export const CDK_AWS_LOGS = new CdkAwsLogs('aws-cdk-lib/aws-logs');

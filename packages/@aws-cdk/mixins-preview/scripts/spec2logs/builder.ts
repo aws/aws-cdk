@@ -3,7 +3,7 @@ import { naming, util } from '@aws-cdk/spec2cdk';
 import { CDK_CORE, CDK_INTERFACES, CONSTRUCTS } from '@aws-cdk/spec2cdk/lib/cdk/cdk';
 import type { Method } from '@cdklabs/typewriter';
 import { Module, ExternalModule, ClassType, Stability, Type, expr, stmt, ThingSymbol, $this, CallableProxy, NewExpression, $E } from '@cdklabs/typewriter';
-import { CDK_AWS_LOGS, MIXINS_LOGS_DELIVERY } from './helpers';
+import { MIXINS_LOGS_DELIVERY } from './helpers';
 import type { ServiceSubmoduleProps, LocatedModule } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 import { BaseServiceSubmodule, relativeImportPath } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 import type { AddServiceProps, LibraryBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
@@ -72,7 +72,6 @@ export class LogsDeliveryBuilder extends LibraryBuilder<LogsDeliveryBuilderServi
     CDK_CORE.import(module, 'cdk');
     CDK_INTERFACES.import(module, 'interfaces');
     CONSTRUCTS.import(module, 'constructs');
-    CDK_AWS_LOGS.import(module, 'logs');
     MIXINS_CORE.import(module, 'core', { fromLocation: relativeImportPath(filePath, '../core') });
     MIXINS_LOGS_DELIVERY.import(module, 'logsDelivery', { fromLocation: '../aws-logs/logs-delivery' });
     submodule.constructLibModule.import(module, 'service');
@@ -304,7 +303,7 @@ class LogsMixin extends ClassType {
     const delivery = init.addParameter({
       name: 'logDelivery',
       type: MIXINS_LOGS_DELIVERY.ILogsDelivery,
-      documentation: 'Object in charge of setting up the delivery destination and delivery connection',
+      documentation: 'Object in charge of setting up the delivery source, delivery destination, and delivery connection',
     });
 
     init.addBody(
@@ -358,28 +357,13 @@ class LogsMixin extends ClassType {
     const sourceArn = expr.ident('sourceArn');
     const arnBuilder = $E(expr.sym(this.resourceType.symbol!)).callMethod(`arnFor${this.resource.name}`, resource);
 
-    const prefix = `${this.resource.name}Source-`;
-    const newCfnDeliverySource = CDK_AWS_LOGS.CfnDeliverySource.newInstance(
-      resource,
-      expr.strConcat(expr.str('CdkSource'), CDK_CORE.uniqueId(resource)),
-      expr.object({
-        name: expr.strConcat(expr.str(prefix), CDK_CORE.uniqueResourceName(resource, expr.object({
-          maxLength: expr.binOp(expr.num(60 - (prefix.length + 1)), '-', $this.logType.prop('length')),
-        })), expr.str('-'), $this.logType),
-        resourceArn: sourceArn,
-        logType: $this.logType,
-      }),
-    );
-    const deliverySource = expr.ident('deliverySource');
-
     method.addBody(
       stmt
         .if_(expr.not(CallableProxy.fromMethod(supports).invoke(resource)))
         .then(stmt.block(stmt.ret(resource))),
 
       stmt.constVar(sourceArn, arnBuilder),
-      stmt.constVar(deliverySource, newCfnDeliverySource),
-      $this.logDelivery.callMethod('bind', resource, deliverySource, sourceArn),
+      $this.logDelivery.callMethod('bind', resource, $this.logType, sourceArn),
 
       stmt.ret(resource),
     );

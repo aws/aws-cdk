@@ -1,9 +1,7 @@
 import * as cdk from 'aws-cdk-lib/core';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
-import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
+import * as events from 'aws-cdk-lib/aws-events';
 import { LogGroupLogsDelivery } from '../../../lib/services/aws-logs/logs-delivery';
 
 const app = new cdk.App();
@@ -11,22 +9,15 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'VendedLogsMultiplesTest');
 
 // Source Resource
-const cloudfrontBucket = new s3.Bucket(stack, 'OriginBucket', {
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
-  autoDeleteObjects: true,
-});
-const distribution = new cloudfront.Distribution(stack, 'Distribution', {
-  defaultBehavior: {
-    origin: origins.S3BucketOrigin.withOriginAccessControl(cloudfrontBucket),
+const eventBus = new events.CfnEventBus(stack, 'EventBus', {
+  name: 'vended-logs-mixin-event-bus',
+  logConfig: {
+    includeDetail: 'NONE',
+    level: 'ERROR',
   },
 });
 
-// Delivery Source
-const deliverySource = new logs.CfnDeliverySource(stack, 'CloudFrontSource', {
-  name: `delivery-source-${distribution.distributionId}-ACCESS_LOGS`,
-  resourceArn: distribution.distributionArn,
-  logType: 'ACCESS_LOGS',
-});
+const logType = 'ERROR_LOGS';
 
 // Destinations
 const destinationLogGroupA = new logs.LogGroup(stack, 'DeliveryLogGroupA', {
@@ -37,12 +28,10 @@ const destinationLogGroupB = new logs.LogGroup(stack, 'DeliveryLogGroupB', {
 });
 
 // Setup deliveries
-const one = new LogGroupLogsDelivery(destinationLogGroupA).bind(stack, deliverySource, distribution.distributionArn);
-const two = new LogGroupLogsDelivery(destinationLogGroupB).bind(stack, deliverySource, distribution.distributionArn);
+const first = new LogGroupLogsDelivery(destinationLogGroupA).bind(stack, logType, eventBus.attrArn);
+const second = new LogGroupLogsDelivery(destinationLogGroupB).bind(stack, logType, eventBus.attrArn);
 
-// // There's issues with multiple Logs::Delivery resources bing deployed in parallel
-// // let's ensure they wait for each other for now
-two.delivery.node.addDependency(one.delivery);
+second.delivery.node.addDependency(first.delivery);
 
 new integ.IntegTest(app, 'DeliveryTest', {
   testCases: [stack],
