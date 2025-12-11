@@ -535,6 +535,23 @@ When directly constructing the `KeySigningKey` resource, enabling DNSSEC signing
 zone will be need to be done explicitly (either using the `CfnDNSSEC` construct or via another
 means).
 
+## Accelerated Recovery
+
+Accelerated recovery is a feature that provides a 60-minute Recovery Time Objective (RTO) for
+public hosted zones during service disruptions in the US East (N. Virginia) Region.
+When enabled, Route 53 maintains a copy of your public hosted zone in the US West (Oregon) Region and automatically redirects control plane operations during impairment.
+
+This feature is only available for public hosted zones.
+
+```ts
+new route53.PublicHostedZone(this, 'HostedZone', {
+  zoneName: 'example.com',
+  acceleratedRecoveryEnabled: true,
+});
+```
+
+For more information, see [Enabling accelerated recovery for managing public DNS records](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/accelerated-recovery.html).
+
 ## Imports
 
 If you don't know the ID of the Hosted Zone to import, you can use the
