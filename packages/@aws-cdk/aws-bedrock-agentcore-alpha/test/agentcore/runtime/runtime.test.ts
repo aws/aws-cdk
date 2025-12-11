@@ -7,12 +7,13 @@ import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import { RuntimeNetworkConfiguration } from '../../../lib/network/network-configuration';
 import { Runtime } from '../../../lib/runtime/runtime';
-import { RuntimeEndpoint } from '../../../lib/runtime/runtime-endpoint';
 import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
 import { RuntimeAuthorizerConfiguration } from '../../../lib/runtime/runtime-authorizer-configuration';
-import { RuntimeNetworkConfiguration } from '../../../lib/network/network-configuration';
+import { RuntimeEndpoint } from '../../../lib/runtime/runtime-endpoint';
 import {
   ProtocolType,
 } from '../../../lib/runtime/types';
@@ -1500,6 +1501,291 @@ describe('Runtime description validation tests', () => {
         description: 'Valid description for the runtime',
       });
     }).not.toThrow();
+  });
+});
+
+describe('Runtime grantInvokeRuntime permission tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let repository: ecr.Repository;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+  let runtime: Runtime;
+  let granteeRole: iam.Role;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+
+    runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime_grant',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    granteeRole = new iam.Role(stack, 'GranteeRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+  });
+
+  test('Should grant InvokeAgentRuntime permission with grantInvokeRuntime', () => {
+    runtime.grantInvokeRuntime(granteeRole);
+
+    const template = Template.fromStack(stack);
+
+    // Verify that a policy is created with the correct permission
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:InvokeAgentRuntime',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  Match.stringLikeRegexp('testruntime.*'),
+                  'AgentRuntimeArn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        Match.stringLikeRegexp('testruntime.*'),
+                        'AgentRuntimeArn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should grant InvokeAgentRuntimeForUser permission with grantInvokeRuntimeForUser', () => {
+    runtime.grantInvokeRuntimeForUser(granteeRole);
+
+    const template = Template.fromStack(stack);
+
+    // Verify that a policy is created with the correct permission
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:InvokeAgentRuntimeForUser',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  Match.stringLikeRegexp('testruntime.*'),
+                  'AgentRuntimeArn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        Match.stringLikeRegexp('testruntime.*'),
+                        'AgentRuntimeArn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should grant both permissions with grantInvoke', () => {
+    runtime.grantInvoke(granteeRole);
+
+    const template = Template.fromStack(stack);
+
+    // Verify that a policy is created with both permissions
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: [
+              'bedrock-agentcore:InvokeAgentRuntime',
+              'bedrock-agentcore:InvokeAgentRuntimeForUser',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  Match.stringLikeRegexp('testruntime.*'),
+                  'AgentRuntimeArn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        Match.stringLikeRegexp('testruntime.*'),
+                        'AgentRuntimeArn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should attach policy to grantee role', () => {
+    runtime.grantInvokeRuntime(granteeRole);
+
+    const template = Template.fromStack(stack);
+
+    // Verify that the policy is attached to the grantee role
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      Roles: [
+        {
+          Ref: Match.stringLikeRegexp('GranteeRole.*'),
+        },
+      ],
+    });
+  });
+
+  test('Should work with imported runtime', () => {
+    const importedRuntime = Runtime.fromAgentRuntimeAttributes(stack, 'ImportedRuntime', {
+      agentRuntimeArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id',
+      agentRuntimeId: 'test-runtime-id',
+      agentRuntimeName: 'test-runtime',
+      roleArn: 'arn:aws:iam::123456789012:role/test-role',
+      agentRuntimeVersion: '1',
+    });
+
+    importedRuntime.grantInvokeRuntime(granteeRole);
+
+    const template = Template.fromStack(stack);
+
+    // Verify that a policy is created for the imported runtime
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:InvokeAgentRuntime',
+            Effect: 'Allow',
+            Resource: [
+              'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id',
+              'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id/*',
+            ],
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should grant to Lambda function', () => {
+    const lambdaFunction = new lambda.Function(stack, 'TestLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): pass'),
+    });
+
+    runtime.grantInvokeRuntime(lambdaFunction);
+
+    const template = Template.fromStack(stack);
+
+    // Verify that the Lambda function's role has the permission
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:InvokeAgentRuntime',
+            Effect: 'Allow',
+          }),
+        ]),
+      },
+      Roles: [
+        {
+          Ref: Match.stringLikeRegexp('TestLambdaServiceRole.*'),
+        },
+      ],
+    });
+  });
+
+  test('Should grant multiple permissions to same role', () => {
+    runtime.grantInvokeRuntime(granteeRole);
+    runtime.grantInvokeRuntimeForUser(granteeRole);
+
+    const template = Template.fromStack(stack);
+
+    // Should have two separate policies
+    template.resourceCountIs('AWS::IAM::Policy', 2);
+  });
+
+  test('Should return Grant object with success', () => {
+    const grant = runtime.grantInvokeRuntime(granteeRole);
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+    expect(grant.principalStatement).toBeDefined();
+  });
+
+  test('Should work with runtime that has custom execution role', () => {
+    const customRole = new iam.Role(stack, 'CustomExecutionRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+    });
+
+    const customRuntime = new Runtime(stack, 'custom-runtime', {
+      runtimeName: 'custom_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      executionRole: customRole,
+    });
+
+    const lambdaRole = new iam.Role(stack, 'LambdaRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    customRuntime.grantInvokeRuntime(lambdaRole);
+
+    const template = Template.fromStack(stack);
+
+    // Verify policy is created for the lambda role
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:InvokeAgentRuntime',
+            Effect: 'Allow',
+          }),
+        ]),
+      },
+      Roles: [
+        {
+          Ref: Match.stringLikeRegexp('LambdaRole.*'),
+        },
+      ],
+    });
   });
 });
 
