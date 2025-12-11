@@ -58,8 +58,10 @@ jobs:
       # Build @aws-cdk/spec2cdk and run L1 gen script to generate base files for new modules
       - name: Build @aws-cdk/spec2cdk
         run: lerna run build --stream --no-progress --skip-nx-cache --scope @aws-cdk/spec2cdk
-      - name: Generate code
+      - name: Generate L1s
+        working-directory: packages/aws-cdk-lib
         run: yarn gen
+      - name: Generate code
         run: lerna run gen --stream --no-progress --skip-nx-cache --scope aws-cdk-lib --scope @aws-cdk/mixins-preview
 
       # Next, create and upload the changes as a patch file. This will later be downloaded to create a pull request
