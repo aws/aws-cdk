@@ -537,9 +537,8 @@ means).
 
 ## Accelerated Recovery
 
-Accelerated recovery is a feature that provides a 60-minute Recovery Time Objective (RTO) for
-public hosted zones during service disruptions in the US East (N. Virginia) Region.
-When enabled, Route 53 maintains a copy of your public hosted zone in the US West (Oregon) Region and automatically redirects control plane operations during impairment.
+Route 53 accelerated recovery for managing public DNS records is designed to achieve a 60-minute Recovery Time Objective (RTO) in the event of service unavailability in the US East (N. Virginia) Region.
+When enabled on a Route 53 public hosted zone, you will be able to resume making changes to DNS records in the public hosted zone within approximately 60 minutes after AWS detects that operations in the US East (N. Virginia) Region are impaired.
 
 This feature is only available for public hosted zones.
 
