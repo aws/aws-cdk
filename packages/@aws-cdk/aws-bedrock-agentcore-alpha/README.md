@@ -249,6 +249,41 @@ const runtimeInstance = new agentcore.Runtime(this, "MyAgentRuntime", {
 });
 ```
 
+#### Option 4: Use an ECR container image URI
+
+Reference an ECR container image directly by its URI. This is useful when you have a pre-existing ECR image URI from CloudFormation parameters or cross-stack references. No IAM permissions are automatically granted - you must ensure the runtime has ECR pull permissions.
+
+```typescript fixture=default
+// Direct URI reference
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromImageUri(
+  "123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:v1.0.0"
+);
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+});
+```
+
+You can also use CloudFormation parameters or references:
+
+```typescript fixture=default
+// Using a CloudFormation parameter
+const imageUriParam = new cdk.CfnParameter(this, "ImageUri", {
+  type: "String",
+  description: "Container image URI for the agent runtime",
+});
+
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromImageUri(
+  imageUriParam.valueAsString
+);
+
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+});
+```
+
 ### Granting Permissions to Invoke Bedrock Models or Inference Profiles
 
 To grant the runtime permissions to invoke Bedrock models or inference profiles:
@@ -578,6 +613,54 @@ runtime.connections.allowTo(databaseSecurityGroup, ec2.Port.tcp(5432), 'Allow Po
 
 // Allow outbound HTTPS to anywhere (for external API calls)
 runtime.connections.allowToAnyIpv4(ec2.Port.tcp(443), 'Allow HTTPS outbound');
+```
+
+### Runtime IAM Permissions
+
+The Runtime construct provides convenient methods for granting IAM permissions to principals that need to invoke the runtime or manage its execution role.
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+// Create a runtime
+const runtime = new agentcore.Runtime(this, "MyRuntime", {
+  runtimeName: "my_runtime",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+});
+
+// Create a Lambda function that needs to invoke the runtime
+const invokerFunction = new lambda.Function(this, "InvokerFunction", {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+import boto3
+def handler(event, context):
+    client = boto3.client('bedrock-agentcore')
+    # Invoke the runtime...
+  `),
+});
+
+// Grant permission to invoke the runtime directly
+runtime.grantInvokeRuntime(invokerFunction);
+
+// Grant permission to invoke the runtime on behalf of a user
+// (requires X-Amzn-Bedrock-AgentCore-Runtime-User-Id header)
+runtime.grantInvokeRuntimeForUser(invokerFunction);
+
+// Grant both invoke permissions (most common use case)
+runtime.grantInvoke(invokerFunction);
+
+// Grant specific custom permissions to the runtime's execution role
+runtime.grant(['bedrock:InvokeModel'], ['arn:aws:bedrock:*:*:*']);
+
+// Add a policy statement to the runtime's execution role
+runtime.addToRolePolicy(new iam.PolicyStatement({
+  actions: ['s3:GetObject'],
+  resources: ['arn:aws:s3:::my-bucket/*'],
+}));
 ```
 
 ### Other configuration

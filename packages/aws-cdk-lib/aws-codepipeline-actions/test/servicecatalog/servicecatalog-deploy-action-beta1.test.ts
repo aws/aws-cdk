@@ -4,7 +4,7 @@ import * as codepipeline from '../../../aws-codepipeline';
 import { Stack } from '../../../core';
 import * as cpactions from '../../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('ServiceCatalog Deploy Action', () => {
   test('addAction succesfully leads to creation of codepipeline service catalog action with properly formatted TemplateFilePath', () => {

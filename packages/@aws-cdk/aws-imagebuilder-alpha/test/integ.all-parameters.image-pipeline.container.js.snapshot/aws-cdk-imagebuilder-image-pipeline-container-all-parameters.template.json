@@ -1,0 +1,1095 @@
+{
+ "Resources": {
+  "Repository22E53BBD": {
+   "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "EmptyOnDelete": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ScanningRepositoryB9C9B705": {
+   "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "EmptyOnDelete": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ExecutionRole605A040B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "imagebuilder.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ExecutionRoleDefaultPolicyA5B92313": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ImageLogGroupD34F5836",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "ImagePipelineLogGroup7E475C9B",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "ec2:RegisterImage",
+       "Condition": {
+        "StringEquals": {
+         "aws:RequestTag/CreatedBy": "EC2 Image Builder"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ec2:*::image/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "ec2:ModifySnapshotAttribute",
+        "ec2:RegisterImage"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "ec2:ResourceTag/CreatedBy": "EC2 Image Builder"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ec2:*::snapshot/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ec2:RunInstances",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ec2:*:*:key-pair/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ec2:*:*:launch-template/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ec2:*:*:network-interface/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ec2:*:*:security-group/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ec2:*:*:subnet/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ec2:*::image/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ec2:*::snapshot/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":license-manager:*:*:license-configuration:*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "ec2:RunInstances",
+       "Condition": {
+        "StringEquals": {
+         "aws:RequestTag/CreatedBy": [
+          "EC2 Image Builder",
+          "EC2 Fast Launch"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ec2:*:*:instance/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ec2:*:*:volume/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "iam:PassRole",
+       "Condition": {
+        "StringEquals": {
+         "iam:PassedToService": [
+          "ec2.amazonaws.com",
+          "ec2.amazonaws.com.cn",
+          "vmie.amazonaws.com"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "ec2:StartInstances",
+        "ec2:StopInstances",
+        "ec2:TerminateInstances"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "ec2:ResourceTag/CreatedBy": "EC2 Image Builder"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "ec2:CopyImage",
+        "ec2:CreateImage",
+        "ec2:CreateLaunchTemplate",
+        "ec2:DeregisterImage",
+        "ec2:DescribeHosts",
+        "ec2:DescribeImages",
+        "ec2:DescribeImportImageTasks",
+        "ec2:DescribeInstanceAttribute",
+        "ec2:DescribeInstanceStatus",
+        "ec2:DescribeInstanceTypeOfferings",
+        "ec2:DescribeInstanceTypes",
+        "ec2:DescribeInstances",
+        "ec2:DescribeSnapshots",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeTags",
+        "ec2:ModifyImageAttribute",
+        "inspector2:ListCoverage",
+        "inspector2:ListFindings",
+        "ssm:AddTagsToResource",
+        "ssm:DescribeAssociationExecutions",
+        "ssm:DescribeInstanceAssociationsStatus",
+        "ssm:DescribeInstanceInformation",
+        "ssm:GetCommandInvocation",
+        "ssm:ListCommandInvocations",
+        "ssm:ListCommands",
+        "ssm:ListInventoryEntries"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "ec2:CreateTags",
+       "Condition": {
+        "StringEquals": {
+         "ec2:CreateAction": [
+          "RunInstances",
+          "CreateImage"
+         ],
+         "aws:RequestTag/CreatedBy": [
+          "EC2 Image Builder",
+          "EC2 Fast Launch"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "ec2:CreateTags",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ec2:*:*:export-image-task/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ec2:*::image/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "ec2:CreateTags",
+       "Condition": {
+        "StringEquals": {
+         "aws:RequestTag/CreatedBy": [
+          "EC2 Image Builder",
+          "EC2 Fast Launch"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ec2:*:*:launch-template/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ec2:*::snapshot/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":sns:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ssm:SendCommand",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ssm:*:*:document/AWS-RunPowerShellScript"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ssm:*:*:document/AWS-RunShellScript"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ssm:*:*:document/AWSEC2-RunSysprep"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "ssm:SendCommand",
+       "Condition": {
+        "StringEquals": {
+         "ssm:resourceTag/CreatedBy": [
+          "EC2 Image Builder"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ec2:*:*:instance/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "ssm:CreateAssociation",
+        "ssm:DeleteAssociation"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ec2:*:*:instance/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ssm:*:*:association/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ssm:*:*:document/AWS-GatherSoftwareInventory"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:GenerateDataKeyWithoutPlaintext",
+        "kms:ReEncryptFrom",
+        "kms:ReEncryptTo"
+       ],
+       "Condition": {
+        "ForAllValues:StringEquals": {
+         "kms:EncryptionContextKeys": [
+          "aws:ebs:id"
+         ]
+        },
+        "StringLike": {
+         "kms:ViaService": [
+          "ec2.*.amazonaws.com"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "kms:DescribeKey",
+       "Condition": {
+        "StringLike": {
+         "kms:ViaService": [
+          "ec2.*.amazonaws.com"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "kms:CreateGrant",
+       "Condition": {
+        "Bool": {
+         "kms:GrantIsForAWSResource": true
+        },
+        "StringLike": {
+         "kms:ViaService": [
+          "ec2.*.amazonaws.com"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":logs:*:*:log-group:/aws/imagebuilder/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "iam:CreateServiceLinkedRole",
+       "Condition": {
+        "StringEquals": {
+         "iam:AWSServiceName": [
+          "ssm.amazonaws.com"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "events:DeleteRule",
+        "events:DescribeRule",
+        "events:PutRule",
+        "events:PutTargets",
+        "events:RemoveTargets"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":events:*:*:rule/ImageBuilder-*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "ssm:GetParameter",
+        "ssm:PutParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:*:*:parameter/imagebuilder/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ssm:GetParameter",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:*::parameter/aws/service/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ecr:CreateRepository",
+       "Condition": {
+        "StringEquals": {
+         "aws:RequestTag/CreatedBy": "EC2 Image Builder"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "ecr:TagResource",
+       "Condition": {
+        "StringEquals": {
+         "aws:RequestTag/CreatedBy": "EC2 Image Builder"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecr:*:*:repository/image-builder-*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ecr:BatchDeleteImage",
+       "Condition": {
+        "StringEquals": {
+         "ecr:ResourceTag/CreatedBy": "EC2 Image Builder"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecr:*:*:repository/image-builder-*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ExecutionRoleDefaultPolicyA5B92313",
+    "Roles": [
+     {
+      "Ref": "ExecutionRole605A040B"
+     }
+    ]
+   }
+  },
+  "ImageLogGroupD34F5836": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ImagePipelineLogGroup7E475C9B": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "InfrastructureConfigurationInstanceProfileRole3AFA1533": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonSSMManagedInstanceCore"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/EC2InstanceProfileForImageBuilder"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/EC2InstanceProfileForImageBuilderECRContainerBuilds"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "InfrastructureConfigurationInstanceProfile8FD9235B": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "InfrastructureConfigurationInstanceProfileRole3AFA1533"
+     }
+    ]
+   }
+  },
+  "InfrastructureConfiguration86C7777D": {
+   "Type": "AWS::ImageBuilder::InfrastructureConfiguration",
+   "Properties": {
+    "InstanceMetadataOptions": {
+     "HttpPutResponseHopLimit": 2,
+     "HttpTokens": "required"
+    },
+    "InstanceProfileName": {
+     "Ref": "InfrastructureConfigurationInstanceProfile8FD9235B"
+    },
+    "Name": "aws-cdk-imagebuilder-image-pipeline-container-all-parameters-infrastructureconfiguration-25b197bb"
+   }
+  },
+  "ContainerRecipe8A7CC9ED": {
+   "Type": "AWS::ImageBuilder::ContainerRecipe",
+   "Properties": {
+    "Components": [
+     {
+      "ComponentArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":imagebuilder:",
+         {
+          "Ref": "AWS::Region"
+         },
+         ":aws:component/hello-world-linux/x.x.x"
+        ]
+       ]
+      }
+     }
+    ],
+    "ContainerType": "DOCKER",
+    "DockerfileTemplateData": "FROM {{{ imagebuilder:parentImage }}}\n{{{ imagebuilder:environments }}}\n{{{ imagebuilder:components }}}",
+    "Name": "aws-cdk-imagebuilder-image-pipeline-container-all-parameters-containerrecipe-703c2596",
+    "ParentImage": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":imagebuilder:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":aws:image/amazon-linux-2023-x86-2023/x.x.x"
+      ]
+     ]
+    },
+    "TargetRepository": {
+     "RepositoryName": {
+      "Ref": "Repository22E53BBD"
+     },
+     "Service": "ECR"
+    },
+    "Version": "1.0.x"
+   }
+  },
+  "ContainerDistributionConfiguration18609EDB": {
+   "Type": "AWS::ImageBuilder::DistributionConfiguration",
+   "Properties": {
+    "Distributions": [
+     {
+      "ContainerDistributionConfiguration": {
+       "TargetRepository": {
+        "RepositoryName": {
+         "Ref": "Repository22E53BBD"
+        },
+        "Service": "ECR"
+       }
+      },
+      "Region": {
+       "Ref": "AWS::Region"
+      }
+     }
+    ],
+    "Name": "aws-cdk-imagebuilder-image-pipeline-container-all-parameters-containerdistributionconfiguration-4e4b61cf"
+   }
+  },
+  "ImagePipelineContainer507B5032": {
+   "Type": "AWS::ImageBuilder::ImagePipeline",
+   "Properties": {
+    "ContainerRecipeArn": {
+     "Fn::GetAtt": [
+      "ContainerRecipe8A7CC9ED",
+      "Arn"
+     ]
+    },
+    "DistributionConfigurationArn": {
+     "Fn::GetAtt": [
+      "ContainerDistributionConfiguration18609EDB",
+      "Arn"
+     ]
+    },
+    "EnhancedImageMetadataEnabled": false,
+    "ExecutionRole": {
+     "Fn::GetAtt": [
+      "ExecutionRole605A040B",
+      "Arn"
+     ]
+    },
+    "ImageScanningConfiguration": {
+     "EcrConfiguration": {
+      "ContainerTags": [
+       "latest-scan"
+      ],
+      "RepositoryName": {
+       "Ref": "ScanningRepositoryB9C9B705"
+      }
+     },
+     "ImageScanningEnabled": true
+    },
+    "ImageTestsConfiguration": {
+     "ImageTestsEnabled": true
+    },
+    "InfrastructureConfigurationArn": {
+     "Fn::GetAtt": [
+      "InfrastructureConfiguration86C7777D",
+      "Arn"
+     ]
+    },
+    "LoggingConfiguration": {
+     "ImageLogGroupName": {
+      "Ref": "ImageLogGroupD34F5836"
+     },
+     "PipelineLogGroupName": {
+      "Ref": "ImagePipelineLogGroup7E475C9B"
+     }
+    },
+    "Name": "test-container-image-pipeline",
+    "Schedule": {
+     "AutoDisablePolicy": {
+      "FailureCount": 5
+     },
+     "PipelineExecutionStartCondition": "EXPRESSION_MATCH_AND_DEPENDENCY_UPDATES_AVAILABLE",
+     "ScheduleExpression": "rate(7 days)"
+    },
+    "Status": "DISABLED",
+    "Tags": {
+     "key1": "value1",
+     "key2": "value2"
+    },
+    "Workflows": [
+     {
+      "WorkflowArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":imagebuilder:",
+         {
+          "Ref": "AWS::Region"
+         },
+         ":aws:workflow/build/build-container/x.x.x"
+        ]
+       ]
+      }
+     },
+     {
+      "WorkflowArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":imagebuilder:",
+         {
+          "Ref": "AWS::Region"
+         },
+         ":aws:workflow/test/test-container/x.x.x"
+        ]
+       ]
+      }
+     },
+     {
+      "WorkflowArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":imagebuilder:",
+         {
+          "Ref": "AWS::Region"
+         },
+         ":aws:workflow/distribution/distribute-container/x.x.x"
+        ]
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "ImagePipelineContainerImageBuildSuccessTriggerRuleFC549F96": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "source": [
+      "aws.imagebuilder"
+     ]
+    },
+    "State": "ENABLED"
+   }
+  },
+  "ImagePipelineContainerImagePipelineAutoDisabledTriggerRule567551D9": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "detail-type": [
+      "EC2 Image Builder Image Pipeline Automatically Disabled"
+     ],
+     "resources": [
+      {
+       "Fn::GetAtt": [
+        "ImagePipelineContainer507B5032",
+        "Arn"
+       ]
+      }
+     ],
+     "source": [
+      "aws.imagebuilder"
+     ]
+    },
+    "State": "ENABLED"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
