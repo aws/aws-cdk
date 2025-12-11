@@ -2672,7 +2672,7 @@ const expectedExecutionRolePolicy = {
     ],
   },
 };
-// Tests for optional physical names (issue #36341)
+
 describe('Runtime Optional Physical Names', () => {
   let stack: cdk.Stack;
   let agentRuntimeArtifact: AgentRuntimeArtifact;

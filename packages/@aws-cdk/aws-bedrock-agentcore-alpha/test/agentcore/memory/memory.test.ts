@@ -2069,7 +2069,7 @@ describe('Memory with custom execution role and strategies tests', () => {
     expect(memory.kmsKey?.keyArn).toBeDefined();
   });
 });
-// Tests for optional physical names (issue #36341)
+
 describe('Memory Optional Physical Names', () => {
   let stack: cdk.Stack;
 

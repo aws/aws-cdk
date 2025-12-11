@@ -985,7 +985,6 @@ describe('CodeInterpreterCustom execution role edge cases', () => {
   });
 });
 
-// Tests for optional physical names (issue #36341)
 describe('CodeInterpreter Optional Physical Names', () => {
   let stack: cdk.Stack;
 

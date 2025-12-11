@@ -1579,7 +1579,7 @@ describe('BrowserCustom browser signing configuration tests', () => {
     });
   });
 });
-// Tests for optional physical names (issue #36341)
+
 describe('Browser Optional Physical Names', () => {
   let stack: cdk.Stack;
 

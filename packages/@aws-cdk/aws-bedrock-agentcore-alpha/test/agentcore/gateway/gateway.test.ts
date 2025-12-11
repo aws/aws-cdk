@@ -2308,7 +2308,6 @@ describe('MCP Server Target Configuration Tests', () => {
   });
 });
 
-// Tests for optional physical names (issue #36341)
 describe('Optional Physical Names', () => {
   let stack: cdk.Stack;
 
