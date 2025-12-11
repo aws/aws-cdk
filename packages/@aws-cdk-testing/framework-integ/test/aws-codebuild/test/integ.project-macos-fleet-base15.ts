@@ -14,10 +14,10 @@ import * as codebuild from 'aws-cdk-lib/aws-codebuild';
  */
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-project-macos');
+const stack = new cdk.Stack(app, 'aws-cdk-project-macos-base15');
 
 const fleet = new codebuild.Fleet(stack, 'MacOsFleet', {
-  fleetName: 'MacOsFleet',
+  fleetName: 'MacOsFleet15',
   baseCapacity: 1,
   computeType: codebuild.FleetComputeType.MEDIUM,
   environmentType: codebuild.EnvironmentType.MAC_ARM,
@@ -32,7 +32,7 @@ const project = new codebuild.Project(stack, 'MacOsProject', {
   }),
   environment: {
     fleet,
-    buildImage: codebuild.MacBuildImage.BASE_14,
+    buildImage: codebuild.MacBuildImage.BASE_15,
     computeType: codebuild.ComputeType.MEDIUM,
   },
 });
