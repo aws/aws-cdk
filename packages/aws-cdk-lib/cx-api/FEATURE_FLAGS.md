@@ -2080,7 +2080,6 @@ the two versions.
 **Compatibility with old behavior:** Disable the feature flag to use getAtt references for VPC V2 migration
 
 
-<<<<<<< HEAD
 ### @aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway
 
 *When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC.*
@@ -2312,6 +2311,4 @@ of the deprecated `CloudFrontWebDistribution` construct.
 **Compatibility with old behavior:** Define a `CloudFrontWebDistribution` explicitly
 
 
-=======
->>>>>>> b33aadd2f9 (commit auto-generated files)
 <!-- END details -->
