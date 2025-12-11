@@ -334,24 +334,48 @@ expanding its surface area. It also allows the **Key** class to change its
 behavior (i.e. add an IAM action to enable encryption of certain types of keys)
 without affecting the API of the consumer.
 
-#### Owned vs. Unowned Constructs
+#### What type to use to accept other constructs (resources) as parameters
 
 Using object references instead of attribute references provides a richer API,
-but also introduces an inherent challenge: how do we reference constructs that
-are not defined inside the same app (“**owned**” by the app)? These could be
-resources that were created by some other AWS CDK app, via the AWS console,
-etc. We call these **“unowned” constructs.**
+but also introduces an inherent challenge: there are different types of classes
+that represent different flavors of a resource with different capabilities:
 
-In order to model this concept of owned and unowned constructs, all constructs
+- Is it an L1?
+- Is it an AWS-written L2?
+- Is it an Enterprise-customer written L2?
+- Is it perhaps not an **owned resource** but a **referenced resource** (i.e.,
+  is it a resource created and managed by CloudFormation, or does it already
+  exist in the account as something immutable we are only allowed to point to
+  but not change).
+
+To accept an as wide array as possible of type of input resource objects, your
+constructs should pose as little requirements on its parameters as possible. To
+that end, we prefer accepting **interfaces** over **classes**, and interfaces
+with **fewer members** over interfaces with **more members**. "Fewer members"
+means "fewer requirements", so easier to implement on a lot of classes!
+Unfortunately, it also means fewer guarantees, so pick your interface type
+according to what plan to do with the input construct.
+
+Here are your choices, from most preferred to least preferred.
+
+| Name | Example | When to use |
+|-----|----------|-----------|
+| Reference interface | `IBucketRef` | A resource of a certain type, that you can only reference. You can get its name or ARN. |
+| L2 interface | `IBucket` | A resource of a certain type with convenience functions and additional attributes. Usually read-only, sometimes mutable. May or may not be "owned" (part of a Stack we are deploying) |
+| L2 Resource construct | `Bucket` | A resource that is part of a Stack we are deploying. Has convenience functions and additional attributes, can be mutated. |
+
+Given the examples above, if you write a construct to accept a Bucket source you
+you should prefer to accept `IBucketRef > IBucket > Bucket`, in that order.
+
+There are 2 linter rules that enforce this:
+
+* Prefer an interface over a concrete class _[awslint:ref-via-interface]_.
+* Prefer a reference interface over an L2 interface _[awslint:prefer-ref-interface]_.
+
+In order to model the concept of owned and unowned constructs, all constructs
 in the AWS Construct Library should always have a corresponding **construct
 interface**. This interface includes the API of the construct
 _[awslint:construct-interface]_.
-
-Therefore, when constructs are referenced ***anywhere*** in the API (e.g. in
-properties or methods of other resources or higher-level constructs), the
-resource interface (`IFoo`) should be used over concrete resource classes
-(`Foo`). This will allow users to supply either internal or external resources
-_[awslint:ref-via-interface]_.
 
 Construct interfaces must extend the **IConstruct** interface in order to allow
 consumers to take advantage of common resource capabilities such as unique IDs,
@@ -360,6 +384,7 @@ paths, scopes, etc _[awslint:construct-interface-extends-iconstruct]_.
 Constructs that directly represent AWS resources (most of the constructs in the
 AWS Construct Library) should extend **IResource** (which, transitively, extends
 **IConstruct**) _[awslint:resource-interface-extends-resource]_.
+
 
 #### Abstract Base
 
