@@ -5,7 +5,6 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import {
-  AwsManagedWorkflow,
   Workflow,
   WorkflowAction,
   WorkflowData,
@@ -84,50 +83,6 @@ describe('Workflow', () => {
     });
     expect(workflow.workflowType).toEqual('TEST');
     expect(workflow.workflowVersion).toEqual('x.x.x');
-  });
-
-  test('AWS-managed workflow import by attributes', () => {
-    const workflow = AwsManagedWorkflow.fromAwsManagedWorkflowAttributes(stack, 'Workflow', {
-      workflowName: 'build-image',
-      workflowType: WorkflowType.BUILD,
-    });
-
-    expect(stack.resolve(workflow.workflowArn)).toEqual({
-      'Fn::Join': [
-        '',
-        ['arn:', { Ref: 'AWS::Partition' }, ':imagebuilder:us-east-1:aws:workflow/build/build-image/x.x.x'],
-      ],
-    });
-    expect(workflow.workflowName).toEqual('build-image');
-    expect(workflow.workflowType).toEqual('BUILD');
-    expect(workflow.workflowVersion).toEqual('x.x.x');
-  });
-
-  test('AWS-managed workflow pre-defined method import', () => {
-    const buildContainer = AwsManagedWorkflow.buildContainer(stack, 'BuildContainer-Workflow');
-    const buildImage = AwsManagedWorkflow.buildImage(stack, 'BuildImage-Workflow');
-    const distributeContainer = AwsManagedWorkflow.distributeContainer(stack, 'DistributeContainer-Workflow');
-    const testContainer = AwsManagedWorkflow.testContainer(stack, 'TestContainer-Workflow');
-    const testImage = AwsManagedWorkflow.testImage(stack, 'TestImage-Workflow');
-
-    const expectedWorkflowArn = (workflowType: string, workflowName: string) => ({
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          { Ref: 'AWS::Partition' },
-          `:imagebuilder:us-east-1:aws:workflow/${workflowType}/${workflowName}/x.x.x`,
-        ],
-      ],
-    });
-
-    expect(stack.resolve(buildContainer.workflowArn)).toEqual(expectedWorkflowArn('build', 'build-container'));
-    expect(stack.resolve(buildImage.workflowArn)).toEqual(expectedWorkflowArn('build', 'build-image'));
-    expect(stack.resolve(distributeContainer.workflowArn)).toEqual(
-      expectedWorkflowArn('distribution', 'distribute-container'),
-    );
-    expect(stack.resolve(testContainer.workflowArn)).toEqual(expectedWorkflowArn('test', 'test-container'));
-    expect(stack.resolve(testImage.workflowArn)).toEqual(expectedWorkflowArn('test', 'test-image'));
   });
 
   test('with all parameters', () => {
@@ -859,15 +814,6 @@ steps:
         'Workflow',
         `arn:aws:imagebuilder:us-east-1:123456789012:workflow/build/imported-workflow-${stack.partition}/1.2.3`,
       ),
-    ).toThrow(cdk.ValidationError);
-  });
-
-  test('throws a validation error when importing AWS-managed workflow with workflow type as an unresolved token', () => {
-    expect(() =>
-      AwsManagedWorkflow.fromAwsManagedWorkflowAttributes(stack, 'BuildImage', {
-        workflowName: 'build-image',
-        workflowType: cdk.Lazy.string({ produce: () => 'BUILD' }) as WorkflowType,
-      }),
     ).toThrow(cdk.ValidationError);
   });
 

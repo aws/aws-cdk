@@ -11,7 +11,7 @@ const imageRecipe = new imagebuilder.ImageRecipe(stack, 'ImageRecipe', {
   ),
   components: [
     {
-      component: imagebuilder.AwsManagedComponent.fromAwsManagedComponentName(
+      component: imagebuilder.AmazonManagedComponent.fromAmazonManagedComponentName(
         stack,
         'SimpleBootTest',
         'simple-boot-test-linux',

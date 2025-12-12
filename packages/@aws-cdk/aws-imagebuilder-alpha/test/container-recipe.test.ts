@@ -7,7 +7,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import {
-  AwsManagedComponent,
+  AmazonManagedComponent,
   BaseContainerImage,
   Component,
   ComponentParameterValue,
@@ -168,7 +168,7 @@ CMD ["echo", "Hello, world!"]
             componentVersion: '1.2.3',
           }),
         },
-        { component: AwsManagedComponent.helloWorld(stack, 'Component2', { platform: Platform.LINUX }) },
+        { component: AmazonManagedComponent.helloWorld(stack, 'Component2', { platform: Platform.LINUX }) },
         {
           component: Component.fromComponentArn(
             stack,
