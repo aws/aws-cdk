@@ -340,7 +340,7 @@ describe('DomainName', () => {
 
   test.each([IpAddressType.IPV4, IpAddressType.DUAL_STACK])('ipAddressType is set', (ipAddressType) => {
     const stack = new Stack();
-    const dn = new DomainName(stack, 'DomainName', {
+    new DomainName(stack, 'DomainName', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
       ipAddressType,
