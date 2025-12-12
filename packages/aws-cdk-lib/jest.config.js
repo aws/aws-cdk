@@ -1,12 +1,13 @@
+// @ts-check
 const baseConfig = require('@aws-cdk/cdk-build-tools/config/jest.config');
 
 /** @type {import('ts-jest').JestConfigWithTsJest} */
-module.exports = {
+const config = {
   ...baseConfig,
 
   // Different than usual
   testMatch: [
-    '<rootDir>/**/test/**/?(*.)+(test).ts',
+    `<rootDir>/**/test/**/?(*.)+(test).ts`,
   ],
   coveragePathIgnorePatterns: ['\\.generated\\.[jt]s$', '<rootDir>/.*/test/', '.warnings.jsii.js$', '/node_modules/'],
 
@@ -22,3 +23,5 @@ module.exports = {
 
   testEnvironment: './testhelpers/jest-bufferedconsole.ts',
 };
+
+module.exports = config;

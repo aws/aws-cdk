@@ -3192,7 +3192,7 @@ test('Resource policy test', () => {
   });
 
   // WHEN
-  const table = new TableV2(stack, 'Table', {
+  new TableV2(stack, 'Table', {
     partitionKey: { name: 'metric', type: AttributeType.STRING },
     resourcePolicy: doc,
   });
@@ -3229,7 +3229,7 @@ test('Warm Throughput test on-demand', () => {
   const stack = new Stack(undefined, 'Stack', { env: { region: 'eu-west-1' } });
 
   // WHEN
-  const table = new TableV2(stack, 'Table', {
+  new TableV2(stack, 'Table', {
     partitionKey: { name: 'id', type: AttributeType.STRING },
     warmThroughput: {
       readUnitsPerSecond: 13000,
@@ -3556,7 +3556,7 @@ test('TableV2 addToResourcePolicy allows scoped ARN resources when table has exp
 test('Contributor Insights Specification - tableV2', () => {
   const stack = new Stack();
 
-  const table = new TableV2(stack, 'TableV2', {
+  new TableV2(stack, 'TableV2', {
     partitionKey: { name: 'hashKey', type: AttributeType.STRING },
     sortKey: { name: 'sortKey', type: AttributeType.NUMBER },
     contributorInsightsSpecification: {
@@ -3593,7 +3593,7 @@ test('Contributor Insights Specification - tableV2', () => {
 test('Contributor Insights Specification - tableV2 - without mode', () => {
   const stack = new Stack();
 
-  const table = new TableV2(stack, 'TableV2', {
+  new TableV2(stack, 'TableV2', {
     partitionKey: { name: 'hashKey', type: AttributeType.STRING },
     sortKey: { name: 'sortKey', type: AttributeType.NUMBER },
     contributorInsightsSpecification: {
@@ -3628,7 +3628,7 @@ test('Contributor Insights Specification - tableV2 - without mode', () => {
 test('Contributor Insights Specification - index', () => {
   const stack = new Stack(undefined, 'Stack', { env: { region: 'eu-west-1' } });
 
-  const table = new TableV2(stack, 'TableV2', {
+  new TableV2(stack, 'TableV2', {
     partitionKey: { name: 'hashKey', type: AttributeType.STRING },
     sortKey: { name: 'sortKey', type: AttributeType.NUMBER },
     globalSecondaryIndexes: [
@@ -3702,7 +3702,7 @@ test('ContributorInsightsSpecification && ContributorInsights - v2', () => {
   const stack = new Stack();
 
   expect(() => {
-    const table = new TableV2(stack, 'Tablev2', {
+    new TableV2(stack, 'Tablev2', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.STRING },
       contributorInsights: true,

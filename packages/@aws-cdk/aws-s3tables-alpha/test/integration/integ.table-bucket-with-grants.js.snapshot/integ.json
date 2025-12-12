@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "testCases": {
     "TableBucketWithGrantIntegTest/DefaultTest": {
       "stacks": [
@@ -13,5 +13,6 @@
       "assertionStack": "TableBucketWithGrantIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "TableBucketWithGrantIntegTestDefaultTestDeployAssert60E58AB6"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

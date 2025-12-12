@@ -1,0 +1,21 @@
+#
+#####################################
+##          EC2 GUARD RULES         ##
+#####################################
+# Rule: EBS_ENCRYPTION_ENABLED
+# Service: Amazon Elastic Compute Cloud (EC2)
+# Coverage: EBS Encryption
+
+let ebs_volumes = Resources.*[
+  Type == 'AWS::EC2::Volume'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "EBS_ENCRYPTION_ENABLED"
+]
+
+# EBS volume encryption must be enabled
+rule EBS_ENCRYPTION_ENABLED when %ebs_volumes !empty {
+    %ebs_volumes {
+        Properties.Encrypted exists
+        Properties.Encrypted == true
+    }
+}

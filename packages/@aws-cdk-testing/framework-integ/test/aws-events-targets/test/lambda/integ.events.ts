@@ -43,7 +43,6 @@ timer3.addTarget(new targets.LambdaFunction(fn, {
 
 app.synth();
 
-/* eslint-disable no-console */
 function handler(event: any, _context: any, callback: any) {
   console.log(JSON.stringify(event, undefined, 2));
   return callback();

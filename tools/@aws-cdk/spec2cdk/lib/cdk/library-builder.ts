@@ -3,7 +3,7 @@ import * as path from 'path';
 import { SpecDatabase, Resource, Service } from '@aws-cdk/service-spec-types';
 import { Module } from '@cdklabs/typewriter';
 import { IWriter, substituteFilePattern } from '../util';
-import { BaseServiceSubmodule, LocatedModule, relativeImportPath } from './service-submodule';
+import { BaseServiceSubmodule, LocatedModule } from './service-submodule';
 
 export interface AddServiceProps {
   /**
@@ -142,16 +142,8 @@ export abstract class LibraryBuilder<ServiceSubmodule extends BaseServiceSubmodu
   /**
    * Do whatever we need to do after a service has been rendered to a submodule
    */
-  protected postprocessSubmodule(submodule: ServiceSubmodule, _props?: AddServiceProps) {
-    // Selective imports from constructor
-    for (const selectiveImport of submodule.imports) {
-      const sourceModule = new Module(selectiveImport.moduleName);
-      for (const mod of submodule.locatedModules) {
-        sourceModule.importSelective(mod.module, selectiveImport.types.map((t) => `${t.originalType} as ${t.aliasedType}`), {
-          fromLocation: relativeImportPath(mod.filePath, sourceModule.name),
-        });
-      }
-    }
+  protected postprocessSubmodule(_submodule: ServiceSubmodule, _props?: AddServiceProps): void {
+    // does nothing, this is a hook for implementations
   }
 
   private obtainServiceSubmodule(service: Service, targetSubmodule?: string, grantsConfig?: string): ServiceSubmodule {

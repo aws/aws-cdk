@@ -1,282 +1,27 @@
 {
  "Resources": {
-  "OriginBucketCA772B8F": {
-   "Type": "AWS::S3::Bucket",
+  "EventBus": {
+   "Type": "AWS::Events::EventBus",
    "Properties": {
-    "Tags": [
-     {
-      "Key": "aws-cdk:auto-delete-objects",
-      "Value": "true"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "OriginBucketPolicyFD67BA59": {
-   "Type": "AWS::S3::BucketPolicy",
-   "Properties": {
-    "Bucket": {
-     "Ref": "OriginBucketCA772B8F"
+    "LogConfig": {
+     "IncludeDetail": "NONE",
+     "Level": "ERROR"
     },
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "s3:DeleteObject*",
-        "s3:GetBucket*",
-        "s3:List*",
-        "s3:PutBucketPolicy"
-       ],
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::GetAtt": [
-          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-          "Arn"
-         ]
-        }
-       },
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "OriginBucketCA772B8F",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "OriginBucketCA772B8F",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "s3:GetObject",
-       "Condition": {
-        "StringEquals": {
-         "AWS:SourceArn": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":cloudfront::",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":distribution/",
-            {
-             "Ref": "Distribution830FAC52"
-            }
-           ]
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "cloudfront.amazonaws.com"
-       },
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          {
-           "Fn::GetAtt": [
-            "OriginBucketCA772B8F",
-            "Arn"
-           ]
-          },
-          "/*"
-         ]
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
+    "Name": "vended-logs-mixin-event-bus"
    }
-  },
-  "OriginBucketAutoDeleteObjectsCustomResource064ED07E": {
-   "Type": "Custom::S3AutoDeleteObjects",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-      "Arn"
-     ]
-    },
-    "BucketName": {
-     "Ref": "OriginBucketCA772B8F"
-    }
-   },
-   "DependsOn": [
-    "OriginBucketPolicyFD67BA59"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-     }
-    ]
-   }
-  },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
-    },
-    "Timeout": 900,
-    "MemorySize": 128,
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs22.x",
-    "Description": {
-     "Fn::Join": [
-      "",
-      [
-       "Lambda function for auto-deleting objects in ",
-       {
-        "Ref": "OriginBucketCA772B8F"
-       },
-       " S3 bucket."
-      ]
-     ]
-    }
-   },
-   "DependsOn": [
-    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-   ]
-  },
-  "DistributionOrigin1S3OriginAccessControlEB606076": {
-   "Type": "AWS::CloudFront::OriginAccessControl",
-   "Properties": {
-    "OriginAccessControlConfig": {
-     "Name": "VendedLogsTestDistributionOrigin1S3OriginAccessControlAF0F22E6",
-     "OriginAccessControlOriginType": "s3",
-     "SigningBehavior": "always",
-     "SigningProtocol": "sigv4"
-    }
-   }
-  },
-  "Distribution830FAC52": {
-   "Type": "AWS::CloudFront::Distribution",
-   "Properties": {
-    "DistributionConfig": {
-     "DefaultCacheBehavior": {
-      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
-      "Compress": true,
-      "TargetOriginId": "VendedLogsTestDistributionOrigin1B246CF58",
-      "ViewerProtocolPolicy": "allow-all"
-     },
-     "Enabled": true,
-     "HttpVersion": "http2",
-     "IPV6Enabled": true,
-     "Origins": [
-      {
-       "DomainName": {
-        "Fn::GetAtt": [
-         "OriginBucketCA772B8F",
-         "RegionalDomainName"
-        ]
-       },
-       "Id": "VendedLogsTestDistributionOrigin1B246CF58",
-       "OriginAccessControlId": {
-        "Fn::GetAtt": [
-         "DistributionOrigin1S3OriginAccessControlEB606076",
-         "Id"
-        ]
-       },
-       "S3OriginConfig": {
-        "OriginAccessIdentity": ""
-       }
-      }
-     ]
-    }
-   }
-  },
-  "CloudFrontSource": {
-   "Type": "AWS::Logs::DeliverySource",
-   "Properties": {
-    "LogType": "ACCESS_LOGS",
-    "Name": {
-     "Fn::Join": [
-      "",
-      [
-       "delivery-source-",
-       {
-        "Ref": "Distribution830FAC52"
-       },
-       "-ACCESS_LOGS"
-      ]
-     ]
-    },
-    "ResourceArn": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":cloudfront::",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":distribution/",
-       {
-        "Ref": "Distribution830FAC52"
-       }
-      ]
-     ]
-    }
-   },
-   "DependsOn": [
-    "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857",
-    "DeliveryBucketPolicyB86375F3"
-   ]
   },
   "DeliveryBucketA9AE6474": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
     "Tags": [
      {
       "Key": "aws-cdk:auto-delete-objects",
@@ -413,6 +158,64 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "DeliveryBucketA9AE6474"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ]
+  },
   "DeliveryLogGroup2A53FD53": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
@@ -424,6 +227,15 @@
   "FirehoseBucket407758F1": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
     "Tags": [
      {
       "Key": "aws-cdk:auto-delete-objects",
@@ -553,6 +365,9 @@
   "DeliveryStream": {
    "Type": "AWS::KinesisFirehose::DeliveryStream",
    "Properties": {
+    "DeliveryStreamEncryptionConfigurationInput": {
+     "KeyType": "AWS_OWNED_CMK"
+    },
     "S3DestinationConfiguration": {
      "BucketARN": {
       "Fn::GetAtt": [
@@ -579,7 +394,7 @@
     ]
    }
   },
-  "CdkS3DeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247Dest7104B367": {
+  "CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247DestE1C5E99F": {
    "Type": "AWS::Logs::DeliveryDestination",
    "Properties": {
     "DeliveryDestinationType": "S3",
@@ -589,32 +404,44 @@
       "Arn"
      ]
     },
-    "Name": "cdk-s3-dest-VendedLogsTestCdkS3DliveryBucket45E742471E9C9141"
+    "Name": "cdk-s3-error-logs-dest-VendedLogsTestBucket45E742478B007C41"
    },
    "DependsOn": [
     "DeliveryBucketPolicyB86375F3"
    ]
   },
-  "CdkS3DeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247Delivery3B7C28CE": {
+  "CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247Delivery5E0B21AA": {
    "Type": "AWS::Logs::Delivery",
    "Properties": {
     "DeliveryDestinationArn": {
      "Fn::GetAtt": [
-      "CdkS3DeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247Dest7104B367",
+      "CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247DestE1C5E99F",
       "Arn"
      ]
     },
     "DeliverySourceName": {
-     "Ref": "CloudFrontSource"
+     "Ref": "CDKSourceERRORLOGSVendedLogsTest"
     }
    },
    "DependsOn": [
-    "CdkS3DeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247Dest7104B367",
-    "CloudFrontSource",
-    "DeliveryBucketPolicyB86375F3"
+    "CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247DestE1C5E99F",
+    "CDKSourceERRORLOGSVendedLogsTest"
    ]
   },
-  "CdkLogGroupDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Dest690B81A0": {
+  "CDKSourceERRORLOGSVendedLogsTest": {
+   "Type": "AWS::Logs::DeliverySource",
+   "Properties": {
+    "LogType": "ERROR_LOGS",
+    "Name": "cdk-errorlogs-source-VendedLogsTest",
+    "ResourceArn": {
+     "Fn::GetAtt": [
+      "EventBus",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Dest07565F4E": {
    "Type": "AWS::Logs::DeliveryDestination",
    "Properties": {
     "DeliveryDestinationType": "CWL",
@@ -624,30 +451,28 @@
       "Arn"
      ]
     },
-    "Name": "cdk-cwl-dest-VendedLogsTestCdkLoeryLogGroup50916FD98193FAF9"
+    "Name": "cdk-cwl-error-logs-dest-VendedLogsTestgGroup50916FD9D42AD8BD"
    },
    "DependsOn": [
     "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857"
    ]
   },
-  "CdkLogGroupDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9DeliveryC75C69DE": {
+  "CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Delivery0C51C7A6": {
    "Type": "AWS::Logs::Delivery",
    "Properties": {
     "DeliveryDestinationArn": {
      "Fn::GetAtt": [
-      "CdkLogGroupDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Dest690B81A0",
+      "CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Dest07565F4E",
       "Arn"
      ]
     },
     "DeliverySourceName": {
-     "Ref": "CloudFrontSource"
+     "Ref": "CDKSourceERRORLOGSVendedLogsTest"
     }
    },
    "DependsOn": [
-    "CdkLogGroupDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Dest690B81A0",
-    "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857",
-    "CdkS3DeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247Delivery3B7C28CE",
-    "CloudFrontSource"
+    "CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Dest07565F4E",
+    "CDKSourceERRORLOGSVendedLogsTest"
    ]
   },
   "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857": {
@@ -684,10 +509,10 @@
       ]
      ]
     },
-    "PolicyName": "VendedLogsTestCdkLogGroupDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD98193FAF9"
+    "PolicyName": "VendedLogsTestCdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9D42AD8BD"
    }
   },
-  "CdkFirehoseDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDest94FA1586": {
+  "CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDestA14731EA": {
    "Type": "AWS::Logs::DeliveryDestination",
    "Properties": {
     "DeliveryDestinationType": "FH",
@@ -697,26 +522,25 @@
       "Arn"
      ]
     },
-    "Name": "cdk-fh-dest-VendedLogsTestCdkFirliveryStream5258C60D868F9F27"
+    "Name": "cdk-fh-error-logs-dest-VendedLogsTestStream5258C60DF56F6844"
    }
   },
-  "CdkFirehoseDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDelivery0A39453E": {
+  "CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDeliveryF5EFF358": {
    "Type": "AWS::Logs::Delivery",
    "Properties": {
     "DeliveryDestinationArn": {
      "Fn::GetAtt": [
-      "CdkFirehoseDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDest94FA1586",
+      "CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDestA14731EA",
       "Arn"
      ]
     },
     "DeliverySourceName": {
-     "Ref": "CloudFrontSource"
+     "Ref": "CDKSourceERRORLOGSVendedLogsTest"
     }
    },
    "DependsOn": [
-    "CdkFirehoseDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDest94FA1586",
-    "CdkLogGroupDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9DeliveryC75C69DE",
-    "CloudFrontSource"
+    "CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDestA14731EA",
+    "CDKSourceERRORLOGSVendedLogsTest"
    ]
   }
  },

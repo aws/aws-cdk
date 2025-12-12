@@ -1,10 +1,10 @@
 import { HttpLambdaAuthorizer, HttpLambdaResponseType } from './../../lib/http/lambda';
 import { DummyRouteIntegration } from './integration';
-import { Duration, Stack } from '../../..';
 import { Match, Template } from '../../../assertions';
 import { HttpApi } from '../../../aws-apigatewayv2';
 import { Code, Function } from '../../../aws-lambda';
 import * as lambda from '../../../aws-lambda';
+import { Duration, Stack } from '../../../core';
 
 describe('HttpLambdaAuthorizer', () => {
   test('default', () => {
@@ -194,7 +194,7 @@ describe('HttpLambdaAuthorizer', () => {
 
     const t = () => {
       const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', handler);
-      const authorizerId = authorizer.authorizerId;
+      void(authorizer.authorizerId);
     };
 
     // THEN

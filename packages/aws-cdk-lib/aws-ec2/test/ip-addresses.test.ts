@@ -394,7 +394,7 @@ type CfnSplit = {
   count: number;
   hostbits: number;
   select: number;
-}
+};
 
 test.each([
   // Index into first block

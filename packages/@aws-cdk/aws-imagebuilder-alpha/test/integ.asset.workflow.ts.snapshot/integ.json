@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "WorkflowTest-Asset/DefaultTest": {
+      "stacks": [
+        "aws-cdk-imagebuilder-workflow-asset"
+      ],
+      "assertionStack": "WorkflowTest-Asset/DefaultTest/DeployAssert",
+      "assertionStackName": "WorkflowTestAssetDefaultTestDeployAssertFC43823D"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

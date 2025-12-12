@@ -91,7 +91,6 @@ new integ.IntegTest(appWithFeatureFlag, 'LambdaAlarmActionIntegrationTestWithFea
 });
 appWithFeatureFlag.synth();
 
-/* eslint-disable no-console */
 function handler(event: any, _context: any, callback: any) {
   console.log(JSON.stringify(event, undefined, 2));
   return callback();

@@ -1,4 +1,3 @@
-import * as cdk from '../..';
 import { Match, Template } from '../../assertions';
 import * as glue from '../../aws-glue';
 import * as iam from '../../aws-iam';
@@ -6,6 +5,7 @@ import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
+import * as cdk from '../../core';
 import * as firehose from '../lib';
 
 describe('S3 destination', () => {

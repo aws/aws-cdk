@@ -4,7 +4,7 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct, type IConstruct } from 'constructs';
 import type { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
-import { tryFindBucketPolicyForBucket } from '../../mixins/private/reflections';
+import { tryFindBucketPolicyForBucket, tryFindDeliverySourceForResource } from '../../mixins/private/reflections';
 import { ConstructSelector, Mixins } from '../../core';
 import { BucketPolicyStatementsMixins } from '../../mixins/private/s3';
 import * as xray from '../aws-xray/policy';
@@ -32,13 +32,13 @@ export interface ILogsDeliveryConfig {
  */
 export interface ILogsDelivery {
   /**
-   * Binds the destination to a delivery source and creates a delivery connection between the source and destination.
+   * Binds the log delivery to a source resource and creates a delivery connection between the source and destination.
    * @param scope - The construct scope
-   * @param deliverySource - The delivery source reference
+   * @param logType - The type of logs that the delivery source will produce
    * @param sourceResourceArn - The Arn of the source resource
    * @returns The delivery reference
    */
-  bind(scope: IConstruct, deliverySource: logs.IDeliverySourceRef, sourceResourceArn: string): ILogsDeliveryConfig;
+  bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig;
 }
 
 /**
@@ -84,28 +84,29 @@ export class S3LogsDelivery implements ILogsDelivery {
   }
 
   /**
-   * Binds the S3 destination to a delivery source and creates a delivery connection between them.
+   * Binds S3 Bucket to a source resource for the purposes of log delivery and creates a delivery source, a delivery destination, and a connection between them.
    */
-  public bind(scope: IConstruct, deliverySource: logs.IDeliverySourceRef, _sourceResourceArn: string): ILogsDeliveryConfig {
-    const container = new Construct(scope, deliveryId('S3', scope, this.bucket));
+  public bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig {
+    const container = new Construct(scope, deliveryId('S3', logType, scope, this.bucket));
 
     const bucketPolicy = this.getOrCreateBucketPolicy(container);
     this.grantLogsDelivery(bucketPolicy);
 
+    const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
+    const deliverySourceRef = deliverySource.deliverySourceRef;
+
     const deliveryDestination = new logs.CfnDeliveryDestination(container, 'Dest', {
       destinationResourceArn: this.bucket.bucketRef.bucketArn,
-      name: deliveryDestName('s3', container),
+      name: deliveryDestName('s3', logType, container),
       deliveryDestinationType: 'S3',
     });
 
     const delivery = new logs.CfnDelivery(container, 'Delivery', {
       deliveryDestinationArn: deliveryDestination.attrArn,
-      deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
+      deliverySourceName: deliverySourceRef.deliverySourceName,
     });
 
-    delivery.node.addDependency(bucketPolicy);
     deliveryDestination.node.addDependency(bucketPolicy);
-    deliverySource.node.addDependency(bucketPolicy);
 
     delivery.node.addDependency(deliverySource);
     delivery.node.addDependency(deliveryDestination);
@@ -197,18 +198,20 @@ export class FirehoseLogsDelivery implements ILogsDelivery {
   }
 
   /**
-   * Binds the Firehose destination to a delivery source and creates a delivery connection between them.
+   * Binds Firehose Delivery Stream to a source resource for the purposes of log delivery and creates a delivery source, a delivery destination, and a connection between them.
    */
-  public bind(scope: IConstruct, deliverySource: logs.IDeliverySourceRef, _sourceResourceArn: string): ILogsDeliveryConfig {
-    const container = new Construct(scope, deliveryId('Firehose', scope, this.deliveryStream));
+  public bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig {
+    const container = new Construct(scope, deliveryId('Firehose', logType, scope, this.deliveryStream));
 
     // Firehose uses a service-linked role to deliver logs
     // This tag marks the destination stream as an allowed destination for the service-linked role
     Tags.of(this.deliveryStream).add('LogDeliveryEnabled', 'true');
 
+    const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
+
     const deliveryDestination = new logs.CfnDeliveryDestination(container, 'Dest', {
       destinationResourceArn: this.deliveryStream.deliveryStreamRef.deliveryStreamArn,
-      name: deliveryDestName('fh', container),
+      name: deliveryDestName('fh', logType, container),
       deliveryDestinationType: 'FH',
     });
 
@@ -243,30 +246,31 @@ export class LogGroupLogsDelivery implements ILogsDelivery {
   }
 
   /**
-   * Binds the log group destination to a delivery source and creates a delivery connection between them.
+   * Binds Log Group to a source resource for the purposes of log delivery and creates a delivery source, a delivery destination, and a connection between them.
    */
-  public bind(scope: IConstruct, deliverySource: logs.IDeliverySourceRef, _sourceResourceArn: string): ILogsDeliveryConfig {
-    const container = new Construct(scope, deliveryId('LogGroup', scope, this.logGroup));
+  public bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig {
+    const container = new Construct(scope, deliveryId('LogGroup', logType, scope, this.logGroup));
+
+    const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
+    const deliverySourceRef = deliverySource.deliverySourceRef;
 
     const logGroupPolicy = this.getOrCreateLogsResourcePolicy(container);
     this.grantLogsDelivery(logGroupPolicy);
 
     const deliveryDestination = new logs.CfnDeliveryDestination(container, 'Dest', {
       destinationResourceArn: this.logGroup.logGroupRef.logGroupArn,
-      name: deliveryDestName('cwl', container),
+      name: deliveryDestName('cwl', logType, container),
       deliveryDestinationType: 'CWL',
     });
 
     const delivery = new logs.CfnDelivery(container, 'Delivery', {
       deliveryDestinationArn: deliveryDestination.deliveryDestinationRef.deliveryDestinationArn,
-      deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
+      deliverySourceName: deliverySourceRef.deliverySourceName,
     });
 
-    delivery.node.addDependency(logGroupPolicy);
     delivery.node.addDependency(deliverySource);
     delivery.node.addDependency(deliveryDestination);
 
-    deliverySource.node.addDependency(logGroupPolicy);
     deliveryDestination.node.addDependency(logGroupPolicy);
 
     return {
@@ -327,16 +331,17 @@ export class XRayLogsDelivery implements ILogsDelivery {
   constructor() {}
 
   /**
-   * Binds the X-Ray destination to a delivery source and creates a delivery connection between them.
+   * Binds X-Ray Destination to a source resource for the purposes of log delivery and creates a delivery source, a delivery destination, and a connection between them.
    */
-  public bind(scope: IConstruct, deliverySource: logs.IDeliverySourceRef, sourceResourceArn: string): ILogsDeliveryConfig {
-    const container = new Construct(scope, deliveryId('XRay', scope, deliverySource));
+  public bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig {
+    const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
+    const container = new Construct(scope, deliveryId('XRay', logType, scope, deliverySource));
 
     const xrayResourcePolicy = this.getOrCreateResourcePolicy(container);
     this.grantLogsDelivery(xrayResourcePolicy, sourceResourceArn);
 
     const deliveryDestination = new logs.CfnDeliveryDestination(container, 'Dest', {
-      name: deliveryDestName('xray', container),
+      name: deliveryDestName('xray', logType, container),
       deliveryDestinationType: 'XRAY',
     });
 
@@ -345,9 +350,7 @@ export class XRayLogsDelivery implements ILogsDelivery {
       deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
     });
 
-    delivery.node.addDependency(xrayResourcePolicy);
     deliveryDestination.node.addDependency(xrayResourcePolicy);
-    deliverySource.node.addDependency(xrayResourcePolicy);
 
     delivery.node.addDependency(deliverySource);
     delivery.node.addDependency(deliveryDestination);
@@ -403,11 +406,26 @@ export class XRayLogsDelivery implements ILogsDelivery {
   }
 }
 
-function deliveryId(type: string, ...scopes: IConstruct[]) {
-  return `Cdk${type}Delivery${scopes.map(s => Names.uniqueId(s)).join('')}`;
+function deliveryId(destType: string, logType: string, ...scopes: IConstruct[]) {
+  return `Cdk${destType}${logType.split('_').map(word => word.charAt(0) + word.slice(1).toLowerCase()).join('')}Delivery${scopes.map(s => Names.uniqueId(s)).join('')}`;
 }
 
-function deliveryDestName(type: string, scope: IConstruct) {
-  const prefix = `cdk-${type}-dest-`;
+function deliveryDestName(destType: string, logType: string, scope: IConstruct) {
+  const prefix = `cdk-${destType}-${logType.split('_').map(word => word.toLowerCase()).join('-')}-dest-`;
   return `${prefix}${Names.uniqueResourceName(scope, { maxLength: 60 - prefix.length })}`;
+}
+
+function getOrCreateDeliverySource(logType: string, resource: IConstruct, sourceArn: string) {
+  const sourceResource = tryFindDeliverySourceForResource(resource, sourceArn, logType);
+
+  if (!sourceResource) {
+    const prefix = `cdk-${logType.split('_').map(word => word.toLowerCase()).join('')}-source-`;
+    const newSource = new logs.CfnDeliverySource(resource, `CDKSource${logType}${Names.uniqueId(resource)}`, {
+      name: `${prefix}${Names.uniqueResourceName(resource, { maxLength: 60 - prefix.length })}`,
+      logType,
+      resourceArn: sourceArn,
+    });
+    return newSource;
+  }
+  return sourceResource;
 }

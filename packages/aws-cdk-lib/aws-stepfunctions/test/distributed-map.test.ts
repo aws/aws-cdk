@@ -1132,7 +1132,7 @@ describe('Distributed Map State', () => {
       // GIVEN
       const stack = new cdk.Stack();
       stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, feature);
-      const writerBucket = new s3.Bucket(stack, 'TestBucket');
+      new s3.Bucket(stack, 'TestBucket');
       // WHEN
       const map = new stepfunctions.DistributedMap(stack, 'Map State', {
         maxConcurrency: 1,

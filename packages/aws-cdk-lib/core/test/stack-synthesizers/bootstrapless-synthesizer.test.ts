@@ -53,7 +53,7 @@ describe('BootstraplessSynthesizer', () => {
     // GIVEN
     const qualifier = 'custom-qualifier';
     const app = new App();
-    const stack = new Stack(app, 'Stack', {
+    new Stack(app, 'Stack', {
       synthesizer: new BootstraplessSynthesizer({
         qualifier,
       }),
