@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "d23919d5953945cbcc7595bbfbe018e37430febbdb3beeef1e41b1cc78141c42": {
+    "79809d1e6a74288f2f7f9b801c8b2f1c2eb45c260fd5cc0493b9eb54ac61d8c8": {
       "displayName": "ecs-placement-strategies-empty Template",
       "source": {
         "path": "ecs-placement-strategies-empty.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-f763f3e9": {
+        "current_account-current_region-2877eb49": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d23919d5953945cbcc7595bbfbe018e37430febbdb3beeef1e41b1cc78141c42.json",
+          "objectKey": "79809d1e6a74288f2f7f9b801c8b2f1c2eb45c260fd5cc0493b9eb54ac61d8c8.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
