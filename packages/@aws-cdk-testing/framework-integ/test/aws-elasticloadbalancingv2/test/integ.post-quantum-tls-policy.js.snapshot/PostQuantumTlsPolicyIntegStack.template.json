@@ -454,7 +454,7 @@
     },
     "Port": 443,
     "Protocol": "HTTPS",
-    "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09"
+    "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-PQ-2025-09"
    }
   },
   "ALBHttpListener04CE8CD0": {
@@ -551,7 +551,7 @@
     },
     "Port": 443,
     "Protocol": "TLS",
-    "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09"
+    "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-PQ-2025-09"
    }
   },
   "NLBTcpListener14676C94": {

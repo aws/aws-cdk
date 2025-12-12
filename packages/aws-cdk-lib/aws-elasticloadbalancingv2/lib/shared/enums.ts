@@ -121,10 +121,10 @@ export enum SslPolicy {
    * The recommended post-quantum security policy for TLS listeners.
    * 
    * This policy includes TLS 1.3 and 1.2 with post-quantum hybrid key exchange using ML-KEM.
-   * Restricted cipher suite for enhanced security with quantum resistance.
-   * AWS recommended policy for post-quantum cryptography.
+   * Provides maximum backward compatibility with existing TLS clients while adding quantum resistance.
+   * This policy is nearly 100% backward compatible with the previous CDK recommended default.
    */
-  RECOMMENDED_TLS_PQ = 'ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09',
+  RECOMMENDED_TLS_PQ = 'ELBSecurityPolicy-TLS13-1-2-PQ-2025-09',
 
   /**
    * The recommended policy for http listeners.

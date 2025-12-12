@@ -1774,12 +1774,15 @@ export const FLAGS: Record<string, FlagInfo> = {
     summary: 'When enabled, SslPolicy.RECOMMENDED_TLS uses post-quantum cryptography policy',
     detailsMd: `
       When this feature flag is enabled, \`SslPolicy.RECOMMENDED_TLS\` will use the post-quantum
-      cryptography policy \`ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09\` instead of the legacy
+      cryptography policy \`ELBSecurityPolicy-TLS13-1-2-PQ-2025-09\` instead of the legacy
       policy \`ELBSecurityPolicy-TLS13-1-2-2021-06\`.
 
-      This aligns CDK with AWS Console behavior, which already defaults to post-quantum security
-      policies for new load balancers. Post-quantum policies provide protection against
-      "Harvest Now, Decrypt Later" attacks using hybrid ML-KEM key exchange.
+      This policy provides maximum backward compatibility while adding quantum resistance.
+      It is nearly 100% backward compatible with the previous CDK recommended default,
+      only removing support for the SHA1 signature algorithm (which has minimal usage).
+
+      Post-quantum policies provide protection against "Harvest Now, Decrypt Later" attacks
+      using hybrid ML-KEM key exchange.
 
       When disabled, \`SslPolicy.RECOMMENDED_TLS\` continues to use the legacy policy for
       backward compatibility.
