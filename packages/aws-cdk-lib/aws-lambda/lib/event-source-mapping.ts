@@ -334,6 +334,14 @@ export enum MetricType {
    * These metrics help you monitor the flow and status of events through your event source mapping.
    */
   EVENT_COUNT = 'EventCount',
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  ERRORCOUNT = 'ErrorCount',
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  KAFKAMETRICS = 'KafkaMetrics',
 }
 
 /**
