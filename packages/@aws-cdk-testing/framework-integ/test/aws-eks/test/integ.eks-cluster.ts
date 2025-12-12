@@ -23,14 +23,14 @@ class EksClusterStack extends Stack {
 
     // allow specific users/roles to assume this role instead of entire account
     const mastersRole = new iam.Role(this, 'AdminRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
+      assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
     });
     
     // Add condition to satisfy security guardian
     mastersRole.assumeRolePolicy?.addStatements(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
-        principals: [new iam.AccountRootPrincipal()],
+        principals: [new iam.ServicePrincipal('eks.amazonaws.com')],
         actions: ['sts:AssumeRole'],
         conditions: {
           'StringEquals': {
