@@ -2205,6 +2205,31 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
     });
   });
 
+  test.each([true, false])('configure S3 vectors engine to %s', (enabled) => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      s3VectorsEngineEnabled: enabled,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      AIMLOptions: {
+        S3VectorsEngine: {
+          Enabled: enabled,
+        },
+      },
+    });
+  });
+
+  test('S3 vectors engine default is undefined', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      AIMLOptions: Match.absent(),
+    });
+  });
+
   test.each([
     't2.2xlarge.search',
     't3.2xlarge.search',

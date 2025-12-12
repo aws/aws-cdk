@@ -756,6 +756,16 @@ export interface DomainProps {
    * @default - undefined
    */
   readonly coldStorageEnabled?: boolean;
+
+  /**
+   * Whether to enable S3 vectors engine.
+   * This feature allows you to offload vector data to Amazon S3 while maintaining sub-second vector search capabilities at low cost.
+   *
+   * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/s3-vector-opensearch-integration-engine.html
+   *
+   * @default undefined - AWS OpenSeartch Service default is false
+   */
+  readonly s3VectorsEngineEnabled?: boolean;
 }
 
 /**
@@ -2047,6 +2057,11 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         autoSoftwareUpdateEnabled: props.enableAutoSoftwareUpdate,
       } : undefined,
       ipAddressType: props.ipAddressType,
+      aimlOptions: props.s3VectorsEngineEnabled !== undefined ? {
+        s3VectorsEngine: {
+          enabled: props.s3VectorsEngineEnabled,
+        },
+      } : undefined,
     });
     this.domain.applyRemovalPolicy(props.removalPolicy);
 
