@@ -1297,7 +1297,7 @@ describe('volume', () => {
 
     // Test: iops in range
     for (const testData of [
-      [EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3, 3000, 16000],
+      [EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3, 3000, 80000],
       [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD, 100, 64000],
       [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2, 100, 256000],
     ]) {
@@ -1475,7 +1475,7 @@ describe('volume', () => {
     }
   });
 
-  test.each([124, 1001])('throws if throughput is set less than 125 or more than 1000', (throughput) => {
+  test.each([124, 2001])('throws if throughput is set less than 125 or more than 2000', (throughput) => {
     const stack = new cdk.Stack();
     expect(() => {
       new Volume(stack, 'Volume', {
@@ -1484,7 +1484,7 @@ describe('volume', () => {
         volumeType: EbsDeviceVolumeType.GP3,
         throughput,
       });
-    }).toThrow(/throughput property takes a minimum of 125 and a maximum of 1000/);
+    }).toThrow(/throughput property takes a minimum of 125 and a maximum of 2000/);
   });
 
   test.each([

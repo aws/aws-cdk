@@ -2059,6 +2059,52 @@ describe('function', () => {
     expect(bindTarget).toEqual(fn);
   });
 
+  test('multi-tenant function accepts ApiEventSource', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => {}'),
+      tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+    });
+
+    let bindCalled = false;
+    class MockApiEventSource implements lambda.IEventSource {
+      bind(target: lambda.IFunction): void {
+        bindCalled = true;
+      }
+    }
+    Object.defineProperty(MockApiEventSource, 'name', { value: 'ApiEventSource' });
+
+    // WHEN & THEN
+    expect(() => {
+      fn.addEventSource(new MockApiEventSource());
+    }).not.toThrow();
+    expect(bindCalled).toBe(true);
+  });
+
+  test('multi-tenant function rejects non-API event sources', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => {}'),
+      tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+    });
+
+    class MockSqsEventSource implements lambda.IEventSource {
+      bind(target: lambda.IFunction): void {}
+    }
+    Object.defineProperty(MockSqsEventSource, 'name', { value: 'SqsEventSource' });
+
+    // WHEN & THEN
+    expect(() => {
+      fn.addEventSource(new MockSqsEventSource());
+    }).toThrow('Event source SqsEventSource is not supported for functions with tenant isolation mode');
+  });
+
   test('layer is baked into the function version', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
@@ -3829,13 +3875,13 @@ describe('function', () => {
       // THEN
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Properties:
-            {
-              Handler: 'example.Handler::handleRequest',
-              Runtime: 'java11',
-              SnapStart: {
-                ApplyOn: 'PublishedVersions',
-              },
-            },
+        {
+          Handler: 'example.Handler::handleRequest',
+          Runtime: 'java11',
+          SnapStart: {
+            ApplyOn: 'PublishedVersions',
+          },
+        },
       });
     });
 
@@ -3864,14 +3910,14 @@ describe('function', () => {
       // THEN
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Properties:
-            {
-              Handler: 'example.Handler::handleRequest',
-              Runtime: 'java11',
-              Architectures: ['arm64'],
-              SnapStart: {
-                ApplyOn: 'PublishedVersions',
-              },
-            },
+        {
+          Handler: 'example.Handler::handleRequest',
+          Runtime: 'java11',
+          Architectures: ['arm64'],
+          SnapStart: {
+            ApplyOn: 'PublishedVersions',
+          },
+        },
       });
     });
 
@@ -3907,6 +3953,18 @@ describe('function', () => {
         ephemeralStorageSize: Size.mebibytes(1024),
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
       })).toThrow('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
+    });
+
+    test('multi-tenant function with snapStart should throw error', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'example.Handler::handleRequest',
+        runtime: lambda.Runtime.JAVA_11,
+        tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      })).toThrow('SnapStart is not supported for functions with tenant isolation mode');
     });
   });
 
@@ -4201,6 +4259,37 @@ describe('function', () => {
         securityGroups: [securityGroup],
       })).toThrow(/Configure \'allowAllIpv6Outbound\' directly on the supplied SecurityGroups./);
     });
+  });
+
+  test('function with tenancy config PER_TENANT', () => {
+    const stack = new cdk.Stack();
+    new lambda.Function(stack, 'Lambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      TenancyConfig: {
+        TenantIsolationMode: 'PER_TENANT',
+      },
+    });
+  });
+
+  test('function without tenancy config has no tenancy properties', () => {
+    const stack = new cdk.Stack();
+    new lambda.Function(stack, 'Lambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      // No tenancyConfig specified
+    });
+
+    const template = Template.fromStack(stack);
+    const functions = template.findResources('AWS::Lambda::Function');
+    const functionResource = functions[Object.keys(functions)[0]];
+    expect(functionResource.Properties).not.toHaveProperty('TenancyConfig');
   });
 });
 
@@ -5046,6 +5135,10 @@ describe('Lambda Function log group behavior', () => {
 });
 
 describe('telemetry metadata', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('redaction happens when feature flag is enabled', () => {
     const app = new cdk.App();
     app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
@@ -5105,6 +5198,104 @@ describe('telemetry metadata', () => {
     });
 
     expect(fn.node.metadata).toStrictEqual([]);
+  });
+});
+describe('L1 Relationships', () => {
+  it('simple union', () => {
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'SomeRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    new lambda.CfnFunction(stack, 'MyLambda', {
+      code: { zipFile: 'foo' },
+      role: role, // Simple Union
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
+      },
+    });
+  });
+
+  it('array of unions', () => {
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'SomeRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    const layer1 = new lambda.LayerVersion(stack, 'LayerVersion1', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+      compatibleRuntimes: [lambda.Runtime.PYTHON_3_13],
+    });
+    const layer2 = new lambda.LayerVersion(stack, 'LayerVersion2', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+      compatibleRuntimes: [lambda.Runtime.PYTHON_3_13],
+    });
+    new lambda.CfnFunction(stack, 'MyLambda', {
+      code: { zipFile: 'foo' },
+      role: role,
+      layers: [layer1, layer2], // Array of Unions
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
+        Layers: [{ Ref: 'LayerVersion139D4D7A8' }, { Ref: 'LayerVersion23E5F3CEA' }],
+      },
+    });
+  });
+
+  it('array reference should be valid', () => {
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'SomeRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    const layer1 = new lambda.LayerVersion(stack, 'LayerVersion1', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+      compatibleRuntimes: [lambda.Runtime.PYTHON_3_13],
+    });
+    const layerArray = [layer1, 'layer2Arn'];
+    new lambda.CfnFunction(stack, 'MyLambda', {
+      code: { zipFile: 'foo' },
+      role: role,
+      layers: layerArray,
+    });
+
+    layerArray.push('layer3Arn');
+
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
+        Layers: [{ Ref: 'LayerVersion139D4D7A8' }, 'layer2Arn', 'layer3Arn'],
+      },
+    });
+  });
+
+  it('tokens should be passed as is', () => {
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'SomeRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    const codeToken = cdk.Token.asAny({
+      resolve: () => ({ s3Bucket: bucket.bucketName }),
+    });
+
+    const fsConfigToken = cdk.Token.asAny({
+      resolve: () => ([{ arn: 'TestArn', localMountPath: '/mnt' }]),
+    });
+
+    new lambda.CfnFunction(stack, 'MyLambda', {
+      code: codeToken,
+      role: role,
+      fileSystemConfigs: fsConfigToken,
+    });
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Role: { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
+        Code: { S3Bucket: { Ref: 'MyBucketF68F3FF0' } },
+        FileSystemConfigs: [{ Arn: 'TestArn', LocalMountPath: '/mnt' }],
+      },
+    });
   });
 });
 

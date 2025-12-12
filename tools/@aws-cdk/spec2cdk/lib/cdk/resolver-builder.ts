@@ -1,5 +1,5 @@
 import { DefinitionReference, Property } from '@aws-cdk/service-spec-types';
-import { expr, Expression, Module, Type } from '@cdklabs/typewriter';
+import { CallableDeclaration, expr, Expression, Lambda, Module, Parameter, Type } from '@cdklabs/typewriter';
 import { CDK_CORE } from './cdk';
 import { RelationshipDecider, Relationship } from './relationship-decider';
 import { NON_RESOLVABLE_PROPERTY_NAMES } from './tagging';
@@ -28,7 +28,8 @@ export class ResolverBuilder {
     private readonly module: Module,
   ) {}
 
-  public buildResolver(prop: Property, cfnName: string): ResolverResult {
+  public buildResolver(prop: Property, cfnName: string, isTypeProp = false): ResolverResult {
+    const shouldGenerateRelationships = isTypeProp ? this.relationshipDecider.enableNestedRelationships : true;
     const name = propertyNameFromCloudFormation(cfnName);
     const baseType = this.converter.typeFromProperty(prop);
 
@@ -37,17 +38,19 @@ export class ResolverBuilder {
     // but didn't.
     const resolvableType = cfnName in NON_RESOLVABLE_PROPERTY_NAMES ? baseType : this.converter.makeTypeResolvable(baseType);
 
-    const relationships = this.relationshipDecider.parseRelationship(name, prop.relationshipRefs);
-    if (relationships.length > 0) {
-      return this.buildRelationshipResolver({ relationships, baseType, name, resolvableType });
-    }
+    if (shouldGenerateRelationships) {
+      const relationships = this.relationshipDecider.parseRelationship(this.module, name, prop.relationshipRefs);
+      if (relationships.length > 0) {
+        return this.buildRelationshipResolver({ relationships, baseType, name, resolvableType });
+      }
 
-    const originalType = this.converter.originalType(baseType);
-    if (this.relationshipDecider.needsFlatteningFunction(name, prop)) {
-      const optional = !prop.required;
-      const typeRef = originalType.type === 'array' ? originalType.element : originalType;
-      if (typeRef.type === 'ref') {
-        return this.buildNestedResolver({ name, baseType, typeRef: typeRef, resolvableType, optional });
+      const originalType = this.converter.originalType(baseType);
+      if (this.relationshipDecider.needsFlatteningFunction(name, prop)) {
+        const optional = !prop.required;
+        const typeRef = originalType.type === 'array' ? originalType.element : originalType;
+        if (typeRef.type === 'ref') {
+          return this.buildNestedResolver({ name, baseType, typeRef: typeRef, resolvableType, optional });
+        }
       }
     }
 
@@ -69,26 +72,32 @@ export class ResolverBuilder {
     if (!(baseType === Type.STRING || baseType.arrayOfType === Type.STRING)) {
       throw Error('Trying to map to a non string property');
     }
-    const newTypes = relationships.map(t => Type.fromName(this.module, t.referenceType));
+    const newTypes = relationships.map(t => t.refType);
     const propType = resolvableType.arrayOfType
       ? Type.arrayOf(Type.distinctUnionOf(resolvableType.arrayOfType, ...newTypes))
       : Type.distinctUnionOf(resolvableType, ...newTypes);
 
+    const typeDisplayNames = [
+      ...[...new Set(relationships.map(r => r.refTypeDisplayName))],
+      resolvableType.arrayOfType?.toString() ?? resolvableType.toString(),
+    ].join(' | ');
+
     // Generates code like:
-    // For single value: (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? (props.roleArn as IUserRef)?.userRef?.userArn ?? props.roleArn
-    // For array: props.roleArns?.map((item: any) => (item as IRoleRef)?.roleRef?.roleArn ?? (item as IUserRef)?.userRef?.userArn ?? item)
+    // For single value T | string : (props.xx as IxxxRef)?.xxxRef?.xxxArn ?? cdk.ensureStringOrUndefined(props.xxx, "xxx", "iam.IxxxRef | string");
+    // For array <T | string>[]: cdk.mapArrayInPlace(props.layers, (item: IxxxRef | string) => (item as IxxxRef)?.xxxRef?.xxxArn ?? cdk.ensureStringOrUndefined(item, "xxx", "lambda.IxxxRef | string"))
     // Ensures that arn properties always appear first in the chain as they are more general
-    const arnRels = relationships.filter(r => r.propName.toLowerCase().endsWith('arn'));
-    const otherRels = relationships.filter(r => !r.propName.toLowerCase().endsWith('arn'));
+    const arnRels = relationships.filter(r => r.refPropName.toLowerCase().endsWith('arn'));
+    const otherRels = relationships.filter(r => !r.refPropName.toLowerCase().endsWith('arn'));
 
     const buildChain = (itemName: string) => [
       ...[...arnRels, ...otherRels]
-        .map(r => `(${itemName} as ${r.referenceType})?.${r.referenceName}?.${r.propName}`),
-      itemName,
+        .map(r => `(${itemName} as ${r.refType})?.${r.refPropStructName}?.${r.refPropName}`),
+      `cdk.ensureStringOrUndefined(${itemName}, "${name}", "${typeDisplayNames}")`,
     ].join(' ?? ');
-    const resolver = (_: Expression) => {
-      if (resolvableType.arrayOfType) {
-        return expr.directCode(`props.${name}?.map((item: any) => ${ buildChain('item') })`);
+    const resolver = (props: Expression) => {
+      if (propType.arrayOfType) {
+        const mapper = this.createMapperLambda(propType.arrayOfType, expr.directCode(buildChain('item')));
+        return CDK_CORE.mapArrayInPlace.call(expr.get(props, name), mapper);
       } else {
         return expr.directCode(buildChain(`props.${name}`));
       }
@@ -110,20 +119,35 @@ export class ResolverBuilder {
 
     const resolver = (props: Expression) => {
       const propValue = expr.get(props, name);
-      const isArray = baseType.arrayOfType !== undefined;
+      // Prop can be of type IResolvable | Array<IResolvable | CfnProperty>
+      const arrayType = resolvableType.unionOfTypes?.find(t => t.arrayOfType)?.arrayOfType;
 
-      const flattenCall = isArray
-        ? propValue.callMethod('map', expr.ident(functionName))
-        : expr.ident(functionName).call(propValue);
+      let flattenCall;
+      if (arrayType) {
+        const mapper = this.createMapperLambda(arrayType, expr.ident(functionName).call(expr.ident('item')));
+        flattenCall = CDK_CORE.mapArrayInPlace.call(propValue, mapper);
+      } else {
+        flattenCall = expr.ident(functionName).call(propValue);
+      }
 
       const condition = optional
-        ? expr.cond(propValue).then(flattenCall).else(expr.UNDEFINED)
+        ? expr.cond(expr.not(propValue)).then(expr.UNDEFINED).else(flattenCall)
         : flattenCall;
 
-      return isArray
+      return arrayType
         ? expr.cond(CDK_CORE.isResolvableObject(propValue)).then(propValue).else(condition)
         : condition;
     };
     return { name, propType: resolvableType, resolvableType, baseType, resolver };
+  }
+
+  /**
+   * Creates an arrow function `(item: T) => body` for use with array mapping.
+   * Parameter requires a CallableDeclaration scope, but Lambda is an anonymous
+   * expression so we provide a placeholder.
+   */
+  private createMapperLambda(itemType: Type, body: Expression): Lambda {
+    const lambdaScope: CallableDeclaration = { parameters: [], returnType: Type.VOID, name: 'LambdaScope' };
+    return new Lambda([new Parameter(lambdaScope, { name: 'item', type: itemType })], body);
   }
 }

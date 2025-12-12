@@ -1,0 +1,38 @@
+{
+  "resources": {
+    "Domain": {
+      "grants": {
+        "read": {
+          "actions": [
+            "es:ESHttpGet",
+            "es:ESHttpHead"
+          ],
+          "arnFormat": ["${domainArn}", "${domainArn}/*"],
+          "docSummary": "Grant read permissions for this domain and its contents to an IAM\nprincipal (Role/Group/User)."
+        },
+        "write": {
+          "actions": [
+            "es:ESHttpDelete",
+            "es:ESHttpPost",
+            "es:ESHttpPut",
+            "es:ESHttpPatch"
+          ],
+          "arnFormat": ["${domainArn}", "${domainArn}/*"],
+          "docSummary": "Grant write permissions for this domain and its contents to an IAM\nprincipal (Role/Group/User)."
+        },
+        "readWrite": {
+          "actions": [
+            "es:ESHttpGet",
+            "es:ESHttpHead",
+            "es:ESHttpDelete",
+            "es:ESHttpPost",
+            "es:ESHttpPut",
+            "es:ESHttpPatch"
+          ],
+          "arnFormat": ["${domainArn}", "${domainArn}/*"],
+          "docSummary": "Grant read/write permissions for this domain and its contents to an IAM\nprincipal (Role/Group/User)."
+        }
+      }
+    }
+  }
+}

@@ -1,5 +1,5 @@
 import { Resource, TypeDefinition } from '@aws-cdk/service-spec-types';
-import { ClassType, expr, FreeFunction, Module, Stability, stmt, StructType, Type } from '@cdklabs/typewriter';
+import { ClassType, expr, FreeFunction, Module, PropertySpec, Stability, stmt, StructType, Type } from '@cdklabs/typewriter';
 import { CloudFormationMapping } from './cloudformation-mapping';
 import { RelationshipDecider } from './relationship-decider';
 import { TypeConverter } from './type-converter';
@@ -14,6 +14,18 @@ export interface TypeDefinitionStructOptions {
   readonly resource: Resource;
   readonly resourceClass: ClassType;
   readonly relationshipDecider: RelationshipDecider;
+  /**
+   * Add the cfn producer helpers.
+   * Validator + ToCloudFormation
+   * @default true
+   */
+  readonly cfnProducer?: boolean;
+  /**
+   * Add the cfn parser helpers.
+   * fromCloudFormation
+   * @default true
+   */
+  readonly cfnParser?: boolean;
 }
 
 /**
@@ -27,6 +39,7 @@ export class TypeDefinitionStruct extends StructType {
   private readonly resource: Resource;
   private readonly module: Module;
   private readonly relationshipDecider: RelationshipDecider;
+  private readonly options: TypeDefinitionStructOptions;
 
   constructor(options: TypeDefinitionStructOptions) {
     super(options.resourceClass, {
@@ -42,16 +55,21 @@ export class TypeDefinitionStruct extends StructType {
       },
     });
 
+    this.options = options;
     this.typeDefinition = options.typeDefinition;
     this.converter = options.converter;
     this.resource = options.resource;
     this.relationshipDecider = options.relationshipDecider;
+    this.options = options;
 
     this.module = Module.of(this);
   }
 
   public build() {
-    const cfnMapping = new CloudFormationMapping(this.module, this.converter);
+    const cfnMapping = new CloudFormationMapping(this.module, this.converter, {
+      resourceType: this.resource.cloudFormationType,
+      propTypeName: this.typeDefinition.name,
+    });
 
     const decider = new TypeDefinitionDecider(this.resource, this.typeDefinition, this.converter, this.relationshipDecider);
 
@@ -90,7 +108,26 @@ export class TypeDefinitionStruct extends StructType {
       );
     }
 
-    cfnMapping.makeCfnProducer(this.module, this);
-    cfnMapping.makeCfnParser(this.module, this);
+    if (this.options.cfnProducer ?? true) {
+      cfnMapping.makeCfnProducer(this.module, this);
+    }
+    if (this.options.cfnParser ?? true) {
+      cfnMapping.makeCfnParser(this.module, this);
+    }
+  }
+}
+
+/**
+ * Same as TypeDefinitionStruct, but all props are optional.
+ */
+export class PartialTypeDefinitionStruct extends TypeDefinitionStruct {
+  /**
+   * Change property spec to make every prop optional.
+   */
+  public addProperty(prop: PropertySpec) {
+    return super.addProperty({
+      ...prop,
+      optional: true,
+    });
   }
 }

@@ -1,8 +1,15 @@
+/**
+ * spec2cdk CLI entry point
+ *
+ * !!! Note that this CLI is never used in the course of normal repository operations !!!
+ * !!! It only exists for experimentation purposes when developing new code gen. !!!
+ */
 import * as path from 'node:path';
 import { parseArgs } from 'node:util';
 import { PositionalArg, showHelp } from './help';
-import { GenerateModuleMap, PatternKeys, generate, generateAll } from '../generate';
-import { log, parsePattern } from '../util';
+import { AwsCdkLibBuilder } from '../cdk/aws-cdk-lib';
+import { GenerateModuleMap, GenerateOptions, generate, generateAll } from '../generate';
+import { log } from '../util';
 
 const command = 'spec2cdk';
 const args: PositionalArg[] = [{
@@ -22,17 +29,14 @@ const config = {
   },
   'pattern': {
     type: 'string',
-    default: '%moduleName%/%serviceShortName%.generated.ts',
     description: 'File and path pattern for generated files',
   },
   'augmentations': {
     type: 'string',
-    default: '%moduleName%/%serviceShortName%-augmentations.generated.ts',
     description: 'File and path pattern for generated augmentations files',
   },
   'metrics': {
     type: 'string',
-    default: '%moduleName%/%serviceShortName%-canned-metrics.generated.ts',
     description: 'File and path pattern for generated canned metrics files ',
   },
   'service': {
@@ -89,34 +93,19 @@ export async function main(argv: string[]) {
     throw new EvalError('Please specify the output-path');
   }
 
-  const pss: Record<PatternKeys, true> = { moduleName: true, serviceName: true, serviceShortName: true };
-
   const outputPath = outputDir ?? path.join(__dirname, '..', 'services');
-  const resourceFilePattern = parsePattern(
-    stringOr(options.pattern, path.join('%moduleName%', '%serviceShortName%.generated.ts')),
-    pss,
-  );
 
-  const augmentationsFilePattern = parsePattern(
-    stringOr(options.augmentations, path.join('%moduleName%', '%serviceShortName%-augmentations.generated.ts')),
-    pss,
-  );
-
-  const cannedMetricsFilePattern = parsePattern(
-    stringOr(options.metrics, path.join('%moduleName%', '%serviceShortName%-canned-metrics.generated.ts')),
-    pss,
-  );
-
-  const generatorOptions = {
+  const generatorOptions: GenerateOptions<typeof AwsCdkLibBuilder> = {
     outputPath,
-    filePatterns: {
-      resources: resourceFilePattern,
-      augmentations: augmentationsFilePattern,
-      cannedMetrics: cannedMetricsFilePattern,
-    },
     clearOutput: options['clear-output'],
-    augmentationsSupport: options['augmentations-support'],
     debug: options.debug as boolean,
+    builderProps: {
+      filePatterns: {
+        resources: options.pattern,
+        augmentations: options.augmentations,
+        cannedMetrics: options.metrics,
+      },
+    },
   };
 
   if (options.service?.length) {
@@ -132,15 +121,4 @@ export async function main(argv: string[]) {
   }
 
   await generateAll(generatorOptions);
-}
-
-function stringOr(pat: unknown, def: string) {
-  if (!pat) {
-    return def;
-  }
-  if (typeof pat !== 'string') {
-    // eslint-disable-next-line @cdklabs/no-throw-default-error
-    throw new Error(`Expected string, got: ${JSON.stringify(pat)}`);
-  }
-  return pat;
 }
