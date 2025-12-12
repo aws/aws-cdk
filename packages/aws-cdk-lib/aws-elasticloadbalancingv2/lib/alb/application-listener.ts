@@ -15,7 +15,7 @@ import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { ApplicationProtocol, ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType, IpAddressType, SslPolicy, getRecommendedTlsPolicy } from '../shared/enums';
+import { ApplicationProtocol, ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType, IpAddressType, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
 
@@ -277,12 +277,17 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       advertiseTrustStoreCaNames = props.mutualAuthentication.advertiseTrustStoreCaNames ? 'on' : 'off';
     }
 
+    // Calculate SSL policy before calling super()
+    const sslPolicy = props.sslPolicy ?? (protocol === ApplicationProtocol.HTTPS ? 
+      (FeatureFlags.of(scope).isEnabled(cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY) ? 
+        SslPolicy.RECOMMENDED_TLS_PQ : SslPolicy.RECOMMENDED_TLS) : undefined);
+
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
       protocol,
       port,
-      sslPolicy: props.sslPolicy ?? (protocol === ApplicationProtocol.HTTPS ? getRecommendedTlsPolicy(scope) : undefined),
+      sslPolicy,
       mutualAuthentication: props.mutualAuthentication ? {
         advertiseTrustStoreCaNames,
         ignoreClientCertificateExpiry: props.mutualAuthentication?.ignoreClientCertificateExpiry,
@@ -591,6 +596,8 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     action.bind(this, this);
     this._setDefaultAction(action);
   }
+
+
 }
 
 /**
