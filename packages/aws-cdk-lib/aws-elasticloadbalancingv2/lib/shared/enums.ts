@@ -118,6 +118,15 @@ export enum SslPolicy {
   RECOMMENDED_TLS = 'ELBSecurityPolicy-TLS13-1-2-2021-06',
 
   /**
+   * The recommended post-quantum security policy for TLS listeners.
+   * 
+   * This policy includes TLS 1.3 and 1.2 with post-quantum hybrid key exchange using ML-KEM.
+   * Restricted cipher suite for enhanced security with quantum resistance.
+   * AWS recommended policy for post-quantum cryptography.
+   */
+  RECOMMENDED_TLS_PQ = 'ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09',
+
+  /**
    * The recommended policy for http listeners.
    * This is the default security policy for listeners created using the AWS CLI
    */
@@ -443,7 +452,7 @@ export enum DesyncMitigationMode {
  */
 export function getRecommendedTlsPolicy(scope: Construct): string {
   if (FeatureFlags.of(scope).isEnabled(cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY)) {
-    return SslPolicy.TLS13_12_RES_PQ;
+    return SslPolicy.RECOMMENDED_TLS_PQ;
   }
   return SslPolicy.RECOMMENDED_TLS;
 }
