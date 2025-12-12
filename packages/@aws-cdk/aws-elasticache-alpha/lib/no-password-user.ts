@@ -9,6 +9,11 @@ import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 const ELASTICACHE_NOPASSWORDUSER_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.NoPasswordUser');
 
 /**
+ * List of engines that support no-password authentication.
+ */
+const SUPPORTED_NO_PASSWORD_ENGINES = [UserEngine.REDIS] as const;
+
+/**
  * Properties for defining an ElastiCache user with no password authentication.
  */
 export interface NoPasswordUserProps extends UserBaseProps {
@@ -86,8 +91,8 @@ export class NoPasswordUser extends UserBase {
     this.userName = props.userName ?? props.userId;
     this.accessString = props.accessControl.accessString;
 
-    if (this.engine === UserEngine.VALKEY) {
-      throw new ValidationError('Valkey engine does not support no-password authentication.', this);
+    if (!SUPPORTED_NO_PASSWORD_ENGINES.includes(this.engine as any)) {
+      throw new ValidationError(`Engine '${this.engine}' does not support no-password authentication. Supported engines: ${SUPPORTED_NO_PASSWORD_ENGINES.join(', ')}.`, this);
     }
 
     this.resource = new CfnUser(this, 'Resource', {
