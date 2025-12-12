@@ -269,3 +269,24 @@ const user = new iam.User(this, 'MyUser');
 key.grantGenerateMac(user); // Adds 'kms:GenerateMac' to the principal's policy
 key.grantVerifyMac(user); // Adds 'kms:VerifyMac' to the principal's policy
 ```
+
+### Bypass policy lockout safety check
+
+By default, AWS KMS prevents you from creating a key policy that doesn't give you permission to manage the key.
+You can bypass this safety check by setting `bypassPolicyLockoutSafetyCheck` to `true`.
+
+```ts
+declare const myCustomPolicy: iam.PolicyDocument;
+const key = new kms.Key(this, 'MyKey', {
+  bypassPolicyLockoutSafetyCheck: true,
+  policy: myCustomPolicy,
+});
+```
+
+> **Warning:** Setting this value to true increases the risk that the KMS key becomes unmanageable.
+> Do not set this value to true indiscriminately.
+
+Use this parameter only when you intend to prevent the principal that is making the request
+from making a subsequent `PutKeyPolicy` request on the KMS key.
+
+See [Default key policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#prevent-unmanageable-key) for more information.
