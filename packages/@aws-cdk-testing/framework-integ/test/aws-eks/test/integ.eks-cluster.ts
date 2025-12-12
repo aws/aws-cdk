@@ -72,8 +72,6 @@ class EksClusterStack extends Stack {
       },
     });
 
-    this.addSecurityGroupIngressRules();
-
     this.assertFargateProfile();
 
     this.assertCapacityX86();
@@ -114,6 +112,8 @@ class EksClusterStack extends Stack {
 
     this.assertExtendedServiceAccount();
 
+    this.addSecurityGroupIngressRules();
+
     new CfnOutput(this, 'ClusterEndpoint', { value: this.cluster.clusterEndpoint });
     new CfnOutput(this, 'ClusterArn', { value: this.cluster.clusterArn });
     new CfnOutput(this, 'ClusterCertificateAuthorityData', { value: this.cluster.clusterCertificateAuthorityData });
@@ -127,8 +127,19 @@ class EksClusterStack extends Stack {
     this.cluster.clusterSecurityGroup.addIngressRule(
       ec2.Peer.ipv4(this.vpc.vpcCidrBlock),
       ec2.Port.tcp(443),
-      'Allow HTTPS from VPC'
+      'Allow HTTPS from VPC IPv4'
     );
+    this.cluster.clusterSecurityGroup.addIngressRule(
+      ec2.Peer.ipv6('::/0'),
+      ec2.Port.tcp(443),
+      'Allow HTTPS from IPv6'
+    );
+    
+    // Add ingress rules to auto scaling group security groups
+    if (this.cluster.defaultCapacity) {
+      this.cluster.defaultCapacity.connections.allowFromAnyIpv4(ec2.Port.tcp(22), 'SSH access IPv4');
+      this.cluster.defaultCapacity.connections.allowFrom(ec2.Peer.ipv6('::/0'), ec2.Port.tcp(22), 'SSH access IPv6');
+    }
   }
 
   private assertServiceAccount() {
