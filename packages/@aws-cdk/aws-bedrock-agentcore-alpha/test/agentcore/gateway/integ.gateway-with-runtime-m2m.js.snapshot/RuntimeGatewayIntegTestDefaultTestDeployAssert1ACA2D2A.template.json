@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallLambdagetFunction7a567ed03bb6f9bfe8aa853222f63fa0": {
-   "Type": "Custom::DeployAssert@SdkCallLambdagetFunction",
+  "AwsApiCallbedrockagentcoreinvokeAgentRuntimec1914e60c8c0a8000b719934606d456b": {
+   "Type": "Custom::DeployAssert@SdkCallbedrock-agentcoreinvokeAgentRunt",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -9,14 +9,31 @@
       "Arn"
      ]
     },
-    "service": "Lambda",
-    "api": "getFunction",
-    "expected": "{\"$ObjectLike\":{\"Configuration\":{\"FunctionName\":\"integ-test-gateway-lambda\",\"Handler\":\"index.handler\"}}}",
+    "service": "bedrock-agentcore",
+    "api": "invokeAgentRuntime",
+    "expected": "{\"$StringLike\":\".*Hello from Gateway Lambda.*\"}",
+    "actualPath": "response.output.result.content[0].text",
     "parameters": {
-     "FunctionName": "\"integ-test-gateway-lambda\""
+     "agentRuntimeArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "BedrockAgentCoreRuntimeGatewayM2MIntegTest:ExportsOutputFnGetAttTestRuntime65042BB5AgentRuntimeArnE8B3C8DA"
+        },
+        "\""
+       ]
+      ]
+     },
+     "runtimeSessionId": "\"0f7b6038-ea81-4e93-8689-421ea41d44eb\"",
+     "payload": "\"{\\\"input\\\":{\\\"prompt\\\":\\\"Test Gateway M2M authentication\\\"}}\""
     },
-    "flattenResponse": "false",
-    "salt": "1765252315889"
+    "flattenResponse": "true",
+    "outputPaths": [
+     "response.output.result.content[0].text"
+    ],
+    "salt": "1765254880507"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -49,7 +66,7 @@
        "Statement": [
         {
          "Action": [
-          "lambda:GetFunction"
+          "bedrock-agentcore:InvokeAgentRuntime"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -84,10 +101,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallLambdagetFunction7a567ed03bb6f9bfe8aa853222f63fa0": {
+  "AssertionResultsAwsApiCallbedrockagentcoreinvokeAgentRuntimec1914e60c8c0a8000b719934606d456b": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallLambdagetFunction7a567ed03bb6f9bfe8aa853222f63fa0",
+     "AwsApiCallbedrockagentcoreinvokeAgentRuntimec1914e60c8c0a8000b719934606d456b",
      "assertion"
     ]
    }
