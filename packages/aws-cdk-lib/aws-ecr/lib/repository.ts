@@ -23,6 +23,7 @@ import {
   Arn,
   ValidationError,
   UnscopedValidationError,
+  CfnDeletionPolicy,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -841,12 +842,7 @@ export class Repository extends RepositoryBase {
       resourceName: this.physicalName,
     });
 
-    if (props.emptyOnDelete && props.removalPolicy !== RemovalPolicy.DESTROY) {
-      throw new ValidationError('Cannot use \'emptyOnDelete\' property on a repository without setting removal policy to \'DESTROY\'.', this);
-    } else if (props.emptyOnDelete == undefined && props.autoDeleteImages) {
-      if (props.removalPolicy !== RemovalPolicy.DESTROY) {
-        throw new ValidationError('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.', this);
-      }
+    if (props.emptyOnDelete ||(props.emptyOnDelete == undefined && props.autoDeleteImages)) {
       this.enableAutoDeleteImages();
     }
 
@@ -914,6 +910,65 @@ export class Repository extends RepositoryBase {
     }
 
     this.lifecycleRules.push({ ...rule });
+  }
+
+  /**
+   * Enable automatic deletion of images in the repository when it is removed from the stack.
+   * This requires the repository's removal policy to be set to DESTROY.
+   */
+  @MethodMetadata()
+  public enableAutoDeleteImages() {
+    // Validate that the removal policy is DESTROY
+    if (this._resource.cfnOptions.deletionPolicy !== CfnDeletionPolicy.DELETE
+      || this._resource.cfnOptions.updateReplacePolicy !== CfnDeletionPolicy.DELETE) {
+      throw new ValidationError('Cannot use auto-delete images on a repository without setting removal policy to \'DESTROY\'.', this);
+    }
+
+    const firstTime = Stack.of(this).node.tryFindChild(`${AUTO_DELETE_IMAGES_RESOURCE_TYPE}CustomResourceProvider`) === undefined;
+    if (!firstTime) {
+      // Provider already exists, so we only need to tag this repository
+      Tags.of(this._resource).add(AUTO_DELETE_IMAGES_TAG, 'true');
+      return;
+    }
+
+    const provider = AutoDeleteImagesProvider.getOrCreateProvider(this, AUTO_DELETE_IMAGES_RESOURCE_TYPE, {
+      useCfnResponseWrapper: false,
+      description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
+    });
+
+    // Use a iam policy to allow the custom resource to list & delete
+    // images in the repository and the ability to get all repositories to find the arn needed on delete.
+    provider.addToRolePolicy({
+      Effect: 'Allow',
+      Action: [
+        'ecr:BatchDeleteImage',
+        'ecr:DescribeRepositories',
+        'ecr:ListImages',
+        'ecr:ListTagsForResource',
+      ],
+      Resource: [`arn:${Aws.PARTITION}:ecr:${Stack.of(this).region}:${Stack.of(this).account}:repository/*`],
+      Condition: {
+        StringEquals: {
+          ['ecr:ResourceTag/' + AUTO_DELETE_IMAGES_TAG]: 'true',
+        },
+      },
+    });
+
+    const customResource = new CustomResource(this, 'AutoDeleteImagesCustomResource', {
+      resourceType: AUTO_DELETE_IMAGES_RESOURCE_TYPE,
+      serviceToken: provider.serviceToken,
+      properties: {
+        RepositoryName: this.repositoryName,
+      },
+    });
+    customResource.node.addDependency(this);
+
+    // We also tag the repository to record the fact that we want it autodeleted.
+    // The custom resource will check this tag before actually doing the delete.
+    // Because tagging and untagging will ALWAYS happen before the CR is deleted,
+    // we can set `autoDeleteImages: false` without the removal of the CR emptying
+    // the repository as a side effect.
+    Tags.of(this._resource).add(AUTO_DELETE_IMAGES_TAG, 'true');
   }
 
   private validateTagMutability(tagMutability?: TagMutability, exclusionFilters?: ImageTagMutabilityExclusionFilter[]): void {
@@ -1024,50 +1079,6 @@ export class Repository extends RepositoryBase {
     }
 
     throw new ValidationError(`Unexpected 'encryptionType': ${encryptionType}`, this);
-  }
-
-  private enableAutoDeleteImages() {
-    const firstTime = Stack.of(this).node.tryFindChild(`${AUTO_DELETE_IMAGES_RESOURCE_TYPE}CustomResourceProvider`) === undefined;
-    const provider = AutoDeleteImagesProvider.getOrCreateProvider(this, AUTO_DELETE_IMAGES_RESOURCE_TYPE, {
-      useCfnResponseWrapper: false,
-      description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
-    });
-
-    if (firstTime) {
-      // Use a iam policy to allow the custom resource to list & delete
-      // images in the repository and the ability to get all repositories to find the arn needed on delete.
-      provider.addToRolePolicy({
-        Effect: 'Allow',
-        Action: [
-          'ecr:BatchDeleteImage',
-          'ecr:DescribeRepositories',
-          'ecr:ListImages',
-          'ecr:ListTagsForResource',
-        ],
-        Resource: [`arn:${Aws.PARTITION}:ecr:${Stack.of(this).region}:${Stack.of(this).account}:repository/*`],
-        Condition: {
-          StringEquals: {
-            ['ecr:ResourceTag/' + AUTO_DELETE_IMAGES_TAG]: 'true',
-          },
-        },
-      });
-    }
-
-    const customResource = new CustomResource(this, 'AutoDeleteImagesCustomResource', {
-      resourceType: AUTO_DELETE_IMAGES_RESOURCE_TYPE,
-      serviceToken: provider.serviceToken,
-      properties: {
-        RepositoryName: this.repositoryName,
-      },
-    });
-    customResource.node.addDependency(this);
-
-    // We also tag the repository to record the fact that we want it autodeleted.
-    // The custom resource will check this tag before actually doing the delete.
-    // Because tagging and untagging will ALWAYS happen before the CR is deleted,
-    // we can set `autoDeleteImages: false` without the removal of the CR emptying
-    // the repository as a side effect.
-    Tags.of(this._resource).add(AUTO_DELETE_IMAGES_TAG, 'true');
   }
 }
 
