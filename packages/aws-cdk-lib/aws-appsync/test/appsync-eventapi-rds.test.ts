@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { Template } from '../../assertions';
 import { Vpc, SecurityGroup, SubnetType } from '../../aws-ec2';
 import { DatabaseSecret, DatabaseClusterEngine, AuroraMysqlEngineVersion, ServerlessCluster, DatabaseCluster, ClusterInstance, AuroraPostgresEngineVersion } from '../../aws-rds';

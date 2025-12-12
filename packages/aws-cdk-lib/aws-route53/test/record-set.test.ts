@@ -1,5 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Annotations, Template, Match } from '../../assertions';
+import { Annotations, Template } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
 import * as origins from '../../aws-cloudfront-origins';
 import * as iam from '../../aws-iam';

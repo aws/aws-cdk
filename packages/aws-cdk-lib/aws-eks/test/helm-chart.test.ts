@@ -6,8 +6,6 @@ import { App, Duration, Stack } from '../../core';
 import * as eks from '../lib';
 import { Cluster, KubernetesVersion } from '../lib';
 
-/* eslint-disable max-len */
-
 describe('helm chart', () => {
   describe('add Helm chart', () => {
     let app: App;

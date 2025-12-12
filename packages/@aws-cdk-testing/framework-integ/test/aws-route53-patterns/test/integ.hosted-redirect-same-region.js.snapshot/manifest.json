@@ -156,6 +156,15 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "redirectRedirectDistributionCFDistribution1A4C48E3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "redirectRedirectDistributionCFDistribution1A4C48E3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "integ-https-redirect-same-region"

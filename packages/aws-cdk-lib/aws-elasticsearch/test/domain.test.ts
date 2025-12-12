@@ -1,4 +1,4 @@
-/* eslint-disable jest/expect-expect */
+
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';

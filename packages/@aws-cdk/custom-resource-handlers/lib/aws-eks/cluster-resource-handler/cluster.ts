@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as EKS from '@aws-sdk/client-eks';
 import { EksClient, ResourceEvent, ResourceHandler } from './common';

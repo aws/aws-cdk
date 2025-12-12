@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 
 /**
  * The event received by the Lambda function

@@ -1,3 +1,4 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 import { FlagInfo, FlagType } from './private/flag-modeling';
 
 ////////////////////////////////////////////////////////////////////////
@@ -158,10 +159,10 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       When enabled, the \`signingProfileName\` property is passed to the L1 \`CfnSigningProfile\` construct,
       which ensures that the AWS Signer profile is created with the specified name.
-      
+
       When disabled, the \`signingProfileName\` is not passed to CloudFormation, maintaining backward
       compatibility with existing deployments where CloudFormation auto-generated profile names.
-      
+
       This feature flag is needed because enabling it can cause existing signing profiles to be
       replaced during deployment if a \`signingProfileName\` was specified but not previously used
       in the CloudFormation template.`,
@@ -1825,7 +1826,7 @@ export function futureFlagDefault(flag: string): boolean {
   const value = CURRENT_VERSION_FLAG_DEFAULTS[flag] ?? false;
   if (typeof value !== 'boolean') {
     // This should never happen, if this error is thrown it's a bug
-    // eslint-disable-next-line @cdklabs/no-throw-default-error
+
     throw new Error(`futureFlagDefault: default type of flag '${flag}' should be boolean, got '${typeof value}'`);
   }
   return value;

@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "description": "Version 2 of the AWS Cloud Development Kit library",
   "main": "index.js",
-  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
@@ -12,7 +11,7 @@
   "stability": "stable",
   "maturity": "stable",
   "scripts": {
-    "gen": "ts-node -P tsconfig.dev.json scripts/gen.ts",
+    "gen": "ts-node scripts/gen.ts",
     "build": "env NODE_OPTIONS=\"--max-old-space-size=8192\" cdk-build",
     "lint": "env NODE_OPTIONS=\"--max-old-space-size=8192\" cdk-lint",
     "test": "jest",
@@ -26,13 +25,13 @@
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract",
-    "on-bump": "ts-node -P tsconfig.dev.json ./cx-api/build-tools/update-vnext.ts && ts-node -P tsconfig.dev.json ./cx-api/build-tools/flag-report"
+    "on-bump": "ts-node ./cx-api/build-tools/update-vnext.ts && ts-node ./cx-api/build-tools/flag-report"
   },
   "cdk-build": {
     "stripDeprecated": true,
     "compressAssembly": true,
     "pre": [
-      "ts-node -P tsconfig.dev.json region-info/build-tools/generate-static-data.ts",
+      "ts-node region-info/build-tools/generate-static-data.ts",
       "(rm -rf core/test/fs/fixtures && cd core/test/fs && tar -xzf fixtures.tar.gz)",
       "(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzvf fixtures.tar.gz)",
       "./scripts/airlift-custom-resource-handlers.sh"

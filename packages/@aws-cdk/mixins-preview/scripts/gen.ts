@@ -1,4 +1,4 @@
-/* eslint-disable @cdklabs/no-throw-default-error */
+
 import { generateAll as generateCfnPropsMixins } from './spec2mixins';
 import { generateAll as generateLogsDeliveryMixins } from './spec2logs';
 import { generateAll as generateEvents } from './spec2eventbridge';
@@ -9,7 +9,6 @@ import type { ModuleMap, ModuleMapEntry } from '@aws-cdk/spec2cdk/lib/module-top
 import type { ModuleDefinition } from '@aws-cdk/pkglint';
 
 main().catch(e => {
-  // eslint-disable-next-line no-console
   console.error(e);
   process.exitCode = 1;
 });

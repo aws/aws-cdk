@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import * as esbuild from 'esbuild';
@@ -85,9 +85,9 @@ async function minifyAndBundle(infile: string, outfile: string) {
       kind: 'error',
       color: true,
     });
-    // eslint-disable-next-line no-console
+
     console.log(messages.join('\n'));
-    // eslint-disable-next-line no-console
+
     console.log(`${messages.length} errors. For false positives, put '// esbuild-disable <code> - <motivation>' on the line before`);
     process.exitCode = 1;
   }
@@ -128,7 +128,6 @@ function ignoreWarnings(result: esbuild.BuildResult) {
 }
 
 main().catch((e) => {
-  // eslint-disable-next-line no-console
   console.error(e);
   process.exitCode = 1;
 });

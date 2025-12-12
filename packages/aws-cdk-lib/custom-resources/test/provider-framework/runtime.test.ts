@@ -1,5 +1,4 @@
-/* eslint-disable max-len */
-/* eslint-disable no-console */
+
 /* eslint-disable @typescript-eslint/no-require-imports */
 import mocks = require('./mocks');
 import cfnResponse = require('../../lib/provider-framework/runtime/cfn-response');

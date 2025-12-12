@@ -1,6 +1,5 @@
 import { Template } from '../../assertions';
 
-import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 
 import { Duration, Stack } from '../../core';
@@ -107,7 +106,7 @@ describe('archive', () => {
     const key = new kms.Key(stack, 'Key');
 
     // WHEN
-    const archive = new Archive(stack, 'Archive', {
+    new Archive(stack, 'Archive', {
       kmsKey: key,
       sourceEventBus: eventBus,
       eventPattern: {
@@ -193,7 +192,7 @@ describe('archive', () => {
     const eventBus = new EventBus(stack, 'Bus');
 
     // WHEN
-    const archive = new Archive(stack, 'Archive', {
+    new Archive(stack, 'Archive', {
       sourceEventBus: eventBus,
       eventPattern: {
         source: ['test'],
