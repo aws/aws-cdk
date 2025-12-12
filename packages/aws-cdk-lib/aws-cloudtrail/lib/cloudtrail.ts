@@ -298,7 +298,7 @@ export class Trail extends Resource {
           conditions: {
             StringEquals: {
               's3:x-amz-acl': 'bucket-owner-full-control',
-// trailName can't stripped out from arn attribute, since it will make circular dependency
+              // trailName can't stripped out from arn attribute, since it will make circular dependency
               'aws:SourceArn': `arn:${this.stack.partition}:cloudtrail:${this.s3bucket.stack.region}:${this.s3bucket.stack.account}:trail/${props.trailName}`,
             },
           },
