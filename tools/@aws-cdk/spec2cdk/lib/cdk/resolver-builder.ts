@@ -1,7 +1,7 @@
 import { DefinitionReference, Property } from '@aws-cdk/service-spec-types';
 import { CallableDeclaration, expr, Expression, Lambda, Module, Parameter, Type } from '@cdklabs/typewriter';
 import { CDK_CORE } from './cdk';
-import { RelationshipDecider, Relationship, GENERATE_RELATIONSHIPS_ON_TYPES } from './relationship-decider';
+import { RelationshipDecider, Relationship } from './relationship-decider';
 import { NON_RESOLVABLE_PROPERTY_NAMES } from './tagging';
 import { TypeConverter } from './type-converter';
 import { flattenFunctionNameFromType, propertyNameFromCloudFormation } from '../naming';
@@ -29,7 +29,7 @@ export class ResolverBuilder {
   ) {}
 
   public buildResolver(prop: Property, cfnName: string, isTypeProp = false): ResolverResult {
-    const shouldGenerateRelationships = isTypeProp ? GENERATE_RELATIONSHIPS_ON_TYPES : true;
+    const shouldGenerateRelationships = isTypeProp ? this.relationshipDecider.enableNestedRelationships : true;
     const name = propertyNameFromCloudFormation(cfnName);
     const baseType = this.converter.typeFromProperty(prop);
 
@@ -39,7 +39,7 @@ export class ResolverBuilder {
     const resolvableType = cfnName in NON_RESOLVABLE_PROPERTY_NAMES ? baseType : this.converter.makeTypeResolvable(baseType);
 
     if (shouldGenerateRelationships) {
-      const relationships = this.relationshipDecider.parseRelationship(name, prop.relationshipRefs);
+      const relationships = this.relationshipDecider.parseRelationship(this.module, name, prop.relationshipRefs);
       if (relationships.length > 0) {
         return this.buildRelationshipResolver({ relationships, baseType, name, resolvableType });
       }
@@ -72,13 +72,13 @@ export class ResolverBuilder {
     if (!(baseType === Type.STRING || baseType.arrayOfType === Type.STRING)) {
       throw Error('Trying to map to a non string property');
     }
-    const newTypes = relationships.map(t => Type.fromName(this.module, t.referenceType));
+    const newTypes = relationships.map(t => t.refType);
     const propType = resolvableType.arrayOfType
       ? Type.arrayOf(Type.distinctUnionOf(resolvableType.arrayOfType, ...newTypes))
       : Type.distinctUnionOf(resolvableType, ...newTypes);
 
     const typeDisplayNames = [
-      ...[...new Set(relationships.map(r => r.typeDisplayName))],
+      ...[...new Set(relationships.map(r => r.refTypeDisplayName))],
       resolvableType.arrayOfType?.toString() ?? resolvableType.toString(),
     ].join(' | ');
 
@@ -86,12 +86,12 @@ export class ResolverBuilder {
     // For single value T | string : (props.xx as IxxxRef)?.xxxRef?.xxxArn ?? cdk.ensureStringOrUndefined(props.xxx, "xxx", "iam.IxxxRef | string");
     // For array <T | string>[]: cdk.mapArrayInPlace(props.layers, (item: IxxxRef | string) => (item as IxxxRef)?.xxxRef?.xxxArn ?? cdk.ensureStringOrUndefined(item, "xxx", "lambda.IxxxRef | string"))
     // Ensures that arn properties always appear first in the chain as they are more general
-    const arnRels = relationships.filter(r => r.propName.toLowerCase().endsWith('arn'));
-    const otherRels = relationships.filter(r => !r.propName.toLowerCase().endsWith('arn'));
+    const arnRels = relationships.filter(r => r.refPropName.toLowerCase().endsWith('arn'));
+    const otherRels = relationships.filter(r => !r.refPropName.toLowerCase().endsWith('arn'));
 
     const buildChain = (itemName: string) => [
       ...[...arnRels, ...otherRels]
-        .map(r => `(${itemName} as ${r.referenceType})?.${r.referenceName}?.${r.propName}`),
+        .map(r => `(${itemName} as ${r.refType})?.${r.refPropStructName}?.${r.refPropName}`),
       `cdk.ensureStringOrUndefined(${itemName}, "${name}", "${typeDisplayNames}")`,
     ].join(' ?? ');
     const resolver = (props: Expression) => {
