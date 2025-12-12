@@ -207,7 +207,7 @@ export interface AgentProps {
    * making changes to the agent. The `DRAFT` version can be continually iterated
    * upon during internal development.
    *
-   * @default - false
+   * @default false
    */
   readonly shouldPrepareAgent?: boolean;
   /**
@@ -250,19 +250,19 @@ export interface AgentProps {
    * Select whether the agent can prompt additional information from the user when it does not have
    * enough information to respond to an utterance
    *
-   * @default - false
+   * @default false
    */
   readonly userInputEnabled?: boolean;
   /**
    * Select whether the agent can generate, run, and troubleshoot code when trying to complete a task
    *
-   * @default - false
+   * @default false
    */
   readonly codeInterpreterEnabled?: boolean;
   /**
    * Whether to delete the resource even if it's in use.
    *
-   * @default - false
+   * @default false
    */
   readonly forceDelete?: boolean;
   /**

@@ -78,7 +78,7 @@ export interface GeneratePhysicalNameV2Options extends cdk.UniqueResourceNameOpt
 
   /**
    * This object is hashed for uniqueness and can force a destroy instead of a replace.
-   * @default: undefined
+   * @default undefined
    */
   destroyCreate?: any;
 }

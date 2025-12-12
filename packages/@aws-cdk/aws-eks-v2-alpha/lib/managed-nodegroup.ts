@@ -253,7 +253,7 @@ export interface NodegroupOptions {
   /**
    * The maximum number of worker nodes that the managed node group can scale out to. Managed node groups can support up to 100 nodes by default.
    *
-   * @default - desiredSize
+   * @default desiredSize
    */
   readonly maxSize?: number;
   /**
@@ -318,7 +318,7 @@ export interface NodegroupOptions {
    * specify an Amazon EC2 SSH key but do not specify a source security group when you create a managed node group,
    * then port 22 on the worker nodes is opened to the internet (0.0.0.0/0)
    *
-   * @default - disabled
+   * @default disabled
    */
   readonly remoteAccess?: NodegroupRemoteAccess;
   /**
@@ -326,7 +326,7 @@ export interface NodegroupOptions {
    * a key and an optional value, both of which you define. Node group tags do not propagate to any other resources
    * associated with the node group, such as the Amazon EC2 instances or subnets.
    *
-   * @default - None
+   * @default None
    */
   readonly tags?: { [name: string]: string };
   /**
@@ -338,7 +338,7 @@ export interface NodegroupOptions {
   /**
    * The capacity type of the nodegroup.
    *
-   * @default - ON_DEMAND
+   * @default ON_DEMAND
    */
   readonly capacityType?: CapacityType;
 
@@ -368,7 +368,7 @@ export interface NodegroupOptions {
    * Specifies whether to enable node auto repair for the node group. Node auto repair is disabled by default.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/node-health.html#node-auto-repair
-   * @default - disabled
+   * @default disabled
    */
   readonly enableNodeAutoRepair?: boolean;
 }
