@@ -1,7 +1,7 @@
+import { App, SecretValue, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { App, SecretValue, Stack } from 'aws-cdk-lib';
 import * as amplify from '../lib';
 
 test('create a domain', () => {

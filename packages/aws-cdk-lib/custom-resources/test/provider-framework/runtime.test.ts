@@ -379,6 +379,25 @@ describe('ResponseURL is passed to user function', () => {
   });
 });
 
+test('waiter state machine execution does not include name field (allows retries)', async () => {
+  // GIVEN
+  mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+  mocks.isCompleteImplMock = async () => ({ IsComplete: true });
+
+  // WHEN
+  await simulateEvent({
+    RequestType: 'Create',
+  });
+
+  // THEN
+  expect(mocks.startStateMachineInput).toBeDefined();
+  expect(mocks.startStateMachineInput?.stateMachineArn).toEqual(mocks.MOCK_SFN_ARN);
+  expect(mocks.startStateMachineInput?.name).toBeUndefined();
+  expect(mocks.startStateMachineInput?.input).toBeDefined();
+
+  expectCloudFormationSuccess({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+});
+
 // -----------------------------------------------------------------------------------------------------------------------
 
 /**

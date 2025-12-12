@@ -1,0 +1,35 @@
+#
+#####################################
+##          SNS GUARD RULES         ##
+#####################################
+# Rule: SNS_NO_WORLD_ACCESSIBLE_INLINE
+# Service: Amazon Simple Notification Service (SNS)
+# Coverage: Inline Topic Policies
+
+let sns_topics = Resources.*[
+  Type == 'AWS::SNS::Topic'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "SNS_NO_WORLD_ACCESSIBLE_INLINE"
+]
+
+# Check inline topic policies
+rule SNS_NO_WORLD_ACCESSIBLE_INLINE when %sns_topics !empty {
+    %sns_topics {
+        Properties.TopicPolicy.Statement[*] {
+            when Effect == "Allow" {
+                when Principal exists {
+                    when Principal != "*" {
+                        when Principal.AWS exists {
+                            when Principal.AWS is_string {
+                                Principal.AWS != "*"
+                            }
+                            when Principal.AWS is_list {
+                                Principal.AWS[*] != "*"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

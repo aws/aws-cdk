@@ -1,1 +1,1 @@
-export * from './appstream.generated';
+export * from './cfn-props-mixins.generated';

@@ -1,1 +1,1 @@
-export * from './resourcegroups.generated';
+export * from './cfn-props-mixins.generated';

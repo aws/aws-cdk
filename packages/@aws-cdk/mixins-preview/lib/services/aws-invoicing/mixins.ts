@@ -1,1 +1,1 @@
-export * from './invoicing.generated';
+export * from './cfn-props-mixins.generated';
