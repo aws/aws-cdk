@@ -59,7 +59,6 @@ jobs:
       - name: Build @aws-cdk/spec2cdk
         run: lerna run build --stream --no-progress --skip-nx-cache --scope @aws-cdk/spec2cdk
       - name: Generate code
-        run: yarn gen
         run: lerna run gen --stream --no-progress --skip-nx-cache --scope aws-cdk-lib --scope @aws-cdk/mixins-preview
 
       # Next, create and upload the changes as a patch file. This will later be downloaded to create a pull request
