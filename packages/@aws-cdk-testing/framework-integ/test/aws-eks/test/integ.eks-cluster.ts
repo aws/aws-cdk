@@ -58,6 +58,8 @@ class EksClusterStack extends Stack {
       },
     });
 
+    this.addSecurityGroupIngressRules();
+
     this.assertFargateProfile();
 
     this.assertCapacityX86();
@@ -105,6 +107,14 @@ class EksClusterStack extends Stack {
     new CfnOutput(this, 'ClusterEncryptionConfigKeyArn', { value: this.cluster.clusterEncryptionConfigKeyArn });
     new CfnOutput(this, 'ClusterName', { value: this.cluster.clusterName });
     new CfnOutput(this, 'NodegroupName', { value: this.cluster.defaultNodegroup!.nodegroupName });
+  }
+
+  private addSecurityGroupIngressRules() {
+    this.cluster.clusterSecurityGroup.addIngressRule(
+      ec2.Peer.ipv4(this.vpc.vpcCidrBlock),
+      ec2.Port.tcp(443),
+      'Allow HTTPS from VPC'
+    );
   }
 
   private assertServiceAccount() {
