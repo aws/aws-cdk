@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ImageTest-StartPipeline-AllParameters/DefaultTest": {
+      "stacks": [
+        "aws-cdk-imagebuilder-image-start-pipeline-all-parameters"
+      ],
+      "assertionStack": "ImageTest-StartPipeline-AllParameters/DefaultTest/DeployAssert",
+      "assertionStackName": "ImageTestStartPipelineAllParametersDefaultTestDeployAssert96C19979"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

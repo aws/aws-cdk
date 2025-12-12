@@ -15,6 +15,8 @@ const imageLogGroup = new logs.LogGroup(stack, 'ImageLogGroup', { removalPolicy:
 const imagePipelineLogGroup = new logs.LogGroup(stack, 'ImagePipelineLogGroup', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
+imageLogGroup.grantWrite(executionRole);
+imagePipelineLogGroup.grantWrite(executionRole);
 
 const infrastructureConfiguration = new imagebuilder.InfrastructureConfiguration(stack, 'InfrastructureConfiguration');
 const imageRecipe = new imagebuilder.ImageRecipe(stack, 'ImageRecipe', {
@@ -50,6 +52,8 @@ const imagePipeline = new imagebuilder.ImagePipeline(stack, 'ImagePipeline-AMI',
 imagePipeline.grantDefaultExecutionRolePermissions(executionRole);
 imagePipeline.onEvent('ImageBuildSuccessTriggerRule');
 imagePipeline.onCVEDetected('ImageBuildCVEDetectedTriggerRule');
+
+imagePipeline.start({ onUpdate: true, tags: { key1: 'value1', key2: 'value2' } });
 
 new integ.IntegTest(app, 'ImagePipelineTest-AMI-AllParameters', {
   testCases: [stack],

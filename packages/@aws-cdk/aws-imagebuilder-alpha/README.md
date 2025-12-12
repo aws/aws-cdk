@@ -261,6 +261,49 @@ examplePipeline.onImagePipelineAutoDisabled('PipelineDisabledAlert', {
 });
 ```
 
+#### Starting Image Pipelines
+
+Pipelines can be started programmatically to trigger image builds on-demand, in addition to scheduled executions. This
+is useful for integrating pipelines with CI/CD workflows, triggering builds based on custom conditions, or creating
+images in response to events.
+
+##### Basic Pipeline Start
+
+Start a pipeline execution without additional configuration:
+
+```ts
+const builtImage = examplePipeline.start();
+```
+
+##### Tagged Pipeline Builds
+
+Apply custom tags to images created from pipeline executions:
+
+```ts
+const taggedImage = examplePipeline.start({
+  tags: {
+    BuildNumber: '456',
+    Environment: 'Production'
+  }
+});
+```
+
+##### Triggering on Pipeline Updates
+
+Configure the pipeline to automatically trigger a new build whenever the pipeline itself is updated:
+
+```ts
+const triggeredImage = examplePipeline.start({
+  onUpdate: true,
+  tags: {
+    AutoBuild: 'true'
+  }
+});
+```
+
+The `start()` method returns an `Image` construct representing the pipeline execution, which can be referenced for
+additional operations or outputs.
+
 #### Importing Image Pipelines
 
 Reference existing pipelines created outside CDK:

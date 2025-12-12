@@ -1,0 +1,205 @@
+{
+ "Resources": {
+  "ImageRecipe8C789631": {
+   "Type": "AWS::ImageBuilder::ImageRecipe",
+   "Properties": {
+    "Components": [
+     {
+      "ComponentArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":imagebuilder:",
+         {
+          "Ref": "AWS::Region"
+         },
+         ":aws:component/simple-boot-test-linux/x.x.x"
+        ]
+       ]
+      }
+     }
+    ],
+    "Name": "aws-cdk-imagebuilder-image-start-pipeline-all-parameters-imagerecipe-dd6b03d9",
+    "ParentImage": "ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64",
+    "Version": "1.0.x"
+   }
+  },
+  "ImagePipelineInfrastructureConfigurationInstanceProfileRoleB353B1C5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonSSMManagedInstanceCore"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/EC2InstanceProfileForImageBuilder"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ImagePipelineInfrastructureConfigurationInstanceProfileAD6309CF": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "ImagePipelineInfrastructureConfigurationInstanceProfileRoleB353B1C5"
+     }
+    ]
+   }
+  },
+  "ImagePipelineInfrastructureConfiguration70CB8806": {
+   "Type": "AWS::ImageBuilder::InfrastructureConfiguration",
+   "Properties": {
+    "InstanceMetadataOptions": {
+     "HttpPutResponseHopLimit": 2,
+     "HttpTokens": "required"
+    },
+    "InstanceProfileName": {
+     "Ref": "ImagePipelineInfrastructureConfigurationInstanceProfileAD6309CF"
+    },
+    "Name": "aws-cdk-imagebuilder-image-start-pipeline-all-parameters-imagepipeline-infrastructureconfiguration-30fa8179"
+   }
+  },
+  "ImagePipeline7DDDE57F": {
+   "Type": "AWS::ImageBuilder::ImagePipeline",
+   "Properties": {
+    "ImageRecipeArn": {
+     "Fn::GetAtt": [
+      "ImageRecipe8C789631",
+      "Arn"
+     ]
+    },
+    "ImageTestsConfiguration": {
+     "ImageTestsEnabled": false
+    },
+    "InfrastructureConfigurationArn": {
+     "Fn::GetAtt": [
+      "ImagePipelineInfrastructureConfiguration70CB8806",
+      "Arn"
+     ]
+    },
+    "Name": "aws-cdk-imagebuilder-image-start-pipeline-all-parameters-imagepipeline-72d28c04"
+   }
+  },
+  "ImageStartPipelineA563EA5A": {
+   "Type": "AWS::ImageBuilder::Image",
+   "Properties": {
+    "ImagePipelineExecutionSettings": {
+     "DeploymentId": {
+      "Fn::GetAtt": [
+       "ImagePipeline7DDDE57F",
+       "DeploymentId"
+      ]
+     },
+     "OnUpdate": false
+    },
+    "Tags": {
+     "tagKey1": "tagValue1",
+     "tagKey2": "tagValue2"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ImageArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageStartPipelineA563EA5A",
+     "Arn"
+    ]
+   }
+  },
+  "ImageName": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageStartPipelineA563EA5A",
+     "Name"
+    ]
+   }
+  },
+  "ImageVersion": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageRecipe8C789631",
+     "Version"
+    ]
+   }
+  },
+  "ImageId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageStartPipelineA563EA5A",
+     "ImageId"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
