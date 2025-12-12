@@ -1,13 +1,13 @@
 import { IAccessLogDestination } from './access-log';
-import { IDomainName } from './domain-name';
 import { AccessLogFormat } from '../../../aws-apigateway/lib';
 import { Metric, MetricOptions } from '../../../aws-cloudwatch';
 import { IResource } from '../../../core';
+import { IDomainNameRef, IStageRef } from '../apigatewayv2.generated';
 
 /**
  * Represents a Stage.
  */
-export interface IStage extends IResource {
+export interface IStage extends IResource, IStageRef {
   /**
    * The name of the stage; its primary identifier.
    * @attribute
@@ -45,7 +45,7 @@ export interface DomainMappingOptions {
    * The domain name for the mapping
    *
    */
-  readonly domainName: IDomainName;
+  readonly domainName: IDomainNameRef;
 
   /**
    * The API mapping key. Leave it undefined for the root path mapping.
