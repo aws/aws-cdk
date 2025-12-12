@@ -32,4 +32,5 @@ export interface Environment {
 }
 
 // For backwards compatibility with TypeScript users
-export type { IEnvironmentAware, ResourceEnvironment } from '../../interfaces/environment-aware';
+import { IEnvironmentAware, ResourceEnvironment } from '../../interfaces/environment-aware';
+export type { IEnvironmentAware, ResourceEnvironment };
