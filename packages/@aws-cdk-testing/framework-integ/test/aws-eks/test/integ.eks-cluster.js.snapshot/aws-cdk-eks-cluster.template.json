@@ -1009,7 +1009,10 @@
        }
       ]
      },
-     "accessConfig": {}
+     "accessConfig": {},
+     "controlPlaneScalingConfig": {
+      "tier": "standard"
+     }
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -4282,7 +4285,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/da0a3b4a14049fb40fd3778635bcd759baec532150cbe4bb27aa5048a19cb782.json"
+       "/3ee48ed59894df9c23478a16312ea63f6cd4a493c7a964ddf7a5407fb1dbdb19.json"
       ]
      ]
     }
@@ -4328,7 +4331,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/0642e73d97b20459af549dc2699bca6a9f8adb7771ab3f38a854431fa9421c9a.json"
+       "/27eb9cb1e957ca39647f77443795eae01cda8b11520ce63054afc248c1678b40.json"
       ]
      ]
     }
@@ -4560,6 +4563,10 @@
      ]
     ]
    }
+  },
+  "ControlPlaneScalingTier": {
+   "Description": "Control plane scaling tier configured",
+   "Value": "standard"
   },
   "ClusterEndpoint": {
    "Value": {
