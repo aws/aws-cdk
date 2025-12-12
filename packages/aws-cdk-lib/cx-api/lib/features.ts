@@ -150,6 +150,7 @@ export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccess
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
 export const NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT = '@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault';
 export const STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT = '@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint';
+export const ELB_USE_POST_QUANTUM_TLS_POLICY = '@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1769,7 +1770,29 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
   },
 
-  //////////////////////////////////////////////////////////////////////
+  [ELB_USE_POST_QUANTUM_TLS_POLICY]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, SslPolicy.RECOMMENDED_TLS uses post-quantum cryptography policy',
+    detailsMd: `
+      When this feature flag is enabled, \`SslPolicy.RECOMMENDED_TLS\` will use the post-quantum
+      cryptography policy \`ELBSecurityPolicy-TLS13-1-2-PQ-2025-09\` instead of the legacy
+      policy \`ELBSecurityPolicy-TLS13-1-2-2021-06\`.
+
+      This policy provides maximum backward compatibility while adding quantum resistance.
+      It is nearly 100% backward compatible with the previous CDK recommended default,
+      only removing support for the SHA1 signature algorithm (which has minimal usage).
+
+      Post-quantum policies provide protection against "Harvest Now, Decrypt Later" attacks
+      using hybrid ML-KEM key exchange.
+
+      When disabled, \`SslPolicy.RECOMMENDED_TLS\` continues to use the legacy policy for
+      backward compatibility.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Use `SslPolicy.TLS13_12_RES` explicitly to maintain the old policy, or disable this feature flag.',
+  },
+
   [ROUTE53_PATTERNS_USE_DISTRIBUTION]: {
     type: FlagType.ApiDefault,
     summary: 'Use the `Distribution` resource instead of `CloudFrontWebDistribution`',
