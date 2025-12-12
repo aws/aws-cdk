@@ -13,25 +13,5 @@
     "@cdklabs/no-throw-default-error": {
       "count": 1
     }
-  },
-  "test/evaluate-cfn.ts": {
-    "@cdklabs/no-throw-default-error": {
-      "count": 7
-    }
-  },
-  "test/integ.synth-default-encryption.ts": {
-    "@cdklabs/no-throw-default-error": {
-      "count": 1
-    }
-  },
-  "test/integ.synth-default-resources.ts": {
-    "@cdklabs/no-throw-default-error": {
-      "count": 1
-    }
-  },
-  "test/util.ts": {
-    "@cdklabs/no-throw-default-error": {
-      "count": 1
-    }
   }
 }
