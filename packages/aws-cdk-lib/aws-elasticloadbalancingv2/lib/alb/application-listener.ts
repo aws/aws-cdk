@@ -16,7 +16,7 @@ import * as cxapi from '../../../cx-api';
 import { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { ApplicationProtocol, ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType, IpAddressType, SslPolicy, getRecommendedTlsPolicy } from '../shared/enums';
+import { ApplicationProtocol, ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType, IpAddressType, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
 
