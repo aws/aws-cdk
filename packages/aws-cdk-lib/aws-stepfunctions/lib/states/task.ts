@@ -8,7 +8,7 @@ import { FieldUtils } from '../fields';
 import { noEmptyObject } from '../private/util';
 import { StateGraph } from '../state-graph';
 import { IStepFunctionsTask, StepFunctionsTaskConfig } from '../step-functions-task';
-import { CatchProps, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
+import { CatchProps, ICatchable, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
 
 /**
  * Props that are common to all tasks
@@ -111,7 +111,7 @@ export interface TaskProps {
  *
  * @deprecated - replaced by service integration specific classes (i.e. LambdaInvoke, SnsPublish)
  */
-export class Task extends State implements INextable {
+export class Task extends State implements INextable, ICatchable {
   public readonly endStates: INextable[];
   private readonly timeout?: cdk.Duration;
   private readonly taskProps: StepFunctionsTaskConfig;
@@ -146,7 +146,7 @@ export class Task extends State implements INextable {
    * When a particular error occurs, execution will continue at the error
    * handler instead of failing the state machine execution.
    */
-  public addCatch(handler: IChainable, props: CatchProps = {}): Task {
+  public addCatch(handler: IChainable, props: CatchProps = {}): this {
     super._addCatch(handler.startState, props);
     return this;
   }
