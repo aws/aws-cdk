@@ -40,6 +40,7 @@
   "MyBucketF68F3FF0": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
+    "AbacStatus": "Enabled",
     "BucketEncryption": {
      "ServerSideEncryptionConfiguration": [
       {
@@ -62,6 +63,7 @@
   "MyOtherBucket543F3540": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
+    "AbacStatus": "Disabled",
     "BucketEncryption": {
      "ServerSideEncryptionConfiguration": [
       {
