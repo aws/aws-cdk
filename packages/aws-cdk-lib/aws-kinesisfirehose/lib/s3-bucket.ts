@@ -4,7 +4,7 @@ import { DestinationBindOptions, DestinationConfig, IDestination } from './desti
 import { IInputFormat, IOutputFormat, SchemaConfiguration } from './record-format';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
-import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
+import { createBackupConfig, createBufferingHints, createDynamicPartitioningConfiguration, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
 import * as cdk from '../../core';
 
 /**
@@ -35,17 +35,24 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
    * The input format, output format, and schema config for converting data from the JSON format to the Parquet or ORC format before writing to Amazon S3.
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-extendeds3destinationconfiguration.html#cfn-kinesisfirehose-deliverystream-extendeds3destinationconfiguration-dataformatconversionconfiguration
    *
-   * @default no data format conversion is done
+   * @default - no data format conversion is done
    */
   readonly dataFormatConversion?: DataFormatConversionProps;
+
+  /**
+   * Specify dynamic partitioning.
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning.html
+   * @default - Dynamic partitioning is disabled.
+   */
+  readonly dynamicPartitioning?: DynamicPartitioningProps;
 }
 
 /**
  * Props for specifying data format conversion for Firehose
  *
- * @see https://docs.aws.amazon.com/firehose/latest/dev/record-format-conversion.html */
+ * @see https://docs.aws.amazon.com/firehose/latest/dev/record-format-conversion.html
+ */
 export interface DataFormatConversionProps {
-
   /**
    * Whether data format conversion is enabled or not.
    *
@@ -67,6 +74,33 @@ export interface DataFormatConversionProps {
    * The output format to convert to for record format conversion
    */
   readonly outputFormat: IOutputFormat;
+}
+
+/**
+ * Props for defining dynamic partitioning.
+ *
+ * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning.html
+ */
+export interface DynamicPartitioningProps {
+  /**
+   * Whether to enable the dynamic partitioning.
+   *
+   * You can enable dynamic partitioning only when you create a new Firehose stream.
+   * You cannot enable dynamic partitioning for an existing Firehose stream that does not have dynamic partitioning already enabled.
+   *
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning-enable.html
+   */
+  readonly enabled: boolean;
+
+  /**
+   * The total amount of time that Data Firehose spends on retries.
+   *
+   * Minimum: Duration.seconds(0)
+   * Maximum: Duration.seconds(7200)
+   *
+   * @default Duration.seconds(300)
+   */
+  readonly retryDuration?: cdk.Duration;
 }
 
 /**
@@ -129,7 +163,8 @@ export class S3Bucket implements IDestination {
         roleArn: role.roleArn,
         s3BackupConfiguration: backupConfig,
         s3BackupMode: this.getS3BackupMode(),
-        bufferingHints: createBufferingHints(scope, this.props.bufferingInterval, this.props.bufferingSize, dataFormatConversionConfiguration),
+        bufferingHints: createBufferingHints(scope, this.props.bufferingInterval, this.props.bufferingSize,
+          dataFormatConversionConfiguration?.enabled, this.props.dynamicPartitioning?.enabled),
         bucketArn: this.bucket.bucketArn,
         dataFormatConversionConfiguration: dataFormatConversionConfiguration,
         compressionFormat: this.props.compression?.value,
@@ -138,6 +173,7 @@ export class S3Bucket implements IDestination {
         prefix: this.props.dataOutputPrefix,
         fileExtension: this.props.fileExtension,
         customTimeZone: this.props.timeZone?.timezoneName,
+        dynamicPartitioningConfiguration: createDynamicPartitioningConfiguration(scope, this.props.dynamicPartitioning),
       },
       dependables: [bucketGrant, ...(loggingDependables ?? []), ...(backupDependables ?? [])],
     };
