@@ -1,12 +1,12 @@
 import { Construct } from 'constructs';
 import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
-import { CfnMethod, CfnMethodProps, IStageRef } from './apigateway.generated';
+import { CfnMethod, CfnMethodProps, IRequestValidatorRef, IStageRef } from './apigateway.generated';
 import { Authorizer, IAuthorizer } from './authorizer';
 import { Integration, IntegrationConfig } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { MethodResponse } from './methodresponse';
 import { IModel } from './model';
-import { IRequestValidator, RequestValidatorOptions } from './requestvalidator';
+import { RequestValidatorOptions } from './requestvalidator';
 import { IResource } from './resource';
 import { IRestApi, RestApi, RestApiBase } from './restapi';
 import { validateHttpMethod } from './util';
@@ -116,7 +116,7 @@ export interface MethodOptions {
    * the request before it reaches integration like Lambda Proxy Integration.
    * @default - No default validator
    */
-  readonly requestValidator?: IRequestValidator;
+  readonly requestValidator?: IRequestValidatorRef;
 
   /**
    * A list of authorization scopes configured on the method. The scopes are used with
@@ -432,7 +432,7 @@ export class Method extends Resource {
     }
 
     // For backward compatibility
-    return options.requestValidator?.requestValidatorId;
+    return options.requestValidator?.requestValidatorRef.requestValidatorId;
   }
 
   /**
