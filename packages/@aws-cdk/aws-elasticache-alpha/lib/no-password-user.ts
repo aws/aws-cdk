@@ -11,7 +11,7 @@ const ELASTICACHE_NOPASSWORDUSER_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.N
 /**
  * List of engines that support no-password authentication.
  */
-const SUPPORTED_NO_PASSWORD_ENGINES = [UserEngine.REDIS] as const;
+const SUPPORTED_NO_PASSWORD_ENGINES = [UserEngine.REDIS];
 
 /**
  * Properties for defining an ElastiCache user with no password authentication.
@@ -91,7 +91,7 @@ export class NoPasswordUser extends UserBase {
     this.userName = props.userName ?? props.userId;
     this.accessString = props.accessControl.accessString;
 
-    if (!SUPPORTED_NO_PASSWORD_ENGINES.includes(this.engine as any)) {
+    if (!SUPPORTED_NO_PASSWORD_ENGINES.includes(this.engine)) {
       throw new ValidationError(`Engine '${this.engine}' does not support no-password authentication. Supported engines: ${SUPPORTED_NO_PASSWORD_ENGINES.join(', ')}.`, this);
     }
 
