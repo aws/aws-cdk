@@ -70,6 +70,27 @@ describe('Image', () => {
     expect(image.imageArn).toEqual('arn:aws:imagebuilder:us-east-1:123456789012:image/imported-image-by-arn/1.2.3/4');
     expect(image.imageName).toEqual('imported-image-by-arn');
     expect(image.imageVersion).toEqual('1.2.3');
+
+    expect(stack.resolve(image.imageLatestVersion.imageArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:image/imported-image-by-arn/x.x.x',
+    );
+    expect(stack.resolve(image.imageLatestVersion.imageName)).toEqual('imported-image-by-arn');
+    expect(stack.resolve(image.imageLatestVersion.imageVersion)).toEqual('x.x.x');
+    expect(stack.resolve(image.imageLatestMajorVersion.imageArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:image/imported-image-by-arn/1.x.x',
+    );
+    expect(stack.resolve(image.imageLatestMajorVersion.imageName)).toEqual('imported-image-by-arn');
+    expect(stack.resolve(image.imageLatestMajorVersion.imageVersion)).toEqual('1.x.x');
+    expect(stack.resolve(image.imageLatestMinorVersion.imageArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:image/imported-image-by-arn/1.2.x',
+    );
+    expect(stack.resolve(image.imageLatestMinorVersion.imageName)).toEqual('imported-image-by-arn');
+    expect(stack.resolve(image.imageLatestMinorVersion.imageVersion)).toEqual('1.2.x');
+    expect(stack.resolve(image.imageLatestPatchVersion.imageArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:image/imported-image-by-arn/1.2.3',
+    );
+    expect(stack.resolve(image.imageLatestPatchVersion.imageName)).toEqual('imported-image-by-arn');
+    expect(stack.resolve(image.imageLatestPatchVersion.imageVersion)).toEqual('1.2.3');
   });
 
   test('imported by arn as an unresolved token', () => {
@@ -183,6 +204,19 @@ describe('Image', () => {
 
     expect(Image.isImage(image as unknown)).toBeTruthy();
     expect(Image.isImage('Image')).toBeFalsy();
+
+    expect(stack.resolve(image.imageLatestVersion.imageArn)).toEqual({
+      'Fn::GetAtt': ['Image9D742C96', 'LatestVersion.Arn'],
+    });
+    expect(stack.resolve(image.imageLatestMajorVersion.imageArn)).toEqual({
+      'Fn::GetAtt': ['Image9D742C96', 'LatestVersion.Major'],
+    });
+    expect(stack.resolve(image.imageLatestMinorVersion.imageArn)).toEqual({
+      'Fn::GetAtt': ['Image9D742C96', 'LatestVersion.Minor'],
+    });
+    expect(stack.resolve(image.imageLatestPatchVersion.imageArn)).toEqual({
+      'Fn::GetAtt': ['Image9D742C96', 'LatestVersion.Patch'],
+    });
 
     template.templateMatches({
       Resources: {
@@ -298,6 +332,19 @@ describe('Image', () => {
 
     expect(Image.isImage(image as unknown)).toBeTruthy();
     expect(Image.isImage('Image')).toBeFalsy();
+
+    expect(stack.resolve(image.imageLatestVersion.imageArn)).toEqual({
+      'Fn::GetAtt': ['Image9D742C96', 'LatestVersion.Arn'],
+    });
+    expect(stack.resolve(image.imageLatestMajorVersion.imageArn)).toEqual({
+      'Fn::GetAtt': ['Image9D742C96', 'LatestVersion.Major'],
+    });
+    expect(stack.resolve(image.imageLatestMinorVersion.imageArn)).toEqual({
+      'Fn::GetAtt': ['Image9D742C96', 'LatestVersion.Minor'],
+    });
+    expect(stack.resolve(image.imageLatestPatchVersion.imageArn)).toEqual({
+      'Fn::GetAtt': ['Image9D742C96', 'LatestVersion.Patch'],
+    });
 
     Template.fromStack(stack).templateMatches({
       Resources: {

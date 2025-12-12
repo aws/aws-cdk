@@ -40,7 +40,7 @@
       "ComponentArn": {
        "Fn::GetAtt": [
         "ParameterizedComponentD29478CA",
-        "Arn"
+        "LatestVersion.Arn"
        ]
       },
       "Parameters": [
