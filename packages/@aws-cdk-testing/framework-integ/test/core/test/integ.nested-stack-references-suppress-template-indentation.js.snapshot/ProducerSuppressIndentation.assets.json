@@ -1,0 +1,34 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "8b91adc9411ee3bc0e3fa2bf0a0ec877263b2cac0d08f1c2c32aaeaf9affbc4d": {
+      "displayName": "NestedSuppressIndentation Nested Stack Template",
+      "source": {
+        "path": "ProducerSuppressIndentationNestedSuppressIndentation806C6D2E.nested.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-b7d6de4a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8b91adc9411ee3bc0e3fa2bf0a0ec877263b2cac0d08f1c2c32aaeaf9affbc4d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "138f0d4178fa2c7eaf4dc3480169211a7795581f282e44519f8fbbcafe365b6a": {
+      "displayName": "ProducerSuppressIndentation Template",
+      "source": {
+        "path": "ProducerSuppressIndentation.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-146765f9": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "138f0d4178fa2c7eaf4dc3480169211a7795581f282e44519f8fbbcafe365b6a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
