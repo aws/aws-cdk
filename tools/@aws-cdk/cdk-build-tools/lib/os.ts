@@ -1,5 +1,6 @@
 import * as child_process from 'child_process';
 import * as fs from 'fs';
+import * as path from 'path';
 import * as util from 'util';
 import * as chalk from 'chalk';
 import { Timers } from './timer';
@@ -7,6 +8,10 @@ import { Timers } from './timer';
 interface ShellOptions {
   timers?: Timers;
   env?: child_process.SpawnOptions['env'];
+  trace?: {
+    command: string;
+    pkg: string;
+  };
 }
 
 /**
@@ -15,8 +20,23 @@ interface ShellOptions {
  * Is platform-aware, handles errors nicely.
  */
 export async function shell(command: string[], options: ShellOptions = {}): Promise<string> {
-  const [cmd, ...args] = command;
+  let [cmd, ...args] = command;
+
+  const timeFile = '.time.tmp';
+
+  // Try to trace memory usage with /usr/bin/time if we're tracing
+  if (options.trace && process.platform === 'darwin') {
+    args.unshift('-l', '-o', timeFile, cmd);
+    cmd = '/usr/bin/time';
+  }
+  if (options.trace && process.platform === 'linux') {
+    args.unshift('-v', '-o', timeFile, cmd);
+    cmd = '/usr/bin/time';
+  }
+
   const timer = (options.timers || new Timers()).start(cmd);
+
+  const startTime = new Date();
 
   await makeShellScriptExecutable(cmd);
 
@@ -38,6 +58,7 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
 
   return new Promise<string>((resolve, reject) => {
     const stdout = new Array<any>();
+    const stderr = new Array<any>();
 
     child.stdout!.on('data', chunk => {
       process.stdout.write(chunk);
@@ -45,6 +66,7 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
     });
 
     child.stderr!.on('data', chunk => {
+      stderr.push(chunk);
       process.stderr.write(makeRed(chunk.toString()));
     });
 
@@ -52,6 +74,31 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
 
     child.once('exit', code => {
       timer.end();
+      const endTime = new Date();
+
+      if (options.trace) {
+        // The end of stderr contains the timing measurements
+        const timing = fs.readFileSync(timeFile, 'utf-8');
+        let maxMemMB = 0;
+
+        if (process.platform === 'darwin') {
+          const f = timing.match(/(\d+)  maximum resident set size/); // Bytes
+          if (f) {
+            maxMemMB = Number(f[1]) / (1024 * 1024);
+          }
+        }
+        if (process.platform === 'linux') {
+          const f = timing.match(/Maximum resident set size \(kbytes\): (\d+)/); // kbytes
+          if (f) {
+            maxMemMB = Number(f[1]) / 1024;
+          }
+        }
+
+        fs.unlinkSync(timeFile);
+
+        writeTrace(options.trace.command, options.trace.pkg, startTime, endTime, maxMemMB);
+      }
+
       if (code === 0) {
         resolve(Buffer.concat(stdout).toString('utf-8'));
       } else {
@@ -172,4 +219,44 @@ async function isShellScript(script: string): Promise<boolean> {
   await util.promisify(fs.read)(f, buffer, 0, 2, null);
 
   return buffer.equals(Buffer.from('#!'));
+}
+
+/**
+ * Write a trace file.
+ *
+ * We write each to a different file to avoid race conditions appending to a shared file
+ * in parallel processes.
+ */
+function writeTrace(command: string, pkg: string, start: Date, end: Date, maxMemMB: number) {
+  const lernaJson = findUp('lerna.json');
+  if (!lernaJson) {
+    return;
+  }
+  const dir = path.join(path.dirname(lernaJson), '.traces');
+  fs.mkdirSync(dir, { recursive: true });
+
+  fs.writeFileSync(
+    path.join(dir, `${slugify(command)}.csv`),
+    `"${command}","${pkg}",${Math.floor(start.getTime() / 1000)},${Math.floor(end.getTime() / 1000)},${maxMemMB}\n`,
+  );
+}
+
+export function findUp(name: string, directory: string = process.cwd()): string | undefined {
+  const absoluteDirectory = path.resolve(directory);
+
+  const file = path.join(directory, name);
+  if (fs.existsSync(file)) {
+    return file;
+  }
+
+  const { root } = path.parse(absoluteDirectory);
+  if (absoluteDirectory == root) {
+    return undefined;
+  }
+
+  return findUp(name, path.dirname(absoluteDirectory));
+}
+
+function slugify(x: string): string {
+  return x.replace(/[^a-zA-Z0-9]/g, '-');
 }
