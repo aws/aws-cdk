@@ -82,6 +82,8 @@ containerImagePipeline.grantDefaultExecutionRolePermissions(executionRole);
 containerImagePipeline.onEvent('ImageBuildSuccessTriggerRule');
 containerImagePipeline.onImagePipelineAutoDisabled('ImagePipelineAutoDisabledTriggerRule');
 
+containerImagePipeline.start();
+
 new integ.IntegTest(app, 'ImagePipelineTest-Container-AllParameters', {
   testCases: [stack],
 });
