@@ -2342,8 +2342,6 @@ When this feature flag is enabled, Network Load Balancer will be created with a 
 **Compatibility with old behavior:** Disable the feature flag to create Network Load Balancer without a security group by default.
 
 
-<<<<<<< HEAD
-=======
 ### @aws-cdk/aws-route53-patterns:useDistribution
 
 *Use the `Distribution` resource instead of `CloudFrontWebDistribution`*
@@ -2352,7 +2350,6 @@ Flag type: New default behavior
 
 Enable this feature flag to use the new `Distribution` resource instead
 of the deprecated `CloudFrontWebDistribution` construct.
->>>>>>> origin/main
 
 
 | Since | Unset behaves like | Recommended value |
