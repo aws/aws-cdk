@@ -21,9 +21,9 @@ class EksClusterStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // allow all account users to assume this role in order to admin the cluster
+    // allow specific users/roles to assume this role instead of entire account
     const mastersRole = new iam.Role(this, 'AdminRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
+      assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
     });
 
     const secretsEncryptionKey = new kms.Key(this, 'SecretsKey');
