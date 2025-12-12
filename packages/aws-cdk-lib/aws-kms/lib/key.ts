@@ -454,6 +454,11 @@ export enum KeySpec {
    * Valid usage: SIGN_VERIFY
    */
   ML_DSA_87 = 'ML_DSA_87',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  ECC_NIST_EDWARDS25519 = 'ECC_NIST_EDWARDS25519',
 }
 
 /**
