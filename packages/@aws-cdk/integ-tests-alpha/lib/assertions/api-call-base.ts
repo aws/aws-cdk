@@ -157,5 +157,5 @@ export abstract class ApiCallBase extends Construct implements IApiCall {
     return next;
   }
 
-  public abstract waitForAssertions(options?: WaiterStateMachineOptions): IApiCall
+  public abstract waitForAssertions(options?: WaiterStateMachineOptions): IApiCall;
 }

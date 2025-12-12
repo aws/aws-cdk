@@ -1,0 +1,134 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Logs Delivery Mixin for a resource 1`] = `
+"/* eslint-disable prettier/prettier, @stylistic/max-len */
+import * as cdk from "aws-cdk-lib/core";
+import * as interfaces from "aws-cdk-lib/interfaces";
+import * as constructs from "constructs";
+import * as core from "../../core";
+import * as logsDelivery from "../aws-logs/logs-delivery";
+import * as service from "aws-cdk-lib/aws-some";
+
+/**
+ * Builder for CfnThingLogsMixin to generate APPLICATION_LOGS for CfnThing
+ *
+ * @cloudformationResource AWS::Some::Resource
+ * @logType APPLICATION_LOGS
+ * @stability external
+ */
+export class CfnThingApplicationLogs {
+  /**
+   * Send logs to a CloudWatch Log Group
+   */
+  public toLogGroup(logGroup: interfaces.aws_logs.ILogGroupRef): CfnThingLogsMixin {
+    {
+      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.LogGroupLogsDelivery(logGroup));
+    }
+  }
+
+  /**
+   * Send logs to a Firehose Delivery Stream
+   */
+  public toFirehose(deliveryStream: interfaces.aws_kinesisfirehose.IDeliveryStreamRef): CfnThingLogsMixin {
+    {
+      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.FirehoseLogsDelivery(deliveryStream));
+    }
+  }
+
+  /**
+   * Send logs to an S3 Bucket
+   */
+  public toS3(bucket: interfaces.aws_s3.IBucketRef): CfnThingLogsMixin {
+    {
+      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.S3LogsDelivery(bucket, {
+        permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2
+      }));
+    }
+  }
+}
+
+/**
+ * Builder for CfnThingLogsMixin to generate ACCESS_LOGS for CfnThing
+ *
+ * @cloudformationResource AWS::Some::Resource
+ * @logType ACCESS_LOGS
+ * @stability external
+ */
+export class CfnThingAccessLogs {
+  /**
+   * Send logs to a CloudWatch Log Group
+   */
+  public toLogGroup(logGroup: interfaces.aws_logs.ILogGroupRef): CfnThingLogsMixin {
+    {
+      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.LogGroupLogsDelivery(logGroup));
+    }
+  }
+
+  /**
+   * Send logs to a Firehose Delivery Stream
+   */
+  public toFirehose(deliveryStream: interfaces.aws_kinesisfirehose.IDeliveryStreamRef): CfnThingLogsMixin {
+    {
+      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.FirehoseLogsDelivery(deliveryStream));
+    }
+  }
+
+  /**
+   * Send logs to an S3 Bucket
+   */
+  public toS3(bucket: interfaces.aws_s3.IBucketRef): CfnThingLogsMixin {
+    {
+      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.S3LogsDelivery(bucket, {
+        permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2
+      }));
+    }
+  }
+}
+
+/**
+ * @cloudformationResource AWS::Some::Resource
+ * @mixin true
+ * @stability external
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
+ */
+export class CfnThingLogsMixin extends core.Mixin implements core.IMixin {
+  public static readonly APPLICATION_LOGS: CfnThingApplicationLogs = new CfnThingApplicationLogs();
+
+  public static readonly ACCESS_LOGS: CfnThingAccessLogs = new CfnThingAccessLogs();
+
+  protected readonly logType: string;
+
+  protected readonly logDelivery: logsDelivery.ILogsDelivery;
+
+  /**
+   * Create a mixin to enable vended logs for \`AWS::Some::Resource\`.
+   *
+   * @param logType Type of logs that are getting vended
+   * @param logDelivery Object in charge of setting up the delivery source, delivery destination, and delivery connection
+   */
+  public constructor(logType: string, logDelivery: logsDelivery.ILogsDelivery) {
+    super();
+    this.logType = logType;
+    this.logDelivery = logDelivery;
+  }
+
+  /**
+   * Check if this mixin supports the given construct (has vendedLogs property)
+   */
+  public supports(construct: constructs.IConstruct): construct is service.CfnThing {
+    return (cdk.CfnResource.isCfnResource(construct) && (construct.cfnResourceType === "AWS::Some::Resource"));
+  }
+
+  /**
+   * Apply vended logs configuration to the construct
+   */
+  public applyTo(resource: constructs.IConstruct): constructs.IConstruct {
+    if (!this.supports(resource)) {
+      return resource;
+    }
+    const sourceArn = service.CfnThing.arnForThing(resource);
+    this.logDelivery.bind(resource, this.logType, sourceArn);
+    return resource;
+  }
+}"
+`;

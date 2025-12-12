@@ -19,7 +19,7 @@ jobs:
           
           status=$(curl -s -o /dev/null -w "%{http_code}" $URL)
           echo "STATUS=${status}" >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/github-script@v8
         if: ${{ steps.download.outputs.STATUS == 200 }}
         env:
@@ -47,10 +47,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Download patch
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: update-spec.patch
           path: ${{ runner.temp }}

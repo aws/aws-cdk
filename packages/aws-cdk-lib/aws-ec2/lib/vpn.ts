@@ -347,9 +347,7 @@ export class VpnConnection extends VpnConnectionBase {
         }
 
         if (options.preSharedKey && !Token.isUnresolved(options.preSharedKey) && !/^[a-zA-Z1-9._][a-zA-Z\d._]{7,63}$/.test(options.preSharedKey)) {
-          /* eslint-disable max-len */
           throw new ValidationError(`The \`preSharedKey\` ${options.preSharedKey} for tunnel ${index + 1} is invalid. Allowed characters are alphanumeric characters and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).`, this);
-          /* eslint-enable max-len */
         }
 
         if (options.tunnelInsideCidr) {
@@ -358,7 +356,6 @@ export class VpnConnection extends VpnConnectionBase {
           }
 
           if (!/^169\.254\.\d{1,3}\.\d{1,3}\/30$/.test(options.tunnelInsideCidr)) {
-            /* eslint-disable-next-line max-len */
             throw new ValidationError(`The \`tunnelInsideCidr\` ${options.tunnelInsideCidr} for tunnel ${index + 1} is not a size /30 CIDR block from the 169.254.0.0/16 range.`, this);
           }
         }
