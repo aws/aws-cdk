@@ -165,10 +165,7 @@ export enum SslPolicy {
    */
   TLS13_13_PQ = 'ELBSecurityPolicy-TLS13-1-3-PQ-2025-09',
 
-  /**
-   * TLS 1.2 and 1.3 with post-quantum hybrid key exchange using ML-KEM
-   */
-  TLS13_12_PQ = 'ELBSecurityPolicy-TLS13-1-2-PQ-2025-09',
+
 
   /**
    * TLS 1.2 and 1.3 with post-quantum hybrid key exchange using ML-KEM
