@@ -420,7 +420,7 @@ This feature allows you to offload vector data to Amazon S3 while maintaining su
 Requirements:
 
 - OpenSearch version 2.19 or later
-- OR1 (OpenSearch Optimized) instance types for data nodes
+- OpenSearch Optimized instance types (OR1, OR2, OM2) for data nodes
 - Encryption at rest must be enabled
 
 ```ts

@@ -2291,7 +2291,7 @@ describe('S3 Vectors Engine', () => {
     })).toThrow('S3 Vectors Engine requires OpenSearch version 2.19 or later. Got version 2.17.');
   });
 
-  test('throws error for non-OR1 instance types', () => {
+  test('throws error for non-OpenSearch Optimized instance types', () => {
     expect(() => new Domain(stack, 'Domain', {
       version: EngineVersion.OPENSEARCH_2_19,
       s3VectorsEngineEnabled: true,
@@ -2302,7 +2302,7 @@ describe('S3 Vectors Engine', () => {
       encryptionAtRest: {
         enabled: true,
       },
-    })).toThrow('S3 Vectors Engine requires OR1 (OpenSearch Optimized) instance types. Got t3.small.search.');
+    })).toThrow('S3 Vectors Engine requires OpenSearch Optimized instance types (OR*, OM*). Got t3.small.search.');
   });
 
   test('throws error when encryption at rest is disabled', () => {

@@ -763,7 +763,7 @@ export interface DomainProps {
    *
    * Requirements:
    * - OpenSearch version 2.19 or later
-   * - OR1 (OpenSearch Optimized) instance types for data nodes
+   * - OpenSearch Optimized instance types (OR*, OM*) for data nodes
    * - Encryption at rest must be enabled
    *
    * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/s3-vector-opensearch-integration-engine.html
@@ -1819,9 +1819,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         throw new ValidationError(`S3 Vectors Engine requires OpenSearch version 2.19 or later. Got version ${versionNum}.`, this);
       }
 
-      // S3 Vectors Engine requires OR1 (OpenSearch Optimized) instance types
-      if (!cdk.Token.isUnresolved(instanceType) && !instanceType.startsWith('or1')) {
-        throw new ValidationError(`S3 Vectors Engine requires OR1 (OpenSearch Optimized) instance types. Got ${instanceType}.`, this);
+      // S3 Vectors Engine requires OpenSearch Optimized instance types (OR*, OM*)
+      const isOpenSearchOptimizedInstance = instanceType.startsWith('or') || instanceType.startsWith('om');
+      if (!cdk.Token.isUnresolved(instanceType) && !isOpenSearchOptimizedInstance) {
+        throw new ValidationError(`S3 Vectors Engine requires OpenSearch Optimized instance types (OR*, OM*). Got ${instanceType}.`, this);
       }
 
       // S3 Vectors Engine requires encryption at rest
