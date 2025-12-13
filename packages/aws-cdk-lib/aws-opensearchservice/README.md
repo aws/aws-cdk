@@ -414,13 +414,25 @@ const domain = new Domain(this, 'Domain', {
 
 ## S3 Vectors Engine
 
-Amazon OpenSearch Service offers [the ability to use Amazon S3 as a vector engine for vector indexes](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/s3-vector-opensearch-integration-engine.html.
+Amazon OpenSearch Service offers [the ability to use Amazon S3 as a vector engine for vector indexes](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/s3-vector-opensearch-integration-engine.html).
 This feature allows you to offload vector data to Amazon S3 while maintaining sub-second vector search capabilities at low cost.
+
+Requirements:
+
+- OpenSearch version 2.19 or later
+- OR1 (OpenSearch Optimized) instance types for data nodes
+- Encryption at rest must be enabled
 
 ```ts
 const domain = new Domain(this, 'Domain', {
-  version: EngineVersion.OPENSEARCH_2_17,
+  version: EngineVersion.OPENSEARCH_2_19,
   s3VectorsEngineEnabled: true,
+  capacity: {
+    dataNodeInstanceType: 'or1.medium.search',
+  },
+  encryptionAtRest: {
+    enabled: true,
+  },
 });
 ```
 

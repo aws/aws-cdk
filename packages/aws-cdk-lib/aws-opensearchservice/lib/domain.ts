@@ -761,9 +761,14 @@ export interface DomainProps {
    * Whether to enable S3 vectors engine.
    * This feature allows you to offload vector data to Amazon S3 while maintaining sub-second vector search capabilities at low cost.
    *
+   * Requirements:
+   * - OpenSearch version 2.19 or later
+   * - OR1 (OpenSearch Optimized) instance types for data nodes
+   * - Encryption at rest must be enabled
+   *
    * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/s3-vector-opensearch-integration-engine.html
    *
-   * @default undefined - AWS OpenSeartch Service default is false
+   * @default undefined - AWS OpenSearch Service default is false
    */
   readonly s3VectorsEngineEnabled?: boolean;
 }
@@ -1801,6 +1806,28 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     if (props.coldStorageEnabled && !warmEnabled) {
       throw new ValidationError('You must enable UltraWarm storage to enable cold storage.', this);
+    }
+
+    // Validate S3 Vectors Engine requirements
+    // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/s3-vector-opensearch-integration-engine.html
+    if (props.s3VectorsEngineEnabled) {
+      // S3 Vectors Engine requires OpenSearch version 2.19 or later
+      if (isElasticsearchVersion) {
+        throw new ValidationError('S3 Vectors Engine requires OpenSearch version 2.19 or later. Elasticsearch versions are not supported.', this);
+      }
+      if (versionNum < 2.19) {
+        throw new ValidationError(`S3 Vectors Engine requires OpenSearch version 2.19 or later. Got version ${versionNum}.`, this);
+      }
+
+      // S3 Vectors Engine requires OR1 (OpenSearch Optimized) instance types
+      if (!cdk.Token.isUnresolved(instanceType) && !instanceType.startsWith('or1')) {
+        throw new ValidationError(`S3 Vectors Engine requires OR1 (OpenSearch Optimized) instance types. Got ${instanceType}.`, this);
+      }
+
+      // S3 Vectors Engine requires encryption at rest
+      if (!encryptionAtRestEnabled) {
+        throw new ValidationError('S3 Vectors Engine requires encryption at rest to be enabled.', this);
+      }
     }
 
     let cfnVpcOptions: CfnDomain.VPCOptionsProperty | undefined;
