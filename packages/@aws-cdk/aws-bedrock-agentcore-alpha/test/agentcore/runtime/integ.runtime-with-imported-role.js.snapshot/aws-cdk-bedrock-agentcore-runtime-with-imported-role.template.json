@@ -267,10 +267,7 @@
      }
     },
     "AgentRuntimeName": "integ_test_runtime",
-    "LifecycleConfiguration": {
-     "IdleRuntimeSessionTimeout": 60,
-     "MaxLifetime": 28800
-    },
+    "LifecycleConfiguration": {},
     "NetworkConfiguration": {
      "NetworkMode": "PUBLIC"
     },
