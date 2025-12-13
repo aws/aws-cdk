@@ -65,7 +65,6 @@ export class S3OnFailureDestinationStack extends Stack {
   }
 }
 async function handler(event: any) {
-  // eslint-disable-next-line no-console
   console.log('event:', JSON.stringify(event, undefined, 2));
   throw new Error();
 }

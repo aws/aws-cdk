@@ -1,4 +1,5 @@
 /* eslint-disable @cdklabs/no-throw-default-error */
+
 /* eslint-disable max-len */
 
 import * as cfnResponse from './cfn-response';
