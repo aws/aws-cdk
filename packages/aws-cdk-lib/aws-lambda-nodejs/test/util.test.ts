@@ -169,7 +169,7 @@ describe('extractDependencies', () => {
       path.join(__dirname, 'testpackage.json'),
       ['typescript'],
     )).toEqual({
-      // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       typescript: require('typescript/package.json').version,
     });
   });
