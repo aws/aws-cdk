@@ -99,7 +99,7 @@ describe('NODEJS_LATEST runtime resolution', () => {
     expect(euFunction.runtime.family).toBe(lambda.RuntimeFamily.NODEJS);
   });
 
-  test('NODEJS_LATEST creates regional mapping in environment-agnostic stack', () => {
+  test('NODEJS_LATEST uses correct version in environment-agnostic stack', () => {
     // GIVEN
     const stack = new cdk.Stack(); // No region specified
 
@@ -111,18 +111,9 @@ describe('NODEJS_LATEST runtime resolution', () => {
     });
 
     // THEN
-    // Should create the LatestNodeRuntimeMap mapping for environment-agnostic stacks
-    Template.fromStack(stack).hasMapping('LatestNodeRuntimeMap', {});
-
-    // Verify the CloudFormation template uses Fn::FindInMap for runtime
+    // Verify the CloudFormation template uses correct runtime version (nodejs22.x)
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Runtime: {
-        'Fn::FindInMap': [
-          'LatestNodeRuntimeMap',
-          { Ref: 'AWS::Region' },
-          'value',
-        ],
-      },
+      Runtime: 'nodejs22.x',
     });
   });
 });

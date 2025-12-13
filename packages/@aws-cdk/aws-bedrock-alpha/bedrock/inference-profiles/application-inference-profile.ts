@@ -123,7 +123,6 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
           grantee: grantee,
           actions: ['bedrock:GetInferenceProfile', 'bedrock:InvokeModel'],
           resourceArns: [this.inferenceProfileArn],
-          scope: this,
         });
       }
     }
@@ -157,7 +156,6 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
           grantee: grantee,
           actions: ['bedrock:GetInferenceProfile', 'bedrock:InvokeModel'],
           resourceArns: [this.inferenceProfileArn],
-          scope: this,
         });
       }
     })(cfnApplicationInferenceProfile, id);
@@ -357,7 +355,6 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
       grantee: grantee,
       actions: ['bedrock:GetInferenceProfile', 'bedrock:InvokeModel'],
       resourceArns: [this.inferenceProfileArn],
-      scope: this,
     });
   }
 }

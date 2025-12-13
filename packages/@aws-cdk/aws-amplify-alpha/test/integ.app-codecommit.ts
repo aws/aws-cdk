@@ -1,5 +1,5 @@
-import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 import { App, Stack, StackProps } from 'aws-cdk-lib';
+import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 import { Construct } from 'constructs';
 import * as amplify from '../lib';
 

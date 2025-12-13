@@ -307,6 +307,21 @@ describe('WebSocketApi', () => {
       IpAddressType: ipAddressType,
     });
   });
+
+  test.each([true, false, undefined])('disableSchemaValidation is set to %s', (disableSchemaValidation) => {
+    const stack = new Stack();
+    new WebSocketApi(stack, 'api', {
+      disableSchemaValidation,
+    });
+
+    const value = disableSchemaValidation !== undefined ? disableSchemaValidation : Match.absent();
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'WEBSOCKET',
+      DisableSchemaValidation: value,
+    });
+  });
 });
 
 class DummyIntegration extends WebSocketRouteIntegration {

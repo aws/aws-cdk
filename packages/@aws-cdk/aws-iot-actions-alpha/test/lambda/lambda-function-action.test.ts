@@ -1,7 +1,7 @@
-import { Template } from 'aws-cdk-lib/assertions';
 import * as iot from '@aws-cdk/aws-iot-alpha';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as actions from '../../lib';
 
 test('create a topic rule with lambda action and a lambda permission to be invoked by the topic rule', () => {

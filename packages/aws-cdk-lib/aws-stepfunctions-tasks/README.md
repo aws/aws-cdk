@@ -142,6 +142,17 @@ The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
 runtime to use to evaluate the expression. Currently, only runtimes
 of the Node.js family are supported.
 
+The `EvaluateExpression` also supports an `architecture` prop to specify the Lambda
+architecture. This can be useful when migrating to ARM64 or when running integration
+tests on ARM64 systems.
+
+```ts
+const convertToSecondsArm64 = new tasks.EvaluateExpression(this, 'Convert to seconds', {
+  expression: '$.waitMilliseconds / 1000',
+  architecture: lambda.Architecture.ARM_64,
+});
+```
+
 ## API Gateway
 
 Step Functions supports [API Gateway](https://docs.aws.amazon.com/step-functions/latest/dg/connect-api-gateway.html) through the service integration pattern.
@@ -1021,6 +1032,18 @@ new tasks.EmrCreateCluster(this, 'SpotSpecification', {
 });
 ```
 
+You can [customize EBS root device volume](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-custom-ami-root-volume-size.html).
+
+```ts
+new tasks.EmrCreateCluster(this, 'Create Cluster', {
+  instances: {},
+  name: 'ClusterName',
+  ebsRootVolumeIops: 4000,
+  ebsRootVolumeSize: Size.gibibytes(20),
+  ebsRootVolumeThroughput: 200,
+});
+```
+
 If you want to run multiple steps in [parallel](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-concurrent-steps.html),
 you can specify the `stepConcurrencyLevel` property. The concurrency range is between 1
 and 256 inclusive, where the default concurrency of 1 means no step concurrency is allowed.
@@ -1043,6 +1066,47 @@ new tasks.EmrCreateCluster(this, 'Create Cluster', {
   instances: {},
   name: 'ClusterName',
   autoTerminationPolicyIdleTimeout: Duration.seconds(100),
+});
+```
+
+If you want to use [managed scaling](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-scaling.html),
+you can specify the `managedScalingPolicy` property.
+
+```ts
+new tasks.EmrCreateCluster(this, 'CreateCluster', {
+  instances: {
+    instanceFleets: [
+      {
+        instanceFleetType: tasks.EmrCreateCluster.InstanceRoleType.CORE,
+        instanceTypeConfigs: [
+          {
+            instanceType: 'm5.xlarge',
+          },
+        ],
+        targetOnDemandCapacity: 1,
+      },
+      {
+        instanceFleetType: tasks.EmrCreateCluster.InstanceRoleType.MASTER,
+        instanceTypeConfigs: [
+          {
+            instanceType: 'm5.xlarge',
+          },
+        ],
+        targetOnDemandCapacity: 1,
+      },
+    ],
+  },
+  name: 'ClusterName',
+  releaseLabel: 'emr-7.9.0',
+  managedScalingPolicy: {
+    computeLimits: {
+      unitType: tasks.EmrCreateCluster.ComputeLimitsUnitType.INSTANCE_FLEET_UNITS,
+      maximumCapacityUnits: 4,
+      minimumCapacityUnits: 1,
+      maximumOnDemandCapacityUnits: 4,
+      maximumCoreCapacityUnits: 2,
+    },
+  },
 });
 ```
 
@@ -1380,12 +1444,12 @@ The following code snippet includes a Task state that uses eks:call to list the 
 
 ```ts
 import * as eks from 'aws-cdk-lib/aws-eks';
-import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 
 const myEksCluster = new eks.Cluster(this, 'my sample cluster', {
-  version: eks.KubernetesVersion.V1_32,
+  version: eks.KubernetesVersion.V1_34,
   clusterName: 'myEksCluster',
-  kubectlLayer: new KubectlV33Layer(this, 'kubectl'),
+  kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
 });
 
 new tasks.EksCall(this, 'Call a EKS Endpoint', {
@@ -1588,7 +1652,7 @@ const connection = new events.Connection(this, 'Connection', {
 
 new tasks.HttpInvoke(this, 'Invoke HTTP API', {
   apiRoot: 'https://api.example.com',
-  apiEndpoint: sfn.TaskInput.fromText('path/to/resource'),
+  apiEndpoint: sfn.TaskInput.fromText(sfn.JsonPath.format('resource/{}/details', sfn.JsonPath.stringAt('$.resourceId'))),
   body: sfn.TaskInput.fromObject({ foo: 'bar' }),
   connection,
   headers: sfn.TaskInput.fromObject({ 'Content-Type': 'application/json' }),

@@ -16,6 +16,7 @@
      "Origins": [
       {
        "CustomOriginConfig": {
+        "IpAddressType": "dualstack",
         "OriginProtocolPolicy": "https-only",
         "OriginSSLProtocols": [
          "TLSv1.2"

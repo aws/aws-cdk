@@ -10,7 +10,7 @@ let stack: Stack;
 let vpc: ec2.Vpc;
 let cluster: ecs.Cluster;
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 beforeEach(() => {
   // GIVEN

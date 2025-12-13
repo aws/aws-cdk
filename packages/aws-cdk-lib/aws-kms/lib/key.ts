@@ -26,6 +26,9 @@ import * as cxapi from '../../cx-api';
 
 /**
  * A KMS Key, either managed by this CDK app, or imported.
+ *
+ * This interface does double duty: it represents an actual KMS keys, but it
+ * also represents things that can behave like KMS keys, like a key alias.
  */
 export interface IKey extends IResource, IKeyRef {
   /**
@@ -816,6 +819,9 @@ export class Key extends KeyBase {
         KeySpec.HMAC_256,
         KeySpec.HMAC_384,
         KeySpec.HMAC_512,
+        KeySpec.ML_DSA_44,
+        KeySpec.ML_DSA_65,
+        KeySpec.ML_DSA_87,
       ],
       [KeyUsage.SIGN_VERIFY]: [
         KeySpec.SYMMETRIC_DEFAULT,
@@ -834,6 +840,9 @@ export class Key extends KeyBase {
         KeySpec.ECC_SECG_P256K1,
         KeySpec.SYMMETRIC_DEFAULT,
         KeySpec.SM2,
+        KeySpec.ML_DSA_44,
+        KeySpec.ML_DSA_65,
+        KeySpec.ML_DSA_87,
       ],
       [KeyUsage.KEY_AGREEMENT]: [
         KeySpec.SYMMETRIC_DEFAULT,
@@ -845,6 +854,9 @@ export class Key extends KeyBase {
         KeySpec.HMAC_256,
         KeySpec.HMAC_384,
         KeySpec.HMAC_512,
+        KeySpec.ML_DSA_44,
+        KeySpec.ML_DSA_65,
+        KeySpec.ML_DSA_87,
       ],
     };
     const keySpec = props.keySpec ?? KeySpec.SYMMETRIC_DEFAULT;

@@ -22,7 +22,7 @@ import {
   ViewerProtocolPolicy,
 } from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 const publicKey = `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAudf8/iNkQgdvjEdm6xYS
@@ -810,7 +810,10 @@ added the ellipsis so a user would know there was more to r...`,
             {
               'EventType': 'viewer-request',
               'FunctionARN': {
-                'Ref': 'TestFunction22AD90FC',
+                'Fn::GetAtt': [
+                  'TestFunction22AD90FC',
+                  'FunctionARN',
+                ],
               },
             },
           ],

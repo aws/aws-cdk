@@ -429,7 +429,7 @@ export interface AppSyncRdsDataSourcePropsV2 extends AppSyncBackedDataSourceProp
  * An AppSync datasource backed by RDS
  */
 export class AppSyncRdsDataSource extends AppSyncBackedDataSource {
-  constructor(scope: Construct, id: string, props: AppSyncRdsDataSourceProps)
+  constructor(scope: Construct, id: string, props: AppSyncRdsDataSourceProps);
   constructor(scope: Construct, id: string, props: AppSyncRdsDataSourcePropsV2) {
     super(scope, id, props, {
       type: AppSyncDataSourceType.RELATIONAL_DATABASE,
@@ -470,7 +470,6 @@ export class AppSyncRdsDataSource extends AppSyncBackedDataSource {
         'rds-data:UpdateItems',
       ],
       resourceArns: [clusterArn, `${clusterArn}:*`],
-      scope: this,
     });
   }
 }

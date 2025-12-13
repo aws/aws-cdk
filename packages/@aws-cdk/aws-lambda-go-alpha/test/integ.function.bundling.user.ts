@@ -1,9 +1,9 @@
 import * as path from 'path';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import { App, Stack, StackProps } from 'aws-cdk-lib';
+import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
-import * as integ from '@aws-cdk/integ-tests-alpha';
-import { IFunction } from 'aws-cdk-lib/aws-lambda';
 
 /*
  * Stack verification steps:

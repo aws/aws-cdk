@@ -32,6 +32,7 @@ export * from './ip-addresses';
 export * from './machine-image';
 export * from './placement-group';
 export * from './key-pair';
+export * from './instance-requirements';
 
 // AWS::EC2 CloudFormation Resources:
 export * from './ec2.generated';

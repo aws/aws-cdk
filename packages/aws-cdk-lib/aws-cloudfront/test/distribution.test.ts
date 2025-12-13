@@ -24,6 +24,7 @@ import {
   SecurityPolicyProtocol,
   SSLMethod,
 } from '../lib';
+import { DistributionGrants } from '../lib/cloudfront-grants.generated';
 
 let app: App;
 let stack: Stack;
@@ -920,7 +921,10 @@ describe('with CloudFront functions', () => {
             {
               EventType: 'viewer-request',
               FunctionARN: {
-                Ref: 'TestFunction22AD90FC',
+                'Fn::GetAtt': [
+                  'TestFunction22AD90FC',
+                  'FunctionARN',
+                ],
               },
             },
           ],
@@ -1249,6 +1253,38 @@ test('grants createInvalidation', () => {
     assumedBy: new iam.AccountRootPrincipal(),
   });
   distribution.grantCreateInvalidation(role);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'cloudfront:CreateInvalidation',
+          Resource: {
+            'Fn::Join': [
+              '', [
+                'arn:', { Ref: 'AWS::Partition' }, ':cloudfront::1234:distribution/',
+                { Ref: 'Distribution830FAC52' },
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('grants createInvalidation to L1', () => {
+  const distribution = new Distribution(stack, 'Distribution', {
+    defaultBehavior: { origin: defaultOrigin() },
+  });
+
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.AccountRootPrincipal(),
+  });
+
+  DistributionGrants.
+    fromDistribution(distribution.node.defaultChild as CfnDistribution)
+    .createInvalidation(role);
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {

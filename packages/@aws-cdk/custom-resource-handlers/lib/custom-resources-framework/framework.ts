@@ -54,6 +54,7 @@ export class HandlerFrameworkModule extends Module {
       handler,
       codeDirectory,
       runtime: component.runtime,
+      constructorVisibility: component.constructorVisibility,
     };
 
     switch (component.type) {

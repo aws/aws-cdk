@@ -15,7 +15,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"$ObjectLike\":{\"resourcePolicy\":{\"$SerializedJson\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"s3.amazonaws.com\"},\"Action\":[\"s3tables:Get*\",\"s3tables:ListNamespace\",\"s3tables:ListTables\"],\"Resource\":[{\"$StringLike\":\"arn:aws:s3tables:",
+       "{\"$ObjectLike\":{\"resourcePolicy\":{\"$SerializedJson\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"s3.amazonaws.com\"},\"Action\":[\"s3tables:Get*\",\"s3tables:ListNamespaces\",\"s3tables:ListTables\"],\"Resource\":[{\"$StringLike\":\"arn:aws:s3tables:",
        {
         "Ref": "AWS::Region"
        },

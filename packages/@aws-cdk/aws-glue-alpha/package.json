@@ -6,6 +6,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
+    "tsconfig": "tsconfig.json",
     "outdir": "dist",
     "targets": {
       "java": {
@@ -33,14 +34,14 @@
         "packageName": "awscdkgluealpha"
       }
     },
-    "projectReferences": true,
     "metadata": {
       "jsii": {
         "rosetta": {
           "strict": true
         }
       }
-    }
+    },
+    "validateTsconfig": "minimal"
   },
   "repository": {
     "type": "git",
@@ -82,7 +83,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.190.2",
+    "@aws-cdk/integ-runner": "^2.192.2",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.14",

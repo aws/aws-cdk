@@ -545,6 +545,10 @@ new logs.Transformer(this, 'Transformer', {
 
 For more details on CloudWatch Logs transformation processors, refer to the [AWS documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Transformation-Processors.html).
 
+### Usage of metric filters on transformed logs
+
+In order to use the transformed logs as search pattern, set the parameter `applyOnTransformedLogs: true` in the MetricFilterProps.
+
 ## Notes
 
 Be aware that Log Group ARNs will always have the string `:*` appended to

@@ -405,6 +405,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly BEDROCK = new InterfaceVpcEndpointAwsService('bedrock');
   public static readonly BEDROCK_AGENT = new InterfaceVpcEndpointAwsService('bedrock-agent');
   public static readonly BEDROCK_AGENT_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-agent-runtime');
+  public static readonly BEDROCK_AGENTCORE = new InterfaceVpcEndpointAwsService('bedrock-agentcore');
+  public static readonly BEDROCK_AGENTCORE_GATEWAY = new InterfaceVpcEndpointAwsService('bedrock-agentcore.gateway');
   public static readonly BEDROCK_RUNTIME = new InterfaceVpcEndpointAwsService('bedrock-runtime');
   public static readonly BEDROCK_DATA_AUTOMATION = new InterfaceVpcEndpointAwsService('bedrock-data-automation');
   public static readonly BEDROCK_DATA_AUTOMATION_FIPS = new InterfaceVpcEndpointAwsService('bedrock-data-automation-fips');
@@ -460,6 +462,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CODEPIPELINE = new InterfaceVpcEndpointAwsService('codepipeline');
   public static readonly CODESTAR_CONNECTIONS = new InterfaceVpcEndpointAwsService('codestar-connections.api');
   public static readonly CODE_CONNECTIONS = new InterfaceVpcEndpointAwsService('codeconnections.api');
+  public static readonly COGNITO_IDP = new InterfaceVpcEndpointAwsService('cognito-idp');
+  public static readonly COGNITO_IDP_FIPS = new InterfaceVpcEndpointAwsService('cognito-idp-fips');
   public static readonly COMPREHEND = new InterfaceVpcEndpointAwsService('comprehend');
   public static readonly COMPREHEND_MEDICAL = new InterfaceVpcEndpointAwsService('comprehendmedical');
   public static readonly COMPUTE_OPTIMIZER = new InterfaceVpcEndpointAwsService('compute-optimizer');

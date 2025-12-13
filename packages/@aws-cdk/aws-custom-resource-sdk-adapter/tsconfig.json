@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "es2022",
     "module": "commonjs",
-    "lib": ["es2020", "dom"],
+    "lib": [
+      "es2022"
+    ],
     "strict": true,
     "alwaysStrict": true,
     "declaration": true,
@@ -11,10 +13,14 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
+    "esModuleInterop": false,
+    "isolatedModules": true,
+    "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
     "composite": true,
-    "incremental": true,
+    "incremental": true
   },
-  "include": ["**/*.ts", "**/*.d.ts"]
+  "include": [ "**/*.ts" ],
+  "exclude": [ "**/*.d.ts" ]
 }

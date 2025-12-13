@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "declarationMap": false,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "alwaysStrict": true,
+    "declaration": true,
+    "incremental": true,
+    "lib": [
+      "es2022"
+    ],
+    "module": "commonjs",
+    "noEmitOnError": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "stripInternal": true,
+    "target": "es2022",
+    "composite": false,
+    "tsBuildInfoFile": "tsconfig.tsbuildinfo",
+    "esModuleInterop": false,
+    "isolatedModules": true
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
