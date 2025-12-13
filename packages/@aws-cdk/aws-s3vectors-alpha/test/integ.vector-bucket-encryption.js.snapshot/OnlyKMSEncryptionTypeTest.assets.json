@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "d613259e9a63ac7dbc3c4f1cd227063131f7d95765ad3bf2a3fad8a68e3a385a": {
+      "displayName": "OnlyKMSEncryptionTypeTest Template",
+      "source": {
+        "path": "OnlyKMSEncryptionTypeTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-f01ef860": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d613259e9a63ac7dbc3c4f1cd227063131f7d95765ad3bf2a3fad8a68e3a385a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
