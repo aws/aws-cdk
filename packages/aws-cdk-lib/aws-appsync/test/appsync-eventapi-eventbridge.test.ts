@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { Template } from '../../assertions';
 import * as eventBridge from '../../aws-events';
 import * as cdk from '../../core';
