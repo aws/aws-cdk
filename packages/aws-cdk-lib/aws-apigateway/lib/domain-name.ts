@@ -37,6 +37,18 @@ export enum SecurityPolicy {
 
   /** Cipher suite TLS 1.2 */
   TLS_1_2 = 'TLS_1_2',
+
+  /** Cipher suite TLS 1.3 */
+  TLS13_1_3_2025_09 = 'SecurityPolicy_TLS13_1_3_2025_09',
+
+  /** Cipher suite TLS 1.3 and TLS 1.2 with post-quantum cryptography */
+  TLS13_1_2_PQ_2025_09 = 'SecurityPolicy_TLS13_1_2_PQ_2025_09',
+
+  /** Cipher suite TLS 1.3 for edge-optimized endpoints */
+  TLS13_2025_EDGE = 'SecurityPolicy_TLS13_2025_EDGE',
+
+  /** Cipher suite TLS 1.3 (FIPS compliant) */
+  TLS13_1_3_FIPS_2025_09 = 'SecurityPolicy_TLS13_1_3_FIPS_2025_09',
 }
 
 export interface DomainNameOptions {
@@ -204,8 +216,16 @@ export class DomainName extends Resource implements IDomainName {
       if (this.endpointType === EndpointType.EDGE) {
         throw new ValidationError('multi-level basePath is only supported when endpointType is EndpointType.REGIONAL', this);
       }
-      if (this.securityPolicy && this.securityPolicy !== SecurityPolicy.TLS_1_2) {
-        throw new ValidationError('securityPolicy must be set to TLS_1_2 if multi-level basePath is provided', this);
+      // Multi-level base path mapping requires TLS 1.2 or higher
+      const tls12OrHigher = [
+        SecurityPolicy.TLS_1_2,
+        SecurityPolicy.TLS13_1_3_2025_09,
+        SecurityPolicy.TLS13_1_2_PQ_2025_09,
+        SecurityPolicy.TLS13_2025_EDGE,
+        SecurityPolicy.TLS13_1_3_FIPS_2025_09,
+      ];
+      if (this.securityPolicy && !tls12OrHigher.includes(this.securityPolicy)) {
+        throw new ValidationError('securityPolicy must be set to TLS 1.2 or higher if multi-level basePath is provided', this);
       }
       return true;
     }
