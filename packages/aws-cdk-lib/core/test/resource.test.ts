@@ -196,7 +196,7 @@ describe('resource', () => {
       autoScalingCreationPolicy: { minSuccessfulInstancesPercent: 10 },
       startFleet: true,
     };
-    // eslint-disable-next-line max-len
+
     r1.cfnOptions.updatePolicy = {
       autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: false },
       autoScalingReplacingUpdate: { willReplace: true },

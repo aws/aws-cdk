@@ -5,7 +5,6 @@ exports[`Logs Delivery Mixin for a resource 1`] = `
 import * as cdk from "aws-cdk-lib/core";
 import * as interfaces from "aws-cdk-lib/interfaces";
 import * as constructs from "constructs";
-import * as logs from "aws-cdk-lib/aws-logs";
 import * as core from "../../core";
 import * as logsDelivery from "../aws-logs/logs-delivery";
 import * as service from "aws-cdk-lib/aws-some";
@@ -105,7 +104,7 @@ export class CfnThingLogsMixin extends core.Mixin implements core.IMixin {
    * Create a mixin to enable vended logs for \`AWS::Some::Resource\`.
    *
    * @param logType Type of logs that are getting vended
-   * @param logDelivery Object in charge of setting up the delivery destination and delivery connection
+   * @param logDelivery Object in charge of setting up the delivery source, delivery destination, and delivery connection
    */
   public constructor(logType: string, logDelivery: logsDelivery.ILogsDelivery) {
     super();
@@ -128,14 +127,7 @@ export class CfnThingLogsMixin extends core.Mixin implements core.IMixin {
       return resource;
     }
     const sourceArn = service.CfnThing.arnForThing(resource);
-    const deliverySource = new logs.CfnDeliverySource(resource, "CdkSource" + cdk.Names.uniqueId(resource), {
-      name: "ThingSource-" + cdk.Names.uniqueResourceName(resource, {
-        maxLength: (47 - this.logType.length)
-      }) + "-" + this.logType,
-      resourceArn: sourceArn,
-      logType: this.logType
-    });
-    this.logDelivery.bind(resource, deliverySource, sourceArn);
+    this.logDelivery.bind(resource, this.logType, sourceArn);
     return resource;
   }
 }"

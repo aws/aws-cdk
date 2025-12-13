@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';

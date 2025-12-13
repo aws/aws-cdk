@@ -368,7 +368,7 @@ test('Log level are set to FATAL by default', () => {
 test('uses loggingFormat instead of deprecated logFormat', () => {
   // GIVEN
   // Spy on console.warn to check for deprecation warnings
-  // eslint-disable-next-line no-console
+
   const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { });
 
   const stack = new Stack();
