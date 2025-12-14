@@ -9,7 +9,6 @@ nyc.config.js
 .nyc_output
 coverage
 dist
-tsconfig.json
 
 *.snk
 !eslint.config.mjs
