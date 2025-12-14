@@ -10,11 +10,10 @@ jobs:
     permissions:
       checks: write
       pull-requests: write
-      id-token: write
       actions: read
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: security-guardian-reports
           path: test-results/
@@ -45,6 +44,7 @@ jobs:
           group_suite: true
           include_skipped: false
           check_title_template: '{{TEST_NAME}}'
+          include_empty_in_summary: false
 
       - name: Publish Security Test Results for resolved templates
         uses: mikepenz/action-junit-report@v6
@@ -63,3 +63,4 @@ jobs:
           group_suite: true
           include_skipped: false
           check_title_template: '{{TEST_NAME}}'
+          include_empty_in_summary: false
