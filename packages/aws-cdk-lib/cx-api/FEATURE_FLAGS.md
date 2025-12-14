@@ -110,8 +110,8 @@ Flags come in three types:
 | [@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId](#aws-cdkaws-ecs-patternsuniquetargetgroupid) | When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement | 2.221.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | 2.221.0 | fix |
 | [@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault](#aws-cdkaws-elasticloadbalancingv2networkloadbalancerwithsecuritygroupbydefault) | When enabled, Network Load Balancer will be created with a security group by default. | 2.222.0 | new default |
-| [@aws-cdk/aws-route53-patterns:useDistribution](#aws-cdkaws-route53-patternsusedistribution) | Use the `Distribution` resource instead of `CloudFrontWebDistribution` | V2NEXT | new default |
 | [@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2\_0](#aws-cdkaws-cloudfrontdefaultfunctionruntimev2_0) | Use cloudfront-js-2.0 as the default runtime for CloudFront Functions | V2NEXT | new default |
+| [@aws-cdk/aws-route53-patterns:useDistribution](#aws-cdkaws-route53-patternsusedistribution) | Use the `Distribution` resource instead of `CloudFrontWebDistribution` | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -205,8 +205,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
     "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": true,
     "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true,
-    "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": true,
-    "@aws-cdk/aws-route53-patterns:useDistribution": true
+    "@aws-cdk/aws-route53-patterns:useDistribution": true,
+    "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": true
   }
 }
 ```
@@ -2342,24 +2342,6 @@ When this feature flag is enabled, Network Load Balancer will be created with a 
 **Compatibility with old behavior:** Disable the feature flag to create Network Load Balancer without a security group by default.
 
 
-### @aws-cdk/aws-route53-patterns:useDistribution
-
-*Use the `Distribution` resource instead of `CloudFrontWebDistribution`*
-
-Flag type: New default behavior
-
-Enable this feature flag to use the new `Distribution` resource instead
-of the deprecated `CloudFrontWebDistribution` construct.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
-
-**Compatibility with old behavior:** Define a `CloudFrontWebDistribution` explicitly
-
-
 ### @aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0
 
 *Use cloudfront-js-2.0 as the default runtime for CloudFront Functions*
@@ -2378,6 +2360,24 @@ If `keyValueStore` is specified, the runtime will always be cloudfront-js-2.0 re
 | V2NEXT | `false` | `true` |
 
 **Compatibility with old behavior:** Set `runtime: FunctionRuntime.JS_1_0` explicitly to use the v1.0 runtime.
+
+
+### @aws-cdk/aws-route53-patterns:useDistribution
+
+*Use the `Distribution` resource instead of `CloudFrontWebDistribution`*
+
+Flag type: New default behavior
+
+Enable this feature flag to use the new `Distribution` resource instead
+of the deprecated `CloudFrontWebDistribution` construct.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Define a `CloudFrontWebDistribution` explicitly
 
 
 <!-- END details -->
