@@ -1,9 +1,9 @@
+import { CfnCluster } from 'aws-cdk-lib/aws-dsql';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
 import { Aws, IResource, RemovalPolicy, Resource, Tags } from 'aws-cdk-lib/core';
-import { CfnCluster } from 'aws-cdk-lib/aws-dsql';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { Construct } from 'constructs';
 
 /**
  * Properties for a new Aurora DSQL cluster
