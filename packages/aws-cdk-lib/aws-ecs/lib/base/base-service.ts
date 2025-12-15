@@ -1820,6 +1820,14 @@ export enum DeploymentStrategy {
    * Blue/green deployment
    */
   BLUE_GREEN = 'BLUE_GREEN',
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  LINEAR = 'LINEAR',
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  CANARY = 'CANARY',
 }
 
 /**
