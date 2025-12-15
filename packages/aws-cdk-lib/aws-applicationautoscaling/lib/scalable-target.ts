@@ -82,11 +82,6 @@ export interface ScalableTargetAttributes {
   readonly scalableTargetId: string;
 
   /**
-   * The resource identifier to associate with this scalable target.
-   */
-  readonly resourceId: string;
-
-  /**
    * The scalable dimension that's associated with the scalable target.
    */
   readonly scalableDimension: string;
@@ -122,7 +117,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
 
       public get scalableTargetRef(): ScalableTargetReference {
         return {
-          resourceId: attrs.resourceId,
+          resourceId: attrs.scalableTargetId,
           scalableDimension: attrs.scalableDimension,
           serviceNamespace: attrs.serviceNamespace,
         };
