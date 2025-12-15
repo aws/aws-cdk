@@ -3,6 +3,15 @@
   "redirectRedirectBucketAA44E2FE": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "aws:kms"
+       }
+      }
+     ]
+    },
     "PublicAccessBlockConfiguration": {
      "BlockPublicAcls": true,
      "BlockPublicPolicy": true,
@@ -19,7 +28,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "redirectRedirectDistributionCFDistribution1A4C48E3": {
+  "redirectRedirectDistribution5423F951": {
    "Type": "AWS::CloudFront::Distribution",
    "Properties": {
     "DistributionConfig": {
@@ -28,22 +37,9 @@
      ],
      "Comment": "Redirect to aws.amazon.com from integ.example.com",
      "DefaultCacheBehavior": {
-      "AllowedMethods": [
-       "GET",
-       "HEAD"
-      ],
-      "CachedMethods": [
-       "GET",
-       "HEAD"
-      ],
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
       "Compress": true,
-      "ForwardedValues": {
-       "Cookies": {
-        "Forward": "none"
-       },
-       "QueryString": false
-      },
-      "TargetOriginId": "origin1",
+      "TargetOriginId": "integhttpsredirectRedirectDistributionOrigin1D11FF053",
       "ViewerProtocolPolicy": "redirect-to-https"
      },
      "DefaultRootObject": "",
@@ -52,14 +48,8 @@
      "IPV6Enabled": true,
      "Origins": [
       {
-       "ConnectionAttempts": 3,
-       "ConnectionTimeout": 10,
        "CustomOriginConfig": {
-        "HTTPPort": 80,
-        "HTTPSPort": 443,
-        "OriginKeepaliveTimeout": 5,
         "OriginProtocolPolicy": "http-only",
-        "OriginReadTimeout": 30,
         "OriginSSLProtocols": [
          "TLSv1.2"
         ]
@@ -80,7 +70,7 @@
          }
         ]
        },
-       "Id": "origin1"
+       "Id": "integhttpsredirectRedirectDistributionOrigin1D11FF053"
       }
      ],
      "PriceClass": "PriceClass_All",
@@ -91,6 +81,7 @@
         "/cdk/exports/integ-https-redirect/certificateredirectstackc8dcaeced090b732e39f9a17bfcca0bf8d20ce4f61useast1RefRedirectCertificatec8615644f6b8e5372f779988c9aad3c31ec249ee76D1272753FE4DCC12"
        ]
       },
+      "MinimumProtocolVersion": "TLSv1.2_2021",
       "SslSupportMethod": "sni-only"
      }
     }
@@ -102,7 +93,7 @@
     "AliasTarget": {
      "DNSName": {
       "Fn::GetAtt": [
-       "redirectRedirectDistributionCFDistribution1A4C48E3",
+       "redirectRedirectDistribution5423F951",
        "DomainName"
       ]
      },
@@ -127,7 +118,7 @@
     "AliasTarget": {
      "DNSName": {
       "Fn::GetAtt": [
-       "redirectRedirectDistributionCFDistribution1A4C48E3",
+       "redirectRedirectDistribution5423F951",
        "DomainName"
       ]
      },
@@ -225,7 +216,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2"
      },
-     "S3Key": "d6fa38886a871b64de769ec5016af90a071e6429aa8e7de84f595e4e2462e17d.zip"
+     "S3Key": "4041b90c06a8299e3cb54c0b0d1843864e545730c529352e77d161f57e6f8cbb.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
