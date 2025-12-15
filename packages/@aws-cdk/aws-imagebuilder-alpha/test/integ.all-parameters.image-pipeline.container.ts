@@ -37,7 +37,7 @@ const containerRecipe = new imagebuilder.ContainerRecipe(stack, 'ContainerRecipe
   targetRepository: imagebuilder.Repository.fromEcr(repository),
   components: [
     {
-      component: imagebuilder.AwsManagedComponent.helloWorld(stack, 'HelloWorld', {
+      component: imagebuilder.AmazonManagedComponent.helloWorld(stack, 'HelloWorld', {
         platform: imagebuilder.Platform.LINUX,
       }),
     },
@@ -65,9 +65,9 @@ const containerImagePipeline = new imagebuilder.ImagePipeline(stack, 'ImagePipel
     autoDisableFailureCount: 5,
   },
   workflows: [
-    { workflow: imagebuilder.AwsManagedWorkflow.buildContainer(stack, 'BuildContainer') },
-    { workflow: imagebuilder.AwsManagedWorkflow.testContainer(stack, 'TestContainer') },
-    { workflow: imagebuilder.AwsManagedWorkflow.distributeContainer(stack, 'DistributeContainer') },
+    { workflow: imagebuilder.AmazonManagedWorkflow.buildContainer(stack, 'BuildContainer') },
+    { workflow: imagebuilder.AmazonManagedWorkflow.testContainer(stack, 'TestContainer') },
+    { workflow: imagebuilder.AmazonManagedWorkflow.distributeContainer(stack, 'DistributeContainer') },
   ],
   imageLogGroup,
   imagePipelineLogGroup,

@@ -199,8 +199,8 @@ Use AWS-managed workflows for common pipeline phases:
 const workflowPipeline = new imagebuilder.ImagePipeline(this, 'WorkflowPipeline', {
   recipe: exampleImageRecipe,
   workflows: [
-    { workflow: imagebuilder.AwsManagedWorkflow.buildImage(this, 'BuildWorkflow') },
-    { workflow: imagebuilder.AwsManagedWorkflow.testImage(this, 'TestWorkflow') }
+    { workflow: imagebuilder.AmazonManagedWorkflow.buildImage(this, 'BuildWorkflow') },
+    { workflow: imagebuilder.AmazonManagedWorkflow.testImage(this, 'TestWorkflow') }
   ]
 });
 ```
@@ -211,9 +211,9 @@ For container pipelines, use container-specific workflows:
 const containerWorkflowPipeline = new imagebuilder.ImagePipeline(this, 'ContainerWorkflowPipeline', {
   recipe: exampleContainerRecipe,
   workflows: [
-    { workflow: imagebuilder.AwsManagedWorkflow.buildContainer(this, 'BuildContainer') },
-    { workflow: imagebuilder.AwsManagedWorkflow.testContainer(this, 'TestContainer') },
-    { workflow: imagebuilder.AwsManagedWorkflow.distributeContainer(this, 'DistributeContainer') }
+    { workflow: imagebuilder.AmazonManagedWorkflow.buildContainer(this, 'BuildContainer') },
+    { workflow: imagebuilder.AmazonManagedWorkflow.testContainer(this, 'TestContainer') },
+    { workflow: imagebuilder.AmazonManagedWorkflow.distributeContainer(this, 'DistributeContainer') }
   ]
 });
 ```
@@ -430,8 +430,8 @@ Use workflows for custom build, test, and distribution processes:
 const imageWithWorkflows = new imagebuilder.Image(this, 'ImageWithWorkflows', {
   recipe: exampleImageRecipe,
   workflows: [
-    { workflow: imagebuilder.AwsManagedWorkflow.buildImage(this, 'BuildWorkflow') },
-    { workflow: imagebuilder.AwsManagedWorkflow.testImage(this, 'TestWorkflow') }
+    { workflow: imagebuilder.AmazonManagedWorkflow.buildImage(this, 'BuildWorkflow') },
+    { workflow: imagebuilder.AmazonManagedWorkflow.testImage(this, 'TestWorkflow') }
   ]
 });
 ```
@@ -603,12 +603,12 @@ const imageRecipe = new imagebuilder.ImageRecipe(this, 'AmazonManagedImageRecipe
   ),
   components: [
     {
-      component: imagebuilder.AwsManagedComponent.updateOS(this, 'UpdateOS', {
+      component: imagebuilder.AmazonManagedComponent.updateOs(this, 'UpdateOS', {
         platform: imagebuilder.Platform.LINUX
       })
     },
     {
-      component: imagebuilder.AwsManagedComponent.awsCliV2(this, 'AwsCli', {
+      component: imagebuilder.AmazonManagedComponent.awsCliV2(this, 'AwsCli', {
         platform: imagebuilder.Platform.LINUX
       })
     }
@@ -790,19 +790,19 @@ const containerRecipe = new imagebuilder.ContainerRecipe(this, 'ComponentContain
 Use pre-built AWS components:
 
 ```ts
-const containerRecipe = new imagebuilder.ContainerRecipe(this, 'AwsManagedContainerRecipe', {
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'AmazonManagedContainerRecipe', {
   baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
   targetRepository: imagebuilder.Repository.fromEcr(
     ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
   ),
   components: [
     {
-      component: imagebuilder.AwsManagedComponent.updateOS(this, 'UpdateOS', {
+      component: imagebuilder.AmazonManagedComponent.updateOs(this, 'UpdateOS', {
         platform: imagebuilder.Platform.LINUX
       })
     },
     {
-      component: imagebuilder.AwsManagedComponent.awsCliV2(this, 'AwsCli', {
+      component: imagebuilder.AmazonManagedComponent.awsCliV2(this, 'AwsCli', {
         platform: imagebuilder.Platform.LINUX
       })
     }
@@ -1070,17 +1070,17 @@ AWS provides a collection of managed components for common tasks:
 
 ```ts
 // Install AWS CLI v2
-const awsCliComponent = imagebuilder.AwsManagedComponent.awsCliV2(this, 'AwsCli', {
+const awsCliComponent = imagebuilder.AmazonManagedComponent.awsCliV2(this, 'AwsCli', {
   platform: imagebuilder.Platform.LINUX
 });
 
 // Update the operating system
-const updateComponent = imagebuilder.AwsManagedComponent.updateOS(this, 'UpdateOS', {
+const updateComponent = imagebuilder.AmazonManagedComponent.updateOs(this, 'UpdateOS', {
   platform: imagebuilder.Platform.LINUX
 });
 
 // Reference any AWS-managed component by name
-const customAwsComponent = imagebuilder.AwsManagedComponent.fromAwsManagedComponentName(
+const customAwsComponent = imagebuilder.AmazonManagedComponent.fromAmazonManagedComponentName(
   this,
   'CloudWatchAgent',
   'amazon-cloudwatch-agent-linux'
@@ -1517,15 +1517,15 @@ AWS provides a collection of workflows for common scenarios:
 
 ```ts
 // Build workflows
-const buildImageWorkflow = imagebuilder.AwsManagedWorkflow.buildImage(this, 'BuildImage');
-const buildContainerWorkflow = imagebuilder.AwsManagedWorkflow.buildContainer(this, 'BuildContainer');
+const buildImageWorkflow = imagebuilder.AmazonManagedWorkflow.buildImage(this, 'BuildImage');
+const buildContainerWorkflow = imagebuilder.AmazonManagedWorkflow.buildContainer(this, 'BuildContainer');
 
 // Test workflows  
-const testImageWorkflow = imagebuilder.AwsManagedWorkflow.testImage(this, 'TestImage');
-const testContainerWorkflow = imagebuilder.AwsManagedWorkflow.testContainer(this, 'TestContainer');
+const testImageWorkflow = imagebuilder.AmazonManagedWorkflow.testImage(this, 'TestImage');
+const testContainerWorkflow = imagebuilder.AmazonManagedWorkflow.testContainer(this, 'TestContainer');
 
 // Distribution workflows
-const distributeContainerWorkflow = imagebuilder.AwsManagedWorkflow.distributeContainer(this, 'DistributeContainer');
+const distributeContainerWorkflow = imagebuilder.AmazonManagedWorkflow.distributeContainer(this, 'DistributeContainer');
 ```
 
 ### Lifecycle Policy

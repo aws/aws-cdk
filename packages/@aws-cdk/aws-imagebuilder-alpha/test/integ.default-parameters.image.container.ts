@@ -17,7 +17,7 @@ const containerRecipe = new imagebuilder.ContainerRecipe(stack, 'ContainerRecipe
   osVersion: imagebuilder.OSVersion.AMAZON_LINUX_2023,
   components: [
     {
-      component: imagebuilder.AwsManagedComponent.helloWorld(stack, 'HelloWorld', {
+      component: imagebuilder.AmazonManagedComponent.helloWorld(stack, 'HelloWorld', {
         platform: imagebuilder.Platform.LINUX,
       }),
     },
