@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/1dd94fd3c232a69b0d68366ce158cdcdff4327028ba27644d6ada6a5beb39146.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/29d62c91dca76b43e3d7d7b022ac49993f73f403b3be4e4d281d61c13376b665.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,14 +34,23 @@
         "aws-cdk-eks-cluster.assets"
       ],
       "metadata": {
+        "/aws-cdk-eks-cluster/CdkIntegTestEksAdminUser": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-eks-cluster/CdkIntegTestEksAdminUser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CdkIntegTestEksAdminUserF8D417B9"
+          }
+        ],
         "/aws-cdk-eks-cluster/AdminRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
+              "assumedBy": "*"
             }
           }
         ],
@@ -60,7 +69,9 @@
         "/aws-cdk-eks-cluster/SecretsKey": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "policy": "*"
+            }
           }
         ],
         "/aws-cdk-eks-cluster/SecretsKey/Resource": [
@@ -1355,6 +1366,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterClusterSecurityGroupfromawscdkeksclusterClusterspotInstanceSecurityGroup888199F5ALLTRAFFICF3C40C11"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/ClusterSecurityGroup/from {IndirectPeer}:443": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterClusterSecurityGroupfromIndirectPeer443F03F2A0D"
+          }
+        ],
+        "/aws-cdk-eks-cluster/Cluster/ClusterSecurityGroup/from ::_0:443": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterClusterSecurityGroupfrom0443F8B899B8"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/HasEcrPublic": [

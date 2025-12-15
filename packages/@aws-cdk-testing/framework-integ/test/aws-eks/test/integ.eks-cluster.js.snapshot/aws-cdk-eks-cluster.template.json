@@ -1,5 +1,8 @@
 {
  "Resources": {
+  "CdkIntegTestEksAdminUserF8D417B9": {
+   "Type": "AWS::IAM::User"
+  },
   "AdminRole38563C57": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -10,15 +13,26 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:aws:iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "CdkIntegTestEksAdminUserF8D417B9",
+          "Arn"
+         ]
+        }
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:RequestedRegion": "us-east-1"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CdkIntegTestEksAdminUserF8D417B9",
+          "Arn"
          ]
         }
        }
@@ -57,7 +71,14 @@
     }
    },
    "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS"
+     ]
+    }
+   }
   },
   "Vpc8378EB38": {
    "Type": "AWS::EC2::VPC",
@@ -1325,6 +1346,43 @@
       "GroupId"
      ]
     }
+   }
+  },
+  "ClusterClusterSecurityGroupfromIndirectPeer443F03F2A0D": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "CidrIp": {
+     "Fn::GetAtt": [
+      "Vpc8378EB38",
+      "CidrBlock"
+     ]
+    },
+    "Description": "Allow HTTPS from VPC IPv4",
+    "FromPort": 443,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "Cluster9EE0221C",
+      "ClusterSecurityGroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 443
+   }
+  },
+  "ClusterClusterSecurityGroupfrom0443F8B899B8": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "CidrIpv6": "::/0",
+    "Description": "Allow HTTPS from IPv6",
+    "FromPort": 443,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "Cluster9EE0221C",
+      "ClusterSecurityGroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 443
    }
   },
   "ClusterAwsAuthmanifestFE51F8AE": {
