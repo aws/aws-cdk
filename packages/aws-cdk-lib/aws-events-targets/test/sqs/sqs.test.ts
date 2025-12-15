@@ -2,8 +2,7 @@ import { Match, Template } from '../../../assertions';
 import * as events from '../../../aws-events';
 import * as kms from '../../../aws-kms';
 import * as sqs from '../../../aws-sqs';
-import * as ssm from '../../../aws-ssm';
-import { App, CustomResource, Duration, Stack } from '../../../core';
+import { App, Duration, Stack } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import * as targets from '../../lib';
 

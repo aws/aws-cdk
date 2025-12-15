@@ -13,8 +13,6 @@ import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, ModernTestGitHubNpm
 
 let app: TestApp;
 let pipelineStack: Stack;
-let sourceArtifact: codepipeline.Artifact;
-let cloudAssemblyArtifact: codepipeline.Artifact;
 
 // Must be unique across all test files, but preferably also consistent
 const OUTDIR = 'testcdk0.out';
@@ -22,8 +20,6 @@ const OUTDIR = 'testcdk0.out';
 beforeEach(() => {
   app = new TestApp({ outdir: OUTDIR });
   pipelineStack = new Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
-  sourceArtifact = new codepipeline.Artifact();
-  cloudAssemblyArtifact = new codepipeline.Artifact('CloudAsm');
 });
 
 afterEach(() => {
