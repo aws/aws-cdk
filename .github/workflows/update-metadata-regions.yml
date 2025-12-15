@@ -33,7 +33,7 @@ jobs:
           git add .
           git diff --patch --staged > ${{ runner.temp }}/update-spec.patch
       - name: Upload Patch
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: update-spec.patch
           path: ${{ runner.temp }}/update-spec.patch
@@ -50,7 +50,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Download patch
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: update-spec.patch
           path: ${{ runner.temp }}
