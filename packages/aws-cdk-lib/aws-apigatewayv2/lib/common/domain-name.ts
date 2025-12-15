@@ -267,7 +267,7 @@ export class DomainName extends Resource implements IDomainName {
 
   public get domainNameRef(): DomainNameReference {
     return {
-      domainName: this.regionalDomainName,
+      domainName: this.name,
       domainNameArn: this.domainNameArn,
     };
   }
