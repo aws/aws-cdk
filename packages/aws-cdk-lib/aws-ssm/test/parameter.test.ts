@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template, Annotations } from '../../assertions';
