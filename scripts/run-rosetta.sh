@@ -64,6 +64,7 @@ fi
 
 echo "💎 Extracting code samples" >&2
 time $ROSETTA extract \
+    --batch 1000 \
     --compile \
     --verbose \
     --compress-tablet \
@@ -77,6 +78,7 @@ if $infuse; then
         $(cat $jsii_pkgs_file)
 
     time $ROSETTA extract \
+        --batch 1000 \
         --compile \
         --verbose \
         --compress-tablet \

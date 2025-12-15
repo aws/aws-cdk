@@ -3580,15 +3580,7 @@
     chalk "^4.1.2"
     semver "^7.7.2"
 
-"@jsii/check-node@1.121.0", "@jsii/check-node@^1.118.0":
-  version "1.121.0"
-  resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.121.0.tgz#cfb32df36b38c308deb8e64f0406d73a55aaa8f1"
-  integrity sha512-0mPTsD9PDx/+Kvi6xNfOMzcxWW/nzo74rp96vN5qVg8pZThtzHqR14X0z4E/SqfYVs6Tv+Xiu4ctRRFmwe4xtQ==
-  dependencies:
-    chalk "^4.1.2"
-    semver "^7.7.2"
-
-"@jsii/check-node@1.121.0":
+"@jsii/check-node@1.121.0", "@jsii/check-node@^1.121.0":
   version "1.121.0"
   resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.121.0.tgz#cfb32df36b38c308deb8e64f0406d73a55aaa8f1"
   integrity sha512-0mPTsD9PDx/+Kvi6xNfOMzcxWW/nzo74rp96vN5qVg8pZThtzHqR14X0z4E/SqfYVs6Tv+Xiu4ctRRFmwe4xtQ==
@@ -3603,14 +3595,7 @@
   dependencies:
     ajv "^8.17.1"
 
-"@jsii/spec@1.121.0", "@jsii/spec@^1.118.0", "@jsii/spec@^1.120.0":
-  version "1.121.0"
-  resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.121.0.tgz#43eeee50904151cebd1a68b2e93e35f104e24ee5"
-  integrity sha512-TDDUKTSRgRB0j2Yti+LOgUzjka8D+NdJm9vzYu1DOGu8Oje8cl9hRYZUmGoW8dWQLnF1dcouUP0n9PLvVKzu5w==
-  dependencies:
-    ajv "^8.17.1"
-
-"@jsii/spec@1.121.0":
+"@jsii/spec@1.121.0", "@jsii/spec@^1.120.0", "@jsii/spec@^1.121.0":
   version "1.121.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.121.0.tgz#43eeee50904151cebd1a68b2e93e35f104e24ee5"
   integrity sha512-TDDUKTSRgRB0j2Yti+LOgUzjka8D+NdJm9vzYu1DOGu8Oje8cl9hRYZUmGoW8dWQLnF1dcouUP0n9PLvVKzu5w==
@@ -10140,13 +10125,13 @@ jsii-reflect@1.121.0, jsii-reflect@^1.120.0, jsii-reflect@^1.121.0:
     oo-ascii-tree "^1.121.0"
     yargs "^17.7.2"
 
-jsii-rosetta@~5.9.15:
-  version "5.9.15"
-  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.9.15.tgz#92d1cbab0a4f5f6b0fae89e1b7f673ddea506082"
-  integrity sha512-ruY+YQURrNIyEVZRTA2/v2jT3sDgS/0NFDIWfSvy0uzGV/IH2MqNRQHxD/u5k0ZlwIct3SjTAsqSpJ6ah3vT2Q==
+jsii-rosetta@~5.9.20:
+  version "5.9.20"
+  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.9.20.tgz#679bde5796a29de25f0f864a59f4d830d3a1879f"
+  integrity sha512-BMsFDilBLpSzIEdK38kYY4x0w4U5qZeLqOTiZUiyOwe9GsHZSfLCHWJ7TvTAAeBF36nnOzxSySL6+/Hp0N7pTQ==
   dependencies:
-    "@jsii/check-node" "^1.118.0"
-    "@jsii/spec" "^1.118.0"
+    "@jsii/check-node" "^1.121.0"
+    "@jsii/spec" "^1.121.0"
     "@xmldom/xmldom" "^0.9.8"
     chalk "^4"
     commonmark "^0.31.2"
