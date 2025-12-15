@@ -162,6 +162,9 @@ export class ApiMapping extends Resource implements IApiMapping {
     };
   }
 
+  /**
+   * Return the domain for this API Mapping
+   */
   public get domainUrl() {
     return `https://${this._domainName.domainNameRef.domainName}/${this.mappingKey ?? ''}`;
   }

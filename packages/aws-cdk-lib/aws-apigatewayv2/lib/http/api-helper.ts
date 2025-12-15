@@ -5,6 +5,9 @@ import { ArnFormat, Stack, Token, ValidationError } from '../../../core';
  * Calculations and operations for HTTP APIs
  */
 export class HttpApiHelper {
+  /**
+   * Return an `HttpApiHelper` for the given HTTP API
+   */
   public static fromHttpApi(httpApi: IHttpApiRef): HttpApiHelper {
     return new HttpApiHelper(httpApi);
   }

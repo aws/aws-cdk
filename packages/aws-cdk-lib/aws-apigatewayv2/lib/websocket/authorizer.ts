@@ -108,7 +108,6 @@ export class WebSocketAuthorizer extends Resource implements IWebSocketAuthorize
     return new Import(scope, id);
   }
 
-  public readonly isWebSocketAuthorizer = true;
   public readonly authorizerId: string;
   private readonly apiId: string;
 
