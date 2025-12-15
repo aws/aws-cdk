@@ -78,6 +78,27 @@ describe('Component', () => {
     );
     expect(component.componentName).toEqual('imported-component-by-arn');
     expect(component.componentVersion).toEqual('1.2.3');
+
+    expect(stack.resolve(component.componentLatestVersion.componentArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:component/imported-component-by-arn/x.x.x',
+    );
+    expect(stack.resolve(component.componentLatestVersion.componentName)).toEqual('imported-component-by-arn');
+    expect(stack.resolve(component.componentLatestVersion.componentVersion)).toEqual('x.x.x');
+    expect(stack.resolve(component.componentLatestMajorVersion.componentArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:component/imported-component-by-arn/1.x.x',
+    );
+    expect(stack.resolve(component.componentLatestMajorVersion.componentName)).toEqual('imported-component-by-arn');
+    expect(stack.resolve(component.componentLatestMajorVersion.componentVersion)).toEqual('1.x.x');
+    expect(stack.resolve(component.componentLatestMinorVersion.componentArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:component/imported-component-by-arn/1.2.x',
+    );
+    expect(stack.resolve(component.componentLatestMinorVersion.componentName)).toEqual('imported-component-by-arn');
+    expect(stack.resolve(component.componentLatestMinorVersion.componentVersion)).toEqual('1.2.x');
+    expect(stack.resolve(component.componentLatestPatchVersion.componentArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:component/imported-component-by-arn/1.2.3',
+    );
+    expect(stack.resolve(component.componentLatestPatchVersion.componentName)).toEqual('imported-component-by-arn');
+    expect(stack.resolve(component.componentLatestPatchVersion.componentVersion)).toEqual('1.2.3');
   });
 
   test('imported by arn as an unresolved token', () => {
@@ -265,6 +286,19 @@ describe('Component', () => {
 
     expect(Component.isComponent(component as unknown)).toBeTruthy();
     expect(Component.isComponent('Component')).toBeFalsy();
+
+    expect(stack.resolve(component.componentLatestVersion.componentArn)).toEqual({
+      'Fn::GetAtt': ['Component0EED0119', 'LatestVersion.Arn'],
+    });
+    expect(stack.resolve(component.componentLatestMajorVersion.componentArn)).toEqual({
+      'Fn::GetAtt': ['Component0EED0119', 'LatestVersion.Major'],
+    });
+    expect(stack.resolve(component.componentLatestMinorVersion.componentArn)).toEqual({
+      'Fn::GetAtt': ['Component0EED0119', 'LatestVersion.Minor'],
+    });
+    expect(stack.resolve(component.componentLatestPatchVersion.componentArn)).toEqual({
+      'Fn::GetAtt': ['Component0EED0119', 'LatestVersion.Patch'],
+    });
 
     Template.fromStack(stack).templateMatches({
       Resources: {

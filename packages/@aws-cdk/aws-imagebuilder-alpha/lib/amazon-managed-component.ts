@@ -22,7 +22,7 @@ export interface AmazonManagedComponentAttributes {
 }
 
 /**
- * Options for selecting a predefined Amazon-managed image
+ * Options for selecting a predefined Amazon-managed component
  */
 export interface AmazonManagedComponentOptions {
   /**
