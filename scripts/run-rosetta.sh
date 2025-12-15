@@ -68,7 +68,7 @@ time $ROSETTA extract \
     --compile \
     -vv \
     --compress-tablet \
-    --cache ${rosetta_cache_file} \
+    --cache-to ${rosetta_cache_file} \
     ${extract_opts} \
     $(cat $jsii_pkgs_file)
 
@@ -82,7 +82,7 @@ if $infuse; then
         --compile \
         -vv \
         --compress-tablet \
-        --cache ${rosetta_cache_file} \
+        --cache-to ${rosetta_cache_file} \
         $(cat $jsii_pkgs_file)
 fi
 
