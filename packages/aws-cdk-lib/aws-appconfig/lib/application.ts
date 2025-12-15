@@ -6,11 +6,10 @@ import { Environment, EnvironmentOptions, IEnvironment } from './environment';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
 import * as ecs from '../../aws-ecs';
 import * as cdk from '../../core';
+import { toIEnvironment } from './private/ref-utils';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IApplicationRef, ApplicationReference } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
-import { IEnvironmentRef } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
-import { toIEnvironment } from './private/ref-utils';
+import { IApplicationRef, IEnvironmentRef, ApplicationReference } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
 
 /**
  * Defines the platform for the AWS AppConfig Lambda extension.
