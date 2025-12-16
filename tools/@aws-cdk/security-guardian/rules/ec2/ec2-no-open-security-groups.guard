@@ -39,21 +39,10 @@ rule EC2_NO_OPEN_SECURITY_GROUPS when %security_groups !empty {
             }
         }
         
-        # Only check egress rules if they exist
-        # Note: Egress 0.0.0.0/0 is generally acceptable as it controls outbound traffic
-        # We only flag the most permissive case: all protocols (-1) to anywhere
-        when Properties.SecurityGroupEgress exists {
-            Properties.SecurityGroupEgress[*] {
-                # Only flag when allowing ALL protocols to anywhere
-                when IpProtocol == "-1" {
-                    when CidrIp exists {
-                        CidrIp != "0.0.0.0/0"
-                    }
-                    when CidrIpv6 exists {
-                        CidrIpv6 != "::/0"
-                    }
-                }
-            }
-        }
+        # Note: We do not check egress rules because:
+        # 1. CDK's default behavior is to allow all outbound traffic (0.0.0.0/0 on all protocols)
+        # 2. Egress controls what resources can connect TO (lower security risk than ingress)
+        # 3. Most applications legitimately need unrestricted outbound access
+        # 4. Restricting egress is an advanced security practice, not a default requirement
     }
 }
