@@ -1706,8 +1706,8 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
    * The network connections associated with this resource.
    */
   readonly connections: ec2.Connections;
-	
-	/**
+
+  /**
    * The IAM role that ECS uses to manage the infrastructure for the capacity provider
    */
   readonly infrastructureRole: iam.IRole;
