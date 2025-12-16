@@ -1,4 +1,3 @@
-/* eslint-disable jest/expect-expect */
 import each from 'jest-each';
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
@@ -10,7 +9,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Domain, DomainProps, EngineVersion, IpAddressType, NodeOptions, TLSSecurityPolicy } from '../lib';
+import { Domain, DomainProps, EngineVersion, IpAddressType, NodeOptions, NodeType, TLSSecurityPolicy } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -2759,7 +2758,7 @@ function testMetric(
 
 each(testedOpenSearchVersions).test('can configure coordinator nodes with nodeOptions', (engineVersion) => {
   const coordinatorConfig: NodeOptions = {
-    nodeType: 'coordinator',
+    nodeType: NodeType.COORDINATOR,
     nodeConfig: {
       enabled: true,
       type: 'm5.large.search',
@@ -2767,7 +2766,7 @@ each(testedOpenSearchVersions).test('can configure coordinator nodes with nodeOp
     },
   };
 
-  const domain = new Domain(stack, 'Domain', {
+  new Domain(stack, 'Domain', {
     version: engineVersion,
     capacity: {
       nodeOptions: [coordinatorConfig],
@@ -2794,7 +2793,7 @@ each(testedOpenSearchVersions).test('throws when coordinator node instance type 
       version: engineVersion,
       capacity: {
         nodeOptions: [{
-          nodeType: 'coordinator' as const,
+          nodeType: NodeType.COORDINATOR,
           nodeConfig: {
             enabled: true,
             type: 'm5.large',
@@ -2811,7 +2810,7 @@ each(testedOpenSearchVersions).test('throws when coordinator node count is less 
       version: engineVersion,
       capacity: {
         nodeOptions: [{
-          nodeType: 'coordinator' as const,
+          nodeType: NodeType.COORDINATOR,
           nodeConfig: {
             enabled: true,
             count: 0,
@@ -2824,11 +2823,11 @@ each(testedOpenSearchVersions).test('throws when coordinator node count is less 
 });
 
 each(testedOpenSearchVersions).test('can disable coordinator nodes', (engineVersion) => {
-  const domain = new Domain(stack, 'Domain', {
+  new Domain(stack, 'Domain', {
     version: engineVersion,
     capacity: {
       nodeOptions: [{
-        nodeType: 'coordinator' as const,
+        nodeType: NodeType.COORDINATOR,
         nodeConfig: {
           enabled: false,
         },
