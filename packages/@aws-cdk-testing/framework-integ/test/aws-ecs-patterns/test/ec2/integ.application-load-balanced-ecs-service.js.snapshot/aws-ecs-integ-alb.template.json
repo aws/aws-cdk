@@ -434,6 +434,13 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "EC2_NO_OPEN_SECURITY_GROUPS"
+     ]
+    }
    }
   },
   "FirstAutoScalingGroupInstanceRoleC3260EBE": {
@@ -952,6 +959,13 @@
     ],
     "VpcId": {
      "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "EC2_NO_OPEN_SECURITY_GROUPS"
+     ]
     }
    }
   },

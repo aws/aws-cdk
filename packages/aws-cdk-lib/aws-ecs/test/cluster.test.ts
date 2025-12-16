@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Annotations, Match, Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -11,7 +11,6 @@ import * as cloudmap from '../../aws-servicediscovery';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as ecs from '../lib';
-import { CfnCluster, MachineImageType } from '../lib';
 
 describe('cluster', () => {
   describe('isCluster() returns', () => {
