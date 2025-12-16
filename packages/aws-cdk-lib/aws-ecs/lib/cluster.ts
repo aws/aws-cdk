@@ -1850,7 +1850,7 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
               sid: 'ECSAgentDiscoverPollEndpointPermissions',
               effect: iam.Effect.ALLOW,
               actions: ['ecs:DiscoverPollEndpoint'],
-              resources: ['*'], // DiscoverPollEndpoint cannot be scoped to a resource.
+              resources: ['*'], // DiscoverPollEndpoint does not support resource scoping.
             }),
             new iam.PolicyStatement({
               sid: 'ECSAgentRegisterPermissions',
@@ -1869,13 +1869,21 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
               sid: 'ECSAgentPollPermissions',
               effect: iam.Effect.ALLOW,
               actions: ['ecs:Poll'],
-              resources: [`arn:${Aws.PARTITION}:ecs:${Stack.of(this).region}:${Stack.of(this).account}:container-instance/*`],
+              resources: [Stack.of(this).formatArn({
+                service: 'ecs',
+                resource: 'container-instance',
+                resourceName: '*',
+              })],
             }),
             new iam.PolicyStatement({
               sid: 'ECSAgentTelemetryPermissions',
               effect: iam.Effect.ALLOW,
               actions: ['ecs:StartTelemetrySession', 'ecs:PutSystemLogEvents'],
-              resources: [`arn:${Aws.PARTITION}:ecs:${Stack.of(this).region}:${Stack.of(this).account}:container-instance/*`],
+              resources: [Stack.of(this).formatArn({
+                service: 'ecs',
+                resource: 'container-instance',
+                resourceName: '*',
+              })],
             }),
             new iam.PolicyStatement({
               sid: 'ECSAgentStateChangePermissions',
