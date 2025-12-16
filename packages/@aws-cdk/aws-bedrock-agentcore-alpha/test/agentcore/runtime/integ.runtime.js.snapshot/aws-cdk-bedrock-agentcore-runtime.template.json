@@ -241,10 +241,7 @@
      "TEST_ENV": "integration",
      "LOG_LEVEL": "INFO"
     },
-    "LifecycleConfiguration": {
-     "IdleRuntimeSessionTimeout": 60,
-     "MaxLifetime": 28800
-    },
+    "LifecycleConfiguration": {},
     "NetworkConfiguration": {
      "NetworkMode": "PUBLIC"
     },
