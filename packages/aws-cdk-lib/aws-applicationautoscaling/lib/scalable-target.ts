@@ -100,6 +100,9 @@ export class ScalableTarget extends Resource implements IScalableTarget {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-applicationautoscaling.ScalableTarget';
 
+  /**
+   * Create a referenceable `IScalableTarget` object based on properties of a resource that already exists in your account
+   */
   public static fromScalableTargetId(scope: Construct, id: string, scalableTargetId: string): IScalableTarget {
     class Import extends Resource implements IScalableTarget {
       public readonly scalableTargetId = scalableTargetId;
@@ -111,6 +114,9 @@ export class ScalableTarget extends Resource implements IScalableTarget {
     return new Import(scope, id);
   }
 
+  /**
+   * Create a referenceable `IScalableTarget` object based on properties of a resource that already exists in your account
+   */
   public static fromScalableTargetAttributes(scope: Construct, id: string, attrs: ScalableTargetAttributes): IScalableTarget {
     class Import extends Resource implements IScalableTarget {
       public readonly scalableTargetId = attrs.scalableTargetId;
