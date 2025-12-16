@@ -295,6 +295,127 @@
               "fqn": "@aws-cdk/aws-sqs.Queue",
               "version": "0.0.0"
             }
+          },
+          "StandardQueue": {
+            "id": "StandardQueue",
+            "path": "aws-cdk-sqs-event-target/StandardQueue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-sqs-event-target/StandardQueue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sqs.CfnQueue",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "aws-cdk-sqs-event-target/StandardQueue/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-sqs-event-target/StandardQueue/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "sqs:GetQueueAttributes",
+                                "sqs:GetQueueUrl",
+                                "sqs:SendMessage"
+                              ],
+                              "Condition": {
+                                "ArnEquals": {
+                                  "aws:SourceArn": {
+                                    "Fn::GetAtt": [
+                                      "StandardQueueRule82F7813E",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "events.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "StandardQueueD43B45BD",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "queues": [
+                          {
+                            "Ref": "StandardQueueD43B45BD"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-sqs.CfnQueuePolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-sqs.QueuePolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-sqs.Queue",
+              "version": "0.0.0"
+            }
+          },
+          "StandardQueueRule": {
+            "id": "StandardQueueRule",
+            "path": "aws-cdk-sqs-event-target/StandardQueueRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-sqs-event-target/StandardQueueRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "scheduleExpression": "rate(1 minute)",
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Fn::GetAtt": [
+                            "StandardQueueD43B45BD",
+                            "Arn"
+                          ]
+                        },
+                        "sqsParameters": {
+                          "messageGroupId": "MyMessageGroupId"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-events.CfnRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-events.Rule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
