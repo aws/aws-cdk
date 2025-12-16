@@ -9,8 +9,6 @@ import { ApplicationMultipleTargetGroupsEc2Service } from 'aws-cdk-lib/aws-ecs-p
 
 const app = new App({
   postCliContext: {
-    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
-    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
   },
 });
 const stack = new Stack(app, 'aws-ecs-integ-multiple-alb-healthchecks');

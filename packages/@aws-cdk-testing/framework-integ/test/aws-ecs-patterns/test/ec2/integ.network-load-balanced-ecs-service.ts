@@ -8,8 +8,6 @@ import { IpAddressType } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 const app = new App({
   postCliContext: {
-    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
-    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
   },
 });
 const stack = new Stack(app, 'aws-ecs-integ-nlb');
