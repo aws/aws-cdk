@@ -12,7 +12,7 @@ const app = new cdk.App({
 });
 const stack = new cdk.Stack(app, 'integ-managedinstances-capacity-provider-default-roles');
 
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: true });
 const cluster = new ecs.Cluster(stack, 'ManagedInstancesCluster', {
   vpc,
   enableFargateCapacityProviders: true,
