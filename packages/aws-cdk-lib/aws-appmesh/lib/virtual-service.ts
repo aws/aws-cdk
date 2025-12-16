@@ -7,11 +7,12 @@ import { IVirtualRouter } from './virtual-router';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IVirtualServiceRef } from '../../interfaces/generated/aws-appmesh-interfaces.generated';
 
 /**
  * Represents the interface which all VirtualService based classes MUST implement
  */
-export interface IVirtualService extends cdk.IResource {
+export interface IVirtualService extends cdk.IResource, IVirtualServiceRef {
   /**
    * The name of the VirtualService
    *
@@ -74,6 +75,13 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
       private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(virtualServiceArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
       readonly virtualServiceName = cdk.Fn.select(2, this.parsedArn);
       readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
+
+      public get virtualServiceRef(): import('../../interfaces/generated/aws-appmesh-interfaces.generated').VirtualServiceReference {
+        return {
+          virtualServiceId: this.virtualServiceName,
+          virtualServiceArn: this.virtualServiceArn,
+        };
+      }
     }(scope, id);
   }
 
@@ -89,6 +97,13 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
         resource: `mesh/${attrs.mesh.meshName}/virtualService`,
         resourceName: this.virtualServiceName,
       });
+
+      public get virtualServiceRef(): import('../../interfaces/generated/aws-appmesh-interfaces.generated').VirtualServiceReference {
+        return {
+          virtualServiceId: this.virtualServiceName,
+          virtualServiceArn: this.virtualServiceArn,
+        };
+      }
     }(scope, id);
   }
 
@@ -106,6 +121,16 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
    * The Mesh which the VirtualService belongs to
    */
   public readonly mesh: IMesh;
+
+  /**
+   * A reference to this virtual service
+   */
+  public get virtualServiceRef(): import('../../interfaces/generated/aws-appmesh-interfaces.generated').VirtualServiceReference {
+    return {
+      virtualServiceId: this.virtualServiceName,
+      virtualServiceArn: this.virtualServiceArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: VirtualServiceProps) {
     super(scope, id, {

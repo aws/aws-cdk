@@ -6,7 +6,7 @@ import { HttpGatewayRoutePathMatch } from './http-route-path-match';
 import { validateGrpcMatchArrayLength, validateGrpcGatewayRouteMatch } from './private/utils';
 import { QueryParameterMatch } from './query-parameter-match';
 import { Protocol } from './shared-interfaces';
-import { IVirtualService } from './virtual-service';
+import { IVirtualServiceRef } from '../../interfaces/generated/aws-appmesh-interfaces.generated';
 
 /**
  * Configuration for gateway route host name match.
@@ -188,7 +188,7 @@ export interface HttpGatewayRouteSpecOptions extends CommonGatewayRouteSpecOptio
   /**
    * The VirtualService this GatewayRoute directs traffic to
    */
-  readonly routeTarget: IVirtualService;
+  readonly routeTarget: IVirtualServiceRef;
 }
 
 /**
@@ -203,7 +203,7 @@ export interface GrpcGatewayRouteSpecOptions extends CommonGatewayRouteSpecOptio
   /**
    * The VirtualService this GatewayRoute directs traffic to
    */
-  readonly routeTarget: IVirtualService;
+  readonly routeTarget: IVirtualServiceRef;
 }
 
 /**
@@ -285,7 +285,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
   /**
    * The VirtualService this GatewayRoute directs traffic to
    */
-  readonly routeTarget: IVirtualService;
+  readonly routeTarget: IVirtualServiceRef;
 
   /**
    * Type of route you are creating
@@ -321,7 +321,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
       action: {
         target: {
           virtualService: {
-            virtualServiceName: this.routeTarget.virtualServiceName,
+            virtualServiceName: this.routeTarget.virtualServiceRef.virtualServiceId,
           },
         },
         rewrite: rewriteRequestHostname !== undefined || prefixPathRewrite || wholePathRewrite
@@ -351,7 +351,7 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
   /**
    * The VirtualService this GatewayRoute directs traffic to
    */
-  readonly routeTarget: IVirtualService;
+  readonly routeTarget: IVirtualServiceRef;
   readonly priority?: number;
 
   constructor(options: GrpcGatewayRouteSpecOptions) {
@@ -378,7 +378,7 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
         action: {
           target: {
             virtualService: {
-              virtualServiceName: this.routeTarget.virtualServiceName,
+              virtualServiceName: this.routeTarget.virtualServiceRef.virtualServiceId,
             },
           },
           rewrite: this.match.rewriteRequestHostname === undefined

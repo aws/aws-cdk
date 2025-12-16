@@ -7,6 +7,7 @@ import { VirtualRouter, VirtualRouterBaseProps } from './virtual-router';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IMeshRef } from '../../interfaces/generated/aws-appmesh-interfaces.generated';
 
 /**
  * A utility enum defined for the egressFilter type property, the default of DROP_ALL,
@@ -28,7 +29,7 @@ export enum MeshFilterType {
 /**
  * Interface which all Mesh based classes MUST implement
  */
-export interface IMesh extends cdk.IResource {
+export interface IMesh extends cdk.IResource, IMeshRef {
   /**
    * The name of the AppMesh mesh
    *
@@ -78,6 +79,16 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
    * The Amazon Resource Name (ARN) of the AppMesh mesh
    */
   public abstract readonly meshArn: string;
+
+  /**
+   * A reference to this mesh
+   */
+  public get meshRef(): import('../../interfaces/generated/aws-appmesh-interfaces.generated').MeshReference {
+    return {
+      meshId: this.meshName,
+      meshArn: this.meshArn,
+    };
+  }
 
   /**
    * Adds a VirtualRouter to the Mesh with the given id and props

@@ -2,8 +2,8 @@ import { Construct } from 'constructs';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
 import { renderTlsClientPolicy } from './private/utils';
 import { TlsClientPolicy } from './tls-client-policy';
-import { IVirtualService } from './virtual-service';
 import * as cdk from '../../core';
+import { IVirtualServiceRef } from '../../interfaces/generated/aws-appmesh-interfaces.generated';
 
 /**
  * Represents timeouts for HTTP protocols.
@@ -295,7 +295,7 @@ export abstract class Backend {
   /**
    * Construct a Virtual Service backend
    */
-  public static virtualService(virtualService: IVirtualService, props: VirtualServiceBackendOptions = {}): Backend {
+  public static virtualService(virtualService: IVirtualServiceRef, props: VirtualServiceBackendOptions = {}): Backend {
     return new VirtualServiceBackend(virtualService, props.tlsClientPolicy);
   }
 
@@ -309,7 +309,7 @@ export abstract class Backend {
  * Represents the properties needed to define a Virtual Service backend
  */
 class VirtualServiceBackend extends Backend {
-  constructor (private readonly virtualService: IVirtualService,
+  constructor (private readonly virtualService: IVirtualServiceRef,
     private readonly tlsClientPolicy: TlsClientPolicy | undefined) {
     super();
   }
@@ -326,9 +326,9 @@ class VirtualServiceBackend extends Backend {
            * a `{ 'Fn::GetAtt' }` CFN expression. This avoids a circular dependency in
            * the case where this Virtual Node is the Virtual Service's provider.
            */
-          virtualServiceName: cdk.Token.isUnresolved(this.virtualService.virtualServiceName)
+          virtualServiceName: cdk.Token.isUnresolved(this.virtualService.virtualServiceRef.virtualServiceId)
             ? (this.virtualService as any).physicalName
-            : this.virtualService.virtualServiceName,
+            : this.virtualService.virtualServiceRef.virtualServiceId,
           clientPolicy: this.tlsClientPolicy
             ? {
               tls: renderTlsClientPolicy(scope, this.tlsClientPolicy),
