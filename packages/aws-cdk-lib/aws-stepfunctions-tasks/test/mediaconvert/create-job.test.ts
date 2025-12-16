@@ -129,7 +129,7 @@ describe('MediaConvert Create Job', () => {
   test('Fails on Unsupported Integration Pattern', () => {
     expect(() => {
       // WHEN
-      const task = new MediaConvertCreateJob(stack, 'MediaConvertCreateJob', {
+      new MediaConvertCreateJob(stack, 'MediaConvertCreateJob', {
         integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
         createJobRequest: {
           Settings: {
@@ -145,7 +145,7 @@ describe('MediaConvert Create Job', () => {
   test('Fails on role not specified', () => {
     expect(() => {
       // WHEN
-      const task = new MediaConvertCreateJob(stack, 'MediaConvertCreateJob', {
+      new MediaConvertCreateJob(stack, 'MediaConvertCreateJob', {
         createJobRequest: {
           Settings: {
             OutputGroups: [],
@@ -160,7 +160,7 @@ describe('MediaConvert Create Job', () => {
   test('Fails on settings not specified', () => {
     expect(() => {
       // WHEN
-      const task = new MediaConvertCreateJob(stack, 'MediaConvertCreateJob', {
+      new MediaConvertCreateJob(stack, 'MediaConvertCreateJob', {
         createJobRequest: {
           Role: 'arn:aws:iam::123456789012:role/MediaConvertRole',
         },
