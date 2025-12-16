@@ -565,7 +565,7 @@ export interface KeySchema {
 }
 
 /**
- * A key schema that combines the legacy properties (singular keys) with the modern properties (compound keys)
+ * A key schema that combines the legacy properties (singular keys) with the modern properties (multi-attribute keys)
  *
  * Picking from an existing type is an easy way to get these without having to copy/paste them all, but we could
  * have also done the copy/pasting. This type is never exported.
@@ -573,7 +573,7 @@ export interface KeySchema {
 type CompatibleKeySchema = Pick<GlobalSecondaryIndexProps, 'partitionKey' | 'partitionKeys' | 'sortKey' | 'sortKeys'>;
 
 /**
- * Parse a backwards compatible key schema to a strictly compound key schema, and validate the contents
+ * Parse a backwards compatible key schema to a strictly multi-attribute key schema, and validate the contents
  */
 export function parseKeySchema(schema: CompatibleKeySchema, scope: IConstruct): KeySchema {
   if ((schema.partitionKey === undefined) === (schema.partitionKeys === undefined)) {

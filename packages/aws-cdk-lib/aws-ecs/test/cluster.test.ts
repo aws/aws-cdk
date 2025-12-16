@@ -96,7 +96,6 @@ describe('cluster', () => {
                 {
                   Ref: 'EcsCluster97242B84',
                 },
-                // eslint-disable-next-line max-len
                 ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
               ],
             ],
@@ -265,7 +264,6 @@ describe('cluster', () => {
                 {
                   Ref: 'EcsCluster97242B84',
                 },
-                // eslint-disable-next-line max-len
                 ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
               ],
             ],
@@ -791,7 +789,6 @@ describe('cluster', () => {
                 {
                   Ref: 'EcsCluster97242B84',
                 },
-                // eslint-disable-next-line max-len
                 ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
               ],
             ],
@@ -1323,12 +1320,14 @@ describe('cluster', () => {
               'Fn::Join': [
                 '',
                 [
-                  {
-                    'Fn::GetAtt': [
-                      'EcsCluster97242B84',
-                      'Arn',
-                    ],
-                  },
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':ecs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':task/',
+                  { Ref: 'EcsCluster97242B84' },
                   '/*',
                 ],
               ],
@@ -1783,7 +1782,6 @@ describe('cluster', () => {
               {
                 Ref: 'EcsCluster97242B84',
               },
-              // eslint-disable-next-line max-len
               ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
             ],
           ],
@@ -4978,7 +4976,7 @@ describe('canContainersAccessInstanceRole behaviour', () => {
               wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole });
             }).toThrow(cdkConfigurations.expectedSynthError);
           } else {
-            wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole });
+            wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole as any });
             cdkConfigurations.assertion(stack);
           }
         });
@@ -5271,7 +5269,7 @@ describe('canContainersAccessInstanceRole behaviour', () => {
               wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole });
             }).toThrow(cdkConfigurations.expectedSynthError);
           } else {
-            wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole });
+            wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole as any });
             cdkConfigurations.assertion(stack);
           }
         });
@@ -5585,7 +5583,7 @@ describe('canContainersAccessInstanceRole behaviour', () => {
               wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole });
             }).toThrow(cdkConfigurations.expectedSynthError);
           } else {
-            wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole });
+            wayToCreateCluster({ stack, canContainersAccessInstanceRole: cdkConfigurations.canContainersAccessInstanceRole as any });
             cdkConfigurations.assertion(stack);
           }
         });

@@ -38,7 +38,10 @@ test phase during the test stage.
 
 ### Image Pipeline
 
-An image pipeline provides the automation framework for building secure AMIs and container images. The pipeline orchestrates the entire image creation process by combining an image recipe or container recipe with infrastructure configuration and distribution configuration. Pipelines can run on a schedule or be triggered manually, and they manage the build, test, and distribution phases automatically.
+An image pipeline provides the automation framework for building secure AMIs and container images. The pipeline
+orchestrates the entire image creation process by combining an image recipe or container recipe with infrastructure
+configuration and distribution configuration. Pipelines can run on a schedule or be triggered manually, and they manage
+the build, test, and distribution phases automatically.
 
 #### Image Pipeline Basic Usage
 
@@ -139,7 +142,7 @@ const advancedSchedulePipeline = new imagebuilder.ImagePipeline(this, 'AdvancedS
 
 #### Image Pipeline Configuration
 
-##### Infrastructure and Distribution
+##### Infrastructure and Distribution in Image Pipelines
 
 Configure custom infrastructure and distribution settings:
 
@@ -177,7 +180,7 @@ const pipelineLogGroup = new logs.LogGroup(this, 'PipelineLogGroup', {
 });
 
 const imageLogGroup = new logs.LogGroup(this, 'ImageLogGroup', {
-  logGroupName: '/custom/imagebuilder/image/logs', 
+  logGroupName: '/custom/imagebuilder/image/logs',
   retention: logs.RetentionDays.ONE_WEEK
 });
 
@@ -188,7 +191,7 @@ const loggedPipeline = new imagebuilder.ImagePipeline(this, 'LoggedPipeline', {
 });
 ```
 
-##### Workflow Integration
+##### Workflow Integration in Image Pipelines
 
 Use AWS-managed workflows for common pipeline phases:
 
@@ -196,8 +199,8 @@ Use AWS-managed workflows for common pipeline phases:
 const workflowPipeline = new imagebuilder.ImagePipeline(this, 'WorkflowPipeline', {
   recipe: exampleImageRecipe,
   workflows: [
-    { workflow: imagebuilder.AwsManagedWorkflow.buildImage(this, 'BuildWorkflow') },
-    { workflow: imagebuilder.AwsManagedWorkflow.testImage(this, 'TestWorkflow') }
+    { workflow: imagebuilder.AmazonManagedWorkflow.buildImage(this, 'BuildWorkflow') },
+    { workflow: imagebuilder.AmazonManagedWorkflow.testImage(this, 'TestWorkflow') }
   ]
 });
 ```
@@ -208,14 +211,14 @@ For container pipelines, use container-specific workflows:
 const containerWorkflowPipeline = new imagebuilder.ImagePipeline(this, 'ContainerWorkflowPipeline', {
   recipe: exampleContainerRecipe,
   workflows: [
-    { workflow: imagebuilder.AwsManagedWorkflow.buildContainer(this, 'BuildContainer') },
-    { workflow: imagebuilder.AwsManagedWorkflow.testContainer(this, 'TestContainer') },
-    { workflow: imagebuilder.AwsManagedWorkflow.distributeContainer(this, 'DistributeContainer') }
+    { workflow: imagebuilder.AmazonManagedWorkflow.buildContainer(this, 'BuildContainer') },
+    { workflow: imagebuilder.AmazonManagedWorkflow.testContainer(this, 'TestContainer') },
+    { workflow: imagebuilder.AmazonManagedWorkflow.distributeContainer(this, 'DistributeContainer') }
   ]
 });
 ```
 
-##### Advanced Features
+##### Advanced Features in Image Pipelines
 
 Configure image scanning for container pipelines:
 
@@ -284,6 +287,204 @@ const automationRole = new iam.Role(this, 'AutomationRole', {
 
 existingPipelineByName.grantStartExecution(automationRole);
 existingPipelineByArn.grantRead(lambdaRole);
+```
+
+### Image
+
+An image is the output resource created by Image Builder, consisting of an AMI or container image plus metadata such as
+version, platform, and creation details. Images are used as base images for future builds and can be shared across AWS
+accounts. While images are the output from image pipeline executions, they can also be created in an ad-hoc manner
+outside a pipeline, defined as a standalone resource.
+
+#### Image Basic Usage
+
+Create a simple AMI-based image from an image recipe:
+
+```ts
+const imageRecipe = new imagebuilder.ImageRecipe(this, 'MyImageRecipe', {
+  baseImage: imagebuilder.BaseImage.fromSsmParameterName(
+    '/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64'
+  )
+});
+
+const amiImage = new imagebuilder.Image(this, 'MyAmiImage', {
+  recipe: imageRecipe
+});
+```
+
+Create a simple container image from a container recipe:
+
+```ts
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'MyContainerRecipe', {
+  baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
+  targetRepository: imagebuilder.Repository.fromEcr(
+    ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
+  )
+});
+
+const containerImage = new imagebuilder.Image(this, 'MyContainerImage', {
+  recipe: containerRecipe
+});
+```
+
+#### AWS-Managed Images
+
+##### Pre-defined OS Images
+
+Use AWS-managed images for common operating systems:
+
+```ts
+// Amazon Linux 2023 AMI for x86_64
+const amazonLinux2023Ami = imagebuilder.AmazonManagedImage.amazonLinux2023(this, 'AmazonLinux2023', {
+  imageType: imagebuilder.ImageType.AMI,
+  imageArchitecture: imagebuilder.ImageArchitecture.X86_64
+});
+
+// Ubuntu 22.04 AMI for ARM64
+const ubuntu2204Ami = imagebuilder.AmazonManagedImage.ubuntuServer2204(this, 'Ubuntu2204', {
+  imageType: imagebuilder.ImageType.AMI,
+  imageArchitecture: imagebuilder.ImageArchitecture.ARM64
+});
+
+// Windows Server 2022 Full AMI
+const windows2022Ami = imagebuilder.AmazonManagedImage.windowsServer2022Full(this, 'Windows2022', {
+  imageType: imagebuilder.ImageType.AMI,
+  imageArchitecture: imagebuilder.ImageArchitecture.X86_64
+});
+
+// Use as base image in recipe
+const managedImageRecipe = new imagebuilder.ImageRecipe(this, 'ManagedImageRecipe', {
+  baseImage: amazonLinux2023Ami.toBaseImage()
+});
+```
+
+##### Custom AWS-Managed Images
+
+Import AWS-managed images by name or attributes:
+
+```ts
+// Import by name
+const managedImageByName = imagebuilder.AmazonManagedImage.fromAmazonManagedImageName(
+  this,
+  'ManagedImageByName',
+  'amazon-linux-2023-x86'
+);
+
+// Import by attributes with specific version
+const managedImageByAttributes = imagebuilder.AmazonManagedImage.fromAmazonManagedImageAttributes(this, 'ManagedImageByAttributes', {
+  imageName: 'ubuntu-server-22-lts-x86',
+  imageVersion: '2024.11.25'
+});
+```
+
+#### Image Configuration
+
+##### Infrastructure and Distribution in Images
+
+Configure custom infrastructure and distribution settings:
+
+```ts
+const infrastructureConfiguration = new imagebuilder.InfrastructureConfiguration(this, 'Infrastructure', {
+  infrastructureConfigurationName: 'production-infrastructure',
+  instanceTypes: [
+    ec2.InstanceType.of(ec2.InstanceClass.COMPUTE7_INTEL, ec2.InstanceSize.LARGE)
+  ],
+  vpc: vpc,
+  subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }
+});
+
+const distributionConfiguration = new imagebuilder.DistributionConfiguration(this, 'Distribution');
+distributionConfiguration.addAmiDistributions({
+  amiName: 'production-ami-{{ imagebuilder:buildDate }}',
+  amiTargetAccountIds: ['123456789012', '098765432109']
+});
+
+const productionImage = new imagebuilder.Image(this, 'ProductionImage', {
+  recipe: exampleImageRecipe,
+  infrastructureConfiguration: infrastructureConfiguration,
+  distributionConfiguration: distributionConfiguration
+});
+```
+
+##### Logging Configuration
+
+Configure custom CloudWatch log groups for image builds:
+
+```ts
+const logGroup = new logs.LogGroup(this, 'ImageLogGroup', {
+  logGroupName: '/custom/imagebuilder/image/logs',
+  retention: logs.RetentionDays.ONE_MONTH
+});
+
+const loggedImage = new imagebuilder.Image(this, 'LoggedImage', {
+  recipe: exampleImageRecipe,
+  logGroup: logGroup
+});
+```
+
+##### Workflow Integration in Images
+
+Use workflows for custom build, test, and distribution processes:
+
+```ts
+const imageWithWorkflows = new imagebuilder.Image(this, 'ImageWithWorkflows', {
+  recipe: exampleImageRecipe,
+  workflows: [
+    { workflow: imagebuilder.AmazonManagedWorkflow.buildImage(this, 'BuildWorkflow') },
+    { workflow: imagebuilder.AmazonManagedWorkflow.testImage(this, 'TestWorkflow') }
+  ]
+});
+```
+
+##### Advanced Features in Images
+
+Configure image scanning, metadata collection, and testing:
+
+```ts
+const scanningRepository = new ecr.Repository(this, 'ScanningRepository');
+
+const advancedContainerImage = new imagebuilder.Image(this, 'AdvancedContainerImage', {
+  recipe: exampleContainerRecipe,
+  imageScanningEnabled: true,
+  imageScanningEcrRepository: scanningRepository,
+  imageScanningEcrTags: ['security-scan', 'latest'],
+  enhancedImageMetadataEnabled: true,
+  imageTestsEnabled: false  // Skip testing for faster builds
+});
+```
+
+#### Importing Images
+
+Reference existing images created outside CDK:
+
+```ts
+// Import by name
+const existingImageByName = imagebuilder.Image.fromImageName(
+  this,
+  'ExistingImageByName',
+  'my-existing-image'
+);
+
+// Import by ARN
+const existingImageByArn = imagebuilder.Image.fromImageArn(
+  this,
+  'ExistingImageByArn',
+  'arn:aws:imagebuilder:us-east-1:123456789012:image/imported-image/1.0.0'
+);
+
+// Import by attributes
+const existingImageByAttributes = imagebuilder.Image.fromImageAttributes(this, 'ExistingImageByAttributes', {
+  imageName: 'shared-base-image',
+  imageVersion: '2024.11.25'
+});
+
+// Grant permissions to imported images
+const role = new iam.Role(this, 'ImageAccessRole', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
+});
+
+existingImageByName.grantRead(role);
+existingImageByArn.grant(role, 'imagebuilder:GetImage', 'imagebuilder:ListImagePackages');
 ```
 
 ### Image Recipe
@@ -396,18 +597,18 @@ const imageRecipe = new imagebuilder.ImageRecipe(this, 'ComponentImageRecipe', {
 Use pre-built AWS components:
 
 ```ts
-const imageRecipe = new imagebuilder.ImageRecipe(this, 'AwsManagedImageRecipe', {
+const imageRecipe = new imagebuilder.ImageRecipe(this, 'AmazonManagedImageRecipe', {
   baseImage: imagebuilder.BaseImage.fromSsmParameterName(
     '/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64'
   ),
   components: [
     {
-      component: imagebuilder.AwsManagedComponent.updateOS(this, 'UpdateOS', {
+      component: imagebuilder.AmazonManagedComponent.updateOs(this, 'UpdateOS', {
         platform: imagebuilder.Platform.LINUX
       })
     },
     {
-      component: imagebuilder.AwsManagedComponent.awsCliV2(this, 'AwsCli', {
+      component: imagebuilder.AmazonManagedComponent.awsCliV2(this, 'AwsCli', {
         platform: imagebuilder.Platform.LINUX
       })
     }
@@ -589,19 +790,19 @@ const containerRecipe = new imagebuilder.ContainerRecipe(this, 'ComponentContain
 Use pre-built AWS components:
 
 ```ts
-const containerRecipe = new imagebuilder.ContainerRecipe(this, 'AwsManagedContainerRecipe', {
+const containerRecipe = new imagebuilder.ContainerRecipe(this, 'AmazonManagedContainerRecipe', {
   baseImage: imagebuilder.BaseContainerImage.fromDockerHub('amazonlinux', 'latest'),
   targetRepository: imagebuilder.Repository.fromEcr(
     ecr.Repository.fromRepositoryName(this, 'Repository', 'my-container-repo')
   ),
   components: [
     {
-      component: imagebuilder.AwsManagedComponent.updateOS(this, 'UpdateOS', {
+      component: imagebuilder.AmazonManagedComponent.updateOs(this, 'UpdateOS', {
         platform: imagebuilder.Platform.LINUX
       })
     },
     {
-      component: imagebuilder.AwsManagedComponent.awsCliV2(this, 'AwsCli', {
+      component: imagebuilder.AmazonManagedComponent.awsCliV2(this, 'AwsCli', {
         platform: imagebuilder.Platform.LINUX
       })
     }
@@ -869,17 +1070,17 @@ AWS provides a collection of managed components for common tasks:
 
 ```ts
 // Install AWS CLI v2
-const awsCliComponent = imagebuilder.AwsManagedComponent.awsCliV2(this, 'AwsCli', {
+const awsCliComponent = imagebuilder.AmazonManagedComponent.awsCliV2(this, 'AwsCli', {
   platform: imagebuilder.Platform.LINUX
 });
 
 // Update the operating system
-const updateComponent = imagebuilder.AwsManagedComponent.updateOS(this, 'UpdateOS', {
+const updateComponent = imagebuilder.AmazonManagedComponent.updateOs(this, 'UpdateOS', {
   platform: imagebuilder.Platform.LINUX
 });
 
 // Reference any AWS-managed component by name
-const customAwsComponent = imagebuilder.AwsManagedComponent.fromAwsManagedComponentName(
+const customAwsComponent = imagebuilder.AmazonManagedComponent.fromAmazonManagedComponentName(
   this,
   'CloudWatchAgent',
   'amazon-cloudwatch-agent-linux'
@@ -1103,7 +1304,8 @@ containerDistributionConfiguration.addContainerDistributions({
 
 ### Workflow
 
-Workflows define the sequence of steps that Image Builder performs during image creation. There are three workflow types: BUILD (image building), TEST (testing images), and DISTRIBUTION (distributing container images).
+Workflows define the sequence of steps that Image Builder performs during image creation. There are three workflow
+types: BUILD (image building), TEST (testing images), and DISTRIBUTION (distributing container images).
 
 #### Basic Workflow Usage
 
@@ -1264,7 +1466,8 @@ const workflowFromS3 = new imagebuilder.Workflow(this, 'S3Workflow', {
 
 #### Encrypt workflow data with a KMS key
 
-You can encrypt workflow data with a KMS key, so that only principals with access to decrypt with the key are able to access the workflow data.
+You can encrypt workflow data with a KMS key, so that only principals with access to decrypt with the key are able to
+access the workflow data.
 
 ```ts
 const workflow = new imagebuilder.Workflow(this, 'EncryptedWorkflow', {
@@ -1314,20 +1517,22 @@ AWS provides a collection of workflows for common scenarios:
 
 ```ts
 // Build workflows
-const buildImageWorkflow = imagebuilder.AwsManagedWorkflow.buildImage(this, 'BuildImage');
-const buildContainerWorkflow = imagebuilder.AwsManagedWorkflow.buildContainer(this, 'BuildContainer');
+const buildImageWorkflow = imagebuilder.AmazonManagedWorkflow.buildImage(this, 'BuildImage');
+const buildContainerWorkflow = imagebuilder.AmazonManagedWorkflow.buildContainer(this, 'BuildContainer');
 
 // Test workflows  
-const testImageWorkflow = imagebuilder.AwsManagedWorkflow.testImage(this, 'TestImage');
-const testContainerWorkflow = imagebuilder.AwsManagedWorkflow.testContainer(this, 'TestContainer');
+const testImageWorkflow = imagebuilder.AmazonManagedWorkflow.testImage(this, 'TestImage');
+const testContainerWorkflow = imagebuilder.AmazonManagedWorkflow.testContainer(this, 'TestContainer');
 
 // Distribution workflows
-const distributeContainerWorkflow = imagebuilder.AwsManagedWorkflow.distributeContainer(this, 'DistributeContainer');
+const distributeContainerWorkflow = imagebuilder.AmazonManagedWorkflow.distributeContainer(this, 'DistributeContainer');
 ```
 
 ### Lifecycle Policy
 
-Lifecycle policies help you manage the retention and cleanup of Image Builder resources automatically. These policies define rules for deprecating or deleting old image versions, managing AMI snapshots, and controlling resource costs by removing unused images based on age, count, or other criteria.
+Lifecycle policies help you manage the retention and cleanup of Image Builder resources automatically. These policies
+define rules for deprecating or deleting old image versions, managing AMI snapshots, and controlling resource costs by
+removing unused images based on age, count, or other criteria.
 
 #### Lifecycle Policy Basic Usage
 
@@ -1642,7 +1847,7 @@ const disabledPolicy = new imagebuilder.LifecyclePolicy(this, 'DisabledPolicy', 
 
 ##### Importing Lifecycle Policies
 
-Reference lifecycle policies created outside of CDK:
+Reference lifecycle policies created outside CDK:
 
 ```ts
 // Import by name
@@ -1660,5 +1865,5 @@ const importedByArn = imagebuilder.LifecyclePolicy.fromLifecyclePolicyArn(
 );
 
 importedByName.grantRead(lambdaRole);
-importedByArn.grant(lambdaRole, 'imagebuilder:PutLifecyclePolicy');
+importedByArn.grant(lambdaRole, 'imagebuilder:UpdateLifecyclePolicy');
 ```

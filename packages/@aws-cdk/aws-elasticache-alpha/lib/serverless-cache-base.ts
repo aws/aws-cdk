@@ -1,4 +1,3 @@
-import { IUserGroup } from './user-group';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -9,6 +8,7 @@ import {
   ServerlessCacheReference,
 } from 'aws-cdk-lib/interfaces/generated/aws-elasticache-interfaces.generated';
 import { ServerlessCacheGrants } from './elasticache-grants.generated';
+import { IUserGroup } from './user-group';
 
 /**
  * Supported cache engines together with available versions.

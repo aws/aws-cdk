@@ -13,7 +13,6 @@ const scopeMapPath = path.join(__dirname, 'scope-map.json');
 const NON_SERVICE_SUBMODULES = ['core', 'interfaces'];
 
 main().catch(e => {
-  // eslint-disable-next-line no-console
   console.error(e);
   process.exitCode = 1;
 });

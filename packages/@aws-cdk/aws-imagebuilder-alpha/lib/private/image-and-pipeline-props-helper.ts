@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { CfnImage, CfnImagePipeline } from 'aws-cdk-lib/aws-imagebuilder';
 import { Construct } from 'constructs';
+import { ImageProps } from '../image';
 import { ImagePipelineProps } from '../image-pipeline';
 
 /**
@@ -10,7 +11,7 @@ import { ImagePipelineProps } from '../image-pipeline';
  * @param props Props input for the construct
  */
 export const buildImageTestsConfiguration = <
-  PropsT extends ImagePipelineProps,
+  PropsT extends ImagePipelineProps | ImageProps,
   OutputT extends CfnImagePipeline.ImageTestsConfigurationProperty | CfnImage.ImageTestsConfigurationProperty,
 >(
   props: PropsT,
@@ -30,7 +31,7 @@ export const buildImageTestsConfiguration = <
  * @param props Props input for the construct
  */
 export const buildImageScanningConfiguration = <
-  PropsT extends ImagePipelineProps,
+  PropsT extends ImagePipelineProps | ImageProps,
   OutputT extends CfnImagePipeline.ImageScanningConfigurationProperty | CfnImage.ImageScanningConfigurationProperty,
 >(
   scope: Construct,
@@ -66,7 +67,7 @@ export const buildImageScanningConfiguration = <
  * @param props Props input for the construct
  */
 export const buildWorkflows = <
-  PropsT extends ImagePipelineProps,
+  PropsT extends ImagePipelineProps | ImageProps,
   OutputT extends CfnImagePipeline.WorkflowConfigurationProperty[] | CfnImage.WorkflowConfigurationProperty[],
 >(
   props: PropsT,

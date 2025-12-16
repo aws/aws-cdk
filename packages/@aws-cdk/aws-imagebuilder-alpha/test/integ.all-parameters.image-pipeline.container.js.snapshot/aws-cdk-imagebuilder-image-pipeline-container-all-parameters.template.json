@@ -2,11 +2,17 @@
  "Resources": {
   "Repository22E53BBD": {
    "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "EmptyOnDelete": true
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
   "ScanningRepositoryB9C9B705": {
    "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "EmptyOnDelete": true
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -32,6 +38,27 @@
    "Properties": {
     "PolicyDocument": {
      "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ImageLogGroupD34F5836",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "ImagePipelineLogGroup7E475C9B",
+          "Arn"
+         ]
+        }
+       ]
+      },
       {
        "Action": "ec2:RegisterImage",
        "Condition": {
@@ -807,12 +834,45 @@
   "ContainerRecipe8A7CC9ED": {
    "Type": "AWS::ImageBuilder::ContainerRecipe",
    "Properties": {
+    "Components": [
+     {
+      "ComponentArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":imagebuilder:",
+         {
+          "Ref": "AWS::Region"
+         },
+         ":aws:component/hello-world-linux/x.x.x"
+        ]
+       ]
+      }
+     }
+    ],
     "ContainerType": "DOCKER",
     "DockerfileTemplateData": "FROM {{{ imagebuilder:parentImage }}}\n{{{ imagebuilder:environments }}}\n{{{ imagebuilder:components }}}",
-    "ImageOsVersionOverride": "Amazon Linux 2023",
     "Name": "aws-cdk-imagebuilder-image-pipeline-container-all-parameters-containerrecipe-703c2596",
-    "ParentImage": "public.ecr.aws/amazonlinux/amazonlinux:latest",
-    "PlatformOverride": "Linux",
+    "ParentImage": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":imagebuilder:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":aws:image/amazon-linux-2023-x86-2023/x.x.x"
+      ]
+     ]
+    },
     "TargetRepository": {
      "RepositoryName": {
       "Ref": "Repository22E53BBD"
@@ -858,7 +918,7 @@
       "Arn"
      ]
     },
-    "EnhancedImageMetadataEnabled": true,
+    "EnhancedImageMetadataEnabled": false,
     "ExecutionRole": {
      "Fn::GetAtt": [
       "ExecutionRole605A040B",
@@ -902,6 +962,10 @@
      "ScheduleExpression": "rate(7 days)"
     },
     "Status": "DISABLED",
+    "Tags": {
+     "key1": "value1",
+     "key2": "value2"
+    },
     "Workflows": [
      {
       "WorkflowArn": {
