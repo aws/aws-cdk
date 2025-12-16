@@ -2,7 +2,7 @@ import { InstanceType, Vpc, SecurityGroup, Peer, Port } from 'aws-cdk-lib/aws-ec
 import { Cluster, ContainerImage, AsgCapacityProvider, EcsOptimizedImage } from 'aws-cdk-lib/aws-ecs';
 import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 import { Protocol } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { App, Duration, Stack } from 'aws-cdk-lib';
+import { App, Duration, Stack, CfnResource } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 import { ApplicationMultipleTargetGroupsEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
@@ -21,6 +21,11 @@ const securityGroup = new SecurityGroup(stack, 'MyAutoScalingGroupSG', {
   allowAllOutbound: true,
 });
 securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcpRange(32768, 65535));
+// Suppress security guardian rule - intentionally allowing public access for load balancer testing
+const cfnSecurityGroup = securityGroup.node.defaultChild as CfnResource;
+cfnSecurityGroup.addMetadata('guard', {
+  SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+});
 const provider = new AsgCapacityProvider(stack, 'MyProvider', {
   autoScalingGroup: new AutoScalingGroup(stack, 'MyAutoScalingGroup', {
     vpc,
@@ -70,6 +75,15 @@ const applicationMultipleTargetGroupsFargateService = new ApplicationMultipleTar
 });
 applicationMultipleTargetGroupsFargateService.loadBalancers[0].connections.addSecurityGroup(securityGroup);
 applicationMultipleTargetGroupsFargateService.loadBalancers[1].connections.addSecurityGroup(securityGroup);
+// Suppress security guardian rule - load balancers intentionally need public access for testing
+applicationMultipleTargetGroupsFargateService.loadBalancers.forEach(lb => {
+  lb.connections.securityGroups.forEach(sg => {
+    const cfnSg = sg.node.defaultChild as CfnResource;
+    cfnSg.addMetadata('guard', {
+      SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+    });
+  });
+});
 
 applicationMultipleTargetGroupsFargateService.targetGroups[0].configureHealthCheck({
   protocol: Protocol.HTTP,

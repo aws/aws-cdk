@@ -22,6 +22,11 @@ const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
   allowAllOutbound: true,
 });
 securityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcpRange(32768, 65535));
+// Suppress security guardian rule - intentionally allowing public access for load balancer testing
+const cfnSecurityGroup = securityGroup.node.defaultChild as cdk.CfnResource;
+cfnSecurityGroup.addMetadata('guard', {
+  SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+});
 
 const provider = new ecs.AsgCapacityProvider(stack, 'CapacityProvier', {
   autoScalingGroup: new autoscaling.AutoScalingGroup(
@@ -61,6 +66,13 @@ const applicationLoadBalancedEc2Service = new ecsPatterns.ApplicationLoadBalance
   },
 );
 applicationLoadBalancedEc2Service.loadBalancer.connections.addSecurityGroup(securityGroup);
+// Suppress security guardian rule - load balancer intentionally needs public access for testing
+applicationLoadBalancedEc2Service.loadBalancer.connections.securityGroups.forEach(sg => {
+  const cfnSg = sg.node.defaultChild as cdk.CfnResource;
+  cfnSg.addMetadata('guard', {
+    SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+  });
+});
 
 new integ.IntegTest(app, 'AlbEc2ServiceWithCommandAndEntryPoint', {
   testCases: [stack],
