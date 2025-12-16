@@ -58,7 +58,7 @@
     "@aws-cdk/service-spec-types" "^0.0.164"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/aws-service-spec@^0.1.129":
+"@aws-cdk/aws-service-spec@^0.1.130":
   version "0.1.130"
   resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.130.tgz#2676e26079a5241816de3ac377c06a8063fc62c4"
   integrity sha512-LzBjA6hHk1nqK9Kg3YNqEyCpMxmQLX2zTeH2kZbRtEnohYS34EtBZzFXZ8NrlYbY/n657mnA5DKWvd0A9CE/EQ==
@@ -146,13 +146,6 @@
   version "0.0.193"
   resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.193.tgz#3d99307bd539ed61272eee543dc2485ba8ded878"
   integrity sha512-Wxki9z/ZgJuWjUbT6rBRytp7gMJGIz904a/2pus73Y3Tsx3CVgi1izwi5eCH1cp8dHrOaxCvAy9C5NODqRlQ8w==
-  dependencies:
-    "@cdklabs/tskb" "^0.0.4"
-
-"@aws-cdk/service-spec-types@^0.0.195":
-  version "0.0.195"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.195.tgz#8334c976ea7688913ce23a5a2b32fbe5888075c3"
-  integrity sha512-12EFJaeyAGc1g/TCBg3GS+kq8PKCp49rvPE4Ms8Nli7w7/xKfXJhUUdU7PLNc09d798kWYxATvcgAC+ybzl6Tg==
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
@@ -3595,6 +3588,14 @@
     chalk "^4.1.2"
     semver "^7.7.2"
 
+"@jsii/check-node@1.121.0":
+  version "1.121.0"
+  resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.121.0.tgz#cfb32df36b38c308deb8e64f0406d73a55aaa8f1"
+  integrity sha512-0mPTsD9PDx/+Kvi6xNfOMzcxWW/nzo74rp96vN5qVg8pZThtzHqR14X0z4E/SqfYVs6Tv+Xiu4ctRRFmwe4xtQ==
+  dependencies:
+    chalk "^4.1.2"
+    semver "^7.7.2"
+
 "@jsii/spec@1.119.0":
   version "1.119.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.119.0.tgz#e8b4f3bee3b454ea2f0da8f409390ff7ac653e19"
@@ -3603,6 +3604,13 @@
     ajv "^8.17.1"
 
 "@jsii/spec@1.121.0", "@jsii/spec@^1.118.0", "@jsii/spec@^1.120.0":
+  version "1.121.0"
+  resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.121.0.tgz#43eeee50904151cebd1a68b2e93e35f104e24ee5"
+  integrity sha512-TDDUKTSRgRB0j2Yti+LOgUzjka8D+NdJm9vzYu1DOGu8Oje8cl9hRYZUmGoW8dWQLnF1dcouUP0n9PLvVKzu5w==
+  dependencies:
+    ajv "^8.17.1"
+
+"@jsii/spec@1.121.0":
   version "1.121.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.121.0.tgz#43eeee50904151cebd1a68b2e93e35f104e24ee5"
   integrity sha512-TDDUKTSRgRB0j2Yti+LOgUzjka8D+NdJm9vzYu1DOGu8Oje8cl9hRYZUmGoW8dWQLnF1dcouUP0n9PLvVKzu5w==

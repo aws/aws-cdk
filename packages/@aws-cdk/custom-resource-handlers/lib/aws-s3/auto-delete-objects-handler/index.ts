@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 
 import { S3 } from '@aws-sdk/client-s3';
 import { makeHandler } from '../../nodejs-entrypoint';
