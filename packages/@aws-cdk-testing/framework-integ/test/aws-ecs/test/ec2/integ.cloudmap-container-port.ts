@@ -2,6 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
 import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import { CfnResource } from 'aws-cdk-lib';
 
 const app = new cdk.App({
   postCliContext: {
@@ -30,6 +31,14 @@ const capacity = cluster.addCapacity('capacity', {
   maxCapacity: 1,
 });
 capacity.connections.allowFromAnyIpv4(ec2.Port.tcpRange(32768, 61000));
+
+// Suppress security guardian rule for intentional test setup
+capacity.connections.securityGroups.forEach(sg => {
+  const cfnSg = sg.node.defaultChild as CfnResource;
+  cfnSg.addMetadata('guard', {
+    SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+  });
+});
 
 cluster.addDefaultCloudMapNamespace({ name: 'aws-ecs-integ' });
 

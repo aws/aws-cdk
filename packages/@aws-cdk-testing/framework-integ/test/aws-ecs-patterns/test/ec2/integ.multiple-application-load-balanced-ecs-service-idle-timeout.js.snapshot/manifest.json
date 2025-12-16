@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d4d2b4bcab278d5e3368e8f64cda52944ab7d71dee57cfe4ff91da3d2d6b6b8b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/752af6a53a0341fd19865e58f18644c349dcaecd197e24342f0b299bcde6d3c9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -604,10 +604,7 @@
         "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/LaunchConfig": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466"
           }
         ],
         "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/ASG": [
