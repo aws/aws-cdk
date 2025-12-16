@@ -17,8 +17,6 @@ import { HelmChart } from '../lib';
 import { KubectlProvider } from '../lib/kubectl-provider';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
 
-/* eslint-disable max-len */
-
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_25;
 
 describe('cluster', () => {
@@ -1510,7 +1508,7 @@ describe('cluster', () => {
 
     test('throws warning when `outputConfigCommand=true` and `mastersRole` is not specified', () => {
       // GIVEN
-      const { app, stack } = testFixtureNoVpc();
+      const { stack } = testFixtureNoVpc();
 
       // WHEN
       new eks.Cluster(stack, 'Cluster', {
@@ -3508,16 +3506,6 @@ describe('cluster', () => {
     });
   });
 
-  describe('kubectlLayer annotation', () => {
-    function message(version: string) {
-      return [
-        `You created a cluster with Kubernetes Version 1.${version} without specifying the kubectlLayer property.`,
-        'The property will become required instead of optional in 2025 Jan. Please update your CDK code to provide a kubectlLayer.',
-        '[ack: @aws-cdk/aws-eks:clusterKubectlLayerNotSpecified]',
-      ].join(' ');
-    }
-  });
-
   test('custom awscli layer can be provided', () => {
     // GIVEN
     const { stack } = testFixture();
@@ -3789,6 +3777,7 @@ describe('cluster', () => {
             cidrs: remoteNodeNetworkCidrs,
           },
         ],
+        kubectlLayer: undefined as any,
       });
 
       // THEN
@@ -3824,6 +3813,7 @@ describe('cluster', () => {
             cidrs: remotePodNetworkCidrs,
           },
         ],
+        kubectlLayer: undefined as any,
       });
 
       // THEN
@@ -3866,6 +3856,7 @@ describe('cluster', () => {
               cidrs: remotePodNetworkCidrs,
             },
           ],
+          kubectlLayer: undefined as any,
         });
       }).toThrow(`Remote node network CIDR block ${overlappingCidr} should not overlap with remote pod network CIDR block ${overlappingCidr}`);
     });
@@ -3889,6 +3880,7 @@ describe('cluster', () => {
               cidrs: remoteNodeNetworkCidrs2,
             },
           ],
+          kubectlLayer: undefined as any,
         });
       }).toThrow(`CIDR block ${overlappingCidr} in remote node network #1 should not overlap with CIDR block ${overlappingCidr} in remote node network #2`);
     });
@@ -3918,6 +3910,7 @@ describe('cluster', () => {
               cidrs: remotePodNetworkCidrs2,
             },
           ],
+          kubectlLayer: undefined as any,
         });
       }).toThrow(`CIDR block ${overlappingCidr} in remote pod network #1 should not overlap with CIDR block ${overlappingCidr} in remote pod network #2`);
     });
@@ -3937,6 +3930,7 @@ describe('cluster', () => {
               cidrs: remoteNodeNetworkCidrs,
             },
           ],
+          kubectlLayer: undefined as any,
         });
       }).toThrow(`CIDR ${overlappingCidr} should not overlap with another CIDR in remote node network #1`);
     });
@@ -3962,6 +3956,7 @@ describe('cluster', () => {
               cidrs: remotePodNetworkCidrs,
             },
           ],
+          kubectlLayer: undefined as any,
         });
       }).toThrow(`CIDR ${overlappingCidr} should not overlap with another CIDR in remote pod network #1`);
     });
