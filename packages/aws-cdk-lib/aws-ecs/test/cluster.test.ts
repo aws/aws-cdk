@@ -3533,11 +3533,14 @@ describe('cluster', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
       const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
       // WHEN
       const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         subnets: vpc.privateSubnets,
       });
+
+      cluster.addManagedInstancesCapacityProvider(capacityProvider);
 
       // THEN
       // Verify default infrastructure role is created with correct managed policy
@@ -3577,6 +3580,7 @@ describe('cluster', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
       const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
       const customInfrastructureRole = new iam.Role(stack, 'CustomInfrastructureRole', {
         assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
@@ -3590,6 +3594,8 @@ describe('cluster', () => {
         infrastructureRole: customInfrastructureRole,
         subnets: vpc.privateSubnets,
       });
+
+      cluster.addManagedInstancesCapacityProvider(capacityProvider);
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
@@ -3612,11 +3618,14 @@ describe('cluster', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
       const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
       // WHEN
-      new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+      const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         subnets: vpc.privateSubnets,
       });
+
+      cluster.addManagedInstancesCapacityProvider(capacityProvider);
 
       // THEN
       // Verify the instance profile name starts with 'ecsInstanceRole'
@@ -3630,11 +3639,14 @@ describe('cluster', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
       const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
       // WHEN
-      new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+      const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         subnets: vpc.privateSubnets,
       });
+
+      cluster.addManagedInstancesCapacityProvider(capacityProvider);
 
       // THEN
       // Verify the instance role name starts with 'ecsInstanceRole'
