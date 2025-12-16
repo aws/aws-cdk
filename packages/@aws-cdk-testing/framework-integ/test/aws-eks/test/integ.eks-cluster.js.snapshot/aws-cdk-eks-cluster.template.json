@@ -44,32 +44,6 @@
   },
   "SecretsKey317DCF94": {
    "Type": "AWS::KMS::Key",
-   "Properties": {
-    "KeyPolicy": {
-     "Statement": [
-      {
-       "Action": "kms:*",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:aws:iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       },
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain",
    "Metadata": {

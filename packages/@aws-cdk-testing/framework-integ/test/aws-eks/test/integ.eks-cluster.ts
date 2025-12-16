@@ -43,16 +43,7 @@ class EksClusterStack extends Stack {
     );
 
     const secretsEncryptionKey = new kms.Key(this, 'SecretsKey', {
-      policy: new iam.PolicyDocument({
-        statements: [
-          new iam.PolicyStatement({
-            effect: iam.Effect.ALLOW,
-            principals: [new iam.ArnPrincipal(`arn:aws:iam::${this.account}:root`)],
-            actions: ['kms:*'],
-            resources: ['*'],
-          }),
-        ],
-      }),
+      policy: new iam.PolicyDocument(),
     });
 
     // Add metadata to suppress security guardian rule for KMS key
