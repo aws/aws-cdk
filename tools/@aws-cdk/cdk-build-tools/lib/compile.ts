@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { makeExecutable, shell } from './os';
 import { CDKBuildOptions, CompilerOverrides, currentPackageJson, packageCompiler } from './package-info';
 import { Timers } from './timer';
@@ -7,7 +8,10 @@ import { Timers } from './timer';
  */
 export async function compileCurrentPackage(options: CDKBuildOptions, timers: Timers, compilers: CompilerOverrides = {}): Promise<void> {
   const env = options.env;
-  await shell(packageCompiler(compilers, options), { timers, env });
+  const compiler = packageCompiler(compilers, options);
+
+  let compilerName = path.basename(compiler[0]);
+  await shell(compiler, { timers, env, trace: { command: compilerName, pkg: options.currentPackageName } });
 
   // Find files in bin/ that look like they should be executable, and make them so.
   const scripts = currentPackageJson().bin || {};

@@ -47,12 +47,18 @@ async function main() {
 
   const testFiles = await unitTestFiles();
   if (testFiles.length > 0) {
-    await shell([args.jest], unitTestOptions);
+    await shell([args.jest], {
+      ...unitTestOptions,
+      trace: { command: 'jest', pkg: options.currentPackageName },
+    });
   }
 
   // Run integration test if the package has integ test files
   if (await hasIntegTests()) {
-    await shell(['integ-runner'], defaultShellOptions);
+    await shell(['integ-runner'], {
+      ...defaultShellOptions,
+      trace: { command: 'integ-runner', pkg: options.currentPackageName },
+    });
   }
 }
 
