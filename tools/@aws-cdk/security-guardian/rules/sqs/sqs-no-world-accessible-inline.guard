@@ -4,38 +4,35 @@
 #####################################
 # Rule: SQS_NO_WORLD_ACCESSIBLE_INLINE
 # Service: Amazon Simple Queue Service (SQS)
-# Coverage: Inline Queue Policies
+# Coverage: Inline Queue Policies (AWS::SQS::QueueInlinePolicy resources)
 #
-# Note: SQS queues without a QueuePolicy are secure by default - only the queue owner
+# Note: SQS queues without a QueueInlinePolicy are secure by default - only the queue owner
 # has permission to send and receive messages. When you create a queue, you have full
 # control access rights for the queue. Only you, the owner of the queue, can grant or
-# deny permissions to the queue. This rule only checks queues that have an inline policy
-# defined to ensure they don't grant world-accessible permissions.
+# deny permissions to the queue. This rule checks AWS::SQS::QueueInlinePolicy resources
+# to ensure they don't grant world-accessible permissions.
 # See: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-configure-add-permissions.html
 # (Section: "By default, only the queue owner has permission to send and receive messages.")
 
-let sqs_queues = Resources.*[
-  Type == 'AWS::SQS::Queue'
+let sqs_queue_inline_policies = Resources.*[
+  Type == 'AWS::SQS::QueueInlinePolicy'
   Metadata.guard.SuppressedRules not exists or
   Metadata.guard.SuppressedRules.* != "SQS_NO_WORLD_ACCESSIBLE_INLINE"
 ]
 
-# Check inline queue policies only when they exist
-rule SQS_NO_WORLD_ACCESSIBLE_INLINE when %sqs_queues !empty {
-    %sqs_queues {
-        # Only check if QueuePolicy is explicitly defined
-        when Properties.QueuePolicy exists {
-            Properties.QueuePolicy.Statement[*] {
-                when Effect == "Allow" {
-                    when Principal exists {
-                        when Principal != "*" {
-                            when Principal.AWS exists {
-                                when Principal.AWS is_string {
-                                    Principal.AWS != "*"
-                                }
-                                when Principal.AWS is_list {
-                                    Principal.AWS[*] != "*"
-                                }
+# Check inline queue policies
+rule SQS_NO_WORLD_ACCESSIBLE_INLINE when %sqs_queue_inline_policies !empty {
+    %sqs_queue_inline_policies {
+        Properties.PolicyDocument.Statement[*] {
+            when Effect == "Allow" {
+                when Principal exists {
+                    when Principal != "*" {
+                        when Principal.AWS exists {
+                            when Principal.AWS is_string {
+                                Principal.AWS != "*"
+                            }
+                            when Principal.AWS is_list {
+                                Principal.AWS[*] != "*"
                             }
                         }
                     }
