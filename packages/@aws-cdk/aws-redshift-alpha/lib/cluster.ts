@@ -6,7 +6,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { Annotations, ArnFormat, CustomResource, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
+import { Annotations, ArnFormat, CustomResource, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, Provider } from 'aws-cdk-lib/custom-resources';
@@ -201,6 +201,12 @@ export abstract class ClusterLogging {
    */
   public abstract readonly _bucket?: s3.IBucket;
 
+  protected constructor(logExports?: LogExport[]) {
+    if (logExports && logExports.length !== new Set(logExports).size) {
+      throw new UnscopedValidationError('logExports must not contain duplicate values.');
+    }
+  }
+
   /**
    * Render the logging properties for CloudFormation.
    * @internal
@@ -212,7 +218,7 @@ class S3ClusterLogging extends ClusterLogging {
   public readonly _bucket?: s3.IBucket;
 
   constructor(private readonly options: S3LoggingOptions) {
-    super();
+    super(options.logExports);
     this._bucket = options.bucket;
   }
 
@@ -230,7 +236,7 @@ class CloudWatchClusterLogging extends ClusterLogging {
   public readonly _bucket?: s3.IBucket = undefined;
 
   constructor(private readonly options: CloudWatchLoggingOptions) {
-    super();
+    super(options.logExports);
   }
 
   public _renderLoggingProperty(): ClusterLoggingConfig {
@@ -775,12 +781,22 @@ export class Cluster extends ClusterBase {
     let loggingProperties;
     if (props.logging) {
       const config = props.logging._renderLoggingProperty();
+
       loggingProperties = {
         logDestinationType: config.logDestinationType,
         bucketName: config.bucketName,
         s3KeyPrefix: config.s3KeyPrefix,
         logExports: config.logExports,
       };
+
+      // Add info annotation for user activity log
+      if (config.logExports?.includes(LogExport.USER_ACTIVITY_LOG)) {
+        Annotations.of(this).addInfo(
+          'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
+          'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it. ' +
+          'See https://docs.aws.amazon.com/redshift/latest/mgmt/db-auditing.html for more details.',
+        );
+      }
 
       // Add bucket policy for S3 logging
       if (props.logging._bucket) {

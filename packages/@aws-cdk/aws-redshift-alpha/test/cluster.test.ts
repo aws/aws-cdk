@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { Match, Template } from 'aws-cdk-lib/assertions';
+import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
@@ -645,6 +645,23 @@ describe('logging', () => {
     });
   });
 
+  test('S3 logging with imported bucket adds warning', () => {
+    // GIVEN
+    const bucket = s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'my-bucket');
+
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.s3({ bucket }),
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/Redshift', Match.stringLikeRegexp('Could not add bucket policy for Redshift logging.*'));
+  });
+
   test('S3 logging without bucket does not create bucket policy', () => {
     // WHEN
     new Cluster(stack, 'Redshift', {
@@ -682,6 +699,21 @@ describe('logging', () => {
         },
       });
     }).toThrow(/Cannot specify both "logging" and "loggingProperties"/);
+  });
+
+  test('throws when logExports contains duplicate values', () => {
+    // WHEN/THEN
+    expect(() => {
+      new Cluster(stack, 'Redshift', {
+        masterUser: {
+          masterUsername: 'admin',
+        },
+        vpc,
+        logging: ClusterLogging.cloudwatch({
+          logExports: [LogExport.CONNECTION_LOG, LogExport.CONNECTION_LOG],
+        }),
+      });
+    }).toThrow(/logExports must not contain duplicate values/);
   });
 });
 
