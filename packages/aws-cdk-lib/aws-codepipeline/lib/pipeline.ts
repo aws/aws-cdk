@@ -41,6 +41,7 @@ import {
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
+import { PipelineReference } from '../../interfaces/generated/aws-codepipeline-interfaces.generated';
 
 /**
  * Allows you to control where to place a new Stage when it's added to the Pipeline.
@@ -388,6 +389,12 @@ export interface PipelineProps {
 abstract class PipelineBase extends Resource implements IPipeline {
   public abstract readonly pipelineName: string;
   public abstract readonly pipelineArn: string;
+
+  public get pipelineRef(): PipelineReference {
+    return {
+      pipelineName: this.pipelineName,
+    };
+  }
 
   /**
    * Defines an event rule triggered by this CodePipeline.
