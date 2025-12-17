@@ -406,6 +406,10 @@ describe('capacity provider', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::CapacityProvider', {
         CapacityProviderName: { Ref: 'CapacityProviderNameParam' },
+        VpcConfig: {
+          SubnetIds: { 'Fn::Split': [',', { Ref: 'SubnetIdsParam' }] },
+          SecurityGroupIds: { 'Fn::Split': [',', { Ref: 'SecurityGroupIdsParam' }] },
+        },
         CapacityProviderScalingConfig: {
           MaxVCpuCount: { Ref: 'MaxVCpuParam' },
         },
