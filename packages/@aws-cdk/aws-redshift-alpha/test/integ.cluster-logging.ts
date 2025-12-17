@@ -12,15 +12,17 @@ class TestStack extends Stack {
 
     const vpc = new ec2.Vpc(this, 'Vpc');
 
-    new redshift.Cluster(this, 'CloudwatchLoggingCluster', {
+    const cluster = new redshift.Cluster(this, 'CloudwatchLoggingCluster', {
       vpc,
       masterUser: {
         masterUsername: 'admin',
       },
+      nodeType: redshift.NodeType.RA3_LARGE,
       logging: redshift.ClusterLogging.cloudwatch({
-        logExports: [redshift.LogExport.CONNECTION_LOG, redshift.LogExport.USER_LOG],
+        logExports: [redshift.LogExport.CONNECTION_LOG, redshift.LogExport.USER_LOG, redshift.LogExport.USER_ACTIVITY_LOG],
       }),
     });
+    cluster.addToParameterGroup('enable_user_activity_logging', 'true');
 
     const loggingBucket = new s3.Bucket(this, 'LoggingBucket', {
       removalPolicy: RemovalPolicy.DESTROY,
@@ -32,13 +34,9 @@ class TestStack extends Stack {
       masterUser: {
         masterUsername: 'admin',
       },
+      nodeType: redshift.NodeType.RA3_LARGE,
       logging: redshift.ClusterLogging.s3({
         bucket: loggingBucket,
-        logExports: [
-          redshift.LogExport.USER_LOG,
-          redshift.LogExport.USER_ACTIVITY_LOG,
-          redshift.LogExport.CONNECTION_LOG,
-        ],
         keyPrefix: 'redshift-logs/',
       }),
     });

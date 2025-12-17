@@ -592,31 +592,6 @@ describe('logging', () => {
     });
   });
 
-  test('S3 logging with log exports', () => {
-    // GIVEN
-    const bucket = new s3.Bucket(stack, 'Bucket');
-
-    // WHEN
-    new Cluster(stack, 'Redshift', {
-      masterUser: {
-        masterUsername: 'admin',
-      },
-      vpc,
-      logging: ClusterLogging.s3({
-        bucket,
-        logExports: [LogExport.USER_ACTIVITY_LOG],
-      }),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
-      LoggingProperties: {
-        LogDestinationType: 's3',
-        LogExports: ['useractivitylog'],
-      },
-    });
-  });
-
   test('S3 logging adds bucket policy', () => {
     // GIVEN
     const bucket = new s3.Bucket(stack, 'Bucket');
@@ -701,7 +676,7 @@ describe('logging', () => {
     }).toThrow(/Cannot specify both "logging" and "loggingProperties"/);
   });
 
-  test('throws when logExports contains duplicate values', () => {
+  test('throws when CloudWatch logExports contains duplicate values', () => {
     // WHEN/THEN
     expect(() => {
       new Cluster(stack, 'Redshift', {

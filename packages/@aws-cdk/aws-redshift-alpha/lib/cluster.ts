@@ -146,13 +146,6 @@ export interface S3LoggingOptions {
    * @default - No prefix
    */
   readonly keyPrefix?: string;
-
-  /**
-   * The types of logs to export.
-   *
-   * @default - All log types
-   */
-  readonly logExports?: LogExport[];
 }
 
 /**
@@ -201,12 +194,6 @@ export abstract class ClusterLogging {
    */
   public abstract readonly _bucket?: s3.IBucket;
 
-  protected constructor(logExports?: LogExport[]) {
-    if (logExports && logExports.length !== new Set(logExports).size) {
-      throw new UnscopedValidationError('logExports must not contain duplicate values.');
-    }
-  }
-
   /**
    * Render the logging properties for CloudFormation.
    * @internal
@@ -218,7 +205,7 @@ class S3ClusterLogging extends ClusterLogging {
   public readonly _bucket?: s3.IBucket;
 
   constructor(private readonly options: S3LoggingOptions) {
-    super(options.logExports);
+    super();
     this._bucket = options.bucket;
   }
 
@@ -227,7 +214,6 @@ class S3ClusterLogging extends ClusterLogging {
       logDestinationType: 's3',
       bucketName: this.options.bucket?.bucketName,
       s3KeyPrefix: this.options.keyPrefix,
-      logExports: this.options.logExports,
     };
   }
 }
@@ -236,7 +222,10 @@ class CloudWatchClusterLogging extends ClusterLogging {
   public readonly _bucket?: s3.IBucket = undefined;
 
   constructor(private readonly options: CloudWatchLoggingOptions) {
-    super(options.logExports);
+    super();
+    if (options.logExports && options.logExports.length !== new Set(options.logExports).size) {
+      throw new UnscopedValidationError('logExports must not contain duplicate values.');
+    }
   }
 
   public _renderLoggingProperty(): ClusterLoggingConfig {
