@@ -4,7 +4,7 @@ import { defineConfig } from 'eslint/config';
 export default defineConfig(
   makeConfig('tsconfig.json'),
   {
-    files: ['region-info/lib/**/*.ts'],
+    files: ['region-info/lib/**'],
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [{
