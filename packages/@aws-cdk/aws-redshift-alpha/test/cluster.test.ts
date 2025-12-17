@@ -5,7 +5,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType, MaintenanceTrackName, NodeType, ResourceAction } from '../lib';
+import { Cluster, ClusterLogging, ClusterParameterGroup, ClusterSubnetGroup, ClusterType, LogExport, MaintenanceTrackName, NodeType, ResourceAction } from '../lib';
 
 let stack: cdk.Stack;
 let vpc: ec2.IVpc;
@@ -523,6 +523,165 @@ test('can create a cluster with logging enabled', () => {
       BucketName: 'logging-bucket',
       S3KeyPrefix: 'prefix',
     },
+  });
+});
+
+describe('logging', () => {
+  test('CloudWatch logging', () => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.cloudwatch(),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+      LoggingProperties: {
+        LogDestinationType: 'cloudwatch',
+      },
+    });
+  });
+
+  test('CloudWatch logging with log exports', () => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.cloudwatch({
+        logExports: [LogExport.CONNECTION_LOG, LogExport.USER_LOG],
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+      LoggingProperties: {
+        LogDestinationType: 'cloudwatch',
+        LogExports: ['connectionlog', 'userlog'],
+      },
+    });
+  });
+
+  test('S3 logging with new API', () => {
+    // GIVEN
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.s3({
+        bucket,
+        keyPrefix: 'logs/',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+      LoggingProperties: {
+        LogDestinationType: 's3',
+        BucketName: { Ref: Match.stringLikeRegexp('Bucket*') },
+        S3KeyPrefix: 'logs/',
+      },
+    });
+  });
+
+  test('S3 logging with log exports', () => {
+    // GIVEN
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.s3({
+        bucket,
+        logExports: [LogExport.USER_ACTIVITY_LOG],
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+      LoggingProperties: {
+        LogDestinationType: 's3',
+        LogExports: ['useractivitylog'],
+      },
+    });
+  });
+
+  test('S3 logging adds bucket policy', () => {
+    // GIVEN
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.s3({ bucket }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: ['s3:GetBucketAcl', 's3:PutObject'],
+            Principal: {
+              Service: 'redshift.amazonaws.com',
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('S3 logging without bucket does not create bucket policy', () => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.s3({}),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+      LoggingProperties: {
+        LogDestinationType: 's3',
+      },
+    });
+    Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 0);
+  });
+
+  test('throws when both logging and loggingProperties are specified', () => {
+    // GIVEN
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN/THEN
+    expect(() => {
+      new Cluster(stack, 'Redshift', {
+        masterUser: {
+          masterUsername: 'admin',
+        },
+        vpc,
+        logging: ClusterLogging.cloudwatch(),
+        loggingProperties: {
+          loggingBucket: bucket,
+          loggingKeyPrefix: 'prefix',
+        },
+      });
+    }).toThrow(/Cannot specify both "logging" and "loggingProperties"/);
   });
 });
 
