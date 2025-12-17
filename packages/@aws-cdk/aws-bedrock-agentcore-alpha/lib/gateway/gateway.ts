@@ -392,12 +392,12 @@ export class Gateway extends GatewayBase {
   /**
    * The Cognito User Pool Domain created for the gateway (if using default Cognito authorizer)
    */
-  public userPoolDomain?: cognito.UserPoolDomain;
+  public userPoolDomain?: cognito.IUserPoolDomain;
 
   /**
    * The Cognito Resource Server created for the gateway (if using default Cognito authorizer)
    */
-  public resourceServer?: cognito.UserPoolResourceServer;
+  public resourceServer?: cognito.IUserPoolResourceServer;
 
   constructor(scope: Construct, id: string, props: GatewayProps) {
     super(scope, id);
