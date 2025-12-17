@@ -18,23 +18,11 @@ rule EC2_NO_OPEN_SECURITY_GROUPS when %security_groups !empty {
         # Only check ingress rules if they exist (missing ingress = secure by default)
         when Properties.SecurityGroupIngress exists {
             Properties.SecurityGroupIngress[*] {
-                when IpProtocol exists {
-                    when IpProtocol != "-1" {
-                        when CidrIp exists {
-                            CidrIp != "0.0.0.0/0"
-                        }
-                        when CidrIpv6 exists {
-                            CidrIpv6 != "::/0"
-                        }
-                    }
-                    when IpProtocol == "-1" {
-                        when CidrIp exists {
-                            CidrIp != "0.0.0.0/0"
-                        }
-                        when CidrIpv6 exists {
-                            CidrIpv6 != "::/0"
-                        }
-                    }
+                when CidrIp exists {
+                    CidrIp != "0.0.0.0/0"
+                }
+                when CidrIpv6 exists {
+                    CidrIpv6 != "::/0"
                 }
             }
         }
