@@ -61,6 +61,12 @@ if $infuse; then
 fi
 
 #----------------------------------------------------------------------
+# Rosetta Debug settings
+
+export TIMING="1"
+export DEBUG_TYPE_FINGERPRINTS=$HOME/.s3buildcache/type-fingerprints.txt
+
+#----------------------------------------------------------------------
 
 echo "💎 Extracting code samples" >&2
 time $ROSETTA extract \
