@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import * as prSync from '../lib/pr-sync.js';
 import { GithubMock } from './github-mock.js';
 import { Github } from '../lib/github.js';
 import * as prSync from '../lib/pr-sync.js';
