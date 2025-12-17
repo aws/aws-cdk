@@ -146,7 +146,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
    */
   public get scalableTargetRef(): ScalableTargetReference {
     return {
-      resourceId: this._resourceId,
+      resourceId: this.scalableTargetId,
       scalableDimension: this._scalableDimension,
       serviceNamespace: this._serviceNamespace,
     };
@@ -157,7 +157,6 @@ export class ScalableTarget extends Resource implements IScalableTarget {
    */
   public readonly role: iam.IRole;
 
-  private readonly _resourceId: string;
   private readonly _scalableDimension: string;
   private readonly _serviceNamespace: string;
   private readonly actions = new Array<CfnScalableTarget.ScheduledActionProperty>();
@@ -189,7 +188,6 @@ export class ScalableTarget extends Resource implements IScalableTarget {
       assumedBy: new iam.ServicePrincipal('application-autoscaling.amazonaws.com'),
     });
 
-    this._resourceId = props.resourceId;
     this._scalableDimension = props.scalableDimension;
     this._serviceNamespace = props.serviceNamespace;
 
