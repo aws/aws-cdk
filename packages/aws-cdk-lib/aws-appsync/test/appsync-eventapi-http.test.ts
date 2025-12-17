@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { Template } from '../../assertions';
 import * as sfn from '../../aws-stepfunctions';
 import * as cdk from '../../core';

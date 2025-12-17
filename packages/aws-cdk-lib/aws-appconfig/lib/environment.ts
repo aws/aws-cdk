@@ -10,6 +10,7 @@ import * as iam from '../../aws-iam';
 import { Resource, IResource, Stack, ArnFormat, PhysicalName, Names, ValidationError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IEnvironmentRef, EnvironmentReference } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
 
 /**
  * Attributes of an existing AWS AppConfig environment to import it.
@@ -55,6 +56,13 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
   protected extensible!: ExtensibleBase;
   protected deploymentQueue: Array<CfnDeployment> = [];
 
+  public get environmentRef(): EnvironmentReference {
+    return {
+      applicationId: this.applicationId,
+      environmentId: this.environmentId,
+    };
+  }
+
   public addDeployment(configuration: IConfiguration): void {
     if (this.name === undefined) {
       throw new ValidationError('Environment name must be known to add a Deployment', this);
@@ -64,7 +72,7 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
       new CfnDeployment(configuration, `Deployment${getHash(this.name)}`, {
         applicationId: configuration.application.applicationId,
         configurationProfileId: configuration.configurationProfileId,
-        deploymentStrategyId: configuration.deploymentStrategy!.deploymentStrategyId,
+        deploymentStrategyId: configuration.deploymentStrategy!.deploymentStrategyRef.deploymentStrategyId,
         environmentId: this.environmentId,
         configurationVersion: configuration.versionNumber!,
         description: configuration.description,
@@ -448,7 +456,7 @@ export abstract class Monitor {
   public abstract readonly isCompositeAlarm?: boolean;
 }
 
-export interface IEnvironment extends IResource {
+export interface IEnvironment extends IResource, IEnvironmentRef {
   /**
    * The application associated with the environment.
    */
