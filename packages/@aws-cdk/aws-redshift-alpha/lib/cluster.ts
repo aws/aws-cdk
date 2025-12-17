@@ -520,7 +520,7 @@ export interface ClusterProps {
   /**
    * Logging configuration for the cluster.
    *
-   * @default - No logging
+   * @default undefined - AWS Redshift default is no logging
    */
   readonly logging?: ClusterLogging;
 
@@ -762,28 +762,19 @@ export class Cluster extends ClusterBase {
     this.singleUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_SINGLE_USER;
     this.multiUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_MULTI_USER;
 
-    // Validate that logging and loggingProperties are not both specified
     if (props.logging && props.loggingProperties) {
       throw new ValidationError('Cannot specify both "logging" and "loggingProperties". Use "logging" instead.', this);
     }
 
     let loggingProperties;
     if (props.logging) {
-      const config = props.logging._renderLoggingProperty();
-
-      loggingProperties = {
-        logDestinationType: config.logDestinationType,
-        bucketName: config.bucketName,
-        s3KeyPrefix: config.s3KeyPrefix,
-        logExports: config.logExports,
-      };
+      loggingProperties = props.logging._renderLoggingProperty();
 
       // Add info annotation for user activity log
-      if (config.logExports?.includes(LogExport.USER_ACTIVITY_LOG)) {
+      if (loggingProperties.logExports?.includes(LogExport.USER_ACTIVITY_LOG)) {
         Annotations.of(this).addInfo(
           'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
-          'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it. ' +
-          'See https://docs.aws.amazon.com/redshift/latest/mgmt/db-auditing.html for more details.',
+          'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it. ',
         );
       }
 

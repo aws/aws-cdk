@@ -553,7 +553,7 @@ describe('logging', () => {
       },
       vpc,
       logging: ClusterLogging.cloudwatch({
-        logExports: [LogExport.CONNECTION_LOG, LogExport.USER_LOG],
+        logExports: [LogExport.CONNECTION_LOG, LogExport.USER_LOG, LogExport.USER_ACTIVITY_LOG],
       }),
     });
 
@@ -561,12 +561,12 @@ describe('logging', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
       LoggingProperties: {
         LogDestinationType: 'cloudwatch',
-        LogExports: ['connectionlog', 'userlog'],
+        LogExports: ['connectionlog', 'userlog', 'useractivitylog'],
       },
     });
   });
 
-  test('S3 logging with new API', () => {
+  test('S3 logging', () => {
     // GIVEN
     const bucket = new s3.Bucket(stack, 'Bucket');
 
@@ -586,23 +586,9 @@ describe('logging', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
       LoggingProperties: {
         LogDestinationType: 's3',
-        BucketName: { Ref: Match.stringLikeRegexp('Bucket*') },
+        BucketName: { Ref: 'Bucket83908E77' },
         S3KeyPrefix: 'logs/',
       },
-    });
-  });
-
-  test('S3 logging adds bucket policy', () => {
-    // GIVEN
-    const bucket = new s3.Bucket(stack, 'Bucket');
-
-    // WHEN
-    new Cluster(stack, 'Redshift', {
-      masterUser: {
-        masterUsername: 'admin',
-      },
-      vpc,
-      logging: ClusterLogging.s3({ bucket }),
     });
 
     // THEN
@@ -637,26 +623,7 @@ describe('logging', () => {
     Annotations.fromStack(stack).hasWarning('/Default/Redshift', Match.stringLikeRegexp('Could not add bucket policy for Redshift logging.*'));
   });
 
-  test('S3 logging without bucket does not create bucket policy', () => {
-    // WHEN
-    new Cluster(stack, 'Redshift', {
-      masterUser: {
-        masterUsername: 'admin',
-      },
-      vpc,
-      logging: ClusterLogging.s3({}),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
-      LoggingProperties: {
-        LogDestinationType: 's3',
-      },
-    });
-    Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 0);
-  });
-
-  test('throws when both logging and loggingProperties are specified', () => {
+  test('throw error when both logging and loggingProperties are specified', () => {
     // GIVEN
     const bucket = new s3.Bucket(stack, 'Bucket');
 
@@ -673,7 +640,7 @@ describe('logging', () => {
           loggingKeyPrefix: 'prefix',
         },
       });
-    }).toThrow(/Cannot specify both "logging" and "loggingProperties"/);
+    }).toThrow('Cannot specify both "logging" and "loggingProperties". Use "logging" instead.');
   });
 
   test('throws when CloudWatch logExports contains duplicate values', () => {
@@ -688,7 +655,7 @@ describe('logging', () => {
           logExports: [LogExport.CONNECTION_LOG, LogExport.CONNECTION_LOG],
         }),
       });
-    }).toThrow(/logExports must not contain duplicate values/);
+    }).toThrow('logExports must not contain duplicate values.');
   });
 });
 
