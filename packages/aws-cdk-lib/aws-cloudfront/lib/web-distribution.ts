@@ -13,7 +13,6 @@ import {
 } from './distribution';
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
-import { IKeyGroup } from './key-group';
 import { IOriginAccessIdentity } from './origin-access-identity';
 import { formatDistributionArn } from './private/utils';
 import * as certificatemanager from '../../aws-certificatemanager';
@@ -23,6 +22,7 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IKeyGroupRef } from '../../interfaces/generated/aws-cloudfront-interfaces.generated';
 
 /**
  * HTTP status code to failover to second origin
@@ -397,7 +397,7 @@ export interface Behavior {
    * @default - no KeyGroups are associated with cache behavior
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
    */
-  readonly trustedKeyGroups?: IKeyGroup[];
+  readonly trustedKeyGroups?: IKeyGroupRef[];
 
   /**
    *
@@ -1062,7 +1062,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       forwardedValues: input.forwardedValues || { queryString: false, cookies: { forward: 'none' } },
       maxTtl: input.maxTtl && input.maxTtl.toSeconds(),
       minTtl: input.minTtl && input.minTtl.toSeconds(),
-      trustedKeyGroups: input.trustedKeyGroups?.map(key => key.keyGroupId),
+      trustedKeyGroups: input.trustedKeyGroups?.map(key => key.keyGroupRef.keyGroupId),
       trustedSigners: input.trustedSigners,
       targetOriginId: input.targetOriginId,
       viewerProtocolPolicy: input.viewerProtocolPolicy || protoPolicy || ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
