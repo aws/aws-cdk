@@ -10,6 +10,7 @@ import { ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
+import { IDeploymentGroupRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
 import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
@@ -18,7 +19,7 @@ import { AutoRollbackConfig } from '../rollback-config';
 /**
  * Interface for an ECS deployment group.
  */
-export interface IEcsDeploymentGroup extends cdk.IResource {
+export interface IEcsDeploymentGroup extends cdk.IResource, IDeploymentGroupRef {
   /**
    * The reference to the CodeDeploy ECS Application that this Deployment Group belongs to.
    */
@@ -368,6 +369,13 @@ export interface EcsDeploymentGroupAttributes {
    * @default EcsDeploymentConfig.ALL_AT_ONCE
    */
   readonly deploymentConfig?: IEcsDeploymentConfig;
+
+  /**
+   * The ID of the CodeDeploy Deployment Group.
+   *
+   * @default - the ID will be constructed from the application name and deployment group name
+   */
+  readonly deploymentGroupId?: string;
 }
 
 @propertyInjectable
@@ -381,6 +389,7 @@ class ImportedEcsDeploymentGroup extends ImportedDeploymentGroupBase implements 
     super(scope, id, {
       application: props.application,
       deploymentGroupName: props.deploymentGroupName,
+      deploymentGroupId: props.deploymentGroupId,
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
