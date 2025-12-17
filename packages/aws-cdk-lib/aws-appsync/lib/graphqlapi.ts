@@ -4,7 +4,6 @@ import { IGraphqlApi, GraphqlApiBase, Visibility, AuthorizationType } from './gr
 import { ISchema, SchemaFile } from './schema';
 import { MergeType, addSourceApiAutoMergePermission, addSourceGraphQLPermission } from './source-api-association';
 import { ICertificate } from '../../aws-certificatemanager';
-import { IUserPool } from '../../aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, IRoleRef } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
@@ -12,6 +11,7 @@ import { CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Sta
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
+import { IUserPoolRef } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * Interface to specify default or additional authorization(s)
@@ -68,7 +68,7 @@ export interface UserPoolConfig {
   /**
    * The Cognito user pool to use as identity source
    */
-  readonly userPool: IUserPool;
+  readonly userPool: IUserPoolRef;
   /**
    * the optional app id regex
    *
@@ -892,7 +892,7 @@ export class GraphqlApi extends GraphqlApiBase {
   private setupUserPoolConfig(config?: UserPoolConfig) {
     if (!config) return undefined;
     return {
-      userPoolId: config.userPool.userPoolId,
+      userPoolId: config.userPool.userPoolRef.userPoolId,
       awsRegion: config.userPool.env.region,
       appIdClientRegex: config.appIdClientRegex,
       defaultAction: config.defaultAction || UserPoolDefaultAction.ALLOW,

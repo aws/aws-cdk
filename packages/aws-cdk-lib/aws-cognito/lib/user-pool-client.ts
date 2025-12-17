@@ -11,6 +11,7 @@ import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AwsCustomResource, AwsCustomResourcePolicy, Logging, PhysicalResourceId } from '../../custom-resources';
 import * as cxapi from '../../cx-api';
+import { IUserPoolClientRef, UserPoolClientReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * Types of authentication flow
@@ -419,7 +420,7 @@ export interface AnalyticsConfiguration {
 /**
  * Represents a Cognito user pool client.
  */
-export interface IUserPoolClient extends IResource {
+export interface IUserPoolClient extends IResource, IUserPoolClientRef {
   /**
    * Name of the application client
    * @attribute
@@ -451,6 +452,9 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       public readonly userPoolClientId = userPoolClientId;
       get userPoolClientSecret(): SecretValue {
         throw new ValidationError('UserPool Client Secret is not available for imported Clients', this);
+      }
+      get userPoolClientRef(): UserPoolClientReference {
+        throw new ValidationError('userPoolClientRef is not available for imported Clients without userPoolId', this);
       }
     }
 
@@ -543,6 +547,13 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
     this.userPoolClientId = resource.ref;
     this._userPoolClientName = props.userPoolClientName;
+  }
+
+  public get userPoolClientRef(): UserPoolClientReference {
+    return {
+      userPoolId: this.userPool.userPoolId,
+      clientId: this.userPoolClientId,
+    };
   }
 
   /**

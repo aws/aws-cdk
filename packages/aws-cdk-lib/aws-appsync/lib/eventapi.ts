@@ -95,7 +95,7 @@ class AppSyncEventApiAuthConfig implements IAppSyncAuthConfig {
   setupCognitoConfig(config?: AppSyncCognitoConfig): CfnApi.CognitoConfigProperty | undefined {
     if (!config) return undefined;
     return {
-      userPoolId: config.userPool.userPoolId,
+      userPoolId: config.userPool.userPoolRef.userPoolId,
       awsRegion: config.userPool.env.region,
       appIdClientRegex: config.appIdClientRegex,
     };
