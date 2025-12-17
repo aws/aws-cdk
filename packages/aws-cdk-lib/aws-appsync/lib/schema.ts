@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-import { IGraphqlApi } from './graphqlapi-base';
+import { IGraphQLApiRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * Configuration for bound graphql schema
@@ -39,7 +39,7 @@ export interface ISchema {
    * @param api the api to bind the schema to
    * @param options configuration for bind behavior
    */
-  bind(api: IGraphqlApi, options?: SchemaBindOptions): ISchemaConfig;
+  bind(api: IGraphQLApiRef, options?: SchemaBindOptions): ISchemaConfig;
 }
 
 /**
@@ -86,9 +86,9 @@ export class SchemaFile implements ISchema {
    *
    * @param api The binding GraphQL Api
    */
-  public bind(api: IGraphqlApi, _options?: SchemaBindOptions): ISchemaConfig {
+  public bind(api: IGraphQLApiRef, _options?: SchemaBindOptions): ISchemaConfig {
     return {
-      apiId: api.apiId,
+      apiId: api.graphQlApiRef.apiId,
       definition: this.definition,
     };
   }

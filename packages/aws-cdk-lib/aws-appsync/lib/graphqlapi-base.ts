@@ -19,6 +19,7 @@ import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
 import { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
 import { ArnFormat, CfnResource, IResource, Resource, Stack, UnscopedValidationError } from '../../core';
+import { IGraphQLApiRef, GraphQLApiReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * Optional configuration for data sources
@@ -156,7 +157,7 @@ export enum AuthorizationType {
 /**
  * Interface for GraphQL
  */
-export interface IGraphqlApi extends IResource {
+export interface IGraphqlApi extends IResource, IGraphQLApiRef {
 
   /**
    * an unique AWS AppSync GraphQL API identifier
@@ -364,6 +365,13 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    * The Authorization Types for this GraphQL Api
    */
   public abstract readonly modes: AuthorizationType[];
+
+  public get graphQlApiRef(): GraphQLApiReference {
+    return {
+      apiId: this.apiId,
+      graphQlApiArn: this.arn,
+    };
+  }
 
   /**
    * add a new dummy data source to this API. Useful for pipeline resolvers
