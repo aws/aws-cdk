@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "83fa456da44c75db2f1fd5e683621fa8fb39e969ffd021e5c2629623776b2a24": {
+      "displayName": "RumAlphaAppMonitorIntegrationTestStack Template",
+      "source": {
+        "path": "RumAlphaAppMonitorIntegrationTestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-daba3e0e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "83fa456da44c75db2f1fd5e683621fa8fb39e969ffd021e5c2629623776b2a24.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
