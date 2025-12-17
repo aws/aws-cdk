@@ -54,6 +54,7 @@ if [[ "${jsii_pkgs_file}" = "" ]]; then
     jsii_pkgs_file=$TMPDIR/jsii.txt
 fi
 
+batch_size=100
 rosetta_cache_file=$HOME/.s3buildcache/rosetta-cache.tabl.json
 extract_opts=""
 if $infuse; then
@@ -64,10 +65,11 @@ fi
 
 echo "💎 Extracting code samples" >&2
 time $ROSETTA extract \
+    --batch $batch_size \
     --compile \
-    --verbose \
+    -vv \
     --compress-tablet \
-    --cache ${rosetta_cache_file} \
+    --cache-to ${rosetta_cache_file} \
     ${extract_opts} \
     $(cat $jsii_pkgs_file)
 
@@ -77,10 +79,11 @@ if $infuse; then
         $(cat $jsii_pkgs_file)
 
     time $ROSETTA extract \
+        --batch $batch_size \
         --compile \
-        --verbose \
+        -vv \
         --compress-tablet \
-        --cache ${rosetta_cache_file} \
+        --cache-to ${rosetta_cache_file} \
         $(cat $jsii_pkgs_file)
 fi
 
