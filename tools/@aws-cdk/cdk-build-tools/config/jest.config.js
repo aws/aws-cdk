@@ -4,7 +4,12 @@
 // On developer boxes we want to run the .ts files directly for quickest
 // iteration (save -> run), but on CI machines we want to run the compiled
 // JavaScript for highest throughput.
-const ext = require('./ext');
+const isCi = !!process.env.CI || !!process.env.CODEBUILD_BUILD_ID;
+
+const thisPackageName = require(`${process.cwd()}/package.json`).name;
+const isExceptedPackage = ['@aws-cdk/custom-resource-handlers'].includes(thisPackageName);
+
+const ext = isCi && !isExceptedPackage ? 'js' : 'ts';
 
 const thisPackagesPackageJson = require(`${process.cwd()}/package.json`);
 const setupFilesAfterEnv = [];
@@ -15,6 +20,9 @@ if ('aws-cdk-lib' in (thisPackagesPackageJson.devDependencies ?? {})) {
   // If we *ARE* aws-cdk-lib, use the hook in a slightly different way
   setupFilesAfterEnv.push(`./testhelpers/jest-autoclean.${ext}`);
 }
+
+// Communicate our decision to snapshot-resolver.js
+process.env.CDK_BUILD_TOOLS_TEST_EXT = ext;
 
 // @ts-check
 /** @type {import('jest').Config} */

@@ -1,7 +1,10 @@
 const path = require('path');
-const ext = require('./ext');
 
-const dotext = `.${ext}`;
+if (!process.env.CDK_BUILD_TOOLS_TEST_EXT) {
+  throw new Error(`$CDK_BUILD_TOOLS_TEST_EXT should be set!`);
+}
+
+const dotext = `.${process.env.CDK_BUILD_TOOLS_TEST_EXT}`;
 
 module.exports = {
   // resolves from test to snapshot path
