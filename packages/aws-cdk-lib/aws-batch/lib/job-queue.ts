@@ -2,14 +2,16 @@ import { Construct } from 'constructs';
 import { CfnJobQueue } from './batch.generated';
 import { IComputeEnvironment } from './compute-environment-base';
 import { ISchedulingPolicy } from './scheduling-policy';
-import { ArnFormat, Duration, IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
+import { ArnFormat, Duration, IResource, Lazy, Resource, Stack, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as interfaces from '../../interfaces';
+import type { IComputeEnvironmentRef } from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
  * Represents a JobQueue
  */
-export interface IJobQueue extends IResource {
+export interface IJobQueue extends IResource, interfaces.aws_batch.IJobQueueRef {
   /**
    * The name of the job queue. It can be up to 128 letters long.
    * It can contain uppercase and lowercase letters, numbers, hyphens (-), and underscores (_)
@@ -65,7 +67,7 @@ export interface IJobQueue extends IResource {
    * Add a `ComputeEnvironment` to this Queue.
    * The Queue will prefer lower-order `ComputeEnvironment`s.
    */
-  addComputeEnvironment(computeEnvironment: IComputeEnvironment, order: number): void;
+  addComputeEnvironment(computeEnvironment: IComputeEnvironmentRef, order: number): void;
 }
 
 /**
@@ -249,7 +251,13 @@ export class JobQueue extends Resource implements IJobQueue {
       public readonly jobQueueArn = jobQueueArn;
       public readonly jobQueueName = stack.splitArn(jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
-      public addComputeEnvironment(_computeEnvironment: IComputeEnvironment, _order: number): void {
+      public get jobQueueRef(): interfaces.aws_batch.JobQueueReference {
+        return {
+          jobQueueArn: this.jobQueueArn,
+        };
+      }
+
+      public addComputeEnvironment(_computeEnvironment: IComputeEnvironmentRef, _order: number): void {
         throw new ValidationError(`cannot add ComputeEnvironments to imported JobQueue '${id}'`, this);
       }
     }
@@ -264,6 +272,12 @@ export class JobQueue extends Resource implements IJobQueue {
 
   public readonly jobQueueArn: string;
   public readonly jobQueueName: string;
+
+  public get jobQueueRef(): interfaces.aws_batch.JobQueueReference {
+    return {
+      jobQueueArn: this.jobQueueArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props?: JobQueueProps) {
     super(scope, id, {
@@ -303,9 +317,9 @@ export class JobQueue extends Resource implements IJobQueue {
     this.node.addValidation({ validate: () => validateOrderedComputeEnvironments(this.computeEnvironments) });
   }
 
-  addComputeEnvironment(computeEnvironment: IComputeEnvironment, order: number): void {
+  addComputeEnvironment(computeEnvironment: IComputeEnvironmentRef, order: number): void {
     this.computeEnvironments.push({
-      computeEnvironment,
+      computeEnvironment: toIComputeEnvironment(computeEnvironment),
       order,
     });
   }
@@ -351,4 +365,11 @@ function validateOrderedComputeEnvironments(computeEnvironments: OrderedComputeE
   }
 
   return seenOrders.length === 0 ? ['This JobQueue does not link any ComputeEnvironments'] : [];
+}
+
+function toIComputeEnvironment(computeEnvironment: IComputeEnvironmentRef): IComputeEnvironment {
+  if (!('computeEnvironmentArn' in computeEnvironment) || !('computeEnvironmentName' in computeEnvironment)) {
+    throw new UnscopedValidationError(`'computeEnvironment' instance should implement IComputeEnvironment, but doesn't: ${computeEnvironment.constructor.name}`);
+  }
+  return computeEnvironment as IComputeEnvironment;
 }

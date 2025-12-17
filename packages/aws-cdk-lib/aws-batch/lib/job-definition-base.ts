@@ -1,11 +1,12 @@
 import { Construct } from 'constructs';
 import { CfnJobDefinitionProps } from './batch.generated';
 import { Duration, IResource, Lazy, Resource } from '../../core';
+import * as interfaces from '../../interfaces';
 
 /**
  * Represents a JobDefinition
  */
-export interface IJobDefinition extends IResource {
+export interface IJobDefinition extends IResource, interfaces.aws_batch.IJobDefinitionRef {
   /**
    * The ARN of this job definition
    *
@@ -243,6 +244,13 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
   public readonly retryStrategies: RetryStrategy[];
   public readonly schedulingPriority?: number;
   public readonly timeout?: Duration;
+
+  public get jobDefinitionRef(): interfaces.aws_batch.JobDefinitionReference {
+    return {
+      jobDefinitionName: this.jobDefinitionName,
+      jobDefinitionArn: this.jobDefinitionArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props?: JobDefinitionProps) {
     super(scope, id, {

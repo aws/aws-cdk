@@ -1,11 +1,12 @@
 import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import { IResource, Resource } from '../../core';
+import * as interfaces from '../../interfaces';
 
 /**
  * Represents a ComputeEnvironment
  */
-export interface IComputeEnvironment extends IResource {
+export interface IComputeEnvironment extends IResource, interfaces.aws_batch.IComputeEnvironmentRef {
   /**
    * The name of the ComputeEnvironment
    *
@@ -91,6 +92,12 @@ export abstract class ComputeEnvironmentBase extends Resource implements IComput
   public readonly serviceRole?: iam.IRole | undefined;
   public readonly enabled: boolean;
   public abstract readonly computeEnvironmentArn: string;
+
+  public get computeEnvironmentRef(): interfaces.aws_batch.ComputeEnvironmentReference {
+    return {
+      computeEnvironmentArn: this.computeEnvironmentArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props?: ComputeEnvironmentProps) {
     super(scope, id, {
