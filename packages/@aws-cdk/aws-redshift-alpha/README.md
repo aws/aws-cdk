@@ -65,7 +65,7 @@ To send audit logs to an S3 bucket, use `ClusterLogging.s3()`:
 import * as s3 from 'aws-cdk-lib/aws-s3';
 
 declare const vpc: ec2.IVpc;
-const bucket = new s3.Bucket(this, 'LoggingBucket');
+declare const bucket: s3.IBucket;
 
 const cluster = new Cluster(this, 'Redshift', {
   masterUser: {
