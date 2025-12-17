@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
+import * as issueSync from '../lib/issue-sync.js';
 import { GithubMock } from './github-mock.js';
 import { Github } from '../lib/github.js';
 import * as issueSync from '../lib/issue-sync.js';
