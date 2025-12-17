@@ -537,8 +537,10 @@
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
+      "Description": "Allow HTTPS outbound",
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
      }
     ],
     "VpcId": {

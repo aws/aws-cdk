@@ -22,8 +22,15 @@ const cluster = new ecs.Cluster(stack, 'ManagedInstancesCluster', {
 const fmiSecurityGroup = new ec2.SecurityGroup(stack, 'ManagedInstancesSecurityGroup', {
   vpc,
   description: 'Security group for ManagedInstances capacity provider instances',
-  allowAllOutbound: true,
+  allowAllOutbound: false,
 });
+
+// Add specific outbound rule for HTTPS
+fmiSecurityGroup.addEgressRule(
+  ec2.Peer.anyIpv4(),
+  ec2.Port.tcp(443),
+  'Allow HTTPS outbound',
+);
 
 // Create MI Capacity Provider without specifying infrastructureRole or ec2InstanceProfile
 // This will test the default roles
