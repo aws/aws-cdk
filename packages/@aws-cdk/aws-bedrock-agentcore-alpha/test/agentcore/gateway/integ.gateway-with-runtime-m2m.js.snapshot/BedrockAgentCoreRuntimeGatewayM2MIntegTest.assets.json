@@ -15,16 +15,16 @@
         }
       }
     },
-    "468c52d4da6304e6ad2ab55afa8203ef47e9e3c45ad1bbd8b873669483e2528c": {
+    "b5d03f7c84052dc5d7752de16955a0a5e83e2c5e9b8373294657733e34529485": {
       "displayName": "BedrockAgentCoreRuntimeGatewayM2MIntegTest Template",
       "source": {
         "path": "BedrockAgentCoreRuntimeGatewayM2MIntegTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-8ba5c570": {
+        "current_account-current_region-27400927": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "468c52d4da6304e6ad2ab55afa8203ef47e9e3c45ad1bbd8b873669483e2528c.json",
+          "objectKey": "b5d03f7c84052dc5d7752de16955a0a5e83e2c5e9b8373294657733e34529485.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
@@ -32,7 +32,7 @@
   },
   "dockerImages": {
     "59ea9be6eec96ed2cb70555aba1b5e0432cb101ab027e5478bc613d570062906": {
-      "displayName": "TestRuntime/AgentRuntimeArtifact8b69c9cb90eeb47a7869cca175a659ae",
+      "displayName": "TestRuntime/AgentRuntimeArtifact",
       "source": {
         "directory": "asset.59ea9be6eec96ed2cb70555aba1b5e0432cb101ab027e5478bc613d570062906"
       },
