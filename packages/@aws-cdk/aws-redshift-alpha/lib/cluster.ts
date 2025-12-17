@@ -772,7 +772,8 @@ export class Cluster extends ClusterBase {
 
       // Add info annotation for user activity log
       if (loggingProperties.logExports?.includes(LogExport.USER_ACTIVITY_LOG)) {
-        Annotations.of(this).addInfo(
+        Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-redshift-alpha:enableUserActivityLogging',
           'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
           'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it. ',
         );

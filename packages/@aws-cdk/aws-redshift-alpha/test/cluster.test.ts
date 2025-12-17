@@ -566,6 +566,22 @@ describe('logging', () => {
     });
   });
 
+  test('adds warning when USER_ACTIVITY_LOG is specified', () => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.cloudwatch({
+        logExports: [LogExport.USER_ACTIVITY_LOG],
+      }),
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/Redshift', Match.stringLikeRegexp('To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter.*'));
+  });
+
   test('S3 logging', () => {
     // GIVEN
     const bucket = new s3.Bucket(stack, 'Bucket');
