@@ -45,6 +45,7 @@ jobs:
           include_skipped: false
           check_title_template: '{{TEST_NAME}}'
           include_empty_in_summary: false
+          summary: "# 🚧 ⚠️ Disclaimer: The new security guardian workflow is still in experimental stage and does NOT block PRs ⚠️"
 
       - name: Publish Security Test Results for resolved templates
         uses: mikepenz/action-junit-report@v6
@@ -64,3 +65,4 @@ jobs:
           include_skipped: false
           check_title_template: '{{TEST_NAME}}'
           include_empty_in_summary: false
+          summary: "# 🚧 ⚠️ Disclaimer: The new security guardian workflow is still in experimental stage and does NOT block PRs ⚠️"
