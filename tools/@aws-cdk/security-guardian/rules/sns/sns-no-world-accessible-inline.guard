@@ -5,6 +5,15 @@
 # Rule: SNS_NO_WORLD_ACCESSIBLE_INLINE
 # Service: Amazon Simple Notification Service (SNS)
 # Coverage: Inline Topic Policies
+#
+# Note: SNS topics without a TopicPolicy are secure by default - they are private
+# and only accessible to the account that created them. By default, Amazon SNS topics
+# are created with no permissions. To enable access for other AWS services, accounts,
+# or principals, you must explicitly define and attach an access policy to the topic.
+# This rule only checks topics that have an inline policy defined to ensure they don't
+# grant world-accessible permissions.
+# See: https://docs.aws.amazon.com/sns/latest/dg/sns-access-policy-use-cases.html
+# (Section: "Default policies in Amazon SNS")
 
 let sns_topics = Resources.*[
   Type == 'AWS::SNS::Topic'
@@ -12,19 +21,22 @@ let sns_topics = Resources.*[
   Metadata.guard.SuppressedRules.* != "SNS_NO_WORLD_ACCESSIBLE_INLINE"
 ]
 
-# Check inline topic policies
+# Check inline topic policies only when they exist
 rule SNS_NO_WORLD_ACCESSIBLE_INLINE when %sns_topics !empty {
     %sns_topics {
-        Properties.TopicPolicy.Statement[*] {
-            when Effect == "Allow" {
-                when Principal exists {
-                    when Principal != "*" {
-                        when Principal.AWS exists {
-                            when Principal.AWS is_string {
-                                Principal.AWS != "*"
-                            }
-                            when Principal.AWS is_list {
-                                Principal.AWS[*] != "*"
+        # Only check if TopicPolicy is explicitly defined
+        when Properties.TopicPolicy exists {
+            Properties.TopicPolicy.Statement[*] {
+                when Effect == "Allow" {
+                    when Principal exists {
+                        when Principal != "*" {
+                            when Principal.AWS exists {
+                                when Principal.AWS is_string {
+                                    Principal.AWS != "*"
+                                }
+                                when Principal.AWS is_list {
+                                    Principal.AWS[*] != "*"
+                                }
                             }
                         }
                     }
