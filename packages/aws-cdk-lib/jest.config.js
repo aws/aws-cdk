@@ -1,6 +1,6 @@
 // @ts-check
 const baseConfig = require('@aws-cdk/cdk-build-tools/config/jest.config');
-const ext = require('@aws-cdk/cdk-build-tools/config/ext');
+const ext = process.env.CDK_BUILD_TOOLS_TEST_EXT;
 
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 const config = {
