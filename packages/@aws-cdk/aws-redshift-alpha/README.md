@@ -53,27 +53,54 @@ A default database named `default_db` will be created in the cluster. To change 
 By default, the cluster will not be publicly accessible.
 Depending on your use case, you can make the cluster publicly accessible with the `publiclyAccessible` property.
 
-## Adding a logging bucket for database audit logging to S3
+## Database Audit Logging
 
-Amazon Redshift logs information about connections and user activities in your database. These logs help you to monitor the database for security and troubleshooting purposes, a process called database auditing. To send these logs to an S3 bucket, specify the `loggingProperties` when creating a new cluster.
+Amazon Redshift logs information about connections and user activities in your database. These logs help you to monitor the database for security and troubleshooting purposes, a process called database auditing.
+
+### S3 Logging
+
+To send audit logs to an S3 bucket, use `ClusterLogging.s3()`:
 
 ```ts
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 
-const vpc = new ec2.Vpc(this, 'Vpc');
-const bucket = s3.Bucket.fromBucketName(this, 'bucket', 'amzn-s3-demo-bucket');
+declare const vpc: ec2.IVpc;
+const bucket = new s3.Bucket(this, 'LoggingBucket');
 
 const cluster = new Cluster(this, 'Redshift', {
   masterUser: {
     masterUsername: 'admin',
   },
   vpc,
-  loggingProperties: {
-    loggingBucket: bucket,
-    loggingKeyPrefix: 'prefix',
-  }
+  logging: ClusterLogging.s3({
+    bucket,
+    keyPrefix: 'redshift-logs/',
+  }),
 });
+```
+
+### CloudWatch Logging
+
+To send audit logs to CloudWatch, use `ClusterLogging.cloudwatch()`:
+
+```ts
+declare const vpc: ec2.IVpc;
+
+const cluster = new Cluster(this, 'Redshift', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc,
+  logging: ClusterLogging.cloudwatch({
+    logExports: [LogExport.CONNECTION_LOG, LogExport.USER_LOG],
+  }),
+});
+```
+
+Note: To capture user activity logs (`LogExport.USER_ACTIVITY_LOG`), you must also enable the `enable_user_activity_logging` database parameter:
+
+```ts
+cluster.addToParameterGroup('enable_user_activity_logging', 'true');
 ```
 
 ## Availability Zone Relocation
