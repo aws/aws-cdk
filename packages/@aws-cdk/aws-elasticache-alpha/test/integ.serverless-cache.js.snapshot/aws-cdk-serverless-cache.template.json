@@ -19,10 +19,6 @@
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AvailabilityZone": {
-     "Fn::Select": [
-      0,
-      {
-       "Fn::GetAZs": ""
       }
      ]
     },
