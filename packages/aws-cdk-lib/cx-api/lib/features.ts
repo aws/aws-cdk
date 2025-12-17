@@ -1,3 +1,4 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 import { FlagInfo, FlagType } from './private/flag-modeling';
 
 ////////////////////////////////////////////////////////////////////////
@@ -80,6 +81,7 @@ export const ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER = '@
 export const ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER = '@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener';
 export const S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY = '@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy';
 export const ROUTE53_PATTERNS_USE_CERTIFICATE = '@aws-cdk/aws-route53-patters:useCertificate';
+export const ROUTE53_PATTERNS_USE_DISTRIBUTION = '@aws-cdk/aws-route53-patterns:useDistribution';
 export const AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT = '@aws-cdk/customresources:installLatestAwsSdkDefault';
 export const DATABASE_PROXY_UNIQUE_RESOURCE_NAME = '@aws-cdk/aws-rds:databaseProxyUniqueResourceName';
 export const CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP = '@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup';
@@ -157,10 +159,10 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       When enabled, the \`signingProfileName\` property is passed to the L1 \`CfnSigningProfile\` construct,
       which ensures that the AWS Signer profile is created with the specified name.
-      
+
       When disabled, the \`signingProfileName\` is not passed to CloudFormation, maintaining backward
       compatibility with existing deployments where CloudFormation auto-generated profile names.
-      
+
       This feature flag is needed because enabling it can cause existing signing profiles to be
       replaced during deployment if a \`signingProfileName\` was specified but not previously used
       in the CloudFormation template.`,
@@ -1766,6 +1768,19 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.221.0' },
     recommendedValue: true,
   },
+
+  //////////////////////////////////////////////////////////////////////
+  [ROUTE53_PATTERNS_USE_DISTRIBUTION]: {
+    type: FlagType.ApiDefault,
+    summary: 'Use the `Distribution` resource instead of `CloudFrontWebDistribution`',
+    detailsMd: `
+      Enable this feature flag to use the new \`Distribution\` resource instead
+      of the deprecated \`CloudFrontWebDistribution\` construct.
+      `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Define a `CloudFrontWebDistribution` explicitly',
+  },
 };
 
 export const CURRENT_MV = 'v2';
@@ -1811,7 +1826,7 @@ export function futureFlagDefault(flag: string): boolean {
   const value = CURRENT_VERSION_FLAG_DEFAULTS[flag] ?? false;
   if (typeof value !== 'boolean') {
     // This should never happen, if this error is thrown it's a bug
-    // eslint-disable-next-line @cdklabs/no-throw-default-error
+
     throw new Error(`futureFlagDefault: default type of flag '${flag}' should be boolean, got '${typeof value}'`);
   }
   return value;

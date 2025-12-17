@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.232.2-alpha.0](https://github.com/aws/aws-cdk/compare/v2.232.1-alpha.0...v2.232.2-alpha.0) (2025-12-12)
+
+## [2.232.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.232.0-alpha.0...v2.232.1-alpha.0) (2025-12-05)
+
+## [2.232.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.231.0-alpha.0...v2.232.0-alpha.0) (2025-12-04)
+
+
+### Bug Fixes
+
+* **bedrock-agentcore-alpha:** use static construct ID for asset-based runtime artifacts ([#36241](https://github.com/aws/aws-cdk/issues/36241)) ([e2bdddd](https://github.com/aws/aws-cdk/commit/e2bdddd82f3e04f1cb2aebb187c580563bae453f)), closes [#35968](https://github.com/aws/aws-cdk/issues/35968)
+* **mixins-preview:** service exports are different then in `aws-cdk-lib` ([#36201](https://github.com/aws/aws-cdk/issues/36201)) ([5858006](https://github.com/aws/aws-cdk/commit/585800660b65a3a87d2b358054c7b5e162faabcf)), closes [#36210](https://github.com/aws/aws-cdk/issues/36210)
+* **mixins-preview:** strongly-typed ConstructSelector interface ([#36266](https://github.com/aws/aws-cdk/issues/36266)) ([1d2f473](https://github.com/aws/aws-cdk/commit/1d2f4730cc4358d35198980957e4fc01a21e9daf))
+
 ## [2.231.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.230.0-alpha.0...v2.231.0-alpha.0) (2025-12-01)
 
 
