@@ -912,7 +912,7 @@ describe('capacityProviderOptions', () => {
         taskDefinition,
         launchTarget: new tasks.EcsFargateLaunchTarget({
           platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-          capacityProviderOptions: tasks.CapacityProviderOptionsBase.none(),
+          capacityProviderOptions: tasks.CapacityProviderOptions.none(),
         }),
       });
 
@@ -942,7 +942,7 @@ describe('capacityProviderOptions', () => {
         taskDefinition,
         launchTarget: new tasks.EcsFargateLaunchTarget({
           platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-          capacityProviderOptions: tasks.CapacityProviderOptionsBase.custom([
+          capacityProviderOptions: tasks.CapacityProviderOptions.custom([
             { capacityProvider: 'FARGATE_SPOT', weight: 2, base: 1 },
             { capacityProvider: 'FARGATE', weight: 1 },
           ]),
@@ -977,7 +977,7 @@ describe('capacityProviderOptions', () => {
         taskDefinition,
         launchTarget: new tasks.EcsFargateLaunchTarget({
           platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-          capacityProviderOptions: tasks.CapacityProviderOptionsBase.default(),
+          capacityProviderOptions: tasks.CapacityProviderOptions.default(),
         }),
       });
 
@@ -1035,7 +1035,7 @@ describe('capacityProviderOptions', () => {
         cluster,
         taskDefinition,
         launchTarget: new tasks.EcsEc2LaunchTarget({
-          capacityProviderOptions: tasks.CapacityProviderOptionsBase.none(),
+          capacityProviderOptions: tasks.CapacityProviderOptions.none(),
         }),
       });
 
@@ -1061,7 +1061,7 @@ describe('capacityProviderOptions', () => {
         cluster,
         taskDefinition,
         launchTarget: new tasks.EcsEc2LaunchTarget({
-          capacityProviderOptions: tasks.CapacityProviderOptionsBase.custom([
+          capacityProviderOptions: tasks.CapacityProviderOptions.custom([
             { capacityProvider: 'my-capacity-provider', weight: 1, base: 2 },
           ]),
         }),
@@ -1090,7 +1090,7 @@ describe('capacityProviderOptions', () => {
         cluster,
         taskDefinition,
         launchTarget: new tasks.EcsEc2LaunchTarget({
-          capacityProviderOptions: tasks.CapacityProviderOptionsBase.default(),
+          capacityProviderOptions: tasks.CapacityProviderOptions.default(),
         }),
       });
 
@@ -1131,7 +1131,7 @@ describe('capacityProviderOptions', () => {
     }));
 
     expect(() => {
-      tasks.CapacityProviderOptionsBase.custom(capacityProviders);
+      tasks.CapacityProviderOptions.custom(capacityProviders);
     }).toThrow(/Capacity provider strategy can contain a maximum of 20 capacity providers, got 21/);
   });
 });

@@ -4,13 +4,10 @@ import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import { Duration } from 'aws-cdk-lib';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
-import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP, STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY } from 'aws-cdk-lib/cx-api';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-sfn-tasks-ecs-fargate-run-task-capacity-provider');
-stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
-stack.node.setContext(STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY, false);
 
 const cluster = new ecs.Cluster(stack, 'FargateCluster');
 
@@ -61,7 +58,7 @@ const definition = new sfn.Pass(stack, 'Start', {
     ],
     launchTarget: new tasks.EcsFargateLaunchTarget({
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-      capacityProviderOptions: tasks.NoCapacityProviderOptions.none(),
+      capacityProviderOptions: tasks.CapacityProviderOptions.none(),
     }),
     taskTimeout: sfn.Timeout.at('$.Timeout'),
     cpu: '1024',
@@ -75,7 +72,7 @@ const definition = new sfn.Pass(stack, 'Start', {
     taskDefinition,
     launchTarget: new tasks.EcsFargateLaunchTarget({
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-      capacityProviderOptions: tasks.NoCapacityProviderOptions.custom([
+      capacityProviderOptions: tasks.CapacityProviderOptions.custom([
         {
           capacityProvider: 'FARGATE',
           weight: 1,
@@ -97,7 +94,7 @@ const definition = new sfn.Pass(stack, 'Start', {
     taskDefinition,
     launchTarget: new tasks.EcsFargateLaunchTarget({
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-      capacityProviderOptions: tasks.NoCapacityProviderOptions.default(),
+      capacityProviderOptions: tasks.CapacityProviderOptions.default(),
     }),
     resultPath: sfn.JsonPath.DISCARD,
   }),

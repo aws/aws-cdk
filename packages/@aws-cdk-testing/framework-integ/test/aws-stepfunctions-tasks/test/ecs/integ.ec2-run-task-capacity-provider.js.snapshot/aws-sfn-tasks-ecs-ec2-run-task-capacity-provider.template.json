@@ -394,6 +394,28 @@
     }
    }
   },
+  "Ec2ClusterVpcRestrictDefaultSecurityGroupCustomResource326BF034": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "Ec2ClusterVpc568127F1",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": {
+     "Ref": "AWS::AccountId"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "Ec2Cluster56240A3A": {
    "Type": "AWS::ECS::ClusterCapacityProviderAssociations",
    "Properties": {
@@ -424,6 +446,100 @@
      }
     ]
    }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ec2:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":security-group/",
+             {
+              "Fn::GetAtt": [
+               "Ec2ClusterVpc568127F1",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ]
   },
   "AutoScalingGroup1InstanceSecurityGroupB9151D5D": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -594,7 +710,7 @@
          {
           "Ref": "Ec2ClusterEE43E89D"
          },
-         " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+         " >> /etc/ecs/ecs.config"
         ]
        ]
       }
@@ -824,7 +940,7 @@
          {
           "Ref": "Ec2ClusterEE43E89D"
          },
-         " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+         " >> /etc/ecs/ecs.config"
         ]
        ]
       }
@@ -1093,116 +1209,7 @@
        "Action": "ecs:RunTask",
        "Effect": "Allow",
        "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Fn::Select": [
-            1,
-            {
-             "Fn::Split": [
-              ":",
-              {
-               "Ref": "TaskDef54694570"
-              }
-             ]
-            }
-           ]
-          },
-          ":",
-          {
-           "Fn::Select": [
-            2,
-            {
-             "Fn::Split": [
-              ":",
-              {
-               "Ref": "TaskDef54694570"
-              }
-             ]
-            }
-           ]
-          },
-          ":",
-          {
-           "Fn::Select": [
-            3,
-            {
-             "Fn::Split": [
-              ":",
-              {
-               "Ref": "TaskDef54694570"
-              }
-             ]
-            }
-           ]
-          },
-          ":",
-          {
-           "Fn::Select": [
-            4,
-            {
-             "Fn::Split": [
-              ":",
-              {
-               "Ref": "TaskDef54694570"
-              }
-             ]
-            }
-           ]
-          },
-          ":",
-          {
-           "Fn::Select": [
-            0,
-            {
-             "Fn::Split": [
-              "/",
-              {
-               "Fn::Select": [
-                5,
-                {
-                 "Fn::Split": [
-                  ":",
-                  {
-                   "Ref": "TaskDef54694570"
-                  }
-                 ]
-                }
-               ]
-              }
-             ]
-            }
-           ]
-          },
-          "/",
-          {
-           "Fn::Select": [
-            1,
-            {
-             "Fn::Split": [
-              "/",
-              {
-               "Fn::Select": [
-                5,
-                {
-                 "Fn::Split": [
-                  ":",
-                  {
-                   "Ref": "TaskDef54694570"
-                  }
-                 ]
-                }
-               ]
-              }
-             ]
-            }
-           ]
-          },
-          ":*"
-         ]
-        ]
+        "Ref": "TaskDef54694570"
        }
       },
       {

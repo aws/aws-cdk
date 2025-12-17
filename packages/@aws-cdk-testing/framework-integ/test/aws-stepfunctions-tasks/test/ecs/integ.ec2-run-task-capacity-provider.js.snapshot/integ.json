@@ -9,5 +9,5 @@
       "assertionStackName": "SfnTasksEcsEc2RunTaskCapacityProviderTestDefaultTestDeployAssertD08F9F1E"
     }
   },
-  "minimumCliVersion": "2.1023.0"
+  "minimumCliVersion": "2.1033.0"
 }

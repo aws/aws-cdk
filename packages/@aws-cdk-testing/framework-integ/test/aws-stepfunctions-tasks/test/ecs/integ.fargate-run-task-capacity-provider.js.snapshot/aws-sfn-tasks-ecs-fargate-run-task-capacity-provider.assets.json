@@ -1,16 +1,30 @@
 {
   "version": "48.0.0",
   "files": {
-    "dd9cef58ec1f2feb40f777d99b05a2438d02293433e7e928ec30e578f9d5d928": {
+    "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f": {
+      "displayName": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
+      "source": {
+        "path": "asset.55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-65a3ca72": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "8bd9404a45e08ef46c725bf7ef6a6c8159ee2da45c72c2ca766b42e0812bc433": {
       "displayName": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider Template",
       "source": {
         "path": "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d8a3981d": {
+        "current_account-current_region-f6d33365": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "dd9cef58ec1f2feb40f777d99b05a2438d02293433e7e928ec30e578f9d5d928.json",
+          "objectKey": "8bd9404a45e08ef46c725bf7ef6a6c8159ee2da45c72c2ca766b42e0812bc433.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

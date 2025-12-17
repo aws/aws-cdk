@@ -835,11 +835,11 @@ const runTask = new tasks.EcsRunTask(this, 'RunFargate', {
 The `capacityProviderOptions` property allows you to configure the capacity provider
 strategy for both EC2 and Fargate launch targets.
 
-- When `CapacityProviderOptionsBase.none()` is used, the task uses the launch type (EC2 or FARGATE) without a capacity provider strategy.
-- When `CapacityProviderOptionsBase.custom()` is used, you can specify a custom capacity provider strategy.
-- When `CapacityProviderOptionsBase.default()` is used, the task uses the cluster's default capacity provider strategy.
+- When `CapacityProviderOptions.none()` is used, the task uses the launch type (EC2 or FARGATE) without a capacity provider strategy.
+- When `CapacityProviderOptions.custom()` is used, you can specify a custom capacity provider strategy.
+- When `CapacityProviderOptions.default()` is used, the task uses the cluster's default capacity provider strategy.
 
-If `capacityProviderOptions` is not specified, it defaults to `CapacityProviderOptionsBase.none()`.
+If `capacityProviderOptions` is not specified, it defaults to `CapacityProviderOptions.none()`.
 
 ```ts
 const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
@@ -860,7 +860,7 @@ const runTaskWithNone = new tasks.EcsRunTask(this, 'RunTaskWithNone', {
   taskDefinition,
   launchTarget: new tasks.EcsFargateLaunchTarget({
     platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-    capacityProviderOptions: tasks.CapacityProviderOptionsBase.none(),
+    capacityProviderOptions: tasks.CapacityProviderOptions.none(),
   }),
 });
 
@@ -870,7 +870,7 @@ const runTaskWithCustom = new tasks.EcsRunTask(this, 'RunTaskWithCustom', {
   taskDefinition,
   launchTarget: new tasks.EcsFargateLaunchTarget({
     platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-    capacityProviderOptions: tasks.CapacityProviderOptionsBase.custom([
+    capacityProviderOptions: tasks.CapacityProviderOptions.custom([
       { capacityProvider: 'FARGATE_SPOT', weight: 2, base: 1 },
       { capacityProvider: 'FARGATE', weight: 1 },
     ]),
@@ -883,7 +883,7 @@ const runTaskWithDefault = new tasks.EcsRunTask(this, 'RunTaskWithDefault', {
   taskDefinition,
   launchTarget: new tasks.EcsFargateLaunchTarget({
     platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-    capacityProviderOptions: tasks.CapacityProviderOptionsBase.default(),
+    capacityProviderOptions: tasks.CapacityProviderOptions.default(),
   }),
 });
 ```
