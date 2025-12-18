@@ -1739,7 +1739,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Enable this feature flag to use the new \`Distribution\` resource instead
       of the deprecated \`CloudFrontWebDistribution\` construct.
       `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.233.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Define a `CloudFrontWebDistribution` explicitly',
   },
