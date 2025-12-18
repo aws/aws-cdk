@@ -1,6 +1,5 @@
 import { Match, Template, Annotations } from '../../assertions';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as s3 from '../lib';

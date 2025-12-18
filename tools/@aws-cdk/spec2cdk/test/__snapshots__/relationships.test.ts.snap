@@ -6,8 +6,7 @@ import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-import { IRoleRef, RoleReference } from "../interfaces/generated/aws-iam-interfaces.generated";
-import { IResourceRef, ResourceReference } from "../interfaces/generated/aws-iam-interfaces.generated";
+import { IResourceRef, IRoleRef, ResourceReference, RoleReference } from "../interfaces/generated/aws-iam-interfaces.generated";
 
 /**
  * @cloudformationResource AWS::IAM::Role
@@ -356,9 +355,8 @@ import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-import { IRoleRef, RoleReference } from "../interfaces/generated/aws-iam-interfaces.generated";
-import { IUserRef, UserReference } from "../interfaces/generated/aws-iam-interfaces.generated";
-import { IPolicyRef, PolicyReference } from "../interfaces/generated/aws-iam-interfaces.generated";
+import { IPolicyRef, IRoleRef, IUserRef, PolicyReference, RoleReference, UserReference } from "../interfaces/generated/aws-iam-interfaces.generated";
+import { aws_iam as iamRefs } from "aws-cdk-lib/interfaces";
 
 /**
  * @cloudformationResource AWS::IAM::Role
@@ -699,7 +697,7 @@ export class CfnPolicy extends cdk.CfnResource implements cdk.IInspectable, IPol
       properties: props
     });
 
-    this.principalArn = (props.principalArn as IRoleRef)?.roleRef?.roleArn ?? (props.principalArn as IUserRef)?.userRef?.userArn ?? cdk.ensureStringOrUndefined(props.principalArn, "principalArn", "iam.IRoleRef | iam.IUserRef | string");
+    this.principalArn = (props.principalArn as iamRefs.IRoleRef)?.roleRef?.roleArn ?? (props.principalArn as iamRefs.IUserRef)?.userRef?.userArn ?? cdk.ensureStringOrUndefined(props.principalArn, "principalArn", "iam.IRoleRef | iam.IUserRef | string");
   }
 
   public get policyRef(): PolicyReference {
@@ -738,7 +736,7 @@ export interface CfnPolicyProps {
   /**
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-policy.html#cfn-iam-policy-principalarn
    */
-  readonly principalArn?: IRoleRef | IUserRef | string;
+  readonly principalArn?: iamRefs.IRoleRef | iamRefs.IUserRef | string;
 }
 
 /**
@@ -793,8 +791,7 @@ import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-import { IRoleRef, RoleReference } from "../interfaces/generated/aws-iam-interfaces.generated";
-import { ITaskRef, TaskReference } from "../interfaces/generated/aws-iam-interfaces.generated";
+import { IRoleRef, ITaskRef, RoleReference, TaskReference } from "../interfaces/generated/aws-iam-interfaces.generated";
 
 /**
  * @cloudformationResource AWS::IAM::Role
@@ -1143,8 +1140,7 @@ import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-import { IRoleRef, RoleReference } from "../interfaces/generated/aws-iam-interfaces.generated";
-import { IJobRef, JobReference } from "../interfaces/generated/aws-iam-interfaces.generated";
+import { IJobRef, IRoleRef, JobReference, RoleReference } from "../interfaces/generated/aws-iam-interfaces.generated";
 
 /**
  * @cloudformationResource AWS::IAM::Role
@@ -1555,8 +1551,8 @@ import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
 import * as cdk_errors from "aws-cdk-lib/core/lib/errors";
-import { IRoleRef, RoleReference } from "../interfaces/generated/aws-iam-interfaces.generated";
-import { IFunctionRef, FunctionReference } from "../interfaces/generated/aws-iam-interfaces.generated";
+import { FunctionReference, IFunctionRef, IRoleRef, RoleReference } from "../interfaces/generated/aws-iam-interfaces.generated";
+import { aws_iam as iamRefs } from "aws-cdk-lib/interfaces";
 
 /**
  * @cloudformationResource AWS::IAM::Role
@@ -1756,7 +1752,7 @@ export class CfnFunction extends cdk.CfnResource implements cdk.IInspectable, IF
       properties: props
     });
 
-    this.roleArn = (props.roleArn as IRoleRef)?.roleRef?.roleArn ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string");
+    this.roleArn = (props.roleArn as iamRefs.IRoleRef)?.roleRef?.roleArn ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string");
   }
 
   public get functionRef(): FunctionReference {
@@ -1795,7 +1791,7 @@ export interface CfnFunctionProps {
   /**
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-function.html#cfn-iam-function-rolearn
    */
-  readonly roleArn?: IRoleRef | string;
+  readonly roleArn?: iamRefs.IRoleRef | string;
 }
 
 /**
