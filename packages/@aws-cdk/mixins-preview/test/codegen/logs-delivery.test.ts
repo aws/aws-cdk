@@ -38,11 +38,6 @@ test('Logs Delivery Mixin for a resource', () => {
     },
     cloudFormationType: 'AWS::Some::Resource',
     arnTemplate: 'arn:${Partition}:some:${Region}:${Account}:resource/${ResourceId}',
-    vendedLogs: {
-      permissionsVersion: 'V2',
-      logTypes: ['APPLICATION_LOGS', 'ACCESS_LOGS'],
-      destinations: ['CWL', 'FH', 'S3'],
-    },
     vendedLogsConfig: [
       {
         permissionsVersion: 'V2',
