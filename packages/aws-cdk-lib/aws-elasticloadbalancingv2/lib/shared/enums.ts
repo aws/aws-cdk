@@ -1,5 +1,3 @@
-
-
 /**
  * What kind of addresses to allocate to the load balancer
  */
@@ -109,7 +107,7 @@ export enum SslPolicy {
    * This is the default policy for listeners created using the AWS Management Console
    *
    * This policy includes TLS 1.3, and is backwards compatible with TLS 1.2
-   * 
+   *
    * When feature flag @aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy is enabled,
    * listeners automatically use the post-quantum policy instead.
    */
@@ -117,7 +115,7 @@ export enum SslPolicy {
 
   /**
    * The recommended post-quantum security policy for TLS listeners.
-   * 
+   *
    * This policy includes TLS 1.3 and 1.2 with post-quantum hybrid key exchange using ML-KEM.
    * Provides maximum backward compatibility with existing TLS clients while adding quantum resistance.
    * This policy is nearly 100% backward compatible with the previous CDK recommended default.
@@ -164,8 +162,6 @@ export enum SslPolicy {
    * TLS 1.3 only with post-quantum hybrid key exchange using ML-KEM
    */
   TLS13_13_PQ = 'ELBSecurityPolicy-TLS13-1-3-PQ-2025-09',
-
-
 
   /**
    * TLS 1.2 and 1.3 with post-quantum hybrid key exchange using ML-KEM
@@ -438,5 +434,4 @@ export enum DesyncMitigationMode {
    */
   STRICTEST = 'strictest',
 }
-
 

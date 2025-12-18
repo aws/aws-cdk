@@ -278,8 +278,8 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     }
 
     // Calculate SSL policy before calling super()
-    const sslPolicy = props.sslPolicy ?? (protocol === ApplicationProtocol.HTTPS ? 
-      (FeatureFlags.of(scope).isEnabled(cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY) ? 
+    const sslPolicy = props.sslPolicy ?? (protocol === ApplicationProtocol.HTTPS ?
+      (FeatureFlags.of(scope).isEnabled(cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY) ?
         SslPolicy.RECOMMENDED_TLS_PQ : SslPolicy.RECOMMENDED_TLS) : undefined);
 
     super(scope, id, {
@@ -596,8 +596,6 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     action.bind(this, this);
     this._setDefaultAction(action);
   }
-
-
 }
 
 /**
