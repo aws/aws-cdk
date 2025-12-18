@@ -10234,15 +10234,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'PrivateCertificate': {
       'domainName': '*',
       'subjectAlternativeNames': '*',
-      'certificateAuthority': {
-        'certificateAuthorityArn': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'certificateAuthority': '*',
       'keyAlgorithm': '*',
       'allowExport': 'boolean'
     }
@@ -14503,7 +14495,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'capacity': {
         'instanceType': '*',
         'machineImage': '*',
-        'canContainersAccessInstanceRole': 'boolean',
         'taskDrainTime': '*',
         'spotInstanceDraining': 'boolean',
         'topicEncryptionKey': {
@@ -14676,7 +14667,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         {
           'instanceType': '*',
           'machineImage': '*',
-          'canContainersAccessInstanceRole': 'boolean',
           'taskDrainTime': '*',
           'spotInstanceDraining': 'boolean',
           'topicEncryptionKey': {
@@ -14761,7 +14751,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'addAsgCapacityProvider': [
         '*',
         {
-          'canContainersAccessInstanceRole': 'boolean',
           'taskDrainTime': '*',
           'spotInstanceDraining': 'boolean',
           'topicEncryptionKey': {
@@ -14783,7 +14772,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'addAutoScalingGroup': [
         '*',
         {
-          'canContainersAccessInstanceRole': 'boolean',
           'taskDrainTime': '*',
           'spotInstanceDraining': 'boolean',
           'topicEncryptionKey': {
@@ -22089,7 +22077,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'cidrRoutingConfig': '*'
+      'cidrRoutingConfig': '*',
+      'failover': 'Failover'
     },
     'ARecord': {
       'target': '*',
@@ -22124,7 +22113,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'cidrRoutingConfig': '*'
+      'cidrRoutingConfig': '*',
+      'failover': 'Failover'
     },
     'AaaaRecord': {
       'target': '*',
@@ -22159,7 +22149,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'cidrRoutingConfig': '*'
+      'cidrRoutingConfig': '*',
+      'failover': 'Failover'
     },
     'CnameRecord': {
       'domainName': '*',
@@ -22194,7 +22185,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'cidrRoutingConfig': '*'
+      'cidrRoutingConfig': '*',
+      'failover': 'Failover'
     },
     'TxtRecord': {
       'values': '*',
@@ -22229,7 +22221,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'cidrRoutingConfig': '*'
+      'cidrRoutingConfig': '*',
+      'failover': 'Failover'
     },
     'SrvRecord': {
       'values': {
@@ -22269,7 +22262,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'cidrRoutingConfig': '*'
+      'cidrRoutingConfig': '*',
+      'failover': 'Failover'
     },
     'CaaRecord': {
       'values': {
@@ -22308,7 +22302,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'cidrRoutingConfig': '*'
+      'cidrRoutingConfig': '*',
+      'failover': 'Failover'
     },
     'CaaAmazonRecord': {
       'zone': {
@@ -22342,7 +22337,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'cidrRoutingConfig': '*'
+      'cidrRoutingConfig': '*',
+      'failover': 'Failover'
     },
     'MxRecord': {
       'values': {
@@ -22380,7 +22376,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'cidrRoutingConfig': '*'
+      'cidrRoutingConfig': '*',
+      'failover': 'Failover'
     },
     'NsRecord': {
       'values': '*',
@@ -22415,7 +22412,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'cidrRoutingConfig': '*'
+      'cidrRoutingConfig': '*',
+      'failover': 'Failover'
     },
     'DsRecord': {
       'values': '*',
@@ -22450,7 +22448,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'cidrRoutingConfig': '*'
+      'cidrRoutingConfig': '*',
+      'failover': 'Failover'
     },
     'SvcbRecord': {
       'values': '*',
@@ -22485,7 +22484,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'cidrRoutingConfig': '*'
+      'cidrRoutingConfig': '*',
+      'failover': 'Failover'
     },
     'HttpsRecord': {
       'values': '*',
@@ -22521,7 +22521,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'cidrRoutingConfig': '*'
+      'cidrRoutingConfig': '*',
+      'failover': 'Failover'
     },
     'ZoneDelegationRecord': {
       'nameServers': '*',
@@ -22556,7 +22557,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'cidrRoutingConfig': '*'
+      'cidrRoutingConfig': '*',
+      'failover': 'Failover'
     }
   },
   'aws-cdk-lib.aws-s3': {
