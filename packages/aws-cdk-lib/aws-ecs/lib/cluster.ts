@@ -1782,8 +1782,8 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
    * Associates the capacity provider with the specified cluster.
    * This method is called by the cluster when adding the capacity provider.
    */
-  public bind(cluster: ICluster): void {
-    this.capacityProvider.clusterName = cluster.clusterName;
+  public bind(cluster: IClusterRef): void {
+    this.capacityProvider.clusterName = cluster.clusterRef.clusterName;
   }
 
   /**

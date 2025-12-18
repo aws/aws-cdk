@@ -7,7 +7,7 @@ import { ArnFormat, Resource, Stack, Annotations, ValidationError } from '../../
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { AssociateCloudMapServiceOptions, BaseService, BaseServiceOptions, CloudMapOptions, DeploymentControllerType, EcsTarget, IBaseService, IEcsLoadBalancerTarget, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
-import { fromServiceAttributes } from '../base/from-service-attributes';
+import { fromServiceAttributes, extractClusterNameFromArn } from '../base/from-service-attributes';
 import { ScalableTaskCount } from '../base/scalable-task-count';
 import { Compatibility, LoadBalancerTargetOptions, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
@@ -91,6 +91,14 @@ export class ExternalService extends BaseService implements IExternalService {
     class Import extends Resource implements IExternalService {
       public readonly serviceArn = externalServiceArn;
       public readonly serviceName = Stack.of(scope).splitArn(externalServiceArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
+      private readonly _clusterName = extractClusterNameFromArn(scope, externalServiceArn);
+
+      public get serviceRef() {
+        return {
+          serviceArn: this.serviceArn,
+          cluster: this._clusterName,
+        };
+      }
     }
     return new Import(scope, id);
   }
