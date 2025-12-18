@@ -3,6 +3,7 @@ import * as cloudfront from '../../aws-cloudfront';
 import { OriginIpAddressType } from '../../aws-cloudfront';
 import * as lambda from '../../aws-lambda';
 import { Duration, Stack } from '../../core';
+import * as cxapi from '../../cx-api';
 import { FunctionUrlOrigin } from '../lib';
 
 let stack: Stack;
@@ -559,6 +560,56 @@ describe('ipAddressType', () => {
     });
   });
 
+  test('defaults to dual-stack when feature flag is enabled', () => {
+    const testStack = new Stack();
+    testStack.node.setContext(cxapi.CLOUDFRONT_ORIGINS_FUNCTION_URL_DUALSTACK_DEFAULT, true);
+
+    const fn = new lambda.Function(testStack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
+
+    const origin = new FunctionUrlOrigin(fnUrl);
+    const originBindConfig = origin.bind(testStack, { originId: 'StackOriginLambdaFunctionURL' });
+
+    expect(testStack.resolve(originBindConfig.originProperty)).toMatchObject({
+      customOriginConfig: {
+        ipAddressType: OriginIpAddressType.DUALSTACK,
+      },
+    });
+  });
+
+  test('explicit ipAddressType overrides feature flag when flag is enabled', () => {
+    const testStack = new Stack();
+    testStack.node.setContext(cxapi.CLOUDFRONT_ORIGINS_FUNCTION_URL_DUALSTACK_DEFAULT, true);
+
+    const fn = new lambda.Function(testStack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
+
+    const origin = new FunctionUrlOrigin(fnUrl, {
+      ipAddressType: OriginIpAddressType.IPV4,
+    });
+    const originBindConfig = origin.bind(testStack, { originId: 'StackOriginLambdaFunctionURL' });
+
+    expect(testStack.resolve(originBindConfig.originProperty)).toMatchObject({
+      customOriginConfig: {
+        ipAddressType: OriginIpAddressType.IPV4, // Explicit value should override flag
+      },
+    });
+  });
+
   test('Correctly sets ipAddressType with OAC', () => {
     const fn = new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
@@ -588,6 +639,56 @@ describe('ipAddressType', () => {
             }),
           }),
         ]),
+      },
+    });
+  });
+
+  test('FunctionUrlOriginWithOAC defaults to dual-stack when feature flag is enabled', () => {
+    const testStack = new Stack();
+    testStack.node.setContext(cxapi.CLOUDFRONT_ORIGINS_FUNCTION_URL_DUALSTACK_DEFAULT, true);
+
+    const fn = new lambda.Function(testStack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.AWS_IAM,
+    });
+
+    const origin = FunctionUrlOrigin.withOriginAccessControl(fnUrl);
+    const originBindConfig = origin.bind(testStack, { originId: 'StackOriginLambdaFunctionURL' });
+
+    expect(testStack.resolve(originBindConfig.originProperty)).toMatchObject({
+      customOriginConfig: {
+        ipAddressType: OriginIpAddressType.DUALSTACK,
+      },
+    });
+  });
+
+  test('FunctionUrlOriginWithOAC explicit ipAddressType overrides feature flag', () => {
+    const testStack = new Stack();
+    testStack.node.setContext(cxapi.CLOUDFRONT_ORIGINS_FUNCTION_URL_DUALSTACK_DEFAULT, true);
+
+    const fn = new lambda.Function(testStack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.AWS_IAM,
+    });
+
+    const origin = FunctionUrlOrigin.withOriginAccessControl(fnUrl, {
+      ipAddressType: OriginIpAddressType.IPV6,
+    });
+    const originBindConfig = origin.bind(testStack, { originId: 'StackOriginLambdaFunctionURL' });
+
+    expect(testStack.resolve(originBindConfig.originProperty)).toMatchObject({
+      customOriginConfig: {
+        ipAddressType: OriginIpAddressType.IPV6, // Explicit value should override flag
       },
     });
   });
