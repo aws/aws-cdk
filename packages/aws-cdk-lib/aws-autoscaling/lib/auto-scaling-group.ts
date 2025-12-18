@@ -429,6 +429,14 @@ export interface CommonAutoScalingGroupProps {
    * @default None
    */
   readonly azCapacityDistributionStrategy?: CapacityDistributionStrategy;
+
+  /**
+   * An instance lifecycle policy that defines how instances should be handled
+   * during lifecycle events, particularly when lifecycle hooks are abandoned or fail.
+   *
+   * @default - No instance lifecycle policy configured
+   */
+  readonly instanceLifecyclePolicy?: InstanceLifecyclePolicy;
 }
 
 /**
@@ -1134,6 +1142,53 @@ export enum CapacityDistributionStrategy {
   BALANCED_BEST_EFFORT = 'balanced-best-effort',
 }
 
+/**
+ * Actions for when a termination lifecycle hook is abandoned
+ */
+export enum TerminateHookAbandonAction {
+  /**
+   * Move instances to a Retained state when termination hook is abandoned
+   */
+  RETAIN = 'retain',
+
+  /**
+   * Terminate instances normally when termination hook is abandoned (default behavior)
+   */
+  TERMINATE = 'terminate',
+}
+
+/**
+ * Instance lifecycle policy for an Auto Scaling group
+ */
+export interface InstanceLifecyclePolicy {
+  /**
+   * Retention triggers for the instance lifecycle policy
+   *
+   * @default - No retention triggers configured
+   */
+  readonly retentionTriggers?: RetentionTriggers;
+}
+
+/**
+ * Retention triggers for instance lifecycle policy
+ *
+ * Defines the specific triggers that cause instances to be retained in a Retained state
+ * rather than terminated. Each trigger corresponds to a different failure scenario during
+ * the instance lifecycle.
+ */
+export interface RetentionTriggers {
+  /**
+   * Specifies the action when a termination lifecycle hook is abandoned due to failure,
+   * timeout, or explicit abandonment (calling CompleteLifecycleAction).
+   *
+   * Retained instances don't count toward desired capacity and remain
+   * until you call TerminateInstanceInAutoScalingGroup.
+   *
+   * @default - No action specified
+   */
+  readonly terminateHookAbandon?: TerminateHookAbandonAction;
+}
+
 abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
   public abstract autoScalingGroupName: string;
   public abstract autoScalingGroupArn: string;
@@ -1597,6 +1652,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         props.minHealthyPercentage,
         props.maxHealthyPercentage,
       ),
+      instanceLifecyclePolicy: props.instanceLifecyclePolicy?.retentionTriggers
+        ? { retentionTriggers: props.instanceLifecyclePolicy.retentionTriggers }
+        : undefined,
       ...this.getLaunchSettings(launchConfig, props.launchTemplate ?? launchTemplateFromConfig, props.mixedInstancesPolicy),
     };
 
