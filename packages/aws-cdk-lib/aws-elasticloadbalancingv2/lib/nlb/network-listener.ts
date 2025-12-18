@@ -367,8 +367,6 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     action.bind(this, this);
     this._setDefaultAction(action);
   }
-
-
 }
 
 /**

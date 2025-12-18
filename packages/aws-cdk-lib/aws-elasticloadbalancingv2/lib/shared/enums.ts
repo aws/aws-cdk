@@ -1,4 +1,3 @@
-
 /**
  * What kind of addresses to allocate to the load balancer
  */
@@ -121,7 +120,7 @@ export enum SslPolicy {
    * Provides maximum backward compatibility with existing TLS clients while adding quantum resistance.
    * This policy is nearly 100% backward compatible with the previous CDK recommended default.
    */
-  RECOMMENDED_TLS_PQ = 'ELBSecurityPolicy-TLS13-1-2-PQ-2025-09',
+  RECOMMENDED_TLS_PQ = 'ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09',
 
   /**
    * The recommended policy for http listeners.
