@@ -91,5 +91,6 @@ if $infuse; then
 fi
 
 time $ROSETTA trim-cache \
+    --verbose \
     ${rosetta_cache_file} \
     $(cat $jsii_pkgs_file)
