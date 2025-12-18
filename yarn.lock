@@ -10118,10 +10118,10 @@ jsii-reflect@1.121.0, jsii-reflect@^1.120.0, jsii-reflect@^1.121.0:
     oo-ascii-tree "^1.121.0"
     yargs "^17.7.2"
 
-jsii-rosetta@~5.9.21:
-  version "5.9.21"
-  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.9.21.tgz#dbf798490e2317dcf4d3dcd22a0aaec842c7bbfa"
-  integrity sha512-oexuS+gKmlLUhotMKiAndRXYnapDvLdUtWkWFt6afGRJJBPL3aPL54aHJmyMOIC43lUhU+az/8N8ewgPls2wQg==
+jsii-rosetta@~5.9.22:
+  version "5.9.22"
+  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.9.22.tgz#c9f9b9f958573744775448143cb857348375069d"
+  integrity sha512-FcZRHybS+0CSJxfRfIXlG+5lNMC4T1SkF/zW5FJfj+f9D3vtg3Ju0JEpjM9yoxSV4CPdSAxxbFo4GKgY6a4A9Q==
   dependencies:
     "@jsii/check-node" "^1.121.0"
     "@jsii/spec" "^1.121.0"

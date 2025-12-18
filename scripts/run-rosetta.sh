@@ -54,6 +54,7 @@ if [[ "${jsii_pkgs_file}" = "" ]]; then
     jsii_pkgs_file=$TMPDIR/jsii.txt
 fi
 
+mkdir -p $HOME/.s3buildcache
 rosetta_cache_file=$HOME/.s3buildcache/rosetta-cache.tabl.json
 extract_opts=""
 if $infuse; then
@@ -91,5 +92,6 @@ if $infuse; then
 fi
 
 time $ROSETTA trim-cache \
+    --verbose \
     ${rosetta_cache_file} \
     $(cat $jsii_pkgs_file)
