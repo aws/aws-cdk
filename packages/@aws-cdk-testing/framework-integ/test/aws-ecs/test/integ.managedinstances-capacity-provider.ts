@@ -7,8 +7,6 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': true,
-    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
-    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
   },
 });
 const stack = new cdk.Stack(app, 'integ-managedinstances-capacity-provider');
@@ -24,7 +22,7 @@ const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
   roleName: 'AmazonECSInfrastructureRoleForOmakase',
   assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
   managedPolicies: [
-    iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonECSInfrastructureRolePolicyForManagedInstances'),
   ],
 });
 
@@ -32,7 +30,7 @@ const instanceRole = new iam.Role(stack, 'InstanceRole', {
   roleName: 'AmazonECSInstanceRoleForOmakase',
   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
   managedPolicies: [
-    iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonECSInstanceRolePolicyForManagedInstances'),
   ],
 });
 
@@ -62,6 +60,9 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'Mana
     acceleratorManufacturers: [ec2.AcceleratorManufacturer.NVIDIA],
   },
 });
+
+// Configure security group rules using IConnectable interface
+miCapacityProvider.connections.allowFrom(ec2.Peer.ipv4(vpc.vpcCidrBlock), ec2.Port.tcp(80));
 
 // Add FMI capacity provider to cluster
 cluster.addManagedInstancesCapacityProvider(miCapacityProvider);
@@ -106,7 +107,6 @@ new ecs.FargateService(stack, 'ManagedInstancesService', {
 
 new integ.IntegTest(app, 'ManagedInstancesCapacityProviders', {
   testCases: [stack],
-  regions: ['us-west-2'],
 });
 
 app.synth();

@@ -1,0 +1,58 @@
+{
+ "Resources": {
+  "S3AssetComponentBDFBFAD2": {
+   "Type": "AWS::ImageBuilder::Component",
+   "Properties": {
+    "Name": "aws-cdk-imagebuilder-component-s3",
+    "Platform": "Linux",
+    "Uri": {
+     "Fn::Join": [
+      "",
+      [
+       "s3://",
+       {
+        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+       },
+       "/bc0e810d66f3b8e9e6cfe276de3f128be221671559a8b6e657d1d97ace42bd52.yaml"
+      ]
+     ]
+    },
+    "Version": "1.0.0"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

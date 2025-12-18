@@ -402,7 +402,6 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
       grantee,
       actions,
       resourceArns: resources.resourceArns(this),
-      scope: this,
     });
   }
 

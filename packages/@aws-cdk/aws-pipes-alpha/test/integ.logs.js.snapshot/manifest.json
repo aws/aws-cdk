@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e3d80d4e83d3bb6f8ca0956211f8785be2e5dfbde26e17a95397b2b1090d5a7b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/28654376a2c9424361bcd71dc7e1adb0bb35766d020c9c9c5a515b138defc290.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -111,12 +111,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "FirehoseBucketAutoDeleteObjectsCustomResourceD3E44B23"
-          }
-        ],
-        "/aws-cdk-pipes-logs/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/aws-cdk-pipes-logs/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
@@ -484,7 +478,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a6274136bc7e276493e65d7bc8d7d26d3aabb7ec501c3108c7002c66bf2e7bab.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f0d974b1fc4356f4bc89ce1a80f33de51388a58c8fa85a40fd2c8e9d9862f572.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -501,16 +495,16 @@
         "integtestpipeslogsDefaultTestDeployAssert461F2E1A.assets"
       ],
       "metadata": {
-        "/integtest-pipes-logs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagea500d45d99d076e30cdedb0c038128c2/Default": [
+        "/integtest-pipes-logs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage7821c53cb86b2bca29d9864c0c4abab5/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/integtest-pipes-logs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagea500d45d99d076e30cdedb0c038128c2/Default/Default": [
+        "/integtest-pipes-logs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage7821c53cb86b2bca29d9864c0c4abab5/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSQSsendMessagea500d45d99d076e30cdedb0c038128c2"
+            "data": "AwsApiCallSQSsendMessage7821c53cb86b2bca29d9864c0c4abab5"
           }
         ],
         "/integtest-pipes-logs/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -523,12 +517,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/integtest-pipes-logs/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/integtest-pipes-logs/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/Default": [

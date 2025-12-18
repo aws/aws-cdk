@@ -1,14 +1,14 @@
-import { Construct } from 'constructs';
-import { UserEngine } from './common';
-import { CfnServerlessCache, CfnUserGroup } from 'aws-cdk-lib/aws-elasticache';
-import { IServerlessCache, ServerlessCacheBase, CacheEngine } from './serverless-cache-base';
-import { IUserGroup } from './user-group';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { CfnServerlessCache, CfnUserGroup } from 'aws-cdk-lib/aws-elasticache';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { ArnFormat, Stack, Size, Lazy, ValidationError, Names, Token } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { UserEngine } from './common';
+import { IServerlessCache, ServerlessCacheBase, CacheEngine } from './serverless-cache-base';
+import { IUserGroup } from './user-group';
 
 const ELASTICACHE_SERVERLESSCACHE_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.ServerlessCache');
 
@@ -329,6 +329,7 @@ export class ServerlessCache extends ServerlessCacheBase {
             case CacheEngine.VALKEY_7:
             case CacheEngine.VALKEY_8:
             case CacheEngine.REDIS_LATEST:
+            case CacheEngine.REDIS_7:
               // Document showing the default port
               // https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/set-up.html#elasticache-install-grant-access-VPN
               defaultPort = ec2.Port.tcp(6379);

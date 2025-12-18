@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "HttpInvokeTest/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-tasks-http-invoke-json-path-integ"
+      ],
+      "assertionStack": "HttpInvokeTest/DefaultTest/DeployAssert",
+      "assertionStackName": "HttpInvokeTestDefaultTestDeployAssertBA1B4726"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

@@ -425,14 +425,6 @@ class CloudWatchLogsDestination extends FlowLogDestination {
       }),
     );
 
-    iamRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        actions: ['iam:PassRole'],
-        effect: iam.Effect.ALLOW,
-        resources: [iamRole.roleArn],
-      }),
-    );
-
     return {
       logDestinationType: FlowLogDestinationType.CLOUD_WATCH_LOGS,
       logGroup,

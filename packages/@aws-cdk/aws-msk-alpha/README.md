@@ -23,7 +23,7 @@ The following example creates an MSK Cluster.
 declare const vpc: ec2.Vpc;
 const cluster = new msk.Cluster(this, 'Cluster', {
   clusterName: 'myCluster',
-  kafkaVersion: msk.KafkaVersion.V4_0_X_KRAFT,
+  kafkaVersion: msk.KafkaVersion.V4_1_X_KRAFT,
   vpc,
 });
 ```
@@ -36,7 +36,7 @@ To control who can access the Cluster, use the `.connections` attribute. For a l
 declare const vpc: ec2.Vpc;
 const cluster = new msk.Cluster(this, 'Cluster', {
   clusterName: 'myCluster',
-  kafkaVersion: msk.KafkaVersion.V4_0_X_KRAFT,
+  kafkaVersion: msk.KafkaVersion.V4_1_X_KRAFT,
   vpc,
 });
 
@@ -88,7 +88,7 @@ import * as acmpca from 'aws-cdk-lib/aws-acmpca';
 declare const vpc: ec2.Vpc;
 const cluster = new msk.Cluster(this, 'Cluster', {
   clusterName: 'myCluster',
-  kafkaVersion: msk.KafkaVersion.V4_0_X_KRAFT,
+  kafkaVersion: msk.KafkaVersion.V4_1_X_KRAFT,
   vpc,
   encryptionInTransit: {
     clientBroker: msk.ClientBrokerEncryption.TLS,
@@ -113,7 +113,7 @@ Enable client authentication with [SASL/SCRAM](https://docs.aws.amazon.com/msk/l
 declare const vpc: ec2.Vpc;
 const cluster = new msk.Cluster(this, 'cluster', {
   clusterName: 'myCluster',
-  kafkaVersion: msk.KafkaVersion.V4_0_X_KRAFT,
+  kafkaVersion: msk.KafkaVersion.V4_1_X_KRAFT,
   vpc,
   encryptionInTransit: {
     clientBroker: msk.ClientBrokerEncryption.TLS,
@@ -132,7 +132,7 @@ Enable client authentication with [IAM](https://docs.aws.amazon.com/msk/latest/d
 declare const vpc: ec2.Vpc;
 const cluster = new msk.Cluster(this, 'cluster', {
   clusterName: 'myCluster',
-  kafkaVersion: msk.KafkaVersion.V4_0_X_KRAFT,
+  kafkaVersion: msk.KafkaVersion.V4_1_X_KRAFT,
   vpc,
   encryptionInTransit: {
     clientBroker: msk.ClientBrokerEncryption.TLS,
@@ -155,7 +155,7 @@ import * as acmpca from 'aws-cdk-lib/aws-acmpca';
 declare const vpc: ec2.Vpc;
 const cluster = new msk.Cluster(this, 'Cluster', {
   clusterName: 'myCluster',
-  kafkaVersion: msk.KafkaVersion.V4_0_X_KRAFT,
+  kafkaVersion: msk.KafkaVersion.V4_1_X_KRAFT,
   vpc,
   encryptionInTransit: {
     clientBroker: msk.ClientBrokerEncryption.TLS,
@@ -186,7 +186,7 @@ declare const vpc: ec2.Vpc;
 declare const bucket: s3.IBucket;
 const cluster = new msk.Cluster(this, 'cluster', {
   clusterName: 'myCluster',
-  kafkaVersion: msk.KafkaVersion.V4_0_X_KRAFT,
+  kafkaVersion: msk.KafkaVersion.V4_1_X_KRAFT,
   vpc,
   logging: {
     s3: {
@@ -226,9 +226,39 @@ declare const bucket: s3.IBucket;
 
 const cluster = new msk.Cluster(this, 'cluster', {
   clusterName: 'myCluster',
-  kafkaVersion: msk.KafkaVersion.V4_0_X_KRAFT,
+  kafkaVersion: msk.KafkaVersion.V4_1_X_KRAFT,
   vpc,
   storageMode: msk.StorageMode.TIERED,
+});
+```
+
+## MSK Express Brokers
+
+You can create an MSK cluster with Express Brokers by setting the `brokerType` property to `BrokerType.EXPRESS`. Express Brokers are a low-cost option for development, testing, and workloads that don't require the high availability guarantees of standard MSK cluster.
+For more information, see [Amazon MSK Express Brokers](https://docs.aws.amazon.com/msk/latest/developerguide/msk-broker-types-express.html).
+
+**Note:** When using Express Brokers, the following constraints apply:
+
+- Apache Kafka version must be 3.6.x or 3.8.x
+- You must specify the `instanceType`
+- The VPC must have at least 3 subnets (across 3 AZs)
+- `ebsStorageInfo` is not supported
+- `storageMode` is not supported
+- `logging` is not supported
+- Supported broker sizes: `m7g.xlarge`, `m7g.2xlarge`, `m7g.4xlarge`, `m7g.8xlarge`, `m7g.12xlarge`, `m7g.16xlarge`
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const expressCluster = new msk.Cluster(this, 'ExpressCluster', {
+  clusterName: 'MyExpressCluster',
+  kafkaVersion: msk.KafkaVersion.V3_8_X,
+  vpc,
+  brokerType: msk.BrokerType.EXPRESS,
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.M7G,
+    ec2.InstanceSize.XLARGE,
+  ),
 });
 ```
 
