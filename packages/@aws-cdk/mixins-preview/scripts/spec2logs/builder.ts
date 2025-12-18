@@ -40,7 +40,7 @@ export class LogsDeliveryBuilder extends LibraryBuilder<LogsDeliveryBuilderServi
 
   protected addResourceToSubmodule(submodule: LogsDeliveryBuilderServiceModule, resource: Resource, _props?: AddServiceProps): void {
     const resourceReference = new ResourceReference(resource);
-    if (resource.vendedLogs && resourceReference.hasArnGetter) {
+    if (resource.vendedLogsConfig && resourceReference.hasArnGetter) {
       const service = this.db.incoming('hasResource', resource).only().entity;
       const logsModule = this.obtainLogsDeliveryModule(submodule, service);
 
