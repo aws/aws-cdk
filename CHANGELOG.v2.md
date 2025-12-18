@@ -29,6 +29,11 @@ All notable changes to this project will be documented in this file. See [standa
 * ci fix for spec updater workflow ([#36364](https://github.com/aws/aws-cdk/issues/36364)) ([a0b42cc](https://github.com/aws/aws-cdk/commit/a0b42ccb4fa496dba34c6146bba553d83f7ce54d))
 * re-export of `ResourceEnvironment` is not an alias ([#36370](https://github.com/aws/aws-cdk/issues/36370)) ([ba8e194](https://github.com/aws/aws-cdk/commit/ba8e194891e96848d512e1e60f9143746fde0954))
 
+**CHANGES TO L1 RESOURCES:** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-ec2: AWS::EC2::EC2Fleet: DefaultTargetCapacityType property is now immutable.  
+aws-ec2: AWS::EC2::EC2Fleet: TargetCapacityUnitType property is now immutable.
+
 
 ## [2.232.2](https://github.com/aws/aws-cdk/compare/v2.232.1...v2.232.2) (2025-12-12)
 
