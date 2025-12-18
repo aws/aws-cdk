@@ -39,8 +39,6 @@ import {
   WindowsVersion,
 } from '../lib';
 
-/* eslint-disable jest/expect-expect */
-
 describe('LaunchTemplate', () => {
   let app: App;
   let stack: Stack;

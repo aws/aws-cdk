@@ -11,5 +11,5 @@
       "assertionStackName": "LambdaEventSourceS3OnFailureDestinationIntegDefaultTestDeployAssert62366951"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }

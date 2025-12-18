@@ -1,0 +1,86 @@
+#
+#####################################
+##          IAM GUARD RULES        ##
+#####################################
+# Rule: IAM_NO_OVERLY_PERMISSIVE_PASSROLE
+# Service: AWS Identity and Access Management (IAM)
+# Coverage: PassRole Policies
+
+let iam_passrole_resources = Resources.*[
+  Type in ['AWS::IAM::Policy', 'AWS::IAM::ManagedPolicy', 'AWS::IAM::Role']
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "IAM_NO_OVERLY_PERMISSIVE_PASSROLE"
+]
+
+# Overly permissive PassRole policies
+rule IAM_NO_OVERLY_PERMISSIVE_PASSROLE when %iam_passrole_resources !empty {
+    %iam_passrole_resources {
+        # Check managed/standalone policies
+        when Properties.PolicyDocument exists {
+            Properties.PolicyDocument.Statement[*] {
+                when Effect == "Allow" {
+                    when Action exists {
+                        when Action is_string {
+                            when Action in ["*", "iam:*", "iam:PassRole"] {
+                                when Resource exists {
+                                    when Resource is_string {
+                                        Resource != "*"
+                                    }
+                                    when Resource is_list {
+                                        Resource[*] != "*"
+                                    }
+                                }
+                            }
+                        }
+                        when Action is_list {
+                            when Action[*] in ["*", "iam:*", "iam:PassRole"] {
+                                when Resource exists {
+                                    when Resource is_string {
+                                        Resource != "*"
+                                    }
+                                    when Resource is_list {
+                                        Resource[*] != "*"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        # Check inline policies in roles
+        when Properties.Policies exists {
+            Properties.Policies[*].PolicyDocument.Statement[*] {
+                when Effect == "Allow" {
+                    when Action exists {
+                        when Action is_string {
+                            when Action in ["*", "iam:*", "iam:PassRole"] {
+                                when Resource exists {
+                                    when Resource is_string {
+                                        Resource != "*"
+                                    }
+                                    when Resource is_list {
+                                        Resource[*] != "*"
+                                    }
+                                }
+                            }
+                        }
+                        when Action is_list {
+                            when Action[*] in ["*", "iam:*", "iam:PassRole"] {
+                                when Resource exists {
+                                    when Resource is_string {
+                                        Resource != "*"
+                                    }
+                                    when Resource is_list {
+                                        Resource[*] != "*"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

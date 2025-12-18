@@ -1488,6 +1488,16 @@ export enum InstanceClass {
   M8A = 'm8a',
 
   /**
+   * Standard instances, 9th generation with Graviton5 processors
+   */
+  STANDARD9_GRAVITON = 'standard9-graviton',
+
+  /**
+   * Standard instances, 9th generation with Graviton5 processors
+   */
+  M9G = 'm9g',
+
+  /**
    * High memory and compute capacity instances, 1st generation
    */
   HIGH_COMPUTE_MEMORY1 = 'high-compute-memory1',
@@ -2095,6 +2105,8 @@ export class InstanceType {
       [InstanceClass.M7A]: 'm7a',
       [InstanceClass.STANDARD8_AMD]: 'm8a',
       [InstanceClass.M8A]: 'm8a',
+      [InstanceClass.STANDARD9_GRAVITON]: 'm9g',
+      [InstanceClass.M9G]: 'm9g',
       [InstanceClass.HIGH_COMPUTE_MEMORY1]: 'z1d',
       [InstanceClass.Z1D]: 'z1d',
       [InstanceClass.INFERENCE1]: 'inf1',

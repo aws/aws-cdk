@@ -10,7 +10,9 @@ export * from './infrastructure-configuration';
 export * from './lifecycle-policy';
 export * from './workflow';
 
+export * from './amazon-managed-component';
 export * from './amazon-managed-image';
+export * from './amazon-managed-workflow';
 export * from './base-image';
 export * from './os-version';
 export * from './recipe-base';

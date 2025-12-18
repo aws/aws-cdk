@@ -1,10 +1,10 @@
 import type { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { naming, util } from '@aws-cdk/spec2cdk';
-import { CDK_CORE, CONSTRUCTS } from '@aws-cdk/spec2cdk/lib/cdk/cdk';
+import { CDK_CORE, CDK_INTERFACES, CONSTRUCTS } from '@aws-cdk/spec2cdk/lib/cdk/cdk';
 import type { Method } from '@cdklabs/typewriter';
 import { Module, ExternalModule, ClassType, Stability, Type, expr, stmt, ThingSymbol, $this, CallableProxy, NewExpression, $E } from '@cdklabs/typewriter';
-import { CDK_AWS_LOGS, MIXINS_LOGS_DELIVERY, REF_INTERFACES } from './helpers';
-import type { ServiceSubmoduleProps, SelectiveImport, LocatedModule } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
+import { MIXINS_LOGS_DELIVERY } from './helpers';
+import type { ServiceSubmoduleProps, LocatedModule } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 import { BaseServiceSubmodule, relativeImportPath } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 import type { AddServiceProps, LibraryBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
 import { LibraryBuilder } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
@@ -48,8 +48,6 @@ export class LogsDeliveryBuilder extends LibraryBuilder<LogsDeliveryBuilderServi
       submodule.registerResource(`${resource.cloudFormationType}VendedLogs`, vendedLogsMixin.mixin);
 
       vendedLogsMixin.build();
-
-      submodule.registerSelectiveImports(...vendedLogsMixin.imports);
     }
   }
 
@@ -72,9 +70,8 @@ export class LogsDeliveryBuilder extends LibraryBuilder<LogsDeliveryBuilderServi
     submodule.registerModule({ module, filePath });
 
     CDK_CORE.import(module, 'cdk');
-    REF_INTERFACES.import(module, 'interfaces');
+    CDK_INTERFACES.import(module, 'interfaces');
     CONSTRUCTS.import(module, 'constructs');
-    CDK_AWS_LOGS.import(module, 'logs');
     MIXINS_CORE.import(module, 'core', { fromLocation: relativeImportPath(filePath, '../core') });
     MIXINS_LOGS_DELIVERY.import(module, 'logsDelivery', { fromLocation: '../aws-logs/logs-delivery' });
     submodule.constructLibModule.import(module, 'service');
@@ -85,7 +82,6 @@ export class LogsDeliveryBuilder extends LibraryBuilder<LogsDeliveryBuilderServi
 
 class LogsDelivery {
   public scope: Module;
-  public readonly imports = new Array<SelectiveImport>();
   public readonly mixin: LogsMixin;
   private readonly helpers: LogsHelper[] = [];
 
@@ -157,7 +153,7 @@ class LogsHelper extends ClassType {
 
             const paramS3 = toS3.addParameter({
               name: 'bucket',
-              type: REF_INTERFACES.IBucketRef,
+              type: CDK_INTERFACES.IBucketRef,
             });
 
             const permissions = this.resource.vendedLogs!.permissionsVersion === 'V2' ? MIXINS_LOGS_DELIVERY.S3LogsDeliveryPermissionsVersion.V2 : MIXINS_LOGS_DELIVERY.S3LogsDeliveryPermissionsVersion.V1;
@@ -179,7 +175,7 @@ class LogsHelper extends ClassType {
 
             const paramCWL = toCWL.addParameter({
               name: 'logGroup',
-              type: REF_INTERFACES.ILogGroupRef,
+              type: CDK_INTERFACES.ILogGroupRef,
             });
 
             toCWL.addBody(stmt.block(
@@ -199,7 +195,7 @@ class LogsHelper extends ClassType {
 
             const paramFH = toFH.addParameter({
               name: 'deliveryStream',
-              type: REF_INTERFACES.IDeliveryStreamRef,
+              type: CDK_INTERFACES.IDeliveryStreamRef,
             });
 
             toFH.addBody(stmt.block(
@@ -238,7 +234,6 @@ class LogsHelper extends ClassType {
 }
 
 class LogsMixin extends ClassType {
-  public readonly imports = new Array<SelectiveImport>();
   private readonly resourceType: Type;
 
   constructor(
@@ -308,7 +303,7 @@ class LogsMixin extends ClassType {
     const delivery = init.addParameter({
       name: 'logDelivery',
       type: MIXINS_LOGS_DELIVERY.ILogsDelivery,
-      documentation: 'Object in charge of setting up the delivery destination and delivery connection',
+      documentation: 'Object in charge of setting up the delivery source, delivery destination, and delivery connection',
     });
 
     init.addBody(
@@ -362,28 +357,13 @@ class LogsMixin extends ClassType {
     const sourceArn = expr.ident('sourceArn');
     const arnBuilder = $E(expr.sym(this.resourceType.symbol!)).callMethod(`arnFor${this.resource.name}`, resource);
 
-    const prefix = `${this.resource.name}Source-`;
-    const newCfnDeliverySource = CDK_AWS_LOGS.CfnDeliverySource.newInstance(
-      resource,
-      expr.strConcat(expr.str('CdkSource'), CDK_CORE.uniqueId(resource)),
-      expr.object({
-        name: expr.strConcat(expr.str(prefix), CDK_CORE.uniqueResourceName(resource, expr.object({
-          maxLength: expr.binOp(expr.num(60 - (prefix.length + 1)), '-', $this.logType.prop('length')),
-        })), expr.str('-'), $this.logType),
-        resourceArn: sourceArn,
-        logType: $this.logType,
-      }),
-    );
-    const deliverySource = expr.ident('deliverySource');
-
     method.addBody(
       stmt
         .if_(expr.not(CallableProxy.fromMethod(supports).invoke(resource)))
         .then(stmt.block(stmt.ret(resource))),
 
       stmt.constVar(sourceArn, arnBuilder),
-      stmt.constVar(deliverySource, newCfnDeliverySource),
-      $this.logDelivery.callMethod('bind', resource, deliverySource, sourceArn),
+      $this.logDelivery.callMethod('bind', resource, $this.logType, sourceArn),
 
       stmt.ret(resource),
     );

@@ -1,14 +1,4 @@
 {
-  "lib/cluster.ts": {
-    "@cdklabs/no-throw-default-error": {
-      "count": 17
-    }
-  },
-  "lib/parameter-group.ts": {
-    "@cdklabs/no-throw-default-error": {
-      "count": 1
-    }
-  },
   "lib/private/database-query-provider/index.ts": {
     "@cdklabs/no-throw-default-error": {
       "count": 1
@@ -37,16 +27,6 @@
   "lib/private/database-query-provider/util.ts": {
     "@cdklabs/no-throw-default-error": {
       "count": 1
-    }
-  },
-  "lib/private/database-query.ts": {
-    "@cdklabs/no-throw-default-error": {
-      "count": 4
-    }
-  },
-  "lib/table.ts": {
-    "@cdklabs/no-throw-default-error": {
-      "count": 7
     }
   }
 }

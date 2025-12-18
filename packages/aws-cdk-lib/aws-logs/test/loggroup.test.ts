@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { Annotations, Template, Match } from '../../assertions';
+import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';

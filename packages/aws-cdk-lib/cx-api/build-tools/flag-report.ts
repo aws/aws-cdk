@@ -229,7 +229,6 @@ function firstCmp(...xs: number[]) {
 }
 
 main().catch(e => {
-  // eslint-disable-next-line no-console
   console.error(e);
   process.exitCode = 1;
 });

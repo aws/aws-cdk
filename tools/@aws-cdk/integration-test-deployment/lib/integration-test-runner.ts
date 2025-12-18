@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { spawn } from 'child_process';
 import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
 import { AtmosphereAllocation } from './atmosphere';
@@ -66,7 +67,7 @@ export const assumeAtmosphereRole = async (roleArn: string) => {
   const response = await sts.send(new AssumeRoleCommand({
     RoleArn: roleArn,
     RoleSessionName: 'run-tests@aws-cdk-deployment-integ',
-    DurationSeconds: 3600
+    DurationSeconds: 3600,
   }));
 
   if (response.Credentials === undefined) throw new Error('Failed to assume atmopshere role');

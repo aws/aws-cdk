@@ -54,11 +54,18 @@ if [[ "${jsii_pkgs_file}" = "" ]]; then
     jsii_pkgs_file=$TMPDIR/jsii.txt
 fi
 
+mkdir -p $HOME/.s3buildcache
 rosetta_cache_file=$HOME/.s3buildcache/rosetta-cache.tabl.json
 extract_opts=""
 if $infuse; then
     extract_opts="--infuse"
 fi
+
+#----------------------------------------------------------------------
+# Rosetta Debug settings
+
+export TIMING="1"
+export DEBUG_TYPE_FINGERPRINTS=$HOME/.s3buildcache/type-fingerprints.txt
 
 #----------------------------------------------------------------------
 
@@ -85,5 +92,6 @@ if $infuse; then
 fi
 
 time $ROSETTA trim-cache \
+    --verbose \
     ${rosetta_cache_file} \
     $(cat $jsii_pkgs_file)

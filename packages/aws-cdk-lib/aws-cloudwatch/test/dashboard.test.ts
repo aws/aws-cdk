@@ -465,7 +465,6 @@ function hasWidgets(props: any, widgets: any[]) {
   try {
     actualWidgets = JSON.parse(props.DashboardBody).widgets;
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.error('Error parsing', props);
     throw e;
   }
@@ -480,7 +479,6 @@ function hasVariables(props: any, variables: any[]) {
   try {
     actualVariables = JSON.parse(props.DashboardBody).variables;
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.error('Error parsing', props);
     throw e;
   }

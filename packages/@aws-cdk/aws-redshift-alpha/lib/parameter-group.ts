@@ -1,5 +1,5 @@
 import { CfnClusterParameterGroup } from 'aws-cdk-lib/aws-redshift';
-import { IResource, Resource } from 'aws-cdk-lib/core';
+import { IResource, Resource, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
@@ -110,7 +110,7 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
       this.parameters[name] = value;
       this.resource.parameters = this.parseParameters();
     } else if (existingValue !== value) {
-      throw new Error(`The parameter group already contains the parameter "${name}", but with a different value (Given: ${value}, Existing: ${existingValue}).`);
+      throw new ValidationError(`The parameter group already contains the parameter "${name}", but with a different value (Given: ${value}, Existing: ${existingValue}).`, this);
     }
   }
 }

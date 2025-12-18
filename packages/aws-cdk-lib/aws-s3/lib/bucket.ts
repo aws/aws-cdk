@@ -623,7 +623,7 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   /**
    * Collection of grant methods for a Bucket
    */
-  public grants = BucketGrants._fromBucket(this);
+  public grants = BucketGrants.fromBucket(this);
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);

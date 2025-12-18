@@ -922,7 +922,7 @@ describe('Invoke Model', () => {
 
     expect(() => {
       // WHEN
-      const task = new BedrockInvokeModel(stack, 'Invoke', {
+      new BedrockInvokeModel(stack, 'Invoke', {
         model,
         body: sfn.TaskInput.fromObject(
           {

@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "testCases": {
     "ClusterAL2023/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "ClusterAL2023DefaultTestDeployAssert19111415"
     }
   },
-  "minimumCliVersion": "2.1020.2"
+  "minimumCliVersion": "2.1033.0"
 }

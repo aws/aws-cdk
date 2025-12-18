@@ -58,3 +58,5 @@ read*lock
 # Nx cache
 .nx/
 
+# jsii-rosetta files
+type-fingerprints.txt

@@ -1,0 +1,36 @@
+#
+#####################################
+##          EC2 GUARD RULES         ##
+#####################################
+# Rule: EC2_NO_OPEN_SECURITY_GROUPS
+# Service: Amazon Elastic Compute Cloud (EC2)
+# Coverage: VPC Security Groups
+
+let security_groups = Resources.*[
+  Type == 'AWS::EC2::SecurityGroup'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "EC2_NO_OPEN_SECURITY_GROUPS"
+]
+
+# EC2 VPC Security Groups should not be overly permissive
+rule EC2_NO_OPEN_SECURITY_GROUPS when %security_groups !empty {
+    %security_groups {
+        # Only check ingress rules if they exist (missing ingress = secure by default)
+        when Properties.SecurityGroupIngress exists {
+            Properties.SecurityGroupIngress[*] {
+                when CidrIp exists {
+                    CidrIp != "0.0.0.0/0"
+                }
+                when CidrIpv6 exists {
+                    CidrIpv6 != "::/0"
+                }
+            }
+        }
+        
+        # Note: We do not check egress rules because:
+        # 1. CDK's default behavior is to allow all outbound traffic (0.0.0.0/0 on all protocols)
+        # 2. Egress controls what resources can connect TO (lower security risk than ingress)
+        # 3. Most applications legitimately need unrestricted outbound access
+        # 4. Restricting egress is an advanced security practice, not a default requirement
+    }
+}

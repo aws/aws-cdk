@@ -1,4 +1,4 @@
-import { Annotations, Template } from '../../assertions';
+import { Template } from '../../assertions';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';

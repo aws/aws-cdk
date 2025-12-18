@@ -32,6 +32,7 @@ import {
   $this,
 } from '@cdklabs/typewriter';
 import { extractVariablesFromArnFormat, findNonIdentifierArnProperty } from './arn';
+import { ImportPaths } from './aws-cdk-lib';
 import { CDK_CORE, CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
 import { ResourceDecider } from './resource-decider';
@@ -51,7 +52,6 @@ import {
 } from '../naming';
 import { isDefined, splitDocumentation, maybeDeprecated } from '../util';
 import { RelationshipDecider } from './relationship-decider';
-import { SelectiveImport } from './service-submodule';
 
 export interface ITypeHost {
   typeFromSpecType(type: PropertyType): Type;
@@ -63,7 +63,8 @@ export interface Referenceable {
 }
 
 export interface ResourceClassProps {
-  readonly interfacesModule?: {
+  readonly importPaths: ImportPaths;
+  readonly interfacesModule: {
     readonly module: Module;
     readonly importLocation: string;
   };
@@ -77,14 +78,13 @@ export class ResourceClass extends ClassType implements Referenceable {
   private readonly relationshipDecider: RelationshipDecider;
   private readonly converter: TypeConverter;
   private readonly module: Module;
-  public readonly imports = new Array<SelectiveImport>();
   public ref: ReferenceInterfaceTypes;
 
   constructor(
     scope: IScope,
     private readonly db: SpecDatabase,
     private readonly resource: Resource,
-    private readonly props: ResourceClassProps = {},
+    private readonly props: ResourceClassProps,
   ) {
     // A mutable array we pass to super()
     const implements_: Type[] = [CDK_CORE.IInspectable];
@@ -107,15 +107,17 @@ export class ResourceClass extends ClassType implements Referenceable {
 
     this.module = Module.of(this);
 
-    this.relationshipDecider = new RelationshipDecider(this.resource, db);
+    this.relationshipDecider = new RelationshipDecider(this.resource, db, {
+      enableRelationships: true,
+      enableNestedRelationships: false,
+      refsImportLocation: this.props.importPaths.interfaces,
+    });
     this.converter = TypeConverter.forResource({
       db: db,
       resource: this.resource,
       resourceClass: this,
       relationshipDecider: this.relationshipDecider,
     });
-
-    this.imports = this.relationshipDecider.imports;
     this.decider = new ResourceDecider(this.resource, this.converter, this.relationshipDecider);
 
     this.propsType = new StructType(this.scope, {

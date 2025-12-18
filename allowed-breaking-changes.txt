@@ -4009,3 +4009,8 @@ weakened:aws-cdk-lib.aws_dynamodb.SchemaOptions
 # property unconfiguredBehavesLike is deprecated and had its type changed
 strengthened:aws-cdk-lib.cloud_assembly_schema.FeatureFlag
 weakened:aws-cdk-lib.cloud_assembly_schema.FeatureFlag
+# See https://github.com/aws/aws-cdk/discussions/32609
+removed:aws-cdk-lib.aws_ecs.AsgCapacityProvider.canContainersAccessInstanceRole
+removed:aws-cdk-lib.aws_ecs.AddAutoScalingGroupCapacityOptions.canContainersAccessInstanceRole
+removed:aws-cdk-lib.aws_ecs.AddCapacityOptions.canContainersAccessInstanceRole
+removed:aws-cdk-lib.aws_ecs.AsgCapacityProviderProps.canContainersAccessInstanceRole

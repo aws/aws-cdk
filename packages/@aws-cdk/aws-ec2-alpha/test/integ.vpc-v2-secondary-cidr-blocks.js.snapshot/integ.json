@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integtest-secondary-cidr-blocks/DefaultTest": {
+      "stacks": [
+        "aws-cdk-vpcv2-secondary-cidr-blocks"
+      ],
+      "assertionStack": "integtest-secondary-cidr-blocks/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestsecondarycidrblocksDefaultTestDeployAssert2FDA9A3A"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

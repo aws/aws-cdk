@@ -1666,7 +1666,7 @@ describe('ec2 service', () => {
       addDefaultCapacityProvider(cluster, stack, vpc);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
-      const container = taskDefinition.addContainer('web', {
+      taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512,
       });
@@ -1688,7 +1688,7 @@ describe('ec2 service', () => {
       addDefaultCapacityProvider(cluster, stack, vpc);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
-      const container = taskDefinition.addContainer('web', {
+      taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512,
       });
@@ -1711,7 +1711,7 @@ describe('ec2 service', () => {
       addDefaultCapacityProvider(cluster, stack, vpc);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
-      const container = taskDefinition.addContainer('web', {
+      taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512,
       });
@@ -1735,7 +1735,7 @@ describe('ec2 service', () => {
       addDefaultCapacityProvider(cluster, stack, vpc);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
-      const container = taskDefinition.addContainer('web', {
+      taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512,
       });
