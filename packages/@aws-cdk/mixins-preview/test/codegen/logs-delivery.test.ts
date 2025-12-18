@@ -43,6 +43,38 @@ test('Logs Delivery Mixin for a resource', () => {
       logTypes: ['APPLICATION_LOGS', 'ACCESS_LOGS'],
       destinations: ['CWL', 'FH', 'S3'],
     },
+    vendedLogsConfig: [
+      {
+        permissionsVersion: 'V2',
+        logType: 'APPLICATION_LOGS',
+        destinations: [
+          {
+            destinationType: 'S3',
+          },
+          {
+            destinationType: 'CWL',
+          },
+          {
+            destinationType: 'FH',
+          },
+        ],
+      },
+      {
+        permissionsVersion: 'V2',
+        logType: 'ACCESS_LOGS',
+        destinations: [
+          {
+            destinationType: 'S3',
+          },
+          {
+            destinationType: 'CWL',
+          },
+          {
+            destinationType: 'FH',
+          },
+        ],
+      },
+    ],
   });
   db.link('hasResource', service, resource);
 
