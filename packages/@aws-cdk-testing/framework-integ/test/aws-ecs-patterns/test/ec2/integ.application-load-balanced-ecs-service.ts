@@ -1,15 +1,13 @@
 import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 import { InstanceType, Vpc, SecurityGroup, Peer, Port } from 'aws-cdk-lib/aws-ec2';
 import { Cluster, ContainerImage, AsgCapacityProvider, EcsOptimizedImage } from 'aws-cdk-lib/aws-ecs';
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Stack, CfnResource } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { ApplicationLoadBalancedEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 const app = new App({
   postCliContext: {
-    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
-    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
   },
 });
 const stack = new Stack(app, 'aws-ecs-integ-alb');
@@ -20,6 +18,11 @@ const securityGroup = new SecurityGroup(stack, 'SecurityGroup', {
   allowAllOutbound: true,
 });
 securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcpRange(32768, 65535));
+// Suppress security guardian rule - intentionally allowing public access for load balancer testing
+const cfnSecurityGroup = securityGroup.node.defaultChild as CfnResource;
+cfnSecurityGroup.addMetadata('guard', {
+  SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+});
 
 const provider1 = new AsgCapacityProvider(stack, 'FirstCapacityProvier', {
   autoScalingGroup: new AutoScalingGroup(stack, 'FirstAutoScalingGroup', {
@@ -65,6 +68,13 @@ const applicationLoadBalancedEc2Service = new ApplicationLoadBalancedEc2Service(
   ipAddressType: elbv2.IpAddressType.IPV4,
 });
 applicationLoadBalancedEc2Service.loadBalancer.connections.addSecurityGroup(securityGroup);
+// Suppress security guardian rule - load balancer intentionally needs public access for testing
+applicationLoadBalancedEc2Service.loadBalancer.connections.securityGroups.forEach(sg => {
+  const cfnSg = sg.node.defaultChild as CfnResource;
+  cfnSg.addMetadata('guard', {
+    SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+  });
+});
 
 new integ.IntegTest(app, 'applicationLoadBalancedEc2ServiceTest', {
   testCases: [stack],

@@ -429,7 +429,7 @@
          {
           "Ref": "ClusterEB0386A7"
          },
-         " >> /etc/ecs/ecs.config\nsudo yum install -y iptables-services; sudo iptables --insert DOCKER-USER 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo iptables-save | sudo tee /etc/sysconfig/iptables && sudo systemctl enable --now iptables\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config\nyum install -y aws-cfn-bootstrap\n/opt/aws/bin/cfn-signal -e $? --stack ",
+         " >> /etc/ecs/ecs.config\nyum install -y aws-cfn-bootstrap\n/opt/aws/bin/cfn-signal -e $? --stack ",
          {
           "Ref": "AWS::StackId"
          },
