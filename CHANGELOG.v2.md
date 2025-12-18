@@ -30,10 +30,6 @@ All notable changes to this project will be documented in this file. See [standa
 * re-export of `ResourceEnvironment` is not an alias ([#36370](https://github.com/aws/aws-cdk/issues/36370)) ([ba8e194](https://github.com/aws/aws-cdk/commit/ba8e194891e96848d512e1e60f9143746fde0954))
 
 
-### Reverts
-
-* turn on stripInternal everywhere ([#36313](https://github.com/aws/aws-cdk/issues/36313)) ([5869e38](https://github.com/aws/aws-cdk/commit/5869e3827643f0554fa3557f95488d53e966248f)), closes [#36310](https://github.com/aws/aws-cdk/issues/36310)
-
 ## [2.232.2](https://github.com/aws/aws-cdk/compare/v2.232.1...v2.232.2) (2025-12-12)
 
 
