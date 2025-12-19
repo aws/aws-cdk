@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Node
         uses: actions/setup-node@v6
@@ -36,7 +36,7 @@ jobs:
         run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
       - name: Restore Yarn cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -66,7 +66,7 @@ jobs:
           git diff --binary --patch --staged > ${{ runner.temp }}/upgrade.patch
 
       - name: Upload Patch
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: upgrade.patch
           path: ${{ runner.temp }}/upgrade.patch
@@ -80,10 +80,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Download patch
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: upgrade.patch
           path: ${{ runner.temp }}
@@ -93,7 +93,7 @@ jobs:
           }}/upgrade.patch || echo "Empty patch. Skipping."'
 
       - name: Make Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           # Git commit details
           branch: automation/yarn-upgrade-dependencies-requiring-intervention

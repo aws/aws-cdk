@@ -661,7 +661,7 @@ function deepMerge(target: any, ...sources: any[]) {
     }
 
     for (const key of Object.keys(source)) {
-      if (key === '__proto__' || key === 'constructor') {
+      if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
         continue;
       }
 

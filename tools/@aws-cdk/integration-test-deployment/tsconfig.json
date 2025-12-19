@@ -14,9 +14,10 @@
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
     "composite": true,
+    "isolatedModules": true,
     "incremental": true,
     "moduleResolution": "node",
-    "types": ["node"],
+    "types": ["node", "jest"],
     "outDir": "."
   },
   "include": ["**/*.ts"],

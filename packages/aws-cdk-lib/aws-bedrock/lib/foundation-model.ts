@@ -95,6 +95,9 @@ export class FoundationModelIdentifier {
   /** Base model "amazon.nova-premier-v1:0". */
   public static readonly AMAZON_NOVA_PREMIER_V1_0 = new FoundationModelIdentifier('amazon.nova-premier-v1:0');
 
+  /** amazon.nova-2-multimodal-embeddings-v1:0 */
+  public static readonly AMAZON_NOVA_2_MULTIMODAL_EMBEDDINGS_V1_0 = new FoundationModelIdentifier('amazon.nova-2-multimodal-embeddings-v1:0');
+
   /**
    * Base model "ai21.j2-mid".
    * @deprecated use latest version of the model
@@ -262,6 +265,9 @@ export class FoundationModelIdentifier {
 
   /** Base model "anthropic.claude-opus-4-1-20250805-v1:0". */
   public static readonly ANTHROPIC_CLAUDE_OPUS_4_1_20250805_V1_0 = new FoundationModelIdentifier('anthropic.claude-opus-4-1-20250805-v1:0');
+
+  /** Base model "anthropic.claude-opus-4-5-20251101-v1:0". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_5_20251101_V1_0 = new FoundationModelIdentifier('anthropic.claude-opus-4-5-20251101-v1:0');
 
   /**
    * Base model "anthropic.claude-instant-v1".

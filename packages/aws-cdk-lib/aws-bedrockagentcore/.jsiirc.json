@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.bedrockagentcore"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.BedrockAgentCore"
+      "namespace": "Amazon.CDK.AWS.BedrockAgentCore"
     },
     "python": {
       "module": "aws_cdk.aws_bedrockagentcore"

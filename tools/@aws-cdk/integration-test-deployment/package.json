@@ -16,11 +16,14 @@
     "watch": "tsc --build -w tsconfig.json",
     "integration-test-deployment": "node bin/index.js"
   },
+  "dependencies": {
+    "@aws-sdk/client-sts": "3.632.0",
+    "@cdklabs/cdk-atmosphere-client": "^0.0.78"
+  },
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@cdklabs/cdk-atmosphere-client": "^0.0.62",
     "jest": "^29",
-    "ts-jest": "^29.4.1",
+    "ts-jest": "^29.4.6",
     "typescript": "~5.5.4"
   },
   "license": "Apache-2.0"
