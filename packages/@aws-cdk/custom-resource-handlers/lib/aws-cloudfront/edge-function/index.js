@@ -1,8 +1,7 @@
 "use strict";
+/* eslint-disable import/no-extraneous-dependencies */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = handler;
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable no-console */
 const client_ssm_1 = require("@aws-sdk/client-ssm");
 async function handler(event) {
     const props = event.ResourceProperties;
