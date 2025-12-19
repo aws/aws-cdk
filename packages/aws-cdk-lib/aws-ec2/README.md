@@ -883,7 +883,7 @@ const sg = ec2.SecurityGroup.fromLookupById(this, 'SecurityGroupLookup', 'sg-123
 ```
 
 The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be
-written to a file called `cdk.context.json`. 
+written to a file called `cdk.context.json`.
 You must commit this file to source control so that the lookup values are available in non-privileged
 environments such as CI build steps, and to ensure your template builds are repeatable.
 
@@ -972,7 +972,7 @@ examples of images you might want to use:
 > `cdk.context.json`, or use the `cdk context` command. For more information, see
 > [Runtime Context](https://docs.aws.amazon.com/cdk/latest/guide/context.html) in the CDK
 > developer guide.
-> 
+>
 > To customize the cache key, use the `additionalCacheKey` parameter.
 > This allows you to have multiple lookups with the same parameters
 > cache their values separately. This can be useful if you want to
@@ -1796,6 +1796,32 @@ new ec2.Instance(this, 'Instance', {
       volume: ec2.BlockDeviceVolume.ebs(100, {
         volumeType: ec2.EbsDeviceVolumeType.GP3,
         throughput: 250,
+      }),
+    },
+  ],
+});
+
+```
+
+To specify the EBS Provisioned Rate for Volume Initialization value for ebs volumes, use the `volumeInitializationRate` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // ...
+
+  blockDevices: [
+    {
+      deviceName: '/dev/sda1',
+      volume: ec2.BlockDeviceVolume.ebs(100, {
+        volumeInitializationRate: 200,
       }),
     },
   ],
