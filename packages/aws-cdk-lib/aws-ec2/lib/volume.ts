@@ -99,6 +99,12 @@ export interface EbsDeviceOptionsBase {
    */
   readonly throughput?: number;
 
+  /**
+   * The volumeInitializationRate that the volume supports, in MiB/s
+   * Takes a minimum of 100 and maximum of 300.
+   * @see https://docs.aws.amazon.com/ebs/latest/userguide/initalize-volume.html
+   * @default - none
+   */
   readonly volumeInitializationRate?: number;
 }
 
