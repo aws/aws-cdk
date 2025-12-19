@@ -6,7 +6,7 @@ import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { AvailabilityZoneRebalancing } from '../availability-zone-rebalancing';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
-import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
+import { fromServiceAttributes, extractServiceNameFromArn, extractClusterNameFromArn } from '../base/from-service-attributes';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
@@ -150,7 +150,15 @@ export class Ec2Service extends BaseService implements IEc2Service {
   public static fromEc2ServiceArn(scope: Construct, id: string, ec2ServiceArn: string): IEc2Service {
     class Import extends Resource implements IEc2Service {
       public readonly serviceArn = ec2ServiceArn;
-      public readonly serviceName = extractServiceNameFromArn(this, ec2ServiceArn);
+      public readonly serviceName = extractServiceNameFromArn(scope, ec2ServiceArn);
+      private readonly _clusterName = extractClusterNameFromArn(scope, ec2ServiceArn);
+
+      public get serviceRef() {
+        return {
+          serviceArn: this.serviceArn,
+          cluster: this._clusterName,
+        };
+      }
     }
     return new Import(scope, id);
   }

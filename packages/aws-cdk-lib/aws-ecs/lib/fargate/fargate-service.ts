@@ -7,7 +7,7 @@ import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { AvailabilityZoneRebalancing } from '../availability-zone-rebalancing';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
-import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
+import { fromServiceAttributes, extractServiceNameFromArn, extractClusterNameFromArn } from '../base/from-service-attributes';
 import { TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 
@@ -128,7 +128,15 @@ export class FargateService extends BaseService implements IFargateService {
   public static fromFargateServiceArn(scope: Construct, id: string, fargateServiceArn: string): IFargateService {
     class Import extends cdk.Resource implements IFargateService {
       public readonly serviceArn = fargateServiceArn;
-      public readonly serviceName = extractServiceNameFromArn(this, fargateServiceArn);
+      public readonly serviceName = extractServiceNameFromArn(scope, fargateServiceArn);
+      private readonly _clusterName = extractClusterNameFromArn(scope, fargateServiceArn);
+
+      public get serviceRef() {
+        return {
+          serviceArn: this.serviceArn,
+          cluster: this._clusterName,
+        };
+      }
     }
     return new Import(scope, id);
   }

@@ -79,6 +79,12 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
    */
   readonly _taskRole?: IRole;
 
+  public get taskDefinitionRef() {
+    return {
+      taskDefinitionArn: this.taskDefinitionArn,
+    };
+  }
+
   constructor(scope: Construct, id: string, props: ImportedTaskDefinitionProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry

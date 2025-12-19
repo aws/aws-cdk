@@ -57,6 +57,13 @@ export function fromServiceAttributes(scope: Construct, id: string, attrs: Servi
     public readonly serviceArn = arn;
     public readonly serviceName = name;
     public readonly cluster = attrs.cluster;
+
+    public get serviceRef() {
+      return {
+        serviceArn: this.serviceArn,
+        cluster: this.cluster.clusterName,
+      };
+    }
   }
   return new Import(scope, id, {
     environmentFromArn: arn,
@@ -79,5 +86,27 @@ export function extractServiceNameFromArn(scope: Construct, arn: string): string
     const resourceName = stack.splitArn(arn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
     const resourceNameSplit = resourceName.split('/');
     return resourceNameSplit.length === 1 ? resourceName : resourceNameSplit[1];
+  }
+}
+
+export function extractClusterNameFromArn(scope: Construct, arn: string): string {
+  const newArnFormat = FeatureFlags.of(scope).isEnabled(ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME);
+  const stack = Stack.of(scope);
+
+  if (Token.isUnresolved(arn)) {
+    if (newArnFormat) {
+      const components = Fn.split(':', arn);
+      const lastComponents = Fn.split('/', Fn.select(5, components));
+      return Fn.select(1, lastComponents);
+    } else {
+      throw new ValidationError('Cannot extract cluster name from service ARN in old format when ARN is unresolved', scope);
+    }
+  } else {
+    const resourceName = stack.splitArn(arn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
+    const resourceNameSplit = resourceName.split('/');
+    if (resourceNameSplit.length === 1) {
+      throw new ValidationError(`Cannot extract cluster name from service ARN: ${arn}. The ARN is in the old format which does not include the cluster name.`, scope);
+    }
+    return resourceNameSplit[0];
   }
 }

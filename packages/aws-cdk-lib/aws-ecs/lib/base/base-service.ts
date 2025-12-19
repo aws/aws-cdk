@@ -25,6 +25,7 @@ import {
   ValidationError,
 } from '../../../core';
 import * as cxapi from '../../../cx-api';
+import { IServiceRef } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
 import { RegionInfo } from '../../../region-info';
 import { IAlternateTarget } from '../alternate-target-configuration';
 import {
@@ -42,7 +43,7 @@ import { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
 /**
  * The interface for a service.
  */
-export interface IService extends IResource {
+export interface IService extends IResource, IServiceRef {
   /**
    * The Amazon Resource Name (ARN) of the service.
    *
@@ -603,6 +604,13 @@ export abstract class BaseService extends Resource
       public readonly serviceArn = serviceArn;
       public readonly serviceName = serviceName;
       public readonly cluster = cluster;
+
+      public get serviceRef() {
+        return {
+          serviceArn: this.serviceArn,
+          cluster: this.cluster.clusterName,
+        };
+      }
     }
 
     return new Import(scope, id, {
@@ -639,6 +647,13 @@ export abstract class BaseService extends Resource
    * The cluster that hosts the service.
    */
   public readonly cluster: ICluster;
+
+  public get serviceRef() {
+    return {
+      serviceArn: this.serviceArn,
+      cluster: this.cluster.clusterName,
+    };
+  }
 
   /**
    * The details of the AWS Cloud Map service.
