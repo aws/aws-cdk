@@ -98,6 +98,8 @@ export interface EbsDeviceOptionsBase {
    * @default - 125 MiB/s.
    */
   readonly throughput?: number;
+
+  readonly volumeInitializationRate?: number;
 }
 
 /**

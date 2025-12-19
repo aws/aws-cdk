@@ -76,6 +76,7 @@ export interface EbsDeviceOptionsBase {
    * @default - 125 MiB/s. Only valid on gp3 volumes.
    */
   readonly throughput?: number;
+  readonly volumeInitializationRate?: number;
 }
 
 /**

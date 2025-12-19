@@ -462,6 +462,33 @@ describe('LaunchTemplate', () => {
     }).toThrow('Throughput (MiBps) to iops ratio of 0.25033333333333335 is too high; maximum is 0.25 MiBps per iops');
   });
 
+  test.each([99, 301])('throws if volumeInitializationRate is set less than 100 or more than 300', (volumeInitializationRate) => {
+    expect(() => {
+      new LaunchTemplate(stack, 'LaunchTemplate', {
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: BlockDeviceVolume.ebs(15, {
+            volumeType: EbsDeviceVolumeType.GP3,
+            volumeInitializationRate,
+          }),
+        }],
+      });
+    }).toThrow(/'volumeInitializationRate' must be between 100 and 300, got/);
+  });
+  test('throws if volumeInitializationRate is not an integer', () => {
+    expect(() => {
+      new LaunchTemplate(stack, 'LaunchTemplate', {
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: BlockDeviceVolume.ebs(15, {
+            volumeType: EbsDeviceVolumeType.GP3,
+            volumeInitializationRate: 234.56,
+          }),
+        }],
+      });
+    }).toThrow("'volumeInitializationRate' must be an integer, got: 234.56.");
+  });
+
   test('Given instance profile', () => {
     // GIVEN
     const role = new Role(stack, 'TestRole', {
