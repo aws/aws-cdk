@@ -93,7 +93,7 @@ class LogsDelivery {
   ) {
     this.scope = scope;
 
-    for (const log of this.resource.vendedLogsConfig || []) {
+    for (const log of this.resource.vendedLogs || []) {
       const logClass = new LogsHelper(this.scope,
         `${naming.classNameFromResource(this.resource)}${log.logType.split('_').map(word => word.charAt(0) + word.slice(1).toLowerCase()).join('')}`,
         this.resource, log,
