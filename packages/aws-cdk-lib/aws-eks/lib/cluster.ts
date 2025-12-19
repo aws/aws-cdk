@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Construct, Node } from 'constructs';
 import * as YAML from 'yaml';
-import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
+import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType, AccessEntryType } from './access-entry';
 import { IAddon, Addon } from './addon';
 import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
@@ -1940,10 +1940,13 @@ export class Cluster extends ClusterBase {
    * @param id - The ID of the `AccessEntry` construct to be created.
    * @param principal - The IAM principal (role or user) to be granted access to the EKS cluster.
    * @param accessPolicies - An array of `IAccessPolicy` objects that define the access permissions to be granted to the IAM principal.
+   * @param accessEntryType - The type of the access entry. Use `AccessEntryType.EC2` for EKS Auto Mode node roles.
+   *
+   * @default - No specific access entry type (defaults to STANDARD in CloudFormation)
    */
   @MethodMetadata()
-  public grantAccess(id: string, principal: string, accessPolicies: IAccessPolicy[]) {
-    this.addToAccessEntry(id, principal, accessPolicies);
+  public grantAccess(id: string, principal: string, accessPolicies: IAccessPolicy[], accessEntryType?: AccessEntryType) {
+    this.addToAccessEntry(id, principal, accessPolicies, accessEntryType);
   }
 
   /**
@@ -2192,7 +2195,7 @@ export class Cluster extends ClusterBase {
    *
    * @returns {void}
    */
-  private addToAccessEntry(id: string, principal: string, policies: IAccessPolicy[]) {
+  private addToAccessEntry(id: string, principal: string, policies: IAccessPolicy[], accessEntryType?: AccessEntryType) {
     const entry = this.accessEntries.get(principal);
     if (entry) {
       (entry as AccessEntry).addAccessPolicies(policies);
@@ -2201,6 +2204,7 @@ export class Cluster extends ClusterBase {
         principal,
         cluster: this,
         accessPolicies: policies,
+        accessEntryType,
       });
       this.accessEntries.set(principal, newEntry);
     }
