@@ -1803,31 +1803,6 @@ new ec2.Instance(this, 'Instance', {
 
 ```
 
-To specify the EBS Provisioned Rate for Volume Initialization value for ebs volumes, use the `volumeInitializationRate` property:
-
-```ts
-declare const vpc: ec2.Vpc;
-declare const instanceType: ec2.InstanceType;
-declare const machineImage: ec2.IMachineImage;
-
-new ec2.Instance(this, 'Instance', {
-  vpc,
-  instanceType,
-  machineImage,
-
-  // ...
-
-  blockDevices: [
-    {
-      deviceName: '/dev/sda1',
-      volume: ec2.BlockDeviceVolume.ebs(100, {
-        volumeInitializationRate: 200,
-      }),
-    },
-  ],
-});
-
-```
 
 #### EBS Optimized Instances
 
@@ -2640,6 +2615,25 @@ To use [AWS Systems Manager parameters instead of AMI IDs](https://docs.aws.amaz
 const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
   machineImage: ec2.MachineImage.resolveSsmParameterAtLaunch('parameterName'),
 });
+```
+
+To specify the EBS Provisioned Rate for Volume Initialization value for ebs volumes, use the `volumeInitializationRate` property on ebs Volumes:
+
+```ts
+const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+      blockDevices: [
+        {
+          deviceName: '/dev/sda1',
+          volume: {
+            ebsDevice: {
+              volumeSize: 150,
+              volumeInitializationRate: 200,
+            },
+          },
+        },
+      ],
+    });
+
 ```
 
 ### Placement Group
