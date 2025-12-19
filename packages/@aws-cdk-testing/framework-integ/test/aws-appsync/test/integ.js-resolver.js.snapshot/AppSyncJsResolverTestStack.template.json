@@ -137,17 +137,12 @@
         "dynamodb:UpdateItem"
        ],
        "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "DynamoTableB2B22E15",
-          "Arn"
-         ]
-        },
-        {
-         "Ref": "AWS::NoValue"
-        }
-       ]
+       "Resource": {
+        "Fn::GetAtt": [
+         "DynamoTableB2B22E15",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -395,7 +390,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "InvokeApiServiceRoleFB17CD97"

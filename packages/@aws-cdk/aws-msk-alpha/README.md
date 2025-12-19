@@ -232,6 +232,36 @@ const cluster = new msk.Cluster(this, 'cluster', {
 });
 ```
 
+## MSK Express Brokers
+
+You can create an MSK cluster with Express Brokers by setting the `brokerType` property to `BrokerType.EXPRESS`. Express Brokers are a low-cost option for development, testing, and workloads that don't require the high availability guarantees of standard MSK cluster.
+For more information, see [Amazon MSK Express Brokers](https://docs.aws.amazon.com/msk/latest/developerguide/msk-broker-types-express.html).
+
+**Note:** When using Express Brokers, the following constraints apply:
+
+- Apache Kafka version must be 3.6.x or 3.8.x
+- You must specify the `instanceType`
+- The VPC must have at least 3 subnets (across 3 AZs)
+- `ebsStorageInfo` is not supported
+- `storageMode` is not supported
+- `logging` is not supported
+- Supported broker sizes: `m7g.xlarge`, `m7g.2xlarge`, `m7g.4xlarge`, `m7g.8xlarge`, `m7g.12xlarge`, `m7g.16xlarge`
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const expressCluster = new msk.Cluster(this, 'ExpressCluster', {
+  clusterName: 'MyExpressCluster',
+  kafkaVersion: msk.KafkaVersion.V3_8_X,
+  vpc,
+  brokerType: msk.BrokerType.EXPRESS,
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.M7G,
+    ec2.InstanceSize.XLARGE,
+  ),
+});
+```
+
 ## MSK Serverless
 
 You can also use MSK Serverless by using `ServerlessCluster` class.

@@ -34,12 +34,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
-          node-version: "18"
+          node-version: "20"
           cache: "yarn"
 
       - name: Set up Docker
@@ -47,7 +47,7 @@ jobs:
 
       - name: Load Docker images
         id: docker-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             ~/.docker-images.tar
@@ -58,7 +58,7 @@ jobs:
         run: docker image load --input ~/.docker-images.tar
 
       - name: Cache build artifacts
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.s3buildcache
@@ -70,7 +70,7 @@ jobs:
           sudo sysctl -w vm.max_map_count=2251954
 
       - name: Build
-        run: /bin/bash ./build.sh --ci
+        run: /bin/bash ./build.sh --ci --concurrency 10
 
       - name: Run Rosetta
         run: /bin/bash ./scripts/run-rosetta.sh
@@ -84,8 +84,25 @@ jobs:
 
       - name: Cache Docker images
         if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             ~/.docker-images.tar
           key: docker-cache-${{ runner.os }}
+
+      - name: Save PR info for PR Linter
+        if: github.event_name == 'pull_request'
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          mkdir -p ./pr
+          echo $PR_NUMBER > ./pr/pr_number
+          echo $PR_SHA > ./pr/pr_sha
+
+      - name: Upload PR info artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v6
+        with:
+          name: pr_info
+          path: pr/

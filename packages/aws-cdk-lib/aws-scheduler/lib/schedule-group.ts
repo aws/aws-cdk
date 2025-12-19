@@ -1,8 +1,9 @@
 import { Construct } from 'constructs';
-import { CfnScheduleGroup } from './scheduler.generated';
+import { ScheduleGroupGrants } from './schedule-group-grants';
+import { CfnScheduleGroup, IScheduleGroupRef, ScheduleGroupReference } from './scheduler.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { Arn, ArnFormat, Aws, IResource, Names, RemovalPolicy, Resource, Stack } from '../../core';
+import { ArnFormat, IResource, Names, RemovalPolicy, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -30,7 +31,7 @@ export interface ScheduleGroupProps {
 /**
  * Interface representing a created or an imported `ScheduleGroup`.
  */
-export interface IScheduleGroup extends IResource {
+export interface IScheduleGroup extends IResource, IScheduleGroupRef {
   /**
    * The name of the schedule group
    *
@@ -144,6 +145,18 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
   public abstract readonly scheduleGroupArn: string;
 
   /**
+   * Collection of grant methods for a ScheduleGroup
+   */
+  public readonly grants = ScheduleGroupGrants.fromScheduleGroup(this);
+
+  public get scheduleGroupRef(): ScheduleGroupReference {
+    return {
+      scheduleGroupArn: this.scheduleGroupArn,
+      scheduleGroupName: this.scheduleGroupName,
+    };
+  }
+
+  /**
    * Return the given named metric for this schedule group
    *
    * @default - sum over 5 minutes
@@ -244,18 +257,6 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
       grantee,
       actions,
       resourceArns: [this.scheduleGroupArn],
-      scope: this,
-    });
-  }
-
-  private arnForScheduleInGroup(scheduleName: string): string {
-    return Arn.format({
-      region: this.env.region,
-      account: this.env.account,
-      partition: Aws.PARTITION,
-      service: 'scheduler',
-      resource: 'schedule',
-      resourceName: this.scheduleGroupName + '/' + scheduleName,
     });
   }
 
@@ -263,36 +264,21 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
    * Grant list and get schedule permissions for schedules in this group to the given principal
    */
   public grantReadSchedules(identity: iam.IGrantable) {
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: ['scheduler:GetSchedule', 'scheduler:ListSchedules'],
-      resourceArns: [this.arnForScheduleInGroup('*')],
-      scope: this,
-    });
+    return this.grants.readSchedules(identity);
   }
 
   /**
    * Grant create and update schedule permissions for schedules in this group to the given principal
    */
   public grantWriteSchedules(identity: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: ['scheduler:CreateSchedule', 'scheduler:UpdateSchedule'],
-      resourceArns: [this.arnForScheduleInGroup('*')],
-      scope: this,
-    });
+    return this.grants.writeSchedules(identity);
   }
 
   /**
    * Grant delete schedule permission for schedules in this group to the given principal
    */
   public grantDeleteSchedules(identity: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: ['scheduler:DeleteSchedule'],
-      resourceArns: [this.arnForScheduleInGroup('*')],
-      scope: this,
-    });
+    return this.grants.deleteSchedules(identity);
   }
 }
 

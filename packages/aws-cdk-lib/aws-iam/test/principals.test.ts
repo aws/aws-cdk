@@ -1,6 +1,5 @@
 import { Template } from '../../assertions';
 import { App, CfnOutput, Stack } from '../../core';
-import * as cxapi from '../../cx-api';
 import * as iam from '../lib';
 import { ServicePrincipal } from '../lib';
 

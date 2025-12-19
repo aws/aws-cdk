@@ -1,15 +1,12 @@
-/* eslint-disable max-len */
+
 /* eslint-disable no-console */
 import * as child_process from 'child_process';
 import * as path from 'path';
-import { JsiiFeature } from '@jsii/spec';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as reflect from 'jsii-reflect';
 import * as yargs from 'yargs';
 import { ALL_RULES_LINTER, DiagnosticLevel, RuleFilterSet } from '../lib';
-
-const FEATURES: JsiiFeature[] = ['intersection-types'];
 
 let stackTrace = false;
 
@@ -106,7 +103,6 @@ async function main() {
       mergeOptions(args, pkg.awslint);
     }
   }
-
 
   if (args.debug) {
     console.error('command: ' + command);
@@ -218,7 +214,6 @@ async function main() {
   throw new Error(`Invalid command: ${command}`);
 
   async function shouldCompile() {
-
     // if --compile is explicitly enabled then just compile always
     if (args.compile === true) {
       return true;
@@ -237,7 +232,6 @@ async function main() {
     // compile!
     return true;
   }
-
 }
 
 main().catch(e => {
@@ -250,7 +244,10 @@ main().catch(e => {
 
 async function loadModule(dir: string) {
   const ts = new reflect.TypeSystem();
-  await ts.load(dir, { validate: false, supportedFeatures: FEATURES }); // Don't validate to save 66% of execution time (20s vs 1min).
+  await ts.load(dir, {
+    validate: false, // Don't validate to save 66% of execution time (20s vs 1min).
+    supportedFeatures: ['intersection-types', 'class-covariant-overrides'],
+  });
   // We run 'awslint' during build time, assemblies are guaranteed to be ok.
 
   // We won't load any more assemblies. Lock the typesystem to benefit from performance improvements.
@@ -267,7 +264,6 @@ function mergeOptions(dest: any, pkg?: any) {
   if (!pkg) { return; } // no options in package.json
 
   for (const [key, value] of Object.entries(pkg)) {
-
     // if this is an array option, then add values to destination
     if (Array.isArray(value)) {
       const arr = dest[key] || [];

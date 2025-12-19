@@ -6,19 +6,22 @@ coverage
 *.tgz
 
 dist
+!lib/custom-resource-handlers/dist
 .LAST_PACKAGE
 .LAST_BUILD
 !*.js
 
 # Include .jsii
 !.jsii
+!.jsii.gz
+!rosetta/_generated.ts-fixture
 
 *.snk
 
 *.tsbuildinfo
 
 tsconfig.json
-.eslintrc.js
+eslint.config.mjs
 jest.config.js
 
 # exclude cdk artifacts
@@ -26,3 +29,5 @@ jest.config.js
 junit.xml
 !*.lit.ts
 **/*.snapshot
+
+test/

@@ -1,4 +1,3 @@
-import * as cdk from '../..';
 import { Match, Template } from '../../assertions';
 import * as glue from '../../aws-glue';
 import * as iam from '../../aws-iam';
@@ -6,6 +5,7 @@ import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
+import * as cdk from '../../core';
 import * as firehose from '../lib';
 
 describe('S3 destination', () => {
@@ -228,7 +228,7 @@ describe('S3 destination', () => {
     });
   });
 
-  describe('processing configuration', () => {
+  describe('processing configuration with deprecated processor prop', () => {
     let lambdaFunction: lambda.IFunction;
     let basicLambdaProcessor: firehose.LambdaFunctionProcessor;
     let destinationWithBasicLambdaProcessor: firehose.S3Bucket;
@@ -348,6 +348,201 @@ describe('S3 destination', () => {
         DependsOn: ['DestinationRoleDefaultPolicy1185C75D'],
       });
     });
+  });
+
+  describe('processing configuration with processors prop', () => {
+    it('creates configuration for LambdaFunctionProcessor', () => {
+      const lambdaFunction = new lambda.Function(stack, 'DataProcessorFunction', {
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'bar',
+      });
+      const lambdaProcessor = new firehose.LambdaFunctionProcessor(lambdaFunction);
+      const destination = new firehose.S3Bucket(bucket, {
+        role: destinationRole,
+        processors: [lambdaProcessor],
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', { destination });
+
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          ProcessingConfiguration: {
+            Enabled: true,
+            Processors: [{
+              Type: 'Lambda',
+              Parameters: [
+                {
+                  ParameterName: 'RoleArn',
+                  ParameterValue: stack.resolve(destinationRole.roleArn),
+                },
+                {
+                  ParameterName: 'LambdaArn',
+                  ParameterValue: stack.resolve(lambdaFunction.functionArn),
+                },
+              ],
+            }],
+          },
+        },
+      });
+    });
+
+    it('set all optional parameters', () => {
+      const lambdaFunction = new lambda.Function(stack, 'DataProcessorFunction', {
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'bar',
+      });
+      const lambdaProcessor = new firehose.LambdaFunctionProcessor(lambdaFunction, {
+        bufferInterval: cdk.Duration.minutes(1),
+        bufferSize: cdk.Size.mebibytes(1),
+        retries: 5,
+      });
+      const destination = new firehose.S3Bucket(bucket, {
+        role: destinationRole,
+        processors: [lambdaProcessor],
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', { destination });
+
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          ProcessingConfiguration: {
+            Enabled: true,
+            Processors: [{
+              Type: 'Lambda',
+              Parameters: [
+                {
+                  ParameterName: 'RoleArn',
+                  ParameterValue: stack.resolve(destinationRole.roleArn),
+                },
+                {
+                  ParameterName: 'LambdaArn',
+                  ParameterValue: stack.resolve(lambdaFunction.functionArn),
+                },
+                {
+                  ParameterName: 'BufferIntervalInSeconds',
+                  ParameterValue: '60',
+                },
+                {
+                  ParameterName: 'BufferSizeInMBs',
+                  ParameterValue: '1',
+                },
+                {
+                  ParameterName: 'NumberOfRetries',
+                  ParameterValue: '5',
+                },
+              ],
+            }],
+          },
+        },
+      });
+    });
+
+    it('grants invoke access to the lambda function and delivery stream depends on grant', () => {
+      const lambdaFunction = new lambda.Function(stack, 'DataProcessorFunction', {
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'bar',
+      });
+      const lambdaProcessor = new firehose.LambdaFunctionProcessor(lambdaFunction);
+      const destination = new firehose.S3Bucket(bucket, {
+        role: destinationRole,
+        processors: [lambdaProcessor],
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', { destination });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyName: 'DestinationRoleDefaultPolicy1185C75D',
+        Roles: [stack.resolve(destinationRole.roleName)],
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Action: 'lambda:InvokeFunction',
+              Effect: 'Allow',
+              Resource: [
+                stack.resolve(lambdaFunction.functionArn),
+                { 'Fn::Join': ['', [stack.resolve(lambdaFunction.functionArn), ':*']] },
+              ],
+            },
+          ]),
+        },
+      });
+      Template.fromStack(stack).hasResource('AWS::KinesisFirehose::DeliveryStream', {
+        DependsOn: ['DestinationRoleDefaultPolicy1185C75D'],
+      });
+    });
+
+    it('creates configuration with built-in processors', () => {
+      const lambdaFunction = new lambda.Function(stack, 'DataProcessorFunction', {
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'bar',
+      });
+      const lambdaProcessor = new firehose.LambdaFunctionProcessor(lambdaFunction);
+      const destination = new firehose.S3Bucket(bucket, {
+        role: destinationRole,
+        processors: [
+          new firehose.DecompressionProcessor(),
+          new firehose.CloudWatchLogProcessor({ dataMessageExtraction: true }),
+          lambdaProcessor,
+          new firehose.AppendDelimiterToRecordProcessor(),
+        ],
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', { destination });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          ProcessingConfiguration: {
+            Enabled: true,
+            Processors: [{
+              Type: 'Decompression',
+              Parameters: [
+                { ParameterName: 'CompressionFormat', ParameterValue: 'GZIP' },
+              ],
+            }, {
+              Type: 'CloudWatchLogProcessing',
+              Parameters: [
+                { ParameterName: 'DataMessageExtraction', ParameterValue: 'true' },
+              ],
+            }, {
+              Type: 'Lambda',
+              Parameters: [
+                { ParameterName: 'RoleArn', ParameterValue: stack.resolve(destinationRole.roleArn) },
+                { ParameterName: 'LambdaArn', ParameterValue: stack.resolve(lambdaFunction.functionArn) },
+              ],
+            }, {
+              Type: 'AppendDelimiterToRecord',
+              Parameters: [],
+            }],
+          },
+        },
+      });
+    });
+
+    test('CloudWatchLogProcessor throws when dataMessageExtraction is false', () => {
+      expect(() => {
+        new firehose.CloudWatchLogProcessor({ dataMessageExtraction: false });
+      }).toThrow('dataMessageExtraction must be true.');
+    });
+  });
+
+  it('throws when specified both processor and processors', () => {
+    const lambdaFunction = new lambda.Function(stack, 'DataProcessorFunction', {
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      code: lambda.Code.fromInline('foo'),
+      handler: 'bar',
+    });
+    const lambdaProcessor = new firehose.LambdaFunctionProcessor(lambdaFunction);
+    const destination = new firehose.S3Bucket(bucket, {
+      role: destinationRole,
+      processor: lambdaProcessor,
+      processors: [lambdaProcessor],
+    });
+
+    expect(() => {
+      new firehose.DeliveryStream(stack, 'DeliveryStream', { destination });
+    }).toThrow("You can specify either 'processors' or 'processor', not both.");
   });
 
   describe('compression', () => {

@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.workspacesthinclient"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.WorkSpacesThinClient"
+      "namespace": "Amazon.CDK.AWS.WorkSpacesThinClient"
     },
     "python": {
       "module": "aws_cdk.aws_workspacesthinclient"
