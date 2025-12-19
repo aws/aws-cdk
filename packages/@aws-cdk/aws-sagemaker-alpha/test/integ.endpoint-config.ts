@@ -4,15 +4,19 @@ import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as sagemaker from '../lib';
 
+
 /*
  * Stack verification is performed using API assertions below.
  */
 
+
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-sagemaker-endpointconfig');
 
+
 const image = sagemaker.ContainerImage.fromAsset(path.join(__dirname, 'test-image'));
 const modelData = sagemaker.ModelData.fromAsset(path.join(__dirname, 'test-artifacts', 'valid-artifact.tar.gz'));
+
 
 const modelWithArtifactAndVpc = new sagemaker.Model(stack, 'ModelWithArtifactAndVpc', {
   containers: [{ image, modelData }],
@@ -22,12 +26,14 @@ const modelWithoutArtifactAndVpc = new sagemaker.Model(stack, 'ModelWithoutArtif
   containers: [{ image }],
 });
 
+
 const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
   instanceProductionVariants: [
     {
       model: modelWithArtifactAndVpc,
       variantName: 'firstVariant',
       instanceType: sagemaker.InstanceType.M5_LARGE,
+      containerStartupHealthCheckTimeout: cdk.Duration.minutes(5),
     },
     {
       model: modelWithArtifactAndVpc,
@@ -41,6 +47,7 @@ endpointConfig.addInstanceProductionVariant({
   initialVariantWeight: 2.0,
 });
 
+
 // Test serverless endpoint configuration with all properties
 const serverlessEndpointConfig = new sagemaker.EndpointConfig(stack, 'ServerlessEndpointConfig', {
   serverlessProductionVariant: {
@@ -53,6 +60,7 @@ const serverlessEndpointConfig = new sagemaker.EndpointConfig(stack, 'Serverless
   },
 });
 
+
 // Test serverless endpoint configuration with minimal properties
 const minimalServerlessEndpointConfig = new sagemaker.EndpointConfig(stack, 'MinimalServerlessEndpointConfig', {
   serverlessProductionVariant: {
@@ -63,6 +71,7 @@ const minimalServerlessEndpointConfig = new sagemaker.EndpointConfig(stack, 'Min
     // No provisionedConcurrency - testing optional property
   },
 });
+
 
 // Test serverless endpoint configuration with boundary values
 const boundaryServerlessEndpointConfig = new sagemaker.EndpointConfig(stack, 'BoundaryServerlessEndpointConfig', {
@@ -75,9 +84,11 @@ const boundaryServerlessEndpointConfig = new sagemaker.EndpointConfig(stack, 'Bo
   },
 });
 
+
 const integ = new IntegTest(app, 'integtest-endpointconfig', {
   testCases: [stack],
 });
+
 
 // Verify instance-based endpoint config
 integ.assertions.awsApiCall('SageMaker', 'describeEndpointConfig', {
@@ -89,6 +100,7 @@ integ.assertions.awsApiCall('SageMaker', 'describeEndpointConfig', {
     { VariantName: 'thirdVariant' },
   ],
 }));
+
 
 // Verify serverless endpoint config with all properties
 integ.assertions.awsApiCall('SageMaker', 'describeEndpointConfig', {
@@ -104,6 +116,7 @@ integ.assertions.awsApiCall('SageMaker', 'describeEndpointConfig', {
   }],
 }));
 
+
 // Verify minimal serverless endpoint config
 integ.assertions.awsApiCall('SageMaker', 'describeEndpointConfig', {
   EndpointConfigName: minimalServerlessEndpointConfig.endpointConfigName,
@@ -116,6 +129,7 @@ integ.assertions.awsApiCall('SageMaker', 'describeEndpointConfig', {
     },
   }],
 }));
+
 
 // Verify boundary serverless endpoint config
 integ.assertions.awsApiCall('SageMaker', 'describeEndpointConfig', {
