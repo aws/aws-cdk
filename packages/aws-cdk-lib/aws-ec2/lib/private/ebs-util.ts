@@ -87,6 +87,7 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
         ...rest,
         iops,
         throughput,
+        volumeInitializationRate,
         volumeType,
         kmsKeyId: kmsKey?.keyArn,
       };

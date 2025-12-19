@@ -342,6 +342,11 @@ describe('LaunchTemplate', () => {
           volumeType: EbsDeviceVolumeType.GP3,
           throughput: 350,
         }),
+      }, {
+        deviceName: 'volumeInitializationRate',
+        volume: BlockDeviceVolume.ebs(15, {
+          volumeInitializationRate: 300,
+        }),
       },
     ];
 
@@ -400,6 +405,13 @@ describe('LaunchTemplate', () => {
               VolumeSize: 15,
               VolumeType: 'gp3',
               Throughput: 350,
+            },
+          },
+          {
+            DeviceName: 'volumeInitializationRate',
+            Ebs: {
+              VolumeSize: 15,
+              VolumeInitializationRate: 300,
             },
           },
         ],
