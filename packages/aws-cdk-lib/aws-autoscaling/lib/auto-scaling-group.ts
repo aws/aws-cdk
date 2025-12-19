@@ -433,8 +433,6 @@ export interface CommonAutoScalingGroupProps {
   /**
    * An instance lifecycle policy that defines how instances should be handled
    * during lifecycle events, particularly when lifecycle hooks are abandoned or fail.
-   *
-   * @default - No instance lifecycle policy configured
    */
   readonly instanceLifecyclePolicy?: InstanceLifecyclePolicy;
 }
@@ -1170,21 +1168,20 @@ export interface InstanceLifecyclePolicy {
 }
 
 /**
- * Retention triggers for instance lifecycle policy
- *
  * Defines the specific triggers that cause instances to be retained in a Retained state
  * rather than terminated. Each trigger corresponds to a different failure scenario during
- * the instance lifecycle.
+ * the instance lifecycle. This allows fine-grained control over when to preserve instances
+ * for manual intervention.
  */
 export interface RetentionTriggers {
   /**
    * Specifies the action when a termination lifecycle hook is abandoned due to failure,
    * timeout, or explicit abandonment (calling CompleteLifecycleAction).
    *
+   * Set to Retain to move instances to a Retained state. Set to Terminate for default termination behavior.
+   *
    * Retained instances don't count toward desired capacity and remain
    * until you call TerminateInstanceInAutoScalingGroup.
-   *
-   * @default - No action specified
    */
   readonly terminateHookAbandon?: TerminateHookAbandonAction;
 }

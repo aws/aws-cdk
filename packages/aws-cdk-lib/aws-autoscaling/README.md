@@ -830,6 +830,38 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+## Instance Lifecycle Policy
+
+You can configure an instance lifecycle policy to control how instances are handled during lifecycle events, particularly when lifecycle hooks are abandoned or fail. This allows fine-grained control over when to preserve instances for manual intervention.
+
+The instance lifecycle policy defines retention triggers that specify when instances should be moved to a Retained state rather than terminated. Retained instances don't count toward desired capacity and remain until you manually terminate them.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // Configure instance lifecycle policy
+  instanceLifecyclePolicy: {
+    retentionTriggers: {
+      terminateHookAbandon: autoscaling.TerminateHookAbandonAction.RETAIN,
+    },
+  },
+});
+```
+
+The `terminateHookAbandon` trigger specifies the action when a termination lifecycle hook is abandoned due to failure, timeout, or explicit abandonment. You can set it to:
+
+* `RETAIN` - Move instances to a Retained state for manual investigation
+* `TERMINATE` - Use default termination behavior (instances are terminated normally)
+
+This feature is particularly useful for debugging failed instances or preserving instances that contain important data during lifecycle hook failures.
+
 ## Future work
 
 * [ ] CloudWatch Events (impossible to add currently as the AutoScalingGroup ARN is
