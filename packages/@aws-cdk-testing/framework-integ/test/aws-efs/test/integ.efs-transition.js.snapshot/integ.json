@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "48.0.0",
   "testCases": {
     "test-efs-integ-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "test-efs-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "testefsintegtestDefaultTestDeployAssert7E1529D5"
     }
-  }
+  },
+  "minimumCliVersion": "2.1027.0"
 }
