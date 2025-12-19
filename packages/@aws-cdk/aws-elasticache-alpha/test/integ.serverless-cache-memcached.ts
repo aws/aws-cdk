@@ -1,7 +1,7 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
-import { CacheEngine, ServerlessCache } from '../lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import { CacheEngine, ServerlessCache } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'aws-cdk-serverless-cache-memcached', { env: { region: 'us-east-1' } });
