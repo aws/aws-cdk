@@ -1,4 +1,5 @@
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
+import { aws_elasticloadbalancingv2 } from '../../interfaces';
 
 /**
  * A single Application Load Balancer as the target for load balancing.
@@ -20,14 +21,14 @@ export class AlbArnTarget implements elbv2.INetworkLoadBalancerTarget {
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    */
-  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(targetGroup: aws_elasticloadbalancingv2.ITargetGroupRef): elbv2.LoadBalancerTargetProps {
     return this._attach(targetGroup);
   }
 
   /**
    * @internal
    */
-  protected _attach(_targetGroup: elbv2.ITargetGroup): elbv2.LoadBalancerTargetProps {
+  protected _attach(_targetGroup: aws_elasticloadbalancingv2.ITargetGroupRef): elbv2.LoadBalancerTargetProps {
     return {
       targetType: elbv2.TargetType.ALB,
       targetJson: { id: this.albArn, port: this.port },
@@ -48,8 +49,8 @@ export class AlbTarget extends AlbArnTarget {
    * @param alb The application load balancer to load balance to
    * @param port The port on which the target is listening
    */
-  constructor(alb: elbv2.IApplicationLoadBalancer, port: number) {
-    super(alb.loadBalancerArn, port);
+  constructor(alb: aws_elasticloadbalancingv2.ILoadBalancerRef, port: number) {
+    super(alb.loadBalancerRef.loadBalancerArn, port);
   }
 }
 
@@ -68,7 +69,7 @@ export class AlbListenerTarget extends AlbArnTarget {
     super(albListener.loadBalancer.loadBalancerArn, albListener.port);
   }
 
-  private attach(targetGroup: elbv2.ITargetGroup): elbv2.LoadBalancerTargetProps {
+  private attach(targetGroup: aws_elasticloadbalancingv2.ITargetGroupRef): elbv2.LoadBalancerTargetProps {
     targetGroup.node.addDependency(this.albListener);
     return super._attach(targetGroup);
   }
@@ -82,7 +83,7 @@ export class AlbListenerTarget extends AlbArnTarget {
    * This adds dependency on albListener because creation of ALB listener and NLB can vary during runtime.
    * More Details on - https://github.com/aws/aws-cdk/issues/17208
    */
-  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(targetGroup: aws_elasticloadbalancingv2.ITargetGroupRef): elbv2.LoadBalancerTargetProps {
     return this.attach(targetGroup);
   }
 }

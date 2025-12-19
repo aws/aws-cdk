@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
-import { INetworkListener } from './network-listener';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { aws_elasticloadbalancingv2 as elbv2 } from '../../../interfaces';
 import {
   BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
   TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
@@ -154,7 +154,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     return NetworkTargetGroup.fromTargetGroupAttributes(scope, id, props);
   }
 
-  private readonly listeners: INetworkListener[];
+  private readonly listeners: elbv2.IListenerRef[];
   private _metrics?: INetworkTargetGroupMetrics;
 
   constructor(scope: Construct, id: string, props: NetworkTargetGroupProps) {
@@ -203,7 +203,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
    *
    * Don't call this directly. It will be called by listeners.
    */
-  public registerListener(listener: INetworkListener) {
+  public registerListener(listener: elbv2.IListenerRef) {
     this.loadBalancerAttachedDependencies.add(listener);
     this.listeners.push(listener);
   }
@@ -235,7 +235,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     if (this.listeners.length === 0) {
       throw new ValidationError('The TargetGroup needs to be attached to a LoadBalancer before you can call this method', this);
     }
-    return loadBalancerNameFromListenerArn(this.listeners[0].listenerArn);
+    return loadBalancerNameFromListenerArn(this.listeners[0].listenerRef.listenerArn);
   }
 
   protected validateTargetGroup(): string[] {
@@ -307,7 +307,7 @@ export interface INetworkTargetGroup extends ITargetGroup {
    *
    * Don't call this directly. It will be called by listeners.
    */
-  registerListener(listener: INetworkListener): void;
+  registerListener(listener: elbv2.IListenerRef): void;
 
   /**
    * Add a load balancing target to this target group
@@ -339,7 +339,7 @@ class ImportedNetworkTargetGroup extends ImportedTargetGroupBase implements INet
     return this._metrics;
   }
 
-  public registerListener(_listener: INetworkListener) {
+  public registerListener(_listener: elbv2.IListenerRef) {
     // Nothing to do, we know nothing of our members
   }
 

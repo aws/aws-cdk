@@ -5,7 +5,7 @@ import { ApplicationListenerRule, FixedResponse, RedirectResponse } from './appl
 import { IApplicationLoadBalancer } from './application-load-balancer';
 import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
 import { ListenerCondition } from './conditions';
-import { ITrustStore } from './trust-store';
+
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Annotations, Duration, FeatureFlags, Lazy, Resource, Token } from '../../../core';
@@ -13,6 +13,7 @@ import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
+import { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType, IpAddressType, SslPolicy } from '../shared/enums';
@@ -130,7 +131,7 @@ export interface MutualAuthentication {
    *
    * @default - no trust store
    */
-  readonly trustStore?: ITrustStore;
+  readonly trustStore?: aws_elasticloadbalancingv2.ITrustStoreRef;
 
   /**
    * Indicates whether expired client certificates are ignored
@@ -287,7 +288,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
         advertiseTrustStoreCaNames,
         ignoreClientCertificateExpiry: props.mutualAuthentication?.ignoreClientCertificateExpiry,
         mode: props.mutualAuthentication?.mutualAuthenticationMode,
-        trustStoreArn: props.mutualAuthentication?.trustStore?.trustStoreArn,
+        trustStoreArn: props.mutualAuthentication?.trustStore?.trustStoreRef.trustStoreArn,
       } : undefined,
     });
     // Enhanced CDK Analytics Telemetry
@@ -694,6 +695,15 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
    * ARN of the listener
    */
   public abstract readonly listenerArn: string;
+
+  /**
+   * A reference to this listener
+   */
+  public get listenerRef(): aws_elasticloadbalancingv2.ListenerReference {
+    return {
+      listenerArn: this.listenerArn,
+    };
+  }
 
   constructor(scope: Construct, id: string) {
     super(scope, id);

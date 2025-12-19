@@ -8,6 +8,7 @@ import { Duration, Resource, Lazy, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { AlpnPolicy, Protocol, SslPolicy } from '../shared/enums';
@@ -155,6 +156,12 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 
     class LookedUp extends Resource implements INetworkListener {
       public listenerArn = props.listenerArn;
+
+      public get listenerRef(): aws_elasticloadbalancingv2.ListenerReference {
+        return {
+          listenerArn: this.listenerArn,
+        };
+      }
     }
 
     return new LookedUp(scope, id);
@@ -166,6 +173,12 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   public static fromNetworkListenerArn(scope: Construct, id: string, networkListenerArn: string): INetworkListener {
     class Import extends Resource implements INetworkListener {
       public listenerArn = networkListenerArn;
+
+      public get listenerRef(): aws_elasticloadbalancingv2.ListenerReference {
+        return {
+          listenerArn: this.listenerArn,
+        };
+      }
     }
 
     return new Import(scope, id);

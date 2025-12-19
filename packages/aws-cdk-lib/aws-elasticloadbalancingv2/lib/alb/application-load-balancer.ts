@@ -12,6 +12,7 @@ import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
+import { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType, ApplicationProtocol, DesyncMitigationMode } from '../shared/enums';
@@ -1219,6 +1220,15 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
    */
   public readonly loadBalancerArn: string;
 
+  /**
+   * A reference to this load balancer
+   */
+  public get loadBalancerRef(): aws_elasticloadbalancingv2.LoadBalancerReference {
+    return {
+      loadBalancerArn: this.loadBalancerArn,
+    };
+  }
+
   public get listeners(): ApplicationListener[] {
     throw Error('.listeners can only be accessed if the class was constructed as an owned, not imported, load balancer');
   }
@@ -1280,6 +1290,15 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
   public readonly connections: ec2.Connections;
   public readonly vpc?: ec2.IVpc;
   public readonly metrics: IApplicationLoadBalancerMetrics;
+
+  /**
+   * A reference to this load balancer
+   */
+  public get loadBalancerRef(): aws_elasticloadbalancingv2.LoadBalancerReference {
+    return {
+      loadBalancerArn: this.loadBalancerArn,
+    };
+  }
 
   public get listeners(): ApplicationListener[] {
     throw Error('.listeners can only be accessed if the class was constructed as an owned, not looked up, load balancer');

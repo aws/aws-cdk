@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
-import { INetworkListener } from './network-listener';
 import { INetworkTargetGroup } from './network-target-group';
 import { Duration } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
+import { aws_elasticloadbalancingv2 as elbv2 } from '../../../interfaces';
 import { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from '../shared/listener-action';
 
@@ -96,7 +96,7 @@ export class NetworkListenerAction implements IListenerAction {
   /**
    * Called when the action is being used in a listener
    */
-  public bind(scope: Construct, listener: INetworkListener) {
+  public bind(scope: Construct, listener: elbv2.IListenerRef) {
     // Empty on purpose
     Array.isArray(scope);
     Array.isArray(listener);
@@ -164,7 +164,7 @@ class TargetGroupListenerAction extends NetworkListenerAction {
     super(defaultActionJson);
   }
 
-  public bind(_scope: Construct, listener: INetworkListener) {
+  public bind(_scope: Construct, listener: elbv2.IListenerRef) {
     for (const tg of this.targetGroups) {
       tg.registerListener(listener);
     }
