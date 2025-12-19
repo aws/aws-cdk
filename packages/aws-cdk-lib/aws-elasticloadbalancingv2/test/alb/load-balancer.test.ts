@@ -1060,6 +1060,279 @@ describe('tests', () => {
     });
   });
 
+  describe('logHealthCheckLogs', () => {
+    class ExtendedLB extends elbv2.ApplicationLoadBalancer {
+      constructor(scope: Construct, id: string, vpc: ec2.IVpc) {
+        super(scope, id, { vpc });
+
+        const healthCheckLogsBucket = new s3.Bucket(this, 'ALBHealthCheckLogsBucket', {
+          blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+          encryption: s3.BucketEncryption.S3_MANAGED,
+          versioned: true,
+          serverAccessLogsPrefix: 'selflog/',
+          enforceSSL: true,
+        });
+
+        this.logHealthCheckLogs(healthCheckLogsBucket);
+      }
+    }
+
+    function loggingSetup(withEncryption: boolean = false ): { stack: cdk.Stack; bucket: s3.Bucket; lb: elbv2.ApplicationLoadBalancer } {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const bucketProps = withEncryption ?
+        { encryption: s3.BucketEncryption.KMS, encryptionKey: new Key(stack, 'TestKMSKey') }
+        : {};
+      const bucket = new s3.Bucket(stack, 'HealthCheckLogBucket', bucketProps);
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+      return { stack, bucket, lb };
+    }
+
+    test('sets load balancer attributes', () => {
+      // GIVEN
+      const { stack, bucket, lb } = loggingSetup();
+
+      // WHEN
+      lb.logHealthCheckLogs(bucket);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.arrayWith([
+          {
+            Key: 'health_check_logs.s3.enabled',
+            Value: 'true',
+          },
+          {
+            Key: 'health_check_logs.s3.bucket',
+            Value: { Ref: Match.stringLikeRegexp('HealthCheckLogBucket') },
+          },
+          {
+            Key: 'health_check_logs.s3.prefix',
+            Value: '',
+          },
+        ]),
+      });
+    });
+
+    test('adds a dependency on the bucket', () => {
+      // GIVEN
+      const { stack, bucket, lb } = loggingSetup();
+
+      // WHEN
+      lb.logConnectionLogs(bucket);
+
+      // THEN
+      // verify the ALB depends on the bucket policy
+      Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        DependsOn: [Match.stringLikeRegexp('HealthCheckLogBucketPolicy')],
+      });
+    });
+
+    test('adds a s3 permission', () => {
+      // GIVEN
+      const { stack, bucket, lb } = loggingSetup();
+
+      // WHEN
+      lb.logHealthCheckLogs(bucket);
+
+      // THEN
+      // verify the bucket policy allows the ALB to put objects in the bucket
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
+              Resource: {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': [Match.stringLikeRegexp('HealthCheckLogBucket'), 'Arn'] }, '/AWSLogs/',
+                  { Ref: 'AWS::AccountId' }, '/*']],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('health check logging with prefix', () => {
+      // GIVEN
+      const { stack, bucket, lb } = loggingSetup();
+
+      // WHEN
+      lb.logHealthCheckLogs(bucket, 'prefix-of-health-check-logs');
+
+      // THEN
+      // verify that the LB attributes reference the bucket
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.arrayWith([
+          {
+            Key: 'health_check_logs.s3.enabled',
+            Value: 'true',
+          },
+          {
+            Key: 'health_check_logs.s3.bucket',
+            Value: { Ref: Match.stringLikeRegexp('HealthCheckLogBucket') },
+          },
+          {
+            Key: 'health_check_logs.s3.prefix',
+            Value: 'prefix-of-health-check-logs',
+          },
+        ]),
+      });
+
+      // verify the bucket policy allows the ALB to put objects in the bucket
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
+              Resource: {
+                'Fn::Join': ['', [{ 'Fn::GetAtt': [Match.stringLikeRegexp('HealthCheckLogBucket'), 'Arn'] }, '/prefix-of-health-check-logs/AWSLogs/',
+                  { Ref: 'AWS::AccountId' }, '/*']],
+              },
+            },
+          ],
+        },
+      });
+
+      // verify the ALB depends on the bucket policy
+      Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        DependsOn: [Match.stringLikeRegexp('HealthCheckLogBucketPolicy')],
+      });
+    });
+
+    test('bucket with KMS throws validation error', () => {
+      // GIVEN
+      const { stack, bucket, lb } = loggingSetup(true);
+
+      // WHEN
+      const testFn = () => lb.logHealthCheckLogs(bucket);
+
+      // THEN
+      // verify failure in case the access log bucket is encrypted with KMS
+      expect(testFn).toThrow('Encryption key detected. The health check logs buckets must use Server-Side Encryption with Amazon S3-managed keys (SSE-S3)');
+    });
+
+    test('health check logging on imported bucket', () => {
+      // GIVEN
+      const { stack, lb } = loggingSetup();
+
+      const bucket = s3.Bucket.fromBucketName(stack, 'ImportedHealthCheckLoggingBucket', 'imported-bucket');
+      // Imported buckets have `autoCreatePolicy` disabled by default
+      bucket.policy = new s3.BucketPolicy(stack, 'ImportedHealthCheckLoggingBucketPolicy', {
+        bucket,
+      });
+
+      // WHEN
+      lb.logHealthCheckLogs(bucket);
+
+      // THEN
+      // verify that the LB attributes reference the bucket
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.arrayWith([
+          {
+            Key: 'health_check_logs.s3.enabled',
+            Value: 'true',
+          },
+          {
+            Key: 'health_check_logs.s3.bucket',
+            Value: 'imported-bucket',
+          },
+          {
+            Key: 'health_check_logs.s3.prefix',
+            Value: '',
+          },
+        ]),
+      });
+
+      // verify the bucket policy allows the ALB to put objects in the bucket
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':s3:::imported-bucket/AWSLogs/',
+                    { Ref: 'AWS::AccountId' },
+                    '/*',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      });
+
+      // verify the ALB depends on the bucket policy
+      Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        DependsOn: [Match.stringLikeRegexp('ImportedHealthCheckLoggingBucketPolicy')],
+      });
+    });
+
+    test('does not add circular dependency on bucket with extended load balancer', () => {
+      // GIVEN
+      const { stack } = loggingSetup();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      // WHEN
+      new ExtendedLB(stack, 'ExtendedLB', vpc);
+
+      // THEN
+      // verify no DependsOn on the bucket to ensure that the bucket storing the logs does not set an explicit dependency on the bucket policy.
+      // see: https://github.com/aws/aws-cdk/issues/1633#issuecomment-1758171559 and https://github.com/aws/aws-cdk/pull/27558
+      Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          AccessControl: 'LogDeliveryWrite',
+          BucketEncryption: {
+            ServerSideEncryptionConfiguration: [
+              {
+                ServerSideEncryptionByDefault: {
+                  SSEAlgorithm: 'AES256',
+                },
+              },
+            ],
+          },
+          LoggingConfiguration: {
+            LogFilePrefix: 'selflog/',
+          },
+          OwnershipControls: {
+            Rules: [
+              {
+                ObjectOwnership: 'ObjectWriter',
+              },
+            ],
+          },
+          PublicAccessBlockConfiguration: {
+            BlockPublicAcls: true,
+            BlockPublicPolicy: true,
+            IgnorePublicAcls: true,
+            RestrictPublicBuckets: true,
+          },
+          VersioningConfiguration: {
+            Status: 'Enabled',
+          },
+        },
+        UpdateReplacePolicy: 'Retain',
+        DeletionPolicy: 'Retain',
+        DependsOn: Match.absent(),
+      });
+    });
+  });
+
   test('Exercise metrics', () => {
     // GIVEN
     const stack = new cdk.Stack();
