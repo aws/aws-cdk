@@ -216,9 +216,8 @@ export abstract class MapBase extends State implements INextable {
       ...this.renderItemsPath(),
       ...this.renderItemSelector(),
       ...this.renderItemProcessor(),
-      ...(this.maxConcurrency && { MaxConcurrency: this.maxConcurrency }),
       ...(this.maxConcurrencyPath && { MaxConcurrencyPath: renderJsonPath(this.maxConcurrencyPath) }),
-      ...(this.jsonataMaxConcurrency && { MaxConcurrency: this.jsonataMaxConcurrency }),
+      ...this.renderMaxConcurrency(),
       ...this.renderAssign(topLevelQueryLanguage),
     };
   }
@@ -277,6 +276,16 @@ export abstract class MapBase extends State implements INextable {
     if (!this.itemSelector && !this.jsonataItemSelector) return undefined;
     return FieldUtils.renderObject({
       ItemSelector: this.itemSelector ?? this.jsonataItemSelector,
+    });
+  }
+
+  /**
+   * Render MaxConcurrency in ASL JSON format
+   */
+  private renderMaxConcurrency(): any {
+    if (!this.maxConcurrency && !this.jsonataMaxConcurrency) return undefined;
+    return FieldUtils.renderObject({
+      MaxConcurrency: this.maxConcurrency ?? this.jsonataMaxConcurrency,
     });
   }
 }
