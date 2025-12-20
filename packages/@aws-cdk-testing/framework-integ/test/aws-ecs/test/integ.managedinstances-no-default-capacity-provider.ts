@@ -56,6 +56,7 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'Mana
   subnets: vpc.privateSubnets,
   securityGroups: [fmiSecurityGroup],
   propagateTags: ecs.PropagateManagedInstancesTags.CAPACITY_PROVIDER,
+  scaleInAfter: cdk.Duration.seconds(300),
   instanceRequirements: {
     vCpuCountMin: 1,
     memoryMin: cdk.Size.gibibytes(2),

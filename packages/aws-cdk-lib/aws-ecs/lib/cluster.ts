@@ -1674,6 +1674,20 @@ export interface ManagedInstancesCapacityProviderProps {
    * @default PropagateManagedInstancesTags.NONE - no tag propagation
    */
   readonly propagateTags?: PropagateManagedInstancesTags;
+
+  /**
+   * The number of seconds Amazon ECS Managed Instances waits before optimizing EC2 instances
+   * that have become idle or underutilized.
+   *
+   * A longer delay increases the likelihood of placing new tasks on idle or underutilized instances,
+   * reducing startup time. A shorter delay helps reduce infrastructure costs by optimizing idle or
+   * underutilized instances more quickly.
+   *
+   * Valid values are between 0 and 3600 seconds (1 hour).
+   *
+   * @default - uses the default behavior (no explicit delay configured)
+   */
+  readonly scaleInAfter?: Duration;
 }
 
 /**
@@ -1737,6 +1751,16 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
       }
     }
 
+    // Validate scaleInAfter if provided
+    if (props.scaleInAfter) {
+      const scaleInAfterSeconds = props.scaleInAfter.toSeconds();
+      if (!Token.isUnresolved(scaleInAfterSeconds)) {
+        if (scaleInAfterSeconds < 0 || scaleInAfterSeconds > 3600) {
+          throw new ValidationError(`scaleInAfter must be between 0 and 3600 seconds (1 hour), got: ${scaleInAfterSeconds}.`, this);
+        }
+      }
+    }
+
     // Build the managed instances provider configuration
     const managedInstancesProviderConfig: CfnCapacityProvider.ManagedInstancesProviderProperty = {
       infrastructureRoleArn: infrastructureRole.roleArn,
@@ -1761,6 +1785,11 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
         }),
       },
       propagateTags: props.propagateTags,
+      ...(props.scaleInAfter && {
+        infrastructureOptimization: {
+          scaleInAfter: props.scaleInAfter.toSeconds(),
+        },
+      }),
     };
 
     // Create the capacity provider
