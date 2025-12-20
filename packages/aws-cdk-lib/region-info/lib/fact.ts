@@ -1,5 +1,18 @@
 import { AWS_REGIONS } from './aws-entities';
-import { UnscopedValidationError } from '../../core/lib/errors';
+
+const CONSTRUCT_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.SynthesisError');
+
+/**
+ * An error thrown when a region fact operation fails.
+ */
+class RegionFactError extends Error {
+  constructor(msg: string) {
+    super(msg);
+    Object.setPrototypeOf(this, RegionFactError.prototype);
+    Object.defineProperty(this, CONSTRUCT_ERROR_SYMBOL, { value: true });
+    this.name = 'RegionFactError';
+  }
+}
 
 /**
  * A database of regional information.
@@ -57,7 +70,7 @@ export class Fact {
     const foundFact = this.find(region, name);
 
     if (!foundFact) {
-      throw new UnscopedValidationError(`No fact ${name} could be found for region: ${region} and name: ${name}.`);
+      throw new RegionFactError(`No fact ${name} could be found for region: ${region} and name: ${name}.`);
     }
 
     return foundFact;
@@ -72,7 +85,7 @@ export class Fact {
   public static register(fact: IFact, allowReplacing = false): void {
     const regionFacts = this.database[fact.region] || (this.database[fact.region] = {});
     if (fact.name in regionFacts && regionFacts[fact.name] !== fact.value && !allowReplacing) {
-      throw new UnscopedValidationError(`Region ${fact.region} already has a fact ${fact.name}, with value ${regionFacts[fact.name]}`);
+      throw new RegionFactError(`Region ${fact.region} already has a fact ${fact.name}, with value ${regionFacts[fact.name]}`);
     }
     if (fact.value !== undefined) {
       regionFacts[fact.name] = fact.value;
@@ -89,7 +102,7 @@ export class Fact {
   public static unregister(region: string, name: string, value?: string): void {
     const regionFacts = this.database[region] || {};
     if (name in regionFacts && value && regionFacts[name] !== value) {
-      throw new UnscopedValidationError(`Attempted to remove ${name} from ${region} with value ${value}, but the fact's value is ${regionFacts[name]}`);
+      throw new RegionFactError(`Attempted to remove ${name} from ${region} with value ${value}, but the fact's value is ${regionFacts[name]}`);
     }
     delete regionFacts[name];
   }
@@ -97,7 +110,9 @@ export class Fact {
   private static readonly database: { [region: string]: { [name: string]: string } } = {};
 
   private constructor() {
-    throw new UnscopedValidationError('Use the static methods of Fact instead!');
+    // this should never happen, so throw a regular error here
+    /* eslint-disable-next-line @cdklabs/no-throw-default-error */
+    throw new Error('Use the static methods of Fact instead!');
   }
 }
 
