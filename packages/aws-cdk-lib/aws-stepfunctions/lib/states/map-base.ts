@@ -216,6 +216,7 @@ export abstract class MapBase extends State implements INextable {
       ...this.renderItemsPath(),
       ...this.renderItemSelector(),
       ...this.renderItemProcessor(),
+      ...(this.maxConcurrency && { MaxConcurrency: this.maxConcurrency }),
       ...(this.maxConcurrencyPath && { MaxConcurrencyPath: renderJsonPath(this.maxConcurrencyPath) }),
       ...this.renderMaxConcurrency(),
       ...this.renderAssign(topLevelQueryLanguage),
