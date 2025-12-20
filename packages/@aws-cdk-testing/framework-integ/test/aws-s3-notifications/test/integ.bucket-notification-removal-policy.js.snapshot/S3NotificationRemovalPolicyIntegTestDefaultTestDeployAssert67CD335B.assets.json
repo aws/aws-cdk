@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "e6f1beb8d2edb7c64c88867c75d3cfd6f25f8e1ec10c88585898541188620f6b": {
+    "08167655cece7d591b09cac9a01501d1984c4ca44d747ff83785aed34b19f2c0": {
       "displayName": "S3NotificationRemovalPolicyIntegTestDefaultTestDeployAssert67CD335B Template",
       "source": {
         "path": "S3NotificationRemovalPolicyIntegTestDefaultTestDeployAssert67CD335B.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-1f286246": {
+        "current_account-current_region-ecd6de89": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e6f1beb8d2edb7c64c88867c75d3cfd6f25f8e1ec10c88585898541188620f6b.json",
+          "objectKey": "08167655cece7d591b09cac9a01501d1984c4ca44d747ff83785aed34b19f2c0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

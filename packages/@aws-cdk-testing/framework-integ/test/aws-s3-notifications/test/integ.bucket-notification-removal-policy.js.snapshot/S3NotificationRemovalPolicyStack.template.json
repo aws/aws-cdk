@@ -2,6 +2,17 @@
  "Resources": {
   "BucketWithRetainPolicy69AB1AFA": {
    "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    }
+   },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain",
    "Metadata": {
@@ -223,6 +234,15 @@
   "BucketWithDestroyPolicyD1C703DA": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
     "Tags": [
      {
       "Key": "aws-cdk:auto-delete-objects",
@@ -426,7 +446,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/3VQzQ6CMAx+Fu+jQrh4FR5Agt4NjkrKz0bWDWMW3l3+Il689Ptrm7QhhBAeihcHsmyClh7gr7aQjZisu+cYfOJkg1akT7WxFTLdknzv9qpHwYrB33RPcs5WstR94EeOgooOfK5bnJMF98atZ1wiZO2MRPElqWOruz8yM3qgEk1SMIozM9rprIpUNe+6ONs7OwqlS4Saj0N0giie/lAzUWCcstQh5Ct+AED6IaYiAQAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/3VQ2w6CMAz9Ft9HxcsPCB+gQd8NjkrKZSPrhjEL/y4wIr740nNrm7QxxBBv8hdHsqijhh7grzaXtRitu+cD+MTJGq1In2phAS66Ifle7aAHwYrB33RHcsoCmes68CMHQXkLPtMNTsmMa+PSM8wRsnZGoviS1LHV7R95MbqnAk2SM4oTM9rxrJJUOe06O9s5OwilC4SKt/3+CLvpDxUTRcYpSy1CFvADgOkiXyIBAAA="
    },
    "Metadata": {
     "aws:cdk:path": "S3NotificationRemovalPolicyStack/CDKMetadata/Default"

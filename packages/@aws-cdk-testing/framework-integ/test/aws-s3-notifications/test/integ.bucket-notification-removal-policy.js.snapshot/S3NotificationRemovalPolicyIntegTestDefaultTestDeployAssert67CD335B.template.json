@@ -3,7 +3,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/zPQM9AzUEwsL9ZNTsnWzclM0gsuSUzO1snLT0nVyyrWLzO00DM0BirJKs7M1C0qzSvJzE3VC4LQAM+znrw9AAAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/zPQM9AzUEwsL9ZNTsnWzclM0gsuSUzO1snLT0nVyyrWLzMy0TMEKckqzszULSrNK8nMTdULgtAAD6CdRT0AAAA="
    },
    "Metadata": {
     "aws:cdk:path": "S3NotificationRemovalPolicyIntegTest/DefaultTest/DeployAssert/CDKMetadata/Default"

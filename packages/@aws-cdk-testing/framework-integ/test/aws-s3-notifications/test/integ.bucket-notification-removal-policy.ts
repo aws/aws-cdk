@@ -23,6 +23,7 @@ const stack = new cdk.Stack(app, 'S3NotificationRemovalPolicyStack', {
 const bucketWithRetainPolicy = new s3.Bucket(stack, 'BucketWithRetainPolicy', {
   removalPolicy: cdk.RemovalPolicy.RETAIN,
   autoDeleteObjects: false,
+  encryption: s3.BucketEncryption.S3_MANAGED,
 });
 
 // Create an SNS topic for notifications
@@ -42,6 +43,7 @@ bucketWithRetainPolicy.addEventNotification(
 const bucketWithDestroyPolicy = new s3.Bucket(stack, 'BucketWithDestroyPolicy', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
+  encryption: s3.BucketEncryption.S3_MANAGED,
 });
 
 bucketWithDestroyPolicy.addEventNotification(
