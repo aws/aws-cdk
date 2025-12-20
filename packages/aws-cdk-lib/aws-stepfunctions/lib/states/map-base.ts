@@ -113,8 +113,7 @@ export interface MapBaseOptions extends AssignableStateOptions {
    *
    * Example value: `{% $states.input.maxConcurrency %}`
    *
-   * @see
-   * https://docs.aws.amazon.com/step-functions/latest/dg/concepts-asl-use-map-state-inline.html#map-state-inline-additional-fields
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-asl-use-map-state-inline.html#map-state-inline-additional-fields
    *
    * @default - full concurrency
    */
