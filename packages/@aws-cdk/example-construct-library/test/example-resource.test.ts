@@ -18,7 +18,7 @@ import * as core from 'aws-cdk-lib/core';
 import * as er from '../lib';
 
 /* We allow quotes in the object keys used for CloudFormation template assertions */
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 const EXAMPLE_RESOURCE_NAME = {
   'Fn::Select': [1, {

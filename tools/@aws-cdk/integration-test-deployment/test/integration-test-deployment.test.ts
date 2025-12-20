@@ -1,4 +1,4 @@
-import { describe, expect, jest, test, beforeEach, beforeAll } from '@jest/globals';
+/* eslint-disable @typescript-eslint/unbound-method */
 import { AtmosphereAllocationMock } from './atmosphere-mock';
 import { gitDiffMock } from './git-mock';
 import { AtmosphereAllocation } from '../lib/atmosphere';

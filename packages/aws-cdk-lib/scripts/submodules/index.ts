@@ -10,13 +10,14 @@ import * as fs from 'fs-extra';
  */
 export default async function generateServiceSubmoduleFiles(modules: topo.ModuleMap, outPath: string) {
   for (const submodule of Object.values(modules)) {
-    const submodulePath = path.join(outPath, submodule.name);
-    await ensureSubmodule(submodule, submodulePath);
+    await ensureSubmodule(submodule, outPath);
     await ensureInterfaceSubmoduleJsiiJsonRc(submodule, path.join(outPath, 'interfaces'));
   }
 }
 
-async function ensureSubmodule(submodule: topo.ModuleMapEntry, modulePath: string) {
+async function ensureSubmodule(submodule: topo.ModuleMapEntry, outPath: string) {
+  const modulePath = path.join(outPath, submodule.name);
+
   // README.md
   const readmePath = path.join(modulePath, 'README.md');
   if (!fs.existsSync(readmePath)) {
@@ -35,12 +36,8 @@ async function ensureSubmodule(submodule: topo.ModuleMapEntry, modulePath: strin
     const lines = submodule.scopes.map(({ namespace }) => `// ${namespace} Cloudformation Resources`);
     lines.push(...submodule.files
       .map((f) => {
-        // New codegen uses absolute paths
-        if (path.isAbsolute(f)) {
-          return path.relative(sourcePath, f);
-        }
-        // Old codegen uses a filename that's already relative to sourcePath
-        return f;
+        // codegen returns paths relative to outpath
+        return path.relative(sourcePath, path.join(outPath, f));
       })
       .map((f) => `export * from './${f.replace('.ts', '')}';`));
     await fs.writeFile(path.join(sourcePath, 'index.ts'), lines.join('\n') + '\n');

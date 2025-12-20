@@ -1,5 +1,5 @@
-import { Template } from 'aws-cdk-lib/assertions';
 import { SecretValue, Stack } from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
 import { AccessControl, IamUser, NoPasswordUser, PasswordUser, UserEngine, UserGroup } from '../lib';
 
 describe('UserGroup', () => {

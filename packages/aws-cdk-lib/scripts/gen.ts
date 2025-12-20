@@ -1,6 +1,5 @@
 import * as path from 'node:path';
-import { naming, topo } from '@aws-cdk/spec2cdk';
-import { generateAll } from '@aws-cdk/spec2cdk/lib/cfn2ts';
+import { naming, generateAll, topo } from '@aws-cdk/spec2cdk';
 import * as fs from 'fs-extra';
 import generateServiceSubmoduleFiles from './submodules';
 import writeCloudFormationIncludeMapping from './submodules/cloudformation-include';
@@ -13,7 +12,6 @@ const scopeMapPath = path.join(__dirname, 'scope-map.json');
 const NON_SERVICE_SUBMODULES = ['core', 'interfaces'];
 
 main().catch(e => {
-  // eslint-disable-next-line no-console
   console.error(e);
   process.exitCode = 1;
 });
@@ -27,7 +25,7 @@ async function main() {
   }));
 
   await updateExportsAndEntryPoints(generated);
-  await topo.writeModuleMap(generated);
+  topo.writeModuleMap(generated);
   await writeCloudFormationIncludeMapping(generated, awsCdkLibDir);
 
   for (const nss of NON_SERVICE_SUBMODULES) {

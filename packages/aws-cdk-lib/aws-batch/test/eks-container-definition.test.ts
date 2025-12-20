@@ -1,7 +1,7 @@
 import { capitalizePropertyNames } from './utils';
-import { Size, Stack } from '../..';
 import { Template } from '../../assertions';
 import * as ecs from '../../aws-ecs';
+import { Size, Stack } from '../../core';
 import { CfnJobDefinitionProps, EksContainerDefinitionProps, EksContainerDefinition, EksJobDefinition, ImagePullPolicy, EksVolume, EmptyDirMediumType } from '../lib';
 
 // GIVEN
