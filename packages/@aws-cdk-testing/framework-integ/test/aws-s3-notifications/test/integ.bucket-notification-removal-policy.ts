@@ -71,6 +71,8 @@ new cdk.CfnOutput(stack, 'TopicArn', {
 // Create integration test
 new IntegTest(app, 'S3NotificationRemovalPolicyIntegTest', {
   testCases: [stack],
+  diffAssets: true,
+  allowDestroy: ['AWS::CDK::Metadata'],
   cdkCommandOptions: {
     deploy: {
       args: {
