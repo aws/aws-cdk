@@ -1,6 +1,5 @@
 import { Match, Template } from '../../../assertions';
 import * as codepipeline from '../../../aws-codepipeline';
-import * as ecr from '../../../aws-ecr';
 import { Bucket } from '../../../aws-s3';
 import { Stack } from '../../../core';
 import * as cpactions from '../../lib';

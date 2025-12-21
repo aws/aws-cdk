@@ -1,5 +1,4 @@
 "use strict";
-/* eslint-disable no-console */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
 const handler = async (event, _context = {}) => {

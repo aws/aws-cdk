@@ -1043,7 +1043,7 @@ describe('Environment', () => {
   test.each([
     ['BASE_14', codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14'],
     ['BASE_15', codebuild.MacBuildImage.BASE_15, 'aws/codebuild/macos-arm-base:15'],
-  ])('can set macOS fleet with %s', (name, buildImage, expectedImage) => {
+  ])('can set macOS fleet with %s', (_, buildImage, expectedImage) => {
     // GIVEN
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket');
@@ -1114,7 +1114,7 @@ describe('Environment', () => {
   test.each([
     ['BASE_14', codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14'],
     ['BASE_15', codebuild.MacBuildImage.BASE_15, 'aws/codebuild/macos-arm-base:15'],
-  ])('can set imported macOS fleet with %s', (name, buildImage, expectedImage) => {
+  ])('can set imported macOS fleet with %s', (_, buildImage, expectedImage) => {
     // GIVEN
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket');
