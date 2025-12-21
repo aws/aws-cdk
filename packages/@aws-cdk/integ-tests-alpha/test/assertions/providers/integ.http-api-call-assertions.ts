@@ -1,8 +1,8 @@
 import { App, Stack } from 'aws-cdk-lib';
-import { ExpectedResult, IntegTest } from '../../../lib';
 import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { ExpectedResult, IntegTest } from '../../../lib';
 
 const app = new App({
   postCliContext: {

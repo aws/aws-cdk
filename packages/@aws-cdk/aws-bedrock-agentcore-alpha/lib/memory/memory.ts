@@ -12,7 +12,6 @@
  */
 
 import { Arn, ArnFormat, Duration, IResource, Lazy, Resource, Token } from 'aws-cdk-lib';
-import { IConstruct, Construct } from 'constructs';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import { CfnMemory, CfnMemoryProps } from 'aws-cdk-lib/aws-bedrockagentcore';
 import {
@@ -26,6 +25,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { IConstruct, Construct } from 'constructs';
 // Internal Libs
 import { IMemoryStrategy } from './memory-strategy';
 import { MemoryPerms } from './perms';

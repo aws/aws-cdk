@@ -31,7 +31,6 @@ export function propertyNameFromCloudFormation(name: string): string {
 
   let ret = camelcase(name);
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   const suffixes: { [key: string]: string } = { ARNs: 'Arns', MBs: 'MBs', AZs: 'AZs' };
 
   for (const suffix of Object.keys(suffixes)) {
@@ -61,6 +60,14 @@ export function propStructNameFromResource(res: Resource, suffix?: string) {
 
 export function interfaceNameFromResource(res: Resource, suffix?: string) {
   return `I${classNameFromResource(res, suffix)}`;
+}
+
+/**
+ * resource to alias for interface imports
+ * `AWS::S3::Bucket` -> `s3Refs`
+ */
+export function interfaceModuleImportName(res: Resource) {
+  return camelcase(`${modulePartsFromResource(res).moduleBaseName}Refs`);
 }
 
 export function namespaceFromResource(res: Resource) {
@@ -147,10 +154,24 @@ export function modulePartsFromNamespace(namespace: string) {
 }
 
 /**
+ * resource to module name parts (`AWS::S3::Bucket` -> ['aws-s3', 'AWS', 'S3'])
+ */
+export function modulePartsFromResource(res: Resource) {
+  return modulePartsFromNamespace(namespaceFromResource(res));
+}
+
+/**
  * Submodule identifier from name (`aws-s3` -> `aws_s3`)
  */
 export function submoduleSymbolFromName(name: string) {
   return name.replace(/-/g, '_');
+}
+
+/**
+ * Submodule identifier from name (`AWS::S3::Bucket` -> `aws_s3`)
+ */
+export function submoduleSymbolFromResource(res: Resource) {
+  return modulePartsFromResource(res).moduleName.replace(/-/g, '_');
 }
 
 /**

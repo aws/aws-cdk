@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable no-console */
 
 import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
 

@@ -2553,7 +2553,8 @@
       "OPENSEARCH_2_15",
       "OPENSEARCH_2_17",
       "OPENSEARCH_2_19",
-      "OPENSEARCH_3_1"
+      "OPENSEARCH_3_1",
+      "OPENSEARCH_3_3"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/ca-certificate.ts": {
@@ -2754,6 +2755,7 @@
       "VER_13_18",
       "VER_13_20",
       "VER_13_21",
+      "VER_13_22",
       "VER_14_3",
       "VER_14_4",
       "VER_14_5",
@@ -2769,6 +2771,7 @@
       "VER_14_15",
       "VER_14_17",
       "VER_14_18",
+      "VER_14_19",
       "VER_15_2",
       "VER_15_3",
       "VER_15_4",
@@ -2780,6 +2783,7 @@
       "VER_15_10",
       "VER_15_12",
       "VER_15_13",
+      "VER_15_14",
       "VER_16_0",
       "VER_16_1",
       "VER_16_2",
@@ -2797,7 +2801,8 @@
       "VER_17_1",
       "VER_17_2",
       "VER_17_4",
-      "VER_17_5"
+      "VER_17_5",
+      "VER_17_6"
     ],
     "DatabaseClusterEngine": [
       "AURORA",
@@ -2922,7 +2927,8 @@
       "VER_11_4_7",
       "VER_11_4_8",
       "VER_11_4_9",
-      "VER_11_8_3"
+      "VER_11_8_3",
+      "VER_11_8_5"
     ],
     "MysqlEngineVersion": [
       "VER_5_5",

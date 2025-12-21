@@ -1,9 +1,7 @@
 import { Template, Match } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
-import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import { App, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
@@ -218,7 +216,7 @@ describe('For alarm-based rollbacks', () => {
       maxHealthyPercent: 200,
     });
 
-    const template = Template.fromStack(stack);
+    Template.fromStack(stack);
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DeploymentConfiguration: settings,

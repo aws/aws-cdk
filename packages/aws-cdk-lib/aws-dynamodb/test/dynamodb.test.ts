@@ -27,7 +27,6 @@ import {
   InputFormat,
   ApproximateCreationDateTimePrecision,
   ContributorInsightsMode,
-  SchemaOptions,
 } from '../lib';
 import { ReplicaProvider } from '../lib/replica-provider';
 
@@ -41,7 +40,7 @@ jest.mock('../../custom-resources', () => {
   };
 });
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 // CDK parameters
 const CONSTRUCT_NAME = 'MyTable';
@@ -1358,7 +1357,7 @@ describe('schema details', () => {
       });
     });
 
-    test('get normalized schema for GSI with compound partition keys', () => {
+    test('get normalized schema for GSI with multi-attribute partition keys', () => {
       const pk1: Attribute = { name: 'pk1', type: AttributeType.STRING };
       const pk2: Attribute = { name: 'pk2', type: AttributeType.STRING };
 
@@ -1373,7 +1372,7 @@ describe('schema details', () => {
       });
     });
 
-    test('get normalized schema for GSI with compound sort keys', () => {
+    test('get normalized schema for GSI with multi-attribute sort keys', () => {
       const sk1: Attribute = { name: 'sk1', type: AttributeType.STRING };
       const sk2: Attribute = { name: 'sk2', type: AttributeType.STRING };
 
@@ -4413,7 +4412,7 @@ test('Resource policy test', () => {
   });
 
   // WHEN
-  const table = new Table(stack, 'Table', {
+  new Table(stack, 'Table', {
     partitionKey: { name: 'id', type: AttributeType.STRING },
     resourcePolicy: doc,
   });
@@ -4727,7 +4726,7 @@ test('Kinesis Stream - precision timestamp', () => {
   const stream = new kinesis.Stream(stack, 'Stream');
 
   // WHEN
-  const table = new Table(stack, 'Table', {
+  new Table(stack, 'Table', {
     partitionKey: { name: 'id', type: AttributeType.STRING },
     kinesisStream: stream,
     kinesisPrecisionTimestamp: ApproximateCreationDateTimePrecision.MILLISECOND,
@@ -4753,7 +4752,7 @@ test('Kinesis Stream - precision timestamp', () => {
 test('Contributor Insights Specification - table', () => {
   const stack = new Stack();
 
-  const table = new Table(stack, CONSTRUCT_NAME, {
+  new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
     sortKey: TABLE_SORT_KEY,
     contributorInsightsSpecification: {
@@ -4784,7 +4783,7 @@ test('Contributor Insights Specification - table', () => {
 test('Contributor Insights Specification - table - without mode', () => {
   const stack = new Stack();
 
-  const table = new Table(stack, CONSTRUCT_NAME, {
+  new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
     sortKey: TABLE_SORT_KEY,
     contributorInsightsSpecification: {
@@ -4879,7 +4878,7 @@ test('ContributorInsightsSpecification && ContributorInsightsEnabled', () => {
   }).toThrow('`contributorInsightsSpecification` and `contributorInsightsEnabled` are set. Use `contributorInsightsSpecification` only.');
 });
 
-test('Compound partition keys for global secondary index', () => {
+test('Multi-attribute partition keys for global secondary index', () => {
   const stack = new Stack();
 
   const table = new Table(stack, CONSTRUCT_NAME, {
@@ -4918,7 +4917,7 @@ test('Compound partition keys for global secondary index', () => {
   );
 });
 
-test('Compound partition keys and standard sort key for global secondary index', () => {
+test('Multi-attribute partition keys and standard sort key for global secondary index', () => {
   const stack = new Stack();
 
   const table = new Table(stack, CONSTRUCT_NAME, {
@@ -4960,7 +4959,7 @@ test('Compound partition keys and standard sort key for global secondary index',
   );
 });
 
-test('Throws when compound partitionKeys and partitionKey are specified', () => {
+test('Throws when multi-attribute partitionKeys and partitionKey are specified', () => {
   const stack = new Stack();
   expect(() => {
     const table = new Table(stack, CONSTRUCT_NAME, {
@@ -4977,7 +4976,7 @@ test('Throws when compound partitionKeys and partitionKey are specified', () => 
   }).toThrow('Exactly one of \'partitionKey\', \'partitionKeys\' must be specified');
 });
 
-test('Throws when compound sortKeys and sortKey are specified', () => {
+test('Throws when multi-attribute sortKeys and sortKey are specified', () => {
   const stack = new Stack();
   expect(() => {
     const table = new Table(stack, CONSTRUCT_NAME, {
@@ -4985,7 +4984,7 @@ test('Throws when compound sortKeys and sortKey are specified', () => {
       sortKey: TABLE_SORT_KEY,
     });
 
-    const index = table.addGlobalSecondaryIndex({
+    table.addGlobalSecondaryIndex({
       indexName: GSI_NAME,
       partitionKeys: [GSI_PARTITION_KEY, GSI_PARTITION_KEY_TWO],
       sortKey: GSI_SORT_KEY,
@@ -4994,7 +4993,7 @@ test('Throws when compound sortKeys and sortKey are specified', () => {
   }).toThrow('At most one of \'sortKey\', \'sortKeys\' may be specified');
 });
 
-test('Throws when more than four compound partition keys are specified', () => {
+test('Throws when more than four multi-attribute partition keys are specified', () => {
   const stack = new Stack();
   expect(() => {
     const table = new Table(stack, CONSTRUCT_NAME, {
@@ -5013,7 +5012,7 @@ test('Throws when more than four compound partition keys are specified', () => {
   }).toThrow('Maximum of 4 partition keys allowed');
 });
 
-test('Throws when more than four compound sort keys are specified', () => {
+test('Throws when more than four multi-attribute sort keys are specified', () => {
   const stack = new Stack();
   expect(() => {
     const table = new Table(stack, CONSTRUCT_NAME, {
