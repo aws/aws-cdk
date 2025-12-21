@@ -27,6 +27,7 @@ Shout out to our top contributors!
 - [peterwoodworth](https://github.com/peterwoodworth)
 - [phuhung273](https://github.com/phuhung273)
 - [GavinZZ](https://github.com/GavinZZ)
+- [salah1994-sys](https://github.com/salah1994-sys)
 
 
 _Last updated: Mon, 01 Dec 25 00:16:16 +0000_
