@@ -435,7 +435,8 @@
       ]
      }
     ],
-    "OptionGroupDescription": "Custom Option Grouptest"
+    "OptionGroupDescription": "Custom Option Grouptest",
+    "OptionGroupName": "custom-og-name"
    }
   }
  },
