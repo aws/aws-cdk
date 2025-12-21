@@ -2015,10 +2015,11 @@ describe('Runtime lifecycle configuration tests', () => {
     app.synth();
     const template = Template.fromStack(stack);
 
+    // lifecycleConfigurationが指定されていない場合、undefinedプロパティは除外される
     template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
       LifecycleConfiguration: {
-        IdleRuntimeSessionTimeout: 60,
-        MaxLifetime: 28800,
+        IdleRuntimeSessionTimeout: Match.absent(),
+        MaxLifetime: Match.absent(),
       },
     });
   });
@@ -2059,7 +2060,7 @@ describe('Runtime lifecycle configuration tests', () => {
     template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
       LifecycleConfiguration: {
         IdleRuntimeSessionTimeout: 900,
-        MaxLifetime: 28800,
+        MaxLifetime: Match.absent(),
       },
     });
   });
@@ -2078,7 +2079,7 @@ describe('Runtime lifecycle configuration tests', () => {
 
     template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
       LifecycleConfiguration: {
-        IdleRuntimeSessionTimeout: 60,
+        IdleRuntimeSessionTimeout: Match.absent(),
         MaxLifetime: 21600,
       },
     });
