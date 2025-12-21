@@ -17,7 +17,7 @@ class OptionGroupTestStack extends cdk.Stack {
         version: OracleEngineVersion.VER_19,
       }),
       description: 'Custom Option Grouptest',
-      name: 'custom-og-name',
+      optionGroupName: 'custom-og-name',
       configurations: [
         {
           name: 'OEM',

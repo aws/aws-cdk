@@ -140,7 +140,6 @@ export class ApiCall {
       }
       return ret;
     } catch (e) {
-      // eslint-disable-next-line no-console
       console.error(e);
       throw Error(`No client constructor found within package: ${this.v3PackageName}`);
     }
