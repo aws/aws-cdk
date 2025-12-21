@@ -14,20 +14,20 @@ import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
  *
  * 1. Configure Accounts
  *   a. Account A (123456789012) should be bootstrapped for us-east-1
- *     - assuming this is the default profile for aws credentials
+ *     - assuming this account is configured with the profile 'account-a' for aws credentials
  *   b. Account B (234567890123) should be bootstrapped for us-east-2
  *     - `cdk bootstrap --trust 123456789012 --cloudformation-execution-policies 'arn:aws:iam::aws:policy/AdministratorAccess' 'aws://234567890123/us-east-2'`
- *     - assuming this account is configured with the profile 'cross-account' for aws credentials
+ *     - assuming this is the default profile for aws credentials
  *
  * 2. Set environment variables
  *   a. `export CDK_INTEG_ACCOUNT=123456789012`
  *   b. `export CDK_INTEG_CROSS_ACCOUNT=234567890123`
  *
  * 3. Run the integ test (from the @aws-cdk-testing/framework-integ/test directory)
- *   a. Get temporary console access credentials for account B
+ *   a. Get temporary console access credentials for account A
  *     - `yarn integ aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-cross-account.js`
  *   b. Fall back if temp credentials do not work (account info may be in snapshot)
- *     - `yarn integ aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-cross-account.js --profiles cross-account`
+ *     - `yarn integ aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-cross-account.js --profile account-a`
  *
  * 4. Before you commit, set both accounts to dummy values, run integ test in dry run mode, and then push the snapshot.
  */
