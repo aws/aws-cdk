@@ -27,7 +27,6 @@ import {
   InputFormat,
   ApproximateCreationDateTimePrecision,
   ContributorInsightsMode,
-  SchemaOptions,
 } from '../lib';
 import { ReplicaProvider } from '../lib/replica-provider';
 
@@ -4413,7 +4412,7 @@ test('Resource policy test', () => {
   });
 
   // WHEN
-  const table = new Table(stack, 'Table', {
+  new Table(stack, 'Table', {
     partitionKey: { name: 'id', type: AttributeType.STRING },
     resourcePolicy: doc,
   });
@@ -4727,7 +4726,7 @@ test('Kinesis Stream - precision timestamp', () => {
   const stream = new kinesis.Stream(stack, 'Stream');
 
   // WHEN
-  const table = new Table(stack, 'Table', {
+  new Table(stack, 'Table', {
     partitionKey: { name: 'id', type: AttributeType.STRING },
     kinesisStream: stream,
     kinesisPrecisionTimestamp: ApproximateCreationDateTimePrecision.MILLISECOND,
@@ -4753,7 +4752,7 @@ test('Kinesis Stream - precision timestamp', () => {
 test('Contributor Insights Specification - table', () => {
   const stack = new Stack();
 
-  const table = new Table(stack, CONSTRUCT_NAME, {
+  new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
     sortKey: TABLE_SORT_KEY,
     contributorInsightsSpecification: {
@@ -4784,7 +4783,7 @@ test('Contributor Insights Specification - table', () => {
 test('Contributor Insights Specification - table - without mode', () => {
   const stack = new Stack();
 
-  const table = new Table(stack, CONSTRUCT_NAME, {
+  new Table(stack, CONSTRUCT_NAME, {
     partitionKey: TABLE_PARTITION_KEY,
     sortKey: TABLE_SORT_KEY,
     contributorInsightsSpecification: {
@@ -4985,7 +4984,7 @@ test('Throws when multi-attribute sortKeys and sortKey are specified', () => {
       sortKey: TABLE_SORT_KEY,
     });
 
-    const index = table.addGlobalSecondaryIndex({
+    table.addGlobalSecondaryIndex({
       indexName: GSI_NAME,
       partitionKeys: [GSI_PARTITION_KEY, GSI_PARTITION_KEY_TWO],
       sortKey: GSI_SORT_KEY,
