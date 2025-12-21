@@ -101,7 +101,7 @@ export interface OptionGroupProps {
    *
    * @default - a CDK generated name
    */
-  readonly name?: string;
+  readonly optionGroupName?: string;
 }
 
 /**
@@ -152,10 +152,10 @@ export class OptionGroup extends Resource implements IOptionGroup {
       majorEngineVersion,
       optionGroupDescription: props.description || `Option group for ${props.engine.engineType} ${majorEngineVersion}`,
       optionConfigurations: Lazy.any({ produce: () => this.renderConfigurations(this.configurations) }),
-      optionGroupName: props.name,
+      optionGroupName: props.optionGroupName,
     });
 
-    this.optionGroupName = props.name ?? optionGroup.ref;
+    this.optionGroupName = props.optionGroupName ?? optionGroup.ref;
   }
 
   @MethodMetadata()

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bdd6b146c653952b3684dc820a4ff1d2c58ca92c52f59df0c5169be7138b2184.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/abd2c59e349cf0c02a37ae654941e5b9f22e39a8ea0b4e377d192c9f031bba8c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -380,7 +380,10 @@
         "/aws-rds-option-group/OptionGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "OptionGroupACA43DC1"
+            "data": "OptionGroupACA43DC1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-rds-option-group/BootstrapVersion": [
