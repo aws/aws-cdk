@@ -3962,3 +3962,27 @@ describe('cluster', () => {
     });
   });
 });
+
+describe('deletionProtection', () => {
+  test.each([
+    [true, true],
+    [false, false],
+  ])('deletionProtection(%s) should work', (input, expected) => {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      deletionProtection: input,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        deletionProtection: expected,
+      },
+    });
+  });
+});
