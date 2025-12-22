@@ -45,7 +45,7 @@ export enum AgentCoreRuntime {
 }
 
 /**
- * Options for configuring an S3 code asset for agent runtime artifact
+ * Options for configuring an S3 code asset from local files for agent runtime artifact
  */
 export interface CodeAssetOptions extends s3_assets.AssetOptions {
   /**
@@ -96,7 +96,7 @@ export abstract class AgentRuntimeArtifact {
   }
 
   /**
-   * Reference an agent runtime artifact that's constructed from local code assets uploaded to S3
+   * Reference an agent runtime artifact that's constructed from local code assets uploaded to a CDK-managed S3 bucket
    * @param options The options for configuring the code asset
    */
   public static fromCodeAsset(options: CodeAssetOptions): AgentRuntimeArtifact {
