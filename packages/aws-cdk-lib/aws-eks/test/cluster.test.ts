@@ -4003,4 +4003,4 @@ describe('deletionProtection', () => {
       })),
     });
   });
-})
+});
