@@ -1,8 +1,10 @@
 import { Construct } from 'constructs';
+import { IScalableTargetRef, ScalableTargetReference } from './applicationautoscaling.generated';
 import { ScalableTarget, ScalingSchedule, ServiceNamespace } from './scalable-target';
 import { BasicStepScalingPolicyProps } from './step-scaling-policy';
 import { BasicTargetTrackingScalingPolicyProps } from './target-tracking-scaling-policy';
 import * as iam from '../../aws-iam';
+import { ResourceEnvironment } from '../../interfaces';
 
 /**
  * Properties for a ScalableTableAttribute
@@ -43,7 +45,7 @@ export interface BaseScalableAttributeProps extends EnableScalingProps {
  * - Don't expose all scaling methods (for example Dynamo tables don't support
  *   Step Scaling, so the Dynamo subclass won't expose this method).
  */
-export abstract class BaseScalableAttribute extends Construct {
+export abstract class BaseScalableAttribute extends Construct implements IScalableTargetRef {
   private target: ScalableTarget;
 
   public constructor(scope: Construct, id: string, protected readonly props: BaseScalableAttributeProps) {
@@ -57,6 +59,14 @@ export abstract class BaseScalableAttribute extends Construct {
       minCapacity: props.minCapacity ?? 1,
       maxCapacity: props.maxCapacity,
     });
+  }
+
+  public get env(): ResourceEnvironment {
+    return this.target.env;
+  }
+
+  public get scalableTargetRef(): ScalableTargetReference {
+    return this.target.scalableTargetRef;
   }
 
   /**

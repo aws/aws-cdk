@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
-import { IScalableTarget } from './scalable-target';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { IScalableTargetRef } from '../../interfaces/generated/aws-applicationautoscaling-interfaces.generated';
 
 /**
  * Base interface for target tracking props
@@ -113,7 +113,7 @@ export interface TargetTrackingScalingPolicyProps extends BasicTargetTrackingSca
   /*
    * The scalable target
    */
-  readonly scalingTarget: IScalableTarget;
+  readonly scalingTarget: IScalableTargetRef;
 }
 
 export class TargetTrackingScalingPolicy extends Construct {
@@ -141,7 +141,7 @@ export class TargetTrackingScalingPolicy extends Construct {
     const resource = new CfnScalingPolicy(this, 'Resource', {
       policyName: props.policyName || cdk.Names.uniqueId(this),
       policyType: 'TargetTrackingScaling',
-      scalingTargetId: props.scalingTarget.scalableTargetId,
+      scalingTargetId: props.scalingTarget.scalableTargetRef.resourceId,
       targetTrackingScalingPolicyConfiguration: {
         customizedMetricSpecification: renderCustomMetric(this, props.customMetric),
         disableScaleIn: props.disableScaleIn,
