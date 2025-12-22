@@ -51,7 +51,7 @@ jobs:
           include_empty_in_summary: false
 
       - name: Add disclaimer to static results comment
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         if: steps.junit_static.outcome == 'success'
         env:
           PR_NUMBER: ${{ steps.pr_info.outputs.pr_number }}
@@ -104,7 +104,7 @@ jobs:
           include_empty_in_summary: false
 
       - name: Add disclaimer to resolved results comment
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         if: steps.junit_resolved.outcome == 'success'
         env:
           PR_NUMBER: ${{ steps.pr_info.outputs.pr_number }}
