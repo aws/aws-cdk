@@ -708,7 +708,7 @@ import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_34,
   albController: {
-    version: eks.AlbControllerVersion.V2_8_2,
+    version: eks.AlbControllerVersion.V2_13_3,
   },
   kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
 });
@@ -722,7 +722,7 @@ import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_34,
   albController: {
-    version: eks.AlbControllerVersion.V2_8_2,
+    version: eks.AlbControllerVersion.V2_13_3,
     additionalHelmChartValues: {
       enableWafv2: false
     }
