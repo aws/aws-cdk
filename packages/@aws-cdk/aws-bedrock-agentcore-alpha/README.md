@@ -237,8 +237,6 @@ const runtimeInstance = new agentcore.Runtime(this, "MyAgentRuntime", {
 Alternatively, you can use local code assets that will be automatically packaged and uploaded to a CDK-managed S3 bucket:
 
 ```typescript fixture=default
-import * as path from 'path';
-
 const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromCodeAsset({
   path: path.join(__dirname, 'path/to/agent/code'),
   runtime: agentcore.AgentCoreRuntime.PYTHON_3_12,
