@@ -1253,6 +1253,7 @@ new rds.OptionGroup(this, 'Options', {
       securityGroups: [securityGroup], // Optional - a default group will be created if not provided.
     },
   ],
+  optionGroupName: 'MyOptionGroup'
 });
 ```
 
