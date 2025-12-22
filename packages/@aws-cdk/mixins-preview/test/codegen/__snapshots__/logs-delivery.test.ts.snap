@@ -18,6 +18,17 @@ import * as service from "aws-cdk-lib/aws-some";
  */
 export class CfnThingApplicationLogs {
   /**
+   * Send logs to an S3 Bucket
+   */
+  public toS3(bucket: interfaces.aws_s3.IBucketRef): CfnThingLogsMixin {
+    {
+      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.S3LogsDelivery(bucket, {
+        permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2
+      }));
+    }
+  }
+
+  /**
    * Send logs to a CloudWatch Log Group
    */
   public toLogGroup(logGroup: interfaces.aws_logs.ILogGroupRef): CfnThingLogsMixin {
@@ -34,17 +45,6 @@ export class CfnThingApplicationLogs {
       return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.FirehoseLogsDelivery(deliveryStream));
     }
   }
-
-  /**
-   * Send logs to an S3 Bucket
-   */
-  public toS3(bucket: interfaces.aws_s3.IBucketRef): CfnThingLogsMixin {
-    {
-      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.S3LogsDelivery(bucket, {
-        permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2
-      }));
-    }
-  }
 }
 
 /**
@@ -55,6 +55,17 @@ export class CfnThingApplicationLogs {
  * @stability external
  */
 export class CfnThingAccessLogs {
+  /**
+   * Send logs to an S3 Bucket
+   */
+  public toS3(bucket: interfaces.aws_s3.IBucketRef): CfnThingLogsMixin {
+    {
+      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.S3LogsDelivery(bucket, {
+        permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2
+      }));
+    }
+  }
+
   /**
    * Send logs to a CloudWatch Log Group
    */
@@ -70,17 +81,6 @@ export class CfnThingAccessLogs {
   public toFirehose(deliveryStream: interfaces.aws_kinesisfirehose.IDeliveryStreamRef): CfnThingLogsMixin {
     {
       return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.FirehoseLogsDelivery(deliveryStream));
-    }
-  }
-
-  /**
-   * Send logs to an S3 Bucket
-   */
-  public toS3(bucket: interfaces.aws_s3.IBucketRef): CfnThingLogsMixin {
-    {
-      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.S3LogsDelivery(bucket, {
-        permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2
-      }));
     }
   }
 }
