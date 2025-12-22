@@ -1519,4 +1519,51 @@ describe('tests', () => {
       }).toThrow('dual-stack without public IPv4 address can only be used with internet-facing scheme.');
     });
   });
+
+  describe('Drop Invalid Header Fields', () => {
+    test.each([true, false])('sets dropInvalidHeaderFields to %s', (dropInvalidHeaderFields) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        dropInvalidHeaderFields,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.arrayWith([
+          {
+            Key: 'routing.http.drop_invalid_header_fields.enabled',
+            Value: String(dropInvalidHeaderFields),
+          },
+        ]),
+      });
+    });
+
+    test('dropInvalidHeaderFields is not set when undefined', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.not(
+          Match.arrayWith([
+            {
+              Key: 'routing.http.drop_invalid_header_fields.enabled',
+              Value: Match.anyValue(),
+            },
+          ]),
+        ),
+      });
+    });
+  });
 });
