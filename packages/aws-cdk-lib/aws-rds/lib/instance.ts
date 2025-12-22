@@ -416,6 +416,11 @@ export enum NetworkType {
    * Dual-stack network type.
    */
   DUAL = 'DUAL',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  IPV6 = 'IPV6',
 }
 
 /**
