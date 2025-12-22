@@ -8,7 +8,7 @@ import * as core from '../../core';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 /* eslint-disable quotes */
 
 describe('CDK Include', () => {
@@ -737,14 +737,14 @@ describe('CDK Include', () => {
   });
 
   test('preserves unknown policy attributes', () => {
-    const cfnTemplate = includeTestTemplate(stack, 'non-existent-policy-attribute.json');
+    includeTestTemplate(stack, 'non-existent-policy-attribute.json');
     Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('non-existent-policy-attribute.json'),
     );
   });
 
   test('correctly handles string arrays in policy attributes', () => {
-    const cfnTemplate = includeTestTemplate(stack, 'string-arrays-in-policy.json');
+    includeTestTemplate(stack, 'string-arrays-in-policy.json');
     Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('string-arrays-in-policy.json'),
     );
