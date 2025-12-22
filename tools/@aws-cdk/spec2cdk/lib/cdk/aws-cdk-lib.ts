@@ -1,4 +1,4 @@
-/* eslint-disable @cdklabs/no-throw-default-error */
+
 import { Resource, Service } from '@aws-cdk/service-spec-types';
 import { Module, stmt } from '@cdklabs/typewriter';
 import { AugmentationsModule } from './augmentation-generator';
@@ -175,16 +175,16 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
     const resourceClass = new ResourceClass(resourceModule, this.db, resource, {
       suffix: props?.nameSuffix,
       deprecated: props?.deprecated,
-      interfacesModule: submodule.interfaces ? {
-        module: submodule.interfaces?.module,
+      importPaths: this.resolveImportPaths(submodule.resourcesMod.filePath),
+      interfacesModule: {
+        module: submodule.interfaces.module,
         importLocation: relativeImportPath(submodule.resourcesMod, submodule.interfaces),
-      } : undefined,
+      },
     });
 
     resourceClass.build();
 
     submodule.registerResource(resource.cloudFormationType, resourceClass);
-    submodule.registerSelectiveImports(...resourceClass.imports);
     submodule.augmentations?.module.augmentResource(resource, resourceClass);
   }
 
@@ -259,18 +259,8 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
       grantModule.build(Object.fromEntries(submodule.resources), props?.nameSuffix);
     }
 
-    // Apply selective imports only to resources module
-    for (const selectiveImport of submodule.imports) {
-      const sourceModule = new Module(selectiveImport.moduleName);
-      sourceModule.importSelective(
-        submodule.resourcesMod.module,
-        selectiveImport.types.map((t) => `${t.originalType} as ${t.aliasedType}`),
-        { fromLocation: relativeImportPath(submodule.resourcesMod, sourceModule.name) },
-      );
-    }
-
     // Add an import for the interfaces file to the entry point file (make sure not to do it twice)
-    if (!submodule.interfaces?.module.isEmpty() && this.interfacesEntry && submodule.didCreateInterfaceModule) {
+    if (!submodule.interfaces.module.isEmpty() && this.interfacesEntry && submodule.didCreateInterfaceModule) {
       const exportName = submoduleSymbolFromName(submodule.service.name);
       const importLocation = relativeImportPath(this.interfacesEntry, submodule.interfaces);
 
@@ -284,7 +274,8 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
     if (!this.inCdkLib) {
       return {
         core: 'aws-cdk-lib/core',
-        interfacesEnvironmentAware: 'aws-cdk-lib/interfaces',
+        interfaces: 'aws-cdk-lib/interfaces',
+        interfacesEnvironmentAware: 'aws-cdk-lib/interfaces/environment-aware',
         coreHelpers: 'aws-cdk-lib/core/lib/helpers-internal',
         coreErrors: 'aws-cdk-lib/core/lib/errors',
         cloudwatch: 'aws-cdk-lib/aws-cloudwatch',
@@ -294,6 +285,7 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
 
     return {
       core: relativeImportPath(sourceModule, 'core/lib'),
+      interfaces: relativeImportPath(sourceModule, 'interfaces'),
       interfacesEnvironmentAware: relativeImportPath(sourceModule, 'interfaces/environment-aware'),
       coreHelpers: relativeImportPath(sourceModule, 'core/lib/helpers-internal'),
       coreErrors: relativeImportPath(sourceModule, 'core/lib/errors'),
@@ -320,6 +312,11 @@ export interface ImportPaths {
    * The import name used import the core module
    */
   readonly core: string;
+
+  /**
+   * The import name used import the `interfaces` module
+   */
+  readonly interfaces: string;
 
   /**
    * The import name used import a specific interface from the `interfaces` module
