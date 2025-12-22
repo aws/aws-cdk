@@ -3985,4 +3985,22 @@ describe('deletionProtection', () => {
       },
     });
   });
-});
+
+  test('deletionProtection defaults to undefined when not specified', () => {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+      Config: Match.not(Match.objectLike({
+        deletionProtection: Match.anyValue(),
+      })),
+    });
+  });
+})
