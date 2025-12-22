@@ -261,7 +261,7 @@ class CodeAsset extends AgentRuntimeArtifact {
     // Handle permissions (only once)
     if (!this.bound && runtime.role) {
       const bucket = this.asset.bucket;
-      // Ensure the policy is applied before the browser resource is created
+      // Ensure the policy is applied before the runtime resource is created
       bucket.grantRead(runtime.role);
       this.bound = true;
     }
