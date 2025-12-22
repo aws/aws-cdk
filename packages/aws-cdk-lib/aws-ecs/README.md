@@ -1685,6 +1685,8 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICap
     acceleratorManufacturers: [ec2.AcceleratorManufacturer.NVIDIA],
   },
   propagateTags: ecs.PropagateManagedInstancesTags.CAPACITY_PROVIDER,
+  // Configure scale-in delay to wait 5 minutes before optimizing idle instances
+  scaleInAfter: Duration.seconds(300),
 });
 
 // Optionally configure security group rules using IConnectable interface
@@ -1768,6 +1770,22 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICap
 });
 
 ```
+
+You can configure the scale-in delay to control when ECS optimizes idle or underutilized instances:
+
+```ts
+const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
+  infrastructureRole,
+  ec2InstanceProfile: instanceProfile,
+  subnets: vpc.privateSubnets,
+  // Configure scale-in delay: wait 5 minutes before optimizing idle instances
+  // A longer delay increases the likelihood of placing new tasks on idle instances,
+  // reducing startup time. A shorter delay helps reduce infrastructure costs.
+  // Valid values are between 0 and 3600 seconds (1 hour).
+  scaleInAfter: Duration.seconds(300),
+});
+```
+
 #### Note: Service Replacement When Migrating from LaunchType to CapacityProviderStrategy
 
 **Understanding the Limitation**

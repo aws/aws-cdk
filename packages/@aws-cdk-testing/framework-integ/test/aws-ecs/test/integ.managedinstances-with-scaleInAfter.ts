@@ -11,7 +11,7 @@ const app = new cdk.App({
     '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
   },
 });
-const stack = new cdk.Stack(app, 'integ-managedinstances-no-default-capacity-provider');
+const stack = new cdk.Stack(app, 'integ-managedinstances-with-scaleInAfter');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new ecs.Cluster(stack, 'ManagedInstancesCluster', {
@@ -36,6 +36,16 @@ const instanceRole = new iam.Role(stack, 'InstanceRole', {
 });
 
 infrastructureRole.grantPassRole(instanceRole);
+infrastructureRole.addToPolicy(new iam.PolicyStatement({
+  effect: iam.Effect.ALLOW,
+  actions: ['iam:PassRole'],
+  resources: [instanceRole.roleArn],
+  conditions: {
+    StringEquals: {
+      'iam:PassedToService': 'ec2.amazonaws.com',
+    },
+  },
+}));
 
 const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
   instanceProfileName: 'InstanceProfile',
@@ -56,11 +66,11 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'Mana
   subnets: vpc.privateSubnets,
   securityGroups: [fmiSecurityGroup],
   propagateTags: ecs.PropagateManagedInstancesTags.CAPACITY_PROVIDER,
+  scaleInAfter: cdk.Duration.seconds(300),
   instanceRequirements: {
     vCpuCountMin: 1,
     memoryMin: cdk.Size.gibibytes(2),
     cpuManufacturers: [ec2.CpuManufacturer.INTEL],
-    acceleratorManufacturers: [ec2.AcceleratorManufacturer.NVIDIA],
   },
 });
 
