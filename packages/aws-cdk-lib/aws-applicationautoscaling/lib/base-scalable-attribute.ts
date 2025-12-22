@@ -4,7 +4,6 @@ import { ScalableTarget, ScalingSchedule, ServiceNamespace } from './scalable-ta
 import { BasicStepScalingPolicyProps } from './step-scaling-policy';
 import { BasicTargetTrackingScalingPolicyProps } from './target-tracking-scaling-policy';
 import * as iam from '../../aws-iam';
-import { Stack } from '../../core/lib/stack';
 import { ResourceEnvironment } from '../../interfaces';
 
 /**
