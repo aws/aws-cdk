@@ -4,7 +4,7 @@ import { CfnAccessPoint } from './efs.generated';
 import { ArnFormat, IResource, Resource, Stack, Tags, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IAccessPointRef, IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
+import { AccessPointReference, IAccessPointRef, IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
 
 /**
  * Represents an EFS AccessPoint
@@ -172,7 +172,7 @@ abstract class AccessPointBase extends Resource implements IAccessPoint {
    */
   public abstract readonly fileSystem: IFileSystem;
 
-  public get accessPointRef() {
+  public get accessPointRef(): AccessPointReference {
     return {
       accessPointId: this.accessPointId,
       accessPointArn: this.accessPointArn,

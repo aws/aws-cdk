@@ -8,7 +8,7 @@ import { ArnFormat, FeatureFlags, Lazy, Names, RemovalPolicy, Resource, Size, St
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
-import { IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
+import { FileSystemReference, IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
 
 /**
  * EFS Lifecycle Policy, if a file is not accessed for given days, it will move to EFS Infrequent Access
@@ -579,7 +579,7 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
    */
   public abstract readonly mountTargetsAvailable: IDependable;
 
-  public get fileSystemRef() {
+  public get fileSystemRef(): FileSystemReference {
     return {
       fileSystemId: this.fileSystemId,
       fileSystemArn: this.fileSystemArn,
