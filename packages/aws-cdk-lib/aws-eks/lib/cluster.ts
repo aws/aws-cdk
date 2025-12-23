@@ -26,7 +26,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as ssm from '../../aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, ValidationError, UnscopedValidationError, RemovalPolicy, RemovalPolicies } from '../../core';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size, ValidationError, UnscopedValidationError, RemovalPolicy } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -1633,6 +1633,8 @@ export class Cluster extends ClusterBase {
 
   private readonly _kubectlResourceProvider: KubectlProvider;
 
+  private readonly _removalPolicy?: RemovalPolicy;
+
   /**
    * Initiates an EKS Cluster with the supplied arguments
    *
@@ -1704,6 +1706,7 @@ export class Cluster extends ClusterBase {
     this.ipFamily = props.ipFamily ?? IpFamily.IP_V4;
     this.onEventLayer = props.onEventLayer;
     this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroup;
+    this._removalPolicy = props.removalPolicy;
 
     const privateSubnets = this.selectPrivateSubnets().slice(0, 16);
     const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
@@ -1923,13 +1926,6 @@ export class Cluster extends ClusterBase {
     }
 
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
-
-    // Apply removal policy to all CFN resources created under this construct.
-    if (props.removalPolicy) {
-      RemovalPolicies.of(this).apply(props.removalPolicy);
-      if (this._openIdConnectProvider) {RemovalPolicies.of(this._openIdConnectProvider).apply(props.removalPolicy);}
-      this._eksPodIdentityAgent?.applyRemovalPolicy(props.removalPolicy);
-    }
   }
 
   /**
@@ -2107,6 +2103,7 @@ export class Cluster extends ClusterBase {
     if (!this._openIdConnectProvider) {
       this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
         url: this.clusterOpenIdConnectIssuerUrl,
+        removalPolicy: this._removalPolicy,
       });
     }
 
@@ -2127,6 +2124,7 @@ export class Cluster extends ClusterBase {
       this._eksPodIdentityAgent = new Addon(this, 'EksPodIdentityAgentAddon', {
         cluster: this,
         addonName: 'eks-pod-identity-agent',
+        removalPolicy: this._removalPolicy,
       });
     }
 

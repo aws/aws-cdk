@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/448ce03a02eb36dbe1db045fdaf408c51407fdbdca4dc3c5405406737669d509.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f1391575f5b855e397a2490b2e6af785537c7eda87e40d746523be18997d2e92.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -314,21 +314,6 @@
               "defaultCapacity": "*",
               "authenticationMode": "API"
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addFargateProfile": [
-                "*",
-                {
-                  "selectors": [
-                    {
-                      "namespace": "*"
-                    }
-                  ]
-                }
-              ]
-            }
           }
         ],
         "/EksClusterRemovalPolicyStack/Cluster/KubectlHandlerRole": [
@@ -467,10 +452,7 @@
         "/EksClusterRemovalPolicyStack/Cluster/ControlPlaneSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterControlPlaneSecurityGroupD274242C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterControlPlaneSecurityGroupD274242C"
           }
         ],
         "/EksClusterRemovalPolicyStack/Cluster/Resource/CreationRole": [
@@ -795,52 +777,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterOpenIdConnectProviderE7EB0530"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/fargate-profile-FargateProfile/PodExecutionRole": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [PodExecutionRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "grantPassRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/fargate-profile-FargateProfile/PodExecutionRole/ImportPodExecutionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/fargate-profile-FargateProfile/PodExecutionRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterfargateprofileFargateProfilePodExecutionRoleBB46D054"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/fargate-profile-FargateProfile/Resource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/fargate-profile-FargateProfile/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterfargateprofileFargateProfileA6BADBA5"
           }
         ],
         "/EksClusterRemovalPolicyStack/Cluster/EksPodIdentityAgentAddon": [
@@ -2052,7 +1988,7 @@
             "data": "AddonF8C56F86"
           }
         ],
-        "/EksClusterRemovalPolicyStack/EksClusterRemovalPolicyStackCluster9F99FFBA-AlbController/alb-sa/ConditionJson/Resource": [
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/alb-sa/ConditionJson/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -2062,13 +1998,13 @@
             "data": "*"
           }
         ],
-        "/EksClusterRemovalPolicyStack/EksClusterRemovalPolicyStackCluster9F99FFBA-AlbController/alb-sa/ConditionJson/Resource/Default": [
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/alb-sa/ConditionJson/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EksClusterRemovalPolicyStackCluster9F99FFBAAlbControlleralbsaConditionJson69E9187B"
+            "data": "AlbControllerConstructalbsaConditionJson766F08BF"
           }
         ],
-        "/EksClusterRemovalPolicyStack/EksClusterRemovalPolicyStackCluster9F99FFBA-AlbController/alb-sa/Role": [
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/alb-sa/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -2223,19 +2159,19 @@
             }
           }
         ],
-        "/EksClusterRemovalPolicyStack/EksClusterRemovalPolicyStackCluster9F99FFBA-AlbController/alb-sa/Role/ImportRole": [
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/alb-sa/Role/ImportRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/EksClusterRemovalPolicyStack/EksClusterRemovalPolicyStackCluster9F99FFBA-AlbController/alb-sa/Role/Resource": [
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/alb-sa/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EksClusterRemovalPolicyStackCluster9F99FFBAAlbControlleralbsaRoleB7528A39"
+            "data": "AlbControllerConstructalbsaRoleC6E245FC"
           }
         ],
-        "/EksClusterRemovalPolicyStack/EksClusterRemovalPolicyStackCluster9F99FFBA-AlbController/alb-sa/Role/DefaultPolicy": [
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/alb-sa/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -2385,34 +2321,34 @@
             }
           }
         ],
-        "/EksClusterRemovalPolicyStack/EksClusterRemovalPolicyStackCluster9F99FFBA-AlbController/alb-sa/Role/DefaultPolicy/Resource": [
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/alb-sa/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EksClusterRemovalPolicyStackCluster9F99FFBAAlbControlleralbsaRoleDefaultPolicy007AEBB1"
+            "data": "AlbControllerConstructalbsaRoleDefaultPolicyE0452BBC"
           }
         ],
-        "/EksClusterRemovalPolicyStack/EksClusterRemovalPolicyStackCluster9F99FFBA-AlbController/alb-sa/manifest-alb-saServiceAccountResource/Resource": [
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/alb-sa/manifest-alb-saServiceAccountResource/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/EksClusterRemovalPolicyStack/EksClusterRemovalPolicyStackCluster9F99FFBA-AlbController/alb-sa/manifest-alb-saServiceAccountResource/Resource/Default": [
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/alb-sa/manifest-alb-saServiceAccountResource/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EksClusterRemovalPolicyStackCluster9F99FFBAAlbControlleralbsamanifestalbsaServiceAccountResourceF80D37C0"
+            "data": "AlbControllerConstructalbsamanifestalbsaServiceAccountResourceC1E23635"
           }
         ],
-        "/EksClusterRemovalPolicyStack/EksClusterRemovalPolicyStackCluster9F99FFBA-AlbController/Resource/Resource": [
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/Resource/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/EksClusterRemovalPolicyStack/EksClusterRemovalPolicyStackCluster9F99FFBA-AlbController/Resource/Resource/Default": [
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/Resource/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EksClusterRemovalPolicyStackCluster9F99FFBAAlbController5D631C49"
+            "data": "AlbControllerConstruct0D542B18"
           }
         ],
         "/EksClusterRemovalPolicyStack/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
@@ -2493,6 +2429,109 @@
             "data": "Nodegroup62B4B2C1"
           }
         ],
+        "/EksClusterRemovalPolicyStack/FargateProfileConstruct/PodExecutionRole": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [PodExecutionRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grantPassRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/FargateProfileConstruct/PodExecutionRole/ImportPodExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/FargateProfileConstruct/PodExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateProfileConstructPodExecutionRole03537AE0"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/FargateProfileConstruct/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/FargateProfileConstruct/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateProfileConstruct951D7B76"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/PodIdentityServiceAccount/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/PodIdentityServiceAccount/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/PodIdentityServiceAccount/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PodIdentityServiceAccountRole63ABADA7"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/PodIdentityServiceAccount/Association": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PodIdentityServiceAccountAssociationDB15A073"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/PodIdentityServiceAccount/manifest-PodIdentityServiceAccountServiceAccountResource/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/PodIdentityServiceAccount/manifest-PodIdentityServiceAccountServiceAccountResource/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PodIdentityServiceAccountmanifestPodIdentityServiceAccountServiceAccountResource6089A15C"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/ServiceAccount/ConditionJson/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/ServiceAccount/ConditionJson/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceAccountConditionJson6C40D905"
+          }
+        ],
         "/EksClusterRemovalPolicyStack/ServiceAccount/Role": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -2514,12 +2553,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ServiceAccountRoleFA0EEF4F"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/ServiceAccount/Association": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceAccountAssociation24AB2A05"
           }
         ],
         "/EksClusterRemovalPolicyStack/ServiceAccount/manifest-ServiceAccountServiceAccountResource/Resource": [
@@ -2592,267 +2625,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "ClusterDefaultVpcFA9F2722": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcFA9F2722",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPublicSubnet1Subnet3BFE1BDA": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1Subnet3BFE1BDA",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPublicSubnet1RouteTable1DCCDD98": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1RouteTable1DCCDD98",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPublicSubnet1RouteTableAssociationAFBE6789": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1RouteTableAssociationAFBE6789",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPublicSubnet1DefaultRouteCF22EF6E": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1DefaultRouteCF22EF6E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPublicSubnet1EIP498E2BD2": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1EIP498E2BD2",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPublicSubnet1NATGateway6E21013E": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1NATGateway6E21013E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPublicSubnet2SubnetC4E9A966": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2SubnetC4E9A966",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPublicSubnet2RouteTable6F1F5F47": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2RouteTable6F1F5F47",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPublicSubnet2RouteTableAssociationA8539C50": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2RouteTableAssociationA8539C50",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPublicSubnet2DefaultRoute1FA8621E": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2DefaultRoute1FA8621E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPublicSubnet2EIP265F4810": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2EIP265F4810",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPublicSubnet2NATGateway4AF4B728": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2NATGateway4AF4B728",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPrivateSubnet1Subnet03F39409": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet1Subnet03F39409",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPrivateSubnet1RouteTable7844020C": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet1RouteTable7844020C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPrivateSubnet1RouteTableAssociationF8A67D95": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet1RouteTableAssociationF8A67D95",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPrivateSubnet1DefaultRouteD624C8BD": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet1DefaultRouteD624C8BD",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPrivateSubnet2SubnetA526AEA7": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet2SubnetA526AEA7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPrivateSubnet2RouteTable1F9A5298": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet2RouteTable1F9A5298",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPrivateSubnet2RouteTableAssociationE1240DF2": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet2RouteTableAssociationE1240DF2",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcPrivateSubnet2DefaultRouteAB55737C": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet2DefaultRouteAB55737C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcIGW756BE43E": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcIGW756BE43E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcVPCGWC1D00388": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcVPCGWC1D00388",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterDefaultVpcRestrictDefaultSecurityGroupCustomResource59F333B7": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcRestrictDefaultSecurityGroupCustomResource59F333B7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterNodegroupDefaultCapacityDA0920A3": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupDefaultCapacityDA0920A3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterAwsAuthmanifestFE51F8AE": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterAwsAuthmanifestFE51F8AE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
@@ -3203,6 +2975,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS clusters will use the native OIDC provider instead of the custom resource provider"
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -3234,16 +3010,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,

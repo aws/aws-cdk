@@ -50,7 +50,7 @@ class EksClusterRemovalPolicyStack extends Stack {
     });
 
     // ALB Controller
-    eks.AlbController.create(this, {
+    new eks.AlbController(this, 'AlbControllerConstruct', {
       cluster,
       version: eks.AlbControllerVersion.V2_8_2,
       removalPolicy: RemovalPolicy.DESTROY,
@@ -63,17 +63,24 @@ class EksClusterRemovalPolicyStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    // Fargate Profiles
-    cluster.addFargateProfile('FargateProfile', {
-      selectors: [{ namespace: 'fargate-ns' }],
+    new eks.FargateProfile(this, 'FargateProfileConstruct', {
+      cluster,
+      fargateProfileName: 'fp-construct',
+      selectors: [{ namespace: 'fp-construct-ns' }],
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
     // Service Account
+    new eks.ServiceAccount(this, 'PodIdentityServiceAccount', {
+      cluster,
+      name: 'test-pod-identity',
+      removalPolicy: RemovalPolicy.DESTROY,
+      identityType: eks.IdentityType.POD_IDENTITY,
+    });
+
     new eks.ServiceAccount(this, 'ServiceAccount', {
       cluster,
-      name: 'test-sa',
-      identityType: eks.IdentityType.POD_IDENTITY,
+      name: 'test-irsa',
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
