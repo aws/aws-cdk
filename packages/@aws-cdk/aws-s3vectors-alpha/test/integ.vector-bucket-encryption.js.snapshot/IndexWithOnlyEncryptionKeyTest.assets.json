@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "120b68bd0e0dbaad269421b163f1a19ef072ffdd3f3a89d4efec19101415afab": {
+    "767ebe6612cc7e5f79c4c240bef6c09af3c9be6ea2dabd6381ce8abcc757f194": {
       "displayName": "IndexWithOnlyEncryptionKeyTest Template",
       "source": {
         "path": "IndexWithOnlyEncryptionKeyTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-ebe01eb2": {
+        "current_account-current_region-1c2d7907": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "120b68bd0e0dbaad269421b163f1a19ef072ffdd3f3a89d4efec19101415afab.json",
+          "objectKey": "767ebe6612cc7e5f79c4c240bef6c09af3c9be6ea2dabd6381ce8abcc757f194.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

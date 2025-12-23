@@ -1,4 +1,4 @@
-import { Fn, IResource, Resource, ResourceProps, Token } from 'aws-cdk-lib';
+import { Fn, IResource, Resource, ResourceProps, Stack, Token } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnIndex } from 'aws-cdk-lib/aws-s3vectors';
@@ -403,10 +403,12 @@ export class Index extends Resource implements IIndex {
 
   /**
    * Allow S3 Vectors indexing service to access the encryption key
-   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-vectors-data-encryption.html
    * @param encryptionKey The key to provide access to
    */
   private allowIndexingAccessToKey(encryptionKey: kms.IKey): void {
+    const stack = Stack.of(this);
+
     encryptionKey.addToResourcePolicy(new iam.PolicyStatement({
       sid: 'AllowS3VectorsIndexingAccess',
       effect: iam.Effect.ALLOW,
@@ -414,10 +416,24 @@ export class Index extends Resource implements IIndex {
         new iam.ServicePrincipal('indexing.s3vectors.amazonaws.com'),
       ],
       actions: [
-        'kms:GenerateDataKey',
         'kms:Decrypt',
       ],
       resources: ['*'],
+      conditions: {
+        ArnLike: {
+          'aws:SourceArn': stack.formatArn({
+            service: 's3vectors',
+            resource: 'bucket',
+            resourceName: '*',
+          }),
+        },
+        StringEquals: {
+          'aws:SourceAccount': stack.account,
+        },
+        'ForAnyValue:StringEquals': {
+          'kms:EncryptionContextKeys': ['aws:s3vectors:arn', 'aws:s3vectors:resource-id'],
+        },
+      },
     }));
   }
 }

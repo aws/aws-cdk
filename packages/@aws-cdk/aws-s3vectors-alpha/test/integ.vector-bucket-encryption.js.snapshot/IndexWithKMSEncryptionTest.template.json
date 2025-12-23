@@ -39,10 +39,42 @@
        "Resource": "*"
       },
       {
-       "Action": [
-        "kms:Decrypt",
-        "kms:GenerateDataKey"
-       ],
+       "Action": "kms:Decrypt",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":s3vectors:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":bucket/*"
+           ]
+          ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ForAnyValue:StringEquals": {
+         "kms:EncryptionContextKeys": [
+          "aws:s3vectors:arn",
+          "aws:s3vectors:resource-id"
+         ]
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "Service": "indexing.s3vectors.amazonaws.com"

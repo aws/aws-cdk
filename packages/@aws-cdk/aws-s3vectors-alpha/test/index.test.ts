@@ -363,5 +363,109 @@ describe('Index', () => {
       // THEN
       expect(index.encryptionKey).toBeUndefined();
     });
+
+    test('adds KMS key policy with proper conditions for S3 Vectors service principal', () => {
+      // GIVEN
+      const key = new kms.Key(stack, 'MyKey');
+
+      // WHEN
+      new s3vectors.Index(stack, 'MyIndex', {
+        vectorBucket,
+        dimension: 1536,
+        encryption: s3vectors.IndexEncryption.KMS,
+        encryptionKey: key,
+      });
+
+      // THEN - verify key policy has proper conditions per AWS documentation
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+        KeyPolicy: {
+          Statement: [
+            {
+              // Default key policy statement
+              Action: 'kms:*',
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
+                },
+              },
+              Resource: '*',
+            },
+            {
+              // S3 Vectors indexing service access with conditions
+              Sid: 'AllowS3VectorsIndexingAccess',
+              Action: 'kms:Decrypt',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'indexing.s3vectors.amazonaws.com',
+              },
+              Resource: '*',
+              Condition: {
+                ArnLike: {
+                  'aws:SourceArn': {
+                    'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3vectors:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':bucket/*']],
+                  },
+                },
+                StringEquals: {
+                  'aws:SourceAccount': { Ref: 'AWS::AccountId' },
+                },
+                'ForAnyValue:StringEquals': {
+                  'kms:EncryptionContextKeys': ['aws:s3vectors:arn', 'aws:s3vectors:resource-id'],
+                },
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('auto-generated KMS key includes proper S3 Vectors service principal policy', () => {
+      // WHEN
+      new s3vectors.Index(stack, 'MyIndex', {
+        vectorBucket,
+        dimension: 1536,
+        encryption: s3vectors.IndexEncryption.KMS,
+      });
+
+      // THEN - verify auto-generated key has S3 Vectors service principal with conditions
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+        KeyPolicy: {
+          Statement: [
+            {
+              Action: 'kms:*',
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']],
+                },
+              },
+              Resource: '*',
+            },
+            {
+              Sid: 'AllowS3VectorsIndexingAccess',
+              Action: 'kms:Decrypt',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'indexing.s3vectors.amazonaws.com',
+              },
+              Resource: '*',
+              Condition: {
+                ArnLike: {
+                  'aws:SourceArn': {
+                    'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3vectors:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':bucket/*']],
+                  },
+                },
+                StringEquals: {
+                  'aws:SourceAccount': { Ref: 'AWS::AccountId' },
+                },
+                'ForAnyValue:StringEquals': {
+                  'kms:EncryptionContextKeys': ['aws:s3vectors:arn', 'aws:s3vectors:resource-id'],
+                },
+              },
+            },
+          ],
+        },
+      });
+    });
   });
 });

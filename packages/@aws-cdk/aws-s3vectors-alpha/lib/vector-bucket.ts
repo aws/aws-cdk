@@ -9,6 +9,9 @@ import {
   VECTOR_BUCKET_READ_ACCESS,
   VECTOR_BUCKET_WRITE_ACCESS,
   VECTOR_BUCKET_READ_WRITE_ACCESS,
+  INDEX_READ_ACCESS,
+  INDEX_WRITE_ACCESS,
+  INDEX_READ_WRITE_ACCESS,
   KEY_READ_ACCESS,
   KEY_WRITE_ACCESS,
   KEY_READ_WRITE_ACCESS,
@@ -188,56 +191,79 @@ abstract class VectorBucketBase extends Resource implements IVectorBucket {
   }
 
   public grantRead(identity: iam.IGrantable, indexId: string): iam.Grant {
-    return this.grant(
+    return this.grantWithSeparateResources(
       identity,
       VECTOR_BUCKET_READ_ACCESS,
+      INDEX_READ_ACCESS,
       KEY_READ_ACCESS,
-      this.vectorBucketArn,
-      `${this.vectorBucketArn}/index/${indexId}`,
+      indexId,
     );
   }
 
   public grantWrite(identity: iam.IGrantable, indexId: string): iam.Grant {
-    return this.grant(
+    return this.grantWithSeparateResources(
       identity,
       VECTOR_BUCKET_WRITE_ACCESS,
+      INDEX_WRITE_ACCESS,
       KEY_WRITE_ACCESS,
-      this.vectorBucketArn,
-      `${this.vectorBucketArn}/index/${indexId}`,
+      indexId,
     );
   }
 
   public grantReadWrite(identity: iam.IGrantable, indexId: string): iam.Grant {
-    return this.grant(
+    return this.grantWithSeparateResources(
       identity,
       VECTOR_BUCKET_READ_WRITE_ACCESS,
+      INDEX_READ_WRITE_ACCESS,
       KEY_READ_WRITE_ACCESS,
-      this.vectorBucketArn,
-      `${this.vectorBucketArn}/index/${indexId}`,
+      indexId,
     );
   }
 
-  private grant(
+  /**
+   * Grant permissions with proper resource type separation per AWS IAM best practices.
+   * VectorBucket actions are granted on the bucket ARN, Index actions on the index ARN.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-vectors-access-management.html
+   */
+  private grantWithSeparateResources(
     grantee: iam.IGrantable,
     bucketActions: string[],
+    indexActions: string[],
     keyActions: string[],
-    resourceArn: string,
-    ...otherResourceArns: (string | undefined)[]
+    indexId: string,
   ): iam.Grant {
-    const resources = [resourceArn, ...otherResourceArns].filter((arn): arn is string => arn != undefined);
+    const indexArn = `${this.vectorBucketArn}/index/${indexId}`;
 
-    const grant = iam.Grant.addToPrincipalOrResource({
-      grantee,
-      actions: bucketActions,
-      resourceArns: resources,
-      resource: this,
-    });
+    // Grant VectorBucket-level actions on the bucket ARN
+    let bucketGrant: iam.Grant | undefined;
+    if (bucketActions.length > 0) {
+      bucketGrant = iam.Grant.addToPrincipalOrResource({
+        grantee,
+        actions: bucketActions,
+        resourceArns: [this.vectorBucketArn],
+        resource: this,
+      });
+    }
 
-    if (this.encryptionKey && keyActions && keyActions.length !== 0) {
+    // Grant Index-level actions on the index ARN
+    let indexGrant: iam.Grant | undefined;
+    if (indexActions.length > 0) {
+      indexGrant = iam.Grant.addToPrincipalOrResource({
+        grantee,
+        actions: indexActions,
+        resourceArns: [indexArn],
+        resource: this,
+      });
+    }
+
+    // Grant KMS permissions if encryption key is present
+    if (this.encryptionKey && keyActions && keyActions.length > 0) {
       this.encryptionKey.grant(grantee, ...keyActions);
     }
 
-    return grant;
+    // Return the index grant as the primary grant (or bucket grant if no index actions)
+    return indexGrant ?? bucketGrant ?? iam.Grant.drop(grantee, 'No actions to grant');
   }
 }
 

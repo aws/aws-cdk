@@ -259,118 +259,117 @@ describe('VectorBucket', () => {
       });
     });
 
-    test('grantRead adds correct IAM permissions for all indexes', () => {
+    test('grantRead adds correct IAM permissions with proper resource separation', () => {
       // WHEN
       bucket.grantRead(role, '*');
 
-      // THEN
+      // THEN - VectorBucket actions on bucket ARN, Index actions on index ARN
       Template.fromStack(permStack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
+              Action: 's3vectors:ListIndexes',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['MyVectorBucket4697D5BD', 'VectorBucketArn'],
+              },
+            },
+            {
               Action: [
+                's3vectors:GetIndex',
                 's3vectors:GetVectors',
                 's3vectors:ListVectors',
-                's3vectors:ListIndexes',
-                's3vectors:GetIndex',
+                's3vectors:QueryVectors',
               ],
               Effect: 'Allow',
-              Resource: [
-                {
-                  'Fn::GetAtt': ['MyVectorBucket4697D5BD', 'VectorBucketArn'],
-                },
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      {
-                        'Fn::GetAtt': ['MyVectorBucket4697D5BD', 'VectorBucketArn'],
-                      },
-                      '/index/*',
-                    ],
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': ['MyVectorBucket4697D5BD', 'VectorBucketArn'],
+                    },
+                    '/index/*',
                   ],
-                },
-              ],
+                ],
+              },
             },
           ],
         },
       });
     });
 
-    test('grantWrite adds correct IAM permissions for all indexes', () => {
+    test('grantWrite adds correct IAM permissions with proper resource separation', () => {
       // WHEN
       bucket.grantWrite(role, '*');
 
-      // THEN
+      // THEN - Only Index actions (no VectorBucket write actions exist)
       Template.fromStack(permStack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
               Action: [
-                's3vectors:PutVectors',
-                's3vectors:DeleteVectors',
                 's3vectors:CreateIndex',
                 's3vectors:DeleteIndex',
+                's3vectors:PutVectors',
+                's3vectors:DeleteVectors',
               ],
               Effect: 'Allow',
-              Resource: [
-                {
-                  'Fn::GetAtt': ['MyVectorBucket4697D5BD', 'VectorBucketArn'],
-                },
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      {
-                        'Fn::GetAtt': ['MyVectorBucket4697D5BD', 'VectorBucketArn'],
-                      },
-                      '/index/*',
-                    ],
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': ['MyVectorBucket4697D5BD', 'VectorBucketArn'],
+                    },
+                    '/index/*',
                   ],
-                },
-              ],
+                ],
+              },
             },
           ],
         },
       });
     });
 
-    test('grantReadWrite adds correct IAM permissions for all indexes', () => {
+    test('grantReadWrite adds correct IAM permissions with proper resource separation', () => {
       // WHEN
       bucket.grantReadWrite(role, '*');
 
-      // THEN
+      // THEN - VectorBucket actions on bucket ARN, Index actions on index ARN
       Template.fromStack(permStack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
+              Action: 's3vectors:ListIndexes',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['MyVectorBucket4697D5BD', 'VectorBucketArn'],
+              },
+            },
+            {
               Action: [
+                's3vectors:GetIndex',
                 's3vectors:GetVectors',
                 's3vectors:ListVectors',
-                's3vectors:ListIndexes',
-                's3vectors:GetIndex',
-                's3vectors:PutVectors',
-                's3vectors:DeleteVectors',
+                's3vectors:QueryVectors',
                 's3vectors:CreateIndex',
                 's3vectors:DeleteIndex',
+                's3vectors:PutVectors',
+                's3vectors:DeleteVectors',
               ],
               Effect: 'Allow',
-              Resource: [
-                {
-                  'Fn::GetAtt': ['MyVectorBucket4697D5BD', 'VectorBucketArn'],
-                },
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      {
-                        'Fn::GetAtt': ['MyVectorBucket4697D5BD', 'VectorBucketArn'],
-                      },
-                      '/index/*',
-                    ],
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': ['MyVectorBucket4697D5BD', 'VectorBucketArn'],
+                    },
+                    '/index/*',
                   ],
-                },
-              ],
+                ],
+              },
             },
           ],
         },
@@ -386,29 +385,31 @@ describe('VectorBucket', () => {
         PolicyDocument: {
           Statement: [
             {
+              Action: 's3vectors:ListIndexes',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': ['MyVectorBucket4697D5BD', 'VectorBucketArn'],
+              },
+            },
+            {
               Action: [
+                's3vectors:GetIndex',
                 's3vectors:GetVectors',
                 's3vectors:ListVectors',
-                's3vectors:ListIndexes',
-                's3vectors:GetIndex',
+                's3vectors:QueryVectors',
               ],
               Effect: 'Allow',
-              Resource: [
-                {
-                  'Fn::GetAtt': ['MyVectorBucket4697D5BD', 'VectorBucketArn'],
-                },
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      {
-                        'Fn::GetAtt': ['MyVectorBucket4697D5BD', 'VectorBucketArn'],
-                      },
-                      '/index/my-index',
-                    ],
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': ['MyVectorBucket4697D5BD', 'VectorBucketArn'],
+                    },
+                    '/index/my-index',
                   ],
-                },
-              ],
+                ],
+              },
             },
           ],
         },
@@ -431,11 +432,15 @@ describe('VectorBucket', () => {
         PolicyDocument: {
           Statement: [
             {
+              Action: 's3vectors:ListIndexes',
+              Effect: 'Allow',
+            },
+            {
               Action: [
+                's3vectors:GetIndex',
                 's3vectors:GetVectors',
                 's3vectors:ListVectors',
-                's3vectors:ListIndexes',
-                's3vectors:GetIndex',
+                's3vectors:QueryVectors',
               ],
               Effect: 'Allow',
             },
@@ -468,10 +473,10 @@ describe('VectorBucket', () => {
           Statement: [
             {
               Action: [
-                's3vectors:PutVectors',
-                's3vectors:DeleteVectors',
                 's3vectors:CreateIndex',
                 's3vectors:DeleteIndex',
+                's3vectors:PutVectors',
+                's3vectors:DeleteVectors',
               ],
               Effect: 'Allow',
             },
@@ -506,15 +511,19 @@ describe('VectorBucket', () => {
         PolicyDocument: {
           Statement: [
             {
+              Action: 's3vectors:ListIndexes',
+              Effect: 'Allow',
+            },
+            {
               Action: [
+                's3vectors:GetIndex',
                 's3vectors:GetVectors',
                 's3vectors:ListVectors',
-                's3vectors:ListIndexes',
-                's3vectors:GetIndex',
-                's3vectors:PutVectors',
-                's3vectors:DeleteVectors',
+                's3vectors:QueryVectors',
                 's3vectors:CreateIndex',
                 's3vectors:DeleteIndex',
+                's3vectors:PutVectors',
+                's3vectors:DeleteVectors',
               ],
               Effect: 'Allow',
             },
