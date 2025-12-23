@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "6e2cad43fa75185ed399221b555d4aefdfba0ba4362cf0313aaffb55563470af": {
+    "e40203bf9ee3fa2e6b7a8abb7f383864647cce9eca80e76ab4e732fcada3513a": {
       "displayName": "aws-cdk-bedrock-agentcore-runtime-endpoint Template",
       "source": {
         "path": "aws-cdk-bedrock-agentcore-runtime-endpoint.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-22c99f90": {
+        "current_account-current_region-03e404e5": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6e2cad43fa75185ed399221b555d4aefdfba0ba4362cf0313aaffb55563470af.json",
+          "objectKey": "e40203bf9ee3fa2e6b7a8abb7f383864647cce9eca80e76ab4e732fcada3513a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
@@ -18,7 +18,7 @@
   },
   "dockerImages": {
     "f06c9f54828243752afd2df4e39ab9d2987b5ccf44e6bdc05621c18d5488f240": {
-      "displayName": "ExistingRuntime/AgentRuntimeArtifact57925e7ddb91ee239b55009d714f9548",
+      "displayName": "ExistingRuntime/AgentRuntimeArtifact",
       "source": {
         "directory": "asset.f06c9f54828243752afd2df4e39ab9d2987b5ccf44e6bdc05621c18d5488f240"
       },

@@ -1,10 +1,25 @@
 import { Resource, Service, SpecDatabase, emptyDatabase } from '@aws-cdk/service-spec-types';
+import { Plain } from '@cdklabs/tskb';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
-import { AstBuilder, AstBuilderProps } from '../lib/cdk/ast';
+import { moduleForResource } from './util';
+import { AwsCdkLibBuilder } from '../lib/cdk/aws-cdk-lib';
 
 const renderer = new TypeScriptRenderer();
 let db: SpecDatabase;
 let service: Service;
+
+const BASE_RESOURCE: Plain<Resource> = {
+  name: 'Resource',
+  primaryIdentifier: ['Id'],
+  attributes: {},
+  properties: {
+    Id: {
+      type: { type: 'string' },
+      documentation: 'The identifier of the resource',
+    },
+  },
+  cloudFormationType: 'AWS::Some::Resource',
+};
 
 beforeEach(async () => {
   db = emptyDatabase();
@@ -19,18 +34,7 @@ beforeEach(async () => {
 
 test('resource interface when primaryIdentifier is a property', () => {
   // GIVEN
-  const resource = db.allocate('resource', {
-    name: 'Resource',
-    primaryIdentifier: ['Id'],
-    attributes: {},
-    properties: {
-      Id: {
-        type: { type: 'string' },
-        documentation: 'The identifier of the resource',
-      },
-    },
-    cloudFormationType: 'AWS::Some::Resource',
-  });
+  const resource = db.allocate('resource', BASE_RESOURCE);
   db.link('hasResource', service, resource);
 
   // THEN
@@ -46,16 +50,7 @@ test('resource interface when primaryIdentifier is a property', () => {
 test('resource with arnTemplate', () => {
   // GIVEN
   const resource = db.allocate('resource', {
-    name: 'Resource',
-    primaryIdentifier: ['Id'],
-    attributes: {},
-    properties: {
-      Id: {
-        type: { type: 'string' },
-        documentation: 'The identifier of the resource',
-      },
-    },
-    cloudFormationType: 'AWS::Some::Resource',
+    ...BASE_RESOURCE,
     arnTemplate: 'arn:${Partition}:some:${Region}:${Account}:resource/${ResourceId}',
   });
   db.link('hasResource', service, resource);
@@ -72,18 +67,7 @@ test('resource with arnTemplate', () => {
 
 test('resource with optional primary identifier gets property from ref', () => {
   // GIVEN
-  const resource = db.allocate('resource', {
-    name: 'Resource',
-    primaryIdentifier: ['Id'],
-    attributes: {},
-    properties: {
-      Id: {
-        type: { type: 'string' },
-        documentation: 'The identifier of the resource',
-      },
-    },
-    cloudFormationType: 'AWS::Some::Resource',
-  });
+  const resource = db.allocate('resource', BASE_RESOURCE);
   db.link('hasResource', service, resource);
 
   // THEN
@@ -99,9 +83,8 @@ test('resource with optional primary identifier gets property from ref', () => {
 test('resource with multiple primaryIdentifiers as properties', () => {
   // GIVEN
   const resource = db.allocate('resource', {
-    name: 'Resource',
+    ...BASE_RESOURCE,
     primaryIdentifier: ['Id', 'AnotherId'],
-    attributes: {},
     properties: {
       Id: {
         type: { type: 'string' },
@@ -112,7 +95,6 @@ test('resource with multiple primaryIdentifiers as properties', () => {
         documentation: 'Another identifier of the resource',
       },
     },
-    cloudFormationType: 'AWS::Some::Resource',
   });
   db.link('hasResource', service, resource);
 
@@ -129,7 +111,7 @@ test('resource with multiple primaryIdentifiers as properties', () => {
 test('resource interface when primaryIdentifier is an attribute', () => {
   // GIVEN
   const resource = db.allocate('resource', {
-    name: 'Resource',
+    ...BASE_RESOURCE,
     primaryIdentifier: ['Id'],
     properties: {},
     attributes: {
@@ -138,7 +120,6 @@ test('resource interface when primaryIdentifier is an attribute', () => {
         documentation: 'The identifier of the resource',
       },
     },
-    cloudFormationType: 'AWS::Some::Resource',
   });
   db.link('hasResource', service, resource);
 
@@ -155,7 +136,7 @@ test('resource interface when primaryIdentifier is an attribute', () => {
 test('resource interface with multiple primaryIdentifiers', () => {
   // GIVEN
   const resource = db.allocate('resource', {
-    name: 'Resource',
+    ...BASE_RESOURCE,
     primaryIdentifier: ['Id', 'Another'],
     properties: {},
     attributes: {
@@ -168,7 +149,6 @@ test('resource interface with multiple primaryIdentifiers', () => {
         documentation: 'Another identifier of the resource',
       },
     },
-    cloudFormationType: 'AWS::Some::Resource',
   });
   db.link('hasResource', service, resource);
 
@@ -299,8 +279,21 @@ test('resource interface with Arn as primaryIdentifier', () => {
   expect(rendered).toMatchSnapshot();
 });
 
-function moduleForResource(resource: Resource, props: AstBuilderProps) {
-  const ast = new AstBuilder(props);
-  const info = ast.addResource(resource);
-  return info.resourcesMod.module;
-}
+test('can generate interface types into a separate module', () => {
+  // GIVEN
+  const resource = db.allocate('resource', BASE_RESOURCE);
+  db.link('hasResource', service, resource);
+
+  // THEN
+  const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
+
+  const ast = new AwsCdkLibBuilder({ db });
+  const info = ast.addResource(foundResource);
+  const rendered = {
+    interfaces: renderer.render(info.interfaces.module),
+    resources: renderer.render(info.resourcesMod.module),
+  };
+
+  expect(rendered.interfaces).toMatchSnapshot();
+  expect(rendered.resources).toMatchSnapshot();
+});

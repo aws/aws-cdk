@@ -31,6 +31,10 @@ class TestBucketDeployment extends cdk.Stack {
     const sources = [];
     for (let i = 0; i < numFiles; i++) {
       const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tmpcdk'));
+      process.on('exit', () => {
+        fs.rmSync(tempDir, { force: true, recursive: true });
+      });
+
       fs.mkdirSync(tempDir, { recursive: true });
       const fileName = `${i+1}.txt`;
       const filePath = path.join(tempDir, fileName);

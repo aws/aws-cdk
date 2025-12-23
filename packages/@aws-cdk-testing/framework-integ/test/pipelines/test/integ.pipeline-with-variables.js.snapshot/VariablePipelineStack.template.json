@@ -142,6 +142,14 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
+  "Fleet30813DF3": {
+   "Type": "AWS::CodeBuild::Fleet",
+   "Properties": {
+    "BaseCapacity": 1,
+    "ComputeType": "BUILD_GENERAL1_SMALL",
+    "EnvironmentType": "LINUX_CONTAINER"
+   }
+  },
   "PipelineArtifactsBucketAEA9A052": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
@@ -728,7 +736,29 @@
     "Description": "Pipeline step VariablePipelineStack/Pipeline/Build/Synth",
     "EncryptionKey": "alias/aws/s3",
     "Environment": {
+     "Certificate": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::GetAtt": [
+          "SourceBucketDDD2130A",
+          "Arn"
+         ]
+        },
+        "/my-certificate.pem"
+       ]
+      ]
+     },
      "ComputeType": "BUILD_GENERAL1_SMALL",
+     "Fleet": {
+      "FleetArn": {
+       "Fn::GetAtt": [
+        "Fleet30813DF3",
+        "Arn"
+       ]
+      }
+     },
      "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
@@ -962,7 +992,29 @@
     "Description": "Pipeline step VariablePipelineStack/Pipeline/MyWave/Produce",
     "EncryptionKey": "alias/aws/s3",
     "Environment": {
+     "Certificate": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::GetAtt": [
+          "SourceBucketDDD2130A",
+          "Arn"
+         ]
+        },
+        "/my-certificate.pem"
+       ]
+      ]
+     },
      "ComputeType": "BUILD_GENERAL1_SMALL",
+     "Fleet": {
+      "FleetArn": {
+       "Fn::GetAtt": [
+        "Fleet30813DF3",
+        "Arn"
+       ]
+      }
+     },
      "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
@@ -1196,7 +1248,29 @@
     "Description": "Pipeline step VariablePipelineStack/Pipeline/MyWave/Consume",
     "EncryptionKey": "alias/aws/s3",
     "Environment": {
+     "Certificate": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::GetAtt": [
+          "SourceBucketDDD2130A",
+          "Arn"
+         ]
+        },
+        "/my-certificate.pem"
+       ]
+      ]
+     },
      "ComputeType": "BUILD_GENERAL1_SMALL",
+     "Fleet": {
+      "FleetArn": {
+       "Fn::GetAtt": [
+        "Fleet30813DF3",
+        "Arn"
+       ]
+      }
+     },
      "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,

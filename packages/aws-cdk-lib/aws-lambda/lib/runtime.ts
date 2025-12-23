@@ -124,6 +124,11 @@ export class Runtime {
   public static readonly NODEJS_22_X = new Runtime('nodejs22.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
+   * The NodeJS 24.x runtime (nodejs24.x)
+   */
+  public static readonly NODEJS_24_X = new Runtime('nodejs24.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+
+  /**
    * The Python 2.7 runtime (python2.7)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python runtime.
    */
@@ -273,6 +278,13 @@ export class Runtime {
    * The .NET 9 runtime (dotnet9)
    */
   public static readonly DOTNET_9 = new Runtime('dotnet9', RuntimeFamily.DOTNET_CORE, {
+    supportsSnapStart: true,
+  });
+
+  /**
+   * The .NET 10 runtime (dotnet10)
+   */
+  public static readonly DOTNET_10 = new Runtime('dotnet10', RuntimeFamily.DOTNET_CORE, {
     supportsSnapStart: true,
   });
 
