@@ -1379,7 +1379,7 @@ describe('fargate service', () => {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       });
 
-      const service = new ecs.FargateService(stack, 'FargateService', {
+      new ecs.FargateService(stack, 'FargateService', {
         cluster,
         taskDefinition,
       });
@@ -1399,7 +1399,7 @@ describe('fargate service', () => {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       });
 
-      const service = new ecs.FargateService(stack, 'FargateService', {
+      new ecs.FargateService(stack, 'FargateService', {
         cluster,
         taskDefinition,
         minHealthyPercent: 50,
@@ -4270,7 +4270,7 @@ describe('fargate service', () => {
     test('with circuit breaker and deployment controller feature flag enabled', () => {
       // GIVEN
       const disableCircuitBreakerEcsDeploymentControllerFeatureFlag =
-          { [cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER]: true };
+        { [cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER]: true };
       const app = new App({ context: disableCircuitBreakerEcsDeploymentControllerFeatureFlag });
       const stack = new cdk.Stack(app);
       const cluster = new ecs.Cluster(stack, 'EcsCluster');

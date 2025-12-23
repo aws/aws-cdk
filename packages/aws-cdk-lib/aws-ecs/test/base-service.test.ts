@@ -217,7 +217,7 @@ describe('For alarm-based rollbacks', () => {
       maxHealthyPercent: 200,
     });
 
-    const template = Template.fromStack(stack);
+    Template.fromStack(stack);
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DeploymentConfiguration: settings,
