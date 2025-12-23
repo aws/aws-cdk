@@ -9,7 +9,7 @@ import { Stack, Token, UnscopedValidationError } from '../../core';
 /**
  * Properties for an environment variable.
  */
-export interface CommonEnvironmentVariableProps {
+interface CommonEnvironmentVariableProps {
   /**
    * The environment variable name in the key-value pair.
    *
@@ -47,14 +47,14 @@ export abstract class EnvironmentVariable {
   /**
    * Create a new plaintext environment variable.
    */
-  public static fromPlaintext(props: PlaintextEnvironmentVariableProps): PlaintextEnvironmentVariable {
+  public static fromPlaintext(props: PlaintextEnvironmentVariableProps): EnvironmentVariable {
     return new PlaintextEnvironmentVariable(props);
   }
 
   /**
    * Create a new Secrets Manager environment variable.
    */
-  public static fromSecretsManager(props: SecretsManagerEnvironmentVariableProps): SecretsManagerEnvironmentVariable {
+  public static fromSecretsManager(props: SecretsManagerEnvironmentVariableProps): EnvironmentVariable {
     return new SecretsManagerEnvironmentVariable(props);
   }
 
@@ -104,7 +104,7 @@ export abstract class EnvironmentVariable {
 /**
  * A plaintext environment variable.
  */
-export class PlaintextEnvironmentVariable extends EnvironmentVariable {
+class PlaintextEnvironmentVariable extends EnvironmentVariable {
   private readonly _variableValue: string;
 
   constructor(props: PlaintextEnvironmentVariableProps) {
@@ -132,7 +132,7 @@ export class PlaintextEnvironmentVariable extends EnvironmentVariable {
 /**
  * A Secrets Manager environment variable.
  */
-export class SecretsManagerEnvironmentVariable extends EnvironmentVariable {
+class SecretsManagerEnvironmentVariable extends EnvironmentVariable {
   private readonly secret: ISecret;
 
   constructor(props: SecretsManagerEnvironmentVariableProps) {
