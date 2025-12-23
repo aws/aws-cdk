@@ -9,7 +9,7 @@ import { Stack, Token, UnscopedValidationError } from '../../core';
 /**
  * Properties for an environment variable.
  */
-interface CommonEnvironmentVariableProps {
+export interface CommonEnvironmentVariableProps {
   /**
    * The environment variable name in the key-value pair.
    *
