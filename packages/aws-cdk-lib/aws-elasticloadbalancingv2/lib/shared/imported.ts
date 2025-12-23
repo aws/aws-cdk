@@ -25,10 +25,7 @@ export abstract class ImportedTargetGroupBase extends Construct implements ITarg
    * The environment this resource belongs to
    */
   public get env(): cdk.ResourceEnvironment {
-    return {
-      account: cdk.Stack.of(this).account,
-      region: cdk.Stack.of(this).region,
-    };
+    return cdk.Stack.of(this).env;
   }
 
   /**

@@ -21,7 +21,7 @@ export class AlbArnTarget implements elbv2.INetworkLoadBalancerTarget {
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    */
-  public attachToNetworkTargetGroup(targetGroup: aws_elasticloadbalancingv2.ITargetGroupRef): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     return this._attach(targetGroup);
   }
 
@@ -49,7 +49,7 @@ export class AlbTarget extends AlbArnTarget {
    * @param alb The application load balancer to load balance to
    * @param port The port on which the target is listening
    */
-  constructor(alb: aws_elasticloadbalancingv2.ILoadBalancerRef, port: number) {
+  constructor(alb: elbv2.IApplicationLoadBalancerRef, port: number) {
     super(alb.loadBalancerRef.loadBalancerArn, port);
   }
 }
@@ -83,7 +83,7 @@ export class AlbListenerTarget extends AlbArnTarget {
    * This adds dependency on albListener because creation of ALB listener and NLB can vary during runtime.
    * More Details on - https://github.com/aws/aws-cdk/issues/17208
    */
-  public attachToNetworkTargetGroup(targetGroup: aws_elasticloadbalancingv2.ITargetGroupRef): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     return this.attach(targetGroup);
   }
 }

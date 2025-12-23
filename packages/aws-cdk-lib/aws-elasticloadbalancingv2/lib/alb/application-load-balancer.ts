@@ -14,6 +14,7 @@ import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
 import { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
+import { ILoadBalancerRef } from '../elasticloadbalancingv2.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType, ApplicationProtocol, DesyncMitigationMode } from '../shared/enums';
 import { parseLoadBalancerFullName } from '../shared/util';
@@ -182,6 +183,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     return new ImportedApplicationLoadBalancer(scope, id, attrs);
   }
 
+  public readonly isApplicationLoadBalancer = true;
   public readonly connections: ec2.Connections;
   public readonly ipAddressType?: IpAddressType;
   public readonly listeners: ApplicationListener[];
@@ -1108,9 +1110,22 @@ export interface IApplicationLoadBalancerMetrics {
 }
 
 /**
+ * Indicates that this resource can be referenced as an Application LoadBalancer.
+ */
+export interface IApplicationLoadBalancerRef extends ILoadBalancerRef {
+  /**
+   * Indicates that this is an Application Load Balancer
+   *
+   * Will always return true, but is necessary to prevent accidental structural
+   * equality in TypeScript.
+   */
+  readonly isApplicationLoadBalancer: boolean;
+}
+
+/**
  * An application load balancer
  */
-export interface IApplicationLoadBalancer extends ILoadBalancerV2, ec2.IConnectable {
+export interface IApplicationLoadBalancer extends ILoadBalancerV2, ec2.IConnectable, IApplicationLoadBalancerRef {
   /**
    * The ARN of this load balancer
    */
@@ -1210,6 +1225,9 @@ export interface ApplicationLoadBalancerAttributes {
 class ImportedApplicationLoadBalancer extends Resource implements IApplicationLoadBalancer {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.ImportedApplicationLoadBalancer';
+
+  public readonly isApplicationLoadBalancer = true;
+
   /**
    * Manage connections for this load balancer
    */
@@ -1283,6 +1301,7 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
 class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLoadBalancer {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-elasticloadbalancingv2.LookedUpApplicationLoadBalancer';
+  public readonly isApplicationLoadBalancer = true;
   public readonly loadBalancerArn: string;
   public readonly loadBalancerCanonicalHostedZoneId: string;
   public readonly loadBalancerDnsName: string;

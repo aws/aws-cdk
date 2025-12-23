@@ -44,7 +44,7 @@ export class IpTarget implements elbv2.IApplicationLoadBalancerTarget, elbv2.INe
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    */
-  public attachToApplicationTargetGroup(targetGroup: aws_elasticloadbalancingv2.ITargetGroupRef): elbv2.LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
     return this.attach(targetGroup);
   }
 
@@ -54,7 +54,7 @@ export class IpTarget implements elbv2.IApplicationLoadBalancerTarget, elbv2.INe
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    */
-  public attachToNetworkTargetGroup(targetGroup: aws_elasticloadbalancingv2.ITargetGroupRef): elbv2.LoadBalancerTargetProps {
+  public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     return this.attach(targetGroup);
   }
 

@@ -250,7 +250,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
    * The environment this resource belongs to
    */
   public get env(): cdk.ResourceEnvironment {
-    return cdk.Stack.of(this);
+    return cdk.Stack.of(this).env;
   }
 
   /**

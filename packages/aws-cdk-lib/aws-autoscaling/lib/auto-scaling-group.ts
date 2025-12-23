@@ -1676,7 +1676,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   @MethodMetadata()
   public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-    this.targetGroupArns.push(targetGroup.targetGroupArn);
+    this.targetGroupArns.push(targetGroup.targetGroupRef.targetGroupArn);
     return { targetType: elbv2.TargetType.INSTANCE };
   }
 
