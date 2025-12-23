@@ -256,6 +256,285 @@
       },
       "displayName": "OnlyS3ManagedEncryptionTest"
     },
+    "IndexWithOnlyEncryptionKeyTest.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "IndexWithOnlyEncryptionKeyTest.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "IndexWithOnlyEncryptionKeyTest": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "IndexWithOnlyEncryptionKeyTest.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/120b68bd0e0dbaad269421b163f1a19ef072ffdd3f3a89d4efec19101415afab.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "IndexWithOnlyEncryptionKeyTest.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "IndexWithOnlyEncryptionKeyTest.assets"
+      ],
+      "metadata": {
+        "/IndexWithOnlyEncryptionKeyTest/Key": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/IndexWithOnlyEncryptionKeyTest/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Key961B73FD"
+          }
+        ],
+        "/IndexWithOnlyEncryptionKeyTest/VectorBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VectorBucket7AA37AC5"
+          }
+        ],
+        "/IndexWithOnlyEncryptionKeyTest/Index/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Index4A79713B"
+          }
+        ],
+        "/IndexWithOnlyEncryptionKeyTest/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/IndexWithOnlyEncryptionKeyTest/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "IndexWithOnlyEncryptionKeyTest"
+    },
+    "IndexWithKMSEncryptionTest.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "IndexWithKMSEncryptionTest.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "IndexWithKMSEncryptionTest": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "IndexWithKMSEncryptionTest.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8bae2430c6e8f9c3c78dace21103f92234e941d7aa673dfcd4136ed208a659a8.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "IndexWithKMSEncryptionTest.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "IndexWithKMSEncryptionTest.assets"
+      ],
+      "metadata": {
+        "/IndexWithKMSEncryptionTest/VectorBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VectorBucket7AA37AC5"
+          }
+        ],
+        "/IndexWithKMSEncryptionTest/Index/Key": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "description": "*",
+              "enableKeyRotation": true
+            }
+          }
+        ],
+        "/IndexWithKMSEncryptionTest/Index/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IndexKeyA7F7F7D2"
+          }
+        ],
+        "/IndexWithKMSEncryptionTest/Index/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Index4A79713B"
+          }
+        ],
+        "/IndexWithKMSEncryptionTest/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/IndexWithKMSEncryptionTest/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "IndexWithKMSEncryptionTest"
+    },
+    "IndexWithKMSEncryptionAndKeyTest.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "IndexWithKMSEncryptionAndKeyTest.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "IndexWithKMSEncryptionAndKeyTest": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "IndexWithKMSEncryptionAndKeyTest.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f67a5907ef398e8a5a49a422ccda4f1cada8f51c67f1f4b45c8032dbc3359bf3.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "IndexWithKMSEncryptionAndKeyTest.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "IndexWithKMSEncryptionAndKeyTest.assets"
+      ],
+      "metadata": {
+        "/IndexWithKMSEncryptionAndKeyTest/Key": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/IndexWithKMSEncryptionAndKeyTest/Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Key961B73FD"
+          }
+        ],
+        "/IndexWithKMSEncryptionAndKeyTest/VectorBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VectorBucket7AA37AC5"
+          }
+        ],
+        "/IndexWithKMSEncryptionAndKeyTest/Index/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Index4A79713B"
+          }
+        ],
+        "/IndexWithKMSEncryptionAndKeyTest/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/IndexWithKMSEncryptionAndKeyTest/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "IndexWithKMSEncryptionAndKeyTest"
+    },
+    "IndexWithS3ManagedEncryptionTest.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "IndexWithS3ManagedEncryptionTest.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "IndexWithS3ManagedEncryptionTest": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "IndexWithS3ManagedEncryptionTest.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7da7a72a8699d34a0c2e67676e53c210602ee98dc7864c852112cd4845ff9172.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "IndexWithS3ManagedEncryptionTest.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "IndexWithS3ManagedEncryptionTest.assets"
+      ],
+      "metadata": {
+        "/IndexWithS3ManagedEncryptionTest/VectorBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VectorBucket7AA37AC5"
+          }
+        ],
+        "/IndexWithS3ManagedEncryptionTest/Index/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Index4A79713B"
+          }
+        ],
+        "/IndexWithS3ManagedEncryptionTest/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/IndexWithS3ManagedEncryptionTest/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "IndexWithS3ManagedEncryptionTest"
+    },
     "VectorBucketEncryptionIntegTestDefaultTestDeployAssert7860388A.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -316,6 +595,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -334,6 +614,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -631,16 +912,6 @@
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
           },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
-          },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
             "recommendedValue": true,
@@ -799,10 +1070,14 @@
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }

@@ -30,7 +30,67 @@ npm install @aws-cdk/aws-s3vectors-alpha
 
 ## Usage
 
-Documentation and examples will be added during implementation.
+### Creating a Vector Bucket
+
+```ts
+const vectorBucket = new s3vectors.VectorBucket(this, 'MyVectorBucket');
+```
+
+### Creating a Vector Index
+
+```ts
+const vectorBucket = new s3vectors.VectorBucket(this, 'MyVectorBucket');
+
+const index = new s3vectors.Index(this, 'MyIndex', {
+  vectorBucket,
+  dimension: 1536,
+  distanceMetric: s3vectors.DistanceMetric.COSINE,
+});
+```
+
+### Index Encryption
+
+By default, a vector index uses the encryption configuration of its vector bucket. You can override this by specifying encryption settings at the index level.
+
+#### S3 Managed Encryption (SSE-S3)
+
+```ts
+const vectorBucket = new s3vectors.VectorBucket(this, 'MyVectorBucket');
+
+const index = new s3vectors.Index(this, 'MyIndex', {
+  vectorBucket,
+  dimension: 1536,
+  encryption: s3vectors.IndexEncryption.S3_MANAGED,
+});
+```
+
+#### KMS Encryption (SSE-KMS)
+
+With auto-generated KMS key:
+
+```ts
+const vectorBucket = new s3vectors.VectorBucket(this, 'MyVectorBucket');
+
+const index = new s3vectors.Index(this, 'MyIndex', {
+  vectorBucket,
+  dimension: 1536,
+  encryption: s3vectors.IndexEncryption.KMS,
+});
+```
+
+With a customer-managed KMS key:
+
+```ts
+const key = new kms.Key(this, 'MyKey');
+const vectorBucket = new s3vectors.VectorBucket(this, 'MyVectorBucket');
+
+const index = new s3vectors.Index(this, 'MyIndex', {
+  vectorBucket,
+  dimension: 1536,
+  encryption: s3vectors.IndexEncryption.KMS,
+  encryptionKey: key,
+});
+```
 
 ## Contributing
 

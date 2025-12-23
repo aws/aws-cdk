@@ -1,0 +1,117 @@
+{
+ "Resources": {
+  "Key961B73FD": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "indexing.s3vectors.amazonaws.com"
+       },
+       "Resource": "*",
+       "Sid": "AllowS3VectorsIndexingAccess"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "VectorBucket7AA37AC5": {
+   "Type": "AWS::S3Vectors::VectorBucket",
+   "Properties": {
+    "VectorBucketName": "integ-vb-idx-kms-key"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Index4A79713B": {
+   "Type": "AWS::S3Vectors::Index",
+   "Properties": {
+    "DataType": "float32",
+    "Dimension": 1536,
+    "DistanceMetric": "cosine",
+    "EncryptionConfiguration": {
+     "KmsKeyArn": {
+      "Fn::GetAtt": [
+       "Key961B73FD",
+       "Arn"
+      ]
+     },
+     "SseType": "aws:kms"
+    },
+    "IndexName": "integ-idx-kms-key",
+    "VectorBucketArn": {
+     "Fn::GetAtt": [
+      "VectorBucket7AA37AC5",
+      "VectorBucketArn"
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

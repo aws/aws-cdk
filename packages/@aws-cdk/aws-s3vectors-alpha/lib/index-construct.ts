@@ -1,4 +1,6 @@
 import { Fn, IResource, Resource, ResourceProps, Token } from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnIndex } from 'aws-cdk-lib/aws-s3vectors';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -51,6 +53,21 @@ export enum DataType {
    * 32-bit floating point
    */
   FLOAT32 = 'float32',
+}
+
+/**
+ * Encryption type for Vector Index
+ */
+export enum IndexEncryption {
+  /**
+   * Server-side encryption with Amazon S3 managed keys (SSE-S3)
+   */
+  S3_MANAGED = 'AES256',
+
+  /**
+   * Server-side encryption with AWS KMS managed keys (SSE-KMS)
+   */
+  KMS = 'aws:kms',
 }
 
 /**
@@ -109,6 +126,26 @@ export interface IndexProps extends ResourceProps {
    * @default - All metadata is filterable
    */
   readonly nonFilterableMetadataKeys?: string[];
+
+  /**
+   * The type of server-side encryption to apply to this index
+   *
+   * By default, if you don't specify, all new vectors in the vector index
+   * will use the encryption configuration of the vector bucket.
+   *
+   * @default - Uses the encryption configuration of the vector bucket
+   */
+  readonly encryption?: IndexEncryption;
+
+  /**
+   * External KMS key to use for index encryption
+   *
+   * The encryption property must be KMS for this to have any effect.
+   *
+   * @default - If encryption is set to KMS and this property is undefined,
+   * a new KMS key will be created and associated with this index
+   */
+  readonly encryptionKey?: kms.IKey;
 }
 
 /**
@@ -175,6 +212,11 @@ export class Index extends Resource implements IIndex {
    */
   public readonly dataType: DataType;
 
+  /**
+   * Optional KMS encryption key associated with this index
+   */
+  public readonly encryptionKey?: kms.IKey;
+
   constructor(scope: Construct, id: string, props: IndexProps) {
     super(scope, id, {
       physicalName: props.indexName,
@@ -194,6 +236,10 @@ export class Index extends Resource implements IIndex {
       ? { nonFilterableMetadataKeys: props.nonFilterableMetadataKeys }
       : undefined;
 
+    // Parse encryption configuration
+    const { encryptionConfiguration, encryptionKey } = this.parseEncryption(props);
+    this.encryptionKey = encryptionKey;
+
     const resource = new CfnIndex(this, 'Resource', {
       vectorBucketArn: props.vectorBucket.vectorBucketArn,
       indexName: props.indexName,
@@ -201,6 +247,7 @@ export class Index extends Resource implements IIndex {
       distanceMetric: this.distanceMetric,
       dataType: this.dataType,
       metadataConfiguration,
+      encryptionConfiguration,
     });
 
     this.indexArn = resource.attrIndexArn;
@@ -285,5 +332,92 @@ export class Index extends Resource implements IIndex {
     if (errors.length > 0) {
       throw new UnscopedValidationError(`Invalid non-filterable metadata keys:\n${errors.join('\n')}`);
     }
+  }
+
+  /**
+   * Parse encryption configuration
+   *
+   * @param props The index properties
+   */
+  private parseEncryption(props: IndexProps): {
+    encryptionConfiguration?: CfnIndex.EncryptionConfigurationProperty;
+    encryptionKey?: kms.IKey;
+  } {
+    const encryptionType = props.encryption;
+    let key = props.encryptionKey;
+
+    // If encryption is undefined
+    if (encryptionType === undefined) {
+      if (key === undefined) {
+        // No encryption specified, use vector bucket's encryption
+        return { encryptionConfiguration: undefined, encryptionKey: undefined };
+      } else {
+        // Key provided without encryption type, use KMS
+        this.allowIndexingAccessToKey(key);
+        return {
+          encryptionConfiguration: {
+            sseType: IndexEncryption.KMS,
+            kmsKeyArn: key.keyArn,
+          },
+          encryptionKey: key,
+        };
+      }
+    }
+
+    // KMS encryption
+    if (encryptionType === IndexEncryption.KMS) {
+      if (key === undefined) {
+        // Create a new key
+        key = new kms.Key(this, 'Key', {
+          description: `Created by ${this.node.path}`,
+          enableKeyRotation: true,
+        });
+      }
+      this.allowIndexingAccessToKey(key);
+      return {
+        encryptionConfiguration: {
+          sseType: IndexEncryption.KMS,
+          kmsKeyArn: key.keyArn,
+        },
+        encryptionKey: key,
+      };
+    }
+
+    // S3 managed encryption
+    if (encryptionType === IndexEncryption.S3_MANAGED) {
+      if (key !== undefined) {
+        throw new UnscopedValidationError(
+          'Expected encryption = IndexEncryption.KMS with user provided encryption key. ' +
+          'Use IndexEncryption.KMS or remove the encryptionKey property.',
+        );
+      }
+      return {
+        encryptionConfiguration: {
+          sseType: IndexEncryption.S3_MANAGED,
+        },
+      };
+    }
+
+    throw new UnscopedValidationError(`Unknown encryption configuration detected: ${props.encryption} with key ${props.encryptionKey}`);
+  }
+
+  /**
+   * Allow S3 Vectors indexing service to access the encryption key
+   *
+   * @param encryptionKey The key to provide access to
+   */
+  private allowIndexingAccessToKey(encryptionKey: kms.IKey): void {
+    encryptionKey.addToResourcePolicy(new iam.PolicyStatement({
+      sid: 'AllowS3VectorsIndexingAccess',
+      effect: iam.Effect.ALLOW,
+      principals: [
+        new iam.ServicePrincipal('indexing.s3vectors.amazonaws.com'),
+      ],
+      actions: [
+        'kms:GenerateDataKey',
+        'kms:Decrypt',
+      ],
+      resources: ['*'],
+    }));
   }
 }

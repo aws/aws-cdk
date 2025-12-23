@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import { Stack } from 'aws-cdk-lib/core';
 import * as s3vectors from '../lib';
 
@@ -228,6 +229,139 @@ describe('Index', () => {
           indexName: tokenName,
         });
       }).not.toThrow();
+    });
+  });
+
+  describe('Encryption', () => {
+    test('creates an Index with S3 managed encryption', () => {
+      // WHEN
+      new s3vectors.Index(stack, 'MyIndex', {
+        vectorBucket,
+        dimension: 1536,
+        encryption: s3vectors.IndexEncryption.S3_MANAGED,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3Vectors::Index', {
+        EncryptionConfiguration: {
+          SseType: 'AES256',
+        },
+      });
+    });
+
+    test('creates an Index with KMS encryption and auto-generated key', () => {
+      // WHEN
+      const index = new s3vectors.Index(stack, 'MyIndex', {
+        vectorBucket,
+        dimension: 1536,
+        encryption: s3vectors.IndexEncryption.KMS,
+      });
+
+      // THEN
+      Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
+      Template.fromStack(stack).hasResourceProperties('AWS::S3Vectors::Index', {
+        EncryptionConfiguration: {
+          SseType: 'aws:kms',
+          KmsKeyArn: stack.resolve(index.encryptionKey!.keyArn),
+        },
+      });
+    });
+
+    test('creates an Index with KMS encryption and provided key', () => {
+      // GIVEN
+      const key = new kms.Key(stack, 'MyKey');
+
+      // WHEN
+      new s3vectors.Index(stack, 'MyIndex', {
+        vectorBucket,
+        dimension: 1536,
+        encryption: s3vectors.IndexEncryption.KMS,
+        encryptionKey: key,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3Vectors::Index', {
+        EncryptionConfiguration: {
+          SseType: 'aws:kms',
+          KmsKeyArn: {
+            'Fn::GetAtt': ['MyKey6AB29FA6', 'Arn'],
+          },
+        },
+      });
+    });
+
+    test('creates an Index with KMS encryption when only key is provided', () => {
+      // GIVEN
+      const key = new kms.Key(stack, 'MyKey');
+
+      // WHEN
+      new s3vectors.Index(stack, 'MyIndex', {
+        vectorBucket,
+        dimension: 1536,
+        encryptionKey: key,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3Vectors::Index', {
+        EncryptionConfiguration: {
+          SseType: 'aws:kms',
+          KmsKeyArn: {
+            'Fn::GetAtt': ['MyKey6AB29FA6', 'Arn'],
+          },
+        },
+      });
+    });
+
+    test('creates an Index without encryption configuration by default', () => {
+      // WHEN
+      new s3vectors.Index(stack, 'MyIndex', {
+        vectorBucket,
+        dimension: 1536,
+      });
+
+      // THEN - no EncryptionConfiguration property
+      const template = Template.fromStack(stack);
+      const resources = template.findResources('AWS::S3Vectors::Index');
+      const indexResource = Object.values(resources)[0];
+      expect(indexResource.Properties.EncryptionConfiguration).toBeUndefined();
+    });
+
+    test('throws error when S3 managed encryption is used with encryption key', () => {
+      // GIVEN
+      const key = new kms.Key(stack, 'MyKey');
+
+      // WHEN/THEN
+      expect(() => {
+        new s3vectors.Index(stack, 'MyIndex', {
+          vectorBucket,
+          dimension: 1536,
+          encryption: s3vectors.IndexEncryption.S3_MANAGED,
+          encryptionKey: key,
+        });
+      }).toThrow(/Expected encryption = IndexEncryption.KMS with user provided encryption key/);
+    });
+
+    test('exposes encryptionKey property when KMS encryption is used', () => {
+      // WHEN
+      const index = new s3vectors.Index(stack, 'MyIndex', {
+        vectorBucket,
+        dimension: 1536,
+        encryption: s3vectors.IndexEncryption.KMS,
+      });
+
+      // THEN
+      expect(index.encryptionKey).toBeDefined();
+    });
+
+    test('encryptionKey is undefined when no encryption is specified', () => {
+      // WHEN
+      const index = new s3vectors.Index(stack, 'MyIndex', {
+        vectorBucket,
+        dimension: 1536,
+      });
+
+      // THEN
+      expect(index.encryptionKey).toBeUndefined();
     });
   });
 });
