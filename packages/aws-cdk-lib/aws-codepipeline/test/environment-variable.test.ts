@@ -7,7 +7,7 @@ import { Secret } from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import * as codepipeline from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('environment variables', () => {
   describe('plaintext environment variables', () => {
