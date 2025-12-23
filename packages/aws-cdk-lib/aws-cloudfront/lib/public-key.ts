@@ -1,8 +1,10 @@
+import * as crypto from 'crypto';
 import { Construct } from 'constructs';
 import { CfnPublicKey, IPublicKeyRef, PublicKeyReference } from './cloudfront.generated';
-import { IResource, Names, Resource, Token, ValidationError } from '../../core';
+import { IResource, Names, Resource, Token, ValidationError, FeatureFlags, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as cxapi from '../../cx-api';
 
 /**
  * Represents a Public Key
@@ -72,10 +74,17 @@ export class PublicKey extends Resource implements IPublicKey {
       throw new ValidationError(`Public key must be in PEM format (with the BEGIN/END PUBLIC KEY lines); got ${props.encodedKey}`, scope);
     }
 
+    // Check if the stable caller reference feature flag is enabled
+    const useStableCallerReference = FeatureFlags.of(this).isEnabled(
+      cxapi.CLOUDFRONT_STABLE_PUBLIC_KEY_CALLER_REFERENCE,
+    );
+
     const resource = new CfnPublicKey(this, 'Resource', {
       publicKeyConfig: {
         name: props.publicKeyName ?? this.generateName(),
-        callerReference: this.node.addr,
+        callerReference: useStableCallerReference
+          ? this.generateStableCallerReference()
+          : this.node.addr, // Keep old behavior for backward compatibility
         encodedKey: props.encodedKey,
         comment: props.comment,
       },
@@ -91,5 +100,38 @@ export class PublicKey extends Resource implements IPublicKey {
       return name.substring(0, 40) + name.substring(name.length - 40);
     }
     return name;
+  }
+
+  private generateStableCallerReference(): string {
+    // Use a hash-based approach that ensures uniqueness while remaining stable
+    // This ensures the caller reference is unique across different construct positions
+    // but remains stable even when the construct tree structure changes
+    const stack = Stack.of(this);
+    const constructPath = this.node.path; // Full path ensures uniqueness
+    const stackName = stack.stackName;
+
+    // Create a stable identifier using stack name, construct path, and account/region
+    // The hash of the path ensures uniqueness while providing stability
+    const stableComponents = [
+      stackName,
+      constructPath,
+      stack.account || 'unknown-account',
+      stack.region || 'unknown-region',
+    ];
+
+    // Create a hash to ensure uniqueness and stability
+    const hash = crypto.createHash('sha256')
+      .update(stableComponents.join('-'))
+      .digest('hex')
+      .substring(0, 16); // Use more characters for better uniqueness
+
+    // Use a readable prefix with the hash, ensuring it fits within CloudFront's 128 character limit
+    const readablePart = `${stackName}-${this.node.id}`.substring(0, 111); // Leave room for hash
+    const callerReference = `${readablePart}-${hash}`;
+
+    // Ensure we don't exceed CloudFront's 128 character limit
+    return callerReference.length > 128
+      ? callerReference.substring(0, 128)
+      : callerReference;
   }
 }
