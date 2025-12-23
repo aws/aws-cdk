@@ -1,6 +1,6 @@
+import { RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { VectorBucket, VectorBucketPolicy } from '../lib';
 
 describe('VectorBucketPolicy', () => {

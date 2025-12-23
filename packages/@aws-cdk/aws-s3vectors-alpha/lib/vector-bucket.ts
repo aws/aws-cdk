@@ -278,7 +278,7 @@ export class VectorBucket extends VectorBucketBase {
       resource: 'bucket',
       resourceName: vectorBucketName,
     });
-    
+
     class Import extends VectorBucketBase {
       public readonly vectorBucketArn = vectorBucketArn;
       public readonly vectorBucketName = vectorBucketName;
@@ -301,7 +301,7 @@ export class VectorBucket extends VectorBucketBase {
     const stack = Stack.of(scope);
     const arnComponents = stack.splitArn(attrs.vectorBucketArn, ArnFormat.SLASH_RESOURCE_NAME);
     const bucketName = arnComponents.resourceName;
-    
+
     if (!bucketName) {
       throw new UnscopedValidationError(`Cannot extract bucket name from ARN: ${attrs.vectorBucketArn}`);
     }

@@ -1,10 +1,10 @@
-import { Construct } from 'constructs';
-import { CfnVectorBucketPolicy } from 'aws-cdk-lib/aws-s3vectors';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { CfnVectorBucketPolicy } from 'aws-cdk-lib/aws-s3vectors';
 import { RemovalPolicy, Resource } from 'aws-cdk-lib/core';
-import { IVectorBucket } from './vector-bucket';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
+import { IVectorBucket } from './vector-bucket';
 
 /**
  * Parameters for constructing a VectorBucketPolicy

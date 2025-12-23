@@ -1,5 +1,5 @@
-import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { Stack } from 'aws-cdk-lib/core';

@@ -1,5 +1,5 @@
-import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
 import { Stack } from 'aws-cdk-lib/core';
 import * as s3vectors from '../lib';
 

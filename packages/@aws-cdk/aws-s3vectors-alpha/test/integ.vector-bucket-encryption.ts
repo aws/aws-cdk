@@ -1,8 +1,8 @@
-import * as core from 'aws-cdk-lib/core';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import * as s3vectors from '../lib';
-import { Construct } from 'constructs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as core from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
+import * as s3vectors from '../lib';
 
 /**
  * Test cases for vector bucket encryption:

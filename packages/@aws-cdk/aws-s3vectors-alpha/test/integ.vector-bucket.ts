@@ -1,8 +1,8 @@
-import * as core from 'aws-cdk-lib/core';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3vectors from '../lib';
-import { Construct } from 'constructs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as core from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
+import * as s3vectors from '../lib';
 
 /**
  * Integration test for S3 Vectors - tests VectorBucket, Index, and VectorBucketPolicy

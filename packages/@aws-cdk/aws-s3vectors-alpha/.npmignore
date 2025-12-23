@@ -31,3 +31,4 @@ coverage
 .nyc_output
 *.tgz
 .eslintrc.js
+eslint.config.mjs
