@@ -27,7 +27,7 @@ import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-re
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
-import { IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
+import { AutoScalingGroupReference, IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
 
 /**
  * Name tag constant
@@ -1143,7 +1143,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public readonly grantPrincipal: iam.IPrincipal = new iam.UnknownPrincipal({ resource: this });
   protected hasCalledScaleOnRequestCount: boolean = false;
 
-  public get autoScalingGroupRef() {
+  public get autoScalingGroupRef(): AutoScalingGroupReference {
     return {
       autoScalingGroupName: this.autoScalingGroupName,
       autoScalingGroupArn: this.autoScalingGroupArn,

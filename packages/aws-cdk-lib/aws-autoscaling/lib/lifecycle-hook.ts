@@ -5,7 +5,7 @@ import * as iam from '../../aws-iam';
 import { Duration, IResource, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IAutoScalingGroupRef, ILifecycleHookRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
+import { IAutoScalingGroupRef, ILifecycleHookRef, LifecycleHookReference } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
 
 /**
  * Basic properties for a lifecycle hook
@@ -114,7 +114,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
    */
   public readonly lifecycleHookName: string;
 
-  public get lifecycleHookRef() {
+  public get lifecycleHookRef(): LifecycleHookReference {
     return {
       autoScalingGroupName: this._autoScalingGroupName,
       lifecycleHookName: this.lifecycleHookName,
