@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier, @stylistic/max-len */
 import * as path from "path";
 import { Construct } from "constructs";
-import { Stack, CustomResourceProviderBase, CustomResourceProviderOptions } from "../../../core";
+import { CustomResourceProviderBase, CustomResourceProviderOptions, Stack } from "../../../core";
 
 export class TestProvider extends CustomResourceProviderBase {
   /**
@@ -21,11 +21,11 @@ export class TestProvider extends CustomResourceProviderBase {
     return existing ?? new TestProvider(stack, id, props);
   }
 
-  public constructor(scope: Construct, id: string, props?: CustomResourceProviderOptions) {
+  private constructor(scope: Construct, id: string, props?: CustomResourceProviderOptions) {
     super(scope, id, {
       ...props,
-      "codeDirectory": path.join(__dirname, 'my-handler'),
-      "runtimeName": "python3.11"
+      codeDirectory: path.join(__dirname, 'my-handler'),
+      runtimeName: "python3.11"
     });
     this.node.addMetadata('aws:cdk:is-custom-resource-handler-customResourceProvider', true);
   }

@@ -1,7 +1,7 @@
+import { Stack, Size } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { Stack, Size } from 'aws-cdk-lib';
 import { CacheEngine, ServerlessCache, UserEngine, UserGroup } from '../lib';
 
 describe('serverless cache', () => {
@@ -15,6 +15,22 @@ describe('serverless cache', () => {
     test('import serverless cache', () => {
       const cache = ServerlessCache.fromServerlessCacheAttributes(stack, 'ImportedCache', {
         serverlessCacheName: 'my-serverless-cache',
+      });
+
+      expect(cache.serverlessCacheArn).toEqual(`arn:${stack.partition}:elasticache:${stack.region}:${stack.account}:serverlesscache/my-serverless-cache`);
+    });
+
+    test.each([
+      [CacheEngine.VALKEY_LATEST],
+      [CacheEngine.VALKEY_8],
+      [CacheEngine.VALKEY_7],
+      [CacheEngine.REDIS_LATEST],
+      [CacheEngine.REDIS_7],
+      [CacheEngine.MEMCACHED_LATEST],
+    ])('import serverless cache for %s', (cacheEngine) => {
+      const cache = ServerlessCache.fromServerlessCacheAttributes(stack, 'ImportedCache', {
+        serverlessCacheName: 'my-serverless-cache',
+        engine: cacheEngine,
       });
 
       expect(cache.serverlessCacheArn).toEqual(`arn:${stack.partition}:elasticache:${stack.region}:${stack.account}:serverlesscache/my-serverless-cache`);
@@ -73,15 +89,24 @@ describe('serverless cache', () => {
       });
     });
 
-    test('create serverless cache with VALKEY_LATEST enigne', () => {
+    test.each([
+      [CacheEngine.VALKEY_LATEST, 'valkey', Match.absent()],
+      [CacheEngine.VALKEY_8, 'valkey', '8'],
+      [CacheEngine.VALKEY_7, 'valkey', '7'],
+      [CacheEngine.REDIS_LATEST, 'redis', Match.absent()],
+      [CacheEngine.REDIS_7, 'redis', '7'],
+      [CacheEngine.MEMCACHED_LATEST, 'memcached', Match.absent()],
+    ])('test serverless cache version for %s', (cacheEngine, engine, version) => {
       new ServerlessCache(stack, 'Cache', {
+        description: 'Serverless cache',
         vpc,
-        engine: CacheEngine.VALKEY_LATEST,
+        engine: cacheEngine,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::ElastiCache::ServerlessCache', {
-        Engine: 'valkey',
-        MajorEngineVersion: Match.absent(),
+        Description: 'Serverless cache',
+        Engine: engine,
+        MajorEngineVersion: version,
       });
     });
   });

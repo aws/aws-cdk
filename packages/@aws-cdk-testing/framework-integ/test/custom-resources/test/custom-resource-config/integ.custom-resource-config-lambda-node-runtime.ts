@@ -29,7 +29,7 @@ new lambda.Function(stack, 'nonCrLambda', {
   runtime: lambda.Runtime.NODEJS_20_X,
 });
 
-CustomResourceConfig.of(app).addLambdaRuntime(lambda.Runtime.NODEJS_18_X);
+CustomResourceConfig.of(app).addLambdaRuntime(lambda.Runtime.NODEJS_20_X);
 
 new integ.IntegTest(app, 'integ-test-custom-resource-config-lambda-node-runtime', {
   testCases: [stack],

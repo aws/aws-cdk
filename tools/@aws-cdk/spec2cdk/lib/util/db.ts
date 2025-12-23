@@ -1,5 +1,6 @@
 import { Service, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { GenerateServiceRequest } from '../generate';
+import { ModuleMapScope } from '../module-topology';
 
 export function getAllServices(db: SpecDatabase) {
   return db.all('service');
@@ -16,4 +17,8 @@ export function getServicesByGenerateServiceRequest(db: SpecDatabase, requests: 
     .map(
       (service) => [requestMap.get(service.cloudFormationNamespace)!, service] as [GenerateServiceRequest, Service],
     );
+}
+
+export function getAllScopes(db: SpecDatabase, field: keyof Service = 'name'): ModuleMapScope[] {
+  return db.all('service').map((s) => ({ namespace: s[field] }));
 }

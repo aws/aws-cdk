@@ -23,7 +23,8 @@ import {
   VpnConnectionType,
   VpnGateway,
 } from 'aws-cdk-lib/aws-ec2';
-import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
+import { VPCReference } from 'aws-cdk-lib/aws-ec2/lib/ec2.generated';
+import { AccountPrincipal, Effect, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 import { Dependable, DependencyGroup, IConstruct, IDependable } from 'constructs';
 import {
   EgressOnlyInternetGateway,
@@ -37,9 +38,8 @@ import {
   VPNGatewayV2,
 } from './route';
 import { ISubnetV2 } from './subnet-v2';
-import { AccountPrincipal, Effect, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
+import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
 import { IVPCCidrBlock } from './vpc-v2';
-import { VPCReference } from 'aws-cdk-lib/aws-ec2/lib/ec2.generated';
 
 /**
  * Options to define EgressOnlyInternetGateway for VPC

@@ -91,6 +91,13 @@
      ]
     }
    },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "SQS_NO_WORLD_ACCESSIBLE_INLINE"
+     ]
+    }
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -135,6 +142,16 @@
   },
   "MyDeadLetterQueueD997968A": {
    "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "SqsManagedSseEnabled": true
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "SQS_NO_WORLD_ACCESSIBLE_INLINE"
+     ]
+    }
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -173,6 +190,84 @@
     "Queues": [
      {
       "Ref": "MyDeadLetterQueueD997968A"
+     }
+    ]
+   }
+  },
+  "StandardQueueD43B45BD": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "SqsManagedSseEnabled": true
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "SQS_NO_WORLD_ACCESSIBLE_INLINE"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "StandardQueuePolicy21A6CBEE": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
+       ],
+       "Condition": {
+        "ArnEquals": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "StandardQueueRule82F7813E",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "StandardQueueD43B45BD",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "StandardQueueD43B45BD"
+     }
+    ]
+   }
+  },
+  "StandardQueueRule82F7813E": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "ScheduleExpression": "rate(1 minute)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "StandardQueueD43B45BD",
+        "Arn"
+       ]
+      },
+      "Id": "Target0",
+      "SqsParameters": {
+       "MessageGroupId": "MyMessageGroupId"
+      }
      }
     ]
    }

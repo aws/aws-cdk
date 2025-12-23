@@ -1,30 +1,14 @@
 import { Deprecation, Property, Resource, RichProperty, TagVariant } from '@aws-cdk/service-spec-types';
-import { $E, $T, Expression, PropertySpec, Type, expr } from '@cdklabs/typewriter';
+import { $E, $T, $this, Expression, PropertySpec, Type, expr } from '@cdklabs/typewriter';
 import { CDK_CORE } from './cdk';
 import { PropertyMapping } from './cloudformation-mapping';
+import { RelationshipDecider } from './relationship-decider';
+import { ResolverBuilder } from './resolver-builder';
 import { NON_RESOLVABLE_PROPERTY_NAMES, TaggabilityStyle, resourceTaggabilityStyle } from './tagging';
 import { TypeConverter } from './type-converter';
-import { attributePropertyName, camelcasedResourceName, cloudFormationDocLink, propertyNameFromCloudFormation, referencePropertyName } from '../naming';
+import { attributePropertyName, camelcasedResourceName, cloudFormationDocLink, propertyNameFromCloudFormation } from '../naming';
 import { splitDocumentation } from '../util';
-
-// This convenience typewriter builder is used all over the place
-const $this = $E(expr.this_());
-
-interface ReferenceProp {
-  readonly declaration: PropertySpec;
-  readonly cfnValue: Expression;
-}
-
-// We temporarily only do this for a few services, to experiment
-const REFERENCE_PROP_SERVICES = [
-  'iam',
-  'apigateway',
-  'ec2',
-  'cloudfront',
-  'kms',
-  's3',
-  'lambda',
-];
+import { ResourceReference } from './reference-props';
 
 /**
  * Decide how properties get mapped between model types, Typescript types, and CloudFormation
@@ -40,21 +24,27 @@ export class ResourceDecider {
   }
 
   private readonly taggability?: TaggabilityStyle;
+  private readonly resolverBuilder: ResolverBuilder;
 
-  public readonly referenceProps = new Array<ReferenceProp>();
+  public readonly resourceReference: ResourceReference;
   public readonly propsProperties = new Array<PropsProperty>();
   public readonly classProperties = new Array<ClassProperty>();
   public readonly classAttributeProperties = new Array<ClassAttributeProperty>();
   public readonly camelResourceName: string;
 
-  constructor(private readonly resource: Resource, private readonly converter: TypeConverter) {
+  constructor(
+    private readonly resource: Resource,
+    private readonly converter: TypeConverter,
+    private readonly relationshipDecider: RelationshipDecider,
+  ) {
     this.camelResourceName = camelcasedResourceName(resource);
     this.taggability = resourceTaggabilityStyle(this.resource);
+    this.resolverBuilder = new ResolverBuilder(this.converter, this.relationshipDecider, this.converter.module);
 
     this.convertProperties();
     this.convertAttributes();
 
-    this.convertReferenceProps();
+    this.resourceReference = new ResourceReference(this.resource);
 
     this.propsProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
     this.classProperties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
@@ -81,103 +71,38 @@ export class ResourceDecider {
   }
 
   /**
-   * Find an ARN property for this resource
-   *
-   * Returns `undefined` if no ARN property is found, or if the ARN property is already
-   * included in the primary identifier.
-   */
-  public findArnProperty() {
-    const possibleArnNames = ['Arn', `${this.resource.name}Arn`];
-    for (const name of possibleArnNames) {
-      const prop = this.resource.attributes[name];
-      if (prop && !this.resource.primaryIdentifier?.includes(name)) {
-        return name;
-      }
-    }
-    return undefined;
-  }
-
-  private convertReferenceProps() {
-    // Primary identifier. We assume all parts are strings.
-    const primaryIdentifier = this.resource.primaryIdentifier ?? [];
-    if (primaryIdentifier.length === 1) {
-      this.referenceProps.push({
-        declaration: {
-          name: referencePropertyName(primaryIdentifier[0], this.resource.name),
-          type: Type.STRING,
-          immutable: true,
-          docs: {
-            summary: `The ${primaryIdentifier[0]} of the ${this.resource.name} resource.`,
-          },
-        },
-        cfnValue: $this.ref,
-      });
-    } else if (primaryIdentifier.length > 1) {
-      for (const [i, cfnName] of enumerate(primaryIdentifier)) {
-        this.referenceProps.push({
-          declaration: {
-            name: referencePropertyName(cfnName, this.resource.name),
-            type: Type.STRING,
-            immutable: true,
-            docs: {
-              summary: `The ${cfnName} of the ${this.resource.name} resource.`,
-            },
-          },
-          cfnValue: splitSelect('|', i, $this.ref),
-        });
-      }
-    }
-
-    const arnProp = this.findArnProperty();
-    if (arnProp) {
-      this.referenceProps.push({
-        declaration: {
-          name: referencePropertyName(arnProp, this.resource.name),
-          type: Type.STRING,
-          immutable: true,
-          docs: {
-            summary: `The ARN of the ${this.resource.name} resource.`,
-          },
-        },
-        cfnValue: $this[attributePropertyName(arnProp)],
-      });
-    }
-  }
-
-  /**
    * Default mapping for a property
    */
   private handlePropertyDefault(cfnName: string, prop: Property) {
-    const name = propertyNameFromCloudFormation(cfnName);
-
-    const { type, baseType } = this.legacyCompatiblePropType(cfnName, prop);
     const optional = !prop.required;
+
+    const resolverResult = this.resolverBuilder.buildResolver(prop, cfnName);
 
     this.propsProperties.push({
       propertySpec: {
-        name,
-        type,
+        name: resolverResult.name,
+        type: resolverResult.propType,
         optional,
         docs: this.defaultPropDocs(cfnName, prop),
       },
       validateRequiredInConstructor: !!prop.required,
       cfnMapping: {
         cfnName,
-        propName: name,
-        baseType,
+        propName: resolverResult.name,
+        baseType: resolverResult.baseType,
         optional,
       },
     });
     this.classProperties.push({
       propertySpec: {
-        name,
-        type,
+        name: resolverResult.name,
+        type: resolverResult.resolvableType,
         optional,
         immutable: false,
         docs: this.defaultClassPropDocs(cfnName, prop),
       },
-      initializer: (props: Expression) => expr.get(props, name),
-      cfnValueToRender: { [name]: $this[name] },
+      initializer: resolverResult.resolver,
+      cfnValueToRender: { [resolverResult.name]: $this[resolverResult.name] },
     });
   }
 
@@ -424,7 +349,6 @@ export class ResourceDecider {
  * Utility function to ensure exhaustive checks for never type.
  */
 function assertNever(x: never): never {
-  // eslint-disable-next-line @cdklabs/no-throw-default-error
   throw new Error(`Unexpected object: ${x}`);
 }
 
@@ -464,16 +388,4 @@ export function deprecationMessage(property: Property): string | undefined {
   }
 
   return undefined;
-}
-
-function splitSelect(sep: string, n: number, base: Expression) {
-  return CDK_CORE.Fn.select(expr.lit(n), CDK_CORE.Fn.split(expr.lit(sep), base));
-}
-
-function enumerate<A>(xs: A[]): Array<[number, A]> {
-  return xs.map((x, i) => [i, x]);
-}
-
-export function shouldBuildReferenceInterface(resource: Resource) {
-  return true || REFERENCE_PROP_SERVICES.some(s => resource.cloudFormationType.toLowerCase().startsWith(`aws::${s}::`));
 }

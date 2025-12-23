@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { DistributionGrants } from './cloudfront-grants.generated';
 import {
   CfnDistribution,
   CfnMonitoringSubscription,
@@ -332,7 +333,7 @@ export class Distribution extends Resource implements IDistribution {
         return grant(this, grantee, ...actions);
       }
       public grantCreateInvalidation(grantee: iam.IGrantable): iam.Grant {
-        return this.grant(grantee, 'cloudfront:CreateInvalidation');
+        return DistributionGrants.fromDistribution(this).createInvalidation(grantee);
       }
     }();
   }
@@ -341,6 +342,11 @@ export class Distribution extends Resource implements IDistribution {
   public readonly distributionDomainName: string;
   public readonly distributionId: string;
   public readonly distributionRef: DistributionReference;
+
+  /**
+   * Collection of grant methods for a Distribution
+   */
+  public readonly grants = DistributionGrants.fromDistribution(this);
 
   private readonly httpVersion: HttpVersion;
   private readonly defaultBehavior: CacheBehavior;
@@ -672,7 +678,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   @MethodMetadata()
   public grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
-    return this.grant(identity, 'cloudfront:CreateInvalidation');
+    return this.grants.createInvalidation(identity);
   }
 
   /**
@@ -953,6 +959,7 @@ export enum SecurityPolicyProtocol {
   TLS_V1_2_2018 = 'TLSv1.2_2018',
   TLS_V1_2_2019 = 'TLSv1.2_2019',
   TLS_V1_2_2021 = 'TLSv1.2_2021',
+  TLS_V1_2_2025 = 'TLSv1.2_2025',
   TLS_V1_3_2025 = 'TLSv1.3_2025',
 }
 
