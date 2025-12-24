@@ -13,7 +13,7 @@ export function instanceBlockDeviceMappings(construct: Construct, blockDevices: 
     }
     if (blockDevice.volume.ebsDevice?.volumeInitializationRate !== undefined) {
       Annotations.of(construct).addWarningV2('@aws-cdk/aws-ec2:volumeInitializationRateNotSuported',
-        'The volumeInitializationRate is not supported on EC2 instances. Use a Laucnh Template instead.',
+        'The volumeInitializationRate is not supported on EC2 instances. Use a Launch Template instead.',
       );
     }
   }
