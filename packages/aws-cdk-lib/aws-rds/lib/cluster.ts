@@ -11,7 +11,7 @@ import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentia
 import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials, EngineLifecycleSupport } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
-import { ISubnetGroup, SubnetGroup } from './subnet-group';
+import { SubnetGroup } from './subnet-group';
 import { validateDatabaseClusterProps } from './validate-database-insights';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
@@ -27,6 +27,7 @@ import { UnscopedValidationError, ValidationError } from '../../core/lib/errors'
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
+import { aws_rds } from '../../interfaces';
 
 /**
  * Common properties for a new database cluster or cluster from snapshot.
@@ -350,7 +351,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - a new subnet group will be created.
    */
-  readonly subnetGroup?: ISubnetGroup;
+  readonly subnetGroup?: aws_rds.IDBSubnetGroupRef;
 
   /**
    * Whether to enable mapping of AWS Identity and Access Management (IAM) accounts
@@ -654,6 +655,16 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
   }
 
   /**
+   * A reference to this database cluster
+   */
+  public get dbClusterRef(): aws_rds.DBClusterReference {
+    return {
+      dbClusterIdentifier: this.clusterIdentifier,
+      dbClusterArn: this.clusterArn,
+    };
+  }
+
+  /**
    * Add a new db proxy to this cluster.
    */
   public addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy {
@@ -717,7 +728,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   protected readonly newCfnProps: CfnDBClusterProps;
   protected readonly securityGroups: ec2.ISecurityGroup[];
-  protected readonly subnetGroup: ISubnetGroup;
+  protected readonly subnetGroup: aws_rds.IDBSubnetGroupRef;
 
   private readonly domainId?: string;
   private readonly domainRole?: iam.IRole;
@@ -928,7 +939,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       engine: props.engine.engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
       dbClusterIdentifier: clusterIdentifier,
-      dbSubnetGroupName: this.subnetGroup.subnetGroupName,
+      dbSubnetGroupName: this.subnetGroup.dbSubnetGroupRef.dbSubnetGroupName,
       vpcSecurityGroupIds: this.securityGroups.map(sg => sg.securityGroupId),
       port: props.port ?? clusterEngineBindConfig.port,
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
@@ -1710,7 +1721,7 @@ interface InstanceConfig {
  * A function rather than a protected method on ``DatabaseClusterNew`` to avoid exposing
  * ``DatabaseClusterNew`` and ``DatabaseClusterBaseProps`` in the API.
  */
-function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBaseProps, subnetGroup: ISubnetGroup): InstanceConfig {
+function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBaseProps, subnetGroup: aws_rds.IDBSubnetGroupRef): InstanceConfig {
   const instanceCount = props.instances != null ? props.instances : 2;
   const instanceUpdateBehaviour = props.instanceUpdateBehaviour ?? InstanceUpdateBehaviour.BULK;
   if (Token.isUnresolved(instanceCount)) {
@@ -1782,7 +1793,7 @@ function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClust
       performanceInsightsKmsKeyId: instanceProps.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: performanceInsightRetention,
       // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
-      dbSubnetGroupName: subnetGroup.subnetGroupName,
+      dbSubnetGroupName: subnetGroup.dbSubnetGroupRef.dbSubnetGroupName,
       dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
       // When `enableClusterLevelEnhancedMonitoring` is enabled,
       // both `monitoringInterval` and `monitoringRole` are set at cluster level so no need to re-set it in instance level.
