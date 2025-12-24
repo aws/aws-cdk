@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { BaseAppsyncFunctionProps, AppsyncFunction } from './appsync-function';
 import { CfnDataSource } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
+import { toIGraphqlApi } from './private/ref-utils';
 import { BaseResolverProps, Resolver } from './resolver';
 import { ITable } from '../../aws-dynamodb';
 import { IDomain as IElasticsearchDomain } from '../../aws-elasticsearch';
@@ -13,6 +14,7 @@ import { IServerlessCluster, IDatabaseCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
 import { IResolvable, Lazy, Stack, Token } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IGraphQLApiRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * Base properties for an AppSync datasource
@@ -21,7 +23,7 @@ export interface BaseDataSourceProps {
   /**
    * The API to attach this data source to
    */
-  readonly api: IGraphqlApi;
+  readonly api: IGraphQLApiRef;
   /**
    * The name of the data source
    *
@@ -116,8 +118,15 @@ export abstract class BaseDataSource extends Construct {
    */
   public readonly ds: CfnDataSource;
 
-  protected api: IGraphqlApi;
+  private readonly _api: IGraphQLApiRef;
   protected serviceRole?: IRole;
+
+  /**
+   * The API to attach this data source to
+   */
+  protected get api(): IGraphqlApi {
+    return toIGraphqlApi(this._api);
+  }
 
   constructor(scope: Construct, id: string, props: BackedDataSourceProps, extended: ExtendedDataSourceProps) {
     super(scope, id);
@@ -129,14 +138,14 @@ export abstract class BaseDataSource extends Construct {
     const name = (props.name ?? id);
     const supportedName = Token.isUnresolved(name) ? name : name.replace(/[\W]+/g, '');
     this.ds = new CfnDataSource(this, 'Resource', {
-      apiId: props.api.apiId,
+      apiId: props.api.graphQlApiRef.apiId,
       name: supportedName,
       description: props.description,
       serviceRoleArn: this.serviceRole?.roleArn,
       ...extended,
     });
     this.name = supportedName;
-    this.api = props.api;
+    this._api = props.api;
   }
 
   /**

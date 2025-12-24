@@ -5,6 +5,7 @@ import { Effect, IRole, PolicyStatement } from '../../aws-iam';
 import { Fn, IResource, Lazy, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { ISourceApiAssociationRef, SourceApiAssociationReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * Merge type used to associate the source API
@@ -24,7 +25,7 @@ export enum MergeType {
 /**
  * Interface for AppSync Source Api Association
  */
-export interface ISourceApiAssociation extends IResource {
+export interface ISourceApiAssociation extends IResource, ISourceApiAssociationRef {
 
   /**
    * The association id.
@@ -123,6 +124,13 @@ export class SourceApiAssociation extends Resource implements ISourceApiAssociat
       public readonly associationArn = attrs.associationArn;
       public readonly sourceApi = attrs.sourceApi;
       public readonly mergedApi = attrs.mergedApi;
+
+      public get sourceApiAssociationRef(): SourceApiAssociationReference {
+        return {
+          associationArn: this.associationArn,
+        };
+      }
+
       constructor(s: Construct, i: string) {
         super(s, i);
       }
@@ -164,6 +172,12 @@ export class SourceApiAssociation extends Resource implements ISourceApiAssociat
    * The merged api execution role for attaching the access policy.
    */
   private readonly mergedApiExecutionRole?: IRole;
+
+  public get sourceApiAssociationRef(): SourceApiAssociationReference {
+    return {
+      associationArn: this.associationArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: SourceApiAssociationProps) {
     super(scope, id);
