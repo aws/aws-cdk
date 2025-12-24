@@ -233,6 +233,16 @@ const repository = new ecr.Repository(this, 'MyTempRepo', {
 });
 ```
 
+Alternatively, you can enable image auto-deletion after the repository has been created, allowing for conditional or dynamic configuration:
+
+```ts
+const repository = new ecr.Repository(this, 'MyTempRepo', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+
+repository.enableAutoDeleteImages();
+```
+
 ## Managing the Resource Policy
 
 You can add statements to the resource policy of the repository using the
