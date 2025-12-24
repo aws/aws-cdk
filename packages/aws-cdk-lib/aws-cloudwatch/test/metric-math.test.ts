@@ -1,5 +1,5 @@
 import { Template } from '../../assertions';
-import { Duration, Stack } from '../../core';
+import { Duration, Lazy, Stack } from '../../core';
 import { Alarm, GraphWidget, IWidget, MathExpression, Metric } from '../lib';
 
 const a = new Metric({ namespace: 'Test', metricName: 'ACount' });
@@ -23,6 +23,44 @@ describe('Metric Math', () => {
         },
       });
     }).toThrow(/Invalid variable names in expression/);
+  });
+
+  test('can use tokens for variable names in MathExpression', () => {
+    const token = Lazy.string({
+      produce() {
+        return 'token';
+      },
+    });
+    const suffix = `_${token}`;
+    const metric = new MathExpression({
+      expression: `a${suffix} + b${suffix}`,
+      usingMetrics: {
+        [`a${suffix}`]: a,
+        [`b${suffix}`]: b,
+      },
+    });
+
+    new Alarm(stack, 'Alarm', {
+      threshold: 1,
+      evaluationPeriods: 1,
+      metric,
+    });
+    console.log({ resources: JSON.stringify(Template.fromStack(stack).findResources('AWS::CloudWatch::Alarm'), null, 2) });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      Metrics: [
+        {
+          Expression: 'a_token + b_token',
+          Id: 'expr_1',
+        },
+        {
+          Id: 'a_token',
+        },
+        {
+          Id: 'b_token',
+        },
+      ],
+    });
   });
 
   test('cannot reuse variable names in nested MathExpressions', () => {
