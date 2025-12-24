@@ -385,7 +385,7 @@ describe('instance', () => {
         }],
       });
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Default/Instance', Match.stringLikeRegexp('The volumeInitializationRate is not supported on EC2 instances. Use a Laucnh Template instead.'));
+      Annotations.fromStack(stack).hasWarning('/Default/Instance', Match.stringLikeRegexp('The volumeInitializationRate is not supported on EC2 instances. Use a Launch Template instead.'));
     });
 
     test('throws if ephemeral volumeIndex < 0', () => {
