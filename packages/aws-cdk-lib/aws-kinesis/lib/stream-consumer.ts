@@ -6,6 +6,7 @@ import * as iam from '../../aws-iam';
 import { ArnFormat, IResource, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IStreamConsumerRef, StreamConsumerReference } from '../../interfaces/generated/aws-kinesis-interfaces.generated';
 
 const READ_OPERATIONS = [
   'kinesis:DescribeStreamConsumer',
@@ -15,7 +16,7 @@ const READ_OPERATIONS = [
 /**
  * A Kinesis Stream Consumer
  */
-export interface IStreamConsumer extends IResource {
+export interface IStreamConsumer extends IResource, IStreamConsumerRef {
   /**
    * The ARN of the stream consumer.
    *
@@ -73,6 +74,15 @@ abstract class StreamConsumerBase extends Resource implements IStreamConsumer {
    * The Kinesis data stream this consumer is associated with.
    */
   public abstract readonly stream: IStream;
+
+  /**
+   * A reference to this stream consumer.
+   */
+  public get streamConsumerRef(): StreamConsumerReference {
+    return {
+      consumerArn: this.streamConsumerArn,
+    };
+  }
 
   /**
    * Indicates if a resource policy should automatically be created upon
