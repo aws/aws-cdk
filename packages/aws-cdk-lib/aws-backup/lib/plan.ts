@@ -1,16 +1,18 @@
 import { Construct } from 'constructs';
 import { CfnBackupPlan } from './backup.generated';
+import { toIBackupVault } from './private/ref-utils';
 import { BackupPlanCopyActionProps, BackupPlanRule } from './rule';
 import { BackupSelection, BackupSelectionOptions } from './selection';
 import { BackupVault, IBackupVault } from './vault';
-import { IResource, Lazy, Resource, ValidationError } from '../../core';
+import { ArnFormat, IResource, Lazy, Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { BackupPlanReference, IBackupPlanRef, IBackupVaultRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
 
 /**
  * A backup plan
  */
-export interface IBackupPlan extends IResource {
+export interface IBackupPlan extends IResource, IBackupPlanRef {
   /**
    * The identifier of the backup plan.
    *
@@ -36,7 +38,7 @@ export interface BackupPlanProps {
    * @default - use the vault defined at the rule level. If not defined a new
    * common vault for the plan will be created
    */
-  readonly backupVault?: IBackupVault;
+  readonly backupVault?: IBackupVaultRef;
 
   /**
    * Rules for the backup plan. Use `addRule()` to add rules after
@@ -70,6 +72,18 @@ export class BackupPlan extends Resource implements IBackupPlan {
   public static fromBackupPlanId(scope: Construct, id: string, backupPlanId: string): IBackupPlan {
     class Import extends Resource implements IBackupPlan {
       public readonly backupPlanId = backupPlanId;
+
+      public get backupPlanRef(): BackupPlanReference {
+        return {
+          backupPlanId: this.backupPlanId,
+          backupPlanArn: this.stack.formatArn({
+            service: 'backup',
+            resource: 'backup-plan',
+            resourceName: this.backupPlanId,
+            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+          }),
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -77,7 +91,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
   /**
    * Daily with 35 day retention
    */
-  public static daily35DayRetention(scope: Construct, id: string, backupVault?: IBackupVault) {
+  public static daily35DayRetention(scope: Construct, id: string, backupVault?: IBackupVaultRef) {
     const plan = new BackupPlan(scope, id, { backupVault });
     plan.addRule(BackupPlanRule.daily());
     return plan;
@@ -86,7 +100,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
   /**
    * Daily and monthly with 1 year retention
    */
-  public static dailyMonthly1YearRetention(scope: Construct, id: string, backupVault?: IBackupVault) {
+  public static dailyMonthly1YearRetention(scope: Construct, id: string, backupVault?: IBackupVaultRef) {
     const plan = new BackupPlan(scope, id, { backupVault });
     plan.addRule(BackupPlanRule.daily());
     plan.addRule(BackupPlanRule.monthly1Year());
@@ -96,7 +110,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
   /**
    * Daily, weekly and monthly with 5 year retention
    */
-  public static dailyWeeklyMonthly5YearRetention(scope: Construct, id: string, backupVault?: IBackupVault) {
+  public static dailyWeeklyMonthly5YearRetention(scope: Construct, id: string, backupVault?: IBackupVaultRef) {
     const plan = new BackupPlan(scope, id, { backupVault });
     plan.addRule(BackupPlanRule.daily());
     plan.addRule(BackupPlanRule.weekly());
@@ -107,7 +121,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
   /**
    * Daily, weekly and monthly with 7 year retention
    */
-  public static dailyWeeklyMonthly7YearRetention(scope: Construct, id: string, backupVault?: IBackupVault) {
+  public static dailyWeeklyMonthly7YearRetention(scope: Construct, id: string, backupVault?: IBackupVaultRef) {
     const plan = new BackupPlan(scope, id, { backupVault });
     plan.addRule(BackupPlanRule.daily());
     plan.addRule(BackupPlanRule.weekly());
@@ -131,8 +145,15 @@ export class BackupPlan extends Resource implements IBackupPlan {
    */
   public readonly versionId: string;
 
+  public get backupPlanRef(): BackupPlanReference {
+    return {
+      backupPlanId: this.backupPlanId,
+      backupPlanArn: this.backupPlanArn,
+    };
+  }
+
   private readonly rules: CfnBackupPlan.BackupRuleResourceTypeProperty[] = [];
-  private _backupVault?: IBackupVault;
+  private _backupVault?: IBackupVaultRef;
 
   constructor(scope: Construct, id: string, props: BackupPlanProps = {}) {
     super(scope, id);
@@ -179,7 +200,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
    */
   @MethodMetadata()
   public addRule(rule: BackupPlanRule) {
-    let vault: IBackupVault;
+    let vault: IBackupVaultRef;
     if (rule.props.backupVault) {
       vault = rule.props.backupVault;
     } else if (this._backupVault) {
@@ -200,7 +221,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
       scheduleExpressionTimezone: rule.props.scheduleExpressionTimezone?.timezoneName,
       startWindowMinutes: rule.props.startWindow?.toMinutes(),
       enableContinuousBackup: rule.props.enableContinuousBackup,
-      targetBackupVault: vault.backupVaultName,
+      targetBackupVault: vault.backupVaultRef.backupVaultName,
       copyActions: rule.props.copyActions?.map(this.planCopyActions),
       recoveryPointTags: rule.props.recoveryPointTags,
     });
@@ -208,7 +229,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
 
   private planCopyActions(this: void, props: BackupPlanCopyActionProps): CfnBackupPlan.CopyActionResourceTypeProperty {
     return {
-      destinationBackupVaultArn: props.destinationBackupVault.backupVaultArn,
+      destinationBackupVaultArn: props.destinationBackupVault.backupVaultRef.backupVaultArn,
       lifecycle: (props.deleteAfter || props.moveToColdStorageAfter) && {
         deleteAfterDays: props.deleteAfter?.toDays(),
         moveToColdStorageAfterDays: props.moveToColdStorageAfter?.toDays(),
@@ -226,7 +247,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
       throw new ValidationError('No backup vault!', this);
     }
 
-    return this._backupVault;
+    return toIBackupVault(this._backupVault);
   }
 
   /**
