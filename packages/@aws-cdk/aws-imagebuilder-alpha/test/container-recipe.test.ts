@@ -49,6 +49,7 @@ describe('Container Recipe', () => {
     expect(containerRecipe.containerRecipeName).toEqual('imported-container-recipe-by-name');
     expect(containerRecipe.containerRecipeVersion).toEqual('x.x.x');
     expect((containerRecipe as IRecipeBase)._isContainerRecipe()).toBeTruthy();
+    expect((containerRecipe as IRecipeBase)._isImageRecipe()).toBeFalsy();
   });
 
   test('imported by name as an unresolved token', () => {
@@ -88,6 +89,35 @@ describe('Container Recipe', () => {
     );
     expect(containerRecipe.containerRecipeName).toEqual('imported-container-recipe-by-arn');
     expect(containerRecipe.containerRecipeVersion).toEqual('1.2.3');
+
+    expect(stack.resolve(containerRecipe.containerRecipeLatestVersion.containerRecipeArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:container-recipe/imported-container-recipe-by-arn/x.x.x',
+    );
+    expect(stack.resolve(containerRecipe.containerRecipeLatestVersion.containerRecipeName)).toEqual(
+      'imported-container-recipe-by-arn',
+    );
+    expect(stack.resolve(containerRecipe.containerRecipeLatestVersion.containerRecipeVersion)).toEqual('x.x.x');
+    expect(stack.resolve(containerRecipe.containerRecipeLatestMajorVersion.containerRecipeArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:container-recipe/imported-container-recipe-by-arn/1.x.x',
+    );
+    expect(stack.resolve(containerRecipe.containerRecipeLatestMajorVersion.containerRecipeName)).toEqual(
+      'imported-container-recipe-by-arn',
+    );
+    expect(stack.resolve(containerRecipe.containerRecipeLatestMajorVersion.containerRecipeVersion)).toEqual('1.x.x');
+    expect(stack.resolve(containerRecipe.containerRecipeLatestMinorVersion.containerRecipeArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:container-recipe/imported-container-recipe-by-arn/1.2.x',
+    );
+    expect(stack.resolve(containerRecipe.containerRecipeLatestMinorVersion.containerRecipeName)).toEqual(
+      'imported-container-recipe-by-arn',
+    );
+    expect(stack.resolve(containerRecipe.containerRecipeLatestMinorVersion.containerRecipeVersion)).toEqual('1.2.x');
+    expect(stack.resolve(containerRecipe.containerRecipeLatestPatchVersion.containerRecipeArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:container-recipe/imported-container-recipe-by-arn/1.2.3',
+    );
+    expect(stack.resolve(containerRecipe.containerRecipeLatestPatchVersion.containerRecipeName)).toEqual(
+      'imported-container-recipe-by-arn',
+    );
+    expect(stack.resolve(containerRecipe.containerRecipeLatestPatchVersion.containerRecipeVersion)).toEqual('1.2.3');
   });
 
   test('imported by arn as an unresolved token', () => {
@@ -226,6 +256,20 @@ CMD ["echo", "Hello, world!"]
     expect(ContainerRecipe.isContainerRecipe(containerRecipe as unknown)).toBeTruthy();
     expect(ContainerRecipe.isContainerRecipe('ContainerRecipe')).toBeFalsy();
     expect((containerRecipe as IRecipeBase)._isContainerRecipe()).toBeTruthy();
+    expect((containerRecipe as IRecipeBase)._isImageRecipe()).toBeFalsy();
+
+    expect(stack.resolve(containerRecipe.containerRecipeLatestVersion.containerRecipeArn)).toEqual({
+      'Fn::GetAtt': ['ContainerRecipe8A7CC9ED', 'LatestVersion.Arn'],
+    });
+    expect(stack.resolve(containerRecipe.containerRecipeLatestMajorVersion.containerRecipeArn)).toEqual({
+      'Fn::GetAtt': ['ContainerRecipe8A7CC9ED', 'LatestVersion.Major'],
+    });
+    expect(stack.resolve(containerRecipe.containerRecipeLatestMinorVersion.containerRecipeArn)).toEqual({
+      'Fn::GetAtt': ['ContainerRecipe8A7CC9ED', 'LatestVersion.Minor'],
+    });
+    expect(stack.resolve(containerRecipe.containerRecipeLatestPatchVersion.containerRecipeArn)).toEqual({
+      'Fn::GetAtt': ['ContainerRecipe8A7CC9ED', 'LatestVersion.Patch'],
+    });
 
     Template.fromStack(stack).templateMatches({
       Resources: {

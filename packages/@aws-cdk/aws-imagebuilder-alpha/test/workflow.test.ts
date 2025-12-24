@@ -36,6 +36,27 @@ describe('Workflow', () => {
     expect(workflow.workflowName).toEqual('imported-workflow');
     expect(workflow.workflowType).toEqual('BUILD');
     expect(workflow.workflowVersion).toEqual('1.2.3');
+
+    expect(stack.resolve(workflow.workflowLatestVersion.workflowArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:workflow/build/imported-workflow/x.x.x',
+    );
+    expect(stack.resolve(workflow.workflowLatestVersion.workflowName)).toEqual('imported-workflow');
+    expect(stack.resolve(workflow.workflowLatestVersion.workflowVersion)).toEqual('x.x.x');
+    expect(stack.resolve(workflow.workflowLatestMajorVersion.workflowArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:workflow/build/imported-workflow/1.x.x',
+    );
+    expect(stack.resolve(workflow.workflowLatestMajorVersion.workflowName)).toEqual('imported-workflow');
+    expect(stack.resolve(workflow.workflowLatestMajorVersion.workflowVersion)).toEqual('1.x.x');
+    expect(stack.resolve(workflow.workflowLatestMinorVersion.workflowArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:workflow/build/imported-workflow/1.2.x',
+    );
+    expect(stack.resolve(workflow.workflowLatestMinorVersion.workflowName)).toEqual('imported-workflow');
+    expect(stack.resolve(workflow.workflowLatestMinorVersion.workflowVersion)).toEqual('1.2.x');
+    expect(stack.resolve(workflow.workflowLatestPatchVersion.workflowArn)).toEqual(
+      'arn:aws:imagebuilder:us-east-1:123456789012:workflow/build/imported-workflow/1.2.3',
+    );
+    expect(stack.resolve(workflow.workflowLatestPatchVersion.workflowName)).toEqual('imported-workflow');
+    expect(stack.resolve(workflow.workflowLatestPatchVersion.workflowVersion)).toEqual('1.2.3');
   });
 
   test('imported by attributes', () => {
@@ -229,6 +250,19 @@ describe('Workflow', () => {
 
     expect(Workflow.isWorkflow(workflow as unknown)).toBeTruthy();
     expect(Workflow.isWorkflow('Workflow')).toBeFalsy();
+
+    expect(stack.resolve(workflow.workflowLatestVersion.workflowArn)).toEqual({
+      'Fn::GetAtt': ['Workflow193EF7C1', 'LatestVersion.Arn'],
+    });
+    expect(stack.resolve(workflow.workflowLatestMajorVersion.workflowArn)).toEqual({
+      'Fn::GetAtt': ['Workflow193EF7C1', 'LatestVersion.Major'],
+    });
+    expect(stack.resolve(workflow.workflowLatestMinorVersion.workflowArn)).toEqual({
+      'Fn::GetAtt': ['Workflow193EF7C1', 'LatestVersion.Minor'],
+    });
+    expect(stack.resolve(workflow.workflowLatestPatchVersion.workflowArn)).toEqual({
+      'Fn::GetAtt': ['Workflow193EF7C1', 'LatestVersion.Patch'],
+    });
 
     Template.fromStack(stack).templateMatches({
       Resources: {
@@ -774,15 +808,6 @@ steps:
             ],
           }),
         }),
-    ).toThrow(cdk.ValidationError);
-  });
-
-  test('throws a validation error when a workflowName/workflowType/workflowVersion and workflowArn are provided when importing by attributes', () => {
-    expect(() =>
-      Workflow.fromWorkflowAttributes(stack, 'Workflow', {
-        workflowArn: 'arn:aws:imagebuilder:us-east-1:123456789012:workflow/build/imported-workflow/x.x.x',
-        workflowName: 'imported-workflow',
-      }),
     ).toThrow(cdk.ValidationError);
   });
 

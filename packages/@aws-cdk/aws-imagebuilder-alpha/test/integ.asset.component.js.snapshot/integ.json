@@ -1,13 +1,13 @@
 {
   "version": "48.0.0",
   "testCases": {
-    "ComponentTest/DefaultTest": {
+    "ComponentTest-Asset/DefaultTest": {
       "stacks": [
         "aws-cdk-imagebuilder-component-asset"
       ],
-      "assertionStack": "ComponentTest/DefaultTest/DeployAssert",
-      "assertionStackName": "ComponentTestDefaultTestDeployAssert990A2773"
+      "assertionStack": "ComponentTest-Asset/DefaultTest/DeployAssert",
+      "assertionStackName": "ComponentTestAssetDefaultTestDeployAssertD35D8A81"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }
