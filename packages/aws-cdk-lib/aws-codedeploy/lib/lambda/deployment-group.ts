@@ -8,6 +8,7 @@ import * as cdk from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
+import { IDeploymentGroupRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
 import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
@@ -16,7 +17,7 @@ import { AutoRollbackConfig } from '../rollback-config';
 /**
  * Interface for a Lambda deployment groups.
  */
-export interface ILambdaDeploymentGroup extends cdk.IResource {
+export interface ILambdaDeploymentGroup extends cdk.IResource, IDeploymentGroupRef {
   /**
    * The reference to the CodeDeploy Lambda Application that this Deployment Group belongs to.
    */
@@ -306,6 +307,13 @@ export interface LambdaDeploymentGroupAttributes {
    * @default LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES
    */
   readonly deploymentConfig?: ILambdaDeploymentConfig;
+
+  /**
+   * The ID of the CodeDeploy Deployment Group.
+   *
+   * @default - the ID will be constructed from the application name and deployment group name
+   */
+  readonly deploymentGroupId?: string;
 }
 
 @propertyInjectable
@@ -319,6 +327,7 @@ class ImportedLambdaDeploymentGroup extends ImportedDeploymentGroupBase implemen
     super(scope, id, {
       application: props.application,
       deploymentGroupName: props.deploymentGroupName,
+      deploymentGroupId: props.deploymentGroupId,
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { isPredefinedDeploymentConfig } from './predefined-deployment-config';
 import { validateName } from './utils';
 import * as iam from '../../../aws-iam';
-import { Resource, IResource, ArnFormat, Arn, Aws } from '../../../core';
+import { Resource, IResource, ArnFormat, Arn, Aws, ValidationError } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { IBaseDeploymentConfig } from '../base-deployment-config';
@@ -31,6 +31,13 @@ export interface ImportedDeploymentGroupBaseProps {
    * @default Either deploymentGroupName or deploymentGroupArn is required
    */
   readonly deploymentGroupName: string;
+
+  /**
+   * The ID of the CodeDeploy Deployment Group.
+   *
+   * @default - the ID will be constructed from the application name and deployment group name
+   */
+  readonly deploymentGroupId?: string;
 }
 
 /**
@@ -42,6 +49,7 @@ export class ImportedDeploymentGroupBase extends Resource {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.ImportedDeploymentGroupBase';
   public readonly deploymentGroupName: string;
   public readonly deploymentGroupArn: string;
+  private readonly _deploymentGroupId?: string;
 
   constructor(scope: Construct, id: string, props: ImportedDeploymentGroupBaseProps) {
     const deploymentGroupName = props.deploymentGroupName;
@@ -60,6 +68,16 @@ export class ImportedDeploymentGroupBase extends Resource {
     addConstructMetadata(this, props);
     this.deploymentGroupName = deploymentGroupName;
     this.deploymentGroupArn = deploymentGroupArn;
+    this._deploymentGroupId = props.deploymentGroupId;
+  }
+
+  public get deploymentGroupRef() {
+    if (!this._deploymentGroupId) {
+      throw new ValidationError(`Cannot access deploymentGroupId for imported deployment group '${this.node.path}'. Please provide the 'deploymentGroupId' property when importing the deployment group.`, this);
+    }
+    return {
+      deploymentGroupId: this._deploymentGroupId,
+    };
   }
 
   /**
@@ -114,6 +132,12 @@ export class DeploymentGroupBase extends Resource {
   public readonly deploymentGroupArn!: string;
 
   /**
+   * The ID of the Deployment Group.
+   * @internal
+   */
+  private readonly _deploymentGroupId!: string;
+
+  /**
    * The service Role of this Deployment Group.
    *
    * (Can't make `role` properly public here, as it's typed as optional in one
@@ -166,5 +190,12 @@ export class DeploymentGroupBase extends Resource {
       resourceName: `${application.applicationName}/${this.physicalName}`,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+    (this as any)._deploymentGroupId = resource.attrId;
+  }
+
+  public get deploymentGroupRef() {
+    return {
+      deploymentGroupId: this._deploymentGroupId,
+    };
   }
 }

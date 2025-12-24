@@ -11,12 +11,13 @@ import * as cdk from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
+import { IDeploymentGroupRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
 import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
 import { AutoRollbackConfig } from '../rollback-config';
 
-export interface IServerDeploymentGroup extends cdk.IResource {
+export interface IServerDeploymentGroup extends cdk.IResource, IDeploymentGroupRef {
   readonly application: IServerApplication;
   readonly role?: iam.IRole;
   /**
@@ -56,6 +57,13 @@ export interface ServerDeploymentGroupAttributes {
    * @default ServerDeploymentConfig#OneAtATime
    */
   readonly deploymentConfig?: IServerDeploymentConfig;
+
+  /**
+   * The ID of the CodeDeploy Deployment Group.
+   *
+   * @default - the ID will be constructed from the application name and deployment group name
+   */
+  readonly deploymentGroupId?: string;
 }
 
 @propertyInjectable
@@ -71,6 +79,7 @@ class ImportedServerDeploymentGroup extends ImportedDeploymentGroupBase implemen
     super(scope, id, {
       application: props.application,
       deploymentGroupName: props.deploymentGroupName,
+      deploymentGroupId: props.deploymentGroupId,
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
