@@ -973,7 +973,7 @@ export abstract class BaseService extends Resource
     } else {
       // If deployment alarms have previously been enabled, we only need to add
       // the new alarm names, since rollback behaviors can't be updated/mixed.
-      this.deploymentAlarms.alarmNames.concat(alarmNames);
+      this.deploymentAlarms.alarmNames.push(...alarmNames);
     }
   }
 
