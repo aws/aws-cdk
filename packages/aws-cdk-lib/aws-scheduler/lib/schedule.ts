@@ -255,9 +255,22 @@ export class Schedule extends Resource implements ISchedule {
    * Import an existing schedule using the ARN.
    */
   public static fromScheduleArn(scope: Construct, id: string, scheduleArn: string): ISchedule {
+    // Format: arn:aws:scheduler:region:account:schedule/SCHEDULE-GROUP/SCHEDULE-NAME
+    const arnComponents = Arn.split(scheduleArn, ArnFormat.NO_RESOURCE_NAME);
+    const resourcePath = arnComponents.resource;
+
+    // Split the resource path: schedule/GROUP/NAME
+    const pathParts = resourcePath.split('/');
+
+    if (pathParts.length !== 3 || pathParts[0] !== 'schedule') {
+      throw new UnscopedValidationError(`Invalid schedule ARN format. Expected: arn:<partition>:scheduler:<region>:<account>:schedule/<group-name>/<schedule-name>, got: ${scheduleArn}`);
+    }
+
+    const scheduleName = pathParts[2];
+
     class Import extends Resource implements ISchedule {
       public readonly scheduleArn = scheduleArn;
-      public readonly scheduleName = Arn.split(scheduleArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!.split('/')[1];
+      public readonly scheduleName = scheduleName;
     }
     return new Import(scope, id);
   }
