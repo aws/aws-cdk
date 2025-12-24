@@ -517,7 +517,7 @@ export class Ipam extends Resource {
 
   /**
    * IPAM name to be used for tagging
-   * @default no tag specified
+   * @default - no tag specified
    * @attribute IpamName
    */
   public readonly ipamName?: string;

@@ -134,7 +134,7 @@ export interface AgentAliasProps {
    * The name for the agent alias.
    * This will be used as the physical name of the agent alias.
    *
-   * @default - "latest"
+   * @default "latest"
    */
   readonly agentAliasName?: string;
   /**
