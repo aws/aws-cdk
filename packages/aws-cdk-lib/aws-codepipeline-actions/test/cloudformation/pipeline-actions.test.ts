@@ -383,6 +383,11 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   ): notifications.NotificationRuleSourceConfig {
     throw new Error('Method not implemented.');
   }
+  public get pipelineRef() {
+    return {
+      pipelineName: this.pipelineName,
+    };
+  }
 }
 
 class FullAction {
