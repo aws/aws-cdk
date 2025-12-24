@@ -1,16 +1,18 @@
 import { Construct } from 'constructs';
 import { CfnGatewayRoute, CfnVirtualGateway } from './appmesh.generated';
 import { GatewayRouteSpec } from './gateway-route-spec';
+import { toIVirtualGateway } from './private/ref-utils';
 import { renderMeshOwner } from './private/utils';
 import { IVirtualGateway, VirtualGateway } from './virtual-gateway';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IGatewayRouteRef, IVirtualGatewayRef } from '../../interfaces/generated/aws-appmesh-interfaces.generated';
 
 /**
  * Interface for which all GatewayRoute based classes MUST implement
  */
-export interface IGatewayRoute extends cdk.IResource {
+export interface IGatewayRoute extends cdk.IResource, IGatewayRouteRef {
   /**
    * The name of the GatewayRoute
    *
@@ -55,7 +57,7 @@ export interface GatewayRouteProps extends GatewayRouteBaseProps {
   /**
    * The VirtualGateway this GatewayRoute is associated with
    */
-  readonly virtualGateway: IVirtualGateway;
+  readonly virtualGateway: IVirtualGatewayRef;
 }
 
 /**
@@ -76,6 +78,13 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
       readonly gatewayRouteArn = gatewayRouteArn;
       readonly gatewayRouteName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(gatewayRouteArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!));
       readonly virtualGateway = VirtualGateway.fromVirtualGatewayArn(this, 'virtualGateway', gatewayRouteArn);
+
+      public get gatewayRouteRef(): import('../../interfaces/generated/aws-appmesh-interfaces.generated').GatewayRouteReference {
+        return {
+          gatewayRouteId: this.gatewayRouteName,
+          gatewayRouteArn: this.gatewayRouteArn,
+        };
+      }
     }(scope, id);
   }
 
@@ -91,6 +100,13 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
         resourceName: this.gatewayRouteName,
       });
       readonly virtualGateway = attrs.virtualGateway;
+
+      public get gatewayRouteRef(): import('../../interfaces/generated/aws-appmesh-interfaces.generated').GatewayRouteReference {
+        return {
+          gatewayRouteId: this.gatewayRouteName,
+          gatewayRouteArn: this.gatewayRouteArn,
+        };
+      }
     }(scope, id);
   }
 
@@ -107,7 +123,24 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
   /**
    * The VirtualGateway this GatewayRoute is a part of
    */
-  public readonly virtualGateway: IVirtualGateway;
+  private readonly _virtualGateway: IVirtualGatewayRef;
+
+  /**
+   * The VirtualGateway this GatewayRoute is a part of
+   */
+  public get virtualGateway(): IVirtualGateway {
+    return toIVirtualGateway(this._virtualGateway);
+  }
+
+  /**
+   * A reference to this gateway route
+   */
+  public get gatewayRouteRef(): import('../../interfaces/generated/aws-appmesh-interfaces.generated').GatewayRouteReference {
+    return {
+      gatewayRouteId: this.gatewayRouteName,
+      gatewayRouteArn: this.gatewayRouteArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: GatewayRouteProps) {
     super(scope, id, {
@@ -116,12 +149,12 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.virtualGateway = props.virtualGateway;
+    this._virtualGateway = props.virtualGateway;
     const routeSpecConfig = props.routeSpec.bind(this);
 
     const gatewayRoute = new CfnGatewayRoute(this, 'Resource', {
       gatewayRouteName: this.physicalName,
-      meshName: props.virtualGateway.mesh.meshName,
+      meshName: this.virtualGateway.mesh.meshName,
       meshOwner: renderMeshOwner(this.env.account, this.virtualGateway.mesh.env.account),
       spec: {
         httpRoute: routeSpecConfig.httpSpecConfig,
@@ -135,7 +168,7 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
     this.gatewayRouteName = this.getResourceNameAttribute(gatewayRoute.attrGatewayRouteName);
     this.gatewayRouteArn = this.getResourceArnAttribute(gatewayRoute.ref, {
       service: 'appmesh',
-      resource: `mesh/${props.virtualGateway.mesh.meshName}/virtualRouter/${this.virtualGateway.virtualGatewayName}/gatewayRoute`,
+      resource: `mesh/${this.virtualGateway.mesh.meshName}/virtualRouter/${this.virtualGateway.virtualGatewayName}/gatewayRoute`,
       resourceName: this.physicalName,
     });
 

@@ -7,11 +7,12 @@ import { VirtualRouterListener } from './virtual-router-listener';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IVirtualRouterRef } from '../../interfaces/generated/aws-appmesh-interfaces.generated';
 
 /**
  * Interface which all VirtualRouter based classes MUST implement
  */
-export interface IVirtualRouter extends cdk.IResource {
+export interface IVirtualRouter extends cdk.IResource, IVirtualRouterRef {
   /**
    * The name of the VirtualRouter
    *
@@ -71,6 +72,16 @@ abstract class VirtualRouterBase extends cdk.Resource implements IVirtualRouter 
    * The Mesh which the VirtualRouter belongs to
    */
   public abstract readonly mesh: IMesh;
+
+  /**
+   * A reference to this virtual router
+   */
+  public get virtualRouterRef(): import('../../interfaces/generated/aws-appmesh-interfaces.generated').VirtualRouterReference {
+    return {
+      virtualRouterId: this.virtualRouterName,
+      virtualRouterArn: this.virtualRouterArn,
+    };
+  }
 
   /**
    * Add a single route to the router

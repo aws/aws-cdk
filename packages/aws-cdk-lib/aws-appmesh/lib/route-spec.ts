@@ -6,8 +6,8 @@ import { HttpRoutePathMatch } from './http-route-path-match';
 import { validateGrpcRouteMatch, validateGrpcMatchArrayLength, validateHttpMatchArrayLength } from './private/utils';
 import { QueryParameterMatch } from './query-parameter-match';
 import { GrpcTimeout, HttpTimeout, Protocol, TcpTimeout } from './shared-interfaces';
-import { IVirtualNode } from './virtual-node';
 import * as cdk from '../../core';
+import { IVirtualNodeRef } from '../../interfaces/generated/aws-appmesh-interfaces.generated';
 
 /**
  * Properties for the Weighted Targets in the route
@@ -16,7 +16,7 @@ export interface WeightedTarget {
   /**
    * The VirtualNode the route points to
    */
-  readonly virtualNode: IVirtualNode;
+  readonly virtualNode: IVirtualNodeRef;
 
   /**
    * The weight for the target
@@ -608,7 +608,7 @@ function renderWeightedTargets(weightedTargets: WeightedTarget[]): CfnRoute.Weig
   const renderedTargets: CfnRoute.WeightedTargetProperty[] = [];
   for (const t of weightedTargets) {
     renderedTargets.push({
-      virtualNode: t.virtualNode.virtualNodeName,
+      virtualNode: t.virtualNode.virtualNodeRef.virtualNodeId,
       weight: t.weight == undefined ? 1 : t.weight,
       port: t.port,
     });

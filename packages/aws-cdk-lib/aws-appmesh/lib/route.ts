@@ -1,17 +1,19 @@
 import { Construct } from 'constructs';
 import { CfnRoute } from './appmesh.generated';
 import { IMesh } from './mesh';
+import { toIVirtualRouter } from './private/ref-utils';
 import { renderMeshOwner } from './private/utils';
 import { RouteSpec } from './route-spec';
 import { IVirtualRouter, VirtualRouter } from './virtual-router';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IRouteRef, IVirtualRouterRef } from '../../interfaces/generated/aws-appmesh-interfaces.generated';
 
 /**
  * Interface for which all Route based classes MUST implement
  */
-export interface IRoute extends cdk.IResource {
+export interface IRoute extends cdk.IResource, IRouteRef {
   /**
    * The name of the route
    *
@@ -61,7 +63,7 @@ export interface RouteProps extends RouteBaseProps {
   /**
    * The VirtualRouter the Route belongs to
    */
-  readonly virtualRouter: IVirtualRouter;
+  readonly virtualRouter: IVirtualRouterRef;
 }
 
 /**
@@ -82,6 +84,13 @@ export class Route extends cdk.Resource implements IRoute {
       readonly routeArn = routeArn;
       readonly virtualRouter = VirtualRouter.fromVirtualRouterArn(this, 'VirtualRouter', routeArn);
       readonly routeName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(routeArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!));
+
+      public get routeRef(): import('../../interfaces/generated/aws-appmesh-interfaces.generated').RouteReference {
+        return {
+          routeId: this.routeName,
+          routeArn: this.routeArn,
+        };
+      }
     }(scope, id);
   }
 
@@ -97,6 +106,13 @@ export class Route extends cdk.Resource implements IRoute {
         resource: `mesh/${attrs.virtualRouter.mesh.meshName}/virtualRouter/${attrs.virtualRouter.virtualRouterName}/route`,
         resourceName: this.routeName,
       });
+
+      public get routeRef(): import('../../interfaces/generated/aws-appmesh-interfaces.generated').RouteReference {
+        return {
+          routeId: this.routeName,
+          routeArn: this.routeArn,
+        };
+      }
     }(scope, id);
   }
 
@@ -113,7 +129,24 @@ export class Route extends cdk.Resource implements IRoute {
   /**
    * The VirtualRouter the Route belongs to
    */
-  public readonly virtualRouter: IVirtualRouter;
+  private readonly _virtualRouter: IVirtualRouterRef;
+
+  /**
+   * The VirtualRouter the Route belongs to
+   */
+  public get virtualRouter(): IVirtualRouter {
+    return toIVirtualRouter(this._virtualRouter);
+  }
+
+  /**
+   * A reference to this route
+   */
+  public get routeRef(): import('../../interfaces/generated/aws-appmesh-interfaces.generated').RouteReference {
+    return {
+      routeId: this.routeName,
+      routeArn: this.routeArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: RouteProps) {
     super(scope, id, {
@@ -122,7 +155,7 @@ export class Route extends cdk.Resource implements IRoute {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.virtualRouter = props.virtualRouter;
+    this._virtualRouter = props.virtualRouter;
 
     const spec = props.routeSpec.bind(this);
 
@@ -143,7 +176,7 @@ export class Route extends cdk.Resource implements IRoute {
     this.routeName = this.getResourceNameAttribute(route.attrRouteName);
     this.routeArn = this.getResourceArnAttribute(route.ref, {
       service: 'appmesh',
-      resource: `mesh/${props.mesh.meshName}/virtualRouter/${props.virtualRouter.virtualRouterName}/route`,
+      resource: `mesh/${props.mesh.meshName}/virtualRouter/${this.virtualRouter.virtualRouterName}/route`,
       resourceName: this.physicalName,
     });
   }
