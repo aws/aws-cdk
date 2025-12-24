@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import * as fs from 'fs-extra';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import { addCustomSynthesis, ICustomSynthesis } from './private/synthesis';
@@ -151,6 +151,15 @@ export interface AppProps {
  * @see https://docs.aws.amazon.com/cdk/latest/guide/apps.html
  */
 export class App extends Stage {
+  /**
+   * Return the app that is the root of the construct tree, if available.
+   *
+   */
+  public static of(construct: IConstruct): Stage | undefined {
+    const root = construct.node.root;
+    return App.isApp(root) ? root : undefined;
+  }
+
   /**
    * Checks if an object is an instance of the `App` class.
    * @returns `true` if `obj` is an `App`.
