@@ -1,3 +1,4 @@
+import { RemovalPolicy } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -18,6 +19,14 @@ export interface OpenIdConnectProviderProps {
    * aws eks describe-cluster --name %cluster_name% --query "cluster.identity.oidc.issuer" --output text
    */
   readonly url: string;
+
+  /**
+   * The removal policy to apply to the resources created by this construct.
+   *
+   * @default - RemovalPolicy.DESTROY
+   */
+
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -52,6 +61,7 @@ export class OpenIdConnectProvider extends iam.OpenIdConnectProvider {
     super(scope, id, {
       url: props.url,
       clientIds,
+      removalPolicy: props.removalPolicy,
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
