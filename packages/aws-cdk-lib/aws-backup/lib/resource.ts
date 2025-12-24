@@ -65,8 +65,8 @@ export class BackupResource {
   /**
    * A DynamoDB table
    */
-  public static fromDynamoDbTable(table: dynamodb.ITable) {
-    return BackupResource.fromArn(table.tableArn);
+  public static fromDynamoDbTable(table: dynamodb.ITableRef) {
+    return BackupResource.fromArn(table.tableRef.tableArn);
   }
 
   /**
