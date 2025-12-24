@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
 import { CfnApiKey } from './appsync.generated';
-import { IUserPool } from '../../aws-cognito';
 import { IFunction } from '../../aws-lambda';
 import { Duration, Expiration } from '../../core';
+import { IUserPoolRef } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * Auth provider settings for AppSync Event APIs
@@ -71,7 +71,7 @@ export interface AppSyncCognitoConfig {
   /**
    * The Cognito user pool to use as identity source
    */
-  readonly userPool: IUserPool;
+  readonly userPool: IUserPoolRef;
   /**
    * the optional app id regex
    *

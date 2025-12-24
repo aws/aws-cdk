@@ -1,8 +1,8 @@
 import { Construct, IConstruct } from 'constructs';
-import * as cognito from '../../aws-cognito';
 import { Port } from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { Duration } from '../../core';
+import { IUserPoolRef, IUserPoolClientRef, IUserPoolDomainRef } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * Properties for AuthenticateCognitoAction
@@ -19,17 +19,17 @@ export interface AuthenticateCognitoActionProps {
   /**
    * The Amazon Cognito user pool.
    */
-  readonly userPool: cognito.IUserPool;
+  readonly userPool: IUserPoolRef;
 
   /**
    * The Amazon Cognito user pool client.
    */
-  readonly userPoolClient: cognito.IUserPoolClient;
+  readonly userPoolClient: IUserPoolClientRef;
 
   /**
    * The domain prefix or fully-qualified domain name of the Amazon Cognito user pool.
    */
-  readonly userPoolDomain: cognito.IUserPoolDomain;
+  readonly userPoolDomain: IUserPoolDomainRef;
 
   /**
    * The query parameters (up to 10) to include in the redirect request to the authorization endpoint.
@@ -87,9 +87,9 @@ export interface AuthenticateCognitoActionProps {
 export class AuthenticateCognitoAction extends elbv2.ListenerAction {
   private static config(options: AuthenticateCognitoActionProps): elbv2.CfnListener.AuthenticateCognitoConfigProperty {
     return {
-      userPoolArn: options.userPool.userPoolArn,
-      userPoolClientId: options.userPoolClient.userPoolClientId,
-      userPoolDomain: options.userPoolDomain.domainName,
+      userPoolArn: options.userPool.userPoolRef.userPoolArn,
+      userPoolClientId: options.userPoolClient.userPoolClientRef.clientId,
+      userPoolDomain: options.userPoolDomain.userPoolDomainRef.domain,
       authenticationRequestExtraParams: options.authenticationRequestExtraParams,
       onUnauthenticatedRequest: options.onUnauthenticatedRequest,
       scope: options.scope,

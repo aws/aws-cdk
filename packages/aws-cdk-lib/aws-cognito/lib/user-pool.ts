@@ -16,6 +16,7 @@ import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, S
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IUserPoolRef, UserPoolReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -945,7 +946,7 @@ export interface UserPoolProps {
 /**
  * Represents a Cognito UserPool
  */
-export interface IUserPool extends IResource {
+export interface IUserPool extends IResource, IUserPoolRef {
   /**
    * The physical ID of this user pool resource
    * @attribute
@@ -1011,6 +1012,13 @@ abstract class UserPoolBase extends Resource implements IUserPool {
   public abstract readonly userPoolArn: string;
   public abstract readonly userPoolProviderName: string;
   public readonly identityProviders: IUserPoolIdentityProvider[] = [];
+
+  public get userPoolRef(): UserPoolReference {
+    return {
+      userPoolId: this.userPoolId,
+      userPoolArn: this.userPoolArn,
+    };
+  }
 
   public addClient(id: string, options?: UserPoolClientOptions): UserPoolClient {
     return new UserPoolClient(this, id, {

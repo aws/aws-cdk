@@ -1,11 +1,11 @@
 import { Construct } from 'constructs';
 import { IdentitySource } from './identity-source';
-import * as cognito from '../../../aws-cognito';
 import { Duration, FeatureFlags, Lazy, Names, Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID } from '../../../cx-api';
+import { IUserPoolRef } from '../../../interfaces/generated/aws-cognito-interfaces.generated';
 import { CfnAuthorizer, CfnAuthorizerProps } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
 import { AuthorizationType } from '../method';
@@ -25,7 +25,7 @@ export interface CognitoUserPoolsAuthorizerProps {
   /**
    * The user pools to associate with this authorizer.
    */
-  readonly cognitoUserPools: cognito.IUserPool[];
+  readonly cognitoUserPools: IUserPoolRef[];
 
   /**
    * How long APIGateway should cache the results. Max 1 hour.
@@ -86,7 +86,7 @@ export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorize
       name: props.authorizerName ?? Names.uniqueId(this),
       restApiId,
       type: 'COGNITO_USER_POOLS',
-      providerArns: props.cognitoUserPools.map(userPool => userPool.userPoolArn),
+      providerArns: props.cognitoUserPools.map(userPool => userPool.userPoolRef.userPoolArn),
       authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
       identitySource: props.identitySource || IdentitySource.header('Authorization'),
     };

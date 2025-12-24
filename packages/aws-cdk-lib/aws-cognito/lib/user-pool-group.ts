@@ -1,16 +1,16 @@
 import { Construct } from 'constructs';
 import { CfnUserPoolGroup } from './cognito.generated';
-import { IUserPool } from './user-pool';
 import { IRoleRef } from '../../aws-iam';
 import { IResource, Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IUserPoolGroupRef, IUserPoolRef, UserPoolGroupReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * Represents a user pool group.
  */
-export interface IUserPoolGroup extends IResource {
+export interface IUserPoolGroup extends IResource, IUserPoolGroupRef {
   /**
    * The user group name
    * @attribute
@@ -68,7 +68,7 @@ export interface UserPoolGroupProps extends UserPoolGroupOptions {
   /**
    * The user pool to which this group is associated.
    */
-  readonly userPool: IUserPool;
+  readonly userPool: IUserPoolRef;
 }
 
 /**
@@ -85,11 +85,15 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
   public static fromGroupName(scope: Construct, id: string, groupName: string): IUserPoolGroup {
     class Import extends Resource implements IUserPoolGroup {
       public readonly groupName = groupName;
+      get userPoolGroupRef(): UserPoolGroupReference {
+        throw new ValidationError('userPoolGroupRef is not available for imported UserPoolGroup without userPoolId', this);
+      }
     }
     return new Import(scope, id);
   }
 
   public readonly groupName: string;
+  private readonly userPool: IUserPoolRef;
 
   constructor(scope: Construct, id: string, props: UserPoolGroupProps) {
     super(scope, id);
@@ -116,8 +120,10 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
       throw new ValidationError('\`groupName\` must be between 1 and 128 characters and can include letters, numbers, and symbols.', this);
     }
 
+    this.userPool = props.userPool;
+
     const resource = new CfnUserPoolGroup(this, 'Resource', {
-      userPoolId: props.userPool.userPoolId,
+      userPoolId: props.userPool.userPoolRef.userPoolId,
       description: props.description,
       groupName: props.groupName,
       precedence: props.precedence,
@@ -125,5 +131,12 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
     });
 
     this.groupName = resource.ref;
+  }
+
+  public get userPoolGroupRef(): UserPoolGroupReference {
+    return {
+      userPoolId: this.userPool.userPoolRef.userPoolId,
+      groupName: this.groupName,
+    };
   }
 }
