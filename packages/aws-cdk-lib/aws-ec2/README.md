@@ -2620,18 +2620,18 @@ To specify the EBS Provisioned Rate for Volume Initialization value for ebs volu
 
 ```ts
 const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
-      blockDevices: [
-        {
-          deviceName: '/dev/sda1',
-          volume: {
-            ebsDevice: {
-              volumeSize: 150,
-              volumeInitializationRate: 200,
-            },
-          },
+  blockDevices: [
+    {
+      deviceName: 'deviceName',
+      volume: {
+        ebsDevice: {
+          volumeSize: 150,
+          volumeInitializationRate: 200,
         },
-      ],
-    });
+      },
+    },
+  ],
+});
 
 ```
 
