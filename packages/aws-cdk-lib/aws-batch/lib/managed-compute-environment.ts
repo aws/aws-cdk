@@ -8,6 +8,7 @@ import { IRole } from '../../aws-iam';
 import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as interfaces from '../../interfaces';
 
 /**
  * Represents a Managed ComputeEnvironment. Batch will provision EC2 Instances to
@@ -656,6 +657,12 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       public readonly securityGroups = [];
       public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
 
+      public get computeEnvironmentRef(): interfaces.aws_batch.ComputeEnvironmentReference {
+        return {
+          computeEnvironmentArn: this.computeEnvironmentArn,
+        };
+      }
+
       public addInstanceClass(_instanceClass: ec2.InstanceClass): void {
         throw new ValidationError(`cannot add instance class to imported ComputeEnvironment '${id}'`, this);
       }
@@ -1185,6 +1192,12 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
       public readonly connections = { } as any;
       public readonly securityGroups = [];
       public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
+
+      public get computeEnvironmentRef(): interfaces.aws_batch.ComputeEnvironmentReference {
+        return {
+          computeEnvironmentArn: this.computeEnvironmentArn,
+        };
+      }
     }
 
     return new Import(scope, id);
