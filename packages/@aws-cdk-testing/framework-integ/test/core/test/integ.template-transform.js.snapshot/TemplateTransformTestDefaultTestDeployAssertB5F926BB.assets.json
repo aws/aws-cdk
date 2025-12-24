@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "c5b0673a7d9a998b80da334309ee5687dbae44beb357372838262748d9f69bea": {
+      "displayName": "TemplateTransformTestDefaultTestDeployAssertB5F926BB Template",
+      "source": {
+        "path": "TemplateTransformTestDefaultTestDeployAssertB5F926BB.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-6c403213": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c5b0673a7d9a998b80da334309ee5687dbae44beb357372838262748d9f69bea.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
