@@ -23,6 +23,7 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * HTTP status code to failover to second origin
@@ -536,7 +537,7 @@ export class ViewerCertificate {
    *                    Your certificate must be located in the us-east-1 (US East (N. Virginia)) region to be accessed by CloudFront
    * @param options certificate configuration options
    */
-  public static fromAcmCertificate(certificate: certificatemanager.ICertificate, options: ViewerCertificateOptions = {}) {
+  public static fromAcmCertificate(certificate: ICertificateRef, options: ViewerCertificateOptions = {}) {
     const {
       sslMethod: sslSupportMethod = SSLMethod.SNI,
       securityPolicy: minimumProtocolVersion,
@@ -544,7 +545,7 @@ export class ViewerCertificate {
     } = options;
 
     return new ViewerCertificate({
-      acmCertificateArn: certificate.certificateArn, sslSupportMethod, minimumProtocolVersion,
+      acmCertificateArn: certificate.certificateRef.certificateId, sslSupportMethod, minimumProtocolVersion,
     }, aliases);
   }
 
