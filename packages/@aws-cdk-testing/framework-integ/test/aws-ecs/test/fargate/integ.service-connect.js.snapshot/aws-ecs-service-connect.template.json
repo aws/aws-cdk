@@ -11,7 +11,9 @@
       ]
      }
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpc779914AB": {
    "Type": "AWS::EC2::VPC",
@@ -26,7 +28,9 @@
       "Value": "aws-ecs-service-connect/EcsCluster/Vpc"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPublicSubnet1Subnet4AC37B0F": {
    "Type": "AWS::EC2::Subnet",
@@ -58,7 +62,9 @@
     "VpcId": {
      "Ref": "EcsClusterVpc779914AB"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPublicSubnet1RouteTable4AE3113D": {
    "Type": "AWS::EC2::RouteTable",
@@ -72,7 +78,9 @@
     "VpcId": {
      "Ref": "EcsClusterVpc779914AB"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPublicSubnet1RouteTableAssociation49C4CDBB": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -83,7 +91,9 @@
     "SubnetId": {
      "Ref": "EcsClusterVpcPublicSubnet1Subnet4AC37B0F"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPublicSubnet1DefaultRoute8C7EFC96": {
    "Type": "AWS::EC2::Route",
@@ -98,7 +108,9 @@
    },
    "DependsOn": [
     "EcsClusterVpcVPCGW944296C0"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPublicSubnet1EIP2D3759A3": {
    "Type": "AWS::EC2::EIP",
@@ -110,7 +122,9 @@
       "Value": "aws-ecs-service-connect/EcsCluster/Vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPublicSubnet1NATGateway2F1E7764": {
    "Type": "AWS::EC2::NatGateway",
@@ -134,7 +148,9 @@
    "DependsOn": [
     "EcsClusterVpcPublicSubnet1DefaultRoute8C7EFC96",
     "EcsClusterVpcPublicSubnet1RouteTableAssociation49C4CDBB"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPublicSubnet2Subnet4A959A4C": {
    "Type": "AWS::EC2::Subnet",
@@ -166,7 +182,9 @@
     "VpcId": {
      "Ref": "EcsClusterVpc779914AB"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPublicSubnet2RouteTable89A2F6C5": {
    "Type": "AWS::EC2::RouteTable",
@@ -180,7 +198,9 @@
     "VpcId": {
      "Ref": "EcsClusterVpc779914AB"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPublicSubnet2RouteTableAssociationE4D42FC1": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -191,7 +211,9 @@
     "SubnetId": {
      "Ref": "EcsClusterVpcPublicSubnet2Subnet4A959A4C"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPublicSubnet2DefaultRoute048730F7": {
    "Type": "AWS::EC2::Route",
@@ -206,7 +228,9 @@
    },
    "DependsOn": [
     "EcsClusterVpcVPCGW944296C0"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPublicSubnet2EIP26E3EEEF": {
    "Type": "AWS::EC2::EIP",
@@ -218,7 +242,9 @@
       "Value": "aws-ecs-service-connect/EcsCluster/Vpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPublicSubnet2NATGatewayBD015416": {
    "Type": "AWS::EC2::NatGateway",
@@ -242,7 +268,9 @@
    "DependsOn": [
     "EcsClusterVpcPublicSubnet2DefaultRoute048730F7",
     "EcsClusterVpcPublicSubnet2RouteTableAssociationE4D42FC1"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPrivateSubnet1SubnetFAB0E487": {
    "Type": "AWS::EC2::Subnet",
@@ -274,7 +302,9 @@
     "VpcId": {
      "Ref": "EcsClusterVpc779914AB"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPrivateSubnet1RouteTable2EA148EE": {
    "Type": "AWS::EC2::RouteTable",
@@ -288,7 +318,9 @@
     "VpcId": {
      "Ref": "EcsClusterVpc779914AB"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPrivateSubnet1RouteTableAssociationF4E8ACD7": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -299,7 +331,9 @@
     "SubnetId": {
      "Ref": "EcsClusterVpcPrivateSubnet1SubnetFAB0E487"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPrivateSubnet1DefaultRoute0239F5D0": {
    "Type": "AWS::EC2::Route",
@@ -311,7 +345,9 @@
     "RouteTableId": {
      "Ref": "EcsClusterVpcPrivateSubnet1RouteTable2EA148EE"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPrivateSubnet2SubnetC2B7B1BA": {
    "Type": "AWS::EC2::Subnet",
@@ -343,7 +379,9 @@
     "VpcId": {
      "Ref": "EcsClusterVpc779914AB"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPrivateSubnet2RouteTable1D430E45": {
    "Type": "AWS::EC2::RouteTable",
@@ -357,7 +395,9 @@
     "VpcId": {
      "Ref": "EcsClusterVpc779914AB"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPrivateSubnet2RouteTableAssociation329A2412": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -368,7 +408,9 @@
     "SubnetId": {
      "Ref": "EcsClusterVpcPrivateSubnet2SubnetC2B7B1BA"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcPrivateSubnet2DefaultRoute27221D27": {
    "Type": "AWS::EC2::Route",
@@ -380,7 +422,9 @@
     "RouteTableId": {
      "Ref": "EcsClusterVpcPrivateSubnet2RouteTable1D430E45"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcIGW3663B083": {
    "Type": "AWS::EC2::InternetGateway",
@@ -391,7 +435,9 @@
       "Value": "aws-ecs-service-connect/EcsCluster/Vpc"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterVpcVPCGW944296C0": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
@@ -402,7 +448,9 @@
     "VpcId": {
      "Ref": "EcsClusterVpc779914AB"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F": {
    "Type": "AWS::ServiceDiscovery::PrivateDnsNamespace",
@@ -411,7 +459,9 @@
     "Vpc": {
      "Ref": "EcsClusterVpc779914AB"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "TaskDefTaskRole1EDB4A67": {
    "Type": "AWS::IAM::Role",
@@ -428,7 +478,9 @@
      ],
      "Version": "2012-10-17"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "TaskDef54694570": {
    "Type": "AWS::ECS::TaskDefinition",
@@ -441,7 +493,7 @@
        "LogDriver": "awslogs",
        "Options": {
         "awslogs-group": {
-         "Ref": "TaskDefcontainerLogGroupAB21CBAF"
+         "Ref": "TaskDefContainerLogGroupB60E6F44"
         },
         "awslogs-stream-prefix": "web",
         "awslogs-region": {
@@ -479,12 +531,14 @@
       "Arn"
      ]
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "TaskDefcontainerLogGroupAB21CBAF": {
+  "TaskDefContainerLogGroupB60E6F44": {
    "Type": "AWS::Logs::LogGroup",
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "TaskDefExecutionRoleB4775C97": {
    "Type": "AWS::IAM::Role",
@@ -501,7 +555,9 @@
      ],
      "Version": "2012-10-17"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "TaskDefExecutionRoleDefaultPolicy0DBB737A": {
    "Type": "AWS::IAM::Policy",
@@ -517,13 +573,19 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "TaskDefcontainerLogGroupAB21CBAF",
+          "SvcLogGroupC37946A3",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "svcLogGroup25CAF347",
+          "SvcTwoLogGroup32A610E3",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "TaskDefContainerLogGroupB60E6F44",
           "Arn"
          ]
         }
@@ -538,9 +600,11 @@
       "Ref": "TaskDefExecutionRoleB4775C97"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "svcService376F2D22": {
+  "SvcServiceE0738BDC": {
    "Type": "AWS::ECS::Service",
    "Properties": {
     "Cluster": {
@@ -563,7 +627,7 @@
       "SecurityGroups": [
        {
         "Fn::GetAtt": [
-         "svcSecurityGroup205CC2DA",
+         "SvcSecurityGroup210F6F1C",
          "GroupId"
         ]
        }
@@ -584,7 +648,7 @@
       "LogDriver": "awslogs",
       "Options": {
        "awslogs-group": {
-        "Ref": "svcLogGroup25CAF347"
+        "Ref": "SvcLogGroupC37946A3"
        },
        "awslogs-stream-prefix": "sc",
        "awslogs-region": {
@@ -611,20 +675,22 @@
    },
    "DependsOn": [
     "TaskDefTaskRole1EDB4A67"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "svcLogGroup25CAF347": {
+  "SvcLogGroupC37946A3": {
    "Type": "AWS::Logs::LogGroup",
    "DependsOn": [
     "TaskDefTaskRole1EDB4A67"
    ],
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "svcSecurityGroup205CC2DA": {
+  "SvcSecurityGroup210F6F1C": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-ecs-service-connect/svc/SecurityGroup",
+    "GroupDescription": "aws-ecs-service-connect/Svc/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -638,15 +704,19 @@
    },
    "DependsOn": [
     "TaskDefTaskRole1EDB4A67"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "ns7AAD7A1A": {
+  "Ns33A06F6E": {
    "Type": "AWS::ServiceDiscovery::HttpNamespace",
    "Properties": {
     "Name": "whistler.com"
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "svctwoService5892185E": {
+  "SvcTwoServiceB062AEA3": {
    "Type": "AWS::ECS::Service",
    "Properties": {
     "Cluster": {
@@ -669,7 +739,7 @@
       "SecurityGroups": [
        {
         "Fn::GetAtt": [
-         "svctwoSecurityGroup7B696927",
+         "SvcTwoSecurityGroup47BD6E0D",
          "GroupId"
         ]
        }
@@ -685,10 +755,26 @@
      }
     },
     "ServiceConnectConfiguration": {
+     "AccessLogConfiguration": {
+      "Format": "JSON",
+      "IncludeQueryParameters": "ENABLED"
+     },
      "Enabled": true,
+     "LogConfiguration": {
+      "LogDriver": "awslogs",
+      "Options": {
+       "awslogs-group": {
+        "Ref": "SvcTwoLogGroup32A610E3"
+       },
+       "awslogs-stream-prefix": "sc-svc2",
+       "awslogs-region": {
+        "Ref": "AWS::Region"
+       }
+      }
+     },
      "Namespace": {
       "Fn::GetAtt": [
-       "ns7AAD7A1A",
+       "Ns33A06F6E",
        "Arn"
       ]
      },
@@ -713,14 +799,16 @@
     }
    },
    "DependsOn": [
-    "ns7AAD7A1A",
+    "Ns33A06F6E",
     "TaskDefTaskRole1EDB4A67"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "svctwoSecurityGroup7B696927": {
+  "SvcTwoSecurityGroup47BD6E0D": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-ecs-service-connect/svc-two/SecurityGroup",
+    "GroupDescription": "aws-ecs-service-connect/SvcTwo/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -733,9 +821,20 @@
     }
    },
    "DependsOn": [
-    "ns7AAD7A1A",
+    "Ns33A06F6E",
     "TaskDefTaskRole1EDB4A67"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SvcTwoLogGroup32A610E3": {
+   "Type": "AWS::Logs::LogGroup",
+   "DependsOn": [
+    "Ns33A06F6E",
+    "TaskDefTaskRole1EDB4A67"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {
