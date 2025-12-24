@@ -14,7 +14,7 @@
     "gen": "ts-node scripts/gen.ts",
     "build": "env NODE_OPTIONS=\"--max-old-space-size=8192\" cdk-build",
     "lint": "env NODE_OPTIONS=\"--max-old-space-size=8192\" cdk-lint",
-    "test": "jest",
+    "test": "scripts/maybe-compile-tests.sh && jest",
     "package": "cdk-package",
     "pkglint": "pkglint -f",
     "build+test": "yarn build && yarn test",
