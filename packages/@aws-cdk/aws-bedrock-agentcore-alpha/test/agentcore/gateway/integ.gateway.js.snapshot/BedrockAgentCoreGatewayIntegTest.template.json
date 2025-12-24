@@ -142,7 +142,6 @@
     "EmailVerificationMessage": "The verification code to your new account is {####}",
     "EmailVerificationSubject": "Verify your new account",
     "SmsVerificationMessage": "The verification code to your new account is {####}",
-    "UserPoolName": "integ-test-gateway-gw-userpool",
     "UsernameConfiguration": {
      "CaseSensitive": false
     },
@@ -156,28 +155,70 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
+  "TestGatewayUserPoolResourceServer7A34B6B2": {
+   "Type": "AWS::Cognito::UserPoolResourceServer",
+   "Properties": {
+    "Identifier": "BedrockAgentCoreGatewayIntegTest-TestGateway-781B0509",
+    "Name": "BedrockAgentCoreGatewayIntegTest-TestGateway-781B0509",
+    "Scopes": [
+     {
+      "ScopeDescription": "Read access to gateway tools",
+      "ScopeName": "read"
+     },
+     {
+      "ScopeDescription": "Write access to gateway tools",
+      "ScopeName": "write"
+     }
+    ],
+    "UserPoolId": {
+     "Ref": "TestGatewayUserPool545AA49A"
+    }
+   }
+  },
   "TestGatewayUserPoolDefaultClient3AC9C728": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
     "AllowedOAuthFlows": [
-     "implicit",
-     "code"
+     "client_credentials"
     ],
     "AllowedOAuthFlowsUserPoolClient": true,
     "AllowedOAuthScopes": [
-     "profile",
-     "phone",
-     "email",
-     "openid",
-     "aws.cognito.signin.user.admin"
+     {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Ref": "TestGatewayUserPoolResourceServer7A34B6B2"
+        },
+        "/read"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Ref": "TestGatewayUserPoolResourceServer7A34B6B2"
+        },
+        "/write"
+       ]
+      ]
+     }
     ],
-    "CallbackURLs": [
-     "https://example.com"
-    ],
-    "ClientName": "integ-test-gateway-gw-client",
+    "GenerateSecret": true,
     "SupportedIdentityProviders": [
      "COGNITO"
     ],
+    "UserPoolId": {
+     "Ref": "TestGatewayUserPool545AA49A"
+    }
+   }
+  },
+  "TestGatewayUserPoolDomainB64B616E": {
+   "Type": "AWS::Cognito::UserPoolDomain",
+   "Properties": {
+    "Domain": "bedrockagentcoregatewayintegtest-testgateway-781b0509",
     "UserPoolId": {
      "Ref": "TestGatewayUserPool545AA49A"
     }
