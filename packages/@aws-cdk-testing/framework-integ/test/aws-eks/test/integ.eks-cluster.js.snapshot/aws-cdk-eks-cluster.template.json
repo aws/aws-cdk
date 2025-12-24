@@ -1,5 +1,8 @@
 {
  "Resources": {
+  "CdkIntegTestEksAdminUserF8D417B9": {
+   "Type": "AWS::IAM::User"
+  },
   "AdminRole38563C57": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -10,15 +13,26 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:aws:iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "CdkIntegTestEksAdminUserF8D417B9",
+          "Arn"
+         ]
+        }
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:RequestedRegion": "us-east-1"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CdkIntegTestEksAdminUserF8D417B9",
+          "Arn"
          ]
         }
        }
@@ -30,34 +44,15 @@
   },
   "SecretsKey317DCF94": {
    "Type": "AWS::KMS::Key",
-   "Properties": {
-    "KeyPolicy": {
-     "Statement": [
-      {
-       "Action": "kms:*",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:aws:iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       },
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   },
    "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS"
+     ]
+    }
+   }
   },
   "Vpc8378EB38": {
    "Type": "AWS::EC2::VPC",
@@ -1009,7 +1004,10 @@
        }
       ]
      },
-     "accessConfig": {}
+     "accessConfig": {},
+     "controlPlaneScalingConfig": {
+      "tier": "standard"
+     }
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -1322,6 +1320,43 @@
       "GroupId"
      ]
     }
+   }
+  },
+  "ClusterClusterSecurityGroupfromIndirectPeer443F03F2A0D": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "CidrIp": {
+     "Fn::GetAtt": [
+      "Vpc8378EB38",
+      "CidrBlock"
+     ]
+    },
+    "Description": "Allow HTTPS from VPC IPv4",
+    "FromPort": 443,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "Cluster9EE0221C",
+      "ClusterSecurityGroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 443
+   }
+  },
+  "ClusterClusterSecurityGroupfrom0443F8B899B8": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "CidrIpv6": "::/0",
+    "Description": "Allow HTTPS from IPv6",
+    "FromPort": 443,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "Cluster9EE0221C",
+      "ClusterSecurityGroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 443
    }
   },
   "ClusterAwsAuthmanifestFE51F8AE": {
@@ -4282,7 +4317,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/da0a3b4a14049fb40fd3778635bcd759baec532150cbe4bb27aa5048a19cb782.json"
+       "/3ee48ed59894df9c23478a16312ea63f6cd4a493c7a964ddf7a5407fb1dbdb19.json"
       ]
      ]
     }
@@ -4328,7 +4363,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/0642e73d97b20459af549dc2699bca6a9f8adb7771ab3f38a854431fa9421c9a.json"
+       "/27eb9cb1e957ca39647f77443795eae01cda8b11520ce63054afc248c1678b40.json"
       ]
      ]
     }
@@ -4560,6 +4595,10 @@
      ]
     ]
    }
+  },
+  "ControlPlaneScalingTier": {
+   "Description": "Control plane scaling tier configured",
+   "Value": "standard"
   },
   "ClusterEndpoint": {
    "Value": {
