@@ -4,6 +4,7 @@ import { CfnApiDestination } from './events.generated';
 import { ArnFormat, IResource, Resource, Stack, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IApiDestinationRef } from '../../interfaces/generated/aws-events-interfaces.generated';
 
 /**
  * The event API Destination properties
@@ -50,7 +51,7 @@ export interface ApiDestinationProps {
 /**
  * Interface for API Destinations
  */
-export interface IApiDestination extends IResource {
+export interface IApiDestination extends IResource, IApiDestinationRef {
   /**
    * The Name of the Api Destination created.
    * @attribute
@@ -127,6 +128,13 @@ export class ApiDestination extends Resource implements IApiDestination {
       public readonly apiDestinationName = apiDestinationName!;
       public readonly apiDestinationArnForPolicy = attrs.apiDestinationArnForPolicy;
       public readonly connection = attrs.connection;
+
+      public get apiDestinationRef() {
+        return {
+          apiDestinationName: this.apiDestinationName,
+          apiDestinationArn: this.apiDestinationArn,
+        };
+      }
     }
 
     return new Import(scope, id);
@@ -153,6 +161,13 @@ export class ApiDestination extends Resource implements IApiDestination {
    * @attribute
    */
   public readonly apiDestinationArnForPolicy?: string;
+
+  public get apiDestinationRef() {
+    return {
+      apiDestinationName: this.apiDestinationName,
+      apiDestinationArn: this.apiDestinationArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: ApiDestinationProps) {
     super(scope, id, {
