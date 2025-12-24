@@ -132,6 +132,7 @@ export const SIGNER_PROFILE_NAME_PASSED_TO_CFN = '@aws-cdk/aws-signer:signingPro
 export const USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE = '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource';
 export const ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT = '@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault';
 export const IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS = '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections';
+export const IAM_POLICY_STATEMENT_VALIDATE_SID = '@aws-cdk/aws-iam:policyStatementValidateSid';
 export const ENABLE_ADDITIONAL_METADATA_COLLECTION = '@aws-cdk/core:enableAdditionalMetadataCollection';
 export const LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY = '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy';
 export const SET_UNIQUE_REPLICATION_ROLE_NAME = '@aws-cdk/aws-s3:setUniqueReplicationRoleName';
@@ -1431,6 +1432,20 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.177.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to allow unsecure OIDC connection.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [IAM_POLICY_STATEMENT_VALIDATE_SID]: {
+    type: FlagType.BugFix,
+    summary: 'Validate PolicyStatement SID is alphanumeric',
+    detailsMd: `
+      When enabled, PolicyStatement SID validation enforces alphanumeric characters only (A-Z, a-z, 0-9)
+      per IAM requirements. Invalid SIDs will throw an error at synthesis time.
+
+      When disabled, no SID validation occurs, maintaining backward compatibility with existing code
+      that may use invalid SID characters.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
   },
 
   //////////////////////////////////////////////////////////////////////
