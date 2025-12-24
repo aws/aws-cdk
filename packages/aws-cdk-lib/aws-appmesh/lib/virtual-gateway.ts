@@ -112,7 +112,6 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
   public get virtualGatewayRef(): VirtualGatewayReference {
     return {
       virtualGatewayArn: this.virtualGatewayArn,
-      virtualGatewayId: this.virtualGatewayName,
     };
   }
 

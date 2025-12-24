@@ -977,12 +977,7 @@ describe('virtual gateway', () => {
           {
             Action: 'appmesh:StreamAggregatedResources',
             Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [
-                'testGateway',
-                'Arn',
-              ],
-            },
+            Resource: { Ref: 'testGateway' },
           },
         ],
       },
