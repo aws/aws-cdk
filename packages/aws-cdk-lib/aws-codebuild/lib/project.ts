@@ -33,6 +33,7 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import { Annotations, ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IProjectRef, ProjectReference } from '../../interfaces/generated/aws-codebuild-interfaces.generated';
 
 const VPC_POLICY_SYM = Symbol.for('@aws-cdk/aws-codebuild.roleVpcPolicy');
 
@@ -71,7 +72,7 @@ export interface ProjectNotifyOnOptions extends notifications.NotificationRuleOp
   readonly events: ProjectNotificationEvents[];
 }
 
-export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, notifications.INotificationRuleSource {
+export interface IProject extends IProjectRef, IResource, iam.IGrantable, ec2.IConnectable, notifications.INotificationRuleSource {
   /**
    * The ARN of this Project.
    * @attribute
@@ -262,8 +263,18 @@ abstract class ProjectBase extends Resource implements IProject {
   /** The human-visible name of this Project. */
   public abstract readonly projectName: string;
 
+  /** The ID of this Project. */
+  protected abstract readonly projectId: string;
+
   /** The IAM service Role of this Project. */
   public abstract readonly role?: iam.IRole;
+
+  public get projectRef(): ProjectReference {
+    return {
+      projectId: this.projectId,
+      projectArn: this.projectArn,
+    };
+  }
 
   /**
    * Actual connections object for this Project.
@@ -812,6 +823,10 @@ export class Project extends ProjectBase {
       public readonly projectName = parsedArn.resourceName!;
       public readonly role?: iam.Role = undefined;
 
+      protected get projectId(): string {
+        throw new ValidationError('projectId is not available for projects imported by ARN. Use Project.fromProjectName() if you need the project ID.', this);
+      }
+
       constructor(s: Construct, i: string) {
         super(s, i, {
           account: parsedArn.account,
@@ -845,6 +860,10 @@ export class Project extends ProjectBase {
       public readonly projectArn: string;
       public readonly projectName: string;
       public readonly role?: iam.Role = undefined;
+
+      protected get projectId(): string {
+        throw new ValidationError('projectId is not available for projects imported by name. Use a full project reference if you need the project ID.', this);
+      }
 
       constructor(s: Construct, i: string) {
         super(s, i);
@@ -1055,6 +1074,11 @@ export class Project extends ProjectBase {
    */
   public readonly projectName: string;
 
+  /**
+   * The ID of the project.
+   */
+  protected readonly projectId: string;
+
   private readonly source: ISource;
   private readonly buildImage: IBuildImage;
   private readonly _secondarySources: CfnProject.SourceProperty[];
@@ -1177,6 +1201,7 @@ export class Project extends ProjectBase {
       resourceName: this.physicalName,
     });
     this.projectName = this.getResourceNameAttribute(resource.ref);
+    this.projectId = resource.attrId;
 
     this.addToRolePolicy(this.createLoggingPermission());
     // add permissions to create and use test report groups

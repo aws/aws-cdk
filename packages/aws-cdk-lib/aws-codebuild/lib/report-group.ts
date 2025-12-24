@@ -6,6 +6,7 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IReportGroupRef, ReportGroupReference } from '../../interfaces/generated/aws-codebuild-interfaces.generated';
 
 /**
  * The interface representing the ReportGroup resource -
@@ -13,7 +14,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
  * `ReportGroup.fromReportGroupName` method,
  * or a new one, created with the `ReportGroup` class.
  */
-export interface IReportGroup extends cdk.IResource {
+export interface IReportGroup extends IReportGroupRef, cdk.IResource {
   /**
    * The ARN of the ReportGroup.
    *
@@ -39,8 +40,16 @@ export interface IReportGroup extends cdk.IResource {
 abstract class ReportGroupBase extends cdk.Resource implements IReportGroup {
   public abstract readonly reportGroupArn: string;
   public abstract readonly reportGroupName: string;
+  protected abstract readonly reportGroupId: string;
   protected abstract readonly exportBucket?: s3.IBucket;
   protected abstract readonly type?: ReportGroupType;
+
+  public get reportGroupRef(): ReportGroupReference {
+    return {
+      reportGroupId: this.reportGroupId,
+      reportGroupArn: this.reportGroupArn,
+    };
+  }
 
   public grantWrite(identity: iam.IGrantable): iam.Grant {
     const typeAction = this.type === ReportGroupType.CODE_COVERAGE ? 'codebuild:BatchPutCodeCoverages' : 'codebuild:BatchPutTestCases';
@@ -149,6 +158,10 @@ export class ReportGroup extends ReportGroupBase {
       public readonly reportGroupArn = renderReportGroupArn(scope, reportGroupName);
       protected readonly exportBucket = undefined;
       protected readonly type = undefined;
+
+      protected get reportGroupId(): string {
+        throw new cdk.ValidationError('reportGroupId is not available for report groups imported by name. Use a full report group reference if you need the report group ID.', this);
+      }
     }
 
     return new Import(scope, id);
@@ -156,6 +169,7 @@ export class ReportGroup extends ReportGroupBase {
 
   public readonly reportGroupArn: string;
   public readonly reportGroupName: string;
+  protected readonly reportGroupId: string;
   protected readonly exportBucket?: s3.IBucket;
   protected readonly type?: ReportGroupType;
 
@@ -192,6 +206,7 @@ export class ReportGroup extends ReportGroupBase {
       // so use Fn::Select + Fn::Split to make one
       cdk.Fn.select(1, cdk.Fn.split('/', resource.ref)),
     );
+    this.reportGroupId = resource.attrId;
     this.exportBucket = props.exportBucket;
 
     if (props.deleteReports && props.removalPolicy !== cdk.RemovalPolicy.DESTROY) {
