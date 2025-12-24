@@ -13,8 +13,6 @@ import {
 } from './distribution';
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
-import { IKeyGroup } from './key-group';
-import { IOriginAccessIdentity } from './origin-access-identity';
 import { formatDistributionArn } from './private/utils';
 import * as certificatemanager from '../../aws-certificatemanager';
 import * as iam from '../../aws-iam';
@@ -23,6 +21,7 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { ICloudFrontOriginAccessIdentityRef, IKeyGroupRef } from '../../interfaces/generated/aws-cloudfront-interfaces.generated';
 
 /**
  * HTTP status code to failover to second origin
@@ -321,7 +320,7 @@ export interface S3OriginConfig {
    *
    * @default No Origin Access Identity which requires the S3 bucket to be public accessible
    */
-  readonly originAccessIdentity?: IOriginAccessIdentity;
+  readonly originAccessIdentity?: ICloudFrontOriginAccessIdentityRef & iam.IGrantable;
 
   /**
    * The relative path to the origin root to use for sources.
@@ -397,7 +396,7 @@ export interface Behavior {
    * @default - no KeyGroups are associated with cache behavior
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
    */
-  readonly trustedKeyGroups?: IKeyGroup[];
+  readonly trustedKeyGroups?: IKeyGroupRef[];
 
   /**
    *
@@ -1062,7 +1061,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       forwardedValues: input.forwardedValues || { queryString: false, cookies: { forward: 'none' } },
       maxTtl: input.maxTtl && input.maxTtl.toSeconds(),
       minTtl: input.minTtl && input.minTtl.toSeconds(),
-      trustedKeyGroups: input.trustedKeyGroups?.map(key => key.keyGroupId),
+      trustedKeyGroups: input.trustedKeyGroups?.map(key => key.keyGroupRef.keyGroupId),
       trustedSigners: input.trustedSigners,
       targetOriginId: input.targetOriginId,
       viewerProtocolPolicy: input.viewerProtocolPolicy || protoPolicy || ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -1176,7 +1175,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         }));
 
         s3OriginConfig = {
-          originAccessIdentity: `origin-access-identity/cloudfront/${originConfig.s3OriginSource.originAccessIdentity.originAccessIdentityId}`,
+          originAccessIdentity: `origin-access-identity/cloudfront/${originConfig.s3OriginSource.originAccessIdentity.cloudFrontOriginAccessIdentityRef.cloudFrontOriginAccessIdentityId}`,
         };
       } else {
         s3OriginConfig = {};
