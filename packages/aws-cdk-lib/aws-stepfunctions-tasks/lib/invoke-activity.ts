@@ -1,5 +1,6 @@
 import * as sfn from '../../aws-stepfunctions';
 import { Duration } from '../../core';
+import { IActivityRef } from '../../interfaces/generated/aws-stepfunctions-interfaces.generated';
 
 /**
  * Properties for FunctionTask
@@ -24,13 +25,13 @@ export interface InvokeActivityProps {
  * @deprecated use `StepFunctionsInvokeActivity`
  */
 export class InvokeActivity implements sfn.IStepFunctionsTask {
-  constructor(private readonly activity: sfn.IActivity, private readonly props: InvokeActivityProps = {}) {
+  constructor(private readonly activity: IActivityRef, private readonly props: InvokeActivityProps = {}) {
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: this.activity.activityArn,
-      metricDimensions: { ActivityArn: this.activity.activityArn },
+      resourceArn: this.activity.activityRef.activityArn,
+      metricDimensions: { ActivityArn: this.activity.activityRef.activityArn },
       heartbeat: this.props.heartbeat,
       // No IAM permissions necessary, execution role implicitly has Activity permissions.
       metricPrefixSingular: 'Activity',
