@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-eks-cluster-deletion-protection-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-cluster-deletion-protection"
+      ],
+      "diffAssets": false,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "aws-cdk-eks-cluster-deletion-protection-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusterdeletionprotectionintegDefaultTestDeployAssert294922E2"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
