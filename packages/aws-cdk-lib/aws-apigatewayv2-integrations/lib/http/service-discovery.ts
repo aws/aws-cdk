@@ -1,8 +1,8 @@
 import { HttpPrivateIntegrationOptions } from './base-types';
 import { HttpPrivateIntegration } from './private/integration';
 import { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '../../../aws-apigatewayv2';
-import * as servicediscovery from '../../../aws-servicediscovery';
 import { ValidationError } from '../../../core/lib/errors';
+import { IServiceRef } from '../../../interfaces/generated/aws-servicediscovery-interfaces.generated';
 
 /**
  * Properties to initialize `HttpServiceDiscoveryIntegration`.
@@ -21,7 +21,7 @@ export class HttpServiceDiscoveryIntegration extends HttpPrivateIntegration {
    */
   constructor(
     id: string,
-    private readonly service: servicediscovery.IService,
+    private readonly service: IServiceRef,
     private readonly props: HttpServiceDiscoveryIntegrationProps = {}) {
     super(id);
   }
@@ -37,7 +37,7 @@ export class HttpServiceDiscoveryIntegration extends HttpPrivateIntegration {
       type: this.integrationType,
       connectionType: this.connectionType,
       connectionId: this.props.vpcLink.vpcLinkId,
-      uri: this.service.serviceArn,
+      uri: this.service.serviceRef.serviceArn,
       secureServerName: this.props.secureServerName,
       parameterMapping: this.props.parameterMapping,
     };
