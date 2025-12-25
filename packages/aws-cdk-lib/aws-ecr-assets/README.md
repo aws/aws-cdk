@@ -58,7 +58,6 @@ variable in order to provide a custom Docker executable command or path. This ma
 be needed when building in environments where the standard docker cannot be executed
 (see https://github.com/aws/aws-cdk/issues/8460 for details).
 
-
 ### Docker Alternatives
 
 The CDK supports several Docker alternatives through the `CDK_DOCKER` environment variable:
@@ -67,7 +66,6 @@ The CDK supports several Docker alternatives through the `CDK_DOCKER` environmen
 
 ```bash
 export CDK_DOCKER=finch
-export DOCKER_HOST=$(finch machine inspect --format 'unix://{{.ConnectionInfo.PodmanSocket.Path}}')
 ```
 
 #### Podman (Community-tested)
@@ -152,17 +150,8 @@ import { DockerImageAsset, Platform } from 'aws-cdk-lib/aws-ecr-assets';
 
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
-  cacheFrom: [
-    { type: 'registry', params: { ref: 'ghcr.io/myorg/myimage:cache' } },
-  ],
-  cacheTo: {
-    type: 'registry',
-    params: {
-      ref: 'ghcr.io/myorg/myimage:cache',
-      mode: 'max',
-      compression: 'zstd',
-    },
-  },
+  cacheFrom: [{ type: 'registry', params: { ref: 'ghcr.io/myorg/myimage:cache' }}],
+  cacheTo: { type: 'registry', params: { ref: 'ghcr.io/myorg/myimage:cache', mode: 'max', compression: 'zstd' }}
 });
 ```
 
