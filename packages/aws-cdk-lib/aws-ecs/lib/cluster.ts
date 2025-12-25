@@ -829,6 +829,13 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * Getter for managed storage configuration associated with the cluster.
+   */
+  public get managedStorageConfiguration(): ManagedStorageConfiguration | undefined {
+    return this._managedStorageConfiguration;
+  }
+
+  /**
    * This method returns the CloudWatch metric for this clusters CPU reservation.
    *
    * @default average over 5 minutes
@@ -942,6 +949,11 @@ export interface ICluster extends IResource, IClusterRef {
    * The execute command configuration for the cluster
    */
   readonly executeCommandConfiguration?: ExecuteCommandConfiguration;
+
+  /**
+   * The managed storage configuration for the cluster
+   */
+  readonly managedStorageConfiguration?: ManagedStorageConfiguration;
 }
 
 /**
@@ -999,6 +1011,13 @@ export interface ClusterAttributes {
    * @default - none.
    */
   readonly executeCommandConfiguration?: ExecuteCommandConfiguration;
+
+  /**
+   * The managed storage configuration for the cluster
+   *
+   * @default - none.
+   */
+  readonly managedStorageConfiguration?: ManagedStorageConfiguration;
 }
 
 /**
@@ -1056,6 +1075,11 @@ class ImportedCluster extends Resource implements ICluster {
   private _executeCommandConfiguration?: ExecuteCommandConfiguration;
 
   /**
+   * The managed storage configuration for the cluster
+   */
+  private _managedStorageConfiguration?: ManagedStorageConfiguration;
+
+  /**
    * Constructs a new instance of the ImportedCluster class.
    */
   constructor(scope: Construct, id: string, props: ClusterAttributes) {
@@ -1067,6 +1091,7 @@ class ImportedCluster extends Resource implements ICluster {
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
     this._defaultCloudMapNamespace = props.defaultCloudMapNamespace;
     this._executeCommandConfiguration = props.executeCommandConfiguration;
+    this._managedStorageConfiguration = props.managedStorageConfiguration;
     this.autoscalingGroup = props.autoscalingGroup;
 
     this.clusterArn = props.clusterArn ?? Stack.of(this).formatArn({
@@ -1086,6 +1111,10 @@ class ImportedCluster extends Resource implements ICluster {
 
   public get executeCommandConfiguration(): ExecuteCommandConfiguration | undefined {
     return this._executeCommandConfiguration;
+  }
+
+  public get managedStorageConfiguration(): ManagedStorageConfiguration | undefined {
+    return this._managedStorageConfiguration;
   }
 }
 
