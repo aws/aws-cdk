@@ -10,11 +10,13 @@ jobs:
     permissions:
       checks: write
       pull-requests: write
-      id-token: write
       actions: read
+    env:
+      CHECK_NAME_STATIC: 'Security Guardian Results'
+      CHECK_NAME_RESOLVED: 'Security Guardian Results with resolved templates'
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: security-guardian-reports
           path: test-results/
@@ -29,11 +31,12 @@ jobs:
           echo "pr_sha=$(cat test-results/pr_sha)" >> "$GITHUB_OUTPUT"
           echo "PR: $(cat test-results/pr_number), SHA: $(cat test-results/pr_sha)"
       - name: Publish Security Test Results 
+        id: junit_static
         uses: mikepenz/action-junit-report@v6
         if: always()
         with:
           report_paths: 'test-results/**/cfn-guard-static.xml'
-          check_name: 'Security Guardian Results'
+          check_name: ${{ env.CHECK_NAME_STATIC }}
           exclude_sources: 'node_modules,dist'
           commit: ${{ steps.pr_info.outputs.pr_sha }}
           check_annotations: true
@@ -45,13 +48,48 @@ jobs:
           group_suite: true
           include_skipped: false
           check_title_template: '{{TEST_NAME}}'
+          include_empty_in_summary: false
+
+      - name: Add disclaimer to static results comment
+        uses: actions/github-script@v8
+        if: steps.junit_static.outcome == 'success'
+        env:
+          PR_NUMBER: ${{ steps.pr_info.outputs.pr_number }}
+          CHECK_NAME: ${{ env.CHECK_NAME_STATIC }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = process.env.PR_NUMBER;
+            const checkName = process.env.CHECK_NAME;
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+            
+            const botComment = comments.data.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes(checkName) &&
+              !comment.body.includes('resolved templates')
+            );
+            
+            if (botComment) {
+              const disclaimer = '⚠️ **Experimental Feature**: This security report is currently in experimental phase. Results may include false positives and the rules are being actively refined. \n**Please try `merge from main` to avoid findings unrelated to the PR.**\n\n---\n\n';
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: disclaimer + botComment.body
+              });
+            }
 
       - name: Publish Security Test Results for resolved templates
+        id: junit_resolved
         uses: mikepenz/action-junit-report@v6
         if: always()
         with:
           report_paths: 'test-results/**/cfn-guard-resolved.xml'
-          check_name: 'Security Guardian Results with resolved templates'
+          check_name: ${{ env.CHECK_NAME_RESOLVED }}
           exclude_sources: 'node_modules,dist'
           commit: ${{ steps.pr_info.outputs.pr_sha }}
           check_annotations: true
@@ -63,3 +101,36 @@ jobs:
           group_suite: true
           include_skipped: false
           check_title_template: '{{TEST_NAME}}'
+          include_empty_in_summary: false
+
+      - name: Add disclaimer to resolved results comment
+        uses: actions/github-script@v8
+        if: steps.junit_resolved.outcome == 'success'
+        env:
+          PR_NUMBER: ${{ steps.pr_info.outputs.pr_number }}
+          CHECK_NAME: ${{ env.CHECK_NAME_RESOLVED }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = process.env.PR_NUMBER;
+            const checkName = process.env.CHECK_NAME;
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+            
+            const botComment = comments.data.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes(checkName)
+            );
+            
+            if (botComment) {
+              const disclaimer = '⚠️ **Experimental Feature**: This security report is currently in experimental phase. Results may include false positives and the rules are being actively refined. \n**Please try `merge from main` to avoid findings unrelated to the PR.**\n\n---\n\n';
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: disclaimer + botComment.body
+              });
+            }

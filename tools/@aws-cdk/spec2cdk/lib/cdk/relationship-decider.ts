@@ -1,23 +1,9 @@
 import { Property, RelationshipRef, Resource, RichProperty, SpecDatabase } from '@aws-cdk/service-spec-types';
+import { Module, SelectiveModuleImport, Type } from '@cdklabs/typewriter';
 import * as naming from '../naming';
-import { namespaceFromResource, referenceInterfaceName, referenceInterfaceAttributeName, referencePropertyName, typeAliasPrefixFromResource } from '../naming';
+import { CDK_INTERFACES } from './cdk';
 import { ResourceReference } from './reference-props';
 import { log } from '../util';
-import { SelectiveImport } from './service-submodule';
-
-/**
- * We currently disable the relationship on the properties of types because they would create a backwards incompatible change
- * by broadening the output type as types are used both in input and output. This represents:
- * Relationship counts:
- *   Resource-level (non-nested): 598
- *   Type-level (nested):         483 <- these are disabled by this flag
- *   Total:                       1081
- * Properties with relationships:
- *   Resource-level (non-nested): 493
- *   Type-level (nested):         358
- *   Total:                       851
- */
-export const GENERATE_RELATIONSHIPS_ON_TYPES = false;
 
 /**
  * Represents a cross-service property relationship that enables references
@@ -25,45 +11,57 @@ export const GENERATE_RELATIONSHIPS_ON_TYPES = false;
  */
 export interface Relationship {
   /** The TypeScript interface type that provides the reference (e.g. "IRoleRef") */
-  readonly referenceType: string;
-  /** The property name on the reference interface that holds the reference object (e.g. "roleRef") */
-  readonly referenceName: string;
-  /** The property to extract from the reference object (e.g. "roleArn") */
-  readonly propName: string;
+  readonly refType: Type;
   /** Human friendly name of the reference type for error generation (e.g. "iam.IRoleRef") */
-  readonly typeDisplayName: string;
+  readonly refTypeDisplayName: string;
+  /** The property name on the reference interface that holds the reference object (e.g. "roleRef") */
+  readonly refPropStructName: string;
+  /** The property to extract from the reference object (e.g. "roleArn") */
+  readonly refPropName: string;
+}
+
+export interface RelationshipDeciderProps {
+  /**
+   * Render relationships
+   */
+  readonly enableRelationships: boolean;
+
+  /**
+   * We currently disable the relationship on the properties of types because they would create a backwards incompatible change
+   * by broadening the output type as types are used both in input and output. This represents:
+   * Relationship counts:
+   *   Resource-level (non-nested): 598
+   *   Type-level (nested):         483 <- these are disabled by this flag
+   *   Total:                       1081
+   * Properties with relationships:
+   *   Resource-level (non-nested): 493
+   *   Type-level (nested):         358
+   *   Total:                       851
+   */
+  readonly enableNestedRelationships: boolean;
+
+  /**
+   * The location to import reference interfaces from.
+   */
+  readonly refsImportLocation: string;
 }
 
 /**
  * Extracts resource relationship information from the database for cross-service property references.
  */
 export class RelationshipDecider {
-  private readonly namespace: string;
-  public readonly imports = new Array<SelectiveImport>();
+  public readonly enableRelationships: boolean;
+  public readonly enableNestedRelationships: boolean;
+  private readonly refsImportLocation: string;
 
-  constructor(readonly resource: Resource, private readonly db: SpecDatabase, private readonly enableRelationships = true) {
-    this.namespace = namespaceFromResource(resource);
-  }
-
-  private registerRequiredImport({ namespace, originalType, aliasedType }: {
-    namespace: string;
-    originalType: string;
-    aliasedType: string;
-  }) {
-    const moduleName = naming.modulePartsFromNamespace(namespace).moduleName;
-    const moduleImport = this.imports.find(i => i.moduleName === moduleName);
-    if (!moduleImport) {
-      this.imports.push({
-        moduleName,
-        types: [{ originalType, aliasedType }],
-      });
-    } else {
-      if (!moduleImport.types.find(t =>
-        t.originalType === originalType && t.aliasedType === aliasedType,
-      )) {
-        moduleImport.types.push({ originalType, aliasedType });
-      }
-    }
+  constructor(
+    readonly resource: Resource,
+    private readonly db: SpecDatabase,
+    props: RelationshipDeciderProps,
+  ) {
+    this.enableRelationships = props.enableRelationships;
+    this.enableNestedRelationships = props.enableNestedRelationships;
+    this.refsImportLocation = props.refsImportLocation;
   }
 
   /**
@@ -77,7 +75,7 @@ export class RelationshipDecider {
     }
     const targetResource = this.db.lookup('resource', 'cloudFormationType', 'equals', relationship.cloudFormationType).only();
     const refProps = new ResourceReference(targetResource).referenceProps;
-    const expectedPropName = referencePropertyName(relationship.propertyName, targetResource.name);
+    const expectedPropName = naming.referencePropertyName(relationship.propertyName, targetResource.name);
     const prop = refProps.find(p => p.declaration.name === expectedPropName);
     if (!prop) {
       log.debug(
@@ -90,7 +88,7 @@ export class RelationshipDecider {
     return targetResource;
   }
 
-  public parseRelationship(sourcePropName: string, relationships?: RelationshipRef[]) {
+  public parseRelationship(targetModule: Module, sourcePropName: string, relationships?: RelationshipRef[]) {
     const parsedRelationships: Relationship[] = [];
     if (!relationships) {
       return parsedRelationships;
@@ -100,22 +98,25 @@ export class RelationshipDecider {
       if (!targetResource) {
         continue;
       }
-      // Ignore the suffix part because it's an edge case that happens only for one module
-      const interfaceName = referenceInterfaceName(targetResource.name);
-      const refPropStructName = referenceInterfaceAttributeName(targetResource.name);
 
-      const targetNamespace = namespaceFromResource(targetResource);
-      let aliasedTypeName = undefined;
-      if (this.namespace !== targetNamespace) {
-        // If this is not in our namespace we need to alias the import type
-        aliasedTypeName = `${typeAliasPrefixFromResource(targetResource)}${interfaceName}`;
-        this.registerRequiredImport({ namespace: targetNamespace, originalType: interfaceName, aliasedType: aliasedTypeName });
-      }
+      // import the ref module
+      const refsAlias = naming.interfaceModuleImportName(targetResource);
+      const selectiveImport = new SelectiveModuleImport(CDK_INTERFACES, this.refsImportLocation, [
+        [naming.submoduleSymbolFromResource(targetResource), refsAlias],
+      ]);
+      targetModule.addImport(selectiveImport);
+
+      // Ignore the suffix part because it's an edge case that happens only for one module
+      const interfaceName = naming.referenceInterfaceName(targetResource.name);
+      const referenceType = Type.fromName(targetModule, `${refsAlias}.${interfaceName}`);
+      const referenceTypeDisplayName = `${naming.typeAliasPrefixFromResource(targetResource).toLowerCase()}.${interfaceName}`;
+      const refPropStructName = naming.referenceInterfaceAttributeName(targetResource.name);
+
       parsedRelationships.push({
-        referenceType: aliasedTypeName ?? interfaceName,
-        referenceName: refPropStructName,
-        propName: referencePropertyName(relationship.propertyName, targetResource.name),
-        typeDisplayName: `${typeAliasPrefixFromResource(targetResource).toLowerCase()}.${interfaceName}`,
+        refType: referenceType,
+        refTypeDisplayName: referenceTypeDisplayName,
+        refPropStructName: refPropStructName,
+        refPropName: naming.referencePropertyName(relationship.propertyName, targetResource.name),
       });
     }
     return parsedRelationships;
@@ -146,7 +147,7 @@ export class RelationshipDecider {
    * Checks if a given property needs a flattening function or not
    */
   public needsFlatteningFunction(propName: string, prop: Property, visited = new Set<string>()): boolean {
-    if (!GENERATE_RELATIONSHIPS_ON_TYPES) {
+    if (!this.enableNestedRelationships) {
       return false;
     }
     if (this.hasValidRelationships(propName, prop.relationshipRefs)) {

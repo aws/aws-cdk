@@ -1,7 +1,7 @@
 import * as zlib from 'zlib';
 import { Construct } from 'constructs';
 import { ENABLE_ADDITIONAL_METADATA_COLLECTION } from '../../cx-api';
-import { App, Stack, IPolicyValidationPluginBeta1, IPolicyValidationContextBeta1, Stage, PolicyValidationPluginReportBeta1, FeatureFlags, Duration } from '../lib';
+import { App, Stack, IPolicyValidationPluginBeta1, IPolicyValidationContextBeta1, Stage, PolicyValidationPluginReportBeta1 } from '../lib';
 import { formatAnalytics, parseAnalytics } from '../lib/private/metadata-resource';
 import { ConstructInfo } from '../lib/private/runtime-info';
 

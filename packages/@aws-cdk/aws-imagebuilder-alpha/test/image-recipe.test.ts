@@ -4,7 +4,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import {
-  AwsManagedComponent,
+  AmazonManagedComponent,
   BaseImage,
   Component,
   ComponentParameterValue,
@@ -148,7 +148,7 @@ describe('Image Recipe', () => {
             componentVersion: '1.2.3',
           }),
         },
-        { component: AwsManagedComponent.helloWorld(stack, 'Component2', { platform: Platform.LINUX }) },
+        { component: AmazonManagedComponent.helloWorld(stack, 'Component2', { platform: Platform.LINUX }) },
         {
           component: Component.fromComponentArn(
             stack,

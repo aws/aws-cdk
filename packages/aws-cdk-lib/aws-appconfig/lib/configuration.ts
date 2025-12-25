@@ -7,6 +7,8 @@ import { IApplication } from './application';
 import { DeploymentStrategy, IDeploymentStrategy, RolloutStrategy } from './deployment-strategy';
 import { IEnvironment } from './environment';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
+import { IDeploymentStrategyRef } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
+import { toIDeploymentStrategy } from './private/ref-utils';
 import * as cp from '../../aws-codepipeline';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -28,7 +30,7 @@ export interface ConfigurationOptions {
    * @default - A deployment strategy with the rollout strategy set to
    * RolloutStrategy.CANARY_10_PERCENT_20_MINUTES
    */
-  readonly deploymentStrategy?: IDeploymentStrategy;
+  readonly deploymentStrategy?: IDeploymentStrategyRef;
 
   /**
    * The name of the configuration.
@@ -191,10 +193,14 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
    */
   public readonly deploymentKey?: kms.IKey;
 
+  private readonly _deploymentStrategy?: IDeploymentStrategyRef;
+
   /**
    * The deployment strategy for the configuration.
    */
-  readonly deploymentStrategy?: IDeploymentStrategy;
+  public get deploymentStrategy(): IDeploymentStrategy | undefined {
+    return this._deploymentStrategy ? toIDeploymentStrategy(this._deploymentStrategy) : undefined;
+  }
 
   protected applicationId: string;
   protected extensible!: ExtensibleBase;
@@ -215,7 +221,7 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
     this.deployTo = props.deployTo;
     this.deploymentKey = props.deploymentKey;
     this.deletionProtectionCheck = props.deletionProtectionCheck;
-    this.deploymentStrategy = props.deploymentStrategy || new DeploymentStrategy(this, 'DeploymentStrategy', {
+    this._deploymentStrategy = props.deploymentStrategy || new DeploymentStrategy(this, 'DeploymentStrategy', {
       rolloutStrategy: RolloutStrategy.CANARY_10_PERCENT_20_MINUTES,
     });
   }

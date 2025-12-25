@@ -1665,26 +1665,21 @@ Managed Instances Capacity Providers allow you to use AWS-managed EC2 instances 
 
 See [ECS documentation for Managed Instances Capacity Provider](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-instances-capacity-providers-concept.html) for more documentation.
 
+#### IAM Roles Setup
+Managed instances require an infrastructure and an EC2 instance profile. You can either provide your own infrastructure role and/or instance profile, or let the construct create them automatically. 
+
+Option 1: Let CDK create the role and instance profile automatically
 ```ts
 declare const vpc: ec2.Vpc;
-declare const infrastructureRole: iam.Role;
-declare const instanceProfile: iam.InstanceProfile;
 
 const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
 
-// Create a Managed Instances Capacity Provider
 const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
-  infrastructureRole,
-  ec2InstanceProfile: instanceProfile,
   subnets: vpc.privateSubnets,
-  securityGroups: [new ec2.SecurityGroup(this, 'MISecurityGroup', { vpc })],
   instanceRequirements: {
     vCpuCountMin: 1,
     memoryMin: Size.gibibytes(2),
-    cpuManufacturers: [ec2.CpuManufacturer.INTEL],
-    acceleratorManufacturers: [ec2.AcceleratorManufacturer.NVIDIA],
   },
-  propagateTags: ecs.PropagateManagedInstancesTags.CAPACITY_PROVIDER,
 });
 
 // Optionally configure security group rules using IConnectable interface
@@ -1718,16 +1713,83 @@ new ecs.FargateService(this, 'FargateService', {
 });
 ```
 
+Option 2: If you don't want to use the `AmazonECSInfrastructureRolePolicyForManagedInstances` managed policy for the ECS infrastructure role, you can create a custom infrastructure role with the required permissions. See [documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/infrastructure_IAM_role.html) for what permissions are needed for the ECS infrastructure role.
+
+You can also choose not to use the automatically created ec2InstanceProfile. See [ECS documentation](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-instances-instance-profile.html) for what permissions are required for the profile's role.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
+
+// Add your custom policies to the role.
+const customInstanceRole = new iam.Role(this, 'CustomInstanceRole', {
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+});
+
+const customInstanceProfile = new iam.InstanceProfile(this, 'CustomInstanceProfile', {
+  role: customInstanceRole,
+});
+
+// Add your custom policies to the role.
+const customInfrastructureRole = new iam.Role(this, 'CustomInfrastructureRole', {
+  assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+});
+
+// Add PassRole permission to allow ECS to pass the instance role to EC2.
+customInfrastructureRole.addToPolicy(new iam.PolicyStatement({
+  effect: iam.Effect.ALLOW,
+  actions: ['iam:PassRole'],
+  resources: [customInstanceRole.roleArn],
+  conditions: {
+    StringEquals: {
+      'iam:PassedToService': 'ec2.amazonaws.com',
+    },
+  },
+}));
+
+const miCapacityProviderCustom = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProviderCustomRoles', {
+  infrastructureRole: customInfrastructureRole,
+  ec2InstanceProfile: customInstanceProfile,
+  subnets: vpc.privateSubnets,
+});
+
+// Add the capacity provider to the cluster
+cluster.addManagedInstancesCapacityProvider(miCapacityProviderCustom);
+
+const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
+  memoryMiB: '512',
+  cpu: '256',
+  networkMode: ecs.NetworkMode.AWS_VPC,
+  compatibility: ecs.Compatibility.MANAGED_INSTANCES,
+});
+
+taskDefinition.addContainer('web', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  memoryReservationMiB: 256,
+});
+
+
+new ecs.FargateService(this, 'FargateService', {
+
+  cluster,
+  taskDefinition,
+  minHealthyPercent: 100,
+  capacityProviderStrategies: [
+    {
+      capacityProvider: miCapacityProviderCustom.capacityProviderName,
+      weight: 1,
+    },
+  ],
+});
+```
+
 You can specify detailed instance requirements to control which types of instances are used:
 
 ```ts
-declare const infrastructureRole: iam.Role;
-declare const instanceProfile: iam.InstanceProfile;
 declare const vpc: ec2.Vpc;
 
 const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
-  infrastructureRole,
-  ec2InstanceProfile: instanceProfile,
   subnets: vpc.privateSubnets,
   instanceRequirements: {
     // Required: CPU and memory constraints

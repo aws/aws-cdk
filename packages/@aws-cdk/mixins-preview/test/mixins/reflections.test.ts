@@ -1,7 +1,8 @@
 import { Construct } from 'constructs';
 import { Stack, App, Resource } from 'aws-cdk-lib/core';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { tryFindBucketPolicyForBucket } from '../../lib/mixins/private/reflections';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import { tryFindBucketPolicyForBucket, tryFindDeliverySourceForResource } from '../../lib/mixins/private/reflections';
 
 class CustomBucket extends Resource implements s3.IBucketRef {
   public readonly bucketRef: s3.BucketReference;
@@ -237,6 +238,105 @@ describe('find bucket policy', () => {
       });
 
       expect(tryFindBucketPolicyForBucket(bucket)).toBe(policy);
+    });
+  });
+});
+
+describe('find DeliverySource', () => {
+  let app: App;
+  let stack: Stack;
+  let logType: string = 'ACCESS_LOGS';
+
+  beforeEach(() => {
+    app = new App();
+    stack = new Stack(app, 'TestStack');
+  });
+
+  describe('find in construct tree', () => {
+    test('returns undefined when no delivery source exists', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      expect(tryFindDeliverySourceForResource(bucket, bucket.attrArn, logType)).toBeUndefined();
+    });
+
+    test('finds delivery source as direct child of construct', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const source = new logs.CfnDeliverySource(bucket, 'BucketSource', {
+        name: 'bucket-source',
+        resourceArn: bucket.attrArn,
+        logType,
+      });
+
+      expect(tryFindDeliverySourceForResource(bucket, bucket.attrArn, logType)).toBe(source);
+    });
+
+    test('finds delivery source as transitive child of construct', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const intermediate = new Construct(bucket, 'Intermediate');
+      const source = new logs.CfnDeliverySource(intermediate, 'BucketSource', {
+        name: 'bucket-source',
+        resourceArn: bucket.attrArn,
+        logType,
+      });
+
+      expect(tryFindDeliverySourceForResource(bucket, bucket.attrArn, logType)).toBe(source);
+    });
+
+    test('finds delivery source as sibling (child of parent)', () => {
+      const parent = new Construct(stack, 'Parent');
+      const bucket = new s3.CfnBucket(parent, 'Bucket');
+      const source = new logs.CfnDeliverySource(parent, 'BucketSource', {
+        name: 'bucket-source',
+        resourceArn: bucket.attrArn,
+        logType,
+      });
+
+      expect(tryFindDeliverySourceForResource(bucket, bucket.attrArn, logType)).toBe(source);
+    });
+
+    test('finds delivery source in parent hierarchy', () => {
+      const grandparent = new Construct(stack, 'Grandparent');
+      const parent = new Construct(grandparent, 'Parent');
+      const bucket = new s3.CfnBucket(parent, 'Bucket');
+      const source = new logs.CfnDeliverySource(grandparent, 'BucketSource', {
+        name: 'bucket-source',
+        resourceArn: bucket.attrArn,
+        logType,
+      });
+
+      expect(tryFindDeliverySourceForResource(bucket, bucket.attrArn, logType)).toBe(source);
+    });
+
+    test('finds cousin delivery sources', () => {
+      const grandparent = new Construct(stack, 'Grandparent');
+      const parent = new Construct(grandparent, 'Parent');
+      const auncle = new Construct(grandparent, 'Auncle');
+
+      const bucket = new s3.CfnBucket(parent, 'Bucket');
+      const source = new logs.CfnDeliverySource(auncle, 'BucketSource', {
+        name: 'bucket-source',
+        resourceArn: bucket.attrArn,
+        logType,
+      });
+
+      expect(tryFindDeliverySourceForResource(bucket, bucket.attrArn, logType)).toBe(source);
+    });
+
+    test('ignores unrelated delivery sources', () => {
+      const bucket1 = new s3.CfnBucket(stack, 'Bucket1');
+      const bucket2 = new s3.CfnBucket(stack, 'Bucket2');
+      new logs.CfnDeliverySource(stack, 'BucketSourceA', {
+        name: 'bucket-source-1a',
+        resourceArn: bucket1.attrArn,
+        logType: 'ERROR_LOGS',
+      });
+
+      new logs.CfnDeliverySource(stack, 'BucketSourceB', {
+        name: 'bucket-source-2b',
+        resourceArn: bucket2.attrArn,
+        logType,
+      });
+
+      expect(tryFindDeliverySourceForResource(bucket1, bucket1.attrArn, logType)).toBeUndefined();
     });
   });
 });

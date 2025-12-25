@@ -105,9 +105,6 @@ new cdk.CfnOutput(stack, 'V2EndpointId', {
   description: 'Version 2 endpoint ID',
 });
 
-// Create the integration test
 new integ.IntegTest(app, 'BedrockAgentCoreRuntimeTest', {
   testCases: [stack],
 });
-
-app.synth();

@@ -1,4 +1,5 @@
 /* eslint-disable @cdklabs/no-throw-default-error */
+
 /* eslint-disable no-console */
 
 export function getEnv(name: string): string {

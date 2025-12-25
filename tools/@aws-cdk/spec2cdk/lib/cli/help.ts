@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 
 export interface PositionalArg {
   name: string;

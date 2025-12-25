@@ -13,7 +13,6 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
  */
 
 async function handler(event: any) {
-  // eslint-disable-next-line no-console
   console.log('event:', JSON.stringify(event, undefined, 2));
   throw new Error();
 }

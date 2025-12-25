@@ -38,7 +38,7 @@ const containerRecipe = new imagebuilder.ContainerRecipe(stack, 'ContainerRecipe
   targetRepository: imagebuilder.Repository.fromEcr(repository),
   components: [
     {
-      component: imagebuilder.AwsManagedComponent.helloWorld(stack, 'HelloWorld', {
+      component: imagebuilder.AmazonManagedComponent.helloWorld(stack, 'HelloWorld', {
         platform: imagebuilder.Platform.LINUX,
       }),
     },
@@ -59,7 +59,7 @@ const image = new imagebuilder.Image(stack, 'Image-Container', {
   distributionConfiguration: containerDistributionConfiguration,
   executionRole,
   logGroup,
-  workflows: [{ workflow: imagebuilder.AwsManagedWorkflow.buildContainer(stack, 'BuildContainer') }],
+  workflows: [{ workflow: imagebuilder.AmazonManagedWorkflow.buildContainer(stack, 'BuildContainer') }],
   enhancedImageMetadataEnabled: false,
   imageTestsEnabled: true,
   imageScanningEnabled: true,

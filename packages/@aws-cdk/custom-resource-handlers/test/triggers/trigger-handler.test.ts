@@ -81,7 +81,6 @@ test('Response Payload is logged', async () => {
 
   await lambda.handler({ RequestType: 'Create', ResourceProperties: mockResourceProperties, ...mockRequest });
 
-  // eslint-disable-next-line no-console
   expect(console.log).toHaveBeenCalledWith(expect.objectContaining({
     invokeResponse: {
       StatusCode: 200,

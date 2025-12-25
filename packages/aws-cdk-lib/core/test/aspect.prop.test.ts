@@ -1,3 +1,4 @@
+
 import { Construct, IConstruct } from 'constructs';
 import * as fc from 'fast-check';
 import * as fs from 'fs-extra';
@@ -188,7 +189,7 @@ function afterSynth(block: (x: PrettyApp) => void, aspectStabilization: boolean)
     let asm;
     try {
       asm = app.cdkApp.synth({ aspectStabilization });
-    } catch (error) {
+    } catch (error: any) {
       if (error.message.includes('Cannot invoke Aspect')) {
         return;
       }
@@ -234,18 +235,6 @@ function forEveryVisitPair(log: AspectActionLog, block: (a: AspectVisitWithIndex
       block({ ...logI, index: i }, { ...logJ, index: j });
     }
   }
-}
-
-function arraysEqual<T>(arr1: T[], arr2: T[]): boolean {
-  if (arr1.length !== arr2.length) {
-    return false;
-  }
-
-  return arr1.every((value, index) => value === arr2[index]);
-}
-
-function arraysEqualUnordered<T>(arr1: T[], arr2: T[]): boolean {
-  return arr1.length === arr2.length && new Set(arr1).size === new Set(arr2).size;
 }
 
 /**
@@ -474,7 +463,7 @@ class PrettyApp {
       ].join(' '));
 
       prefixes.push('     ');
-      construct.node.children.forEach((child, i) => {
+      construct.node.children.forEach((child) => {
         recurse(child);
       });
       prefixes.pop();
@@ -564,7 +553,7 @@ function buildApplication(appFac: AppFactory, appls: TestAspectApplication[]): P
   const state: ExecutionState = {
     actionLog: [],
   };
-  tree[EXECUTIONSTATE_SYM] = state; // Stick this somewhere the aspects can find it
+  (tree as any)[EXECUTIONSTATE_SYM] = state; // Stick this somewhere the aspects can find it
 
   for (const app of appls) {
     const ctrs = app.constructPaths.map((p) => findConstructDeep(tree, p));
@@ -712,7 +701,7 @@ abstract class TracingAspect implements IAspect {
   }
 
   protected executionState(node: IConstruct): ExecutionState {
-    return node.node.root[EXECUTIONSTATE_SYM];
+    return (node.node.root as any)[EXECUTIONSTATE_SYM];
   }
 
   visit(node: IConstruct): void {

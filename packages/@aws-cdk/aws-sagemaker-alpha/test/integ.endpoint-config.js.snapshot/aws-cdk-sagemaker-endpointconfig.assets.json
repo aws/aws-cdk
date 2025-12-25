@@ -2,7 +2,7 @@
   "version": "48.0.0",
   "files": {
     "126d48fa0e32fbef5078b9d88658b35ad29d4291eb86675a64c75fa4f1338916": {
-      "displayName": "ModelWithArtifactAndVpc/ModelData3a5d8a5c26d90a81d20fad7f530f24e2",
+      "displayName": "ModelWithArtifactAndVpc/ModelData537c6638ecd347568c55ceb83c27aadb",
       "source": {
         "path": "asset.126d48fa0e32fbef5078b9d88658b35ad29d4291eb86675a64c75fa4f1338916.tar.gz",
         "packaging": "file"
@@ -32,7 +32,7 @@
   },
   "dockerImages": {
     "98e27853307092de1d03c86e89a5ead7aab9f8ea8f6722e4f113f04f34a329fd": {
-      "displayName": "ModelWithArtifactAndVpc/ModelImage70e881962cb181ccd50da9c12b3370f1",
+      "displayName": "ModelWithArtifactAndVpc/ModelImage895236687163ccbc3c3e11bac0ea92b5",
       "source": {
         "directory": "asset.98e27853307092de1d03c86e89a5ead7aab9f8ea8f6722e4f113f04f34a329fd"
       },

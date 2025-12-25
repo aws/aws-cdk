@@ -305,7 +305,7 @@ test('grantDelegation on L1s', () => {
   });
 
   // WHEN
-  HostedZoneGrants.fromHostedZone(zone).delegation(role);
+  HostedZoneGrants.fromHostedZone(zone as any).delegation(role);
 
   // THEN
   const template = Template.fromStack(stack);

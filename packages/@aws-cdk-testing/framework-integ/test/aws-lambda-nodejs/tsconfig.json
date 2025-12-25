@@ -24,7 +24,7 @@
     "strict": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
-    "stripInternal": true,
+    "stripInternal": false,
     "target": "ES2022",
     "composite": true,
     "tsBuildInfoFile": "tsconfig.tsbuildinfo"

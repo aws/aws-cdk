@@ -1,15 +1,13 @@
 import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 import { InstanceType, Vpc, SecurityGroup, Peer, Port } from 'aws-cdk-lib/aws-ec2';
 import { Cluster, ContainerImage, AsgCapacityProvider, EcsOptimizedImage } from 'aws-cdk-lib/aws-ecs';
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Stack, CfnResource } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { NetworkLoadBalancedEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
 import { IpAddressType } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 const app = new App({
   postCliContext: {
-    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
-    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
   },
 });
 const stack = new Stack(app, 'aws-ecs-integ-nlb');
@@ -20,6 +18,12 @@ const securityGroup = new SecurityGroup(stack, 'SecurityGroup', {
   allowAllOutbound: true,
 });
 securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcpRange(32768, 65535));
+
+// Suppress security guardian rule for intentional test setup
+const cfnSecurityGroup = securityGroup.node.defaultChild as CfnResource;
+cfnSecurityGroup.addMetadata('guard', {
+  SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+});
 
 const provider1 = new AsgCapacityProvider(stack, 'FirstCapacityProvider', {
   autoScalingGroup: new AutoScalingGroup(stack, 'FirstAutoScalingGroup', {

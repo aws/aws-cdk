@@ -15,16 +15,35 @@ let iam_roles = Resources.*[
 #Check inline policies in roles for wildcards
 rule IAM_NO_WILDCARD_ACTIONS_INLINE when %iam_roles !empty {
     %iam_roles {
-        Properties.Policies[*].PolicyDocument.Statement[*] {
-            when Effect == "Allow" {
-                when Action exists {
-                    when Action is_string {
-                        Action != "*"
-                        Action != /\w+:\*$/
+        when Properties.Policies[*].PolicyDocument.Statement[*] exists {
+            Properties.Policies[*].PolicyDocument.Statement[*] {
+                when Effect == "Allow" {
+                    when Action exists {
+                        when Action is_string {
+                            Action != "*"
+                            Action != /\w+:\*$/
+                        }
+                        when Action is_list {
+                            Action[*] != "*"
+                            Action[*] != /\w+:\*$/
+                        }
                     }
-                    when Action is_list {
-                        Action[*] != "*"
-                        Action[*] != /\w+:\*$/
+                }
+            }
+        }
+
+        when Properties.AssumeRolePolicyDocument.Statement[*] exists {
+            Properties.AssumeRolePolicyDocument.Statement[*] {
+                when Effect == "Allow" {
+                    when Action exists {
+                        when Action is_string {
+                            Action != "*"
+                            Action != /\w+:\*$/
+                        }
+                        when Action is_list {
+                            Action[*] != "*"
+                            Action[*] != /\w+:\*$/
+                        }
                     }
                 }
             }

@@ -1,4 +1,4 @@
-import { Match, Template } from '../../../assertions';
+import { Template } from '../../../assertions';
 import * as events from '../../../aws-events';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';

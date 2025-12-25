@@ -7,7 +7,7 @@ import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
-import { Resource, Stack, ValidationError } from '../../core';
+import { Annotations, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -100,7 +100,11 @@ export interface TrailProps {
   readonly snsTopic?: sns.ITopic;
 
   /**
-   * The name of the trail. We recommend customers do not set an explicit name.
+   * The name of the trail.
+   *
+   * Required when `isOrganizationTrail` is set to true to attach the necessary permissions.
+   *
+   * Otherwise, we recommend customers do not set an explicit name.
    *
    * @default - AWS CloudFormation generated name.
    */
@@ -280,19 +284,26 @@ export class Trail extends Resource {
     }));
 
     if (props.isOrganizationTrail) {
-      this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
-        resources: [this.s3bucket.arnForObjects(
-          `AWSLogs/${props.orgId}/*`,
-        )],
-        actions: ['s3:PutObject'],
-        principals: [cloudTrailPrincipal],
-        conditions: {
-          StringEquals: {
-            's3:x-amz-acl': 'bucket-owner-full-control',
-            'aws:SourceArn': `arn:${this.stack.partition}:cloudtrail:${this.s3bucket.stack.region}:${this.s3bucket.stack.account}:trail/${props.trailName}`,
+      if (props.orgId === undefined) {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-cloudtrail:missingOrgIdForOrganizationTrail', 'Skipped attaching a policy to the bucket which allows organization trail to write because of missing orgId. Consider specifying orgId to add missing permissions');
+      } else if (props.trailName === undefined) {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-cloudtrail:missingTrailNameForOrganizationTrail', 'Skipped attaching a policy to the bucket which allows organization trail to write because of missing trailName. Consider specifying trailName to add missing permissions');
+      } else {
+        this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
+          resources: [this.s3bucket.arnForObjects(
+            `AWSLogs/${props.orgId}/*`,
+          )],
+          actions: ['s3:PutObject'],
+          principals: [cloudTrailPrincipal],
+          conditions: {
+            StringEquals: {
+              's3:x-amz-acl': 'bucket-owner-full-control',
+              // trailName can't stripped out from arn attribute, since it will make circular dependency
+              'aws:SourceArn': `arn:${this.stack.partition}:cloudtrail:${this.s3bucket.stack.region}:${this.s3bucket.stack.account}:trail/${props.trailName}`,
+            },
           },
-        },
-      }));
+        }));
+      }
     }
 
     this.topic = props.snsTopic;

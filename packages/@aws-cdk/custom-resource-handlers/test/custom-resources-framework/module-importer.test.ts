@@ -100,7 +100,7 @@ describe('module importer', () => {
 
     // THEN
     const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
-    const expected = '/* eslint-disable prettier/prettier, @stylistic/max-len */\nimport * as lambda from "../../../aws-lambda";\nimport { Stack, CustomResourceProviderBase } from "../../../core";';
+    const expected = '/* eslint-disable prettier/prettier, @stylistic/max-len */\nimport * as lambda from "../../../aws-lambda";\nimport { CustomResourceProviderBase, Stack } from "../../../core";';
     expect(result).toEqual(expected);
   });
 
