@@ -22,7 +22,7 @@ class TestStack extends Stack {
     this.cache = new ServerlessCache(this, 'Cache', {
       vpc,
       engine: CacheEngine.VALKEY_8,
-      userGroup
+      userGroup,
     });
   }
 }
