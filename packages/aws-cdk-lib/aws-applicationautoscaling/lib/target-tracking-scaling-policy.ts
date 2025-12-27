@@ -167,6 +167,12 @@ function renderCustomMetric(scope: Construct, metric?: cloudwatch.IMetric): CfnS
     throw new ValidationError(`Cannot use statistic '${c.statistic}' for Target Tracking: only 'Average', 'Minimum', 'Maximum', 'SampleCount', and 'Sum' are supported.`, scope);
   }
 
+  // Detect cross-account metric usage
+  const stackAccount = cdk.Stack.of(scope).account;
+  if (c.account !== undefined && c.account !== stackAccount) {
+    throw new ValidationError('Cross-account metrics are not supported for Application Auto Scaling target tracking policies. The metric must be in the same account as the scaling policy.', scope);
+  }
+
   return {
     dimensions: c.dimensions,
     metricName: c.metricName,
