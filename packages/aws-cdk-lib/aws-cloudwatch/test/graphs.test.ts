@@ -1,8 +1,11 @@
 import { Duration, Stack, UnscopedValidationError } from '../../core';
 import {
   Alarm,
+  AlarmRule,
+  AlarmState,
   AlarmWidget,
   Color,
+  CompositeAlarm,
   CustomWidget,
   GaugeWidget,
   GraphWidget,
@@ -266,7 +269,7 @@ describe('Graphs', () => {
   test('query result widget - line', () => {
     // GIVEN
     const stack = new Stack();
-    const logGroup = { logGroupName: 'my-log-group' } ;
+    const logGroup = { logGroupName: 'my-log-group' };
 
     // WHEN
     const widget = new LogQueryWidget({
@@ -700,6 +703,189 @@ describe('Graphs', () => {
     });
 
     // THEN: Compiles
+  });
+
+  test('composite alarm widget generates alarm-type widget', () => {
+    // CloudWatch console requires 'alarm' type for composite alarms to render properly
+    // and 'metric' type for regular alarms. This test verifies the correct widget type is used.
+
+    // GIVEN
+    const stack = new Stack();
+
+    const alarm1 = new Metric({ namespace: 'CDK', metricName: 'Test1' }).createAlarm(stack, 'Alarm1', {
+      evaluationPeriods: 2,
+      threshold: 1000,
+    });
+
+    const alarm2 = new Metric({ namespace: 'CDK', metricName: 'Test2' }).createAlarm(stack, 'Alarm2', {
+      evaluationPeriods: 2,
+      threshold: 500,
+    });
+
+    const compositeAlarm = new CompositeAlarm(stack, 'CompositeAlarm', {
+      alarmRule: AlarmRule.anyOf(alarm1, alarm2),
+    });
+
+    // WHEN
+    const widget = new AlarmWidget({
+      alarm: compositeAlarm,
+      title: 'Composite Alarm Widget',
+      accountId: '123456789012',
+    });
+
+    // THEN
+    const result = stack.resolve(widget.toJson());
+    expect(result).toHaveLength(1);
+    expect(result[0].type).toBe('alarm');
+    expect(result[0].width).toBe(6);
+    expect(result[0].height).toBe(6);
+    expect(result[0].properties.view).toBe('timeSeries');
+    expect(result[0].properties.title).toBe('Composite Alarm Widget');
+    expect(result[0].properties.region).toEqual({ Ref: 'AWS::Region' });
+    expect(result[0].properties.accountId).toBe('123456789012');
+    expect(result[0].properties.annotations.alarms).toHaveLength(1);
+    expect(result[0].properties.annotations.alarms[0]).toHaveProperty('Fn::GetAtt');
+    expect(result[0].properties.yAxis).toEqual({});
+  });
+
+  test('regular alarm widget maintains metric-type widget behavior', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const alarm = new Metric({ namespace: 'CDK', metricName: 'Test' }).createAlarm(stack, 'Alarm', {
+      evaluationPeriods: 2,
+      threshold: 1000,
+    });
+
+    // WHEN
+    const widget = new AlarmWidget({
+      alarm,
+      title: 'Regular Alarm Widget',
+      region: 'us-west-2',
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        title: 'Regular Alarm Widget',
+        region: 'us-west-2',
+        annotations: {
+          alarms: [{ 'Fn::GetAtt': ['Alarm7103F465', 'Arn'] }],
+        },
+        yAxis: {},
+      },
+    }]);
+  });
+
+  test('imported composite alarm using fromCompositeAlarmArn generates alarm-type widget', () => {
+    // GIVEN
+    const stack = new Stack();
+    const compositeAlarm = CompositeAlarm.fromCompositeAlarmArn(
+      stack,
+      'ImportedCompositeAlarm',
+      'arn:aws:cloudwatch:us-east-1:123456789012:alarm:MyCompositeAlarm',
+    );
+
+    // WHEN
+    const widget = new AlarmWidget({
+      alarm: compositeAlarm,
+      title: 'Imported Composite Alarm',
+      accountId: '123456789012',
+    });
+
+    // THEN
+    const result = stack.resolve(widget.toJson());
+    expect(result).toHaveLength(1);
+    expect(result[0].type).toBe('alarm');
+    expect(result[0].width).toBe(6);
+    expect(result[0].height).toBe(6);
+    expect(result[0].properties.view).toBe('timeSeries');
+    expect(result[0].properties.title).toBe('Imported Composite Alarm');
+    expect(result[0].properties.region).toEqual({ Ref: 'AWS::Region' });
+    expect(result[0].properties.accountId).toBe('123456789012');
+    expect(result[0].properties.annotations.alarms).toEqual(['arn:aws:cloudwatch:us-east-1:123456789012:alarm:MyCompositeAlarm']);
+    expect(result[0].properties.yAxis).toEqual({});
+  });
+
+  test('alarm widget preserves all properties for both alarm types', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const regularAlarm = new Metric({ namespace: 'CDK', metricName: 'Test' }).createAlarm(stack, 'RegularAlarm', {
+      evaluationPeriods: 2,
+      threshold: 1000,
+    });
+
+    const compositeAlarm = new CompositeAlarm(stack, 'CompositeAlarm', {
+      alarmRule: AlarmRule.fromAlarm(regularAlarm, AlarmState.ALARM),
+    });
+
+    // WHEN
+    const regularWidget = new AlarmWidget({
+      alarm: regularAlarm,
+      title: 'Regular Alarm',
+      region: 'eu-west-1',
+      accountId: '123456789012',
+      width: 12,
+      height: 8,
+      leftYAxis: {
+        min: 0,
+        max: 100,
+        label: 'Test Label',
+        showUnits: false,
+      },
+    });
+
+    const compositeWidget = new AlarmWidget({
+      alarm: compositeAlarm,
+      title: 'Composite Alarm',
+      region: 'eu-west-1',
+      accountId: '123456789012',
+      width: 12,
+      height: 8,
+      leftYAxis: {
+        min: 0,
+        max: 100,
+        label: 'Test Label',
+        showUnits: false,
+      },
+    });
+
+    // THEN
+    const regularJson = stack.resolve(regularWidget.toJson())[0];
+    const compositeJson = stack.resolve(compositeWidget.toJson())[0];
+
+    // Verify regular alarm generates metric widget
+    expect(regularJson.type).toBe('metric');
+    expect(regularJson.width).toBe(12);
+    expect(regularJson.height).toBe(8);
+    expect(regularJson.properties.title).toBe('Regular Alarm');
+    expect(regularJson.properties.region).toBe('eu-west-1');
+    expect(regularJson.properties.accountId).toBe('123456789012');
+    expect(regularJson.properties.yAxis.left).toEqual({
+      min: 0,
+      max: 100,
+      label: 'Test Label',
+      showUnits: false,
+    });
+
+    // Verify composite alarm generates alarm widget
+    expect(compositeJson.type).toBe('alarm');
+    expect(compositeJson.width).toBe(12);
+    expect(compositeJson.height).toBe(8);
+    expect(compositeJson.properties.title).toBe('Composite Alarm');
+    expect(compositeJson.properties.region).toBe('eu-west-1');
+    expect(compositeJson.properties.accountId).toBe('123456789012');
+    expect(compositeJson.properties.yAxis.left).toEqual({
+      min: 0,
+      max: 100,
+      label: 'Test Label',
+      showUnits: false,
+    });
   });
 
   test('add setPeriodToTimeRange to singleValueWidget', () => {

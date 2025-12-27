@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "8fa69ff5c72668b7dd03f982545116b29ab95dae7b5504e73735e526d50acd96": {
+      "displayName": "CompositeAlarmWidgetIntegrationTest Template",
+      "source": {
+        "path": "CompositeAlarmWidgetIntegrationTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-3b532900": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8fa69ff5c72668b7dd03f982545116b29ab95dae7b5504e73735e526d50acd96.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
