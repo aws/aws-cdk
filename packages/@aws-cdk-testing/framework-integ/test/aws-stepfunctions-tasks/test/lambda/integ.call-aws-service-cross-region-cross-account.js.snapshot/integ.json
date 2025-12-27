@@ -10,5 +10,5 @@
       "assertionStackName": "CallAwsServiceCrossRegionCrossAccountIntegDefaultTestDeployAssertF31294DD"
     }
   },
-  "minimumCliVersion": "2.1029.1"
+  "minimumCliVersion": "2.1033.0"
 }

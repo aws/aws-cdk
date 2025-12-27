@@ -35,17 +35,12 @@
         "dynamodb:Scan"
        ],
        "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "TableCD117FA1",
-          "Arn"
-         ]
-        },
-        {
-         "Ref": "AWS::NoValue"
-        }
-       ]
+       "Resource": {
+        "Fn::GetAtt": [
+         "TableCD117FA1",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
