@@ -274,7 +274,7 @@ class DefaultCapacityProviderOptions extends CapacityProviderOptions {
   _bind(): ecs.CapacityProviderStrategy[] {
     // If neither `launchType` nor `capacityProviderStrategy` is specified,
     // the cluster's `defaultCapacityProviderStrategy` is used.
-    return undefined;
+    return [];
   }
 }
 
