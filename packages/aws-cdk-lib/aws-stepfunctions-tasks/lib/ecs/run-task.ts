@@ -300,11 +300,11 @@ export class EcsFargateLaunchTarget implements IEcsLaunchTarget {
     return {
       parameters: {
         LaunchType: launchType,
-        CapacityProviderStrategy: capacityProviderStrategy?.map((s) => ({
+        CapacityProviderStrategy: capacityProviderStrategy?.length ? capacityProviderStrategy.map((s) => ({
           CapacityProvider: s.capacityProvider,
           Weight: s.weight,
           Base: s.base,
-        })),
+        })) : undefined,
         PlatformVersion: this.options?.platformVersion,
       },
     };
@@ -336,11 +336,11 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
     return {
       parameters: {
         LaunchType: launchType,
-        CapacityProviderStrategy: capacityProviderStrategy?.map((s) => ({
+        CapacityProviderStrategy: capacityProviderStrategy?.length ? capacityProviderStrategy.map((s) => ({
           CapacityProvider: s.capacityProvider,
           Weight: s.weight,
           Base: s.base,
-        })),
+        })) : undefined,
         // takes an array of placement constraints each of which contain a single item array of constraints, flattens it
         // and renders the Json to be passed as a parameter in the state machine.
         // input: [ecs.PlacementConstraint.distinctInstances()] - distinctInstances() returns [{ type: 'distinctInstance' }]
