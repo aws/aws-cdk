@@ -894,9 +894,9 @@ test('set enableExecuteCommand', () => {
   });
 });
 
-describe('capacityProviderOptions', () => {
+describe('capacityProviderStrategy', () => {
   describe('EcsFargateLaunchTarget', () => {
-    test('with none() capacity provider options', () => {
+    test('with default behavior (no capacity provider strategy)', () => {
       const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
         memoryMiB: '512',
         cpu: '256',
@@ -912,7 +912,6 @@ describe('capacityProviderOptions', () => {
         taskDefinition,
         launchTarget: new tasks.EcsFargateLaunchTarget({
           platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-          capacityProviderOptions: tasks.CapacityProviderOptions.none(),
         }),
       });
 
@@ -926,7 +925,7 @@ describe('capacityProviderOptions', () => {
       expect(stateJson.Parameters.CapacityProviderStrategy).toBeUndefined();
     });
 
-    test('with custom() capacity provider options', () => {
+    test('with custom capacity provider strategy', () => {
       const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
         memoryMiB: '512',
         cpu: '256',
@@ -942,10 +941,10 @@ describe('capacityProviderOptions', () => {
         taskDefinition,
         launchTarget: new tasks.EcsFargateLaunchTarget({
           platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-          capacityProviderOptions: tasks.CapacityProviderOptions.custom([
+          capacityProviderStrategy: [
             { capacityProvider: 'FARGATE_SPOT', weight: 2, base: 1 },
             { capacityProvider: 'FARGATE', weight: 1 },
-          ]),
+          ],
         }),
       });
 
@@ -961,7 +960,7 @@ describe('capacityProviderOptions', () => {
       expect(stack.resolve(runTask.toStateJson()).Parameters.LaunchType).toBeUndefined();
     });
 
-    test('with default() capacity provider options', () => {
+    test('with cluster default capacity provider strategy', () => {
       const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
         memoryMiB: '512',
         cpu: '256',
@@ -977,7 +976,7 @@ describe('capacityProviderOptions', () => {
         taskDefinition,
         launchTarget: new tasks.EcsFargateLaunchTarget({
           platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-          capacityProviderOptions: tasks.CapacityProviderOptions.default(),
+          useDefaultCapacityProviderStrategy: true,
         }),
       });
 
@@ -991,7 +990,7 @@ describe('capacityProviderOptions', () => {
       expect(stateJson.Parameters.CapacityProviderStrategy).toBeUndefined();
     });
 
-    test('without capacity provider options (defaults to none())', () => {
+    test('without capacity provider options (defaults to FARGATE launch type)', () => {
       const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
         memoryMiB: '512',
         cpu: '256',
@@ -1022,7 +1021,7 @@ describe('capacityProviderOptions', () => {
   });
 
   describe('EcsEc2LaunchTarget', () => {
-    test('with none() capacity provider options', () => {
+    test('with default behavior (no capacity provider strategy)', () => {
       const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
         compatibility: ecs.Compatibility.EC2,
       });
@@ -1034,9 +1033,7 @@ describe('capacityProviderOptions', () => {
       const runTask = new tasks.EcsRunTask(stack, 'Run', {
         cluster,
         taskDefinition,
-        launchTarget: new tasks.EcsEc2LaunchTarget({
-          capacityProviderOptions: tasks.CapacityProviderOptions.none(),
-        }),
+        launchTarget: new tasks.EcsEc2LaunchTarget(),
       });
 
       const stateJson = stack.resolve(runTask.toStateJson());
@@ -1048,7 +1045,7 @@ describe('capacityProviderOptions', () => {
       expect(stateJson.Parameters.CapacityProviderStrategy).toBeUndefined();
     });
 
-    test('with custom() capacity provider options', () => {
+    test('with custom capacity provider strategy', () => {
       const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
         compatibility: ecs.Compatibility.EC2,
       });
@@ -1061,9 +1058,9 @@ describe('capacityProviderOptions', () => {
         cluster,
         taskDefinition,
         launchTarget: new tasks.EcsEc2LaunchTarget({
-          capacityProviderOptions: tasks.CapacityProviderOptions.custom([
+          capacityProviderStrategy: [
             { capacityProvider: 'my-capacity-provider', weight: 1, base: 2 },
-          ]),
+          ],
         }),
       });
 
@@ -1077,7 +1074,7 @@ describe('capacityProviderOptions', () => {
       expect(stack.resolve(runTask.toStateJson()).Parameters.LaunchType).toBeUndefined();
     });
 
-    test('with default() capacity provider options', () => {
+    test('with cluster default capacity provider strategy', () => {
       const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
         compatibility: ecs.Compatibility.EC2,
       });
@@ -1090,7 +1087,7 @@ describe('capacityProviderOptions', () => {
         cluster,
         taskDefinition,
         launchTarget: new tasks.EcsEc2LaunchTarget({
-          capacityProviderOptions: tasks.CapacityProviderOptions.default(),
+          useDefaultCapacityProviderStrategy: true,
         }),
       });
 
@@ -1099,7 +1096,7 @@ describe('capacityProviderOptions', () => {
       expect(stateJson.Parameters.CapacityProviderStrategy).toBeUndefined();
     });
 
-    test('without capacity provider options (defaults to none())', () => {
+    test('without capacity provider options (defaults to EC2 launch type)', () => {
       const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
         compatibility: ecs.Compatibility.EC2,
       });
@@ -1124,14 +1121,49 @@ describe('capacityProviderOptions', () => {
     });
   });
 
-  test('throws error when more than 20 capacity providers are specified', () => {
+  test('throws error when more than 20 capacity providers are specified for Fargate', () => {
     const capacityProviders = Array.from({ length: 21 }, (_, i) => ({
       capacityProvider: `provider-${i}`,
       weight: 1,
     }));
 
     expect(() => {
-      tasks.CapacityProviderOptions.custom(capacityProviders);
+      new tasks.EcsFargateLaunchTarget({
+        platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+        capacityProviderStrategy: capacityProviders,
+      });
     }).toThrow(/Capacity provider strategy can contain a maximum of 20 capacity providers, got 21/);
+  });
+
+  test('throws error when more than 20 capacity providers are specified for EC2', () => {
+    const capacityProviders = Array.from({ length: 21 }, (_, i) => ({
+      capacityProvider: `provider-${i}`,
+      weight: 1,
+    }));
+
+    expect(() => {
+      new tasks.EcsEc2LaunchTarget({
+        capacityProviderStrategy: capacityProviders,
+      });
+    }).toThrow(/Capacity provider strategy can contain a maximum of 20 capacity providers, got 21/);
+  });
+
+  test('throws error when both capacityProviderStrategy and useDefaultCapacityProviderStrategy are specified for Fargate', () => {
+    expect(() => {
+      new tasks.EcsFargateLaunchTarget({
+        platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+        capacityProviderStrategy: [{ capacityProvider: 'FARGATE_SPOT', weight: 1 }],
+        useDefaultCapacityProviderStrategy: true,
+      });
+    }).toThrow(/capacityProviderStrategy and useDefaultCapacityProviderStrategy are mutually exclusive/);
+  });
+
+  test('throws error when both capacityProviderStrategy and useDefaultCapacityProviderStrategy are specified for EC2', () => {
+    expect(() => {
+      new tasks.EcsEc2LaunchTarget({
+        capacityProviderStrategy: [{ capacityProvider: 'my-cp', weight: 1 }],
+        useDefaultCapacityProviderStrategy: true,
+      });
+    }).toThrow(/capacityProviderStrategy and useDefaultCapacityProviderStrategy are mutually exclusive/);
   });
 });

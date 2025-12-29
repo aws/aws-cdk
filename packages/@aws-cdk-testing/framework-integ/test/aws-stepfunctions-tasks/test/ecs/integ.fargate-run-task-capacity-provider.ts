@@ -35,12 +35,12 @@ const containerDefinition = taskDefinition.addContainer('TheContainer', {
   logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' }),
 });
 
-// Build state machine with different capacity provider options
+// Build state machine with different capacity provider strategies
 const definition = new sfn.Pass(stack, 'Start', {
   result: sfn.Result.fromObject({ SomeKey: 'SomeValue', Timeout: 900 }),
 }).next(
-  // Task with none() capacity provider option - uses launch type
-  new tasks.EcsRunTask(stack, 'FargateTaskWithNone', {
+  // Task with default behavior - uses FARGATE launch type
+  new tasks.EcsRunTask(stack, 'FargateTaskWithLaunchType', {
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     cluster,
     taskDefinition,
@@ -58,7 +58,6 @@ const definition = new sfn.Pass(stack, 'Start', {
     ],
     launchTarget: new tasks.EcsFargateLaunchTarget({
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-      capacityProviderOptions: tasks.CapacityProviderOptions.none(),
     }),
     taskTimeout: sfn.Timeout.at('$.Timeout'),
     cpu: '1024',
@@ -66,13 +65,13 @@ const definition = new sfn.Pass(stack, 'Start', {
     resultPath: sfn.JsonPath.DISCARD,
   }),
 ).next(
-  // Task with custom capacity provider option
+  // Task with custom capacity provider strategy
   new tasks.EcsRunTask(stack, 'FargateTaskWithCustom', {
     cluster,
     taskDefinition,
     launchTarget: new tasks.EcsFargateLaunchTarget({
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-      capacityProviderOptions: tasks.CapacityProviderOptions.custom([
+      capacityProviderStrategy: [
         {
           capacityProvider: 'FARGATE',
           weight: 1,
@@ -83,18 +82,18 @@ const definition = new sfn.Pass(stack, 'Start', {
           weight: 2,
           base: 1,
         },
-      ]),
+      ],
     }),
     resultPath: sfn.JsonPath.DISCARD,
   }),
 ).next(
-  // Task with default capacity provider option - uses cluster default
-  new tasks.EcsRunTask(stack, 'FargateTaskWithDefault', {
+  // Task with cluster's default capacity provider strategy
+  new tasks.EcsRunTask(stack, 'FargateTaskWithClusterDefault', {
     cluster,
     taskDefinition,
     launchTarget: new tasks.EcsFargateLaunchTarget({
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-      capacityProviderOptions: tasks.CapacityProviderOptions.default(),
+      useDefaultCapacityProviderStrategy: true,
     }),
     resultPath: sfn.JsonPath.DISCARD,
   }),
