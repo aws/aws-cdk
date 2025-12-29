@@ -29,6 +29,7 @@ jobs:
         id: changed-cli-files
         uses: step-security/changed-files@95b56dadb92a30ca9036f16423fd3c088a71ee94
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           files_yaml: |
             cli:
               - packages/aws-cdk-lib/cx-api/lib/features.ts
