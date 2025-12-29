@@ -830,19 +830,16 @@ const runTask = new tasks.EcsRunTask(this, 'RunFargate', {
 });
 ```
 
-#### Capacity Provider Strategy
+#### Capacity Provider Options
 
-You can configure the capacity provider strategy for both EC2 and Fargate launch targets
-using the `capacityProviderStrategy` and `useDefaultCapacityProviderStrategy` properties.
+The `capacityProviderOptions` property allows you to configure the capacity provider
+strategy for both EC2 and Fargate launch targets.
 
-**Default behavior (no capacity provider strategy):**
-When neither property is specified, the task uses the launch type (EC2 or FARGATE) without a capacity provider strategy.
+- When `CapacityProviderOptions.none()` is used, the task uses the launch type (EC2 or FARGATE) without a capacity provider strategy.
+- When `CapacityProviderOptions.custom()` is used, you can specify a custom capacity provider strategy.
+- When `CapacityProviderOptions.default()` is used, the task uses the cluster's default capacity provider strategy.
 
-**Custom capacity provider strategy:**
-Use the `capacityProviderStrategy` property to specify a custom capacity provider strategy.
-
-**Cluster's default capacity provider strategy:**
-Set `useDefaultCapacityProviderStrategy` to `true` to use the cluster's default capacity provider strategy.
+If `capacityProviderOptions` is not specified, it defaults to `CapacityProviderOptions.none()`.
 
 ```ts
 const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
@@ -857,35 +854,36 @@ const taskDefinition = new ecs.TaskDefinition(this, 'TD', {
   compatibility: ecs.Compatibility.FARGATE,
 });
 
-// Default behavior - uses FARGATE launch type without capacity provider strategy
-const runTaskDefault = new tasks.EcsRunTask(this, 'RunTaskDefault', {
+// Use none() option - uses launch type without capacity provider strategy
+const runTaskWithNone = new tasks.EcsRunTask(this, 'RunTaskWithNone', {
   cluster,
   taskDefinition,
   launchTarget: new tasks.EcsFargateLaunchTarget({
     platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    capacityProviderOptions: tasks.CapacityProviderOptions.none(),
   }),
 });
 
-// Custom capacity provider strategy
+// Use custom() option - specify custom capacity provider strategy
 const runTaskWithCustom = new tasks.EcsRunTask(this, 'RunTaskWithCustom', {
   cluster,
   taskDefinition,
   launchTarget: new tasks.EcsFargateLaunchTarget({
     platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-    capacityProviderStrategy: [
+    capacityProviderOptions: tasks.CapacityProviderOptions.custom([
       { capacityProvider: 'FARGATE_SPOT', weight: 2, base: 1 },
       { capacityProvider: 'FARGATE', weight: 1 },
-    ],
+    ]),
   }),
 });
 
-// Use cluster's default capacity provider strategy
-const runTaskWithClusterDefault = new tasks.EcsRunTask(this, 'RunTaskWithClusterDefault', {
+// Use default() option - uses cluster's default capacity provider strategy
+const runTaskWithDefault = new tasks.EcsRunTask(this, 'RunTaskWithDefault', {
   cluster,
   taskDefinition,
   launchTarget: new tasks.EcsFargateLaunchTarget({
     platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-    useDefaultCapacityProviderStrategy: true,
+    capacityProviderOptions: tasks.CapacityProviderOptions.default(),
   }),
 });
 ```

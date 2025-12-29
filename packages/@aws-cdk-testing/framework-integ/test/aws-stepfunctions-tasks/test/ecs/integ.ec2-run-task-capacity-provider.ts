@@ -62,12 +62,12 @@ const containerDefinition = taskDefinition.addContainer('Container', {
   logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' }),
 });
 
-// Build state machine with different capacity provider strategies
+// Build state machine with different capacity provider options
 const definition = new sfn.Pass(stack, 'Start', {
   result: sfn.Result.fromObject({ SomeKey: 'SomeValue' }),
 }).next(
-  // Task with default behavior - uses EC2 launch type
-  new tasks.EcsRunTask(stack, 'Ec2TaskWithLaunchType', {
+  // Task with none() capacity provider option - uses launch type
+  new tasks.EcsRunTask(stack, 'Ec2TaskWithNone', {
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     cluster,
     taskDefinition,
@@ -82,17 +82,19 @@ const definition = new sfn.Pass(stack, 'Start', {
         ],
       },
     ],
-    launchTarget: new tasks.EcsEc2LaunchTarget(),
+    launchTarget: new tasks.EcsEc2LaunchTarget({
+      capacityProviderOptions: tasks.CapacityProviderOptions.none(),
+    }),
     enableExecuteCommand: true,
     resultPath: sfn.JsonPath.DISCARD,
   }),
 ).next(
-  // Task with custom capacity provider strategy
+  // Task with custom capacity provider option
   new tasks.EcsRunTask(stack, 'Ec2TaskWithCustom', {
     cluster,
     taskDefinition,
     launchTarget: new tasks.EcsEc2LaunchTarget({
-      capacityProviderStrategy: [
+      capacityProviderOptions: tasks.CapacityProviderOptions.custom([
         {
           capacityProvider: capacityProvider1.capacityProviderName,
           weight: 1,
@@ -103,17 +105,17 @@ const definition = new sfn.Pass(stack, 'Start', {
           weight: 2,
           base: 1,
         },
-      ],
+      ]),
     }),
     resultPath: sfn.JsonPath.DISCARD,
   }),
 ).next(
-  // Task with cluster's default capacity provider strategy
-  new tasks.EcsRunTask(stack, 'Ec2TaskWithClusterDefault', {
+  // Task with default capacity provider option - uses cluster default
+  new tasks.EcsRunTask(stack, 'Ec2TaskWithDefault', {
     cluster,
     taskDefinition,
     launchTarget: new tasks.EcsEc2LaunchTarget({
-      useDefaultCapacityProviderStrategy: true,
+      capacityProviderOptions: tasks.CapacityProviderOptions.default(),
     }),
     resultPath: sfn.JsonPath.DISCARD,
   }),
