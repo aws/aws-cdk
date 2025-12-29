@@ -961,7 +961,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
 
   public get domainRef(): DomainReference {
     return {
-      domainId: this.domainName,
+      domainName: this.domainName,
       domainArn: this.domainArn,
     };
   }

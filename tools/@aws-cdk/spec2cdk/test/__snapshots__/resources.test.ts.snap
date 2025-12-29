@@ -189,7 +189,7 @@ function CfnResourcePropsFromCloudFormation(properties: any): cfn_parse.FromClou
 export type { IResourceRef, ResourceReference };"
 `;
 
-exports[`resource interface when primaryIdentifier is a property 1`] = `
+exports[`resource interface when cfnRefIdentifier is a property 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
 import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";

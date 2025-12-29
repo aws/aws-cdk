@@ -58,12 +58,12 @@
     "@aws-cdk/service-spec-types" "^0.0.164"
     "@cdklabs/tskb" "^0.0.3"
 
-"@aws-cdk/aws-service-spec@^0.1.133":
-  version "0.1.133"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.133.tgz#75a36a43225d5dfcd04ed821a892d6549c322839"
-  integrity sha512-6i6vjGJQ3vNpVn29RqBveyv3aadof7bkvB/WE3zlI7q+ZyxAma+8INPBgSifbL47t1kCcFQLCPQQulq3MjXfLA==
+"@aws-cdk/aws-service-spec@^0.1.135":
+  version "0.1.135"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.135.tgz#ef01b1e5fca6c6da1dafa294108fa73799ad2a51"
+  integrity sha512-XY98CaTyze7Bquun0vxZ1EoWpXRz+1hlnfzHtf1vtNhMfEp6JmdZeoN38kGcAtq1ags/Zfs84Ca5ubIZaMAwwg==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.199"
+    "@aws-cdk/service-spec-types" "^0.0.201"
     "@cdklabs/tskb" "^0.0.4"
 
 "@aws-cdk/cloud-assembly-schema@^48.20.0":
@@ -146,6 +146,13 @@
   version "0.0.199"
   resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.199.tgz#324e35d9d7f743b0d941eac3d45bc1e04a622c06"
   integrity sha512-25x27EQSSNYyaHEbTWIAU2aII0df0/Ee92r1xU6A7AlRMwHYztET8i6f6mNUsnNf6dnHr5v1dIq/Nmz4PW2Xwg==
+  dependencies:
+    "@cdklabs/tskb" "^0.0.4"
+
+"@aws-cdk/service-spec-types@^0.0.201":
+  version "0.0.201"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.201.tgz#3481ff79a99a11d971c4a3387def84d7bdbbc866"
+  integrity sha512-dHBmmKU24ROarP4GN5NQBu1UjV3Me8tdzA2I+/GPSEtt0J1EEObi3megYeU3fYx50i6uzYQ1pJVo9nVWgce9vA==
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
@@ -7551,6 +7558,11 @@ diff@^5.2.0:
   version "5.2.0"
   resolved "https://registry.npmjs.org/diff/-/diff-5.2.0.tgz#26ded047cd1179b78b9537d5ef725503ce1ae531"
   integrity sha512-uIFDxqpRZGZ6ThOk84hEfqWoHx2devRFvpTZcTHur85vImfaxUbTW9Ryh4CpCuDnToOP1CEtXKIgytHBPVff5A==
+
+diff@^8.0.2:
+  version "8.0.2"
+  resolved "https://registry.npmjs.org/diff/-/diff-8.0.2.tgz#712156a6dd288e66ebb986864e190c2fc9eddfae"
+  integrity sha512-sSuxWU5j5SR9QQji/o2qMvqRNYRDOcBTgsJ/DeCf4iSN4gW+gNMXM7wFIP+fdXZxoNiAnHUTGjCr+TSWXdRDKg==
 
 dir-glob@^3.0.1:
   version "3.0.1"
