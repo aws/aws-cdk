@@ -250,6 +250,7 @@
     "./aws-billing": "./aws-billing/index.js",
     "./aws-billingconductor": "./aws-billingconductor/index.js",
     "./aws-budgets": "./aws-budgets/index.js",
+    "./aws-cases": "./aws-cases/index.js",
     "./aws-cassandra": "./aws-cassandra/index.js",
     "./aws-ce": "./aws-ce/index.js",
     "./aws-certificatemanager": "./aws-certificatemanager/index.js",
