@@ -237,7 +237,7 @@ export abstract class CapacityProviderOptions {
   /**
    * @internal
    */
-  abstract _bind(): ecs.CapacityProviderStrategy[] | undefined;
+  abstract _bind(): ecs.CapacityProviderStrategy[];
 }
 
 /**
