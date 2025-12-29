@@ -331,7 +331,7 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
     }
 
     const capacityProviderStrategy = this.options?.capacityProviderOptions?._bind();
-    const launchType = capacityProviderStrategy ? undefined : ecs.LaunchType.EC2;
+    const launchType = capacityProviderStrategy !== undefined ? undefined : ecs.LaunchType.EC2;
 
     return {
       parameters: {
