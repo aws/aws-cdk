@@ -295,7 +295,7 @@ export class EcsFargateLaunchTarget implements IEcsLaunchTarget {
     }
 
     const capacityProviderStrategy = this.options?.capacityProviderOptions?._bind();
-    const launchType = capacityProviderStrategy ? undefined : ecs.LaunchType.FARGATE;
+    const launchType = capacityProviderStrategy !== undefined ? undefined : ecs.LaunchType.FARGATE;
 
     return {
       parameters: {
