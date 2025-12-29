@@ -18,18 +18,20 @@ jobs:
     outputs:
       any-changed-files: ${{ steps.changed-cli-files.outputs.cli_any_changed }}
     steps:
-      - name: Checkout
+      - name: Checkout base repository
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.base.ref }}
           fetch-depth: 0
-          persist-credentials: false
+      - name: Fetch PR head
+        run: |
+          git fetch origin ${{ github.event.pull_request.head.sha }}
       - name: Find changed cli files
         id: changed-cli-files
         uses: step-security/changed-files@95b56dadb92a30ca9036f16423fd3c088a71ee94
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          base_sha: ${{ github.event.pull_request.base.sha }}
+          sha: ${{ github.event.pull_request.head.sha }}
           files_yaml: |
             cli:
               - packages/aws-cdk-lib/cx-api/lib/features.ts
