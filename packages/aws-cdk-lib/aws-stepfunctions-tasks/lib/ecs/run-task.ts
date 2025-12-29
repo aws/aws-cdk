@@ -164,10 +164,6 @@ export interface EcsFargateLaunchTargetOptions {
    *
    * This property allows you to set the capacity provider strategy for the task.
    *
-   * If you don't need the capacity provider strategy, specify `CapacityProviderOptions.none()`.
-   * In that case, 'FARGATE' LaunchType running tasks on AWS Fargate On-Demand
-   * infrastructure is used without the capacity provider strategy.
-   *
    * If you want to set the capacity provider strategy for the task, specify
    * `CapacityProviderOptions.custom()`. This is required to use the FARGATE_SPOT
    * capacity provider.
@@ -204,10 +200,6 @@ export interface EcsEc2LaunchTargetOptions {
    *
    * This property allows you to set the capacity provider strategy for the task.
    *
-   * If you don't need the capacity provider strategy, specify `CapacityProviderOptions.none()`.
-   * In that case, 'EC2' LaunchType running tasks on Amazon EC2 instances registered to
-   * your cluster is used without the capacity provider strategy.
-   *
    * If you want to set the capacity provider strategy for the task, specify
    * `CapacityProviderOptions.custom()`.
    *
@@ -220,22 +212,10 @@ export interface EcsEc2LaunchTargetOptions {
   readonly capacityProviderOptions?: CapacityProviderOptions;
 }
 
-interface CapacityProviderParams {
-  launchType?: ecs.LaunchType;
-  capacityProviderStrategy?: ecs.CapacityProviderStrategy[];
-}
-
 /**
  * Base class for capacity provider options
  */
 export abstract class CapacityProviderOptions {
-  /**
-   * No capacity provider strategy is used.
-   */
-  public static none(): CapacityProviderOptions {
-    return new NoCapacityProviderOptions();
-  }
-
   /**
    * Use a custom capacity provider strategy.
    *
@@ -257,25 +237,7 @@ export abstract class CapacityProviderOptions {
   /**
    * @internal
    */
-  abstract _bind(launchType: ecs.LaunchType): CapacityProviderParams;
-}
-
-/**
- * No capacity provider strategy options
- */
-class NoCapacityProviderOptions extends CapacityProviderOptions {
-  constructor() {
-    super();
-  }
-
-  /**
-   * @internal
-   */
-  _bind(launchType: ecs.LaunchType): CapacityProviderParams {
-    return {
-      launchType,
-    };
-  }
+  abstract _bind(): ecs.CapacityProviderStrategy[] | undefined;
 }
 
 /**
@@ -293,10 +255,8 @@ class CustomCapacityProviderOptions extends CapacityProviderOptions {
   /**
    * @internal
    */
-  _bind(_launchType: ecs.LaunchType): CapacityProviderParams {
-    return {
-      capacityProviderStrategy: this.capacityProviderStrategy,
-    };
+  _bind(): ecs.CapacityProviderStrategy[] {
+    return this.capacityProviderStrategy;
   }
 }
 
@@ -311,10 +271,10 @@ class DefaultCapacityProviderOptions extends CapacityProviderOptions {
   /**
    * @internal
    */
-  _bind(_launchType: ecs.LaunchType): CapacityProviderParams {
+  _bind(): undefined {
     // If neither `launchType` nor `capacityProviderStrategy` is specified,
     // the cluster's `defaultCapacityProviderStrategy` is used.
-    return {};
+    return undefined;
   }
 }
 
@@ -334,13 +294,13 @@ export class EcsFargateLaunchTarget implements IEcsLaunchTarget {
       throw new ValidationError('Supplied TaskDefinition is not compatible with Fargate', task);
     }
 
-    const capacityProvider = this.options?.capacityProviderOptions ?? CapacityProviderOptions.none();
-    const capacityProviderBound = capacityProvider._bind(ecs.LaunchType.FARGATE);
+    const capacityProviderStrategy = this.options?.capacityProviderOptions?._bind();
+    const launchType = capacityProviderStrategy ? undefined : ecs.LaunchType.FARGATE;
 
     return {
       parameters: {
-        LaunchType: capacityProviderBound.launchType,
-        CapacityProviderStrategy: capacityProviderBound.capacityProviderStrategy?.map((s) => ({
+        LaunchType: launchType,
+        CapacityProviderStrategy: capacityProviderStrategy?.map((s) => ({
           CapacityProvider: s.capacityProvider,
           Weight: s.weight,
           Base: s.base,
@@ -370,13 +330,13 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
       throw new ValidationError('Cluster for this service needs Ec2 capacity. Call addCapacity() on the cluster.', task);
     }
 
-    const capacityProvider = this.options?.capacityProviderOptions ?? CapacityProviderOptions.none();
-    const capacityProviderBound = capacityProvider._bind(ecs.LaunchType.EC2);
+    const capacityProviderStrategy = this.options?.capacityProviderOptions?._bind();
+    const launchType = capacityProviderStrategy ? undefined : ecs.LaunchType.EC2;
 
     return {
       parameters: {
-        LaunchType: capacityProviderBound.launchType,
-        CapacityProviderStrategy: capacityProviderBound.capacityProviderStrategy?.map((s) => ({
+        LaunchType: launchType,
+        CapacityProviderStrategy: capacityProviderStrategy?.map((s) => ({
           CapacityProvider: s.capacityProvider,
           Weight: s.weight,
           Base: s.base,

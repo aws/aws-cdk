@@ -835,11 +835,9 @@ const runTask = new tasks.EcsRunTask(this, 'RunFargate', {
 The `capacityProviderOptions` property allows you to configure the capacity provider
 strategy for both EC2 and Fargate launch targets.
 
-- When `CapacityProviderOptions.none()` is used, the task uses the launch type (EC2 or FARGATE) without a capacity provider strategy.
 - When `CapacityProviderOptions.custom()` is used, you can specify a custom capacity provider strategy.
 - When `CapacityProviderOptions.default()` is used, the task uses the cluster's default capacity provider strategy.
-
-If `capacityProviderOptions` is not specified, it defaults to `CapacityProviderOptions.none()`.
+- If `capacityProviderOptions` is not specified, the task uses the launch type (EC2 or FARGATE) without a capacity provider strategy.
 
 ```ts
 const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
@@ -852,16 +850,6 @@ const taskDefinition = new ecs.TaskDefinition(this, 'TD', {
   memoryMiB: '512',
   cpu: '256',
   compatibility: ecs.Compatibility.FARGATE,
-});
-
-// Use none() option - uses launch type without capacity provider strategy
-const runTaskWithNone = new tasks.EcsRunTask(this, 'RunTaskWithNone', {
-  cluster,
-  taskDefinition,
-  launchTarget: new tasks.EcsFargateLaunchTarget({
-    platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-    capacityProviderOptions: tasks.CapacityProviderOptions.none(),
-  }),
 });
 
 // Use custom() option - specify custom capacity provider strategy
