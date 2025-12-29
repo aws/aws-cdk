@@ -3,9 +3,6 @@ import { ChangeObject, diffLines } from 'diff';
 
 expect.extend({
   toContainCode(actual: string, expected: string) {
-    // actual = actual.split('\n').map(x => x.trim()).join('\n');
-    // subset = subset.split('\n').map(x => x.trim()).join('\n');
-    // console.log(actual);
     const ds = diffLines(actual, expected, {
       ignoreWhitespace: true,
     });
