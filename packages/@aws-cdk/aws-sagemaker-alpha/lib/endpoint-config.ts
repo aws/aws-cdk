@@ -2,6 +2,7 @@ import { EOL } from 'os';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnEndpointConfig } from 'aws-cdk-lib/aws-sagemaker';
 import * as cdk from 'aws-cdk-lib/core';
+import { Duration } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Construct } from 'constructs';
@@ -9,6 +10,7 @@ import { AcceleratorType } from './accelerator-type';
 import { InstanceType } from './instance-type';
 import { IModel } from './model';
 import { sameEnv } from './private/util';
+
 
 /**
  * The interface for a SageMaker EndpointConfig resource.
@@ -27,6 +29,7 @@ export interface IEndpointConfig extends cdk.IResource {
    */
   readonly endpointConfigName: string;
 }
+
 
 /**
  * Common construction properties for all production variant types (e.g., instance, serverless).
@@ -49,6 +52,7 @@ interface ProductionVariantProps {
    */
   readonly variantName: string;
 }
+
 
 /**
  * Construction properties for an instance production variant.
@@ -73,7 +77,17 @@ export interface InstanceProductionVariantProps extends ProductionVariantProps {
    * @default InstanceType.T2_MEDIUM
    */
   readonly instanceType?: InstanceType;
+  /**
+   * The timeout value, in seconds, for your inference container to pass health check by SageMaker Hosting.
+   * 
+   * For more information about health check, see
+   * [How Your Container Should Respond to Health Check (Ping) Requests](https://docs.aws.amazon.com/sagemaker/latest/dg/your-algorithms-inference-code.html#your-algorithms-inference-algo-ping-requests).
+   * 
+   * @default - no custom timeout specified (uses SageMaker default)
+   */
+  readonly containerStartupHealthCheckTimeout?: Duration;
 }
+
 
 /**
  * Construction properties for a serverless production variant.
@@ -100,6 +114,7 @@ export interface ServerlessProductionVariantProps extends ProductionVariantProps
   readonly provisionedConcurrency?: number;
 }
 
+
 /**
  * Represents common attributes of all production variant types (e.g., instance, serverless) once
  * associated to an EndpointConfig.
@@ -120,6 +135,7 @@ interface ProductionVariant {
    */
   readonly variantName: string;
 }
+
 
 /**
  * Represents an instance production variant that has been associated with an EndpointConfig.
@@ -142,7 +158,14 @@ export interface InstanceProductionVariant extends ProductionVariant {
    * Instance type of the production variant.
    */
   readonly instanceType: InstanceType;
+  /**
+   * The timeout value for container startup health check.
+   *
+   * @default - none
+   */
+  readonly containerStartupHealthCheckTimeout?: Duration;
 }
+
 
 /**
  * Represents a serverless production variant that has been associated with an EndpointConfig.
@@ -164,6 +187,7 @@ interface ServerlessProductionVariant extends ProductionVariant {
   readonly provisionedConcurrency?: number;
 }
 
+
 /**
  * Construction properties for a SageMaker EndpointConfig.
  */
@@ -176,12 +200,14 @@ export interface EndpointConfigProps {
    */
   readonly endpointConfigName?: string;
 
+
   /**
    * Optional KMS encryption key associated with this stream.
    *
    * @default - none
    */
   readonly encryptionKey?: kms.IKeyRef;
+
 
   /**
    * A list of instance production variants. You can always add more variants later by calling
@@ -192,6 +218,7 @@ export interface EndpointConfigProps {
    * @default - none
    */
   readonly instanceProductionVariants?: InstanceProductionVariantProps[];
+
 
   /**
    * A serverless production variant. Serverless endpoints automatically launch compute resources
@@ -204,6 +231,7 @@ export interface EndpointConfigProps {
   readonly serverlessProductionVariant?: ServerlessProductionVariantProps;
 }
 
+
 /**
  * Defines a SageMaker EndpointConfig.
  */
@@ -211,6 +239,7 @@ export interface EndpointConfigProps {
 export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-sagemaker-alpha.EndpointConfig';
+
 
   /**
    * Imports an EndpointConfig defined either outside the CDK or in a different CDK stack.
@@ -221,15 +250,18 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
   public static fromEndpointConfigArn(scope: Construct, id: string, endpointConfigArn: string): IEndpointConfig {
     const endpointConfigName = cdk.Stack.of(scope).splitArn(endpointConfigArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
+
     class Import extends cdk.Resource implements IEndpointConfig {
       public endpointConfigArn = endpointConfigArn;
       public endpointConfigName = endpointConfigName;
     }
 
+
     return new Import(scope, id, {
       environmentFromArn: endpointConfigArn,
     });
   }
+
 
   /**
    * Imports an EndpointConfig defined either outside the CDK or in a different CDK stack.
@@ -244,15 +276,18 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       resourceName: endpointConfigName,
     });
 
+
     class Import extends cdk.Resource implements IEndpointConfig {
       public endpointConfigArn = endpointConfigArn;
       public endpointConfigName = endpointConfigName;
     }
 
+
     return new Import(scope, id, {
       environmentFromArn: endpointConfigArn,
     });
   }
+
 
   /**
    * The ARN of the endpoint configuration.
@@ -263,8 +298,10 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    */
   public readonly endpointConfigName: string;
 
+
   private readonly instanceProductionVariantsByName: { [key: string]: InstanceProductionVariant } = {};
   private serverlessProductionVariant?: ServerlessProductionVariant;
+
 
   constructor(scope: Construct, id: string, props: EndpointConfigProps = {}) {
     super(scope, id, {
@@ -273,16 +310,20 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+
     // Validate mutual exclusivity
     if (props.instanceProductionVariants && props.serverlessProductionVariant) {
       throw new Error('Cannot specify both instanceProductionVariants and serverlessProductionVariant. Choose one variant type.');
     }
 
+
     (props.instanceProductionVariants || []).map(p => this.addInstanceProductionVariant(p));
+
 
     if (props.serverlessProductionVariant) {
       this.addServerlessProductionVariant(props.serverlessProductionVariant);
     }
+
 
     // create the endpoint configuration resource
     const endpointConfig = new CfnEndpointConfig(this, 'EndpointConfig', {
@@ -297,6 +338,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       resourceName: this.physicalName,
     });
   }
+
 
   /**
    * Add production variant to the endpoint configuration.
@@ -319,8 +361,10 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       instanceType: props.instanceType || InstanceType.T2_MEDIUM,
       modelName: props.model.modelName,
       variantName: props.variantName,
+      containerStartupHealthCheckTimeout: props.containerStartupHealthCheckTimeout,
     };
   }
+
 
   /**
    * Add serverless production variant to the endpoint configuration.
@@ -346,6 +390,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     };
   }
 
+
   /**
    * Get instance production variants associated with endpoint configuration.
    *
@@ -354,6 +399,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
   public get _instanceProductionVariants(): InstanceProductionVariant[] {
     return Object.values(this.instanceProductionVariantsByName);
   }
+
 
   /**
    * Find instance production variant based on variant name
@@ -369,18 +415,22 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     return ret;
   }
 
+
   private validateProductionVariants(): void {
     const hasServerlessVariant = this.serverlessProductionVariant !== undefined;
+
 
     // validate at least one production variant
     if (this._instanceProductionVariants.length === 0 && !hasServerlessVariant) {
       throw new Error('Must configure at least 1 production variant');
     }
 
+
     // validate mutual exclusivity
     if (this._instanceProductionVariants.length > 0 && hasServerlessVariant) {
       throw new Error('Cannot configure both instance and serverless production variants');
     }
+
 
     // validate instance variant limits
     if (this._instanceProductionVariants.length > 10) {
@@ -388,18 +438,30 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     }
   }
 
+
   private validateInstanceProductionVariantProps(props: InstanceProductionVariantProps): void {
     const errors: string[] = [];
+
 
     // check instance count is greater than zero
     if (props.initialInstanceCount !== undefined && props.initialInstanceCount < 1) {
       errors.push('Must have at least one instance');
     }
 
+
     // check variant weight is not negative
     if (props.initialVariantWeight && props.initialVariantWeight < 0) {
       errors.push('Cannot have negative variant weight');
     }
+
+    // check containerStartupHealthCheckTimeout range
+    if (props.containerStartupHealthCheckTimeout !== undefined) {
+      const timeoutSeconds = props.containerStartupHealthCheckTimeout.toSeconds();
+      if (timeoutSeconds < 60 || timeoutSeconds > 3600) {
+        errors.push('containerStartupHealthCheckTimeout must be between 60 and 3600 seconds');
+      }
+    }
+
 
     // check environment compatibility with model
     const model = props.model;
@@ -409,29 +471,35 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       errors.push(`Cannot use model in region ${model.env.region} for endpoint configuration in region ${this.env.region}`);
     }
 
+
     if (errors.length > 0) {
       throw new Error(`Invalid Production Variant Props: ${errors.join(EOL)}`);
     }
   }
 
+
   private validateServerlessProductionVariantProps(props: ServerlessProductionVariantProps): void {
     const errors: string[] = [];
+
 
     // check variant weight is not negative
     if (props.initialVariantWeight && props.initialVariantWeight < 0) {
       errors.push('Cannot have negative variant weight');
     }
 
+
     // check maxConcurrency range
     if (props.maxConcurrency < 1 || props.maxConcurrency > 200) {
       errors.push('maxConcurrency must be between 1 and 200');
     }
+
 
     // check memorySizeInMB valid values (1GB increments from 1024 to 6144)
     const validMemorySizes = [1024, 2048, 3072, 4096, 5120, 6144];
     if (!validMemorySizes.includes(props.memorySizeInMB)) {
       errors.push(`memorySizeInMB must be one of: ${validMemorySizes.join(', ')} MB`);
     }
+
 
     // check provisionedConcurrency range and relationship to maxConcurrency
     if (props.provisionedConcurrency !== undefined) {
@@ -443,6 +511,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       }
     }
 
+
     // check environment compatibility with model
     const model = props.model;
     if (!sameEnv(model.env.account, this.env.account)) {
@@ -451,10 +520,12 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       errors.push(`Cannot use model in region ${model.env.region} for endpoint configuration in region ${this.env.region}`);
     }
 
+
     if (errors.length > 0) {
       throw new Error(`Invalid Serverless Production Variant Props: ${errors.join(EOL)}`);
     }
   }
+
 
   /**
    * Render the list of production variants (instance or serverless).
@@ -462,12 +533,14 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
   private renderProductionVariants(): CfnEndpointConfig.ProductionVariantProperty[] {
     this.validateProductionVariants();
 
+
     if (this.serverlessProductionVariant) {
       return this.renderServerlessProductionVariant();
     } else {
       return this.renderInstanceProductionVariants();
     }
   }
+
 
   /**
    * Render the list of instance production variants.
@@ -477,6 +550,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       throw new Error('renderInstanceProductionVariants called but no instance variants are configured');
     }
 
+
     return this._instanceProductionVariants.map( v => ({
       acceleratorType: v.acceleratorType?.toString(),
       initialInstanceCount: v.initialInstanceCount,
@@ -484,8 +558,10 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       instanceType: v.instanceType.toString(),
       modelName: v.modelName,
       variantName: v.variantName,
+      containerStartupHealthCheckTimeoutInSeconds: v.containerStartupHealthCheckTimeout?.toSeconds(),
     }) );
   }
+
 
   /**
    * Render the serverless production variant.
@@ -494,6 +570,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     if (!this.serverlessProductionVariant) {
       throw new Error('renderServerlessProductionVariant called but no serverless variant is configured');
     }
+
 
     const variant = this.serverlessProductionVariant;
     return [{

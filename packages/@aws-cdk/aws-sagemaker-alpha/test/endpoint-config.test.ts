@@ -1,6 +1,8 @@
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as sagemaker from '../lib';
+
 
 describe('When synthesizing a stack containing an EndpointConfig', () => {
   test('with more than 10 production variants, an exception is thrown', () => {
@@ -18,12 +20,15 @@ describe('When synthesizing a stack containing an EndpointConfig', () => {
       endpointConfig.addInstanceProductionVariant({ variantName: `variant-${i}`, model });
     }
 
+
     // WHEN
     const when = () => app.synth();
+
 
     // THEN
     expect(when).toThrow(/Can\'t have more than 10 production variants/);
   });
+
 
   test('with no production variants, an exception is thrown', () => {
     // GIVEN
@@ -31,18 +36,22 @@ describe('When synthesizing a stack containing an EndpointConfig', () => {
     const stack = new cdk.Stack(app);
     new sagemaker.EndpointConfig(stack, 'EndpointConfig');
 
+
     // WHEN
     const when = () => app.synth();
+
 
     // THEN
     expect(when).toThrow(/Must configure at least 1 production variant/);
   });
+
 
   test('with both instance and serverless variants in constructor, an exception is thrown', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+
 
     // WHEN
     const when = () => new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
@@ -58,9 +67,11 @@ describe('When synthesizing a stack containing an EndpointConfig', () => {
       },
     });
 
+
     // THEN
     expect(when).toThrow(/Cannot specify both instanceProductionVariants and serverlessProductionVariant/);
   });
+
 
   test('with serverless variant, synthesizes correctly', () => {
     // GIVEN
@@ -77,8 +88,10 @@ describe('When synthesizing a stack containing an EndpointConfig', () => {
       },
     });
 
+
     // WHEN
     const template = app.synth().getStackByName(stack.stackName).template;
+
 
     // THEN
     const endpointConfigResource = Object.values(template.Resources).find((resource: any) =>
@@ -102,12 +115,14 @@ describe('When synthesizing a stack containing an EndpointConfig', () => {
   });
 });
 
+
 describe('When adding a production variant to an EndpointConfig', () => {
   test('with too few instances specified, an exception is thrown', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model }] });
+
 
     // WHEN
     const when = () =>
@@ -117,15 +132,18 @@ describe('When adding a production variant to an EndpointConfig', () => {
         initialInstanceCount: 0,
       });
 
+
     // THEN
     expect(when).toThrow(/Invalid Production Variant Props: Must have at least one instance/);
   });
+
 
   test('with a negative weight, an exception is thrown', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model }] });
+
 
     // WHEN
     const when = () =>
@@ -135,9 +153,11 @@ describe('When adding a production variant to an EndpointConfig', () => {
         initialVariantWeight: -1,
       });
 
+
     // THEN
     expect(when).toThrow(/Invalid Production Variant Props: Cannot have negative variant weight/);
   });
+
 
   test('with a duplicate variant name, an exception is thrown', () => {
     // GIVEN
@@ -145,12 +165,15 @@ describe('When adding a production variant to an EndpointConfig', () => {
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model }] });
 
+
     // WHEN
     const when = () => endpointConfig.addInstanceProductionVariant({ variantName: 'variant', model });
+
 
     // THEN
     expect(when).toThrow(/There is already a Production Variant with name 'variant'/);
   });
+
 
   test('instance variant when serverless variant exists, an exception is thrown', () => {
     // GIVEN
@@ -165,13 +188,16 @@ describe('When adding a production variant to an EndpointConfig', () => {
       },
     });
 
+
     // WHEN
     const when = () => endpointConfig.addInstanceProductionVariant({ variantName: 'instance-variant', model });
+
 
     // THEN
     expect(when).toThrow(/Cannot add instance production variant when serverless production variant is already configured/);
   });
 });
+
 
 describe('When adding a serverless production variant to an EndpointConfig', () => {
   test('with invalid maxConcurrency, an exception is thrown', () => {
@@ -179,6 +205,7 @@ describe('When adding a serverless production variant to an EndpointConfig', () 
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig');
+
 
     // WHEN
     const when = () =>
@@ -189,15 +216,18 @@ describe('When adding a serverless production variant to an EndpointConfig', () 
         memorySizeInMB: 1024,
       });
 
+
     // THEN
     expect(when).toThrow(/Invalid Serverless Production Variant Props: maxConcurrency must be between 1 and 200/);
   });
+
 
   test('with invalid memorySizeInMB, an exception is thrown', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig');
+
 
     // WHEN
     const when = () =>
@@ -208,15 +238,18 @@ describe('When adding a serverless production variant to an EndpointConfig', () 
         memorySizeInMB: 1500,
       });
 
+
     // THEN
     expect(when).toThrow(/Invalid Serverless Production Variant Props: memorySizeInMB must be one of: 1024, 2048, 3072, 4096, 5120, 6144 MB/);
   });
+
 
   test('with provisionedConcurrency greater than maxConcurrency, an exception is thrown', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig');
+
 
     // WHEN
     const when = () =>
@@ -228,15 +261,18 @@ describe('When adding a serverless production variant to an EndpointConfig', () 
         provisionedConcurrency: 15,
       });
 
+
     // THEN
     expect(when).toThrow(/Invalid Serverless Production Variant Props: provisionedConcurrency cannot be greater than maxConcurrency/);
   });
+
 
   test('with negative variant weight, an exception is thrown', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig');
+
 
     // WHEN
     const when = () =>
@@ -248,9 +284,11 @@ describe('When adding a serverless production variant to an EndpointConfig', () 
         initialVariantWeight: -1,
       });
 
+
     // THEN
     expect(when).toThrow(/Invalid Serverless Production Variant Props: Cannot have negative variant weight/);
   });
+
 
   test('when instance variants exist, an exception is thrown', () => {
     // GIVEN
@@ -259,6 +297,7 @@ describe('When adding a serverless production variant to an EndpointConfig', () 
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
       instanceProductionVariants: [{ variantName: 'instance-variant', model }],
     });
+
 
     // WHEN
     const when = () =>
@@ -269,9 +308,11 @@ describe('When adding a serverless production variant to an EndpointConfig', () 
         memorySizeInMB: 1024,
       });
 
+
     // THEN
     expect(when).toThrow(/Cannot add serverless production variant when instance production variants are already configured/);
   });
+
 
   test('when serverless variant already exists, an exception is thrown', () => {
     // GIVEN
@@ -286,6 +327,7 @@ describe('When adding a serverless production variant to an EndpointConfig', () 
       },
     });
 
+
     // WHEN
     const when = () =>
       endpointConfig.addServerlessProductionVariant({
@@ -295,15 +337,18 @@ describe('When adding a serverless production variant to an EndpointConfig', () 
         memorySizeInMB: 2048,
       });
 
+
     // THEN
     expect(when).toThrow(/Cannot add more than one serverless production variant per endpoint configuration/);
   });
+
 
   test('with valid properties, succeeds', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig');
+
 
     // WHEN
     const when = () =>
@@ -315,10 +360,12 @@ describe('When adding a serverless production variant to an EndpointConfig', () 
         provisionedConcurrency: 5,
       });
 
+
     // THEN
     expect(when).not.toThrow();
   });
 });
+
 
 describe('When searching an EndpointConfig for a production variant', () => {
   test('that exists, the variant is returned', () => {
@@ -327,12 +374,15 @@ describe('When searching an EndpointConfig for a production variant', () => {
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model }] });
 
+
     // WHEN
     const variant = endpointConfig._findInstanceProductionVariant('variant');
+
 
     // THEN
     expect(variant.variantName).toEqual('variant');
   });
+
 
   test('that does not exist, an exception is thrown', () => {
     // GIVEN
@@ -340,24 +390,30 @@ describe('When searching an EndpointConfig for a production variant', () => {
     const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
     const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', { instanceProductionVariants: [{ variantName: 'variant', model }] });
 
+
     // WHEN
     const when = () => endpointConfig._findInstanceProductionVariant('missing-variant');
+
 
     // THEN
     expect(when).toThrow(/No variant with name: 'missing-variant'/);
   });
 });
 
+
 test('When importing an endpoint configuration by ARN, the name is determined correctly', () => {
   // GIVEN
   const stack = new cdk.Stack();
 
+
   // WHEN
   const endpointConfig = sagemaker.EndpointConfig.fromEndpointConfigArn(stack, 'EndpointConfig', 'arn:aws:sagemaker:us-west-2:123456789012:endpoint-config/my-name');
+
 
   // THEN
   expect(endpointConfig.endpointConfigName).toEqual('my-name');
 });
+
 
 test('When importing an endpoint configuration by name, the ARN is constructed correctly', () => {
   // GIVEN
@@ -369,12 +425,15 @@ test('When importing an endpoint configuration by name, the ARN is constructed c
       },
   });
 
+
   // WHEN
   const endpointConfig = sagemaker.EndpointConfig.fromEndpointConfigName(stack, 'EndpointConfig', 'my-name');
+
 
   // THEN
   expect(endpointConfig.endpointConfigArn).toMatch(/arn:.+:sagemaker:us-west-2:123456789012:endpoint-config\/my-name/);
 });
+
 
 describe('When sharing a model from an origin stack with a destination stack', () => {
   describe('which represents an owned Model instance', () => {
@@ -402,6 +461,7 @@ describe('When sharing a model from an origin stack with a destination stack', (
           },
       });
 
+
       // WHEN
       const when = () =>
         new sagemaker.EndpointConfig(destinationStack, 'MyEndpointConfig', {
@@ -411,9 +471,11 @@ describe('When sharing a model from an origin stack with a destination stack', (
           }],
         });
 
+
       // THEN
       expect(when).toThrow(/Cannot use model in account 123456789012 for endpoint configuration in account 234567890123/);
     });
+
 
     test('across stack region boundaries, synthesis fails', () => {
       // GIVEN
@@ -439,6 +501,7 @@ describe('When sharing a model from an origin stack with a destination stack', (
           },
       });
 
+
       // WHEN
       const when = () =>
         new sagemaker.EndpointConfig(destinationStack, 'MyEndpointConfig', {
@@ -448,10 +511,12 @@ describe('When sharing a model from an origin stack with a destination stack', (
           }],
         });
 
+
       // THEN
       expect(when).toThrow(/Cannot use model in region us-west-2 for endpoint configuration in region us-east-1/);
     });
   });
+
 
   describe('which represents an unowned IModel instance', () => {
     describe('imported by name', () => {
@@ -474,6 +539,7 @@ describe('When sharing a model from an origin stack with a destination stack', (
             },
         });
 
+
         // WHEN
         const when = () =>
           new sagemaker.EndpointConfig(destinationStack, 'MyEndpointConfig', {
@@ -483,9 +549,11 @@ describe('When sharing a model from an origin stack with a destination stack', (
             }],
           });
 
+
         // THEN
         expect(when).toThrow(/Cannot use model in account 123456789012 for endpoint configuration in account 234567890123/);
       });
+
 
       test('across stack region boundaries, synthesis fails', () => {
         // GIVEN
@@ -506,6 +574,7 @@ describe('When sharing a model from an origin stack with a destination stack', (
             },
         });
 
+
         // WHEN
         const when = () =>
           new sagemaker.EndpointConfig(destinationStack, 'MyEndpointConfig', {
@@ -515,10 +584,12 @@ describe('When sharing a model from an origin stack with a destination stack', (
             }],
           });
 
+
         // THEN
         expect(when).toThrow(/Cannot use model in region us-west-2 for endpoint configuration in region us-east-1/);
       });
     });
+
 
     describe('imported by ARN', () => {
       test('in a different account than both stacks, synthesis fails', () => {
@@ -540,6 +611,7 @@ describe('When sharing a model from an origin stack with a destination stack', (
             },
         });
 
+
         // WHEN
         const when = () =>
           new sagemaker.EndpointConfig(destinationStack, 'MyEndpointConfig', {
@@ -549,9 +621,11 @@ describe('When sharing a model from an origin stack with a destination stack', (
             }],
           });
 
+
         // THEN
         expect(when).toThrow(/Cannot use model in account 123456789012 for endpoint configuration in account 234567890123/);
       });
+
 
       test('in a different region than both stacks, synthesis fails', () => {
         // GIVEN
@@ -572,6 +646,7 @@ describe('When sharing a model from an origin stack with a destination stack', (
             },
         });
 
+
         // WHEN
         const when = () =>
           new sagemaker.EndpointConfig(destinationStack, 'MyEndpointConfig', {
@@ -581,9 +656,191 @@ describe('When sharing a model from an origin stack with a destination stack', (
             }],
           });
 
+
         // THEN
         expect(when).toThrow(/Cannot use model in region us-west-2 for endpoint configuration in region us-east-1/);
       });
     });
+  });
+});
+
+
+describe('containerStartupHealthCheckTimeout', () => {
+  test('is included in CloudFormation when specified', () => {
+    // ARRANGE
+    const stack = new cdk.Stack();
+    const model = new sagemaker.Model(stack, 'Model', {
+      containers: [{
+        image: sagemaker.ContainerImage.fromAsset(path.join(__dirname, 'test-image')),
+      }],
+    });
+
+
+    // ACT
+    new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+      instanceProductionVariants: [{
+        model,
+        variantName: 'variant-1',
+        containerStartupHealthCheckTimeout: cdk.Duration.minutes(5),
+      }],
+    });
+
+
+    // ASSERT
+    Template.fromStack(stack).hasResourceProperties('AWS::SageMaker::EndpointConfig', {
+      ProductionVariants: [
+        Match.objectLike({
+          ContainerStartupHealthCheckTimeoutInSeconds: 300,
+        }),
+      ],
+    });
+  });
+
+
+  test('is omitted from CloudFormation when not specified', () => {
+    // ARRANGE
+    const stack = new cdk.Stack();
+    const model = new sagemaker.Model(stack, 'Model', {
+      containers: [{
+        image: sagemaker.ContainerImage.fromAsset(path.join(__dirname, 'test-image')),
+      }],
+    });
+
+
+    // ACT
+    new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+      instanceProductionVariants: [{
+        model,
+        variantName: 'variant-1',
+      }],
+    });
+
+
+    // ASSERT
+    const template = Template.fromStack(stack).toJSON();
+    const endpointConfigResource = template.Resources.EndpointConfig;
+    const variant = endpointConfigResource.Properties.ProductionVariants[0];
+    
+    expect(variant.ContainerStartupHealthCheckTimeoutInSeconds).toBeUndefined();
+  });
+
+
+  test('converts Duration to seconds correctly', () => {
+    // ARRANGE
+    const stack = new cdk.Stack();
+    const model = new sagemaker.Model(stack, 'Model', {
+      containers: [{
+        image: sagemaker.ContainerImage.fromAsset(path.join(__dirname, 'test-image')),
+      }],
+    });
+
+
+    // ACT - Test with hours
+    new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+      instanceProductionVariants: [{
+        model,
+        variantName: 'variant-1',
+        containerStartupHealthCheckTimeout: cdk.Duration.hours(1),
+      }],
+    });
+
+
+    // ASSERT - 1 hour = 3600 seconds
+    Template.fromStack(stack).hasResourceProperties('AWS::SageMaker::EndpointConfig', {
+      ProductionVariants: [
+        Match.objectLike({
+          ContainerStartupHealthCheckTimeoutInSeconds: 3600,
+        }),
+      ],
+    });
+  });
+
+
+  test('throws error when timeout is less than 60 seconds', () => {
+    // ARRANGE
+    const stack = new cdk.Stack();
+    const model = new sagemaker.Model(stack, 'Model', {
+      containers: [{
+        image: sagemaker.ContainerImage.fromAsset(path.join(__dirname, 'test-image')),
+      }],
+    });
+
+
+    // ACT & ASSERT
+    expect(() => {
+      new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+        instanceProductionVariants: [{
+          model,
+          variantName: 'variant-1',
+          containerStartupHealthCheckTimeout: cdk.Duration.seconds(30),
+        }],
+      });
+    }).toThrow(/containerStartupHealthCheckTimeout must be between 60 and 3600 seconds/);
+  });
+
+
+  test('throws error when timeout is greater than 3600 seconds', () => {
+    // ARRANGE
+    const stack = new cdk.Stack();
+    const model = new sagemaker.Model(stack, 'Model', {
+      containers: [{
+        image: sagemaker.ContainerImage.fromAsset(path.join(__dirname, 'test-image')),
+      }],
+    });
+
+
+    // ACT & ASSERT
+    expect(() => {
+      new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+        instanceProductionVariants: [{
+          model,
+          variantName: 'variant-1',
+          containerStartupHealthCheckTimeout: cdk.Duration.hours(2),
+        }],
+      });
+    }).toThrow(/containerStartupHealthCheckTimeout must be between 60 and 3600 seconds/);
+  });
+
+
+  test('works with multiple variants where some have timeout and others do not', () => {
+    // ARRANGE
+    const stack = new cdk.Stack();
+    const model1 = new sagemaker.Model(stack, 'Model1', {
+      containers: [{
+        image: sagemaker.ContainerImage.fromAsset(path.join(__dirname, 'test-image')),
+      }],
+    });
+    const model2 = new sagemaker.Model(stack, 'Model2', {
+      containers: [{
+        image: sagemaker.ContainerImage.fromAsset(path.join(__dirname, 'test-image')),
+      }],
+    });
+
+
+    // ACT
+    new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+      instanceProductionVariants: [
+        {
+          model: model1,
+          variantName: 'variant-with-timeout',
+          containerStartupHealthCheckTimeout: cdk.Duration.minutes(5),
+        },
+        {
+          model: model2,
+          variantName: 'variant-without-timeout',
+        },
+      ],
+    });
+
+
+    // ASSERT
+    const template = Template.fromStack(stack).toJSON();
+    const variants = template.Resources.EndpointConfig.Properties.ProductionVariants;
+    
+    // First variant has timeout
+    expect(variants[0].ContainerStartupHealthCheckTimeoutInSeconds).toBe(300);
+    
+    // Second variant doesn't have timeout
+    expect(variants[1].ContainerStartupHealthCheckTimeoutInSeconds).toBeUndefined();
   });
 });
