@@ -14,15 +14,18 @@ const stack = new cdk.Stack(app, 'aws-cdk-s3-notifications-scoped-permissions');
 // Create multiple buckets to test consolidated policy with scoped permissions
 const bucket1 = new s3.Bucket(stack, 'Bucket1', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  encryption: s3.BucketEncryption.S3_MANAGED,
 });
 
 const bucket2 = new s3.Bucket(stack, 'Bucket2', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  encryption: s3.BucketEncryption.S3_MANAGED,
 });
 
 const topic = new sns.Topic(stack, 'Topic');
 const queue = new sqs.Queue(stack, 'Queue', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  encryption: sqs.QueueEncryption.KMS_MANAGED,
 });
 
 // Add notifications to multiple buckets with different event types - this should create scoped IAM permissions

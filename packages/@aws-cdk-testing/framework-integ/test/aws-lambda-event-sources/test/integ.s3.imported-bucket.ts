@@ -15,6 +15,7 @@ const stack2 = new Stack(app, 'TestStack2');
 
 const bucket = new Bucket(stack1, 'bucket', {
   removalPolicy: RemovalPolicy.DESTROY,
+  encryption: Bucket.BucketEncryption.S3_MANAGED,
 });
 
 const fn = new TestFunction(stack2, 'F');

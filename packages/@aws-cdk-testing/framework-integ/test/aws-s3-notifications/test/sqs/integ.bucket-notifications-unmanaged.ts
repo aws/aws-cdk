@@ -12,13 +12,18 @@ const stack = new cdk.Stack(app, 'integ-sqs-bucket-notifications');
 const bucket1 = new s3.Bucket(stack, 'Bucket1', {
   autoDeleteObjects: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  encryption: s3.BucketEncryption.S3_MANAGED,
 });
 const c1 = new constructs.Construct(stack, 'Construct1');
 const unmanagedBucket = s3.Bucket.fromBucketName(c1, 'IntegUnmanagedBucket1', bucket1.bucketName);
 const c2 = new constructs.Construct(stack, 'Construct2');
 const unmanagedBucket2 = s3.Bucket.fromBucketName(c2, 'IntegUnmanagedBucket2', bucket1.bucketName);
-const queue1 = new sqs.Queue(stack, 'IntegQueue1');
-const queue2 = new sqs.Queue(stack, 'IntegQueue2');
+const queue1 = new sqs.Queue(stack, 'IntegQueue1', {
+  encryption: sqs.QueueEncryption.KMS_MANAGED,
+});
+const queue2 = new sqs.Queue(stack, 'IntegQueue2', {
+  encryption: sqs.QueueEncryption.KMS_MANAGED,
+});
 
 unmanagedBucket.addObjectCreatedNotification(new s3n.SqsDestination(queue1), {
   prefix: 'bucket1',

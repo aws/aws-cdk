@@ -22,12 +22,15 @@ class MyStack extends cdk.Stack {
       masterKey: kmsKey,
     });
 
-    this.queue = new sqs.Queue(this, 'Queue');
+    this.queue = new sqs.Queue(this, 'Queue', {
+      encryption: sqs.QueueEncryption.KMS_MANAGED,
+    });
     topic.addSubscription(new subscriptions.SqsSubscription(this.queue));
 
     this.bucket = new s3.Bucket(this, 'MyBucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
+      encryption: s3.BucketEncryption.S3_MANAGED,
     });
 
     this.bucket.addObjectCreatedNotification(new s3n.SnsDestination(topic));
