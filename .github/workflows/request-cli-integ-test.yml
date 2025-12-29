@@ -1,6 +1,5 @@
 # Request a deployment to the test pipeline
 
-
 name: request-cli-integ-test
 on:
   pull_request_target:
@@ -11,30 +10,36 @@ on:
       - labeled
       - unlabeled
 
-
 jobs:
   cli-changes:
     runs-on: ubuntu-latest
     outputs:
-      any-changed-files: ${{ steps.changed-cli-files.outputs.cli_any_changed }}
+      any-changed-files: ${{ steps.check-cli-files.outputs.any_changed }}
     steps:
       - name: Checkout base repository
         uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.base.ref }}
           fetch-depth: 0
-      - name: Fetch PR head
+
+      - name: Add PR remote
         run: |
-          git fetch origin ${{ github.event.pull_request.head.sha }}
-      - name: Find changed cli files
-        id: changed-cli-files
-        uses: step-security/changed-files@95b56dadb92a30ca9036f16423fd3c088a71ee94
-        with:
-          base_sha: ${{ github.event.pull_request.base.sha }}
-          sha: ${{ github.event.pull_request.head.sha }}
-          files_yaml: |
-            cli:
-              - packages/aws-cdk-lib/cx-api/lib/features.ts
+          git remote add pr-origin https://github.com/${{ github.event.pull_request.head.repo.full_name }}.git
+          git fetch pr-origin ${{ github.event.pull_request.head.ref }}
+
+      - name: Check for changed CLI files
+        id: check-cli-files
+        run: |
+          set -e
+          DIFF_FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }} pr-origin/${{ github.event.pull_request.head.ref }})
+          echo "Changed files:"
+          echo "$DIFF_FILES"
+          if echo "$DIFF_FILES" | grep -qE '^packages/aws-cdk-lib/cx-api/lib/features\.ts$'; then
+            echo "any_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "any_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
   submit-to-test-pipeline:
     environment: test-pipeline
     needs: cli-changes
