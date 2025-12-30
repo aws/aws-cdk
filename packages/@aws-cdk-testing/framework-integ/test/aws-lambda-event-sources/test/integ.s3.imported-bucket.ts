@@ -1,5 +1,5 @@
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
-import { Bucket, EventType } from 'aws-cdk-lib/aws-s3';
+import { Bucket, BucketEncryption, EventType } from 'aws-cdk-lib/aws-s3';
 import { S3EventSourceV2 } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { TestFunction } from './test-function';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
@@ -15,7 +15,7 @@ const stack2 = new Stack(app, 'TestStack2');
 
 const bucket = new Bucket(stack1, 'bucket', {
   removalPolicy: RemovalPolicy.DESTROY,
-  encryption: Bucket.BucketEncryption.S3_MANAGED,
+  encryption: BucketEncryption.S3_MANAGED,
 });
 
 const fn = new TestFunction(stack2, 'F');
