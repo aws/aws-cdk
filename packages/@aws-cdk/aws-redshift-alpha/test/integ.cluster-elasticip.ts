@@ -46,5 +46,3 @@ new redshift.Cluster(stack, 'Cluster', {
 new integ.IntegTest(app, 'aws-cdk-redshift-elastic-ip-test', {
   testCases: [stack],
 });
-
-app.synth();
