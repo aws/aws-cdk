@@ -40,13 +40,4 @@ const stack = new EksClusterDeletionProtectionStack(app, 'aws-cdk-eks-cluster-de
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-deletion-protection-integ', {
   testCases: [stack],
   diffAssets: false,
-  cdkCommandOptions: {
-    deploy: {
-      args: {
-        rollback: true,
-      },
-    },
-  },
 });
-
-app.synth();

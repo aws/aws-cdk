@@ -181,6 +181,8 @@ new eks.FargateCluster(this, 'HelloEKS', {
 You can enable deletion protection for your cluster to prevent accidental deletion. When deletion protection is enabled,
 the cluster cannot be deleted until protection is disabled. This setting only applies to clusters in an active state.
 
+> For more details visit [Deletion protection](https://docs.aws.amazon.com/eks/latest/userguide/deletion-protection.html).
+
 ```ts
 import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
 

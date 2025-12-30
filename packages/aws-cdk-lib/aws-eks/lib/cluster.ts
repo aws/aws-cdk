@@ -737,8 +737,10 @@ export interface ClusterOptions extends CommonClusterOptions {
    * The current deletion protection setting for the cluster.
    * When true, deletion protection is enabled and the cluster cannot be deleted until protection is disabled.
    * When false, the cluster can be deleted normally. This setting only applies to clusters in an active state.
-   *
-   * @default - none
+   * 
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/deletion-protection.html
+   * 
+   * @default - deletion protection is disabled
    */
   readonly deletionProtection?: boolean;
 }

@@ -3965,23 +3965,20 @@ describe('cluster', () => {
 
 describe('deletionProtection', () => {
   test.each([
-    [true, true],
-    [false, false],
-  ])('deletionProtection(%s) should work', (input, expected) => {
+    true, false
+  ])('deletionProtection(%s) should work', (deletionProtection) => {
     // GIVEN
     const { stack } = testFixture();
-
     // WHEN
     new eks.Cluster(stack, 'Cluster', {
       version: CLUSTER_VERSION,
-      deletionProtection: input,
+      deletionProtection,
       kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
-
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
       Config: {
-        deletionProtection: expected,
+        deletionProtection,
       },
     });
   });
@@ -3998,9 +3995,9 @@ describe('deletionProtection', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
-      Config: Match.not(Match.objectLike({
-        deletionProtection: Match.anyValue(),
-      })),
+      Config: {
+        deletionProtection: Match.absent(),
+      },
     });
   });
 });
