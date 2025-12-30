@@ -82,9 +82,7 @@ const definition = new sfn.Pass(stack, 'Start', {
         ],
       },
     ],
-    launchTarget: new tasks.EcsEc2LaunchTarget({
-      capacityProviderOptions: tasks.CapacityProviderOptions.none(),
-    }),
+    launchTarget: new tasks.EcsEc2LaunchTarget(),
     enableExecuteCommand: true,
     resultPath: sfn.JsonPath.DISCARD,
   }),

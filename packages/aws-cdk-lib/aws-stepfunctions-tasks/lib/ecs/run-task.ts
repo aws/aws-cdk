@@ -164,10 +164,6 @@ export interface EcsFargateLaunchTargetOptions {
    *
    * This property allows you to set the capacity provider strategy for the task.
    *
-   * If you don't need the capacity provider strategy, specify `CapacityProviderOptions.none()`.
-   * In that case, 'FARGATE' LaunchType running tasks on AWS Fargate On-Demand
-   * infrastructure is used without the capacity provider strategy.
-   *
    * If you want to set the capacity provider strategy for the task, specify
    * `CapacityProviderOptions.custom()`. This is required to use the FARGATE_SPOT
    * capacity provider.
@@ -204,10 +200,6 @@ export interface EcsEc2LaunchTargetOptions {
    *
    * This property allows you to set the capacity provider strategy for the task.
    *
-   * If you don't need the capacity provider strategy, specify `CapacityProviderOptions.none()`.
-   * In that case, 'EC2' LaunchType running tasks on Amazon EC2 instances registered to
-   * your cluster is used without the capacity provider strategy.
-   *
    * If you want to set the capacity provider strategy for the task, specify
    * `CapacityProviderOptions.custom()`.
    *
@@ -220,22 +212,10 @@ export interface EcsEc2LaunchTargetOptions {
   readonly capacityProviderOptions?: CapacityProviderOptions;
 }
 
-interface CapacityProviderParams {
-  launchType?: ecs.LaunchType;
-  capacityProviderStrategy?: ecs.CapacityProviderStrategy[];
-}
-
 /**
- * Base class for capacity provider options
+ * Capacity provider options
  */
-export abstract class CapacityProviderOptions {
-  /**
-   * No capacity provider strategy is used.
-   */
-  public static none(): CapacityProviderOptions {
-    return new NoCapacityProviderOptions();
-  }
-
+export class CapacityProviderOptions {
   /**
    * Use a custom capacity provider strategy.
    *
@@ -244,48 +224,18 @@ export abstract class CapacityProviderOptions {
    * @param capacityProviderStrategy The capacity provider strategy to use for the task.
    */
   public static custom(capacityProviderStrategy: ecs.CapacityProviderStrategy[]): CapacityProviderOptions {
-    return new CustomCapacityProviderOptions(capacityProviderStrategy);
+    return new CapacityProviderOptions(capacityProviderStrategy);
   }
 
   /**
    * Use the cluster's default capacity provider strategy.
    */
   public static default(): CapacityProviderOptions {
-    return new DefaultCapacityProviderOptions();
+    return new CapacityProviderOptions();
   }
 
-  /**
-   * @internal
-   */
-  abstract _bind(launchType: ecs.LaunchType): CapacityProviderParams;
-}
-
-/**
- * No capacity provider strategy options
- */
-class NoCapacityProviderOptions extends CapacityProviderOptions {
-  constructor() {
-    super();
-  }
-
-  /**
-   * @internal
-   */
-  _bind(launchType: ecs.LaunchType): CapacityProviderParams {
-    return {
-      launchType,
-    };
-  }
-}
-
-/**
- * Custom capacity provider strategy options
- */
-class CustomCapacityProviderOptions extends CapacityProviderOptions {
-  constructor(private readonly capacityProviderStrategy: ecs.CapacityProviderStrategy[]) {
-    super();
-
-    if (capacityProviderStrategy && capacityProviderStrategy.length > 20) {
+  private constructor(private readonly capacityProviderStrategy: ecs.CapacityProviderStrategy[] = []) {
+    if (capacityProviderStrategy.length > 20) {
       throw new cdk.UnscopedValidationError(`Capacity provider strategy can contain a maximum of 20 capacity providers, got ${capacityProviderStrategy.length}`);
     }
   }
@@ -293,28 +243,8 @@ class CustomCapacityProviderOptions extends CapacityProviderOptions {
   /**
    * @internal
    */
-  _bind(_launchType: ecs.LaunchType): CapacityProviderParams {
-    return {
-      capacityProviderStrategy: this.capacityProviderStrategy,
-    };
-  }
-}
-
-/**
- * Default capacity provider strategy options
- */
-class DefaultCapacityProviderOptions extends CapacityProviderOptions {
-  constructor() {
-    super();
-  }
-
-  /**
-   * @internal
-   */
-  _bind(_launchType: ecs.LaunchType): CapacityProviderParams {
-    // If neither `launchType` nor `capacityProviderStrategy` is specified,
-    // the cluster's `defaultCapacityProviderStrategy` is used.
-    return {};
+  _bind(): ecs.CapacityProviderStrategy[] {
+    return this.capacityProviderStrategy;
   }
 }
 
@@ -334,17 +264,20 @@ export class EcsFargateLaunchTarget implements IEcsLaunchTarget {
       throw new ValidationError('Supplied TaskDefinition is not compatible with Fargate', task);
     }
 
-    const capacityProvider = this.options?.capacityProviderOptions ?? CapacityProviderOptions.none();
-    const capacityProviderBound = capacityProvider._bind(ecs.LaunchType.FARGATE);
+    // If neither `launchType` nor `capacityProviderStrategy` is specified,
+    // the cluster's `defaultCapacityProviderStrategy` is used.
+    const launchType = this.options?.capacityProviderOptions ? undefined : ecs.LaunchType.FARGATE;
+    const capacityProviderStrategyList = this.options?.capacityProviderOptions?._bind();
+    const capacityProviderStrategy = capacityProviderStrategyList?.length ? capacityProviderStrategyList.map((s) => ({
+      CapacityProvider: s.capacityProvider,
+      Weight: s.weight,
+      Base: s.base,
+    })) : undefined;
 
     return {
       parameters: {
-        LaunchType: capacityProviderBound.launchType,
-        CapacityProviderStrategy: capacityProviderBound.capacityProviderStrategy?.map((s) => ({
-          CapacityProvider: s.capacityProvider,
-          Weight: s.weight,
-          Base: s.base,
-        })),
+        LaunchType: launchType,
+        CapacityProviderStrategy: capacityProviderStrategy,
         PlatformVersion: this.options?.platformVersion,
       },
     };
@@ -370,17 +303,20 @@ export class EcsEc2LaunchTarget implements IEcsLaunchTarget {
       throw new ValidationError('Cluster for this service needs Ec2 capacity. Call addCapacity() on the cluster.', task);
     }
 
-    const capacityProvider = this.options?.capacityProviderOptions ?? CapacityProviderOptions.none();
-    const capacityProviderBound = capacityProvider._bind(ecs.LaunchType.EC2);
+    // If neither `launchType` nor `capacityProviderStrategy` is specified,
+    // the cluster's `defaultCapacityProviderStrategy` is used.
+    const launchType = this.options?.capacityProviderOptions ? undefined : ecs.LaunchType.EC2;
+    const capacityProviderStrategyList = this.options?.capacityProviderOptions?._bind();
+    const capacityProviderStrategy = capacityProviderStrategyList?.length ? capacityProviderStrategyList.map((s) => ({
+      CapacityProvider: s.capacityProvider,
+      Weight: s.weight,
+      Base: s.base,
+    })) : undefined;
 
     return {
       parameters: {
-        LaunchType: capacityProviderBound.launchType,
-        CapacityProviderStrategy: capacityProviderBound.capacityProviderStrategy?.map((s) => ({
-          CapacityProvider: s.capacityProvider,
-          Weight: s.weight,
-          Base: s.base,
-        })),
+        LaunchType: launchType,
+        CapacityProviderStrategy: capacityProviderStrategy,
         // takes an array of placement constraints each of which contain a single item array of constraints, flattens it
         // and renders the Json to be passed as a parameter in the state machine.
         // input: [ecs.PlacementConstraint.distinctInstances()] - distinctInstances() returns [{ type: 'distinctInstance' }]

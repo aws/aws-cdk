@@ -58,7 +58,6 @@ const definition = new sfn.Pass(stack, 'Start', {
     ],
     launchTarget: new tasks.EcsFargateLaunchTarget({
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-      capacityProviderOptions: tasks.CapacityProviderOptions.none(),
     }),
     taskTimeout: sfn.Timeout.at('$.Timeout'),
     cpu: '1024',
