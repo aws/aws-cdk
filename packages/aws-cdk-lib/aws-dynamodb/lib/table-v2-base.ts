@@ -5,6 +5,7 @@ import { IMetric, MathExpression, Metric, MetricOptions, MetricProps } from '../
 import { AddToResourcePolicyResult, Grant, IGrantable, IResourceWithPolicy, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { Resource, ValidationError } from '../../core';
+import { TableReference } from '../../interfaces/generated/aws-dynamodb-interfaces.generated';
 
 /**
  * Represents an instance of a DynamoDB table.
@@ -63,6 +64,16 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   protected abstract readonly region: string;
 
   protected abstract get hasIndex(): boolean;
+
+  /**
+   * A reference to this table.
+   */
+  public get tableRef(): TableReference {
+    return {
+      tableName: this.tableName,
+      tableArn: this.tableArn,
+    };
+  }
 
   /**
    * Adds an IAM policy statement associated with this table to an IAM principal's policy.
