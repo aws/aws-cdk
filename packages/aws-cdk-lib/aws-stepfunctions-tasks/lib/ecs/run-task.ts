@@ -247,7 +247,7 @@ class CustomCapacityProviderOptions extends CapacityProviderOptions {
   constructor(private readonly capacityProviderStrategy: ecs.CapacityProviderStrategy[]) {
     super();
 
-    if (capacityProviderStrategy && capacityProviderStrategy.length > 20) {
+    if (capacityProviderStrategy.length > 20) {
       throw new cdk.UnscopedValidationError(`Capacity provider strategy can contain a maximum of 20 capacity providers, got ${capacityProviderStrategy.length}`);
     }
   }
