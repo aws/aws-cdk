@@ -11,7 +11,7 @@ import { Cluster } from './cluster';
 export interface FargateProfileOptions {
   /**
    * The name of the Fargate profile.
-   * @default generated
+   * @default - generated
    */
   readonly fargateProfileName?: string;
 

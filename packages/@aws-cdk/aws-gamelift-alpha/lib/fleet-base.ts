@@ -99,7 +99,7 @@ export interface RuntimeConfiguration {
    *
    * If the game session does not become active before the timeout, it is ended and the game session status is changed to `TERMINATED`.
    *
-   * @default - by default game session activation timeout is 300 seconds
+   * @default Duration.seconds(300)
    */
   readonly gameSessionActivationTimeout?: cdk.Duration;
 
