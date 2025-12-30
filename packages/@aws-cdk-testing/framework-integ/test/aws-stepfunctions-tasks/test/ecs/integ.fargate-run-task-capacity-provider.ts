@@ -39,7 +39,7 @@ const containerDefinition = taskDefinition.addContainer('TheContainer', {
 const definition = new sfn.Pass(stack, 'Start', {
   result: sfn.Result.fromObject({ SomeKey: 'SomeValue', Timeout: 900 }),
 }).next(
-  // Task with none() capacity provider option - uses launch type
+  // Task without capacity provider option - uses launch type
   new tasks.EcsRunTask(stack, 'FargateTaskWithNone', {
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     cluster,
