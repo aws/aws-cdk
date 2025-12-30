@@ -110,8 +110,8 @@ const cluster = ecs.Cluster.fromClusterArn(this, 'Cluster', clusterArn);
 You can also import a cluster with additional attributes, including the managed storage configuration:
 
 ```ts
-declare const vpc: ec2.Vpc;
-declare const key: kms.Key;
+declare const vpc: ec2.IVpc;
+declare const key: kms.IKey;
 
 const cluster = ecs.Cluster.fromClusterAttributes(this, 'Cluster', {
   clusterName: 'my-cluster',
