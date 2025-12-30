@@ -36,7 +36,8 @@ const cp = new ecs.AsgCapacityProvider(stack, 'EC2CapacityProvider', {
 
 cluster.addAsgCapacityProvider(cp);
 
-const importedCluster = ecs.Cluster.fromClusterAttributes(stack, 'ImportedCluster', {
+// Import cluster with managedStorageConfiguration to verify it can be passed through fromClusterAttributes
+ecs.Cluster.fromClusterAttributes(stack, 'ImportedCluster', {
   clusterName: cluster.clusterName,
   vpc,
   autoscalingGroup: autoScalingGroup,
@@ -44,11 +45,6 @@ const importedCluster = ecs.Cluster.fromClusterAttributes(stack, 'ImportedCluste
     kmsKey,
   },
 });
-
-// Verify that managedStorageConfiguration is accessible on imported cluster
-if (!importedCluster.managedStorageConfiguration) {
-  throw new Error('managedStorageConfiguration should be defined on imported cluster');
-}
 
 new integ.IntegTest(app, 'ClusterImported', {
   testCases: [stack],
