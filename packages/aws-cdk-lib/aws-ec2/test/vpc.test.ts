@@ -1,6 +1,6 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
-import { App, CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '../../core';
+import { App, CfnOutput, CfnResource, Duration, Fn, Lazy, Stack, Tags } from '../../core';
 import { EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
 import {
   AclCidr,
@@ -18,6 +18,7 @@ import {
   NatGatewayProvider,
   NatInstanceProvider,
   NatTrafficDirection,
+  RegionalNatGatewayProvider,
   NetworkAcl,
   NetworkAclEntry,
   Peer,
@@ -1256,6 +1257,113 @@ describe('vpc', () => {
       });
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
         AllocationId: stack.resolve(Fn.select(1, eipAllocationIds)),
+      });
+    });
+
+    test('Regional NAT gateway provider creates a single regional NAT gateway', () => {
+      const stack = new Stack();
+      const natGatewayProvider = NatProvider.regionalGateway();
+      new Vpc(stack, 'VpcNetwork', {
+        natGatewayProvider,
+        subnetConfiguration: [
+          { name: 'Public', subnetType: SubnetType.PUBLIC },
+          { name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+        ],
+      });
+
+      // Regional NAT Gateway should be created with availabilityMode: 'regional'
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+        AvailabilityMode: 'regional',
+        ConnectivityType: 'public',
+      });
+
+      // Only one NAT Gateway should be created (regional covers all AZs)
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 1);
+
+      // No EIPs should be created (regional mode manages EIPs automatically)
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::EIP', 0);
+    });
+
+    test('Regional NAT gateway provider can be instantiated directly with new', () => {
+      const stack = new Stack();
+      const natGatewayProvider = new RegionalNatGatewayProvider();
+      new Vpc(stack, 'VpcNetwork', {
+        natGatewayProvider,
+        subnetConfiguration: [
+          { name: 'Public', subnetType: SubnetType.PUBLIC },
+          { name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+        ],
+      });
+
+      expect(natGatewayProvider.configuredGateways.length).toBe(1);
+      expect(natGatewayProvider.configuredGateways[0].az).toBe('regional');
+    });
+
+    test('Regional NAT gateway provider with maxDrainDuration', () => {
+      const stack = new Stack();
+      const natGatewayProvider = NatProvider.regionalGateway({
+        maxDrainDuration: Duration.minutes(10),
+      });
+      new Vpc(stack, 'VpcNetwork', {
+        natGatewayProvider,
+        subnetConfiguration: [
+          { name: 'Public', subnetType: SubnetType.PUBLIC },
+          { name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+        AvailabilityMode: 'regional',
+        MaxDrainDurationSeconds: 600,
+      });
+    });
+
+    test('Regional NAT gateway provider warns when natGateways is specified', () => {
+      const app = new App();
+      const stack = new Stack(app, 'TestStack');
+      const natGatewayProvider = NatProvider.regionalGateway();
+      new Vpc(stack, 'VpcNetwork', {
+        natGatewayProvider,
+        natGateways: 3, // This should trigger a warning
+        subnetConfiguration: [
+          { name: 'Public', subnetType: SubnetType.PUBLIC },
+          { name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+        ],
+      });
+
+      Annotations.fromStack(stack).hasWarning('/TestStack/VpcNetwork', Match.stringLikeRegexp('natGateways is ignored when using Regional NAT Gateway'));
+    });
+
+    test('Regional NAT gateway provider warns when natGatewaySubnets is specified', () => {
+      const app = new App();
+      const stack = new Stack(app, 'TestStack');
+      const natGatewayProvider = NatProvider.regionalGateway();
+      new Vpc(stack, 'VpcNetwork', {
+        natGatewayProvider,
+        natGatewaySubnets: { subnetType: SubnetType.PUBLIC },
+        subnetConfiguration: [
+          { name: 'Public', subnetType: SubnetType.PUBLIC },
+          { name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+        ],
+      });
+
+      Annotations.fromStack(stack).hasWarning('/TestStack/VpcNetwork', Match.stringLikeRegexp('natGatewaySubnets is ignored when using Regional NAT Gateway'));
+    });
+
+    test('Regional NAT gateway does not require public subnets', () => {
+      const stack = new Stack();
+      const natGatewayProvider = NatProvider.regionalGateway();
+
+      // This should NOT throw, unlike zonal NAT gateway
+      new Vpc(stack, 'VpcNetwork', {
+        natGatewayProvider,
+        subnetConfiguration: [
+          { name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+        AvailabilityMode: 'regional',
       });
     });
 

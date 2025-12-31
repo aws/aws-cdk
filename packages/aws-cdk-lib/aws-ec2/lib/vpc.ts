@@ -24,7 +24,7 @@ import {
   Ipv6Addresses,
   RequestedSubnet,
 } from './ip-addresses';
-import { NatProvider } from './nat';
+import { NatProvider, RegionalNatGatewayProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { SubnetFilter } from './subnet';
 import {
@@ -1655,7 +1655,9 @@ export class Vpc extends VpcBase {
     this.subnetConfiguration = ifUndefined(props.subnetConfiguration, defaultSubnet);
 
     const natGatewayPlacement = props.natGatewaySubnets || { subnetType: SubnetType.PUBLIC };
-    const natGatewayCount = determineNatGatewayCount(props.natGateways, this.subnetConfiguration, this.availabilityZones.length);
+    const natGatewayCount = determineNatGatewayCount(
+      props.natGateways, this.subnetConfiguration, this.availabilityZones.length, props.natGatewayProvider,
+    );
 
     if (this.useIpv6) {
       this.ipv6Addresses = props.ipv6Addresses ?? Ipv6Addresses.amazonProvided();
@@ -1702,6 +1704,23 @@ export class Vpc extends VpcBase {
       // if gateways are needed create them
       if (natGatewayCount > 0) {
         const provider = props.natGatewayProvider || NatProvider.gateway();
+
+        // Add warnings for Regional NAT Gateway if unnecessary options are specified
+        if (provider instanceof RegionalNatGatewayProvider) {
+          if (props.natGateways !== undefined && props.natGateways !== 1) {
+            Annotations.of(this).addWarningV2(
+              '@aws-cdk/aws-ec2:regionalNatGatewayCount',
+              'natGateways is ignored when using Regional NAT Gateway. A single regional gateway covers all AZs.',
+            );
+          }
+          if (props.natGatewaySubnets !== undefined) {
+            Annotations.of(this).addWarningV2(
+              '@aws-cdk/aws-ec2:regionalNatGatewaySubnets',
+              'natGatewaySubnets is ignored when using Regional NAT Gateway. The gateway is created at VPC level without requiring a public subnet.',
+            );
+          }
+        }
+
         this.createNatGateways(provider, natGatewayCount, natGatewayPlacement);
       }
     }
@@ -1797,6 +1816,17 @@ export class Vpc extends VpcBase {
   }
 
   private createNatGateways(provider: NatProvider, natCount: number, placement: SubnetSelection): void {
+    // Regional NAT Gateway does not require public subnets
+    if (provider instanceof RegionalNatGatewayProvider) {
+      provider.configureNat({
+        vpc: this,
+        natSubnets: [], // Regional NAT Gateway doesn't use natSubnets
+        privateSubnets: this.privateSubnets as PrivateSubnet[],
+      });
+      return;
+    }
+
+    // Zonal NAT Gateway requires public subnets
     const natSubnets: PublicSubnet[] = this.selectSubnetObjects(placement) as PublicSubnet[];
     for (const sub of natSubnets) {
       if (this.publicSubnets.indexOf(sub) === -1) {
@@ -2787,19 +2817,29 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
  * Do we want to require that there are private subnets if there are NatGateways?
  * They seem pointless but I see no reason to prevent it.
  */
-function determineNatGatewayCount(requestedCount: number | undefined, subnetConfig: SubnetConfiguration[], azCount: number) {
+function determineNatGatewayCount(
+  requestedCount: number | undefined,
+  subnetConfig: SubnetConfiguration[],
+  azCount: number,
+  natGatewayProvider?: NatProvider,
+) {
   const hasPrivateSubnets = subnetConfig.some(c => (c.subnetType === SubnetType.PRIVATE_WITH_EGRESS
     || c.subnetType === SubnetType.PRIVATE || c.subnetType === SubnetType.PRIVATE_WITH_NAT) && !c.reserved);
   const hasPublicSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PUBLIC && !c.reserved);
   const hasCustomEgress = subnetConfig.some(c => c.subnetType === SubnetType.PRIVATE_WITH_EGRESS);
 
-  const count = requestedCount !== undefined ? Math.min(requestedCount, azCount) : (hasPrivateSubnets ? azCount : 0);
+  // Regional NAT Gateway uses a single gateway regardless of AZ count
+  const isRegionalNatGateway = natGatewayProvider instanceof RegionalNatGatewayProvider;
+  const count = requestedCount !== undefined
+    ? Math.min(requestedCount, azCount)
+    : (hasPrivateSubnets ? (isRegionalNatGateway ? 1 : azCount) : 0);
 
   if (count === 0 && hasPrivateSubnets && !hasCustomEgress) {
     throw new UnscopedValidationError('If you do not want NAT gateways (natGateways=0), make sure you don\'t configure any PRIVATE(_WITH_NAT) subnets in \'subnetConfiguration\' (make them PUBLIC or ISOLATED instead)');
   }
 
-  if (count > 0 && !hasPublicSubnets) {
+  // Regional NAT Gateway does not require public subnets
+  if (count > 0 && !hasPublicSubnets && !isRegionalNatGateway) {
     throw new UnscopedValidationError(`If you configure PRIVATE subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into (got ${JSON.stringify(subnetConfig)}.`);
   }
 
