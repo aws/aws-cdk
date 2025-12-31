@@ -1,6 +1,8 @@
 name: Security Guardian
 on:
-  pull_request: {}
+  pull_request:
+    paths:
+      - '**.js.snapshot**'
 
 jobs:
   log-skip:
