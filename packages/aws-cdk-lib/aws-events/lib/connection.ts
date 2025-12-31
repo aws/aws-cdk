@@ -3,6 +3,7 @@ import { CfnConnection } from './events.generated';
 import { IResource, Resource, Stack, SecretValue, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IConnectionRef } from '../../interfaces/generated/aws-events-interfaces.generated';
 
 /**
  * An API Destination Connection
@@ -249,7 +250,7 @@ export interface AuthorizationBindResult {
 /**
  * Interface for EventBus Connections
  */
-export interface IConnection extends IResource {
+export interface IConnection extends IResource, IConnectionRef {
   /**
    * The Name for the connection.
    * @attribute
@@ -343,6 +344,13 @@ export class Connection extends Resource implements IConnection {
    */
   public readonly connectionSecretArn: string;
 
+  public get connectionRef() {
+    return {
+      connectionName: this.connectionName,
+      connectionArn: this.connectionArn,
+    };
+  }
+
   constructor(scope: Construct, id: string, props: ConnectionProps) {
     super(scope, id, {
       physicalName: props.connectionName,
@@ -381,6 +389,14 @@ class ImportedConnection extends Resource {
   public readonly connectionArn: string;
   public readonly connectionName: string;
   public readonly connectionSecretArn: string;
+
+  public get connectionRef() {
+    return {
+      connectionName: this.connectionName,
+      connectionArn: this.connectionArn,
+    };
+  }
+
   constructor(scope: Construct, id: string, attrs: ConnectionAttributes) {
     const arnParts = Stack.of(scope).parseArn(attrs.connectionArn);
     super(scope, id, {
