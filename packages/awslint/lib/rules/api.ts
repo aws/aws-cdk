@@ -108,6 +108,13 @@ apiLinter.add({
         return;
       }
 
+      if (type.intersectionOfTypes) {
+        for (const t of type.intersectionOfTypes) {
+          assertType(t, docs, scope);
+        }
+        return;
+      }
+
       // interfaces are okay
       if (type.type && type.type.isInterfaceType()) {
         return assertInterface(type.type);
