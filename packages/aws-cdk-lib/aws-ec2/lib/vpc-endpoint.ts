@@ -848,12 +848,18 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
         'redshift', 'redshift-data', 's3', 'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'securityhub',
         'servicecatalog', 'sms', 'sqs', 'states', 'sts', 'sync-states', 'synthetics', 'transcribe', 'transcribestreaming', 'transfer',
         'workspaces', 'xray'],
+      'eusc-de-east-1': ['ecr.dkr', 'ecr.api', 'execute-api', 'securityhub'],
     };
     if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name)) {
-      return 'cn.com.amazonaws';
-    } else {
-      return 'com.amazonaws';
+      switch (region) {
+        case 'eusc-de-east-1':
+          return 'eu.amazonaws';
+        case 'cn-north-1':
+        case 'cn-northwest-1':
+          return 'cn.com.amazonaws';
+      }
     }
+    return 'com.amazonaws';
   }
 
   /**
