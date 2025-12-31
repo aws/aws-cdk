@@ -1,7 +1,9 @@
 import { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
+import { getPipelineArn } from '../../../aws-codepipeline/lib/private/ref-utils';
 import * as iam from '../../../aws-iam';
 import { Stack } from '../../../core';
+import { IPipelineRef } from '../../../interfaces/generated/aws-codepipeline-interfaces.generated';
 import { Action } from '../action';
 
 /**
@@ -12,7 +14,7 @@ export interface PipelineInvokeActionProps extends codepipeline.CommonAwsActionP
    * The pipeline that will, upon running, start the current target pipeline.
    * You must have already created the invoking pipeline.
    */
-  readonly targetPipeline: codepipeline.IPipeline;
+  readonly targetPipeline: IPipelineRef;
 
   /**
    * The source revisions that you want the target pipeline to use when it is started by the invoking pipeline.
@@ -113,12 +115,12 @@ export class PipelineInvokeAction extends Action {
   codepipeline.ActionConfig {
     options.role.addToPolicy(new iam.PolicyStatement({
       actions: ['codepipeline:StartPipelineExecution'],
-      resources: [this.props.targetPipeline.pipelineArn],
+      resources: [getPipelineArn(this.props.targetPipeline)],
     }));
 
     return {
       configuration: {
-        PipelineName: this.props.targetPipeline.pipelineName,
+        PipelineName: this.props.targetPipeline.pipelineRef.pipelineName,
         SourceRevisions: Stack.of(scope).toJsonString(this.props.sourceRevisions),
         Variables: Stack.of(scope).toJsonString(this.props.variables),
       },

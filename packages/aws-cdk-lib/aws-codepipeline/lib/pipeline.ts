@@ -389,6 +389,12 @@ abstract class PipelineBase extends Resource implements IPipeline {
   public abstract readonly pipelineName: string;
   public abstract readonly pipelineArn: string;
 
+  public get pipelineRef(): import('../../interfaces/generated/aws-codepipeline-interfaces.generated').PipelineReference {
+    return {
+      pipelineName: this.pipelineName,
+    };
+  }
+
   /**
    * Defines an event rule triggered by this CodePipeline.
    *
