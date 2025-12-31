@@ -57,6 +57,12 @@ export function fromServiceAttributes(scope: Construct, id: string, attrs: Servi
     public readonly serviceArn = arn;
     public readonly serviceName = name;
     public readonly cluster = attrs.cluster;
+
+    public get serviceRef() {
+      return {
+        serviceArn: this.serviceArn,
+      };
+    }
   }
   return new Import(scope, id, {
     environmentFromArn: arn,

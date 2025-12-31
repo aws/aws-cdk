@@ -129,6 +129,12 @@ export class FargateService extends BaseService implements IFargateService {
     class Import extends cdk.Resource implements IFargateService {
       public readonly serviceArn = fargateServiceArn;
       public readonly serviceName = extractServiceNameFromArn(this, fargateServiceArn);
+
+      public get serviceRef() {
+        return {
+          serviceArn: this.serviceArn,
+        };
+      }
     }
     return new Import(scope, id);
   }

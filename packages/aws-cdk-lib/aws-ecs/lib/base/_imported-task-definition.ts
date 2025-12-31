@@ -136,4 +136,13 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
   public get isManagedInstancesCompatible(): boolean {
     return isManagedInstancesCompatible(this.compatibility);
   }
+
+  /**
+   * A reference to this task definition.
+   */
+  public get taskDefinitionRef() {
+    return {
+      taskDefinitionArn: this.taskDefinitionArn,
+    };
+  }
 }

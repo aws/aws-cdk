@@ -91,6 +91,12 @@ export class ExternalService extends BaseService implements IExternalService {
     class Import extends Resource implements IExternalService {
       public readonly serviceArn = externalServiceArn;
       public readonly serviceName = Stack.of(scope).splitArn(externalServiceArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
+
+      public get serviceRef() {
+        return {
+          serviceArn: this.serviceArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
