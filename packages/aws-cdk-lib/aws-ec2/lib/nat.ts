@@ -11,6 +11,7 @@ import { UserData } from './user-data';
 import { PrivateSubnet, PublicSubnet, RouterType, Vpc } from './vpc';
 import * as iam from '../../aws-iam';
 import { Duration, Fn, Token, UnscopedValidationError } from '../../core';
+import { IEIPRef } from '../../interfaces/generated/aws-ec2-interfaces.generated';
 
 /**
  * Direction of traffic to allow all by default.
@@ -53,8 +54,6 @@ export interface GatewayConfig {
  *
  * Determines what type of NAT provider to create, either NAT gateways or NAT
  * instance.
- *
- *
  */
 export abstract class NatProvider {
   /**
@@ -185,12 +184,28 @@ export interface RegionalNatGatewayProviderProps {
    * @default Duration.seconds(350)
    */
   readonly maxDrainDuration?: Duration;
+
+  /**
+   * The allocation ID of the Elastic IP address to use for this NAT gateway.
+   *
+   * Cannot be specified together with `eip`.
+   *
+   * @default - A new EIP is automatically allocated
+   */
+  readonly allocationId?: string;
+
+  /**
+   * Reference to an existing EIP to use for this NAT gateway.
+   *
+   * Cannot be specified together with `allocationId`.
+   *
+   * @default - A new EIP is automatically allocated
+   */
+  readonly eip?: IEIPRef;
 }
 
 /**
  * Properties for a NAT instance
- *
- *
  */
 export interface NatInstanceProps {
   /**
@@ -366,30 +381,32 @@ export class NatGatewayProvider extends NatProvider {
 /**
  * Provider for Regional NAT Gateways
  *
- * Regional NAT Gateways provide automatic multi-AZ redundancy with a single
- * gateway that scales across availability zones. Unlike zonal NAT gateways,
- * a regional NAT gateway does not require a public subnet and is created at
- * the VPC level.
+ * Regional NAT Gateways provide automatic multi-AZ redundancy with a single gateway that scales across availability zones.
+ * Unlike zonal NAT gateways, a regional NAT gateway does not require a public subnet and is created at the VPC level.
  *
  * @see https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html
  */
 export class RegionalNatGatewayProvider extends NatProvider {
-  private gatewayId?: string;
+  private natGateway?: CfnNatGateway;
 
   constructor(private readonly props: RegionalNatGatewayProviderProps = {}) {
     super();
+
+    if (this.props.allocationId && this.props.eip) {
+      throw new UnscopedValidationError(
+        'Cannot specify both allocationId and eip. Use one or the other.',
+      );
+    }
   }
 
   public configureNat(options: ConfigureNatOptions) {
-    // Regional NAT Gateway is created at VPC level, not in a public subnet
-    const natGateway = new CfnNatGateway(options.vpc, 'RegionalNatGateway', {
+    this.natGateway = new CfnNatGateway(options.vpc, 'RegionalNatGateway', {
       vpcId: options.vpc.vpcId,
       availabilityMode: 'regional',
       connectivityType: 'public',
+      allocationId: this.props.allocationId ?? this.props.eip,
       maxDrainDurationSeconds: this.props.maxDrainDuration?.toSeconds(),
     });
-
-    this.gatewayId = natGateway.attrNatGatewayId;
 
     // Add routes to the regional NAT gateway in all private subnets
     for (const sub of options.privateSubnets) {
@@ -398,17 +415,22 @@ export class RegionalNatGatewayProvider extends NatProvider {
   }
 
   public configureSubnet(subnet: PrivateSubnet) {
+    if (!this.natGateway) {
+      throw new UnscopedValidationError('Cannot configure subnet before configuring NAT gateway');
+    }
     // All private subnets use the same regional NAT gateway ID
     subnet.addRoute('DefaultRoute', {
       routerType: RouterType.NAT_GATEWAY,
-      routerId: this.gatewayId!,
+      routerId: this.natGateway.attrNatGatewayId,
       enablesInternetConnectivity: true,
     });
   }
 
   public get configuredGateways(): GatewayConfig[] {
     // Regional NAT gateway is a single gateway covering all AZs
-    return this.gatewayId ? [{ az: 'regional', gatewayId: this.gatewayId }] : [];
+    return this.natGateway
+      ? [{ az: 'regional', gatewayId: this.natGateway.attrNatGatewayId }]
+      : [];
   }
 }
 

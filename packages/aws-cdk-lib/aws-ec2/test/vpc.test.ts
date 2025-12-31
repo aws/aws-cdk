@@ -6,6 +6,7 @@ import {
   AclCidr,
   AclTraffic,
   BastionHostLinux,
+  CfnEIP,
   CfnSubnet,
   CfnVPC,
   SubnetFilter,
@@ -1365,6 +1366,61 @@ describe('vpc', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
         AvailabilityMode: 'regional',
       });
+    });
+
+    test('Regional NAT gateway provider with allocationId', () => {
+      const stack = new Stack();
+      const natGatewayProvider = NatProvider.regionalGateway({
+        allocationId: 'eipalloc-12345678',
+      });
+      new Vpc(stack, 'VpcNetwork', {
+        natGatewayProvider,
+        subnetConfiguration: [
+          { name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+        AvailabilityMode: 'regional',
+        AllocationId: 'eipalloc-12345678',
+      });
+    });
+
+    test('Regional NAT gateway provider with eip reference', () => {
+      const stack = new Stack();
+      const eip = new CfnEIP(stack, 'EIP');
+      const natGatewayProvider = NatProvider.regionalGateway({
+        eip,
+      });
+      new Vpc(stack, 'VpcNetwork', {
+        natGatewayProvider,
+        subnetConfiguration: [
+          { name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+        AvailabilityMode: 'regional',
+        AllocationId: { 'Fn::GetAtt': ['EIP', 'AllocationId'] },
+      });
+    });
+
+    test('Regional NAT gateway provider throws when both allocationId and eip are specified', () => {
+      const stack = new Stack();
+      const eip = new CfnEIP(stack, 'EIP');
+      const natGatewayProvider = NatProvider.regionalGateway({
+        allocationId: 'eipalloc-12345678',
+        eip,
+      });
+
+      expect(() => {
+        new Vpc(stack, 'VpcNetwork', {
+          natGatewayProvider,
+          subnetConfiguration: [
+            { name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+          ],
+        });
+      }).toThrow(/Cannot specify both allocationId and eip/);
     });
 
     test('Can add an IPv6 route', () => {
