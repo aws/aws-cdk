@@ -3965,7 +3965,7 @@ describe('cluster', () => {
 
 describe('deletionProtection', () => {
   test.each([
-    true, false
+    true, false,
   ])('deletionProtection(%s) should work', (deletionProtection) => {
     // GIVEN
     const { stack } = testFixture();
