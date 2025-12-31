@@ -1,0 +1,28 @@
+*.js
+*.js.map
+*.d.ts
+tsconfig.json
+node_modules
+*.generated.ts
+dist
+.jsii
+
+.LAST_BUILD
+.nyc_output
+coverage
+.nycrc
+.LAST_PACKAGE
+*.snk
+nyc.config.js
+!.eslintrc.js
+!jest.config.js
+
+# Include .jsiirc.json if it exists
+!.jsiirc.json
+
+# Include .npmignore if it exists
+!.npmignore
+
+# Exclude typescript source for javascript packages
+exclude-typescript
+junit.xml
