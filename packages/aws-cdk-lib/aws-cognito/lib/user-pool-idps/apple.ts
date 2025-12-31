@@ -68,7 +68,7 @@ export class UserPoolIdentityProviderApple extends UserPoolIdentityProviderBase 
     }
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
-      userPoolId: props.userPool.userPoolId,
+      userPoolId: props.userPool.userPoolRef.userPoolId,
       providerName: 'SignInWithApple', // must be 'SignInWithApple' when the type is 'SignInWithApple'
       providerType: 'SignInWithApple',
       providerDetails: {

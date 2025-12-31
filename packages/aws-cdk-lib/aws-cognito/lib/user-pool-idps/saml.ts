@@ -137,7 +137,7 @@ export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
     const { metadataType, metadataContent } = props.metadata;
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
-      userPoolId: props.userPool.userPoolId,
+      userPoolId: props.userPool.userPoolRef.userPoolId,
       providerName: this.getProviderName(props.name),
       providerType: 'SAML',
       providerDetails: {

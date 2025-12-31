@@ -7,7 +7,7 @@ import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
 import { UserPoolEmail, UserPoolEmailConfig } from './user-pool-email';
 import { UserPoolGroup, UserPoolGroupOptions } from './user-pool-group';
-import { IUserPoolIdentityProvider } from './user-pool-idp';
+import { IUserPoolIdentityProvider, IUserPoolIdentityProviderRef } from './user-pool-idp';
 import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
 import { Grant, IGrantable, IRoleRef, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import { IKeyRef } from '../../aws-kms';
@@ -16,6 +16,9 @@ import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, S
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IUserPoolRef, UserPoolReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
+
+export type { IUserPoolRef, UserPoolReference };
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -945,7 +948,7 @@ export interface UserPoolProps {
 /**
  * Represents a Cognito UserPool
  */
-export interface IUserPool extends IResource {
+export interface IUserPool extends IResource, IUserPoolRef {
   /**
    * The physical ID of this user pool resource
    * @attribute
@@ -997,7 +1000,7 @@ export interface IUserPool extends IResource {
   /**
    * Register an identity provider with this user pool.
    */
-  registerIdentityProvider(provider: IUserPoolIdentityProvider): void;
+  registerIdentityProvider(provider: IUserPoolIdentityProviderRef): void;
 
   /**
    * Adds an IAM policy statement associated with this user pool to an
@@ -1011,6 +1014,13 @@ abstract class UserPoolBase extends Resource implements IUserPool {
   public abstract readonly userPoolArn: string;
   public abstract readonly userPoolProviderName: string;
   public readonly identityProviders: IUserPoolIdentityProvider[] = [];
+
+  public get userPoolRef(): UserPoolReference {
+    return {
+      userPoolId: this.userPoolId,
+      userPoolArn: this.userPoolArn,
+    };
+  }
 
   public addClient(id: string, options?: UserPoolClientOptions): UserPoolClient {
     return new UserPoolClient(this, id, {
@@ -1040,8 +1050,8 @@ abstract class UserPoolBase extends Resource implements IUserPool {
     });
   }
 
-  public registerIdentityProvider(provider: IUserPoolIdentityProvider) {
-    this.identityProviders.push(provider);
+  public registerIdentityProvider(provider: IUserPoolIdentityProviderRef) {
+    this.identityProviders.push(provider as IUserPoolIdentityProvider);
   }
 
   public grant(grantee: IGrantable, ...actions: string[]): Grant {

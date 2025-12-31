@@ -1,6 +1,6 @@
 import { Construct, Node } from 'constructs';
 import { IIdentityPool } from './identitypool';
-import { IUserPool, IUserPoolClient } from '../../aws-cognito';
+import { IUserPool, IUserPoolClient, IUserPoolClientRef } from '../../aws-cognito';
 import { Stack } from '../../core';
 
 /**
@@ -33,7 +33,7 @@ export interface UserPoolAuthenticationProviderProps {
    * The User Pool Client for the provided User Pool
    * @default - A default user pool client will be added to User Pool
    */
-  readonly userPoolClient?: IUserPoolClient;
+  readonly userPoolClient?: IUserPoolClientRef;
 
   /**
    * Setting this to true turns off identity pool checks for this user pool to make sure the user has not been globally signed out or deleted before the identity pool provides an OIDC token or AWS credentials for the user
@@ -81,15 +81,20 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
   /**
    * The User Pool Client for the provided User Pool
    */
-  private userPoolClient: IUserPoolClient;
+  private _userPoolClient: IUserPoolClientRef;
 
   /**
    * Whether to disable the pool's default server side token check
    */
   private disableServerSideTokenCheck: boolean;
+
+  private get userPoolClient(): IUserPoolClient {
+    return this._userPoolClient as IUserPoolClient;
+  }
+
   constructor(props: UserPoolAuthenticationProviderProps) {
     this.userPool = props.userPool;
-    this.userPoolClient = props.userPoolClient || this.userPool.addClient('UserPoolAuthenticationProviderClient');
+    this._userPoolClient = props.userPoolClient || this.userPool.addClient('UserPoolAuthenticationProviderClient');
     this.disableServerSideTokenCheck = props.disableServerSideTokenCheck ?? false;
   }
 
@@ -104,7 +109,7 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
     const urlSuffix = Stack.of(scope).urlSuffix;
 
     return {
-      clientId: this.userPoolClient.userPoolClientId,
+      clientId: this._userPoolClient.userPoolClientRef.clientId,
       providerName: `cognito-idp.${region}.${urlSuffix}/${this.userPool.userPoolId}`,
       serverSideTokenCheck: !this.disableServerSideTokenCheck,
     };

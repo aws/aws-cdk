@@ -45,7 +45,7 @@ export class UserPoolIdentityProviderAmazon extends UserPoolIdentityProviderBase
     const scopes = props.scopes ?? ['profile'];
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
-      userPoolId: props.userPool.userPoolId,
+      userPoolId: props.userPool.userPoolRef.userPoolId,
       providerName: 'LoginWithAmazon', // must be 'LoginWithAmazon' when the type is 'LoginWithAmazon'
       providerType: 'LoginWithAmazon',
       providerDetails: {
