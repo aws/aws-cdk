@@ -1,5 +1,5 @@
 import { Connections, IConnectable } from './connections';
-import { CfnNatGateway } from './ec2.generated';
+import { CfnEIP, CfnNatGateway } from './ec2.generated';
 import { Instance } from './instance';
 import { InstanceArchitecture, InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
@@ -224,7 +224,7 @@ export interface RegionalNatGatewayProviderProps {
    * Cannot be specified together with `eip`.
    * Ignored when `availabilityZoneAddresses` is specified.
    *
-   * @default - A new EIP is automatically allocated by AWS
+   * @default - A new EIP is automatically allocated
    */
   readonly allocationId?: string;
 
@@ -234,7 +234,7 @@ export interface RegionalNatGatewayProviderProps {
    * Cannot be specified together with `allocationId`.
    * Ignored when `availabilityZoneAddresses` is specified.
    *
-   * @default - A new EIP is automatically allocated by AWS
+   * @default - A new EIP is automatically allocated
    */
   readonly eip?: IEIPRef;
 
@@ -480,7 +480,7 @@ export class RegionalNatGatewayProvider extends NatProvider {
       vpcId: options.vpc.vpcId,
       availabilityMode: 'regional',
       connectivityType: 'public',
-      allocationId: this.props.allocationId ?? this.props.eip,
+      allocationId: this.getAllocationId(options.vpc),
       availabilityZoneAddresses: this.props.availabilityZoneAddresses,
       maxDrainDurationSeconds: this.props.maxDrainDuration?.toSeconds(),
     });
@@ -508,6 +508,26 @@ export class RegionalNatGatewayProvider extends NatProvider {
     return this.natGateway
       ? [{ az: 'regional', gatewayId: this.natGateway.attrNatGatewayId }]
       : [];
+  }
+
+  private getAllocationId(vpc: Vpc): string | IEIPRef | undefined {
+    // availabilityZoneAddresses uses its own EIP configuration per AZ
+    if (this.props.availabilityZoneAddresses) {
+      return undefined;
+    }
+
+    if (this.props.allocationId) {
+      return this.props.allocationId;
+    }
+
+    if (this.props.eip) {
+      return this.props.eip;
+    }
+
+    // Create a new EIP automatically (same pattern as Zonal NAT Gateway)
+    return new CfnEIP(vpc, 'RegionalNatGatewayEIP', {
+      domain: 'vpc',
+    });
   }
 }
 

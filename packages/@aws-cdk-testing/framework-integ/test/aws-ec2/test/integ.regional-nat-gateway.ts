@@ -2,53 +2,33 @@ import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-/**
- * Minimal configuration - Regional NAT Gateway with automatic EIP allocation
- */
-class MinimalStack extends cdk.Stack {
+class RegionalNatGatewayStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    new ec2.Vpc(this, 'Vpc', {
+    // Minimal configuration - Regional NAT Gateway with automatic EIP allocation
+    new ec2.Vpc(this, 'VpcMinimal', {
       natGatewayProvider: ec2.NatProvider.regionalGateway(),
       subnetConfiguration: [
         { name: 'Private', subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
       ],
     });
-  }
-}
 
-/**
- * With explicit EIP allocation
- */
-class WithEipStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
-
+    // With explicit EIP allocation
     const eip = new ec2.CfnEIP(this, 'NatEip');
-
-    new ec2.Vpc(this, 'Vpc', {
+    new ec2.Vpc(this, 'VpcWithEip', {
       natGatewayProvider: ec2.NatProvider.regionalGateway({
-        allocationId: eip.attrAllocationId,
+        eip,
       }),
       subnetConfiguration: [
         { name: 'Private', subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
       ],
     });
-  }
-}
 
-/**
- * With AvailabilityZoneAddresses for manual AZ configuration
- */
-class WithAvailabilityZoneAddressesStack extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
-
+    // With AvailabilityZoneAddresses for manual AZ configuration
     const eip1 = new ec2.CfnEIP(this, 'NatEip1');
     const eip2 = new ec2.CfnEIP(this, 'NatEip2');
-
-    new ec2.Vpc(this, 'Vpc', {
+    new ec2.Vpc(this, 'VpcWithAzAddresses', {
       natGatewayProvider: ec2.NatProvider.regionalGateway({
         availabilityZoneAddresses: [
           { allocationIds: [eip1.attrAllocationId], availabilityZone: 'us-east-1a' },
@@ -63,10 +43,8 @@ class WithAvailabilityZoneAddressesStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-const minimal = new MinimalStack(app, 'RegionalNatGatewayMinimal');
-const withEip = new WithEipStack(app, 'RegionalNatGatewayWithEip');
-const withAzAddresses = new WithAvailabilityZoneAddressesStack(app, 'RegionalNatGatewayWithAzAddresses');
+const stack = new RegionalNatGatewayStack(app, 'RegionalNatGatewayStack');
 
 new IntegTest(app, 'regional-nat-gateway-integ', {
-  testCases: [minimal, withEip, withAzAddresses],
+  testCases: [stack],
 });

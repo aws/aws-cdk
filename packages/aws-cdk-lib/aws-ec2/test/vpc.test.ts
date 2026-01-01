@@ -1281,8 +1281,8 @@ describe('vpc', () => {
       // Only one NAT Gateway should be created (regional covers all AZs)
       Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 1);
 
-      // No EIPs should be created (regional mode manages EIPs automatically)
-      Template.fromStack(stack).resourceCountIs('AWS::EC2::EIP', 0);
+      // One EIP should be created automatically (same pattern as Zonal NAT Gateway)
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::EIP', 1);
     });
 
     test('Regional NAT gateway provider can be instantiated directly with new', () => {
@@ -1533,6 +1533,56 @@ describe('vpc', () => {
       Template.fromStack(stack).hasResource('AWS::EC2::NatGateway', {
         DependsOn: Match.arrayWith([
           Match.stringLikeRegexp('IGW'),
+        ]),
+      });
+    });
+
+    test('Regional NAT gateway creates EIP when allocationId is not specified', () => {
+      const stack = new Stack();
+      new Vpc(stack, 'VpcNetwork', {
+        natGatewayProvider: NatProvider.regionalGateway(),
+        subnetConfiguration: [
+          { name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+        ],
+      });
+
+      // Verify EIP resource is created
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::EIP', {
+        Domain: 'vpc',
+      });
+
+      // Verify NAT Gateway references the EIP's AllocationId
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+        AllocationId: {
+          'Fn::GetAtt': [
+            Match.stringLikeRegexp('RegionalNatGatewayEIP'),
+            'AllocationId',
+          ],
+        },
+      });
+    });
+
+    test('Regional NAT gateway does not create EIP when availabilityZoneAddresses is specified', () => {
+      const stack = new Stack();
+      const eip = new CfnEIP(stack, 'ExternalEIP');
+      new Vpc(stack, 'VpcNetwork', {
+        natGatewayProvider: NatProvider.regionalGateway({
+          availabilityZoneAddresses: [
+            { allocationIds: [eip.attrAllocationId], availabilityZone: 'us-east-1a' },
+          ],
+        }),
+        subnetConfiguration: [
+          { name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+        ],
+      });
+
+      // Verify NAT Gateway does not have AllocationId (uses AvailabilityZoneAddresses instead)
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+        AllocationId: Match.absent(),
+        AvailabilityZoneAddresses: Match.arrayWith([
+          Match.objectLike({
+            AllocationIds: Match.anyValue(),
+          }),
         ]),
       });
     });
