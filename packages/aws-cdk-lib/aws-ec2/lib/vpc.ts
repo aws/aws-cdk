@@ -1824,6 +1824,7 @@ export class Vpc extends VpcBase {
         ),
       });
 
+      // NAT Gateway needs needs to be created after Internet Gateway is ready
       if (provider.natGateway) {
         provider.natGateway.node.addDependency(this.internetConnectivityEstablished);
       }
