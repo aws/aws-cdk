@@ -184,7 +184,7 @@ Which subnets are selected is evaluated as follows:
 
 ### Using Regional NAT Gateways
 
-Regional NAT Gateways provide automatic multi-AZ redundancy with a single gateway that scales across availability zones.
+[Regional NAT Gateways](https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html) provide automatic multi-AZ redundancy with a single gateway that scales across availability zones.
 Unlike zonal NAT gateways, a regional NAT gateway does not require public subnets and is created at the VPC level.
 
 ```ts
