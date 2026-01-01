@@ -1824,6 +1824,14 @@ export class Vpc extends VpcBase {
           (s): s is PrivateSubnet => s instanceof PrivateSubnet,
         ),
       });
+
+      // Regional NAT Gateway requires IGW to be attached first.
+      // Unlike Zonal NAT Gateways (which have implicit dependency via subnet placement),
+      // Regional NAT Gateway only references vpcId, so explicit dependency is needed.
+      if (provider.natGateway) {
+        provider.natGateway.node.addDependency(this.internetConnectivityEstablished);
+      }
+
       return;
     }
 

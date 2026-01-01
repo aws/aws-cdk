@@ -436,7 +436,7 @@ export class NatGatewayProvider extends NatProvider {
  * @see https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html
  */
 export class RegionalNatGatewayProvider extends NatProvider {
-  private natGateway?: CfnNatGateway;
+  public natGateway?: CfnNatGateway;
 
   constructor(private readonly props: RegionalNatGatewayProviderProps = {}) {
     super();

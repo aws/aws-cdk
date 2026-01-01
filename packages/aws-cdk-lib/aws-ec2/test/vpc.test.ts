@@ -1520,6 +1520,23 @@ describe('vpc', () => {
       }).toThrow(/allocationIds cannot be an empty array in AvailabilityZoneAddress/);
     });
 
+    test('Regional NAT gateway depends on VPC internet connectivity (IGW attachment)', () => {
+      const stack = new Stack();
+      new Vpc(stack, 'VpcNetwork', {
+        natGatewayProvider: NatProvider.regionalGateway(),
+        subnetConfiguration: [
+          { name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+        ],
+      });
+
+      // Verify that the NAT Gateway has a DependsOn for the Internet Gateway
+      Template.fromStack(stack).hasResource('AWS::EC2::NatGateway', {
+        DependsOn: Match.arrayWith([
+          Match.stringLikeRegexp('IGW'),
+        ]),
+      });
+    });
+
     test('Can add an IPv6 route', () => {
       // GIVEN
       const stack = getTestStack();
