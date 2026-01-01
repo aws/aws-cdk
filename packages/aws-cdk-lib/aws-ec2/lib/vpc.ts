@@ -1710,13 +1710,13 @@ export class Vpc extends VpcBase {
           if (props.natGateways !== undefined && props.natGateways !== 1) {
             Annotations.of(this).addWarningV2(
               '@aws-cdk/aws-ec2:regionalNatGatewayCount',
-              'natGateways is ignored when using Regional NAT Gateway. A single regional gateway covers all AZs.',
+              '`natGateways` is ignored when using Regional NAT Gateway. A single regional gateway covers all AZs.',
             );
           }
           if (props.natGatewaySubnets !== undefined) {
             Annotations.of(this).addWarningV2(
               '@aws-cdk/aws-ec2:regionalNatGatewaySubnets',
-              'natGatewaySubnets is ignored when using Regional NAT Gateway. The gateway is created at VPC level without requiring a public subnet.',
+              '`natGatewaySubnets` is ignored when using Regional NAT Gateway. The gateway is created at VPC level without requiring a public subnet.',
             );
           }
         }
