@@ -198,6 +198,18 @@ export interface S3FileItemReaderProps extends ItemReaderProps {
    * Key of file stored in S3 bucket containing an array to iterate over
    */
   readonly key: string;
+
+  /**
+   * JSONPath expression that points to the array to iterate over within the JSON file
+   *
+   * Use this when the JSON file contains a nested structure and the array to iterate over
+   * is not at the root level. For example, if your JSON file has structure like
+   * `{"items": [{"id": 1}, {"id": 2}]}`, you can use `"$.items"` to point to the items array.
+   *
+   * @default - The entire JSON file is expected to be an array
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/input-output-itemreader.html#itemsource-example-json-data
+   */
+  readonly itemsPointer?: string;
 }
 
 /**
@@ -239,6 +251,13 @@ abstract class S3FileItemReader implements IItemReader {
    */
   readonly maxItems?: number;
 
+  /**
+   * JSONPath expression that points to the array to iterate over within the JSON file
+   *
+   * @default - The entire JSON file is expected to be an array
+   */
+  readonly itemsPointer?: string;
+
   protected abstract readonly inputType: string;
 
   constructor(props: S3FileItemReaderProps) {
@@ -246,6 +265,7 @@ abstract class S3FileItemReader implements IItemReader {
     this.bucketNamePath = props.bucketNamePath;
     this.key = props.key;
     this.maxItems = props.maxItems;
+    this.itemsPointer = props.itemsPointer;
     this.resource = Arn.format({
       region: '',
       account: '',
@@ -268,12 +288,19 @@ abstract class S3FileItemReader implements IItemReader {
       Key: this.key,
     };
 
+    const readerConfig: any = {
+      InputType: this.inputType,
+      ...(this.maxItems && { MaxItems: this.maxItems }),
+    };
+
+    // ItemsPointer is only applicable to JSON input type
+    if (this.inputType === 'JSON' && this.itemsPointer) {
+      readerConfig.ItemsPointer = this.itemsPointer;
+    }
+
     return FieldUtils.renderObject({
       Resource: this.resource,
-      ReaderConfig: {
-        InputType: this.inputType,
-        ...(this.maxItems && { MaxItems: this.maxItems }),
-      },
+      ReaderConfig: readerConfig,
       ...(queryLanguage === QueryLanguage.JSONATA ? {
         Arguments: parameterOrArgument,
       }: {
