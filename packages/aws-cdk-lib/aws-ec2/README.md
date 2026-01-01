@@ -188,19 +188,27 @@ Which subnets are selected is evaluated as follows:
 Unlike zonal NAT gateways, a regional NAT gateway does not require public subnets and is created at the VPC level.
 
 ```ts
-// Basic usage - CDK creates an EIP automatically
+// Basic usage
+// Creates a single Regional NAT Gateway for the VPC
 new ec2.Vpc(this, 'Vpc', {
   natGatewayProvider: ec2.NatProvider.regionalGateway(),
 });
 ```
 
-You can specify an existing EIP:
+You can specify an existing EIP from a `CfnEIP` resource or an allocation ID:
 
 ```ts
 const eip = new ec2.CfnEIP(this, 'NatEip');
-new ec2.Vpc(this, 'Vpc', {
+
+new ec2.Vpc(this, 'Vpc1', {
   natGatewayProvider: ec2.NatProvider.regionalGateway({
     eip,
+  }),
+});
+
+new ec2.Vpc(this, 'Vpc2', {
+  natGatewayProvider: ec2.NatProvider.regionalGateway({
+    allocationId: eip.attrAllocationId,
   }),
 });
 ```
