@@ -184,13 +184,12 @@ Which subnets are selected is evaluated as follows:
 
 ### Using Regional NAT Gateways
 
-Regional NAT Gateways provide automatic multi-AZ redundancy with a single gateway
-that scales across availability zones. Unlike zonal NAT gateways, a regional NAT
-gateway does not require public subnets and is created at the VPC level.
+Regional NAT Gateways provide automatic multi-AZ redundancy with a single gateway that scales across availability zones.
+Unlike zonal NAT gateways, a regional NAT gateway does not require public subnets and is created at the VPC level.
 
 ```ts
 // Basic usage - CDK creates an EIP automatically
-new ec2.Vpc(this, 'TheVPC', {
+new ec2.Vpc(this, 'Vpc', {
   natGatewayProvider: ec2.NatProvider.regionalGateway(),
   subnetConfiguration: [
     { name: 'Private', subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
@@ -202,7 +201,7 @@ You can specify an existing EIP:
 
 ```ts
 const eip = new ec2.CfnEIP(this, 'NatEip');
-new ec2.Vpc(this, 'TheVPC', {
+new ec2.Vpc(this, 'Vpc', {
   natGatewayProvider: ec2.NatProvider.regionalGateway({
     eip,
   }),
@@ -218,7 +217,7 @@ For manual control over AZ coverage and EIP allocation, use `availabilityZoneAdd
 const eip1 = new ec2.CfnEIP(this, 'NatEip1');
 const eip2 = new ec2.CfnEIP(this, 'NatEip2');
 
-new ec2.Vpc(this, 'TheVPC', {
+new ec2.Vpc(this, 'Vpc', {
   natGatewayProvider: ec2.NatProvider.regionalGateway({
     availabilityZoneAddresses: [
       { allocationIds: [eip1.attrAllocationId], availabilityZone: 'us-east-1a' },
@@ -234,7 +233,7 @@ new ec2.Vpc(this, 'TheVPC', {
 You can also configure the maximum drain duration:
 
 ```ts
-new ec2.Vpc(this, 'TheVPC', {
+new ec2.Vpc(this, 'Vpc', {
   natGatewayProvider: ec2.NatProvider.regionalGateway({
     maxDrainDuration: Duration.minutes(10),
   }),
@@ -243,9 +242,6 @@ new ec2.Vpc(this, 'TheVPC', {
   ],
 });
 ```
-
-> **Note**: Regional NAT Gateways may take up to 60 minutes to extend to new
-> Availability Zones when your workload scales.
 
 ### Using NAT instances
 
