@@ -1261,263 +1261,241 @@ describe('vpc', () => {
       });
     });
 
-    test('Regional NAT gateway provider creates a single regional NAT gateway', () => {
-      const stack = new Stack();
-      const natGatewayProvider = NatProvider.regionalGateway();
-      new Vpc(stack, 'Vpc', {
-        natGatewayProvider,
+    describe('Regional NAT Gateway', () => {
+      test('creates a single regional NAT gateway', () => {
+        const stack = new Stack();
+        const natGatewayProvider = NatProvider.regionalGateway();
+        new Vpc(stack, 'Vpc', {
+          natGatewayProvider,
+        });
+
+        // Regional NAT Gateway should be created with availabilityMode: 'regional'
+        Template.fromStack(stack).hasResource('AWS::EC2::NatGateway', {
+          Properties: {
+            AllocationId: Match.absent(),
+            AvailabilityMode: 'regional',
+            ConnectivityType: 'public',
+          },
+          DependsOn: ['VpcIGWD7BA715C'],
+        });
+
+        // Only one NAT Gateway should be created (regional covers all AZs)
+        Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 1);
+
+        expect(natGatewayProvider.configuredGateways.length).toBe(1);
+        expect(natGatewayProvider.configuredGateways[0].az).toBe('regional');
       });
 
-      // Regional NAT Gateway should be created with availabilityMode: 'regional'
-      Template.fromStack(stack).hasResource('AWS::EC2::NatGateway', {
-        Properties: {
-          AllocationId: { 'Fn::GetAtt': ['VpcRegionalNatGatewayEIPA5DDC300', 'AllocationId'] },
+      test('with maxDrainDuration', () => {
+        const stack = new Stack();
+        const natGatewayProvider = NatProvider.regionalGateway({
+          maxDrainDuration: Duration.minutes(10),
+        });
+        new Vpc(stack, 'Vpc', {
+          natGatewayProvider,
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
           AvailabilityMode: 'regional',
-          ConnectivityType: 'public',
-        },
-        DependsOn: ['VpcIGWD7BA715C'],
+          MaxDrainDurationSeconds: 600,
+        });
       });
 
-      // Only one NAT Gateway should be created (regional covers all AZs)
-      Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 1);
-
-      // One EIP should be created automatically (same pattern as Zonal NAT Gateway)
-      Template.fromStack(stack).resourceCountIs('AWS::EC2::EIP', 1);
-
-      expect(natGatewayProvider.configuredGateways.length).toBe(1);
-      expect(natGatewayProvider.configuredGateways[0].az).toBe('regional');
-    });
-
-    test('Regional NAT gateway provider with maxDrainDuration', () => {
-      const stack = new Stack();
-      const natGatewayProvider = NatProvider.regionalGateway({
-        maxDrainDuration: Duration.minutes(10),
-      });
-      new Vpc(stack, 'Vpc', {
-        natGatewayProvider,
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
-        AvailabilityMode: 'regional',
-        MaxDrainDurationSeconds: 600,
-      });
-    });
-
-    test('Regional NAT gateway provider with allocationId', () => {
-      const stack = new Stack();
-      const natGatewayProvider = NatProvider.regionalGateway({
-        allocationId: 'eipalloc-12345678',
-      });
-      new Vpc(stack, 'Vpc', {
-        natGatewayProvider,
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
-        AvailabilityMode: 'regional',
-        AllocationId: 'eipalloc-12345678',
-      });
-    });
-
-    test('Regional NAT gateway provider with eip reference', () => {
-      const stack = new Stack();
-      const eip = new CfnEIP(stack, 'EIP');
-      const natGatewayProvider = NatProvider.regionalGateway({
-        eip,
-      });
-      new Vpc(stack, 'Vpc', {
-        natGatewayProvider,
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
-        AvailabilityMode: 'regional',
-        AllocationId: { 'Fn::GetAtt': ['EIP', 'AllocationId'] },
-      });
-    });
-
-    test('Regional NAT gateway provider warns when natGateways is specified', () => {
-      const app = new App();
-      const stack = new Stack(app, 'TestStack');
-      const natGatewayProvider = NatProvider.regionalGateway();
-      new Vpc(stack, 'Vpc', {
-        natGatewayProvider,
-        natGateways: 3,
-      });
-
-      Annotations.fromStack(stack).hasWarning('/TestStack/Vpc', Match.stringLikeRegexp('`natGateways` is ignored when using Regional NAT Gateway'));
-
-      Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 1);
-    });
-
-    test('Regional NAT gateway provider warns when natGatewaySubnets is specified', () => {
-      const app = new App();
-      const stack = new Stack(app, 'TestStack');
-      const natGatewayProvider = NatProvider.regionalGateway();
-      new Vpc(stack, 'Vpc', {
-        natGatewayProvider,
-        natGatewaySubnets: { subnetType: SubnetType.PUBLIC },
-      });
-
-      Annotations.fromStack(stack).hasWarning('/TestStack/Vpc', Match.stringLikeRegexp('`natGatewaySubnets` is ignored when using Regional NAT Gateway'));
-    });
-
-    test('Regional NAT gateway does not require public subnets', () => {
-      const stack = new Stack();
-      const natGatewayProvider = NatProvider.regionalGateway();
-
-      // This should NOT throw, unlike zonal NAT gateway
-      new Vpc(stack, 'Vpc', {
-        natGatewayProvider,
-        subnetConfiguration: [
-          { name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS },
-        ],
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
-        AvailabilityMode: 'regional',
-      });
-    });
-
-    test('Regional NAT gateway provider throws when both allocationId and eip are specified', () => {
-      const stack = new Stack();
-      const eip = new CfnEIP(stack, 'EIP');
-
-      expect(() => {
-        NatProvider.regionalGateway({
+      test('with allocationId', () => {
+        const stack = new Stack();
+        const natGatewayProvider = NatProvider.regionalGateway({
           allocationId: 'eipalloc-12345678',
+        });
+        new Vpc(stack, 'Vpc', {
+          natGatewayProvider,
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+          AvailabilityMode: 'regional',
+          AllocationId: 'eipalloc-12345678',
+        });
+      });
+
+      test('with eip reference', () => {
+        const stack = new Stack();
+        const eip = new CfnEIP(stack, 'EIP');
+        const natGatewayProvider = NatProvider.regionalGateway({
           eip,
         });
-      }).toThrow('Cannot specify both `allocationId` and `eip`. Use one or the other.');
-    });
+        new Vpc(stack, 'Vpc', {
+          natGatewayProvider,
+        });
 
-    test('Regional NAT gateway provider with availabilityZoneAddresses', () => {
-      const stack = new Stack();
-      const natGatewayProvider = NatProvider.regionalGateway({
-        availabilityZoneAddresses: [
-          {
-            allocationIds: ['eipalloc-11111111'],
-            availabilityZone: 'us-east-1a',
-          },
-          {
-            allocationIds: ['eipalloc-22222222'],
-            availabilityZone: 'us-east-1b',
-          },
-        ],
-      });
-      new Vpc(stack, 'Vpc', {
-        natGatewayProvider,
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+          AvailabilityMode: 'regional',
+          AllocationId: { 'Fn::GetAtt': ['EIP', 'AllocationId'] },
+        });
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
-        AvailabilityMode: 'regional',
-        AvailabilityZoneAddresses: [
-          {
-            AllocationIds: ['eipalloc-11111111'],
-            AvailabilityZone: 'us-east-1a',
-          },
-          {
-            AllocationIds: ['eipalloc-22222222'],
-            AvailabilityZone: 'us-east-1b',
-          },
-        ],
-      });
-    });
+      test('warns when natGateways is specified', () => {
+        const app = new App();
+        const stack = new Stack(app, 'TestStack');
+        const natGatewayProvider = NatProvider.regionalGateway();
+        new Vpc(stack, 'Vpc', {
+          natGatewayProvider,
+          natGateways: 3,
+        });
 
-    test('Regional NAT gateway provider warns when availabilityZoneAddresses with allocationId', () => {
-      const app = new App();
-      const stack = new Stack(app, 'TestStack');
-      const natGatewayProvider = NatProvider.regionalGateway({
-        allocationId: 'eipalloc-ignored',
-        availabilityZoneAddresses: [
-          {
-            allocationIds: ['eipalloc-11111111'],
-            availabilityZone: 'us-east-1a',
-          },
-        ],
-      });
-      new Vpc(stack, 'Vpc', {
-        natGatewayProvider,
+        Annotations.fromStack(stack).hasWarning('/TestStack/Vpc', Match.stringLikeRegexp('`natGateways` is ignored when using Regional NAT Gateway'));
+
+        Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 1);
       });
 
-      Annotations.fromStack(stack).hasWarning(
-        '/TestStack/Vpc',
-        Match.stringLikeRegexp('`allocationId` and `eip` are ignored when `availabilityZoneAddresses` is specified'),
-      );
-    });
+      test('warns when natGatewaySubnets is specified', () => {
+        const app = new App();
+        const stack = new Stack(app, 'TestStack');
+        const natGatewayProvider = NatProvider.regionalGateway();
+        new Vpc(stack, 'Vpc', {
+          natGatewayProvider,
+          natGatewaySubnets: { subnetType: SubnetType.PUBLIC },
+        });
 
-    test('Regional NAT gateway provider warns when availabilityZoneAddresses with eip', () => {
-      const app = new App();
-      const stack = new Stack(app, 'TestStack');
-      const natGatewayProvider = NatProvider.regionalGateway({
-        eip: new CfnEIP(stack, 'IgnoredEIP'),
-        availabilityZoneAddresses: [
-          {
-            allocationIds: ['eipalloc-11111111'],
-            availabilityZone: 'us-east-1a',
-          },
-        ],
-      });
-      new Vpc(stack, 'Vpc', {
-        natGatewayProvider,
+        Annotations.fromStack(stack).hasWarning('/TestStack/Vpc', Match.stringLikeRegexp('`natGatewaySubnets` is ignored when using Regional NAT Gateway'));
       });
 
-      Annotations.fromStack(stack).hasWarning(
-        '/TestStack/Vpc',
-        Match.stringLikeRegexp('`allocationId` and `eip` are ignored when `availabilityZoneAddresses` is specified'),
-      );
-    });
+      test('does not require public subnets', () => {
+        const stack = new Stack();
+        const natGatewayProvider = NatProvider.regionalGateway();
 
-    test('Regional NAT gateway provider throws when availabilityZoneAddress has neither availabilityZone nor availabilityZoneId', () => {
-      expect(() => {
-        NatProvider.regionalGateway({
+        // This should NOT throw, unlike zonal NAT gateway
+        new Vpc(stack, 'Vpc', {
+          natGatewayProvider,
+          subnetConfiguration: [
+            { name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+          ],
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+          AvailabilityMode: 'regional',
+        });
+      });
+
+      test('throws when both allocationId and eip are specified', () => {
+        const stack = new Stack();
+        const eip = new CfnEIP(stack, 'EIP');
+
+        expect(() => {
+          NatProvider.regionalGateway({
+            allocationId: 'eipalloc-12345678',
+            eip,
+          });
+        }).toThrow('Cannot specify both `allocationId` and `eip`. Use one or the other.');
+      });
+
+      test('with availabilityZoneAddresses', () => {
+        const stack = new Stack();
+        const natGatewayProvider = NatProvider.regionalGateway({
           availabilityZoneAddresses: [
             {
               allocationIds: ['eipalloc-11111111'],
-              // Missing both availabilityZone and availabilityZoneId
+              availabilityZone: 'us-east-1a',
+            },
+            {
+              allocationIds: ['eipalloc-22222222'],
+              availabilityZone: 'us-east-1b',
             },
           ],
         });
-      }).toThrow('Either `availabilityZone` or `availabilityZoneId` must be specified in `AvailabilityZoneAddress`.');
-    });
-
-    test('Regional NAT gateway provider throws when availabilityZoneAddresses is empty array', () => {
-      expect(() => {
-        NatProvider.regionalGateway({
-          availabilityZoneAddresses: [],
+        new Vpc(stack, 'Vpc', {
+          natGatewayProvider,
         });
-      }).toThrow('`availabilityZoneAddresses` cannot be an empty array.');
-    });
 
-    test('Regional NAT gateway provider throws when allocationIds is empty array', () => {
-      expect(() => {
-        NatProvider.regionalGateway({
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+          AvailabilityMode: 'regional',
+          AvailabilityZoneAddresses: [
+            {
+              AllocationIds: ['eipalloc-11111111'],
+              AvailabilityZone: 'us-east-1a',
+            },
+            {
+              AllocationIds: ['eipalloc-22222222'],
+              AvailabilityZone: 'us-east-1b',
+            },
+          ],
+        });
+      });
+
+      test('warns when availabilityZoneAddresses with allocationId', () => {
+        const app = new App();
+        const stack = new Stack(app, 'TestStack');
+        const natGatewayProvider = NatProvider.regionalGateway({
+          allocationId: 'eipalloc-ignored',
           availabilityZoneAddresses: [
             {
-              allocationIds: [],
+              allocationIds: ['eipalloc-11111111'],
               availabilityZone: 'us-east-1a',
             },
           ],
         });
-      }).toThrow('`allocationIds` cannot be an empty array in `AvailabilityZoneAddress`.');
-    });
+        new Vpc(stack, 'Vpc', {
+          natGatewayProvider,
+        });
 
-    test('Regional NAT gateway does not create EIP when availabilityZoneAddresses is specified', () => {
-      const stack = new Stack();
-      const eip = new CfnEIP(stack, 'ExternalEIP');
-      new Vpc(stack, 'Vpc', {
-        natGatewayProvider: NatProvider.regionalGateway({
-          availabilityZoneAddresses: [
-            { allocationIds: [eip.attrAllocationId], availabilityZone: 'us-east-1a' },
-          ],
-        }),
+        Annotations.fromStack(stack).hasWarning(
+          '/TestStack/Vpc',
+          Match.stringLikeRegexp('`allocationId` and `eip` are ignored when `availabilityZoneAddresses` is specified'),
+        );
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
-        AllocationId: Match.absent(),
-        AvailabilityZoneAddresses: Match.arrayWith([
-          Match.objectLike({
-            AllocationIds: Match.anyValue(),
-          }),
-        ]),
+      test('warns when availabilityZoneAddresses with eip', () => {
+        const app = new App();
+        const stack = new Stack(app, 'TestStack');
+        const natGatewayProvider = NatProvider.regionalGateway({
+          eip: new CfnEIP(stack, 'IgnoredEIP'),
+          availabilityZoneAddresses: [
+            {
+              allocationIds: ['eipalloc-11111111'],
+              availabilityZone: 'us-east-1a',
+            },
+          ],
+        });
+        new Vpc(stack, 'Vpc', {
+          natGatewayProvider,
+        });
+
+        Annotations.fromStack(stack).hasWarning(
+          '/TestStack/Vpc',
+          Match.stringLikeRegexp('`allocationId` and `eip` are ignored when `availabilityZoneAddresses` is specified'),
+        );
+      });
+
+      test('throws when availabilityZoneAddress has neither availabilityZone nor availabilityZoneId', () => {
+        expect(() => {
+          NatProvider.regionalGateway({
+            availabilityZoneAddresses: [
+              {
+                allocationIds: ['eipalloc-11111111'],
+                // Missing both availabilityZone and availabilityZoneId
+              },
+            ],
+          });
+        }).toThrow('Either `availabilityZone` or `availabilityZoneId` must be specified in `AvailabilityZoneAddress`.');
+      });
+
+      test('throws when availabilityZoneAddresses is empty array', () => {
+        expect(() => {
+          NatProvider.regionalGateway({
+            availabilityZoneAddresses: [],
+          });
+        }).toThrow('`availabilityZoneAddresses` cannot be an empty array.');
+      });
+
+      test('throws when allocationIds is empty array', () => {
+        expect(() => {
+          NatProvider.regionalGateway({
+            availabilityZoneAddresses: [
+              {
+                allocationIds: [],
+                availabilityZone: 'us-east-1a',
+              },
+            ],
+          });
+        }).toThrow('`allocationIds` cannot be an empty array in `AvailabilityZoneAddress`.');
       });
     });
 
