@@ -145,9 +145,11 @@ export interface ConfigureNatOptions {
   readonly vpc: Vpc;
 
   /**
-   * The public subnets where the NAT providers need to be placed
+   * The public subnets where the NAT providers need to be placed.
+   *
+   * Required for zonal NAT gateways, not used for regional NAT gateways.
    */
-  readonly natSubnets: PublicSubnet[];
+  readonly natSubnets?: PublicSubnet[];
 
   /**
    * The private subnets that need to route through the NAT providers.
@@ -340,17 +342,19 @@ export class NatGatewayProvider extends NatProvider {
   }
 
   public configureNat(options: ConfigureNatOptions) {
+    const natSubnets = options.natSubnets ?? [];
+
     if (
       this.props.eipAllocationIds != null
       && !Token.isUnresolved(this.props.eipAllocationIds)
-      && this.props.eipAllocationIds.length < options.natSubnets.length
+      && this.props.eipAllocationIds.length < natSubnets.length
     ) {
-      throw new UnscopedValidationError(`Not enough NAT gateway EIP allocation IDs (${this.props.eipAllocationIds.length} provided) for the requested subnet count (${options.natSubnets.length} needed).`);
+      throw new UnscopedValidationError(`Not enough NAT gateway EIP allocation IDs (${this.props.eipAllocationIds.length} provided) for the requested subnet count (${natSubnets.length} needed).`);
     }
 
     // Create the NAT gateways
     let i = 0;
-    for (const sub of options.natSubnets) {
+    for (const sub of natSubnets) {
       const eipAllocationId = this.props.eipAllocationIds ? pickN(i, this.props.eipAllocationIds) : undefined;
       const gateway = sub.addNatGateway(eipAllocationId);
       this.gateways.add(sub.availabilityZone, gateway.ref);
@@ -480,7 +484,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
 
-    for (const sub of options.natSubnets) {
+    for (const sub of options.natSubnets ?? []) {
       const natInstance = new Instance(sub, 'NatInstance', {
         instanceType: this.props.instanceType,
         machineImage,
@@ -640,7 +644,7 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
       userData.addCommands(...NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS);
     }
 
-    for (const sub of options.natSubnets) {
+    for (const sub of options.natSubnets ?? []) {
       const natInstance = new Instance(sub, 'NatInstance', {
         instanceType: this.props.instanceType,
         machineImage,

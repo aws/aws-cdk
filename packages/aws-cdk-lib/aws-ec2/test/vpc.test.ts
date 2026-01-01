@@ -1408,17 +1408,11 @@ describe('vpc', () => {
     test('Regional NAT gateway provider throws when both allocationId and eip are specified', () => {
       const stack = new Stack();
       const eip = new CfnEIP(stack, 'EIP');
-      const natGatewayProvider = NatProvider.regionalGateway({
-        allocationId: 'eipalloc-12345678',
-        eip,
-      });
 
       expect(() => {
-        new Vpc(stack, 'VpcNetwork', {
-          natGatewayProvider,
-          subnetConfiguration: [
-            { name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS },
-          ],
+        NatProvider.regionalGateway({
+          allocationId: 'eipalloc-12345678',
+          eip,
         });
       }).toThrow(/Cannot specify both allocationId and eip/);
     });

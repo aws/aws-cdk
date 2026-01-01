@@ -1820,8 +1820,9 @@ export class Vpc extends VpcBase {
     if (provider instanceof RegionalNatGatewayProvider) {
       provider.configureNat({
         vpc: this,
-        natSubnets: [], // Regional NAT Gateway doesn't use natSubnets
-        privateSubnets: this.privateSubnets as PrivateSubnet[],
+        privateSubnets: this.privateSubnets.filter(
+          (s): s is PrivateSubnet => s instanceof PrivateSubnet,
+        ),
       });
       return;
     }
