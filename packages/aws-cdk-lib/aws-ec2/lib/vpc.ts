@@ -2834,11 +2834,16 @@ function determineNatGatewayCount(
   const hasPublicSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PUBLIC && !c.reserved);
   const hasCustomEgress = subnetConfig.some(c => c.subnetType === SubnetType.PRIVATE_WITH_EGRESS);
 
-  // Regional NAT Gateway uses a single gateway regardless of AZ count
   const isRegionalNatGateway = natGatewayProvider instanceof RegionalNatGatewayProvider;
+
+  // Regional NAT Gateway uses a single gateway regardless of AZ count
+  if (isRegionalNatGateway && requestedCount !== undefined && requestedCount > 0) {
+    return 1;
+  }
+
   const count = requestedCount !== undefined
     ? Math.min(requestedCount, azCount)
-    : (hasPrivateSubnets ? (isRegionalNatGateway ? 1 : azCount) : 0);
+    : (hasPrivateSubnets ? azCount : 0);
 
   if (count === 0 && hasPrivateSubnets && !hasCustomEgress) {
     throw new UnscopedValidationError('If you do not want NAT gateways (natGateways=0), make sure you don\'t configure any PRIVATE(_WITH_NAT) subnets in \'subnetConfiguration\' (make them PUBLIC or ISOLATED instead)');

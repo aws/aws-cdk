@@ -1587,6 +1587,20 @@ describe('vpc', () => {
       });
     });
 
+    test('Regional NAT gateway count is 1 even when natGateways is set to higher value', () => {
+      const stack = new Stack();
+      new Vpc(stack, 'VpcNetwork', {
+        natGatewayProvider: NatProvider.regionalGateway(),
+        natGateways: 3,
+        subnetConfiguration: [
+          { name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+        ],
+      });
+
+      // Only 1 NAT Gateway should be created
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 1);
+    });
+
     test('Can add an IPv6 route', () => {
       // GIVEN
       const stack = getTestStack();
