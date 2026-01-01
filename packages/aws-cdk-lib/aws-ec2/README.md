@@ -189,7 +189,7 @@ Unlike zonal NAT gateways, a regional NAT gateway does not require public subnet
 
 ```ts
 // Basic usage
-// Creates a single Regional NAT Gateway for the VPC
+// Creates a single Regional NAT Gateway for the VPC and automatically allocate Elastic IPs
 new ec2.Vpc(this, 'Vpc', {
   natGatewayProvider: ec2.NatProvider.regionalGateway(),
 });
