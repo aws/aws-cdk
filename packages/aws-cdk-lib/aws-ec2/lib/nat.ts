@@ -243,8 +243,7 @@ export interface RegionalNatGatewayProviderProps {
    * and the Elastic IP addresses to use in each AZ.
    *
    * When specified, `allocationId` and `eip` are ignored.
-   * This enables manual mode for Regional NAT Gateway where you control
-   * EIP allocation per AZ.
+   * This enables manual mode for Regional NAT Gateway where you control EIP allocation per AZ.
    *
    * @default - Automatic mode: AWS manages AZ coverage and EIP allocation
    */
@@ -443,24 +442,24 @@ export class RegionalNatGatewayProvider extends NatProvider {
 
     if (this.props.allocationId && this.props.eip) {
       throw new UnscopedValidationError(
-        'Cannot specify both allocationId and eip. Use one or the other.',
+        'Cannot specify both `allocationId` and `eip`. Use one or the other.',
       );
     }
 
     if (this.props.availabilityZoneAddresses) {
       if (this.props.availabilityZoneAddresses.length === 0) {
         throw new UnscopedValidationError(
-          'availabilityZoneAddresses cannot be an empty array',
+          '`availabilityZoneAddresses` cannot be an empty array.',
         );
       }
       if (this.props.availabilityZoneAddresses.some(az => !az.availabilityZone && !az.availabilityZoneId)) {
         throw new UnscopedValidationError(
-          'Either availabilityZone or availabilityZoneId must be specified in AvailabilityZoneAddress',
+          'Either `availabilityZone` or `availabilityZoneId` must be specified in `AvailabilityZoneAddress`.',
         );
       }
       if (this.props.availabilityZoneAddresses.some(az => az.allocationIds.length === 0)) {
         throw new UnscopedValidationError(
-          'allocationIds cannot be an empty array in AvailabilityZoneAddress',
+          '`allocationIds` cannot be an empty array in `AvailabilityZoneAddress`.',
         );
       }
     }
@@ -468,11 +467,11 @@ export class RegionalNatGatewayProvider extends NatProvider {
 
   public configureNat(options: ConfigureNatOptions) {
     // Warn if availabilityZoneAddresses is specified with allocationId/eip
+    // allocationId/eip will be ignored in that case
     if (this.props.availabilityZoneAddresses && (this.props.allocationId || this.props.eip)) {
       Annotations.of(options.vpc).addWarningV2(
         '@aws-cdk/aws-ec2:regionalNatGatewayAllocationIdIgnored',
-        'allocationId and eip are ignored when availabilityZoneAddresses is specified. ' +
-        'Use availabilityZoneAddresses to configure EIPs per Availability Zone.',
+        '`allocationId` and `eip` are ignored when `availabilityZoneAddresses` is specified.',
       );
     }
 
@@ -480,7 +479,11 @@ export class RegionalNatGatewayProvider extends NatProvider {
       vpcId: options.vpc.vpcId,
       availabilityMode: 'regional',
       connectivityType: 'public',
-      allocationId: this.getAllocationId(options.vpc),
+      allocationId: this.props.allocationId
+        ?? this.props.eip
+        ?? new CfnEIP(options.vpc, 'RegionalNatGatewayEIP', {
+          domain: 'vpc',
+        }),
       availabilityZoneAddresses: this.props.availabilityZoneAddresses,
       maxDrainDurationSeconds: this.props.maxDrainDuration?.toSeconds(),
     });
@@ -508,26 +511,6 @@ export class RegionalNatGatewayProvider extends NatProvider {
     return this.natGateway
       ? [{ az: 'regional', gatewayId: this.natGateway.attrNatGatewayId }]
       : [];
-  }
-
-  private getAllocationId(vpc: Vpc): string | IEIPRef | undefined {
-    // availabilityZoneAddresses uses its own EIP configuration per AZ
-    if (this.props.availabilityZoneAddresses) {
-      return undefined;
-    }
-
-    if (this.props.allocationId) {
-      return this.props.allocationId;
-    }
-
-    if (this.props.eip) {
-      return this.props.eip;
-    }
-
-    // Create a new EIP automatically (same pattern as Zonal NAT Gateway)
-    return new CfnEIP(vpc, 'RegionalNatGatewayEIP', {
-      domain: 'vpc',
-    });
   }
 }
 
