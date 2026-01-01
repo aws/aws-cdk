@@ -1816,7 +1816,6 @@ export class Vpc extends VpcBase {
   }
 
   private createNatGateways(provider: NatProvider, natCount: number, placement: SubnetSelection): void {
-    // Regional NAT Gateway does not require public subnets
     if (provider instanceof RegionalNatGatewayProvider) {
       provider.configureNat({
         vpc: this,
@@ -1825,9 +1824,6 @@ export class Vpc extends VpcBase {
         ),
       });
 
-      // Regional NAT Gateway requires IGW to be attached first.
-      // Unlike Zonal NAT Gateways (which have implicit dependency via subnet placement),
-      // Regional NAT Gateway only references vpcId, so explicit dependency is needed.
       if (provider.natGateway) {
         provider.natGateway.node.addDependency(this.internetConnectivityEstablished);
       }
