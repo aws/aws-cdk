@@ -1,0 +1,929 @@
+{
+ "Resources": {
+  "VpcMinimalE698D2C3": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcMinimal"
+     }
+    ]
+   }
+  },
+  "VpcMinimalPrivateSubnet1SubnetE07A1DFE": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/17",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcMinimal/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VpcMinimalE698D2C3"
+    }
+   }
+  },
+  "VpcMinimalPrivateSubnet1RouteTableB98D88F5": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcMinimal/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VpcMinimalE698D2C3"
+    }
+   }
+  },
+  "VpcMinimalPrivateSubnet1RouteTableAssociationA4F4D523": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcMinimalPrivateSubnet1RouteTableB98D88F5"
+    },
+    "SubnetId": {
+     "Ref": "VpcMinimalPrivateSubnet1SubnetE07A1DFE"
+    }
+   }
+  },
+  "VpcMinimalPrivateSubnet1DefaultRoute689932DE": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Fn::GetAtt": [
+      "VpcMinimalRegionalNatGateway29AEA777",
+      "NatGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Ref": "VpcMinimalPrivateSubnet1RouteTableB98D88F5"
+    }
+   }
+  },
+  "VpcMinimalPrivateSubnet2Subnet5650C335": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/17",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcMinimal/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VpcMinimalE698D2C3"
+    }
+   }
+  },
+  "VpcMinimalPrivateSubnet2RouteTable6F73FEFC": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcMinimal/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VpcMinimalE698D2C3"
+    }
+   }
+  },
+  "VpcMinimalPrivateSubnet2RouteTableAssociationD0AA47A8": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcMinimalPrivateSubnet2RouteTable6F73FEFC"
+    },
+    "SubnetId": {
+     "Ref": "VpcMinimalPrivateSubnet2Subnet5650C335"
+    }
+   }
+  },
+  "VpcMinimalPrivateSubnet2DefaultRoute87899180": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Fn::GetAtt": [
+      "VpcMinimalRegionalNatGateway29AEA777",
+      "NatGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Ref": "VpcMinimalPrivateSubnet2RouteTable6F73FEFC"
+    }
+   }
+  },
+  "VpcMinimalIGW8F34E96F": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcMinimal"
+     }
+    ]
+   }
+  },
+  "VpcMinimalVPCGWFD28F5A0": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "VpcMinimalIGW8F34E96F"
+    },
+    "VpcId": {
+     "Ref": "VpcMinimalE698D2C3"
+    }
+   }
+  },
+  "VpcMinimalRegionalNatGatewayEIPBC8E20CF": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcMinimal"
+     }
+    ]
+   }
+  },
+  "VpcMinimalRegionalNatGateway29AEA777": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VpcMinimalRegionalNatGatewayEIPBC8E20CF",
+      "AllocationId"
+     ]
+    },
+    "AvailabilityMode": "regional",
+    "ConnectivityType": "public",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcMinimal"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VpcMinimalE698D2C3"
+    }
+   },
+   "DependsOn": [
+    "VpcMinimalIGW8F34E96F"
+   ]
+  },
+  "VpcMinimalRestrictDefaultSecurityGroupCustomResourceDBEDBFF9": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "VpcMinimalE698D2C3",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": {
+     "Ref": "AWS::AccountId"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ec2:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":security-group/",
+             {
+              "Fn::GetAtt": [
+               "VpcMinimalE698D2C3",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ec2:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":security-group/",
+             {
+              "Fn::GetAtt": [
+               "VpcWithEip3E290B42",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ec2:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":security-group/",
+             {
+              "Fn::GetAtt": [
+               "VpcWithAzAddressesE1CB7BD3",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ]
+  },
+  "NatEip": {
+   "Type": "AWS::EC2::EIP"
+  },
+  "VpcWithEip3E290B42": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcWithEip"
+     }
+    ]
+   }
+  },
+  "VpcWithEipPrivateSubnet1Subnet3AE2A530": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/17",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcWithEip/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VpcWithEip3E290B42"
+    }
+   }
+  },
+  "VpcWithEipPrivateSubnet1RouteTable2188AD25": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcWithEip/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VpcWithEip3E290B42"
+    }
+   }
+  },
+  "VpcWithEipPrivateSubnet1RouteTableAssociation5F05058A": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcWithEipPrivateSubnet1RouteTable2188AD25"
+    },
+    "SubnetId": {
+     "Ref": "VpcWithEipPrivateSubnet1Subnet3AE2A530"
+    }
+   }
+  },
+  "VpcWithEipPrivateSubnet1DefaultRouteC049064C": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Fn::GetAtt": [
+      "VpcWithEipRegionalNatGatewayA5BB7343",
+      "NatGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Ref": "VpcWithEipPrivateSubnet1RouteTable2188AD25"
+    }
+   }
+  },
+  "VpcWithEipPrivateSubnet2SubnetD754D8FE": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/17",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcWithEip/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VpcWithEip3E290B42"
+    }
+   }
+  },
+  "VpcWithEipPrivateSubnet2RouteTable2792E72D": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcWithEip/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VpcWithEip3E290B42"
+    }
+   }
+  },
+  "VpcWithEipPrivateSubnet2RouteTableAssociation1567316E": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcWithEipPrivateSubnet2RouteTable2792E72D"
+    },
+    "SubnetId": {
+     "Ref": "VpcWithEipPrivateSubnet2SubnetD754D8FE"
+    }
+   }
+  },
+  "VpcWithEipPrivateSubnet2DefaultRouteA982E219": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Fn::GetAtt": [
+      "VpcWithEipRegionalNatGatewayA5BB7343",
+      "NatGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Ref": "VpcWithEipPrivateSubnet2RouteTable2792E72D"
+    }
+   }
+  },
+  "VpcWithEipIGW61363602": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcWithEip"
+     }
+    ]
+   }
+  },
+  "VpcWithEipVPCGWADFBEA2B": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "VpcWithEipIGW61363602"
+    },
+    "VpcId": {
+     "Ref": "VpcWithEip3E290B42"
+    }
+   }
+  },
+  "VpcWithEipRegionalNatGatewayA5BB7343": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "NatEip",
+      "AllocationId"
+     ]
+    },
+    "AvailabilityMode": "regional",
+    "ConnectivityType": "public",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcWithEip"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VpcWithEip3E290B42"
+    }
+   },
+   "DependsOn": [
+    "VpcWithEipIGW61363602"
+   ]
+  },
+  "VpcWithEipRestrictDefaultSecurityGroupCustomResourceB8CA6CD6": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "VpcWithEip3E290B42",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": {
+     "Ref": "AWS::AccountId"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "NatEip1": {
+   "Type": "AWS::EC2::EIP"
+  },
+  "NatEip2": {
+   "Type": "AWS::EC2::EIP"
+  },
+  "VpcWithAzAddressesE1CB7BD3": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcWithAzAddresses"
+     }
+    ]
+   }
+  },
+  "VpcWithAzAddressesPrivateSubnet1SubnetFA62492B": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/17",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcWithAzAddresses/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VpcWithAzAddressesE1CB7BD3"
+    }
+   }
+  },
+  "VpcWithAzAddressesPrivateSubnet1RouteTableB923A5D1": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcWithAzAddresses/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VpcWithAzAddressesE1CB7BD3"
+    }
+   }
+  },
+  "VpcWithAzAddressesPrivateSubnet1RouteTableAssociation39A9C818": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcWithAzAddressesPrivateSubnet1RouteTableB923A5D1"
+    },
+    "SubnetId": {
+     "Ref": "VpcWithAzAddressesPrivateSubnet1SubnetFA62492B"
+    }
+   }
+  },
+  "VpcWithAzAddressesPrivateSubnet1DefaultRoute9A373F1E": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Fn::GetAtt": [
+      "VpcWithAzAddressesRegionalNatGateway6423F064",
+      "NatGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Ref": "VpcWithAzAddressesPrivateSubnet1RouteTableB923A5D1"
+    }
+   }
+  },
+  "VpcWithAzAddressesPrivateSubnet2Subnet0FB5DD00": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/17",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcWithAzAddresses/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VpcWithAzAddressesE1CB7BD3"
+    }
+   }
+  },
+  "VpcWithAzAddressesPrivateSubnet2RouteTableE9662F6F": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcWithAzAddresses/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VpcWithAzAddressesE1CB7BD3"
+    }
+   }
+  },
+  "VpcWithAzAddressesPrivateSubnet2RouteTableAssociation30D3FBD1": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcWithAzAddressesPrivateSubnet2RouteTableE9662F6F"
+    },
+    "SubnetId": {
+     "Ref": "VpcWithAzAddressesPrivateSubnet2Subnet0FB5DD00"
+    }
+   }
+  },
+  "VpcWithAzAddressesPrivateSubnet2DefaultRoute1FF6BA5E": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Fn::GetAtt": [
+      "VpcWithAzAddressesRegionalNatGateway6423F064",
+      "NatGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Ref": "VpcWithAzAddressesPrivateSubnet2RouteTableE9662F6F"
+    }
+   }
+  },
+  "VpcWithAzAddressesIGW6718AF4C": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcWithAzAddresses"
+     }
+    ]
+   }
+  },
+  "VpcWithAzAddressesVPCGWF2C3D410": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "VpcWithAzAddressesIGW6718AF4C"
+    },
+    "VpcId": {
+     "Ref": "VpcWithAzAddressesE1CB7BD3"
+    }
+   }
+  },
+  "VpcWithAzAddressesRegionalNatGateway6423F064": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AvailabilityMode": "regional",
+    "AvailabilityZoneAddresses": [
+     {
+      "AllocationIds": [
+       {
+        "Fn::GetAtt": [
+         "NatEip1",
+         "AllocationId"
+        ]
+       }
+      ],
+      "AvailabilityZone": "us-east-1a"
+     },
+     {
+      "AllocationIds": [
+       {
+        "Fn::GetAtt": [
+         "NatEip2",
+         "AllocationId"
+        ]
+       }
+      ],
+      "AvailabilityZone": "us-east-1b"
+     }
+    ],
+    "ConnectivityType": "public",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayStack/VpcWithAzAddresses"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VpcWithAzAddressesE1CB7BD3"
+    }
+   },
+   "DependsOn": [
+    "VpcWithAzAddressesIGW6718AF4C"
+   ]
+  },
+  "VpcWithAzAddressesRestrictDefaultSecurityGroupCustomResource288A38FE": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "VpcWithAzAddressesE1CB7BD3",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": {
+     "Ref": "AWS::AccountId"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
