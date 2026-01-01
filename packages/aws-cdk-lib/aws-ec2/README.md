@@ -191,9 +191,6 @@ Unlike zonal NAT gateways, a regional NAT gateway does not require public subnet
 // Basic usage - CDK creates an EIP automatically
 new ec2.Vpc(this, 'Vpc', {
   natGatewayProvider: ec2.NatProvider.regionalGateway(),
-  subnetConfiguration: [
-    { name: 'Private', subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
-  ],
 });
 ```
 
@@ -205,9 +202,6 @@ new ec2.Vpc(this, 'Vpc', {
   natGatewayProvider: ec2.NatProvider.regionalGateway({
     eip,
   }),
-  subnetConfiguration: [
-    { name: 'Private', subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
-  ],
 });
 ```
 
@@ -224,9 +218,6 @@ new ec2.Vpc(this, 'Vpc', {
       { allocationIds: [eip2.attrAllocationId], availabilityZone: 'us-east-1b' },
     ],
   }),
-  subnetConfiguration: [
-    { name: 'Private', subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
-  ],
 });
 ```
 
@@ -237,9 +228,6 @@ new ec2.Vpc(this, 'Vpc', {
   natGatewayProvider: ec2.NatProvider.regionalGateway({
     maxDrainDuration: Duration.minutes(10),
   }),
-  subnetConfiguration: [
-    { name: 'Private', subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
-  ],
 });
 ```
 
