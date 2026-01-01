@@ -481,9 +481,13 @@ export class RegionalNatGatewayProvider extends NatProvider {
       connectivityType: 'public',
       allocationId: this.props.allocationId
         ?? this.props.eip
-        ?? new CfnEIP(options.vpc, 'RegionalNatGatewayEIP', {
-          domain: 'vpc',
-        }),
+        ?? (
+          this.props.availabilityZoneAddresses
+            ? undefined
+            : new CfnEIP(options.vpc, 'RegionalNatGatewayEIP', {
+              domain: 'vpc',
+            })
+        ),
       availabilityZoneAddresses: this.props.availabilityZoneAddresses,
       maxDrainDurationSeconds: this.props.maxDrainDuration?.toSeconds(),
     });

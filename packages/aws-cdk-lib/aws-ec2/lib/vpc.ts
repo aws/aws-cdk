@@ -2837,7 +2837,7 @@ function determineNatGatewayCount(
   const isRegionalNatGateway = natGatewayProvider instanceof RegionalNatGatewayProvider;
 
   // Regional NAT Gateway uses a single gateway regardless of AZ count
-  if (isRegionalNatGateway && requestedCount !== undefined && requestedCount > 0) {
+  if (isRegionalNatGateway && (requestedCount !== 0)) {
     return 1;
   }
 
