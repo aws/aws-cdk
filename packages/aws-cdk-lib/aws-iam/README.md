@@ -744,6 +744,8 @@ thumbprint of the root certificate authority (CA) will automatically be obtained
 from the host as described
 [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html).
 
+**Note:** If you are migrating from `OpenIdConnectProvider` to `OidcProviderNative`, you must follow a two-step deployment process. See the migration instructions in the `OpenIdConnectProvider` class documentation for details.
+
 By default, the custom resource enforces strict security practices by rejecting
 any unauthorized connections when downloading CA thumbprints from the issuer URL.
 If you need to connect to an unauthorized OIDC identity provider and understand the
