@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "OrphanedLoadBalancerCleanupTest/DefaultTest": {
+      "stacks": [
+        "OrphanedLoadBalancerCleanupStack"
+      ],
+      "assertionStack": "OrphanedLoadBalancerCleanupTest/DefaultTest/DeployAssert",
+      "assertionStackName": "OrphanedLoadBalancerCleanupTestDefaultTestDeployAssert0067E2AD"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

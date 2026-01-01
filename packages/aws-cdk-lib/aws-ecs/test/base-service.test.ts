@@ -515,3 +515,177 @@ describe('Blue/Green Deployment', () => {
     expect(service.isUsingECSDeploymentController()).toBe(false);
   });
 });
+
+describe('Orphaned Load Balancer Cleanup', () => {
+  let stack: cdk.Stack;
+  let vpc: ec2.Vpc;
+  let cluster: ecs.Cluster;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'Vpc');
+    cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  });
+
+  test('should clean up orphaned load balancer references during synthesis', () => {
+    // GIVEN
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+    taskDefinition.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('nginx'),
+      portMappings: [{ containerPort: 80 }],
+    });
+
+    const service = new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+    });
+
+    // Simulate the scenario where a target group was previously registered
+    // but is no longer present in the construct tree (removed from CDK code)
+    // This directly adds an orphaned reference to test the cleanup logic
+    (service as any).loadBalancers.push({
+      targetGroupArn: 'arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/removed-target-group/1234567890123456',
+      containerName: 'Container',
+      containerPort: 80,
+    });
+
+    // Verify the service has the orphaned load balancer reference
+    expect((service as any).loadBalancers).toHaveLength(1);
+
+    // WHEN - Trigger synthesis which should run our validation
+    const template = Template.fromStack(stack);
+
+    // THEN - The service should not have any load balancer references in the template
+    // because our validation should have cleaned up the orphaned reference
+    template.hasResourceProperties('AWS::ECS::Service', {
+      LoadBalancers: Match.absent(),
+    });
+  });
+
+  test('should preserve valid load balancer references', () => {
+    // GIVEN
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+    taskDefinition.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('nginx'),
+      portMappings: [{ containerPort: 80 }],
+    });
+
+    const service = new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+    });
+
+    // Create a target group and register the service
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', { port: 80 });
+    listener.addTargets('Targets', {
+      port: 80,
+      targets: [service],
+    });
+
+    // WHEN - Trigger synthesis
+    const template = Template.fromStack(stack);
+
+    // THEN - The service should still have the load balancer reference
+    // because the target group still exists
+    template.hasResourceProperties('AWS::ECS::Service', {
+      LoadBalancers: [
+        {
+          ContainerName: 'Container',
+          ContainerPort: 80,
+          TargetGroupArn: {
+            Ref: Match.anyValue(),
+          },
+        },
+      ],
+    });
+  });
+
+  test('should handle multiple load balancer references correctly', () => {
+    // GIVEN
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+    taskDefinition.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('nginx'),
+      portMappings: [{ containerPort: 80 }, { containerPort: 8080 }],
+    });
+
+    const service = new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+    });
+
+    // Create one valid target group
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', { port: 8080 });
+
+    listener.addTargets('Targets', {
+      port: 8080,
+      targets: [service.loadBalancerTarget({
+        containerName: 'Container',
+        containerPort: 8080,
+      })],
+    });
+
+    // Add an orphaned reference (simulating a removed target group)
+    (service as any).loadBalancers.push({
+      targetGroupArn: 'arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/removed-target-group/1234567890123456',
+      containerName: 'Container',
+      containerPort: 80,
+    });
+
+    // Verify both load balancer references exist initially
+    expect((service as any).loadBalancers).toHaveLength(2);
+
+    // WHEN - Trigger synthesis
+    const template = Template.fromStack(stack);
+
+    // THEN - Only the valid load balancer reference should remain
+    template.hasResourceProperties('AWS::ECS::Service', {
+      LoadBalancers: [
+        {
+          ContainerName: 'Container',
+          ContainerPort: 8080,
+          TargetGroupArn: {
+            Ref: Match.anyValue(),
+          },
+        },
+      ],
+    });
+  });
+
+  test('should handle token-based ARNs gracefully', () => {
+    // GIVEN
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+    taskDefinition.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('nginx'),
+      portMappings: [{ containerPort: 80 }],
+    });
+
+    const service = new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+    });
+
+    // Manually add a load balancer reference with a token-based ARN
+    // This simulates cross-stack references or imported target groups
+    (service as any).loadBalancers.push({
+      targetGroupArn: cdk.Lazy.string({ produce: () => 'arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/my-targets/1234567890123456' }),
+      containerName: 'Container',
+      containerPort: 80,
+    });
+
+    // WHEN - Trigger synthesis
+    const template = Template.fromStack(stack);
+
+    // THEN - The token-based reference should be preserved
+    template.hasResourceProperties('AWS::ECS::Service', {
+      LoadBalancers: [
+        {
+          ContainerName: 'Container',
+          ContainerPort: 80,
+          TargetGroupArn: 'arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/my-targets/1234567890123456',
+        },
+      ],
+    });
+  });
+});
