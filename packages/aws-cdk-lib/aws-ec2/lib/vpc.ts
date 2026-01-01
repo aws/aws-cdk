@@ -2841,16 +2841,13 @@ function determineNatGatewayCount(
     return 1;
   }
 
-  const count = requestedCount !== undefined
-    ? Math.min(requestedCount, azCount)
-    : (hasPrivateSubnets ? azCount : 0);
+  const count = requestedCount !== undefined ? Math.min(requestedCount, azCount) : (hasPrivateSubnets ? azCount : 0);
 
   if (count === 0 && hasPrivateSubnets && !hasCustomEgress) {
     throw new UnscopedValidationError('If you do not want NAT gateways (natGateways=0), make sure you don\'t configure any PRIVATE(_WITH_NAT) subnets in \'subnetConfiguration\' (make them PUBLIC or ISOLATED instead)');
   }
 
-  // Regional NAT Gateway does not require public subnets
-  if (count > 0 && !hasPublicSubnets && !isRegionalNatGateway) {
+  if (count > 0 && !hasPublicSubnets) {
     throw new UnscopedValidationError(`If you configure PRIVATE subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into (got ${JSON.stringify(subnetConfig)}.`);
   }
 
