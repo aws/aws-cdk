@@ -15,11 +15,8 @@ After extracting the archive, follow the following instructions:
 
 ### Installing the CLI
 
-The CLI (the `cdk` command) is always installed using npm, regardless of your language.
-
-```
-npm install -g /path/to/zip/js/aws-cdk-1.2.3.tgz
-```
+> **Note:** The AWS CDK CLI has been moved to a separate repository. It is released independently from the CDK libraries. For installation instructions, releases, and source code, see:
+[AWS CDK CLI repository](https://github.com/aws/aws-cdk-cli)
 
 ### TypeScript/JavaScript (npm)
 

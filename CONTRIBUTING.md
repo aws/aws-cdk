@@ -530,14 +530,14 @@ CDK integration tests.
 We've added a watch feature to the CDK that builds your code as you type it. Start this by running `yarn watch` for
 each module that you are modifying.
 
-For example, watch the aws-cdk-lib and aws-cdk modules in a second terminal session:
+For example, watch the aws-cdk-lib module in a second terminal session:
 
 ```console
 $ cd packages/aws-cdk-lib
 $ yarn watch & # runs in the background
-$ cd packages/aws-cdk
-$ yarn watch & # runs in the background
 ```
+
+> **Note:** The AWS CDK CLI has been moved to a separate repository. If you need to watch the CLI package, please refer to the [AWS CDK CLI repository](https://github.com/aws/aws-cdk-cli).
 
 #### Verify your fix by deployment
 
@@ -1020,21 +1020,7 @@ be deprecated and the final version - `grantAwesomePower` will be added.
 
 ### Adding new experimental CLI features
 
-In order to move fast when developing new CLI features, we may decide to release 
-functionality as "experimental" or "incremental." In this scenario we can utilize
-explicit opt-in via an `--unstable` flag.
-
-Explicit opt-ins would look something like this:
-
-```bash
-cdk new-command --unstable='new-command'
-
-cdk bootstrap --unstable='new-funky-bootstrap'
-```
-
-And can be simply added as an additional flag on the CLI command that is being worked on.
-When the time comes to stabilize the command, we remove the requirement that such a flag
-is set.
+> **Note:** The AWS CDK CLI has been moved to a separate repository. For information about adding new experimental CLI features, please refer to the [AWS CDK CLI repository](https://github.com/aws/aws-cdk-cli).
 
 ## Documentation
 
@@ -1274,10 +1260,7 @@ You can use `find-cycles` to print a list of internal dependency cycles:
 
 ## Running CLI integration tests
 
-The CLI package (`packages/aws-cdk`) has some integration tests that aren't
-run as part of the regular build, since they have some particular requirements.
-See the [CLI CONTRIBUTING.md file](packages/aws-cdk/CONTRIBUTING.md) for
-more information on running those tests.
+> **Note:** The AWS CDK CLI has been moved to a separate repository. For information about running CLI integration tests, please refer to the [CLI Integration Tests](https://github.com/aws/aws-cdk-cli/blob/main/packages/@aws-cdk-testing/cli-integ/README.md) document in the [AWS CDK CLI repository](https://github.com/aws/aws-cdk-cli).
 
 ## Building and testing v2 -alpha packages
 
@@ -1568,6 +1551,7 @@ The badges have the following meaning:
 
 ## Related Repositories
 
+* [AWS CDK CLI](https://github.com/aws/aws-cdk-cli): the AWS CDK command-line interface (moved to a separate repository)
 * [Samples](https://github.com/aws-samples/aws-cdk-examples): includes sample code in multiple languages
 * [Workshop](https://github.com/aws-samples/aws-cdk-intro-workshop): source for https://cdkworkshop.com
 * [Developer Guide](https://github.com/awsdocs/aws-cdk-guide): markdown source for developer guide
