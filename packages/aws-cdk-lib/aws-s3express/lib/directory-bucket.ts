@@ -268,6 +268,12 @@ export class DirectoryBucket extends Resource implements IDirectoryBucket {
 
   public readonly bucketArn: string;
   public readonly bucketName: string;
+
+  /**
+   * The KMS key used to encrypt the directory bucket.
+   *
+   * @attribute
+   */
   public readonly encryptionKey?: kms.IKey;
 
   private policy?: iam.PolicyDocument;

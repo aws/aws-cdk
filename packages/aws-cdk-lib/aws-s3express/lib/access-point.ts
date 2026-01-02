@@ -48,6 +48,23 @@ export interface IDirectoryBucketAccessPoint extends IResource {
 }
 
 /**
+ * Attributes for importing an existing S3 Express directory bucket access point
+ */
+export interface DirectoryBucketAccessPointAttributes {
+  /**
+   * The ARN of the access point.
+   * At least one of accessPointArn or accessPointName must be specified.
+   */
+  readonly accessPointArn?: string;
+
+  /**
+   * The name of the access point.
+   * At least one of accessPointArn or accessPointName must be specified.
+   */
+  readonly accessPointName?: string;
+}
+
+/**
  * Properties for defining an S3 Express One Zone directory bucket access point
  */
 export interface DirectoryBucketAccessPointProps {
@@ -86,18 +103,34 @@ export interface DirectoryBucketAccessPointProps {
  */
 export class DirectoryBucketAccessPoint extends Resource implements IDirectoryBucketAccessPoint {
   /**
-   * Import an existing directory bucket access point given its ARN
+   * Import an existing directory bucket access point from its attributes
    *
    * @param scope The parent construct
    * @param id The construct ID
-   * @param accessPointArn The ARN of the access point
+   * @param attrs The attributes of the access point to import
    */
-  public static fromAccessPointArn(
+  public static fromAccessPointAttributes(
     scope: Construct,
     id: string,
-    accessPointArn: string,
+    attrs: DirectoryBucketAccessPointAttributes,
   ): IDirectoryBucketAccessPoint {
-    const accessPointName = Stack.of(scope).splitArn(accessPointArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+    const stack = Stack.of(scope);
+    let accessPointArn: string;
+    let accessPointName: string;
+
+    if (attrs.accessPointArn) {
+      accessPointArn = attrs.accessPointArn;
+      accessPointName = attrs.accessPointName ?? stack.splitArn(accessPointArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+    } else if (attrs.accessPointName) {
+      accessPointName = attrs.accessPointName;
+      accessPointArn = stack.formatArn({
+        service: 's3express',
+        resource: 'accesspoint',
+        resourceName: accessPointName,
+      });
+    } else {
+      throw new Error('Either accessPointArn or accessPointName must be specified in DirectoryBucketAccessPointAttributes');
+    }
 
     class Import extends Resource implements IDirectoryBucketAccessPoint {
       public readonly accessPointArn = accessPointArn;
@@ -128,6 +161,21 @@ export class DirectoryBucketAccessPoint extends Resource implements IDirectoryBu
   }
 
   /**
+   * Import an existing directory bucket access point given its ARN
+   *
+   * @param scope The parent construct
+   * @param id The construct ID
+   * @param accessPointArn The ARN of the access point
+   */
+  public static fromAccessPointArn(
+    scope: Construct,
+    id: string,
+    accessPointArn: string,
+  ): IDirectoryBucketAccessPoint {
+    return DirectoryBucketAccessPoint.fromAccessPointAttributes(scope, id, { accessPointArn });
+  }
+
+  /**
    * Import an existing directory bucket access point given its name
    *
    * @param scope The parent construct
@@ -139,14 +187,7 @@ export class DirectoryBucketAccessPoint extends Resource implements IDirectoryBu
     id: string,
     accessPointName: string,
   ): IDirectoryBucketAccessPoint {
-    const stack = Stack.of(scope);
-    const accessPointArn = stack.formatArn({
-      service: 's3express',
-      resource: 'accesspoint',
-      resourceName: accessPointName,
-    });
-
-    return DirectoryBucketAccessPoint.fromAccessPointArn(scope, id, accessPointArn);
+    return DirectoryBucketAccessPoint.fromAccessPointAttributes(scope, id, { accessPointName });
   }
 
   public readonly accessPointArn: string;
