@@ -10,6 +10,7 @@ import {
   Stack,
   Token,
 } from '../../core';
+import { ValidationError } from '../../core/lib/errors';
 
 /**
  * Represents an S3 Express One Zone directory bucket
@@ -358,16 +359,16 @@ export class DirectoryBucket extends Resource implements IDirectoryBucket {
 
     // Validate location
     if (!location.availabilityZone && !location.localZone) {
-      throw new Error('Either availabilityZone or localZone must be specified in location');
+      throw new ValidationError('Either availabilityZone or localZone must be specified in location', this);
     }
 
     if (location.availabilityZone && location.localZone) {
-      throw new Error('Cannot specify both availabilityZone and localZone in location');
+      throw new ValidationError('Cannot specify both availabilityZone and localZone in location', this);
     }
 
     // Validate encryption
     if (encryptionKey && encryption !== DirectoryBucketEncryption.KMS) {
-      throw new Error('encryptionKey can only be specified when encryption is set to KMS');
+      throw new ValidationError('encryptionKey can only be specified when encryption is set to KMS', this);
     }
 
     // Validate bucket name format if provided
@@ -382,25 +383,28 @@ export class DirectoryBucket extends Resource implements IDirectoryBucket {
 
     // Must have exactly 3 parts: bucket-base-name, zone-id, x-s3
     if (parts.length !== 3 || parts[2] !== 'x-s3') {
-      throw new Error(
+      throw new ValidationError(
         `Invalid directory bucket name: ${bucketName}. ` +
         'Directory bucket names must follow the format: bucket-base-name--zone-id--x-s3',
+        this,
       );
     }
 
     // Validate bucket-base-name: starts with alphanumeric, can contain hyphens
     if (!/^[a-z0-9][a-z0-9-]*$/.test(parts[0])) {
-      throw new Error(
+      throw new ValidationError(
         `Invalid directory bucket name: ${bucketName}. ` +
         'Bucket base name must start with a lowercase letter or number and contain only lowercase letters, numbers, and hyphens.',
+        this,
       );
     }
 
     // Validate zone-id: alphanumeric and hyphens
     if (!/^[a-z0-9-]+$/.test(parts[1])) {
-      throw new Error(
+      throw new ValidationError(
         `Invalid directory bucket name: ${bucketName}. ` +
         'Zone ID must contain only lowercase letters, numbers, and hyphens.',
+        this,
       );
     }
   }
@@ -412,7 +416,7 @@ export class DirectoryBucket extends Resource implements IDirectoryBucket {
     if (location.localZone) {
       return location.localZone;
     }
-    throw new Error('Either availabilityZone or localZone must be specified');
+    throw new ValidationError('Either availabilityZone or localZone must be specified', this);
   }
 
   private extractZoneId(location: string): string {
