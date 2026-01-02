@@ -55,12 +55,16 @@ export interface DirectoryBucketAccessPointAttributes {
   /**
    * The ARN of the access point.
    * At least one of accessPointArn or accessPointName must be specified.
+   *
+   * @default - Required if accessPointName is not provided
    */
   readonly accessPointArn?: string;
 
   /**
    * The name of the access point.
    * At least one of accessPointArn or accessPointName must be specified.
+   *
+   * @default - Required if accessPointArn is not provided
    */
   readonly accessPointName?: string;
 }
