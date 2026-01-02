@@ -156,6 +156,13 @@
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
+"@aws-cdk/service-spec-types@^0.0.201":
+  version "0.0.201"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.201.tgz#3481ff79a99a11d971c4a3387def84d7bdbbc866"
+  integrity sha512-dHBmmKU24ROarP4GN5NQBu1UjV3Me8tdzA2I+/GPSEtt0J1EEObi3megYeU3fYx50i6uzYQ1pJVo9nVWgce9vA==
+  dependencies:
+    "@cdklabs/tskb" "^0.0.4"
+
 "@aws-crypto/crc32@5.2.0":
   version "5.2.0"
   resolved "https://registry.npmjs.org/@aws-crypto/crc32/-/crc32-5.2.0.tgz#cfcc22570949c98c6689cfcbd2d693d36cdae2e1"
@@ -7558,6 +7565,11 @@ diff@^5.2.0:
   version "5.2.0"
   resolved "https://registry.npmjs.org/diff/-/diff-5.2.0.tgz#26ded047cd1179b78b9537d5ef725503ce1ae531"
   integrity sha512-uIFDxqpRZGZ6ThOk84hEfqWoHx2devRFvpTZcTHur85vImfaxUbTW9Ryh4CpCuDnToOP1CEtXKIgytHBPVff5A==
+
+diff@^8.0.2:
+  version "8.0.2"
+  resolved "https://registry.npmjs.org/diff/-/diff-8.0.2.tgz#712156a6dd288e66ebb986864e190c2fc9eddfae"
+  integrity sha512-sSuxWU5j5SR9QQji/o2qMvqRNYRDOcBTgsJ/DeCf4iSN4gW+gNMXM7wFIP+fdXZxoNiAnHUTGjCr+TSWXdRDKg==
 
 dir-glob@^3.0.1:
   version "3.0.1"
