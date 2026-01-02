@@ -147,7 +147,9 @@ export interface ConfigureNatOptions {
   /**
    * The public subnets where the NAT providers need to be placed.
    *
-   * Required for zonal NAT gateways, not used for regional NAT gateways.
+   * Not used for regional NAT gateways, otherwise required.
+   *
+   * @default - For anything other than regional NAT Gateways, it is treated as an empty array and NATs will not be created
    */
   readonly natSubnets?: PublicSubnet[];
 
@@ -435,6 +437,9 @@ export class NatGatewayProvider extends NatProvider {
  * @see https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html
  */
 export class RegionalNatGatewayProvider extends NatProvider {
+  /**
+   * The Regional NAT Gateway created by this provider
+   */
   public natGateway?: CfnNatGateway;
 
   constructor(private readonly props: RegionalNatGatewayProviderProps = {}) {
