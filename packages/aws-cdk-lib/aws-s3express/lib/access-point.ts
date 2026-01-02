@@ -8,6 +8,7 @@ import {
   Resource,
   Stack,
 } from '../../core';
+import { UnscopedValidationError } from '../../core/lib/errors';
 
 /**
  * Represents an S3 Express One Zone directory bucket access point
@@ -129,7 +130,7 @@ export class DirectoryBucketAccessPoint extends Resource implements IDirectoryBu
         resourceName: accessPointName,
       });
     } else {
-      throw new Error('Either accessPointArn or accessPointName must be specified in DirectoryBucketAccessPointAttributes');
+      throw new UnscopedValidationError('Either accessPointArn or accessPointName must be specified in DirectoryBucketAccessPointAttributes');
     }
 
     class Import extends Resource implements IDirectoryBucketAccessPoint {
