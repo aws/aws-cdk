@@ -129,6 +129,13 @@
      "Version": "2012-10-17"
     },
     "RoleName": "crossaccountstepfunctionsachineactionrole6deedc8a0d27532099c6"
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS"
+     ]
+    }
    }
   },
   "CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5InvokeStepFunctionInvokeStateMachineActionRoleDefaultPolicy71BB5A06": {

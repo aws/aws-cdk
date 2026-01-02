@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-test-region/ee4f2770d66e2083d2c70f98fbbc5f8edd4b73556d5328051dfffda320b1ee20.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-test-region/7b48d1dd021078b61b12a0779ca3c5b489551dff8b7b243b1df19444b0e60b4b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -397,10 +397,7 @@
         "/CdkPipelineStepFunctionsActionStack/BucketDeployment/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BucketDeploymentAwsCliLayerB018DCE1",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "BucketDeploymentAwsCliLayerB018DCE1"
           }
         ],
         "/CdkPipelineStepFunctionsActionStack/BucketDeployment/CustomResourceHandler": [

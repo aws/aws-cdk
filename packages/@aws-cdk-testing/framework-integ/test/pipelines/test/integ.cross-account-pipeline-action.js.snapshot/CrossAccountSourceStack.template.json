@@ -379,6 +379,13 @@
      "Version": "2012-10-17"
     },
     "RoleName": "crossaccountsourcestacksourceactionrole897ff83e126e129e1ac8"
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS"
+     ]
+    }
    }
   },
   "CdkPipelineInvestigationStackPipeline029CB441SourceS3SourceActionRoleDefaultPolicy9F106E57": {
