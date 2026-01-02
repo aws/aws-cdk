@@ -1,5 +1,5 @@
 import { Connections, IConnectable } from './connections';
-import { CfnEIP, CfnNatGateway } from './ec2.generated';
+import { CfnNatGateway } from './ec2.generated';
 import { Instance } from './instance';
 import { InstanceArchitecture, InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';

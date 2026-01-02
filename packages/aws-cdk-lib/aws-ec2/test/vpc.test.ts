@@ -19,7 +19,6 @@ import {
   NatGatewayProvider,
   NatInstanceProvider,
   NatTrafficDirection,
-  RegionalNatGatewayProvider,
   NetworkAcl,
   NetworkAclEntry,
   Peer,
