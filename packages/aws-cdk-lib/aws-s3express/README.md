@@ -155,6 +155,75 @@ bucket.addToResourcePolicy(new iam.PolicyStatement({
 }));
 ```
 
+### Access Points
+
+Access points simplify data access management for directory buckets by providing named network endpoints with customized access policies.
+
+#### Creating an Access Point
+
+```ts
+const bucket = new s3express.DirectoryBucket(this, 'MyBucket', {
+  location: { availabilityZone: 'us-east-1a' },
+});
+
+const accessPoint = new s3express.DirectoryBucketAccessPoint(this, 'MyAccessPoint', {
+  bucket: bucket,
+});
+```
+
+#### Granting Permissions through Access Points
+
+```ts
+const accessPoint = new s3express.DirectoryBucketAccessPoint(this, 'MyAccessPoint', {
+  bucket: bucket,
+});
+
+const readFunction = new lambda.Function(this, 'ReadFunction', {
+  // ... function configuration
+});
+
+// Grant read access through the access point
+accessPoint.grantRead(readFunction);
+
+// Grant write access
+accessPoint.grantWrite(readFunction);
+
+// Grant full read/write access
+accessPoint.grantReadWrite(readFunction);
+```
+
+#### Importing Existing Access Points
+
+```ts
+// Import by ARN
+const importedByArn = s3express.DirectoryBucketAccessPoint.fromAccessPointArn(
+  this,
+  'ImportedAccessPoint',
+  'arn:aws:s3express:us-east-1:123456789012:accesspoint/my-ap--useast1-az1--x-s3',
+);
+
+// Import by name
+const importedByName = s3express.DirectoryBucketAccessPoint.fromAccessPointName(
+  this,
+  'ImportedAccessPoint',
+  'my-ap--useast1-az1--x-s3',
+);
+
+// Use imported access point
+importedByArn.grantRead(someRole);
+```
+
+#### Cross-Account Access Points
+
+For cross-account access, specify the bucket account ID:
+
+```ts
+const accessPoint = new s3express.DirectoryBucketAccessPoint(this, 'CrossAccountAP', {
+  bucket: bucket,
+  bucketAccountId: '123456789012',
+});
+```
+
 ### Performance Considerations
 
 - **Co-location**: For optimal performance, deploy compute resources (Lambda, ECS, EC2) in the same Availability Zone as your directory bucket
