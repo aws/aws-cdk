@@ -88,8 +88,6 @@ describe('Guard Rules Validation', () => {
     });
   });
 
-  // S3 encryption rule removed - AWS enforces SSE-S3 encryption automatically since Jan 5, 2023.
-  // It's not possible to disable encryption via CDK or CloudFormation, so the rule provides no security value.
 
   describe('Template Processing', () => {
     test('should successfully process all existing templates', () => {
@@ -153,7 +151,6 @@ describe('Guard Rules Validation', () => {
       expect(success).toBe(true);
     });
 
-    // S3 encryption test removed - rule provides no security value (encryption cannot be disabled)
 
     test('should pass validation with compliant EBS volume', async () => {
       // Run validation with EC2 rules on compliant template
