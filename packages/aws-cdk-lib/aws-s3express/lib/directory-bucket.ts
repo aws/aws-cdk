@@ -377,11 +377,30 @@ export class DirectoryBucket extends Resource implements IDirectoryBucket {
   }
 
   private validateBucketName(bucketName: string): void {
-    const pattern = /^[a-z0-9][a-z0-9-]*--[a-z0-9-]+--x-s3$/;
-    if (!pattern.test(bucketName)) {
+    // Split on '--' to avoid polynomial regex complexity (ReDoS vulnerability)
+    const parts = bucketName.split('--');
+
+    // Must have exactly 3 parts: bucket-base-name, zone-id, x-s3
+    if (parts.length !== 3 || parts[2] !== 'x-s3') {
       throw new Error(
         `Invalid directory bucket name: ${bucketName}. ` +
         'Directory bucket names must follow the format: bucket-base-name--zone-id--x-s3',
+      );
+    }
+
+    // Validate bucket-base-name: starts with alphanumeric, can contain hyphens
+    if (!/^[a-z0-9][a-z0-9-]*$/.test(parts[0])) {
+      throw new Error(
+        `Invalid directory bucket name: ${bucketName}. ` +
+        'Bucket base name must start with a lowercase letter or number and contain only lowercase letters, numbers, and hyphens.',
+      );
+    }
+
+    // Validate zone-id: alphanumeric and hyphens
+    if (!/^[a-z0-9-]+$/.test(parts[1])) {
+      throw new Error(
+        `Invalid directory bucket name: ${bucketName}. ` +
+        'Zone ID must contain only lowercase letters, numbers, and hyphens.',
       );
     }
   }
