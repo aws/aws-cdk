@@ -257,6 +257,22 @@ export enum AccessEntryType {
    * Represents an EC2 Windows access entry.
    */
   EC2_WINDOWS = 'EC2_WINDOWS',
+
+  /**
+   * Represents an EC2 access entry for EKS Auto Mode.
+   * Use this type for node roles in EKS Auto Mode clusters.
+   */
+  EC2 = 'EC2',
+
+  /**
+   * Represents a Hybrid Linux access entry for EKS Hybrid Nodes.
+   */
+  HYBRID_LINUX = 'HYBRID_LINUX',
+
+  /**
+   * Represents a HyperPod Linux access entry for Amazon SageMaker HyperPod.
+   */
+  HYPERPOD_LINUX = 'HYPERPOD_LINUX',
 }
 
 /**
