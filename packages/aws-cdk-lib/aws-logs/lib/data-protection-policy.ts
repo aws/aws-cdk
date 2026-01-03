@@ -191,6 +191,7 @@ export class DataIdentifier {
   public static readonly CREDITCARDEXPIRATION = new DataIdentifier('CreditCardExpiration');
   public static readonly CREDITCARDNUMBER = new DataIdentifier('CreditCardNumber');
   public static readonly CREDITCARDSECURITYCODE = new DataIdentifier('CreditCardSecurityCode');
+  public static readonly DATEOFBIRTH = new DataIdentifier('DateOfBirth');
   public static readonly DRIVERSLICENSE_AT = new DataIdentifier('DriversLicense-AT');
   public static readonly DRIVERSLICENSE_AU = new DataIdentifier('DriversLicense-AU');
   public static readonly DRIVERSLICENSE_BE = new DataIdentifier('DriversLicense-BE');
