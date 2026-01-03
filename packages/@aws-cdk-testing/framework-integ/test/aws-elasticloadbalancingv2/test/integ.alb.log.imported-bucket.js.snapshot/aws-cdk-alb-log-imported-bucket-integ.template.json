@@ -513,6 +513,29 @@
          ]
         ]
        }
+      },
+      {
+       "Action": "s3:PutObject",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "arn:aws:iam::797873946194:root"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:s3:::",
+          {
+           "Ref": "Bucket83908E77"
+          },
+          "/prefix-health-check-log/AWSLogs/",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          "/*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -554,6 +577,20 @@
      {
       "Key": "connection_logs.s3.prefix",
       "Value": "prefix-connection-log"
+     },
+     {
+      "Key": "health_check_logs.s3.enabled",
+      "Value": "true"
+     },
+     {
+      "Key": "health_check_logs.s3.bucket",
+      "Value": {
+       "Ref": "Bucket83908E77"
+      }
+     },
+     {
+      "Key": "health_check_logs.s3.prefix",
+      "Value": "prefix-health-check-log"
      }
     ],
     "Scheme": "internet-facing",
