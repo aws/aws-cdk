@@ -26,7 +26,7 @@ describe('DirectoryBucket', () => {
       BucketEncryption: {
         ServerSideEncryptionConfiguration: [{
           ServerSideEncryptionByDefault: {
-            SSEAlgorithm: 'aws:kms:dsse',
+            SSEAlgorithm: 'AES256',
           },
         }],
       },
@@ -106,7 +106,7 @@ describe('DirectoryBucket', () => {
       BucketEncryption: {
         ServerSideEncryptionConfiguration: [{
           ServerSideEncryptionByDefault: {
-            SSEAlgorithm: 'aws:kms:dsse',
+            SSEAlgorithm: 'AES256',
           },
         }],
       },

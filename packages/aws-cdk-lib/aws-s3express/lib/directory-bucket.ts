@@ -90,15 +90,17 @@ export enum DataRedundancy {
  * Encryption type for S3 Express One Zone directory buckets
  *
  * Note: S3 Express supports two encryption options:
- * - aws:kms:dsse: Dual-layer server-side encryption with S3-managed keys (DSSE-KMS)
- * - aws:kms: Server-side encryption with customer-provided AWS KMS keys
+ * - AES256: Server-side encryption with Amazon S3 managed keys (SSE-S3)
+ * - aws:kms: Server-side encryption with customer-provided AWS KMS keys (SSE-KMS)
+ *
+ * DSSE-KMS (dual-layer encryption) is NOT supported for directory buckets.
  */
 export enum DirectoryBucketEncryption {
   /**
-   * Dual-layer server-side encryption with S3-managed keys (aws:kms:dsse)
+   * Server-side encryption with Amazon S3 managed keys (AES256)
    *
-   * Uses DSSE-KMS (Double Server-Side Encryption with AWS KMS), which is the
-   * default encryption for S3 Express One Zone directory buckets.
+   * Uses SSE-S3, which is the default encryption for S3 Express One Zone directory buckets.
+   * Every directory bucket is automatically encrypted with AES256.
    */
   S3_MANAGED,
 
@@ -106,6 +108,7 @@ export enum DirectoryBucketEncryption {
    * Server-side encryption with customer-provided AWS KMS keys (aws:kms)
    *
    * Requires an encryption key to be specified via the `encryptionKey` property.
+   * Note: AWS managed key (aws/s3) is not supported. Only customer managed keys are supported.
    */
   KMS,
 }
@@ -466,10 +469,11 @@ export class DirectoryBucket extends Resource implements IDirectoryBucket {
   }
 
   private renderEncryption(props: DirectoryBucketProps): CfnDirectoryBucket.BucketEncryptionProperty | undefined {
-    // S3 Express One Zone supports two encryption algorithms:
-    // - aws:kms:dsse (DSSE-KMS): Default S3-managed encryption using dual-layer server-side encryption
-    // - aws:kms: Customer-managed KMS keys for custom encryption
-    const sseAlgorithm = props.encryption === DirectoryBucketEncryption.KMS ? 'aws:kms' : 'aws:kms:dsse';
+    // S3 Express One Zone supports only two encryption algorithms:
+    // - AES256: Default S3-managed encryption (SSE-S3)
+    // - aws:kms: Customer-managed KMS keys (SSE-KMS)
+    // Note: DSSE-KMS is NOT supported for directory buckets
+    const sseAlgorithm = props.encryption === DirectoryBucketEncryption.KMS ? 'aws:kms' : 'AES256';
 
     return {
       serverSideEncryptionConfiguration: [{
