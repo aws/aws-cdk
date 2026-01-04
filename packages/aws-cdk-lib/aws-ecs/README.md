@@ -603,6 +603,8 @@ const customImage: ecs.IContainerImage = {
   },
 };
 
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+
 taskDefinition.addContainer('Container', {
   image: customImage,
   memoryLimitMiB: 512,
