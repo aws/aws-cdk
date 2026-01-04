@@ -6,9 +6,24 @@ import * as ecr from '../../aws-ecr';
 import { DockerImageAsset, TarballImageAsset } from '../../aws-ecr-assets';
 
 /**
+ * Interface for container image providers.
+ *
+ * Implementations of this interface provide a container image that can be used by an ECS task.
+ */
+export interface IContainerImage {
+  /**
+   * Called when the image is used by a ContainerDefinition.
+   *
+   * @param scope The scope in which to create resources
+   * @param containerDefinition The container definition using this image
+   */
+  bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig;
+}
+
+/**
  * Constructs for types of container images
  */
-export abstract class ContainerImage {
+export abstract class ContainerImage implements IContainerImage {
   /**
    * Reference an image on DockerHub or another online registry
    */
