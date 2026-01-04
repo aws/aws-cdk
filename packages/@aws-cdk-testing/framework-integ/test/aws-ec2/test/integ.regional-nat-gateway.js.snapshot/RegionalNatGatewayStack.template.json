@@ -181,27 +181,9 @@
     }
    }
   },
-  "VpcMinimalRegionalNatGatewayEIPBC8E20CF": {
-   "Type": "AWS::EC2::EIP",
-   "Properties": {
-    "Domain": "vpc",
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "RegionalNatGatewayStack/VpcMinimal"
-     }
-    ]
-   }
-  },
   "VpcMinimalRegionalNatGateway29AEA777": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "AllocationId": {
-     "Fn::GetAtt": [
-      "VpcMinimalRegionalNatGatewayEIPBC8E20CF",
-      "AllocationId"
-     ]
-    },
     "AvailabilityMode": "regional",
     "ConnectivityType": "public",
     "Tags": [
