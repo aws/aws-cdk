@@ -3059,4 +3059,83 @@ describe('container definition', () => {
       ],
     });
   });
+
+  test('can use custom IContainerImage implementation', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // Custom implementation of IContainerImage
+    const customImage: ecs.IContainerImage = {
+      bind(_scope, containerDefinition) {
+        // Grant necessary permissions
+        containerDefinition.taskDefinition.obtainExecutionRole();
+
+        return {
+          imageName: 'custom-registry.example.com/my-app:v1.0',
+        };
+      },
+    };
+
+    // WHEN
+    new ecs.ContainerDefinition(stack, 'Container', {
+      image: customImage,
+      taskDefinition,
+      memoryLimitMiB: 512,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Essential: true,
+          Image: 'custom-registry.example.com/my-app:v1.0',
+          Memory: 512,
+          Name: 'Container',
+        },
+      ],
+    });
+  });
+
+  test('custom IContainerImage can provide repository credentials', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // Custom implementation with credentials
+    const customImage: ecs.IContainerImage = {
+      bind(_scope, containerDefinition) {
+        containerDefinition.taskDefinition.obtainExecutionRole();
+
+        return {
+          imageName: 'private-registry.example.com/my-app:latest',
+          repositoryCredentials: {
+            credentialsParameter: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-secret',
+          },
+        };
+      },
+    };
+
+    // WHEN
+    new ecs.ContainerDefinition(stack, 'Container', {
+      image: customImage,
+      taskDefinition,
+      memoryLimitMiB: 256,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Essential: true,
+          Image: 'private-registry.example.com/my-app:latest',
+          Memory: 256,
+          Name: 'Container',
+          RepositoryCredentials: {
+            CredentialsParameter: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-secret',
+          },
+        },
+      ],
+    });
+  });
 });
