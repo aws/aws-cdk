@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "s3express-directory-bucket-integ.assets": {
+    "s3express-access-point-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "s3express-directory-bucket-integ.assets.json",
+        "file": "s3express-access-point-integ.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "s3express-directory-bucket-integ": {
+    "s3express-access-point-integ": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "s3express-directory-bucket-integ.template.json",
+        "templateFile": "s3express-access-point-integ.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/26c87d1b4258aa303414db3317689bf922a8f3d29c733813383433db071a9470.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c14823527fa78f00114772387e12cd46bd2ac9baa740db82761c7590694ab544.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "s3express-directory-bucket-integ.assets"
+          "s3express-access-point-integ.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,36 +31,22 @@
         }
       },
       "dependencies": [
-        "s3express-directory-bucket-integ.assets"
+        "s3express-access-point-integ.assets"
       ],
       "metadata": {
-        "/s3express-directory-bucket-integ/MyDirectoryBucket/Resource": [
+        "/s3express-access-point-integ/MyDirectoryBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyDirectoryBucket8E079C10"
           }
         ],
-        "/s3express-directory-bucket-integ/BucketKey": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "description": "*"
-            }
-          }
-        ],
-        "/s3express-directory-bucket-integ/BucketKey/Resource": [
+        "/s3express-access-point-integ/MyAccessPoint/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BucketKey7092080A"
+            "data": "MyAccessPoint9925F14C"
           }
         ],
-        "/s3express-directory-bucket-integ/EncryptedBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EncryptedBucket6730B3DC"
-          }
-        ],
-        "/s3express-directory-bucket-integ/MyFunction": [
+        "/s3express-access-point-integ/ReadFunction": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -80,7 +66,7 @@
             }
           }
         ],
-        "/s3express-directory-bucket-integ/MyFunction/ServiceRole": [
+        "/s3express-access-point-integ/ReadFunction/ServiceRole": [
           {
             "type": "aws:cdk:warning",
             "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
@@ -116,6 +102,132 @@
                 {}
               ]
             }
+          }
+        ],
+        "/s3express-access-point-integ/ReadFunction/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/s3express-access-point-integ/ReadFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReadFunctionServiceRole2908FF73"
+          }
+        ],
+        "/s3express-access-point-integ/ReadFunction/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/s3express-access-point-integ/ReadFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReadFunctionServiceRoleDefaultPolicy5992278C"
+          }
+        ],
+        "/s3express-access-point-integ/ReadFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReadFunction9BA9B3F3"
+          }
+        ],
+        "/s3express-access-point-integ/ReadFunction/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/s3express-access-point-integ/ReadFunction/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReadFunctionLogGroup026B0B5B"
+          }
+        ],
+        "/s3express-access-point-integ/WriteFunction": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "runtime": "*",
+              "handler": "*",
+              "code": "*",
+              "environment": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/s3express-access-point-integ/WriteFunction/ServiceRole": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -126,19 +238,19 @@
             }
           }
         ],
-        "/s3express-directory-bucket-integ/MyFunction/ServiceRole/ImportServiceRole": [
+        "/s3express-access-point-integ/WriteFunction/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/s3express-directory-bucket-integ/MyFunction/ServiceRole/Resource": [
+        "/s3express-access-point-integ/WriteFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunctionServiceRole3C357FF2"
+            "data": "WriteFunctionServiceRole1BA0480D"
           }
         ],
-        "/s3express-directory-bucket-integ/MyFunction/ServiceRole/DefaultPolicy": [
+        "/s3express-access-point-integ/WriteFunction/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -174,29 +286,21 @@
                 {}
               ]
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
           }
         ],
-        "/s3express-directory-bucket-integ/MyFunction/ServiceRole/DefaultPolicy/Resource": [
+        "/s3express-access-point-integ/WriteFunction/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunctionServiceRoleDefaultPolicyB705ABD4"
+            "data": "WriteFunctionServiceRoleDefaultPolicy87AD5147"
           }
         ],
-        "/s3express-directory-bucket-integ/MyFunction/Resource": [
+        "/s3express-access-point-integ/WriteFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunction3BAA72D1"
+            "data": "WriteFunction7E3D34BD"
           }
         ],
-        "/s3express-directory-bucket-integ/MyFunction/LogGroup": [
+        "/s3express-access-point-integ/WriteFunction/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -204,40 +308,40 @@
             }
           }
         ],
-        "/s3express-directory-bucket-integ/MyFunction/LogGroup/Resource": [
+        "/s3express-access-point-integ/WriteFunction/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyFunctionLogGroup4CB93A41"
+            "data": "WriteFunctionLogGroupDED59FAA"
           }
         ],
-        "/s3express-directory-bucket-integ/BootstrapVersion": [
+        "/s3express-access-point-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/s3express-directory-bucket-integ/CheckBootstrapVersion": [
+        "/s3express-access-point-integ/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "s3express-directory-bucket-integ"
+      "displayName": "s3express-access-point-integ"
     },
-    "DirectoryBucketTestDefaultTestDeployAssert2A702262.assets": {
+    "AccessPointTestDefaultTestDeployAssert755EE3E7.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "DirectoryBucketTestDefaultTestDeployAssert2A702262.assets.json",
+        "file": "AccessPointTestDefaultTestDeployAssert755EE3E7.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "DirectoryBucketTestDefaultTestDeployAssert2A702262": {
+    "AccessPointTestDefaultTestDeployAssert755EE3E7": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "DirectoryBucketTestDefaultTestDeployAssert2A702262.template.json",
+        "templateFile": "AccessPointTestDefaultTestDeployAssert755EE3E7.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -246,7 +350,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "DirectoryBucketTestDefaultTestDeployAssert2A702262.assets"
+          "AccessPointTestDefaultTestDeployAssert755EE3E7.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -255,23 +359,23 @@
         }
       },
       "dependencies": [
-        "DirectoryBucketTestDefaultTestDeployAssert2A702262.assets"
+        "AccessPointTestDefaultTestDeployAssert755EE3E7.assets"
       ],
       "metadata": {
-        "/DirectoryBucketTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/AccessPointTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/DirectoryBucketTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/AccessPointTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "DirectoryBucketTest/DefaultTest/DeployAssert"
+      "displayName": "AccessPointTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

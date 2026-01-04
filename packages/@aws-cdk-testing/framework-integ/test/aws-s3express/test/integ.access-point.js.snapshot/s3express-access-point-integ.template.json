@@ -7,14 +7,14 @@
      "ServerSideEncryptionConfiguration": [
       {
        "ServerSideEncryptionByDefault": {
-        "SSEAlgorithm": "aws:kms:dsse"
+        "SSEAlgorithm": "AES256"
        }
       }
      ]
     },
-    "BucketName": "s3expressaccesspdirectorybucket-1f1c7411--useast1a--x-s3",
+    "BucketName": "s3expressaccesspdirectorybucket-1f1c7411--use1-az4--x-s3",
     "DataRedundancy": "SingleAvailabilityZone",
-    "LocationName": "us-east-1a"
+    "LocationName": "use1-az4"
    }
   },
   "MyAccessPoint9925F14C": {

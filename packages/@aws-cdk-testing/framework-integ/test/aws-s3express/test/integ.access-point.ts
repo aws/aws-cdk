@@ -9,9 +9,10 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 's3express-access-point-integ');
 
 // Create a directory bucket
+// Note: availabilityZone must be the Availability Zone ID (e.g., 'use1-az1'), not the name
 const bucket = new s3express.DirectoryBucket(stack, 'MyDirectoryBucket', {
   location: {
-    availabilityZone: 'us-east-1a',
+    availabilityZone: 'use1-az4',
   },
 });
 

@@ -88,17 +88,25 @@ export enum DataRedundancy {
 
 /**
  * Encryption type for S3 Express One Zone directory buckets
+ *
+ * Note: S3 Express supports two encryption options:
+ * - AES256: Server-side encryption with Amazon S3 managed keys
+ * - aws:kms: Server-side encryption with customer-provided AWS KMS keys
  */
 export enum DirectoryBucketEncryption {
   /**
-   * Server-side encryption with Amazon S3 managed keys (SSE-S3)
+   * Server-side encryption with Amazon S3 managed keys (AES256)
+   *
+   * Uses the default S3-managed encryption.
    */
-  S3_MANAGED = 'aws:kms:dsse',
+  S3_MANAGED,
 
   /**
-   * Server-side encryption with AWS KMS keys (SSE-KMS)
+   * Server-side encryption with customer-provided AWS KMS keys (aws:kms)
+   *
+   * Requires an encryption key to be specified via the `encryptionKey` property.
    */
-  KMS = 'aws:kms',
+  KMS,
 }
 
 /**
@@ -107,7 +115,10 @@ export enum DirectoryBucketEncryption {
 export interface DirectoryBucketLocation {
   /**
    * The Availability Zone ID for the directory bucket.
-   * Example: 'us-east-1a'
+   *
+   * Must be an Availability Zone ID (e.g., 'use1-az1'), not an Availability Zone name (e.g., 'us-east-1a').
+   * Availability Zone IDs are unique across AWS accounts. You can find your account's AZ IDs using
+   * the AWS CLI: `aws ec2 describe-availability-zones --region us-east-1`
    *
    * Either availabilityZone or localZone must be specified, but not both.
    *
@@ -427,10 +438,9 @@ export class DirectoryBucket extends Resource implements IDirectoryBucket {
   }
 
   private extractZoneId(location: string): string {
-    // Convert zone names to zone IDs
-    // For AZ: us-east-1a -> useast1-az1 (simplified, actual mapping may vary)
-    // For LZ: us-west-2-lax-1a -> usweast2-lax-1a
-    return location.replace(/-/g, '').toLowerCase();
+    // The location should already be a valid zone ID (e.g., use1-az4 or us-west-2-lax-1a)
+    // Just return it as-is for use in the bucket name
+    return location.toLowerCase();
   }
 
   private determineBucketName(proposedName: string | undefined, zoneId: string): string {
@@ -455,12 +465,14 @@ export class DirectoryBucket extends Resource implements IDirectoryBucket {
   }
 
   private renderEncryption(props: DirectoryBucketProps): CfnDirectoryBucket.BucketEncryptionProperty | undefined {
-    const encryptionType = props.encryption ?? DirectoryBucketEncryption.S3_MANAGED;
+    // Determine the encryption algorithm based on whether a custom KMS key is provided
+    // S3 Express supports AES256 (S3-managed) or aws:kms (customer-managed KMS)
+    const sseAlgorithm = props.encryptionKey ? 'aws:kms' : 'AES256';
 
     return {
       serverSideEncryptionConfiguration: [{
         serverSideEncryptionByDefault: {
-          sseAlgorithm: encryptionType,
+          sseAlgorithm,
           kmsMasterKeyId: props.encryptionKey?.keyArn,
         },
       }],

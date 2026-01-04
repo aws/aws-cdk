@@ -9,9 +9,10 @@ const stack = new cdk.Stack(app, 's3express-directory-bucket-lit');
 
 /// !show
 // Create a directory bucket in an Availability Zone
+// Note: Use Availability Zone ID (e.g., 'use1-az1'), not name (e.g., 'us-east-1a')
 const bucket = new s3express.DirectoryBucket(stack, 'MyDirectoryBucket', {
   location: {
-    availabilityZone: 'us-east-1a',
+    availabilityZone: 'use1-az4',
   },
 });
 
@@ -22,7 +23,7 @@ const encryptionKey = new kms.Key(stack, 'BucketKey', {
 
 const encryptedBucket = new s3express.DirectoryBucket(stack, 'EncryptedBucket', {
   location: {
-    availabilityZone: 'us-east-1a',
+    availabilityZone: 'use1-az4',
   },
   encryption: s3express.DirectoryBucketEncryption.KMS,
   encryptionKey,
