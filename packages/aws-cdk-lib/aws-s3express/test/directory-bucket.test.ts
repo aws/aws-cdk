@@ -52,7 +52,7 @@ describe('DirectoryBucket', () => {
   test('bucket with custom name', () => {
     // WHEN
     new s3express.DirectoryBucket(stack, 'MyBucket', {
-      bucketName: 'my-custom-bucket--useast1az1--x-s3',
+      directoryBucketName: 'my-custom-bucket--useast1az1--x-s3',
       location: {
         availabilityZone: 'us-east-1a',
       },
@@ -434,7 +434,7 @@ describe('DirectoryBucket', () => {
     // THEN
     expect(() => {
       new s3express.DirectoryBucket(stack, 'MyBucket', {
-        bucketName: 'invalid-bucket-name',
+        directoryBucketName: 'invalid-bucket-name',
         location: {
           availabilityZone: 'us-east-1a',
         },
@@ -464,7 +464,7 @@ describe('DirectoryBucket', () => {
   test('bucket attributes are correctly exposed', () => {
     // GIVEN
     const bucket = new s3express.DirectoryBucket(stack, 'MyBucket', {
-      bucketName: 'my-bucket--useast1az1--x-s3',
+      directoryBucketName: 'my-bucket--useast1az1--x-s3',
       location: {
         availabilityZone: 'us-east-1a',
       },

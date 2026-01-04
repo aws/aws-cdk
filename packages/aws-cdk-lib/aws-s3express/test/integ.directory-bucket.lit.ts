@@ -1,3 +1,6 @@
+/// !cdk-integ *
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
@@ -51,6 +54,10 @@ class DirectoryBucketStack extends cdk.Stack {
 
 const app = new cdk.App();
 
-new DirectoryBucketStack(app, 's3express-directory-bucket-integ');
+const stack = new DirectoryBucketStack(app, 's3express-directory-bucket-integ');
+
+new IntegTest(app, 'DirectoryBucketTest', {
+  testCases: [stack],
+});
 
 app.synth();

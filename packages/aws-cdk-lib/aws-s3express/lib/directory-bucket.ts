@@ -7,6 +7,7 @@ import {
   IResource,
   Names,
   Resource,
+  ResourceProps,
   Stack,
   Token,
 } from '../../core';
@@ -128,7 +129,7 @@ export interface DirectoryBucketLocation {
 /**
  * Properties for defining an S3 Express One Zone directory bucket
  */
-export interface DirectoryBucketProps {
+export interface DirectoryBucketProps extends ResourceProps {
   /**
    * Physical name of this directory bucket.
    *
@@ -137,7 +138,7 @@ export interface DirectoryBucketProps {
    *
    * @default - Automatically generated name
    */
-  readonly bucketName?: string;
+  readonly directoryBucketName?: string;
 
   /**
    * The location (Availability Zone or Local Zone) where the directory bucket will be created.
@@ -280,14 +281,14 @@ export class DirectoryBucket extends Resource implements IDirectoryBucket {
 
   constructor(scope: Construct, id: string, props: DirectoryBucketProps) {
     super(scope, id, {
-      physicalName: props.bucketName,
+      physicalName: props.directoryBucketName,
     });
 
     this.validateProps(props);
 
     const location = this.determineLocation(props.location);
     const zoneId = this.extractZoneId(location);
-    const bucketName = this.determineBucketName(props.bucketName, zoneId);
+    const bucketName = this.determineBucketName(props.directoryBucketName, zoneId);
 
     this.encryptionKey = this.determineEncryptionKey(props);
 
@@ -378,8 +379,8 @@ export class DirectoryBucket extends Resource implements IDirectoryBucket {
     }
 
     // Validate bucket name format if provided
-    if (props.bucketName && !Token.isUnresolved(props.bucketName)) {
-      this.validateBucketName(props.bucketName);
+    if (props.directoryBucketName && !Token.isUnresolved(props.directoryBucketName)) {
+      this.validateBucketName(props.directoryBucketName);
     }
   }
 

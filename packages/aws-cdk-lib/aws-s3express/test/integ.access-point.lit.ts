@@ -1,3 +1,6 @@
+/// !cdk-integ *
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as s3express from '../lib';
@@ -57,6 +60,10 @@ class AccessPointStack extends cdk.Stack {
 
 const app = new cdk.App();
 
-new AccessPointStack(app, 's3express-access-point-integ');
+const stack = new AccessPointStack(app, 's3express-access-point-integ');
+
+new IntegTest(app, 'AccessPointTest', {
+  testCases: [stack],
+});
 
 app.synth();

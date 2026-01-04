@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "98658a9ba3200a7f59c24edf18e761edd75c72f5007aeeba6e48f70ff898291e": {
+      "displayName": "s3express-directory-bucket-integ Template",
+      "source": {
+        "path": "s3express-directory-bucket-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-2f20d0e5": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "98658a9ba3200a7f59c24edf18e761edd75c72f5007aeeba6e48f70ff898291e.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
