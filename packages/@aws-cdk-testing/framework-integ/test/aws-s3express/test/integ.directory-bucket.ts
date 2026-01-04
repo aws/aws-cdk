@@ -1,13 +1,14 @@
-import * as kms from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
-import * as cdk from '../../core';
-import * as s3express from '../lib';
+#!/usr/bin/env node
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as cdk from 'aws-cdk-lib';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as s3express from 'aws-cdk-lib/aws-s3express';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 's3express-directory-bucket-lit');
+const stack = new cdk.Stack(app, 's3express-directory-bucket-integ');
 
-/// !show
 // Create a directory bucket in an Availability Zone
 const bucket = new s3express.DirectoryBucket(stack, 'MyDirectoryBucket', {
   location: {
@@ -45,4 +46,7 @@ const fn = new lambda.Function(stack, 'MyFunction', {
 
 bucket.grantReadWrite(fn);
 encryptedBucket.grantRead(fn);
-/// !hide
+
+new IntegTest(app, 'DirectoryBucketTest', {
+  testCases: [stack],
+});

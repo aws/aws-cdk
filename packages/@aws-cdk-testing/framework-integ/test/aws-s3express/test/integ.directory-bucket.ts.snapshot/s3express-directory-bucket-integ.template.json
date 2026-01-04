@@ -257,7 +257,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "\n        exports.handler = async function(event) {\n          console.log('Bucket:', process.env.BUCKET_NAME);\n          return { statusCode: 200, body: 'OK' };\n        };\n      "
+     "ZipFile": "\n    exports.handler = async function(event) {\n      console.log('Bucket:', process.env.BUCKET_NAME);\n      return { statusCode: 200, body: 'OK' };\n    };\n  "
     },
     "Environment": {
      "Variables": {

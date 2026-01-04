@@ -1,12 +1,13 @@
-import * as lambda from '../../aws-lambda';
-import * as cdk from '../../core';
-import * as s3express from '../lib';
+#!/usr/bin/env node
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as cdk from 'aws-cdk-lib';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as s3express from 'aws-cdk-lib/aws-s3express';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 's3express-access-point-lit');
+const stack = new cdk.Stack(app, 's3express-access-point-integ');
 
-/// !show
 // Create a directory bucket
 const bucket = new s3express.DirectoryBucket(stack, 'MyDirectoryBucket', {
   location: {
@@ -51,4 +52,7 @@ const writeFn = new lambda.Function(stack, 'WriteFunction', {
 // Grant permissions through the access point
 accessPoint.grantRead(readFn);
 accessPoint.grantWrite(writeFn);
-/// !hide
+
+new IntegTest(app, 'AccessPointTest', {
+  testCases: [stack],
+});

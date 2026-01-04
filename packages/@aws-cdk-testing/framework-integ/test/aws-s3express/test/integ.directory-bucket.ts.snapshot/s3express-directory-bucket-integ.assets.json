@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "f378a394a8cf7d778821a68366d17b7d39778e41c4f827593db5e7be69759697": {
-      "displayName": "s3express-access-point-integ Template",
+    "26c87d1b4258aa303414db3317689bf922a8f3d29c733813383433db071a9470": {
+      "displayName": "s3express-directory-bucket-integ Template",
       "source": {
-        "path": "s3express-access-point-integ.template.json",
+        "path": "s3express-directory-bucket-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-ed0642fe": {
+        "current_account-current_region-9d22ffc4": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f378a394a8cf7d778821a68366d17b7d39778e41c4f827593db5e7be69759697.json",
+          "objectKey": "26c87d1b4258aa303414db3317689bf922a8f3d29c733813383433db071a9470.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

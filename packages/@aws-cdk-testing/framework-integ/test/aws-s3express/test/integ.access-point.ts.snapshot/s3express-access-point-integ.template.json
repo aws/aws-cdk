@@ -189,7 +189,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "\n        exports.handler = async function(event) {\n          console.log('Access Point:', process.env.ACCESS_POINT_ARN);\n          return { statusCode: 200, body: 'OK' };\n        };\n      "
+     "ZipFile": "\n    exports.handler = async function(event) {\n      console.log('Access Point:', process.env.ACCESS_POINT_ARN);\n      return { statusCode: 200, body: 'OK' };\n    };\n  "
     },
     "Environment": {
      "Variables": {
@@ -416,7 +416,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "\n        exports.handler = async function(event) {\n          console.log('Access Point:', process.env.ACCESS_POINT_ARN);\n          return { statusCode: 200, body: 'OK' };\n        };\n      "
+     "ZipFile": "\n    exports.handler = async function(event) {\n      console.log('Access Point:', process.env.ACCESS_POINT_ARN);\n      return { statusCode: 200, body: 'OK' };\n    };\n  "
     },
     "Environment": {
      "Variables": {
