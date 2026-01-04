@@ -25,6 +25,9 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 ```ts nofixture
 import * as s3express from 'aws-cdk-lib/aws-s3express';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as iam from 'aws-cdk-lib/aws-iam';
 ```
 
 ## S3 Express One Zone
@@ -95,13 +98,8 @@ const bucket = new s3express.DirectoryBucket(this, 'MyBucket', {
   location: { availabilityZone: 'us-east-1a' },
 });
 
-const readFunction = new lambda.Function(this, 'ReadFunction', {
-  // ... function configuration
-});
-
-const writeFunction = new lambda.Function(this, 'WriteFunction', {
-  // ... function configuration
-});
+declare const readFunction: lambda.IFunction;
+declare const writeFunction: lambda.IFunction;
 
 // Grant read access
 bucket.grantRead(readFunction);
@@ -136,7 +134,8 @@ const importedByName = s3express.DirectoryBucket.fromBucketName(
 );
 
 // Use imported bucket
-importedByArn.grantRead(someRole);
+declare const myRole: iam.IRole;
+importedByArn.grantRead(myRole);
 ```
 
 #### Bucket Policies
@@ -174,13 +173,13 @@ const accessPoint = new s3express.DirectoryBucketAccessPoint(this, 'MyAccessPoin
 #### Granting Permissions through Access Points
 
 ```ts
+declare const bucket: s3express.DirectoryBucket;
+
 const accessPoint = new s3express.DirectoryBucketAccessPoint(this, 'MyAccessPoint', {
   bucket: bucket,
 });
 
-const readFunction = new lambda.Function(this, 'ReadFunction', {
-  // ... function configuration
-});
+declare const readFunction: lambda.IFunction;
 
 // Grant read access through the access point
 accessPoint.grantRead(readFunction);
@@ -210,7 +209,8 @@ const importedByName = s3express.DirectoryBucketAccessPoint.fromAccessPointName(
 );
 
 // Use imported access point
-importedByArn.grantRead(someRole);
+declare const myRole: iam.IRole;
+importedByArn.grantRead(myRole);
 ```
 
 #### Cross-Account Access Points
@@ -218,6 +218,8 @@ importedByArn.grantRead(someRole);
 For cross-account access, specify the bucket account ID:
 
 ```ts
+declare const bucket: s3express.DirectoryBucket;
+
 const accessPoint = new s3express.DirectoryBucketAccessPoint(this, 'CrossAccountAP', {
   bucket: bucket,
   bucketAccountId: '123456789012',
