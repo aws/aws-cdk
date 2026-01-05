@@ -199,16 +199,16 @@ describe('CodeCommit Source Action', () => {
       const stack = new Stack();
 
       const eventPattern
-      = {
-        'detail-type': ['CodeCommit Repository State Change'],
-        'resources': ['foo'],
-        'source': ['aws.codecommit'],
-        'detail': {
-          referenceType: ['branch'],
-          event: ['referenceCreated', 'referenceUpdated'],
-          referenceName: ['test-branch'],
-        },
-      };
+        = {
+          'detail-type': ['CodeCommit Repository State Change'],
+          'resources': ['foo'],
+          'source': ['aws.codecommit'],
+          'detail': {
+            referenceType: ['branch'],
+            event: ['referenceCreated', 'referenceUpdated'],
+            referenceName: ['test-branch'],
+          },
+        };
 
       minimalPipeline(stack, cpactions.CodeCommitTrigger.EVENTS, {
         customEventRule: {

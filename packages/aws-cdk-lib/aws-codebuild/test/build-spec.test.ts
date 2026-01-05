@@ -2,7 +2,6 @@
 import * as codebuild from '../lib';
 
 /* eslint-disable @stylistic/quote-props */
-/* eslint-disable quotes */
 
 describe('Test BuildSpec merge', () => {
   test('merge two simple specs', () => {

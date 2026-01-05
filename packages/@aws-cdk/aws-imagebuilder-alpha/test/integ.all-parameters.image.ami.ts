@@ -26,7 +26,7 @@ const imageRecipe = new imagebuilder.ImageRecipe(stack, 'ImageRecipe', {
   }).toBaseImage(),
   components: [
     {
-      component: imagebuilder.AwsManagedComponent.fromAwsManagedComponentName(
+      component: imagebuilder.AmazonManagedComponent.fromAmazonManagedComponentName(
         stack,
         'SimpleBootTest',
         'simple-boot-test-linux',
@@ -44,7 +44,7 @@ const image = new imagebuilder.Image(stack, 'Image-AMI', {
   distributionConfiguration: amiDistributionConfiguration,
   executionRole,
   logGroup,
-  workflows: [{ workflow: imagebuilder.AwsManagedWorkflow.testImage(stack, 'TestImage') }],
+  workflows: [{ workflow: imagebuilder.AmazonManagedWorkflow.testImage(stack, 'TestImage') }],
   enhancedImageMetadataEnabled: true,
   imageTestsEnabled: true,
   imageScanningEnabled: true,

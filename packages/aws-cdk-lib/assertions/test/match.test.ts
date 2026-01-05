@@ -423,7 +423,7 @@ describe('Matchers', () => {
 function expectPass(matcher: Matcher, target: any): void {
   const result = matcher.test(target);
   if (result.hasFailed()) {
-    throw new Error(result.toHumanStrings().join('\n')); // eslint-disable-line jest/no-jasmine-globals
+    throw new Error(result.toHumanStrings().join('\n'));
   }
 }
 

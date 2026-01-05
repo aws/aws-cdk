@@ -737,14 +737,14 @@ describe('CDK Include', () => {
   });
 
   test('preserves unknown policy attributes', () => {
-    const cfnTemplate = includeTestTemplate(stack, 'non-existent-policy-attribute.json');
+    includeTestTemplate(stack, 'non-existent-policy-attribute.json');
     Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('non-existent-policy-attribute.json'),
     );
   });
 
   test('correctly handles string arrays in policy attributes', () => {
-    const cfnTemplate = includeTestTemplate(stack, 'string-arrays-in-policy.json');
+    includeTestTemplate(stack, 'string-arrays-in-policy.json');
     Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('string-arrays-in-policy.json'),
     );
