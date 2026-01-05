@@ -1,0 +1,16 @@
+{
+  "tools": [
+    {
+      "name": "tool2",
+      "description": "Second test tool",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "param2": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ]
+}
