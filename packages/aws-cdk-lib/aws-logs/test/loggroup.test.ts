@@ -1063,6 +1063,21 @@ test('create a Add Key transformer against a log group', () => {
   });
 });
 
+test('enable deletion protection', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new LogGroup(stack, 'LogGroup', {
+    deletionProtectionEnabled: true
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+    DeletionProtectionEnabled: true,
+  });
+});
+
 function dataDrivenTests(cases: string[], body: (suffix: string) => void): void {
   for (let i = 0; i < cases.length; i++) {
     const args = cases[i]; // Need to capture inside loop for safe use inside closure.
