@@ -8,6 +8,7 @@ import {
   Stack,
   ValidationError,
 } from 'aws-cdk-lib';
+import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
 import {
   DimensionsMap,
   Metric,
@@ -15,14 +16,13 @@ import {
   MetricProps,
   Stats,
 } from 'aws-cdk-lib/aws-cloudwatch';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
 import { Location } from 'aws-cdk-lib/aws-s3';
-import { Construct } from 'constructs';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { Construct } from 'constructs';
 // Internal Libs
 import * as perms from './perms';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from './validation-helpers';
@@ -483,7 +483,7 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
 export interface RecordingConfig {
   /**
    * Whether recording is enabled
-   * @default - false
+   * @default false
    */
   readonly enabled?: boolean;
 

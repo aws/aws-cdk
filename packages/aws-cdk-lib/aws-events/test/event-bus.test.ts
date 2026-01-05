@@ -700,7 +700,7 @@ describe('event bus', () => {
     const key = new kms.Key(stack, 'Key');
 
     // WHEN
-    const eventBus = new EventBus(stack, 'Bus', {
+    new EventBus(stack, 'Bus', {
       kmsKey: key,
     });
 

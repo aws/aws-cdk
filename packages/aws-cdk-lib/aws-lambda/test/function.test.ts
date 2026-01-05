@@ -81,7 +81,6 @@ describe('function', () => {
         Version: '2012-10-17',
       },
       ManagedPolicyArns:
-        // eslint-disable-next-line max-len
         [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
     });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -149,7 +148,6 @@ describe('function', () => {
           Version: '2012-10-17',
         },
         ManagedPolicyArns:
-          // eslint-disable-next-line max-len
           [{ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] }],
       });
 
@@ -2071,7 +2069,7 @@ describe('function', () => {
 
     let bindCalled = false;
     class MockApiEventSource implements lambda.IEventSource {
-      bind(target: lambda.IFunction): void {
+      bind(_target: lambda.IFunction): void {
         bindCalled = true;
       }
     }
@@ -2095,7 +2093,7 @@ describe('function', () => {
     });
 
     class MockSqsEventSource implements lambda.IEventSource {
-      bind(target: lambda.IFunction): void {}
+      bind(_target: lambda.IFunction): void {}
     }
     Object.defineProperty(MockSqsEventSource, 'name', { value: 'SqsEventSource' });
 
@@ -3875,13 +3873,13 @@ describe('function', () => {
       // THEN
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Properties:
-            {
-              Handler: 'example.Handler::handleRequest',
-              Runtime: 'java11',
-              SnapStart: {
-                ApplyOn: 'PublishedVersions',
-              },
-            },
+        {
+          Handler: 'example.Handler::handleRequest',
+          Runtime: 'java11',
+          SnapStart: {
+            ApplyOn: 'PublishedVersions',
+          },
+        },
       });
     });
 
@@ -3910,14 +3908,14 @@ describe('function', () => {
       // THEN
       Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Properties:
-            {
-              Handler: 'example.Handler::handleRequest',
-              Runtime: 'java11',
-              Architectures: ['arm64'],
-              SnapStart: {
-                ApplyOn: 'PublishedVersions',
-              },
-            },
+        {
+          Handler: 'example.Handler::handleRequest',
+          Runtime: 'java11',
+          Architectures: ['arm64'],
+          SnapStart: {
+            ApplyOn: 'PublishedVersions',
+          },
+        },
       });
     });
 

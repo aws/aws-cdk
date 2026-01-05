@@ -110,7 +110,6 @@ describe('tokens', () => {
     expect(resolve({ not_a_token: { resolve: 12 } })).toEqual({ not_a_token: { resolve: 12 } });
   });
 
-  // eslint-disable-next-line max-len
   test('if a resolvable object inherits from a class that is also resolvable, the "constructor" function will not get in the way (uses Object.keys instead of "for in")', () => {
     expect(resolve({ prop: new DataType() })).toEqual({ prop: { foo: 12, goo: 'hello' } });
   });
