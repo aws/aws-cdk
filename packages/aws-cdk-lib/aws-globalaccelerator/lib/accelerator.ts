@@ -164,7 +164,7 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
       public readonly ipv4Addresses = attrs.ipv4Addresses;
       public readonly ipv6Addresses = attrs.ipv6Addresses;
 
-      public get acceleratorRef() {
+      public get acceleratorRef(): ga.AcceleratorReference {
         return {
           acceleratorArn: this.acceleratorArn,
         };
@@ -199,7 +199,7 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
    */
   public readonly ipv6Addresses?: string[];
 
-  public get acceleratorRef() {
+  public get acceleratorRef(): ga.AcceleratorReference {
     return {
       acceleratorArn: this.acceleratorArn,
     };

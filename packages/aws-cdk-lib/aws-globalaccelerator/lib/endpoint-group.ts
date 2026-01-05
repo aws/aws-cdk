@@ -166,7 +166,7 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
     class Import extends cdk.Resource implements IEndpointGroup {
       public readonly endpointGroupArn = endpointGroupArn;
 
-      public get endpointGroupRef() {
+      public get endpointGroupRef(): ga.EndpointGroupReference {
         return {
           endpointGroupArn: this.endpointGroupArn,
         };
@@ -188,7 +188,7 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
    */
   protected readonly endpoints = new Array<IEndpoint>();
 
-  public get endpointGroupRef() {
+  public get endpointGroupRef(): ga.EndpointGroupReference {
     return {
       endpointGroupArn: this.endpointGroupArn,
     };
