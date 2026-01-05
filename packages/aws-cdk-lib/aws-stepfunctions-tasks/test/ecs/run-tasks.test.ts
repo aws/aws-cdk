@@ -1068,14 +1068,14 @@ describe('capacityProviderOptions', () => {
     });
   });
 
-  test('throws error when more than 20 capacity providers are specified', () => {
-    const capacityProviders = Array.from({ length: 21 }, (_, i) => ({
+  test.each([0, 21])('throws error when custom() is called with %s', (length: number) => {
+    const capacityProviders = Array.from({ length }, (_, i) => ({
       capacityProvider: `provider-${i}`,
       weight: 1,
     }));
 
     expect(() => {
       tasks.CapacityProviderOptions.custom(capacityProviders);
-    }).toThrow(/Capacity provider strategy can contain a maximum of 20 capacity providers, got 21/);
+    }).toThrow(`Capacity provider strategy must contain between 1 and 20 capacity providers, got ${length}`);
   });
 });

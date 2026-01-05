@@ -219,11 +219,16 @@ export class CapacityProviderOptions {
   /**
    * Use a custom capacity provider strategy.
    *
-   * You can specify a maximum of 20 capacity providers.
+   * You can specify between 1 and 20 capacity providers.
    *
    * @param capacityProviderStrategy The capacity provider strategy to use for the task.
    */
   public static custom(capacityProviderStrategy: ecs.CapacityProviderStrategy[]): CapacityProviderOptions {
+    if (capacityProviderStrategy.length < 1 || capacityProviderStrategy.length > 20) {
+      throw new cdk.UnscopedValidationError(
+        `Capacity provider strategy must contain between 1 and 20 capacity providers, got ${capacityProviderStrategy.length}`,
+      );
+    }
     return new CapacityProviderOptions(capacityProviderStrategy);
   }
 
@@ -234,11 +239,7 @@ export class CapacityProviderOptions {
     return new CapacityProviderOptions();
   }
 
-  private constructor(private readonly capacityProviderStrategy: ecs.CapacityProviderStrategy[] = []) {
-    if (capacityProviderStrategy.length > 20) {
-      throw new cdk.UnscopedValidationError(`Capacity provider strategy can contain a maximum of 20 capacity providers, got ${capacityProviderStrategy.length}`);
-    }
-  }
+  private constructor(private readonly capacityProviderStrategy: ecs.CapacityProviderStrategy[] = []) {}
 
   /**
    * @internal
