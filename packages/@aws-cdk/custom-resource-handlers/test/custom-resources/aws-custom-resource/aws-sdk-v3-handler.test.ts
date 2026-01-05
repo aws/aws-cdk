@@ -29,7 +29,6 @@ beforeEach(() => {
   mockExecSync.mockReset();
 });
 
-/* eslint-disable no-console */
 console.log = jest.fn();
 
 const eventCommon = {
