@@ -949,7 +949,7 @@ export interface AddApplicationActionProps extends AddRuleProps {
   readonly removeSuffix?: boolean;
 
   /**
-   * Transforms to apply to requests and responses
+   * Transforms to apply to requests
    *
    * @default - No transforms are applied
    */
@@ -1120,7 +1120,7 @@ function checkAddActionProps(scope: Construct, props: AddApplicationActionProps)
       );
     }
   }
-  if (hasTransforms && !hasPriority) {
+  if (hasTransforms && (!hasPriority || !hasAnyConditions)) {
     throw new ValidationError(
       'Setting \'transforms\' requires \'priority\' and at least one of \'conditions\', \'pathPattern\' or \'hostHeader\' to be set.',
       scope,

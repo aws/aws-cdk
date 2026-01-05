@@ -1477,7 +1477,7 @@ describe('tests', () => {
       });
     });
 
-    test('throws when specifying transforms without priority', () => {
+    test('throws when specifying transforms without priority and conditions', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'VPC');
