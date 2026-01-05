@@ -1,16 +1,33 @@
 import { Construct } from 'constructs';
-import { ILogGroup } from './log-group';
 import { CfnLogStream } from './logs.generated';
-import { IResource, RemovalPolicy, Resource } from '../../core';
+import { IResource, RemovalPolicy, Resource, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { ILogGroupRef, ILogStreamRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
-export interface ILogStream extends IResource {
+export interface ILogStream extends IResource, ILogStreamRef {
   /**
    * The name of this log stream
    * @attribute
    */
   readonly logStreamName: string;
+}
+
+/**
+ * Attributes for importing a LogStream
+ */
+export interface LogStreamAttributes {
+  /**
+   * The name of the log stream
+   */
+  readonly logStreamName: string;
+
+  /**
+   * The name of the log group
+   *
+   * @default - When not provided, logStreamRef will throw an error
+   */
+  readonly logGroupName?: string;
 }
 
 /**
@@ -20,7 +37,7 @@ export interface LogStreamProps {
   /**
    * The log group to create a log stream for.
    */
-  readonly logGroup: ILogGroup;
+  readonly logGroup: ILogGroupRef;
 
   /**
    * The name of the log stream to create.
@@ -55,11 +72,29 @@ export class LogStream extends Resource implements ILogStream {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-logs.LogStream';
 
   /**
-   * Import an existing LogGroup
+   * Import an existing LogStream
    */
   public static fromLogStreamName(scope: Construct, id: string, logStreamName: string): ILogStream {
+    return LogStream.fromLogStreamAttributes(scope, id, { logStreamName });
+  }
+
+  /**
+   * Import an existing LogStream using its attributes
+   */
+  public static fromLogStreamAttributes(scope: Construct, id: string, attrs: LogStreamAttributes): ILogStream {
     class Import extends Resource implements ILogStream {
-      public readonly logStreamName = logStreamName;
+      public readonly logStreamName = attrs.logStreamName;
+      private readonly _logGroupName = attrs.logGroupName;
+
+      public get logStreamRef() {
+        if (!this._logGroupName) {
+          throw new UnscopedValidationError('Cannot access logStreamRef on an imported LogStream without logGroupName. Use LogStream.fromLogStreamAttributes() and provide logGroupName.');
+        }
+        return {
+          logGroupName: this._logGroupName,
+          logStreamName: this.logStreamName,
+        };
+      }
     }
 
     return new Import(scope, id);
@@ -70,6 +105,8 @@ export class LogStream extends Resource implements ILogStream {
    */
   public readonly logStreamName: string;
 
+  private readonly logGroupName: string;
+
   constructor(scope: Construct, id: string, props: LogStreamProps) {
     super(scope, id, {
       physicalName: props.logStreamName,
@@ -77,12 +114,21 @@ export class LogStream extends Resource implements ILogStream {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    this.logGroupName = props.logGroup.logGroupRef.logGroupName;
+
     const resource = new CfnLogStream(this, 'Resource', {
-      logGroupName: props.logGroup.logGroupName,
+      logGroupName: this.logGroupName,
       logStreamName: this.physicalName,
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
     this.logStreamName = this.getResourceNameAttribute(resource.ref);
+  }
+
+  public get logStreamRef() {
+    return {
+      logGroupName: this.logGroupName,
+      logStreamName: this.logStreamName,
+    };
   }
 }

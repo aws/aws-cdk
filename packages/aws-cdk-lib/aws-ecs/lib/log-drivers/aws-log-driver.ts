@@ -44,7 +44,7 @@ export interface AwsLogDriverProps {
    *
    * @default - A log group is automatically created.
    */
-  readonly logGroup?: logs.ILogGroup;
+  readonly logGroup?: logs.ILogGroupRef;
 
   /**
    * The number of days log events are kept in CloudWatch Logs when the log
@@ -105,7 +105,7 @@ export class AwsLogDriver extends LogDriver {
    *
    * Only available after the LogDriver has been bound to a ContainerDefinition.
    */
-  public logGroup?: logs.ILogGroup;
+  public logGroup?: logs.ILogGroupRef;
 
   /**
    * Constructs a new instance of the AwsLogDriver class.
@@ -144,13 +144,13 @@ export class AwsLogDriver extends LogDriver {
     const execRole = containerDefinition.taskDefinition.obtainExecutionRole();
     execRole.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
-      resources: [this.logGroup.logGroupArn],
+      resources: [this.logGroup.logGroupRef.logGroupArn],
     }));
 
     return {
       logDriver: 'awslogs',
       options: removeEmpty({
-        'awslogs-group': this.logGroup.logGroupName,
+        'awslogs-group': this.logGroup.logGroupRef.logGroupName,
         'awslogs-stream-prefix': this.props.streamPrefix,
         'awslogs-region': this.logGroup.env.region,
         'awslogs-datetime-format': this.props.datetimeFormat,

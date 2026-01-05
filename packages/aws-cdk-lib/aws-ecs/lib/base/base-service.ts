@@ -1165,7 +1165,7 @@ export abstract class BaseService extends Resource
         resources: ['*'],
       }));
 
-      const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
+      const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupRef.logGroupName}:*` : '*';
       this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
         actions: [
           'logs:CreateLogStream',
