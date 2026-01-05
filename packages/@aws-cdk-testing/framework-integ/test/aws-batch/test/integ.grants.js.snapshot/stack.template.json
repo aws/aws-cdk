@@ -488,7 +488,7 @@
     "UpdatePolicy": {}
    }
   },
-  "joBBQ9FD52DAF": {
+  "joBBQL214ECA04": {
    "Type": "AWS::Batch::JobQueue",
    "Properties": {
     "ComputeEnvironmentOrder": [
@@ -612,7 +612,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "joBBQ9FD52DAF",
+          "joBBQL214ECA04",
           "JobQueueArn"
          ]
         },

@@ -9,7 +9,7 @@ const app = new App();
 const stack = new Stack(app, 'stack');
 const vpc = new Vpc(stack, 'vpc', { restrictDefaultSecurityGroup: false });
 
-const queue = new batch.JobQueue(stack, 'joBBQ', {
+const queue = new batch.JobQueue(stack, 'joBBQL', {
   computeEnvironments: [{
     computeEnvironment: new batch.ManagedEc2EcsComputeEnvironment(stack, 'managedEc2CE', {
       vpc,
