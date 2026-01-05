@@ -25,9 +25,6 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 ```ts nofixture
 import * as s3express from 'aws-cdk-lib/aws-s3express';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as iam from 'aws-cdk-lib/aws-iam';
 ```
 
 ## S3 Express One Zone
@@ -41,6 +38,8 @@ Directory buckets provide up to 10x faster performance compared to S3 Standard, 
 #### Basic Usage
 
 ```ts
+import * as s3express from 'aws-cdk-lib/aws-s3express';
+
 const bucket = new s3express.DirectoryBucket(this, 'MyDirectoryBucket', {
   location: {
     availabilityZone: 'us-east-1a',
@@ -56,6 +55,9 @@ console.log(bucket.bucketName);
 Directory buckets support server-side encryption with either S3-managed keys (default) or AWS KMS keys:
 
 ```ts
+import * as s3express from 'aws-cdk-lib/aws-s3express';
+import * as kms from 'aws-cdk-lib/aws-kms';
+
 // S3-managed encryption (default)
 const bucketWithS3Encryption = new s3express.DirectoryBucket(this, 'S3Encrypted', {
   location: { availabilityZone: 'us-west-2a' },
@@ -76,6 +78,8 @@ const bucketWithKMSEncryption = new s3express.DirectoryBucket(this, 'KMSEncrypte
 Choose between single Availability Zone or single Local Zone redundancy:
 
 ```ts
+import * as s3express from 'aws-cdk-lib/aws-s3express';
+
 // Single Availability Zone (default)
 const azBucket = new s3express.DirectoryBucket(this, 'AZBucket', {
   location: { availabilityZone: 'us-east-1a' },
@@ -94,6 +98,9 @@ const lzBucket = new s3express.DirectoryBucket(this, 'LZBucket', {
 Grant read, write, or full access permissions to IAM principals:
 
 ```ts
+import * as s3express from 'aws-cdk-lib/aws-s3express';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
 const bucket = new s3express.DirectoryBucket(this, 'MyBucket', {
   location: { availabilityZone: 'us-east-1a' },
 });
@@ -119,6 +126,9 @@ bucket.grantRead(readFunction, 'prefix/*');
 Reference existing directory buckets by ARN or name:
 
 ```ts
+import * as s3express from 'aws-cdk-lib/aws-s3express';
+import * as iam from 'aws-cdk-lib/aws-iam';
+
 // Import by ARN
 const importedByArn = s3express.DirectoryBucket.fromBucketArn(
   this,
@@ -143,6 +153,9 @@ importedByArn.grantRead(myRole);
 Apply resource policies to directory buckets:
 
 ```ts
+import * as s3express from 'aws-cdk-lib/aws-s3express';
+import * as iam from 'aws-cdk-lib/aws-iam';
+
 const bucket = new s3express.DirectoryBucket(this, 'MyBucket', {
   location: { availabilityZone: 'us-east-1a' },
 });
@@ -161,6 +174,8 @@ Access points simplify data access management for directory buckets by providing
 #### Creating an Access Point
 
 ```ts
+import * as s3express from 'aws-cdk-lib/aws-s3express';
+
 const bucket = new s3express.DirectoryBucket(this, 'MyBucket', {
   location: { availabilityZone: 'us-east-1a' },
 });
@@ -173,6 +188,9 @@ const accessPoint = new s3express.DirectoryBucketAccessPoint(this, 'MyAccessPoin
 #### Granting Permissions through Access Points
 
 ```ts
+import * as s3express from 'aws-cdk-lib/aws-s3express';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
 declare const bucket: s3express.DirectoryBucket;
 
 const accessPoint = new s3express.DirectoryBucketAccessPoint(this, 'MyAccessPoint', {
@@ -194,6 +212,9 @@ accessPoint.grantReadWrite(readFunction);
 #### Importing Existing Access Points
 
 ```ts
+import * as s3express from 'aws-cdk-lib/aws-s3express';
+import * as iam from 'aws-cdk-lib/aws-iam';
+
 // Import by ARN
 const importedByArn = s3express.DirectoryBucketAccessPoint.fromAccessPointArn(
   this,
@@ -218,6 +239,8 @@ importedByArn.grantRead(myRole);
 For cross-account access, specify the bucket account ID:
 
 ```ts
+import * as s3express from 'aws-cdk-lib/aws-s3express';
+
 declare const bucket: s3express.DirectoryBucket;
 
 const accessPoint = new s3express.DirectoryBucketAccessPoint(this, 'CrossAccountAP', {
