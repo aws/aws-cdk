@@ -92,9 +92,68 @@ export abstract class ContainerImage implements IContainerImage {
   }
 
   /**
+   * Use a custom container image configuration.
+   *
+   * This method allows you to specify custom container images from any registry
+   * without implementing the IContainerImage interface directly.
+   *
+   * @param config Configuration for the custom container image
+   *
+   * @example
+   * ```ts
+   * const customImage = ContainerImage.fromCustomConfiguration({
+   *   imageName: 'custom-registry.example.com/my-app:v1.0',
+   *   repositoryCredentials: {
+   *     credentialsParameter: 'arn:aws:secretsmanager:region:account:secret:my-secret',
+   *   },
+   * });
+   *
+   * const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+   * taskDefinition.addContainer('Container', {
+   *   image: customImage,
+   *   memoryLimitMiB: 512,
+   * });
+   * ```
+   */
+  public static fromCustomConfiguration(config: CustomContainerImageConfig): ContainerImage {
+    return {
+      bind(_scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
+        // Ensure execution role exists if credentials are provided
+        if (config.repositoryCredentials) {
+          containerDefinition.taskDefinition.obtainExecutionRole();
+        }
+
+        return {
+          imageName: config.imageName,
+          repositoryCredentials: config.repositoryCredentials,
+        };
+      },
+    };
+  }
+
+  /**
    * Called when the image is used by a ContainerDefinition
    */
   public abstract bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig;
+}
+
+/**
+ * Configuration for a custom container image.
+ */
+export interface CustomContainerImageConfig {
+  /**
+   * The image name. Images in Docker Hub or ECR are supported.
+   *
+   * @example 'custom-registry.example.com/my-app:v1.0'
+   */
+  readonly imageName: string;
+
+  /**
+   * The credentials used to access the image repository.
+   *
+   * @default - No credentials are used
+   */
+  readonly repositoryCredentials?: CfnTaskDefinition.RepositoryCredentialsProperty;
 }
 
 /**

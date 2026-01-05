@@ -587,21 +587,15 @@ obtained from either DockerHub or from ECR repositories, built directly from a l
 
 #### Custom Container Images
 
-You can implement the `IContainerImage` interface to provide custom container image sources without extending the `ContainerImage` abstract class:
+You can use `ContainerImage.fromCustomConfiguration()` to provide custom container image sources from any registry:
 
 ```ts
-const customImage: ecs.IContainerImage = {
-  bind(_scope, containerDefinition) {
-    containerDefinition.taskDefinition.obtainExecutionRole();
-
-    return {
-      imageName: 'custom-registry.example.com/my-app:v1.0',
-      repositoryCredentials: {
-        credentialsParameter: 'arn:aws:secretsmanager:region:account:secret:my-secret',
-      },
-    };
+const customImage = ecs.ContainerImage.fromCustomConfiguration({
+  imageName: 'custom-registry.example.com/my-app:v1.0',
+  repositoryCredentials: {
+    credentialsParameter: 'arn:aws:secretsmanager:region:account:secret:my-secret',
   },
-};
+});
 
 const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 
@@ -611,7 +605,7 @@ taskDefinition.addContainer('Container', {
 });
 ```
 
-This enables integration with custom container registries or image management systems.
+This enables integration with custom container registries or image management systems without needing to implement the `IContainerImage` interface directly.
 
 ### Environment variables
 
