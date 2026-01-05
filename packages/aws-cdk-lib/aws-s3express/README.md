@@ -38,8 +38,6 @@ Directory buckets provide up to 10x faster performance compared to S3 Standard, 
 #### Basic Usage
 
 ```ts
-import * as s3express from 'aws-cdk-lib/aws-s3express';
-
 const bucket = new s3express.DirectoryBucket(this, 'MyDirectoryBucket', {
   location: {
     availabilityZone: 'us-east-1a',
@@ -55,9 +53,6 @@ console.log(bucket.bucketName);
 Directory buckets support server-side encryption with either S3-managed keys (default) or AWS KMS keys:
 
 ```ts
-import * as s3express from 'aws-cdk-lib/aws-s3express';
-import * as kms from 'aws-cdk-lib/aws-kms';
-
 // S3-managed encryption (default)
 const bucketWithS3Encryption = new s3express.DirectoryBucket(this, 'S3Encrypted', {
   location: { availabilityZone: 'us-west-2a' },
@@ -78,8 +73,6 @@ const bucketWithKMSEncryption = new s3express.DirectoryBucket(this, 'KMSEncrypte
 Choose between single Availability Zone or single Local Zone redundancy:
 
 ```ts
-import * as s3express from 'aws-cdk-lib/aws-s3express';
-
 // Single Availability Zone (default)
 const azBucket = new s3express.DirectoryBucket(this, 'AZBucket', {
   location: { availabilityZone: 'us-east-1a' },
@@ -98,8 +91,6 @@ const lzBucket = new s3express.DirectoryBucket(this, 'LZBucket', {
 Grant read, write, or full access permissions to IAM principals:
 
 ```ts
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-
 const bucket = new s3express.DirectoryBucket(this, 'MyBucket', {
   location: { availabilityZone: 'us-east-1a' },
 });
@@ -125,8 +116,6 @@ bucket.grantRead(readFunction, 'prefix/*');
 Reference existing directory buckets by ARN or name:
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-
 // Import by ARN
 const importedByArn = s3express.DirectoryBucket.fromBucketArn(
   this,
