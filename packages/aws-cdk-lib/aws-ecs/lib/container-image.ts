@@ -100,7 +100,6 @@ export abstract class ContainerImage implements IContainerImage {
    * @param config Configuration for the custom container image
    *
    * @example
-   * ```ts
    * const customImage = ContainerImage.fromCustomConfiguration({
    *   imageName: 'custom-registry.example.com/my-app:v1.0',
    *   repositoryCredentials: {
@@ -113,7 +112,6 @@ export abstract class ContainerImage implements IContainerImage {
    *   image: customImage,
    *   memoryLimitMiB: 512,
    * });
-   * ```
    */
   public static fromCustomConfiguration(config: CustomContainerImageConfig): ContainerImage {
     return {
