@@ -9,6 +9,7 @@ import { App, Fn, RemovalPolicy, ResourceEnvironment, Stack, UnscopedValidationE
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 import { Node } from 'constructs';
+import { SOLUTION_STACK_NAME } from '../../utils/aws-elasticbeanstalk';
 
 /**
  * To validate that the deployment actually succeeds, perform the following actions:
@@ -93,8 +94,7 @@ const beanstalkApp = new elasticbeanstalk.CfnApplication(stack, 'beastalk-app', 
 const beanstalkEnv = new elasticbeanstalk.CfnEnvironment(stack, 'beanstlk-env', {
   applicationName: beanstalkApp.applicationName!,
   environmentName: 'codepipeline-test-env',
-  // see https://docs.aws.amazon.com/elasticbeanstalk/latest/platforms/platforms-supported.html#platforms-supported.nodejs
-  solutionStackName: '64bit Amazon Linux 2023 v6.6.2 running Node.js 20',
+  solutionStackName: SOLUTION_STACK_NAME.NODEJS_20,
   optionSettings: [
     {
       namespace: 'aws:autoscaling:launchconfiguration',

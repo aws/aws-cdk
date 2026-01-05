@@ -443,7 +443,7 @@
       "Value": "AWSServiceRoleForElasticBeanstalkManagedUpdates"
      }
     ],
-    "SolutionStackName": "64bit Amazon Linux 2023 v6.6.2 running Node.js 20"
+    "SolutionStackName": "64bit Amazon Linux 2023 v6.7.1 running Node.js 20"
    },
    "DependsOn": [
     "beastalkapp",
