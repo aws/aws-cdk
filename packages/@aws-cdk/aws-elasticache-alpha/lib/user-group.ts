@@ -253,7 +253,7 @@ export class UserGroup extends UserGroupBase {
 
     this.engine = props.engine ?? UserEngine.VALKEY;
     this.userGroupName = props.userGroupName ?? Lazy.string({
-      // User group ID max length is 40 characters
+      // ElastiCache is allowing only uppercase and max 40 characters for user group id
       produce: () => Names.uniqueResourceName(this, { maxLength: 40 }).toLocaleLowerCase(),
     });
 
