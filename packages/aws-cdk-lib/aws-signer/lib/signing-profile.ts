@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnSigningProfile } from './signer.generated';
+import { CfnSigningProfile, SigningProfileReference } from './signer.generated';
 import { Duration, FeatureFlags, IResource, Resource, Stack } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -155,7 +155,7 @@ export class SigningProfile extends Resource implements ISigningProfile {
       public readonly signingProfileVersion = attrs.signingProfileVersion;
       public readonly signingProfileVersionArn: string;
 
-      public get signingProfileRef() {
+      public get signingProfileRef(): SigningProfileReference {
         return {
           signingProfileArn: this.signingProfileArn,
         };
@@ -185,7 +185,7 @@ export class SigningProfile extends Resource implements ISigningProfile {
   public readonly signingProfileVersion: string;
   public readonly signingProfileVersionArn: string;
 
-  public get signingProfileRef() {
+  public get signingProfileRef(): SigningProfileReference {
     return {
       signingProfileArn: this.signingProfileArn,
     };
