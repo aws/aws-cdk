@@ -471,7 +471,7 @@ export class ServerlessCache extends ServerlessCacheBase {
 
     this.connections = new ec2.Connections({
       securityGroups: this.securityGroups,
-      defaultPort: ec2.Port.tcp(Lazy.number({ produce: () => parseInt(this.serverlessCacheEndpointPort) })),
+      defaultPort: ec2.Port.tcp(Token.asNumber(this.serverlessCacheEndpointPort)),
     });
 
     Object.defineProperty(this, ELASTICACHE_SERVERLESSCACHE_SYMBOL, { value: true });
