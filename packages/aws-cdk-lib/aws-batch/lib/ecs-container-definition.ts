@@ -240,7 +240,7 @@ export class EfsVolume extends EcsVolume {
     return x !== null && typeof(x) === 'object' && EFS_VOLUME_SYMBOL in x;
   }
 
-  protected readonly _fileSystem: IFileSystemRef;
+  private readonly _fileSystem: IFileSystemRef;
 
   /**
    * The EFS File System that supports this volume
