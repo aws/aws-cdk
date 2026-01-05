@@ -27,6 +27,11 @@ export enum AcceleratorType {
    * Purpose-built for efficient machine learning inference.
    */
   INFERENCE = 'inference',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  MEDIA = 'media',
 }
 
 /**
@@ -94,6 +99,41 @@ export enum AcceleratorName {
 
   /** NVIDIA T4G GPUs. */
   T4G = 't4g',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  L40S = 'l40s',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  L4 = 'l4',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  GAUDI_HL_205 = 'gaudi-hl-205',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  INFERENTIA2 = 'inferentia2',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  TRAINIUM = 'trainium',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  TRAINIUM2 = 'trainium2',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  U30 = 'u30',
 }
 
 /**
