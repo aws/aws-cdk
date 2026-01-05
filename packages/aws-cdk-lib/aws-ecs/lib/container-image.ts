@@ -98,20 +98,6 @@ export abstract class ContainerImage implements IContainerImage {
    * without implementing the IContainerImage interface directly.
    *
    * @param config Configuration for the custom container image
-   *
-   * @example
-   * const customImage = ContainerImage.fromCustomConfiguration({
-   *   imageName: 'custom-registry.example.com/my-app:v1.0',
-   *   repositoryCredentials: {
-   *     credentialsParameter: 'arn:aws:secretsmanager:region:account:secret:my-secret',
-   *   },
-   * });
-   *
-   * const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
-   * taskDefinition.addContainer('Container', {
-   *   image: customImage,
-   *   memoryLimitMiB: 512,
-   * });
    */
   public static fromCustomConfiguration(config: CustomContainerImageConfig): ContainerImage {
     return {
