@@ -1,5 +1,4 @@
 import { Template, Match } from '../../assertions';
-import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
