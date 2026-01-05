@@ -30,7 +30,7 @@ The CDK is available in the following languages:
 Third-party Language Deprecation: language version is only supported until its EOL (End Of Life) shared by the vendor or community and is subject to change with prior notice.
 
 \
-Jump To:
+Jump To s:
 [Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide) |
 [API Reference](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-construct-library.html) |
 [Getting Started](#getting-started) |
