@@ -98,7 +98,6 @@ const lzBucket = new s3express.DirectoryBucket(this, 'LZBucket', {
 Grant read, write, or full access permissions to IAM principals:
 
 ```ts
-import * as s3express from 'aws-cdk-lib/aws-s3express';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 const bucket = new s3express.DirectoryBucket(this, 'MyBucket', {
@@ -126,7 +125,6 @@ bucket.grantRead(readFunction, 'prefix/*');
 Reference existing directory buckets by ARN or name:
 
 ```ts
-import * as s3express from 'aws-cdk-lib/aws-s3express';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
 // Import by ARN
@@ -153,9 +151,6 @@ importedByArn.grantRead(myRole);
 Apply resource policies to directory buckets:
 
 ```ts
-import * as s3express from 'aws-cdk-lib/aws-s3express';
-import * as iam from 'aws-cdk-lib/aws-iam';
-
 const bucket = new s3express.DirectoryBucket(this, 'MyBucket', {
   location: { availabilityZone: 'us-east-1a' },
 });
@@ -174,8 +169,6 @@ Access points simplify data access management for directory buckets by providing
 #### Creating an Access Point
 
 ```ts
-import * as s3express from 'aws-cdk-lib/aws-s3express';
-
 const bucket = new s3express.DirectoryBucket(this, 'MyBucket', {
   location: { availabilityZone: 'us-east-1a' },
 });
@@ -188,9 +181,6 @@ const accessPoint = new s3express.DirectoryBucketAccessPoint(this, 'MyAccessPoin
 #### Granting Permissions through Access Points
 
 ```ts
-import * as s3express from 'aws-cdk-lib/aws-s3express';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-
 declare const bucket: s3express.DirectoryBucket;
 
 const accessPoint = new s3express.DirectoryBucketAccessPoint(this, 'MyAccessPoint', {
@@ -212,9 +202,6 @@ accessPoint.grantReadWrite(readFunction);
 #### Importing Existing Access Points
 
 ```ts
-import * as s3express from 'aws-cdk-lib/aws-s3express';
-import * as iam from 'aws-cdk-lib/aws-iam';
-
 // Import by ARN
 const importedByArn = s3express.DirectoryBucketAccessPoint.fromAccessPointArn(
   this,
@@ -239,8 +226,6 @@ importedByArn.grantRead(myRole);
 For cross-account access, specify the bucket account ID:
 
 ```ts
-import * as s3express from 'aws-cdk-lib/aws-s3express';
-
 declare const bucket: s3express.DirectoryBucket;
 
 const accessPoint = new s3express.DirectoryBucketAccessPoint(this, 'CrossAccountAP', {
