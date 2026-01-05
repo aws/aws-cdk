@@ -1,10 +1,11 @@
 import * as iam from '../../aws-iam';
 import { IResource } from '../../core';
+import { IEndpointRef } from '../../interfaces/generated/aws-sagemaker-interfaces.generated';
 
 /**
  * The interface for a SageMaker Endpoint resource.
  */
-export interface IEndpoint extends IResource {
+export interface IEndpoint extends IResource, IEndpointRef {
   /**
    * The ARN of the endpoint.
    *
@@ -18,6 +19,11 @@ export interface IEndpoint extends IResource {
    * @attribute
    */
   readonly endpointName: string;
+
+  /**
+   * A reference to this Endpoint resource.
+   */
+  readonly endpointRef: import('../../interfaces/generated/aws-sagemaker-interfaces.generated').EndpointReference;
 
   /**
    * Permits an IAM principal to invoke this endpoint
