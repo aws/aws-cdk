@@ -6,6 +6,9 @@
         "integ-distribution-lambda-cross-region"
       ],
       "diffAssets": true,
+      "allowDestroy": [
+        "AWS::Lambda::Function"
+      ],
       "assertionStack": "cdk-integ-distribution-lambda-cross-region/DefaultTest/DeployAssert",
       "assertionStackName": "cdkintegdistributionlambdacrossregionDefaultTestDeployAssert47F14485"
     }
