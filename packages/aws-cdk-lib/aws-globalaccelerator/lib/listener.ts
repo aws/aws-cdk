@@ -131,7 +131,7 @@ export class Listener extends cdk.Resource implements IListener {
     class Import extends cdk.Resource implements IListener {
       public readonly listenerArn = listenerArn;
 
-      public get listenerRef() {
+      public get listenerRef(): ga.ListenerReference {
         return {
           listenerArn: this.listenerArn,
         };
@@ -148,7 +148,7 @@ export class Listener extends cdk.Resource implements IListener {
    */
   public readonly listenerName: string;
 
-  public get listenerRef() {
+  public get listenerRef(): ga.ListenerReference {
     return {
       listenerArn: this.listenerArn,
     };
