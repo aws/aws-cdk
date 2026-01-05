@@ -47,5 +47,4 @@ new cloudfront.Distribution(stack, 'Dist', {
 new integ.IntegTest(app, 'cdk-integ-distribution-lambda-cross-region', {
   testCases: [stack],
   diffAssets: true,
-  allowDestroy: ['AWS::Lambda::Function'],
 });
