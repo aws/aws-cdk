@@ -6,12 +6,12 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /**
  * Integration test for post-quantum TLS policy feature flag
- * 
+ *
  * This test verifies that:
  * 1. ALB HTTPS listeners use post-quantum TLS policy when feature flag is enabled
  * 2. NLB TLS listeners use post-quantum TLS policy when feature flag is enabled
  * 3. CloudFormation templates are generated correctly with the expected SSL policies
- * 
+ *
  * DEPLOYMENT NOTES:
  * - For snapshot generation: Uses dummy certificate ARN (safe for CI/CD)
  * - For actual deployment: Set CDK_INTEG_CERTIFICATE_ARN with real certificate ARN:
@@ -40,10 +40,10 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
  * Certificate ARN configuration:
  * - By default: Uses dummy ARN (safe for snapshot generation and CI/CD)
  * - For actual deployment: Set CDK_INTEG_CERTIFICATE_ARN with real validated certificate ARN
- * 
+ *
  * Example for real deployment:
  * export CDK_INTEG_CERTIFICATE_ARN=arn:aws:acm:us-east-1:YOUR-ACCOUNT:certificate/YOUR-CERT-ID
- * 
+ *
  * The certificate must be validated and in the same region as the deployment.
  */
 const certificateArn = process.env.CDK_INTEG_CERTIFICATE_ARN ?? 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012';
