@@ -44,6 +44,9 @@ class TestStack extends Stack {
       },
     });
     this.cache.applyRemovalPolicy(RemovalPolicy.DESTROY);
+
+    const clientSG = new SecurityGroup(this, 'ClientSG', { vpc });
+    clientSG.connections.allowToDefaultPort(this.cache);
   }
 }
 
