@@ -9,6 +9,7 @@ import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
+import { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { AlpnPolicy, Protocol, SslPolicy } from '../shared/enums';
@@ -155,7 +156,14 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     });
 
     class LookedUp extends Resource implements INetworkListener {
+      public readonly isNetworkListener = true;
       public listenerArn = props.listenerArn;
+
+      public get listenerRef(): aws_elasticloadbalancingv2.ListenerReference {
+        return {
+          listenerArn: this.listenerArn,
+        };
+      }
     }
 
     return new LookedUp(scope, id);
@@ -166,11 +174,20 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    */
   public static fromNetworkListenerArn(scope: Construct, id: string, networkListenerArn: string): INetworkListener {
     class Import extends Resource implements INetworkListener {
+      public readonly isNetworkListener = true;
       public listenerArn = networkListenerArn;
+
+      public get listenerRef(): aws_elasticloadbalancingv2.ListenerReference {
+        return {
+          listenerArn: this.listenerArn,
+        };
+      }
     }
 
     return new Import(scope, id);
   }
+
+  public readonly isNetworkListener = true;
 
   /**
    * The load balancer this listener is attached to
@@ -353,9 +370,22 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 }
 
 /**
+ * Indicates that this resource can be referenced as an NLB Listener
+ */
+export interface INetworkListenerRef extends IListener {
+  /**
+   * Indicates that this is an NLB listener
+   *
+   * Will always return true, but is necessary to prevent accidental structural
+   * equality in TypeScript.
+   */
+  readonly isNetworkListener: boolean;
+}
+
+/**
  * Properties to reference an existing listener
  */
-export interface INetworkListener extends IListener {
+export interface INetworkListener extends IListener, INetworkListenerRef {
 }
 
 /**
