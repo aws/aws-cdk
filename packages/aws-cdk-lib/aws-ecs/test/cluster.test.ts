@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/unbound-method */
+
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as autoscaling from '../../aws-autoscaling';
@@ -95,7 +95,7 @@ describe('cluster', () => {
                 {
                   Ref: 'EcsCluster97242B84',
                 },
-                // eslint-disable-next-line max-len
+
                 ' >> /etc/ecs/ecs.config',
               ],
             ],
@@ -264,7 +264,7 @@ describe('cluster', () => {
                 {
                   Ref: 'EcsCluster97242B84',
                 },
-                // eslint-disable-next-line max-len
+
                 ' >> /etc/ecs/ecs.config',
               ],
             ],
@@ -790,7 +790,7 @@ describe('cluster', () => {
                 {
                   Ref: 'EcsCluster97242B84',
                 },
-                // eslint-disable-next-line max-len
+
                 ' >> /etc/ecs/ecs.config',
               ],
             ],
@@ -1783,7 +1783,7 @@ describe('cluster', () => {
               {
                 Ref: 'EcsCluster97242B84',
               },
-              // eslint-disable-next-line max-len
+
               ' >> /etc/ecs/ecs.config',
             ],
           ],
