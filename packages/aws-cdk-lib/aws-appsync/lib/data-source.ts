@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { BaseAppsyncFunctionProps, AppsyncFunction } from './appsync-function';
 import { CfnDataSource } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
-import { toIGraphqlApi } from './private/ref-utils';
+import { extractApiIdFromGraphQLApiRef, toIGraphqlApi } from './private/ref-utils';
 import { BaseResolverProps, Resolver } from './resolver';
 import { ITable } from '../../aws-dynamodb';
 import { IDomain as IElasticsearchDomain } from '../../aws-elasticsearch';
@@ -12,7 +12,7 @@ import { IFunction } from '../../aws-lambda';
 import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
 import { IServerlessCluster, IDatabaseCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
-import { Fn, IResolvable, Lazy, Stack, Token } from '../../core';
+import { IResolvable, Lazy, Stack, Token } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { IGraphQLApiRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
@@ -105,17 +105,6 @@ export interface ExtendedDataSourceProps {
   readonly relationalDatabaseConfig?: CfnDataSource.RelationalDatabaseConfigProperty | IResolvable;
 }
 
-function extractApiIdFromGraphQLApiRef(apiRef: IGraphQLApiRef): string {
-  // Check if this is actually an IGraphqlApi (which has apiId directly)
-  const api = apiRef as any;
-  if (api.apiId !== undefined) {
-    return api.apiId;
-  }
-  // Otherwise, extract from the ARN
-  // ARN format: arn:aws:appsync:region:account:apis/apiId
-  return Fn.select(1, Fn.split('/', apiRef.graphQlApiRef.graphQlApiArn));
-}
-
 /**
  * Abstract AppSync datasource implementation. Do not use directly but use subclasses for concrete datasources
  */
@@ -158,6 +147,13 @@ export abstract class BaseDataSource extends Construct {
    */
   protected get api(): IGraphqlApi {
     return toIGraphqlApi(this._api);
+  }
+
+  /**
+   * Set the API this data source is attached to
+   */
+  protected set api(api: IGraphqlApi) {
+    this._api = api;
   }
 
   /**

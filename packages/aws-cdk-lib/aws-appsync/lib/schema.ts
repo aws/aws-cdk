@@ -1,17 +1,6 @@
 import { readFileSync } from 'fs';
-import { Fn } from '../../core';
+import { extractApiIdFromGraphQLApiRef } from './private/ref-utils';
 import { IGraphQLApiRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
-
-function extractApiIdFromGraphQLApiRef(apiRef: IGraphQLApiRef): string {
-  // Check if this is actually an IGraphqlApi (which has apiId directly)
-  const api = apiRef as any;
-  if (api.apiId !== undefined) {
-    return api.apiId;
-  }
-  // Otherwise, extract from the ARN
-  // ARN format: arn:aws:appsync:region:account:apis/apiId
-  return Fn.select(1, Fn.split('/', apiRef.graphQlApiRef.graphQlApiArn));
-}
 
 /**
  * Configuration for bound graphql schema

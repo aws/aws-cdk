@@ -7,19 +7,9 @@ import { BaseDataSource } from './data-source';
 import { IGraphqlApi } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
 import { FunctionRuntime } from './runtime';
-import { Fn, Token, ValidationError } from '../../core';
+import { Token, ValidationError } from '../../core';
+import { extractFunctionIdFromFunctionRef } from './private/ref-utils';
 import { IFunctionConfigurationRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
-
-function extractFunctionIdFromFunctionRef(funcRef: IFunctionConfigurationRef): string {
-  // Check if this is actually an IAppsyncFunction (which has functionId directly)
-  const func = funcRef as any;
-  if (func.functionId !== undefined) {
-    return func.functionId;
-  }
-  // Otherwise, extract from the ARN
-  // ARN format: arn:aws:appsync:region:account:apis/apiId/functions/functionId
-  return Fn.select(3, Fn.split('/', funcRef.functionConfigurationRef.functionArn));
-}
 
 /**
  * Basic properties for an AppSync resolver

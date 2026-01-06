@@ -15,20 +15,9 @@ import { IFunction } from '../../aws-lambda';
 import { IDomain } from '../../aws-opensearchservice';
 import { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
-import { Fn, IResolvable, Token, Lazy, Stack } from '../../core';
-import { toIApi } from './private/ref-utils';
+import { IResolvable, Token, Lazy, Stack } from '../../core';
+import { extractApiIdFromApiRef, toIApi } from './private/ref-utils';
 import { IApiRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
-
-function extractApiIdFromApiRef(apiRef: IApiRef): string {
-  // Check if this is actually an IApi (which has apiId directly)
-  const api = apiRef as any;
-  if (api.apiId !== undefined) {
-    return api.apiId;
-  }
-  // Otherwise, extract from the ARN
-  // ARN format: arn:aws:appsync:region:account:apis/apiId
-  return Fn.select(1, Fn.split('/', apiRef.apiRef.apiArn));
-}
 
 /**
  * Valid data source types for AppSync
