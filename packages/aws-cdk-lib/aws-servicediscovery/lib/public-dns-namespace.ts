@@ -5,7 +5,7 @@ import { CfnPublicDnsNamespace } from './servicediscovery.generated';
 import { Resource } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IPublicDnsNamespaceRef } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
+import { IPublicDnsNamespaceRef, PublicDnsNamespaceReference } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
 
 export interface PublicDnsNamespaceProps extends BaseNamespaceProps {}
 export interface IPublicDnsNamespace extends INamespace, IPublicDnsNamespaceRef { }
@@ -40,7 +40,7 @@ export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace 
       public namespaceId = attrs.namespaceId;
       public namespaceArn = attrs.namespaceArn;
       public type = NamespaceType.DNS_PUBLIC;
-      public get publicDnsNamespaceRef() {
+      public get publicDnsNamespaceRef(): PublicDnsNamespaceReference {
         return {
           publicDnsNamespaceId: attrs.namespaceId,
           publicDnsNamespaceArn: attrs.namespaceArn,
@@ -101,7 +101,7 @@ export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace 
   /** @attribute */
   public get publicDnsNamespaceId() { return this.namespaceId; }
 
-  public get publicDnsNamespaceRef() {
+  public get publicDnsNamespaceRef(): PublicDnsNamespaceReference {
     return {
       publicDnsNamespaceId: this.namespaceId,
       publicDnsNamespaceArn: this.namespaceArn,

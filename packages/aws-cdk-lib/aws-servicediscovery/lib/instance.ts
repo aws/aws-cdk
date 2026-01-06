@@ -1,6 +1,6 @@
 import { IService } from './service';
 import { IResource, Names, Resource } from '../../core';
-import { IInstanceRef } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
+import { IInstanceRef, InstanceReference } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
 
 export interface IInstance extends IResource, IInstanceRef {
   /**
@@ -46,7 +46,7 @@ export abstract class InstanceBase extends Resource implements IInstance {
    */
   public abstract readonly service: IService;
 
-  public get instanceRef() {
+  public get instanceRef(): InstanceReference {
     return {
       instanceId: this.instanceId,
     };

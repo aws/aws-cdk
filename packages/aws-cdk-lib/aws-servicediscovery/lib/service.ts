@@ -11,7 +11,7 @@ import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { Duration, IResource, Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IServiceRef } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
+import { IServiceRef, ServiceReference } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
 
 export interface IService extends IResource, IServiceRef {
   /**
@@ -154,7 +154,7 @@ abstract class ServiceBase extends Resource implements IService {
   public abstract readonly serviceName: string;
   public abstract discoveryType: DiscoveryType;
 
-  public get serviceRef() {
+  public get serviceRef(): ServiceReference {
     return {
       serviceId: this.serviceId,
       serviceArn: this.serviceArn,
