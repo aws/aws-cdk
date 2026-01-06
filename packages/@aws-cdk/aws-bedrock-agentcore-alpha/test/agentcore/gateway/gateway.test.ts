@@ -2341,5 +2341,4 @@ describe('Multiple Schema Binding Tests', () => {
       schema2.bind(stack);
     }).not.toThrow();
   });
-
 });
