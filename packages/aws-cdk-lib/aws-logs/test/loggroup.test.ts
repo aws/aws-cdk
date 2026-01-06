@@ -1069,7 +1069,7 @@ test('enable deletion protection', () => {
 
   // WHEN
   new LogGroup(stack, 'LogGroup', {
-    deletionProtectionEnabled: true
+    deletionProtectionEnabled: true,
   });
 
   // THEN
