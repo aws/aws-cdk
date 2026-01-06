@@ -483,7 +483,7 @@ export abstract class ReplicationConfiguration {
     return new OneZoneFileSystem({ region, availabilityZone, kmsKey });
   }
 
-  protected readonly _destinationFileSystem?: IFileSystemRef;
+  private readonly _destinationFileSystem?: IFileSystemRef;
 
   /**
    * The existing destination file system for the replication.
