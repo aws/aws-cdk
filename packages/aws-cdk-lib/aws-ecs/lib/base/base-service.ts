@@ -294,6 +294,35 @@ export interface ServiceConnectTlsConfiguration {
 }
 
 /**
+ * Configuration to force a new deployment of an ECS service.
+ */
+export interface ForceNewDeployment {
+  /**
+   * Determines whether to force a new deployment of the service.
+   *
+   * By default, deployments aren't forced. You can use this option to start a new deployment
+   * with no service definition changes. For example, you can update a service's tasks to use
+   * a newer Docker image with the same image/tag combination ( `my_image:latest` ) or to roll
+   * Fargate tasks onto a newer platform version.
+   *
+   * @default true
+   */
+  readonly enable?: boolean;
+
+  /**
+   * When you change the `forceNewDeploymentNonce` value in your template, it signals Amazon ECS
+   * to start a new deployment even though no other service parameters have changed.
+   *
+   * The value must be a unique, time-varying value like a timestamp, random string, or sequence
+   * number. Use this property when you want to ensure your tasks pick up the latest version of
+   * a Docker image that uses the same tag but has been updated in the registry.
+   *
+   * @default - undefined
+   */
+  readonly nonce?: string;
+}
+
+/**
  * The properties for the base Ec2Service or FargateService service.
  */
 export interface BaseServiceOptions {
@@ -455,6 +484,17 @@ export interface BaseServiceOptions {
    * @default - none;
    */
   readonly lifecycleHooks?: IDeploymentLifecycleHookTarget[];
+
+  /**
+   * Configuration to force a new deployment of the service.
+   *
+   * This is useful when you need to force a new deployment even though no service parameters have changed.
+   * For example, when switching from launch type to capacity provider strategy, or making changes to
+   * capacity provider strategy on a service that is already using one.
+   *
+   * @default - undefined
+   */
+  readonly forceNewDeployment?: ForceNewDeployment;
 }
 
 /**
@@ -747,6 +787,10 @@ export abstract class BaseService extends Resource
       enableExecuteCommand: props.enableExecuteCommand,
       capacityProviderStrategy: props.capacityProviderStrategies,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
+      forceNewDeployment: props.forceNewDeployment ? {
+        enableForceNewDeployment: props.forceNewDeployment.enable ?? true,
+        forceNewDeploymentNonce: props.forceNewDeployment.nonce,
+      } : undefined,
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
       serviceRegistries: Lazy.any({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),

@@ -1025,6 +1025,46 @@ This issue only applies if the metrics to alarm on are emitted by the service
 itself. If the metrics are emitted by a different resource, that does not depend
 on the service, there will be no restrictions on the alarm name.
 
+### Force new deployment
+
+When making certain changes to an ECS service, AWS ECS requires you to force a new deployment. This is particularly important when:
+
+- Switching from launch type to capacity provider strategy on an existing service
+- Making changes to capacity provider strategy on a service that is already using one
+- Changing the underlying Auto Scaling Group instance type when using capacity provider strategies with CODE_DEPLOY deployment controller
+
+Use the `forceNewDeployment` property to force a new deployment:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const capacityProvider: ecs.AsgCapacityProvider;
+
+const service = new ecs.Ec2Service(this, 'Service', {
+  cluster,
+  taskDefinition,
+  capacityProviderStrategies: [
+    {
+      capacityProvider: capacityProvider.capacityProviderName,
+      weight: 1,
+    },
+  ],
+  deploymentController: {
+    type: ecs.DeploymentControllerType.CODE_DEPLOY,
+  },
+  forceNewDeployment: {
+    enable: true,
+    nonce: Date.now().toString(), // Use a unique value to trigger deployment
+  },
+});
+```
+
+The `forceNewDeployment` property accepts:
+- `enable` (optional, defaults to `true`): Determines whether to force a new deployment
+- `nonce` (optional): A unique, time-varying value like a timestamp, random string, or sequence number. Changing this value signals Amazon ECS to start a new deployment even though no other service parameters have changed
+
+> **Note**: When using `forceNewDeployment` with a nonce, changing the nonce value on subsequent deployments will trigger a new deployment. This is useful when you need to force deployments due to changes in the underlying infrastructure (like ASG instance types) that don't directly affect the service configuration.
+
 ### Include an application/network load balancer
 
 `Services` are load balancing targets and can be added to a target group, which will be attached to an application/network load balancers:
@@ -1658,6 +1698,8 @@ new ecs.Ec2Service(this, 'EC2Service', {
   ],
 });
 ```
+
+> **Note**: When changing the Auto Scaling Group instance type for a service that uses capacity provider strategies (especially with CODE_DEPLOY deployment controller), you may need to use `forceNewDeployment` to force a new deployment. See the [Force new deployment](#force-new-deployment) section for more details.
 
 ### Managed Instances Capacity Providers
 
