@@ -1,12 +1,12 @@
 import { Construct } from 'constructs';
-import { IHttpApi } from './api';
+import { IHttpApiRef } from './api';
 import { IHttpRoute } from './route';
-import { CfnAuthorizer } from '.././index';
 import { Duration, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { IAuthorizer } from '../common';
+import { AuthorizerReference, CfnAuthorizer } from '../index';
 
 /**
  * Supported Authorizer types
@@ -47,7 +47,7 @@ export interface HttpAuthorizerProps {
   /**
    * HTTP Api to attach the authorizer to
    */
-  readonly httpApi: IHttpApi;
+  readonly httpApi: IHttpApiRef;
 
   /**
    * The type of authorizer
@@ -162,6 +162,7 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
   }
 
   public readonly authorizerId: string;
+  private readonly apiId: string;
 
   constructor(scope: Construct, id: string, props: HttpAuthorizerProps) {
     super(scope, id);
@@ -186,9 +187,10 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
       authorizerPayloadFormatVersion = AuthorizerPayloadVersion.VERSION_2_0;
     }
 
+    this.apiId = props.httpApi.apiRef.apiId;
     const resource = new CfnAuthorizer(this, 'Resource', {
       name: props.authorizerName ?? id,
-      apiId: props.httpApi.apiId,
+      apiId: props.httpApi.apiRef.apiId,
       authorizerType: props.type,
       identitySource: props.identitySource,
       jwtConfiguration: undefinedIfNoKeys({
@@ -202,6 +204,13 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
     });
 
     this.authorizerId = resource.ref;
+  }
+
+  public get authorizerRef(): AuthorizerReference {
+    return {
+      authorizerId: this.authorizerId,
+      apiId: this.apiId,
+    };
   }
 }
 
