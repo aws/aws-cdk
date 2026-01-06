@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
-import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScalingPolicy } from './autoscaling.generated';
 import { Annotations, Duration, Lazy, ValidationError } from '../../core';
+import { IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
 
 /**
  * Properties for a scaling policy
@@ -10,7 +10,7 @@ export interface StepScalingActionProps {
   /**
    * The auto scaling group
    */
-  readonly autoScalingGroup: IAutoScalingGroup;
+  readonly autoScalingGroup: IAutoScalingGroupRef;
 
   /**
    * Period after a scaling completes before another scaling activity can start.
@@ -81,7 +81,7 @@ export class StepScalingAction extends Construct {
 
     const resource = new CfnScalingPolicy(this, 'Resource', {
       policyType: 'StepScaling',
-      autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
+      autoScalingGroupName: props.autoScalingGroup.autoScalingGroupRef.autoScalingGroupName,
       estimatedInstanceWarmup: props.estimatedInstanceWarmup && props.estimatedInstanceWarmup.toSeconds(),
       adjustmentType: props.adjustmentType,
       minAdjustmentMagnitude: props.minAdjustmentMagnitude,
