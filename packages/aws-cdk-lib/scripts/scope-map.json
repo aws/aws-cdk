@@ -276,6 +276,13 @@
       }
     ]
   },
+  "aws-cases": {
+    "scopes": [
+      {
+        "namespace": "AWS::Cases"
+      }
+    ]
+  },
   "aws-cassandra": {
     "scopes": [
       {

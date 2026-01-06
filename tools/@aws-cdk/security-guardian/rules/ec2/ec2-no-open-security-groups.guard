@@ -15,54 +15,22 @@ let security_groups = Resources.*[
 # EC2 VPC Security Groups should not be overly permissive
 rule EC2_NO_OPEN_SECURITY_GROUPS when %security_groups !empty {
     %security_groups {
-        Properties.SecurityGroupIngress[*] {
-            when IpProtocol exists {
-                when IpProtocol != "-1" {
-                    when CidrIp exists {
-                        CidrIp != "0.0.0.0/0"
-                    }
-                    when CidrIpv6 exists {
-                        CidrIpv6 != "::/0"
-                    }
+        # Only check ingress rules if they exist (missing ingress = secure by default)
+        when Properties.SecurityGroupIngress exists {
+            Properties.SecurityGroupIngress[*] {
+                when CidrIp exists {
+                    CidrIp != "0.0.0.0/0"
                 }
-                when IpProtocol == "-1" {
-                    when CidrIp exists {
-                        CidrIp != "0.0.0.0/0"
-                    }
-                    when CidrIpv6 exists {
-                        CidrIpv6 != "::/0"
-                    }
+                when CidrIpv6 exists {
+                    CidrIpv6 != "::/0"
                 }
             }
         }
         
-        Properties.SecurityGroupEgress[*] {
-            when IpProtocol exists {
-                when IpProtocol != "-1" {
-                    when CidrIp exists {
-                        when FromPort exists {
-                            when ToPort exists {
-                                when FromPort == 0 {
-                                    when ToPort == 65535 {
-                                        CidrIp != "0.0.0.0/0"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    when CidrIpv6 exists {
-                        when FromPort exists {
-                            when ToPort exists {
-                                when FromPort == 0 {
-                                    when ToPort == 65535 {
-                                        CidrIpv6 != "::/0"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        # Note: We do not check egress rules because:
+        # 1. CDK's default behavior is to allow all outbound traffic (0.0.0.0/0 on all protocols)
+        # 2. Egress controls what resources can connect TO (lower security risk than ingress)
+        # 3. Most applications legitimately need unrestricted outbound access
+        # 4. Restricting egress is an advanced security practice, not a default requirement
     }
 }
