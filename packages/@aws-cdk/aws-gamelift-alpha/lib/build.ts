@@ -170,7 +170,7 @@ export interface BuildProps {
    *
    * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/integration-custom-intro.html
    *
-   * @default - 4.0.2
+   * @default '4.0.2'
    */
   readonly serverSdkVersion?: string;
 }
