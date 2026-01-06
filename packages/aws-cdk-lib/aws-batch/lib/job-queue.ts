@@ -5,7 +5,7 @@ import { ISchedulingPolicy } from './scheduling-policy';
 import { ArnFormat, Duration, IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IComputeEnvironmentRef, IJobQueueRef, ISchedulingPolicyRef } from '../../interfaces/generated/aws-batch-interfaces.generated';
+import { IComputeEnvironmentRef, IJobQueueRef, ISchedulingPolicyRef, JobQueueReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
  * Represents a JobQueue
@@ -250,7 +250,7 @@ export class JobQueue extends Resource implements IJobQueue {
       public readonly jobQueueArn = jobQueueArn;
       public readonly jobQueueName = stack.splitArn(jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
-      public get jobQueueRef() {
+      public get jobQueueRef(): JobQueueReference {
         return {
           jobQueueArn: this.jobQueueArn,
         };
@@ -279,7 +279,7 @@ export class JobQueue extends Resource implements IJobQueue {
     return this._schedulingPolicy ? toISchedulingPolicy(this._schedulingPolicy) : undefined;
   }
 
-  public get jobQueueRef() {
+  public get jobQueueRef(): JobQueueReference {
     return {
       jobQueueArn: this.jobQueueArn,
     };

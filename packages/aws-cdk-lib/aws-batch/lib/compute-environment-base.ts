@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import { IResource, Resource } from '../../core';
-import { IComputeEnvironmentRef } from '../../interfaces/generated/aws-batch-interfaces.generated';
+import { ComputeEnvironmentReference, IComputeEnvironmentRef } from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
  * Represents a ComputeEnvironment
@@ -93,7 +93,7 @@ export abstract class ComputeEnvironmentBase extends Resource implements IComput
   public readonly enabled: boolean;
   public abstract readonly computeEnvironmentArn: string;
 
-  public get computeEnvironmentRef() {
+  public get computeEnvironmentRef(): ComputeEnvironmentReference {
     return {
       computeEnvironmentArn: this.computeEnvironmentArn,
     };

@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnJobDefinitionProps } from './batch.generated';
 import { Duration, IResource, Lazy, Resource } from '../../core';
-import { IJobDefinitionRef } from '../../interfaces/generated/aws-batch-interfaces.generated';
+import { IJobDefinitionRef, JobDefinitionReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
  * Represents a JobDefinition
@@ -245,7 +245,7 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
   public readonly schedulingPriority?: number;
   public readonly timeout?: Duration;
 
-  public get jobDefinitionRef() {
+  public get jobDefinitionRef(): JobDefinitionReference {
     return {
       jobDefinitionArn: this.jobDefinitionArn,
     };
