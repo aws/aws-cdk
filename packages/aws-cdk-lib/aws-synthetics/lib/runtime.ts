@@ -284,6 +284,38 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_11_0 = new Runtime('syn-nodejs-puppeteer-11.0', RuntimeFamily.NODEJS);
 
   /**
+   * `syn-nodejs-puppeteer-12.0` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Puppeteer-core version 24.22.1
+   * - Chromium version 140.0.7339.185
+   * - Firefox version 143.0.1
+   *
+   * New Features:
+   * - Applied security patches and updated Puppeteer and browser versions.
+   * - **Bug fix for Restricted header redaction**: Fixed an issue where in some situations restricted headers were not being redacted in executeHttpStep(). Behavior is now consistent with Puppeteer 10.0.
+   * - **Bug fix for includeResponseBody configuration**: Fixed an issue where HAR file generation can misapply the includeResponseBody configuration setting in certain situations. HAR now ensures response bodies are excluded when setting is configured.
+   * - **Request capture lifecycle fixed**: Fixed an issue where in some situations the HTTP request capturer may cause continuous aggregation of requests. Recording now terminates correctly after each step execution.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-12.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_12_0 = new Runtime('syn-nodejs-puppeteer-12.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-13.0` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Puppeteer-core version 24.25.0
+   * - Chromium version 142.0.7444.175
+   * - Firefox version 145.x
+   *
+   * New Features:
+   * - Applied security patches and updated Puppeteer and browser versions.
+   * - **Bug fix**: Fixed intermittent runtime extension crash issue caused by concurrent map access
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-13.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_13_0 = new Runtime('syn-nodejs-puppeteer-13.0', RuntimeFamily.NODEJS);
+
+  /**
    * `syn-nodejs-playwright-1.0` includes the following:
    * - Lambda runtime Node.js 20.x
    * - Playwright version 1.45
