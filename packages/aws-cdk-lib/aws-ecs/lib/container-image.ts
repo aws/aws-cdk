@@ -4,6 +4,7 @@ import { ContainerDefinition } from './container-definition';
 import { CfnTaskDefinition } from './ecs.generated';
 import * as ecr from '../../aws-ecr';
 import { DockerImageAsset, TarballImageAsset } from '../../aws-ecr-assets';
+import * as secretsmanager from '../../aws-secretsmanager';
 
 /**
  * Interface for container image providers.
@@ -102,14 +103,16 @@ export abstract class ContainerImage implements IContainerImage {
   public static fromCustomConfiguration(config: CustomContainerImageConfig): ContainerImage {
     return {
       bind(_scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
-        // Ensure execution role exists if credentials are provided
-        if (config.repositoryCredentials) {
-          containerDefinition.taskDefinition.obtainExecutionRole();
+        // Grant read permissions on the secret if credentials are provided
+        if (config.repositoryCredential) {
+          config.repositoryCredential.grantRead(containerDefinition.taskDefinition.obtainExecutionRole());
         }
 
         return {
           imageName: config.imageName,
-          repositoryCredentials: config.repositoryCredentials,
+          repositoryCredentials: config.repositoryCredential && {
+            credentialsParameter: config.repositoryCredential.secretArn,
+          },
         };
       },
     };
@@ -133,11 +136,12 @@ export interface CustomContainerImageConfig {
   readonly imageName: string;
 
   /**
-   * The credentials used to access the image repository.
+   * The secret that contains the credentials for the image repository.
+   * The supported value is the full ARN of an AWS Secrets Manager secret.
    *
    * @default - No credentials are used
    */
-  readonly repositoryCredentials?: CfnTaskDefinition.RepositoryCredentialsProperty;
+  readonly repositoryCredential?: secretsmanager.ISecret;
 }
 
 /**
