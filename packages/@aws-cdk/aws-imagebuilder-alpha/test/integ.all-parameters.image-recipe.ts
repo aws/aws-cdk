@@ -52,7 +52,7 @@ const imageRecipe = new imagebuilder.ImageRecipe(stack, 'ImageRecipe', {
   description: 'A test image recipe',
   components: [
     {
-      component: imagebuilder.AwsManagedComponent.helloWorld(stack, 'Component2', {
+      component: imagebuilder.AmazonManagedComponent.helloWorld(stack, 'Component2', {
         platform: imagebuilder.Platform.LINUX,
       }),
     },
