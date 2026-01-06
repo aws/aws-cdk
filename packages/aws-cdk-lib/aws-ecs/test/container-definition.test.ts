@@ -3094,13 +3094,13 @@ describe('container definition', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const mySecretArn = 'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-secret-AbCdEf';
+    const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'MySecret', mySecretArn);
 
     // Custom container image with credentials
     const customImage = ecs.ContainerImage.fromCustomConfiguration({
       imageName: 'private-registry.example.com/my-app:latest',
-      repositoryCredentials: {
-        credentialsParameter: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-secret',
-      },
+      repositoryCredential: secret,
     });
 
     // WHEN
@@ -3119,7 +3119,7 @@ describe('container definition', () => {
           Memory: 256,
           Name: 'Container',
           RepositoryCredentials: {
-            CredentialsParameter: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-secret',
+            CredentialsParameter: mySecretArn,
           },
         },
       ],

@@ -590,11 +590,11 @@ obtained from either DockerHub or from ECR repositories, built directly from a l
 You can use `ContainerImage.fromCustomConfiguration()` to provide custom container image sources from any registry:
 
 ```ts
+declare const secret: secretsmanager.ISecret;
+
 const customImage = ecs.ContainerImage.fromCustomConfiguration({
   imageName: 'custom-registry.example.com/my-app:v1.0',
-  repositoryCredentials: {
-    credentialsParameter: 'arn:aws:secretsmanager:region:account:secret:my-secret',
-  },
+  repositoryCredential: secret,
 });
 
 const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
@@ -605,7 +605,7 @@ taskDefinition.addContainer('Container', {
 });
 ```
 
-This enables integration with custom container registries or image management systems without needing to implement the `IContainerImage` interface directly.
+This enables integration with custom container registries or image management systems without needing to implement the `IContainerImage` interface directly. The `repositoryCredential` parameter accepts an AWS Secrets Manager secret containing the registry credentials, and the required IAM permissions are automatically granted to the task execution role.
 
 ### Environment variables
 
