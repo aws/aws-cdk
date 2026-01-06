@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "SfnTasksEcsEc2RunTaskCapacityProviderTest/DefaultTest": {
+      "stacks": [
+        "aws-sfn-tasks-ecs-ec2-run-task-capacity-provider"
+      ],
+      "assertionStack": "SfnTasksEcsEc2RunTaskCapacityProviderTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SfnTasksEcsEc2RunTaskCapacityProviderTestDefaultTestDeployAssertD08F9F1E"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
