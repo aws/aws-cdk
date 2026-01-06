@@ -605,6 +605,34 @@ test('Detects pnpm-lock.yaml', () => {
   });
 });
 
+test('pnpm with nodeModules copies .npmrc for private registry authentication', () => {
+  const pnpmLock = '/project/pnpm-lock.yaml';
+  // Simulate .npmrc existing in project root while allowing real lookups for other files (e.g. package.json)
+  const originalFindUp = util.findUp;
+  jest.spyOn(util, 'findUp').mockImplementation((name, dir) =>
+    name === '.npmrc' ? '/project/.npmrc' : originalFindUp(name, dir),
+  );
+
+  Bundling.bundle(stack, {
+    entry: __filename,
+    projectRoot,
+    depsLockFilePath: pnpmLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    nodeModules: ['delay'],
+    forceDockerBundling: true,
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(pnpmLock), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: expect.arrayContaining([
+        expect.stringMatching(/echo '' > "\/asset-output\/pnpm-workspace.yaml" && cp "\/asset-input\/.npmrc" "\/asset-output\/.npmrc"/),
+      ]),
+    }),
+  });
+});
+
 test('Detects bun.lockb', () => {
   const bunLock = path.join(__dirname, '..', 'bun.lockb');
   Bundling.bundle(stack, {
