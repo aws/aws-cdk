@@ -9,7 +9,7 @@ import { IBucket } from '../../aws-s3';
 import { ArnFormat, IResource, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ICloudFormationProductRef } from '../../interfaces/generated/aws-servicecatalog-interfaces.generated';
+import { CloudFormationProductReference, ICloudFormationProductRef } from '../../interfaces/generated/aws-servicecatalog-interfaces.generated';
 
 /**
  * A Service Catalog product, currently only supports type CloudFormationProduct
@@ -46,7 +46,7 @@ abstract class ProductBase extends Resource implements IProduct {
   public abstract readonly productId: string;
   public abstract readonly assetBuckets: IBucket[];
 
-  public get cloudFormationProductRef() {
+  public get cloudFormationProductRef(): CloudFormationProductReference {
     return {
       cloudFormationProductId: this.productId,
     };

@@ -18,7 +18,7 @@ import { ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IPortfolioRef } from '../../interfaces/generated/aws-servicecatalog-interfaces.generated';
+import { IPortfolioRef, PortfolioReference } from '../../interfaces/generated/aws-servicecatalog-interfaces.generated';
 
 /**
  * Options for portfolio share.
@@ -164,7 +164,7 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
   private readonly assetBuckets: Set<IBucket> = new Set<IBucket>();
   private readonly sharedAccounts: string[] = [];
 
-  public get portfolioRef() {
+  public get portfolioRef(): PortfolioReference {
     return {
       portfolioId: this.portfolioId,
     };
