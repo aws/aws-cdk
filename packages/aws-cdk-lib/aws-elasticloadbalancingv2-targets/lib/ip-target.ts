@@ -1,4 +1,5 @@
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
+import { aws_elasticloadbalancingv2 } from '../../interfaces';
 
 /**
  * An IP address that is a target for load balancing.
@@ -57,7 +58,7 @@ export class IpTarget implements elbv2.IApplicationLoadBalancerTarget, elbv2.INe
     return this.attach(targetGroup);
   }
 
-  private attach(_targetGroup: elbv2.ITargetGroup): elbv2.LoadBalancerTargetProps {
+  private attach(_targetGroup: aws_elasticloadbalancingv2.ITargetGroupRef): elbv2.LoadBalancerTargetProps {
     return {
       targetType: elbv2.TargetType.IP,
       targetJson: { id: this.ipAddress, port: this.port, availabilityZone: this.availabilityZone },
