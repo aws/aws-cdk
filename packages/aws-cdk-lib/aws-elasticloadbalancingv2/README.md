@@ -229,14 +229,14 @@ listener.addAction('RewriteAction', {
     // Rewrite URL path
     elbv2.ListenerTransform.urlRewrite([
       {
-        regex: '^/api/(.+)$',
+        regex: '/api/(.+)',
         replace: '/v2/api/$1',
       },
     ]),
     // Rewrite host header
     elbv2.ListenerTransform.hostHeaderRewrite([
       {
-        regex: '^(.*)\\.example\\.com$',
+        regex: '(.*)\\.example\\.com',
         replace: '$1.internal.example.com',
       },
     ]),
