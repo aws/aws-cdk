@@ -8,6 +8,7 @@ import { ArnFormat, FeatureFlags, Lazy, Names, RemovalPolicy, Resource, Size, St
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
+import { FileSystemReference, IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
 
 /**
  * EFS Lifecycle Policy, if a file is not accessed for given days, it will move to EFS Infrequent Access
@@ -141,7 +142,7 @@ export enum ReplicationOverwriteProtection {
 /**
  * Represents an Amazon EFS file system
  */
-export interface IFileSystem extends ec2.IConnectable, iam.IResourceWithPolicy {
+export interface IFileSystem extends IFileSystemRef, ec2.IConnectable, iam.IResourceWithPolicy {
   /**
    * The ID of the file system, assigned by Amazon EFS.
    *
@@ -368,7 +369,7 @@ export interface ReplicationConfigurationProps {
    *
    * @default - None
    */
-  readonly destinationFileSystem?: IFileSystem;
+  readonly destinationFileSystem?: IFileSystemRef;
 
   /**
    * AWS KMS key used to protect the encrypted file system.
@@ -445,7 +446,7 @@ export interface ExistingFileSystemProps {
   /**
    * The existing destination file system for the replication.
    */
-  readonly destinationFileSystem: IFileSystem;
+  readonly destinationFileSystem: IFileSystemRef;
 }
 
 /**
@@ -457,7 +458,7 @@ export abstract class ReplicationConfiguration {
    *
    * @param destinationFileSystem The existing destination file system for the replication
    */
-  public static existingFileSystem(destinationFileSystem: IFileSystem): ReplicationConfiguration {
+  public static existingFileSystem(destinationFileSystem: IFileSystemRef): ReplicationConfiguration {
     return new ExistingFileSystem({ destinationFileSystem });
   }
 
@@ -482,10 +483,21 @@ export abstract class ReplicationConfiguration {
     return new OneZoneFileSystem({ region, availabilityZone, kmsKey });
   }
 
+  private readonly _destinationFileSystem?: IFileSystemRef;
+
   /**
    * The existing destination file system for the replication.
    */
-  public readonly destinationFileSystem?: IFileSystem;
+  public get destinationFileSystem(): IFileSystem | undefined {
+    return this._destinationFileSystem ? toIFileSystem(this._destinationFileSystem) : undefined;
+  }
+
+  /**
+   * @internal
+   */
+  public get _destinationFileSystemRef(): IFileSystemRef | undefined {
+    return this._destinationFileSystem;
+  }
 
   /**
    * AWS KMS key used to protect the encrypted file system.
@@ -504,7 +516,7 @@ export abstract class ReplicationConfiguration {
   public readonly availabilityZone?: string;
 
   constructor(options: ReplicationConfigurationProps) {
-    this.destinationFileSystem = options.destinationFileSystem;
+    this._destinationFileSystem = options.destinationFileSystem;
     this.kmsKey = options.kmsKey;
     this.region = options.region;
     this.availabilityZone = options.availabilityZone;
@@ -566,6 +578,13 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
    * Dependable that can be depended upon to ensure the mount targets of the filesystem are ready
    */
   public abstract readonly mountTargetsAvailable: IDependable;
+
+  public get fileSystemRef(): FileSystemReference {
+    return {
+      fileSystemId: this.fileSystemId,
+      fileSystemArn: this.fileSystemArn,
+    };
+  }
 
   /**
    * @internal
@@ -791,10 +810,10 @@ export class FileSystem extends FileSystemBase {
     const replicationConfiguration = props.replicationConfiguration ? {
       destinations: [
         {
-          fileSystemId: props.replicationConfiguration.destinationFileSystem?.fileSystemId,
+          fileSystemId: props.replicationConfiguration._destinationFileSystemRef?.fileSystemRef.fileSystemId,
           kmsKeyId: props.replicationConfiguration.kmsKey?.keyArn,
-          region: props.replicationConfiguration.destinationFileSystem ?
-            props.replicationConfiguration.destinationFileSystem.env.region :
+          region: props.replicationConfiguration._destinationFileSystemRef ?
+            props.replicationConfiguration._destinationFileSystemRef.env.region :
             (props.replicationConfiguration.region ?? Stack.of(this).region),
           availabilityZoneName: props.replicationConfiguration.availabilityZone,
         },
@@ -986,4 +1005,11 @@ class ImportedFileSystem extends FileSystemBase {
 
     this.mountTargetsAvailable = new DependencyGroup();
   }
+}
+
+function toIFileSystem(fileSystem: IFileSystemRef): IFileSystem {
+  if (!('fileSystemId' in fileSystem) || !('fileSystemArn' in fileSystem)) {
+    throw new ValidationError(`'fileSystem' instance should implement IFileSystem, but doesn't: ${fileSystem.constructor.name}`, fileSystem as any);
+  }
+  return fileSystem as IFileSystem;
 }
