@@ -63,7 +63,7 @@ export interface EcsBlueGreenDeploymentConfig {
    * The load balancer listener used to serve production traffic and to shift production traffic from the
    * 'blue' ECS task set to the 'green' ECS task set during a blue-green deployment.
    */
-  readonly listener: elbv2.IListener;
+  readonly listener: elbv2.IListenerRef;
 
   /**
    * The load balancer listener used to route test traffic to the 'green' ECS task set during a blue-green deployment.
@@ -79,7 +79,7 @@ export interface EcsBlueGreenDeploymentConfig {
    *
    * @default No test listener will be added
    */
-  readonly testListener?: elbv2.IListener;
+  readonly testListener?: elbv2.IListenerRef;
 
   /**
    * Specify how long CodeDeploy waits for approval to continue a blue-green deployment before it stops the deployment.
@@ -330,12 +330,12 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
           ],
           prodTrafficRoute: {
             listenerArns: [
-              options.listener.listenerArn,
+              options.listener.listenerRef.listenerArn,
             ],
           },
           testTrafficRoute: options.testListener ? {
             listenerArns: [
-              options.testListener.listenerArn,
+              options.testListener.listenerRef.listenerArn,
             ],
           } : undefined,
         },

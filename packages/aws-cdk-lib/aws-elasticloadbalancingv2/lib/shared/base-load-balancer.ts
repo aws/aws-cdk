@@ -9,6 +9,7 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { CfnResource, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import * as cxapi from '../../../cx-api';
+import { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { RegionInfo } from '../../../region-info';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 
@@ -153,7 +154,7 @@ export interface BaseLoadBalancerProps {
   readonly minimumCapacityUnit?: number;
 }
 
-export interface ILoadBalancerV2 extends IResource {
+export interface ILoadBalancerV2 extends IResource, aws_elasticloadbalancingv2.ILoadBalancerRef {
   /**
    * The canonical hosted zone ID of this load balancer
    *
@@ -290,6 +291,15 @@ export abstract class BaseLoadBalancer extends Resource {
    * @attribute
    */
   public readonly loadBalancerArn: string;
+
+  /**
+   * A reference to this load balancer
+   */
+  public get loadBalancerRef(): aws_elasticloadbalancingv2.LoadBalancerReference {
+    return {
+      loadBalancerArn: this.loadBalancerArn,
+    };
+  }
 
   /**
    * @attribute

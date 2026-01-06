@@ -8,6 +8,7 @@ import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
+import { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { NetworkELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2, SubnetMapping } from '../shared/base-load-balancer';
 import { IpAddressType, Protocol } from '../shared/enums';
@@ -250,6 +251,12 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       public readonly vpc?: ec2.IVpc = attrs.vpc;
       public readonly metrics: INetworkLoadBalancerMetrics = new NetworkLoadBalancerMetrics(this, parseLoadBalancerFullName(attrs.loadBalancerArn));
       public readonly securityGroups?: string[] = attrs.loadBalancerSecurityGroups;
+
+      public get loadBalancerRef(): aws_elasticloadbalancingv2.LoadBalancerReference {
+        return {
+          loadBalancerArn: this.loadBalancerArn,
+        };
+      }
 
       public addListener(lid: string, props: BaseNetworkListenerProps): NetworkListener {
         return new NetworkListener(this, lid, {
@@ -644,6 +651,12 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
   public readonly securityGroups?: string[];
   public readonly ipAddressType?: IpAddressType;
   public readonly connections: ec2.Connections;
+
+  public get loadBalancerRef(): aws_elasticloadbalancingv2.LoadBalancerReference {
+    return {
+      loadBalancerArn: this.loadBalancerArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: cxapi.LoadBalancerContextResponse) {
     super(scope, id, { environmentFromArn: props.loadBalancerArn });

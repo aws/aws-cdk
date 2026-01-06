@@ -6,6 +6,7 @@ import * as ec2 from '../../../aws-ec2';
 import { Aws, Annotations, Duration, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { aws_elasticloadbalancingv2 as elbv2 } from '../../../interfaces';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
@@ -698,7 +699,7 @@ class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements 
     }
   }
 
-  public registerListener(_listener: IApplicationListener, _associatingConstruct?: IConstruct) {
+  public registerListener(_listener: elbv2.IListenerRef, _associatingConstruct?: IConstruct) {
     // Nothing to do, we know nothing of our members
     Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:albTargetGroupCannotRegisterListener', 'Cannot register listener on imported target group -- security groups might need to be updated manually');
   }
