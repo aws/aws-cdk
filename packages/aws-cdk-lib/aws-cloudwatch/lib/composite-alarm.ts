@@ -4,6 +4,7 @@ import { CfnCompositeAlarm } from './cloudwatch.generated';
 import { ArnFormat, Lazy, Names, Stack, Duration, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
 /**
  * Properties for creating a Composite Alarm
@@ -41,7 +42,7 @@ export interface CompositeAlarmProps {
    *
    * @default - alarm will not be suppressed.
    */
-  readonly actionsSuppressor?: IAlarm;
+  readonly actionsSuppressor?: IAlarmRef;
 
   /**
    * The maximum duration that the composite alarm waits after suppressor alarm goes out of the ALARM state.
@@ -149,7 +150,7 @@ export class CompositeAlarm extends AlarmBase {
       alarmActions: Lazy.list({ produce: () => this.alarmActionArns }),
       insufficientDataActions: Lazy.list({ produce: (() => this.insufficientDataActionArns) }),
       okActions: Lazy.list({ produce: () => this.okActionArns }),
-      actionsSuppressor: props.actionsSuppressor?.alarmArn,
+      actionsSuppressor: props.actionsSuppressor?.alarmRef.alarmArn,
       actionsSuppressorExtensionPeriod: extensionPeriod?.toSeconds(),
       actionsSuppressorWaitPeriod: waitPeriod?.toSeconds(),
     });

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { IAlarm } from './alarm-base';
+import { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
 /**
  * Interface for objects that can be the targets of CloudWatch alarm actions
@@ -11,7 +11,7 @@ export interface IAlarmAction {
    * @param scope root Construct that allows creating new Constructs
    * @param alarm CloudWatch alarm that the action will target
    */
-  bind(scope: Construct, alarm: IAlarm): AlarmActionConfig;
+  bind(scope: Construct, alarm: IAlarmRef): AlarmActionConfig;
 }
 
 /**

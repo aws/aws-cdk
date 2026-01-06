@@ -12,7 +12,7 @@ export class SnsAction implements cloudwatch.IAlarmAction {
   /**
    * Returns an alarm action configuration to use an SNS topic as an alarm action
    */
-  public bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
+  public bind(_scope: Construct, _alarm: cloudwatch.IAlarmRef): cloudwatch.AlarmActionConfig {
     return { alarmActionArn: this.topic.topicArn };
   }
 }

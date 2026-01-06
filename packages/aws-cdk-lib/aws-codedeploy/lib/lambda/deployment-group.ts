@@ -1,13 +1,13 @@
 import { Construct } from 'constructs';
 import { ILambdaApplication, LambdaApplication } from './application';
 import { ILambdaDeploymentConfig, LambdaDeploymentConfig } from './deployment-config';
-import * as cloudwatch from '../../../aws-cloudwatch';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
+import { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
 import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
@@ -75,7 +75,7 @@ export interface LambdaDeploymentGroupProps {
    * @default []
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-create-alarms.html
    */
-  readonly alarms?: cloudwatch.IAlarm[];
+  readonly alarms?: IAlarmRef[];
 
   /**
    * The service Role of this Deployment Group.
@@ -160,7 +160,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
    */
   public readonly role: iam.IRole;
 
-  private readonly alarms: cloudwatch.IAlarm[];
+  private readonly alarms: IAlarmRef[];
   private preHook?: lambda.IFunction;
   private postHook?: lambda.IFunction;
 
@@ -233,7 +233,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
    * @param alarm the alarm to associate with this Deployment Group
    */
   @MethodMetadata()
-  public addAlarm(alarm: cloudwatch.IAlarm): void {
+  public addAlarm(alarm: IAlarmRef): void {
     this.alarms.push(alarm);
   }
 

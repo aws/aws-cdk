@@ -1,8 +1,8 @@
-import { IAlarm } from './alarm-base';
 import { IMetric } from './metric-types';
 import { allMetricsGraphJson } from './private/rendering';
 import { ConcreteWidget } from './widget';
 import * as cdk from '../../core';
+import { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
 /**
  * Basic properties for widgets that display metrics
@@ -92,7 +92,7 @@ export interface AlarmWidgetProps extends MetricWidgetProps {
   /**
    * The alarm to show
    */
-  readonly alarm: IAlarm;
+  readonly alarm: IAlarmRef;
 
   /**
    * Left Y axis
@@ -125,7 +125,7 @@ export class AlarmWidget extends ConcreteWidget {
         title: this.props.title,
         region: this.props.region || cdk.Aws.REGION,
         annotations: {
-          alarms: [this.props.alarm.alarmArn],
+          alarms: [this.props.alarm.alarmRef.alarmArn],
         },
         yAxis: {
           left: this.props.leftYAxis ?? undefined,
