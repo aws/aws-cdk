@@ -23,10 +23,10 @@ Shout out to our top contributors!
 - [robertd](https://github.com/robertd)
 - [MrArnoldPalmer](https://github.com/MrArnoldPalmer)
 - [lpizzinidev](https://github.com/lpizzinidev)
+- [phuhung273](https://github.com/phuhung273)
 - [msambol](https://github.com/msambol)
 - [peterwoodworth](https://github.com/peterwoodworth)
-- [phuhung273](https://github.com/phuhung273)
 - [GavinZZ](https://github.com/GavinZZ)
 
 
-_Last updated: Mon, 01 Dec 25 00:16:16 +0000_
+_Last updated: Thu, 01 Jan 26 00:16:08 +0000_
