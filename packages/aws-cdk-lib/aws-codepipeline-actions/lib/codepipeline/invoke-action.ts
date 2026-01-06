@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
-import { getPipelineArn } from '../../../aws-codepipeline/lib/private/ref-utils';
 import * as iam from '../../../aws-iam';
 import { Stack } from '../../../core';
 import { IPipelineRef } from '../../../interfaces/generated/aws-codepipeline-interfaces.generated';
@@ -115,7 +114,7 @@ export class PipelineInvokeAction extends Action {
   codepipeline.ActionConfig {
     options.role.addToPolicy(new iam.PolicyStatement({
       actions: ['codepipeline:StartPipelineExecution'],
-      resources: [getPipelineArn(this.props.targetPipeline)],
+      resources: [codepipeline.CfnPipeline.arnForPipeline(this.props.targetPipeline)],
     }));
 
     return {

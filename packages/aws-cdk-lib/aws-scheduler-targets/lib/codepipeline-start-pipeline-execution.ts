@@ -1,5 +1,5 @@
 import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
-import { getPipelineArn } from '../../aws-codepipeline/lib/private/ref-utils';
+import { CfnPipeline } from '../../aws-codepipeline';
 import { IRole, PolicyStatement } from '../../aws-iam';
 import { IScheduleTarget } from '../../aws-scheduler';
 import { IPipelineRef } from '../../interfaces/generated/aws-codepipeline-interfaces.generated';
@@ -12,13 +12,13 @@ export class CodePipelineStartPipelineExecution extends ScheduleTargetBase imple
     private readonly pipeline: IPipelineRef,
     props: ScheduleTargetBaseProps = {},
   ) {
-    super(props, getPipelineArn(pipeline));
+    super(props, CfnPipeline.arnForPipeline(pipeline));
   }
 
   protected addTargetActionToRole(role: IRole): void {
     role.addToPrincipalPolicy(new PolicyStatement({
       actions: ['codepipeline:StartPipelineExecution'],
-      resources: [getPipelineArn(this.pipeline)],
+      resources: [CfnPipeline.arnForPipeline(this.pipeline)],
     }));
   }
 }
