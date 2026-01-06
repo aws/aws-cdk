@@ -1018,10 +1018,6 @@ grantAwesomePowerBeta1()
 When we decide it's time to graduate the API, the latest preview version will
 be deprecated and the final version - `grantAwesomePower` will be added.
 
-### Adding new experimental CLI features
-
-> **Note:** The AWS CDK CLI has been moved to a separate repository. For information about adding new experimental CLI features, please refer to the [AWS CDK CLI repository](https://github.com/aws/aws-cdk-cli).
-
 ## Documentation
 
 Every module's README is rendered as the landing page of the official documentation. For example, this is
@@ -1257,10 +1253,6 @@ $ cdk -a some.app.js synth | $awscdk/scripts/template-deps-to-dot | dot -Tpng > 
 ### Find dependency cycles between packages
 
 You can use `find-cycles` to print a list of internal dependency cycles:
-
-## Running CLI integration tests
-
-> **Note:** The AWS CDK CLI has been moved to a separate repository. For information about running CLI integration tests, please refer to the [CLI Integration Tests](https://github.com/aws/aws-cdk-cli/blob/main/packages/@aws-cdk-testing/cli-integ/README.md) document in the [AWS CDK CLI repository](https://github.com/aws/aws-cdk-cli).
 
 ## Building and testing v2 -alpha packages
 
