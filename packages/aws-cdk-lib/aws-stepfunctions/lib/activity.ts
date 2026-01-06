@@ -9,7 +9,7 @@ import * as iam from '../../aws-iam';
 import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IActivityRef } from '../../interfaces/generated/aws-stepfunctions-interfaces.generated';
+import { ActivityReference, IActivityRef } from '../../interfaces/generated/aws-stepfunctions-interfaces.generated';
 
 /**
  * Properties for defining a new Step Functions Activity
@@ -47,7 +47,7 @@ export class Activity extends Resource implements IActivity {
       public get activityName() {
         return Stack.of(this).splitArn(activityArn, ArnFormat.COLON_RESOURCE_NAME).resourceName || '';
       }
-      public get activityRef() {
+      public get activityRef(): ActivityReference {
         return {
           activityArn: this.activityArn,
         };
@@ -84,7 +84,7 @@ export class Activity extends Resource implements IActivity {
    */
   public readonly encryptionConfiguration?: EncryptionConfiguration;
 
-  public get activityRef() {
+  public get activityRef(): ActivityReference {
     return {
       activityArn: this.activityArn,
     };
