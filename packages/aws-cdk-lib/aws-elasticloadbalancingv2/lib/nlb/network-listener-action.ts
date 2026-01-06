@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { INetworkListener } from './network-listener';
+import { INetworkListenerRef } from './network-listener';
 import { INetworkTargetGroup } from './network-target-group';
 import { Duration } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
@@ -96,7 +96,7 @@ export class NetworkListenerAction implements IListenerAction {
   /**
    * Called when the action is being used in a listener
    */
-  public bind(scope: Construct, listener: INetworkListener) {
+  public bind(scope: Construct, listener: INetworkListenerRef) {
     // Empty on purpose
     Array.isArray(scope);
     Array.isArray(listener);
@@ -164,7 +164,7 @@ class TargetGroupListenerAction extends NetworkListenerAction {
     super(defaultActionJson);
   }
 
-  public bind(_scope: Construct, listener: INetworkListener) {
+  public bind(_scope: Construct, listener: INetworkListenerRef) {
     for (const tg of this.targetGroups) {
       tg.registerListener(listener);
     }
