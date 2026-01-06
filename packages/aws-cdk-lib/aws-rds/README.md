@@ -1204,7 +1204,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   }),
   writer: rds.ClusterInstance.provisioned('writer'),
   vpc,
-  cloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit'], // Export all available MySQL-based logs
+  cloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit', 'instance', 'iam-db-auth-error'], // Export all available MySQL-based logs
   cloudwatchLogsRetention: logs.RetentionDays.THREE_MONTHS, // Optional - default is to never expire logs
   cloudwatchLogsRetentionRole: myLogsPublishingRole, // Optional - a role will be created if not provided
   // ...
@@ -1253,6 +1253,7 @@ new rds.OptionGroup(this, 'Options', {
       securityGroups: [securityGroup], // Optional - a default group will be created if not provided.
     },
   ],
+  optionGroupName: 'MyOptionGroup'
 });
 ```
 

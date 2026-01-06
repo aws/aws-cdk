@@ -1,5 +1,5 @@
 import * as path from 'node:path';
-import { createLibraryReadme, ModuleDefinition } from '@aws-cdk/pkglint';
+import { createLibraryReadme } from '@aws-cdk/pkglint';
 import { topo } from '@aws-cdk/spec2cdk';
 import * as fs from 'fs-extra';
 
@@ -10,13 +10,14 @@ import * as fs from 'fs-extra';
  */
 export default async function generateServiceSubmoduleFiles(modules: topo.ModuleMap, outPath: string) {
   for (const submodule of Object.values(modules)) {
-    const submodulePath = path.join(outPath, submodule.name);
-    await ensureSubmodule(submodule, submodulePath);
+    await ensureSubmodule(submodule, outPath);
     await ensureInterfaceSubmoduleJsiiJsonRc(submodule, path.join(outPath, 'interfaces'));
   }
 }
 
-async function ensureSubmodule(submodule: topo.ModuleMapEntry, modulePath: string) {
+async function ensureSubmodule(submodule: topo.ModuleMapEntry, outPath: string) {
+  const modulePath = path.join(outPath, submodule.name);
+
   // README.md
   const readmePath = path.join(modulePath, 'README.md');
   if (!fs.existsSync(readmePath)) {
@@ -35,12 +36,8 @@ async function ensureSubmodule(submodule: topo.ModuleMapEntry, modulePath: strin
     const lines = submodule.scopes.map(({ namespace }) => `// ${namespace} Cloudformation Resources`);
     lines.push(...submodule.files
       .map((f) => {
-        // New codegen uses absolute paths
-        if (path.isAbsolute(f)) {
-          return path.relative(sourcePath, f);
-        }
-        // Old codegen uses a filename that's already relative to sourcePath
-        return f;
+        // codegen returns paths relative to outpath
+        return path.relative(sourcePath, path.join(outPath, f));
       })
       .map((f) => `export * from './${f.replace('.ts', '')}';`));
     await fs.writeFile(path.join(sourcePath, 'index.ts'), lines.join('\n') + '\n');
@@ -84,25 +81,27 @@ async function ensureInterfaceSubmoduleJsiiJsonRc(submodule: topo.ModuleMapEntry
   const interfacesModuleJsiiRcPath = path.join(interfacesModulePath, '.jsiirc.json');
   const interfacesModuleJsiiRc = JSON.parse(await fs.readFile(interfacesModuleJsiiRcPath, 'utf-8'));
 
-  const jsiiRcPath = path.join(interfacesModulePath, 'generated', `${submodule.name}-interfaces.generated.jsiirc.json`);
+  const jsiiRcPath = path.join(interfacesModulePath, 'generated', `.${submodule.name}-interfaces.generated.jsiirc.json`);
 
   const jsiirc = {
     targets: {
-      ...combineLanguageNamespace('java', 'package', 'javaPackage'),
-      ...combineLanguageNamespace('dotnet', 'namespace', 'dotnetPackage'),
-      ...combineLanguageNamespace('python', 'module', 'pythonModuleName'),
-      // No Go...
+      ...combineLanguageNamespace('java', 'package', submodule.definition?.javaPackage),
+      ...combineLanguageNamespace('dotnet', 'namespace', submodule.definition?.dotnetPackage),
+      ...combineLanguageNamespace('python', 'module', submodule.definition?.pythonModuleName),
+      ...combineLanguageNamespace('go', 'packageName', submodule.definition?.moduleName.replace(/[^a-z0-9.]/gi, '')),
     },
   };
   await fs.writeJson(jsiiRcPath, jsiirc, { spaces: 2 });
 
-  function combineLanguageNamespace(language: string, whatName: string, k: keyof ModuleDefinition) {
-    const ns = `${interfacesModuleJsiiRc.targets[language][whatName]}.${lastPart(submodule.definition?.[k] ?? 'undefined')}`;
-    if (ns.includes('undefined')) {
-      throw new Error(`Could not build child namespace for language ${language} from ${JSON.stringify(interfacesModuleJsiiRc.targets[language])} and ${k} from ${JSON.stringify(submodule.definition)}`);
+  function combineLanguageNamespace(language: string, whatName: string, fromDef?: string) {
+    if (fromDef == null) {
+      throw new Error(`Could not build child namespace for language ${language} from ${JSON.stringify(interfacesModuleJsiiRc.targets[language])} and definition ${JSON.stringify(submodule.definition)}`);
     }
 
-    return { [language]: { [whatName]: ns } };
+    const nsParts = [interfacesModuleJsiiRc.targets[language][whatName], lastPart(fromDef)];
+    const nsSep = language === 'go' ? '' : '.';
+
+    return { [language]: { [whatName]: nsParts.join(nsSep) } };
   }
 }
 

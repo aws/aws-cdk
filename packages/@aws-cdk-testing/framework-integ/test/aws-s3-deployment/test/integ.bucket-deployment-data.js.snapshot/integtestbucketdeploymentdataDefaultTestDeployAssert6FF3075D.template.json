@@ -28,7 +28,7 @@
      "Key": "\"deploy/here/my-json/secret-config.json\""
     },
     "flattenResponse": "false",
-    "salt": "1762212912654"
+    "salt": "1763112638469"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -76,6 +76,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -91,7 +100,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
+     "S3Key": "ca235e6258b11c240506ff06f79037eca461b8d0d9464a947a386d38d8163515.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -102,6 +111,39 @@
      ]
     }
    }
+  },
+  "AwsApiCallS3getObject4098f16b1e7b6f4ed8fcb258e72e3188": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "expected": "{\"$ObjectLike\":{\"Body\":\"{\\\"hello\\\":\\\"there\\\",\\\"goodbye\\\":null}\"}}",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployment-data:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"deploy/here/my-json/config-with-null.json\""
+    },
+    "flattenResponse": "false",
+    "salt": "1763112638470"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "AwsApiCallS3getObjectf9e2d3ce58742177bed058632f0fe5f9": {
    "Type": "Custom::DeployAssert@SdkCallS3getObject",
@@ -131,7 +173,7 @@
      "Key": "\"deploy/here/my-yaml/secret-config.yaml\""
     },
     "flattenResponse": "false",
-    "salt": "1762212912654"
+    "salt": "1763112638470"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -142,6 +184,14 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallS3getObject780d452f7611fd1c0e0b1c423e1bda6d",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getObject4098f16b1e7b6f4ed8fcb258e72e3188": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getObject4098f16b1e7b6f4ed8fcb258e72e3188",
      "assertion"
     ]
    }

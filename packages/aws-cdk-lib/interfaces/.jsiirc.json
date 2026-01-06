@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.interfaces"
+    },
+    "go": {
+      "packageName": "interfaces"
     }
   }
 }

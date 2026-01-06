@@ -18,4 +18,8 @@ if (!atmosphereRoleArn) {
   throw new Error('CDK_ATMOSPHERE_OIDC_ROLE environment variable is required');
 }
 
-deployIntegTests({ atmosphereRoleArn, endpoint, pool, batchSize });
+deployIntegTests({ atmosphereRoleArn, endpoint, pool, batchSize }).catch((e) => {
+  // eslint-disable-next-line no-console
+  console.error(e);
+  process.exitCode = 1;
+});
