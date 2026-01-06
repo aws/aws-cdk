@@ -9,11 +9,12 @@ import { IBucket } from '../../aws-s3';
 import { ArnFormat, IResource, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { CloudFormationProductReference, ICloudFormationProductRef } from '../../interfaces/generated/aws-servicecatalog-interfaces.generated';
 
 /**
  * A Service Catalog product, currently only supports type CloudFormationProduct
  */
-export interface IProduct extends IResource {
+export interface IProduct extends IResource, ICloudFormationProductRef {
   /**
    * The ARN of the product.
    * @attribute
@@ -44,6 +45,12 @@ abstract class ProductBase extends Resource implements IProduct {
   public abstract readonly productArn: string;
   public abstract readonly productId: string;
   public abstract readonly assetBuckets: IBucket[];
+
+  public get cloudFormationProductRef(): CloudFormationProductReference {
+    return {
+      cloudFormationProductId: this.productId,
+    };
+  }
 
   public associateTagOptions(tagOptions: TagOptions) {
     AssociationManager.associateTagOptions(this, this.productId, tagOptions);
