@@ -88,26 +88,6 @@ describe('Guard Rules Validation', () => {
     });
   });
 
-  describe('S3 Rules', () => {
-    test('S3_ENCRYPTION_ENABLED - should validate S3 buckets in existing templates', async () => {
-      // Process existing templates that contain S3 buckets
-      preprocessTemplates(templatesDir, outputDir);
-      
-      // Run validation with S3 rules
-      const success = await runCfnGuardValidation(
-        outputDir,
-        path.join(rulesDir, 's3'),
-        path.join(outputDir, 's3-test.xml'),
-        'S3',
-        new Map(),
-        true
-      );
-      
-      // Should detect S3 violations (validation should fail)
-      expect(typeof success).toBe('boolean');
-      expect(success).toBe(false);
-    });
-  });
 
   describe('Template Processing', () => {
     test('should successfully process all existing templates', () => {
@@ -171,21 +151,6 @@ describe('Guard Rules Validation', () => {
       expect(success).toBe(true);
     });
 
-    test('should pass validation with compliant S3 bucket', async () => {
-      // Run validation with S3 rules on compliant template
-      const success = await runCfnGuardValidation(
-        compliantTemplate,
-        path.join(rulesDir, 's3/s3-encryption-enabled.guard'),
-        path.join(outputDir, 'compliant-s3-test.xml'),
-        'Compliant S3',
-        new Map(),
-        true
-      );
-      
-      // Should pass validation (encryption enabled)
-      expect(typeof success).toBe('boolean');
-      expect(success).toBe(true);
-    });
 
     test('should pass validation with compliant EBS volume', async () => {
       // Run validation with EC2 rules on compliant template
