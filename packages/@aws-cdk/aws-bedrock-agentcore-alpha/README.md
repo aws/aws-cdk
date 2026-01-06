@@ -155,6 +155,7 @@ to production by simply updating the endpoint to point to the newer version.
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
+
 | `runtimeName` | `string` | Yes | The name of the agent runtime. Valid characters are a-z, A-Z, 0-9, _ (underscore). Must start with a letter and can be up to 48 characters long |
 | `agentRuntimeArtifact` | `AgentRuntimeArtifact` | Yes | The artifact configuration for the agent runtime containing the container configuration with ECR URI |
 | `executionRole` | `iam.IRole` | No | The IAM role that provides permissions for the agent runtime. If not provided, a role will be created automatically |
@@ -748,6 +749,7 @@ For more information on VPC connectivity for Amazon Bedrock AgentCore Browser, p
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
+
 | `browserCustomName` | `string` | Yes | The name of the browser. Must start with a letter and can be up to 48 characters long. Pattern: `[a-zA-Z][a-zA-Z0-9_]{0,47}` |
 | `description` | `string` | No | Optional description for the browser. Can have up to 200 characters |
 | `networkConfiguration` | `BrowserNetworkConfiguration` | No | Network configuration for browser. Defaults to PUBLIC network mode |
@@ -959,6 +961,7 @@ For more information on VPC connectivity for Amazon Bedrock AgentCore Browser, p
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
+
 | `codeInterpreterCustomName` | `string` | Yes | The name of the code interpreter. Must start with a letter and can be up to 48 characters long. Pattern: `[a-zA-Z][a-zA-Z0-9_]{0,47}` |
 | `description` | `string` | No | Optional description for the code interpreter. Can have up to 200 characters |
 | `executionRole` | `iam.IRole` | No | The IAM role that provides permissions for the code interpreter to access AWS services. A new role will be created if not provided |
@@ -1084,6 +1087,7 @@ The Gateway construct provides a way to create Amazon Bedrock Agent Core Gateway
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
+
 | `gatewayName` | `string` | Yes | The name of the gateway. Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen). Maximum 100 characters |
 | `description` | `string` | No | Optional description for the gateway. Maximum 200 characters |
 | `protocolConfiguration` | `IGatewayProtocolConfig` | No | The protocol configuration for the gateway. Defaults to MCP protocol |
@@ -1274,6 +1278,7 @@ credential provider attached enabling you to securely access targets whether the
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
+
 | `gatewayTargetName` | `string` | Yes | The name of the gateway target. Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen) |
 | `description` | `string` | No | Optional description for the gateway target. Maximum 200 characters |
 | `gateway` | `IGateway` | Yes | The gateway this target belongs to |
@@ -1868,6 +1873,7 @@ To write to long-term memory, you need to configure extraction strategies which 
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
+
 | `memoryName` | `string` | Yes | The name of the memory |
 | `expirationDuration` | `Duration` | No | Short-term memory expiration in days (between 7 and 365). Default: 90 days |
 | `description` | `string` | No | Optional description for the memory. Default: no description. |
@@ -1925,7 +1931,7 @@ You can use built-in extraction strategies for quick setup, or create custom ext
 
 ### Memory with Built-in Strategies
 
-The library provides three built-in LTM strategies. These are default strategies for organizing and extracting memory data,
+The library provides four built-in LTM strategies. These are default strategies for organizing and extracting memory data,
 each optimized for specific use cases.
 
 For example: An agent helps multiple users with cloud storage setup. From these conversations,
@@ -1952,6 +1958,13 @@ Extracted memory example: User needs clear guidance on cloud storage account con
    - Extracts user behavior patterns from raw conversations
    - Namespace: `/strategies/{memoryStrategyId}/actors/{actorId}`
 
+4. **Episodic Memory Strategy** (`MemoryStrategy.usingBuiltInEpisodic()`)
+Captures meaningful slices of user and system interactions, preserve them into compact records after summarizing.
+Extracted memory example: User first asked about pricing on Monday, then requested feature comparison on Tuesday, finally made purchase decision on Wednesday.
+
+   - Captures event sequences and temporal relationships
+   - Namespace: `/strategies/{memoryStrategyId}/actors/{actorId}`
+
 ```typescript fixture=default
 // Create memory with built-in strategies
 const memory = new agentcore.Memory(this, "MyMemory", {
@@ -1962,6 +1975,7 @@ const memory = new agentcore.Memory(this, "MyMemory", {
     agentcore.MemoryStrategy.usingBuiltInSummarization(),
     agentcore.MemoryStrategy.usingBuiltInSemantic(),
     agentcore.MemoryStrategy.usingBuiltInUserPreference(),
+    agentcore.MemoryStrategy.usingBuiltInEpisodic(),
   ],
 });
 ```
@@ -1971,6 +1985,7 @@ The name generated for each built in memory strategy is as follows:
 - For Summarization: `summary_builtin_cdk001`
 - For Semantic:`semantic_builtin_cdk001>`
 - For User Preferences: `preference_builtin_cdk001`
+- For Episodic : `episodic_builtin_cdk001`
 
 ### Memory with custom Strategies
 
@@ -2012,12 +2027,13 @@ You can customise the namespace, i.e. where the memories are stored by using the
 1. **Summarization Strategy** (`MemoryStrategy.usingSummarization(props)`)
 1. **Semantic Memory Strategy** (`MemoryStrategy.usingSemantic(props)`)
 1. **User Preference Strategy** (`MemoryStrategy.usingUserPreference(props)`)
+1. **Episodic Memory Strategy** (`MemoryStrategy.usingEpisodic(props)`)
 
 ```typescript fixture=default
-// Create memory with built-in strategies
+// Create memory with custom strategies
 const memory = new agentcore.Memory(this, "MyMemory", {
   memoryName: "my_memory",
-  description: "Memory with built-in strategies",
+  description: "Memory with custom strategies",
   expirationDuration: cdk.Duration.days(90),
   memoryStrategies: [
     agentcore.MemoryStrategy.usingUserPreference({
@@ -2027,6 +2043,13 @@ const memory = new agentcore.Memory(this, "MyMemory", {
     agentcore.MemoryStrategy.usingSemantic({
         name: "CustomerSupportSemantic",
         namespaces: ["support/customer/{actorId}/semantic"]
+    }),
+     agentcore.MemoryStrategy.usingEpisodic({
+        name: "customerJourneyEpisodic",
+        namespaces: ["/journey/customer/{actorId}/episodes"],
+        reflectionConfiguration: {
+            namespaces: ["/journey/customer/{actorId}/reflections"]
+        }
     }),
   ],
 });
