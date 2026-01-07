@@ -77,14 +77,12 @@ export class LogStream extends Resource implements ILogStream {
   public static fromLogStreamName(scope: Construct, id: string, logStreamName: string): ILogStream {
     class Import extends Resource implements ILogStream {
       public readonly logStreamName = logStreamName;
-      private readonly _logGroupName = attrs.logGroupName;
 
       public get logStreamRef() {
-        if (!this._logGroupName) {
-          throw new UnscopedValidationError('Cannot access logStreamRef on an imported LogStream without logGroupName. Use LogStream.fromLogStreamAttributes() and provide logGroupName.');
-        }
         return {
-          logGroupName: this._logGroupName,
+          get logGroupName(): string {
+            throw new UnscopedValidationError('Cannot access logGroupName on a LogStream obtained from fromLogStreamName. Use LogStream.fromLogStreamAttributes() instead.');
+          },
           logStreamName: this.logStreamName,
         };
       }
@@ -99,14 +97,9 @@ export class LogStream extends Resource implements ILogStream {
   public static fromLogStreamAttributes(scope: Construct, id: string, attrs: LogStreamAttributes): ILogStream {
     class Import extends Resource implements ILogStream {
       public readonly logStreamName = attrs.logStreamName;
-      private readonly _logGroupName = attrs.logGroupName;
-
       public get logStreamRef(): LogStreamReference {
-        if (!this._logGroupName) {
-          throw new UnscopedValidationError('Cannot access logStreamRef on an imported LogStream without logGroupName. Use LogStream.fromLogStreamAttributes() and provide logGroupName.');
-        }
         return {
-          logGroupName: this._logGroupName,
+          logGroupName: attrs.logGroupName,
           logStreamName: this.logStreamName,
         };
       }

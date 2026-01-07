@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
-import { ILogGroup } from './log-group';
-import { CfnDestination } from './logs.generated';
+import { CfnDestination, ILogGroupRef } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
 import * as iam from '../../aws-iam';
 import { ArnFormat } from '../../core';
@@ -103,7 +102,7 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
   }
 
   @MethodMetadata()
-  public bind(_scope: Construct, _sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig {
+  public bind(_scope: Construct, _sourceLogGroup: ILogGroupRef): LogSubscriptionDestinationConfig {
     return { arn: this.destinationArn };
   }
 
