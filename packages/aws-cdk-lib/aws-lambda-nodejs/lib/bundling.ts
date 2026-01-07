@@ -286,13 +286,16 @@ export class Bundling implements cdk.BundlingOptions {
       const isPnpm = this.packageManager.lockFile === LockFile.PNPM;
       const isBun = this.packageManager.lockFile === LockFile.BUN_LOCK || this.packageManager.lockFile === LockFile.BUN;
 
-      // Find .npmrc file in project root for pnpm to inherit registry authentication
+      // Find .npmrc file for pnpm to inherit registry authentication
+      // Only use it if it's within projectRoot (not outside, which would be inaccessible in Docker)
       const npmrcFilePath = isPnpm ? findUp('.npmrc', this.projectRoot) : undefined;
+      const relativeNpmrcPath = npmrcFilePath ? path.relative(this.projectRoot, npmrcFilePath) : undefined;
+      const npmrcInProjectRoot = relativeNpmrcPath && !relativeNpmrcPath.startsWith('..');
 
       // Create dummy package.json, copy lock file if any and then install
       depsCommand = chain([
         isPnpm ? osCommand.write(pathJoin(options.outputDir, 'pnpm-workspace.yaml'), ''): '', // Ensure node_modules directory is installed locally by creating local 'pnpm-workspace.yaml' file
-        isPnpm && npmrcFilePath ? osCommand.copy(pathJoin(options.inputDir, path.relative(this.projectRoot, npmrcFilePath)), pathJoin(options.outputDir, '.npmrc')) : '', // Copy .npmrc for pnpm to inherit registry authentication
+        npmrcInProjectRoot ? osCommand.copy(pathJoin(options.inputDir, relativeNpmrcPath!), pathJoin(options.outputDir, '.npmrc')) : '', // Copy .npmrc for pnpm to inherit registry authentication
         osCommand.writeJson(pathJoin(options.outputDir, 'package.json'), { dependencies }),
         osCommand.copy(lockFilePath, pathJoin(options.outputDir, this.packageManager.lockFile)),
         osCommand.changeDirectory(options.outputDir),
