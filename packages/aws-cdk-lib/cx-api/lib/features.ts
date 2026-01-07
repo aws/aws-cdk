@@ -1732,29 +1732,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
   },
 
-  [ELB_USE_POST_QUANTUM_TLS_POLICY]: {
-    type: FlagType.ApiDefault,
-    summary: 'When enabled, SslPolicy.RECOMMENDED_TLS uses post-quantum cryptography policy',
-    detailsMd: `
-      When this feature flag is enabled, \`SslPolicy.RECOMMENDED_TLS\` will use the post-quantum
-      cryptography policy \`ELBSecurityPolicy-TLS13-1-2-PQ-2025-09\` instead of the legacy
-      policy \`ELBSecurityPolicy-TLS13-1-2-2021-06\`.
-
-      This policy provides maximum backward compatibility while adding quantum resistance.
-      It is nearly 100% backward compatible with the previous CDK recommended default,
-      only removing support for the SHA1 signature algorithm (which has minimal usage).
-
-      Post-quantum policies provide protection against "Harvest Now, Decrypt Later" attacks
-      using hybrid ML-KEM key exchange.
-
-      When disabled, \`SslPolicy.RECOMMENDED_TLS\` continues to use the legacy policy for
-      backward compatibility.
-    `,
-    introducedIn: { v2: 'V2NEXT' },
-    recommendedValue: true,
-    compatibilityWithOldBehaviorMd: 'Use `SslPolicy.TLS13_12_RES` explicitly to maintain the old policy, or disable this feature flag.',
-  },
-
   [ROUTE53_PATTERNS_USE_DISTRIBUTION]: {
     type: FlagType.ApiDefault,
     summary: 'Use the `Distribution` resource instead of `CloudFrontWebDistribution`',
@@ -1770,22 +1747,22 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [ELB_USE_POST_QUANTUM_TLS_POLICY]: {
     type: FlagType.ApiDefault,
-    summary: 'When enabled, SslPolicy.RECOMMENDED_TLS uses post-quantum cryptography policy',
+    summary: 'When enabled, HTTPS listeners use post-quantum TLS policy by default',
     detailsMd: `
-      When this feature flag is enabled, \`SslPolicy.RECOMMENDED_TLS\` will use the post-quantum
-      cryptography policy \`ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09\` instead of the legacy
+      When this feature flag is enabled, HTTPS listeners will use the post-quantum
+      cryptography policy \`ELBSecurityPolicy-TLS13-1-2-PQ-2025-09\` by default instead of the legacy
       policy \`ELBSecurityPolicy-TLS13-1-2-2021-06\`.
 
-      This aligns CDK with AWS Console behavior, which already defaults to post-quantum security
-      policies for new load balancers. Post-quantum policies provide protection against
-      "Harvest Now, Decrypt Later" attacks using hybrid ML-KEM key exchange.
+      This policy uses the non-restricted variant (without -Res-) to maintain AES-CBC cipher support
+      for TLS 1.2 clients, ensuring nearly 100% backward compatibility with the previous CDK default.
+      Post-quantum policies provide protection against "Harvest Now, Decrypt Later" attacks using
+      hybrid ML-KEM key exchange.
 
-      When disabled, \`SslPolicy.RECOMMENDED_TLS\` continues to use the legacy policy for
-      backward compatibility.
+      When disabled, listeners continue to use the legacy policy for backward compatibility.
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
-    compatibilityWithOldBehaviorMd: 'Use `SslPolicy.TLS13_12_RES` explicitly to maintain the old policy, or disable this feature flag.',
+    compatibilityWithOldBehaviorMd: 'Use `SslPolicy.RECOMMENDED_TLS` explicitly to maintain the old policy, or disable this feature flag.',
   },
 };
 
