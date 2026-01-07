@@ -3,7 +3,7 @@ import { CfnLogStream } from './logs.generated';
 import { IResource, RemovalPolicy, Resource, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ILogGroupRef, ILogStreamRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
+import { ILogGroupRef, ILogStreamRef, LogStreamReference } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 export interface ILogStream extends IResource, ILogStreamRef {
   /**
@@ -27,7 +27,7 @@ export interface LogStreamAttributes {
    *
    * @default - When not provided, logStreamRef will throw an error
    */
-  readonly logGroupName?: string;
+  readonly logGroupName: string;
 }
 
 /**
@@ -75,7 +75,22 @@ export class LogStream extends Resource implements ILogStream {
    * Import an existing LogStream
    */
   public static fromLogStreamName(scope: Construct, id: string, logStreamName: string): ILogStream {
-    return LogStream.fromLogStreamAttributes(scope, id, { logStreamName });
+    class Import extends Resource implements ILogStream {
+      public readonly logStreamName = logStreamName;
+      private readonly _logGroupName = attrs.logGroupName;
+
+      public get logStreamRef() {
+        if (!this._logGroupName) {
+          throw new UnscopedValidationError('Cannot access logStreamRef on an imported LogStream without logGroupName. Use LogStream.fromLogStreamAttributes() and provide logGroupName.');
+        }
+        return {
+          logGroupName: this._logGroupName,
+          logStreamName: this.logStreamName,
+        };
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   /**
@@ -86,7 +101,7 @@ export class LogStream extends Resource implements ILogStream {
       public readonly logStreamName = attrs.logStreamName;
       private readonly _logGroupName = attrs.logGroupName;
 
-      public get logStreamRef() {
+      public get logStreamRef(): LogStreamReference {
         if (!this._logGroupName) {
           throw new UnscopedValidationError('Cannot access logStreamRef on an imported LogStream without logGroupName. Use LogStream.fromLogStreamAttributes() and provide logGroupName.');
         }
@@ -125,7 +140,7 @@ export class LogStream extends Resource implements ILogStream {
     this.logStreamName = this.getResourceNameAttribute(resource.ref);
   }
 
-  public get logStreamRef() {
+  public get logStreamRef(): LogStreamReference {
     return {
       logGroupName: this.logGroupName,
       logStreamName: this.logStreamName,
