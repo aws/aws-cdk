@@ -13,7 +13,7 @@ import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CrossAccountZoneDelegationProvider } from '../../custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated';
 import { DeleteExistingRecordSetProvider } from '../../custom-resource-handlers/dist/aws-route53/delete-existing-record-set-provider.generated';
-import { IRecordSetRef } from '../../interfaces/generated/aws-route53-interfaces.generated';
+import { IRecordSetRef, RecordSetReference } from '../../interfaces/generated/aws-route53-interfaces.generated';
 
 const CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE = 'Custom::CrossAccountZoneDelegation';
 const DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE = 'Custom::DeleteExistingRecordSet';
@@ -388,7 +388,7 @@ export class RecordSet extends Resource implements IRecordSet {
   private readonly multiValueAnswer?: boolean;
   private readonly failover?: Failover;
 
-  public get recordSetRef() {
+  public get recordSetRef(): RecordSetReference {
     return {
       recordSetName: this.domainName,
     };

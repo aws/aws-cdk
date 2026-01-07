@@ -6,7 +6,7 @@ import * as kms from '../../aws-kms';
 import { Resource, IResource, Lazy, Names } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IKeySigningKeyRef } from '../../interfaces/generated/aws-route53-interfaces.generated';
+import { IKeySigningKeyRef, KeySigningKeyReference } from '../../interfaces/generated/aws-route53-interfaces.generated';
 
 /**
  * Properties for constructing a Key Signing Key.
@@ -142,7 +142,7 @@ export class KeySigningKey extends Resource implements IKeySigningKey {
   public readonly keySigningKeyName: string;
   public readonly keySigningKeyId: string;
 
-  public get keySigningKeyRef() {
+  public get keySigningKeyRef(): KeySigningKeyReference {
     return {
       hostedZoneId: this.hostedZone.hostedZoneId,
       keySigningKeyName: this.keySigningKeyName,
