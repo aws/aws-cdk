@@ -1,6 +1,6 @@
-import { IBackupVault } from './vault';
 import * as events from '../../aws-events';
 import { Duration, TimeZone, Token, UnscopedValidationError } from '../../core';
+import { IBackupVaultRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
 
 /**
  * Properties for a BackupPlanRule
@@ -64,7 +64,7 @@ export interface BackupPlanRuleProps {
    * @default - use the vault defined at the plan level. If not defined a new
    * common vault for the plan will be created
    */
-  readonly backupVault?: IBackupVault;
+  readonly backupVault?: IBackupVaultRef;
 
   /**
    * Enables continuous backup and point-in-time restores (PITR).
@@ -100,7 +100,7 @@ export interface BackupPlanCopyActionProps {
   /**
    * Destination Vault for recovery points to be copied into
    */
-  readonly destinationBackupVault: IBackupVault;
+  readonly destinationBackupVault: IBackupVaultRef;
 
   /**
    * Specifies the duration after creation that a copied recovery point is deleted from the destination vault.
@@ -125,7 +125,7 @@ export class BackupPlanRule {
   /**
    * Daily with 35 days retention
    */
-  public static daily(backupVault?: IBackupVault) {
+  public static daily(backupVault?: IBackupVaultRef) {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Daily',
@@ -140,7 +140,7 @@ export class BackupPlanRule {
   /**
    * Weekly with 3 months retention
    */
-  public static weekly(backupVault?: IBackupVault) {
+  public static weekly(backupVault?: IBackupVaultRef) {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Weekly',
@@ -156,7 +156,7 @@ export class BackupPlanRule {
   /**
    * Monthly 1 year retention, move to cold storage after 1 month
    */
-  public static monthly1Year(backupVault?: IBackupVault) {
+  public static monthly1Year(backupVault?: IBackupVaultRef) {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Monthly1Year',
@@ -173,7 +173,7 @@ export class BackupPlanRule {
   /**
    * Monthly 5 year retention, move to cold storage after 3 months
    */
-  public static monthly5Year(backupVault?: IBackupVault) {
+  public static monthly5Year(backupVault?: IBackupVaultRef) {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Monthly5Year',
@@ -190,7 +190,7 @@ export class BackupPlanRule {
   /**
    * Monthly 7 year retention, move to cold storage after 3 months
    */
-  public static monthly7Year(backupVault?: IBackupVault) {
+  public static monthly7Year(backupVault?: IBackupVaultRef) {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Monthly7Year',
