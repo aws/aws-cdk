@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
 import * as dynamodb from '../../aws-dynamodb';
 import * as ec2 from '../../aws-ec2';
-import * as efs from '../../aws-efs';
 import * as rds from '../../aws-rds';
 import { Stack } from '../../core';
+import { IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
 
 /**
  * An operation that is applied to a key-value pair
@@ -65,8 +65,8 @@ export class BackupResource {
   /**
    * A DynamoDB table
    */
-  public static fromDynamoDbTable(table: dynamodb.ITable) {
-    return BackupResource.fromArn(table.tableArn);
+  public static fromDynamoDbTable(table: dynamodb.ITableRef) {
+    return BackupResource.fromArn(table.tableRef.tableArn);
   }
 
   /**
@@ -83,11 +83,11 @@ export class BackupResource {
   /**
    * An EFS file system
    */
-  public static fromEfsFileSystem(fileSystem: efs.IFileSystem) {
+  public static fromEfsFileSystem(fileSystem: IFileSystemRef) {
     return BackupResource.fromArn(Stack.of(fileSystem).formatArn({
       service: 'elasticfilesystem',
       resource: 'file-system',
-      resourceName: fileSystem.fileSystemId,
+      resourceName: fileSystem.fileSystemRef.fileSystemId,
     }));
   }
 

@@ -4,8 +4,9 @@ version: 0.2
 
 phases:
   install:
+    runtime-versions:
+      nodejs: 20
     commands:
-
       # baked in our image.
       # this also takes care of launching the docker daemon.
       - /root/ecr-proxy/start.sh
@@ -34,7 +35,7 @@ phases:
   post_build:
     commands:
       # Short-circuit: Don't run pack if the above build failed.
-      - '[ ${CODEBUILD_BUILD_SUCCEEDING:-0} -eq 1 ] || exit 1'
+      - "[ ${CODEBUILD_BUILD_SUCCEEDING:-0} -eq 1 ] || exit 1"
       - "[ -f .BUILD_COMPLETED ] && /bin/bash ./pack.sh"
       - /bin/bash ./scripts/cache-store.sh
 artifacts:
