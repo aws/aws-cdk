@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
-import { IHttpApi } from './api';
+import { IHttpApi, IHttpApiRef, toIHttpApi } from './api';
 import { HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from './authorizer';
 import { HttpRouteIntegration } from './integration';
-import { CfnRoute, CfnRouteProps } from '.././index';
+import { CfnRoute, CfnRouteProps, RouteReference } from '.././index';
 import * as iam from '../../../aws-iam';
 import { Aws, Resource } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
@@ -131,7 +131,7 @@ export interface HttpRouteProps extends BatchHttpRouteOptions {
   /**
    * the API the route is associated with
    */
-  readonly httpApi: IHttpApi;
+  readonly httpApi: IHttpApiRef;
 
   /**
    * The key to this route. This is a combination of an HTTP method and an HTTP path.
@@ -182,10 +182,10 @@ export class HttpRoute extends Resource implements IHttpRoute {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.HttpRoute';
 
   public readonly routeId: string;
-  public readonly httpApi: IHttpApi;
   public readonly path?: string;
   public readonly routeArn: string;
 
+  private readonly _httpApi: IHttpApiRef;
   private readonly method: HttpMethod;
   private readonly authBindResult?: HttpRouteAuthorizerConfig;
 
@@ -194,7 +194,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.httpApi = props.httpApi;
+    this._httpApi = props.httpApi;
     this.path = props.routeKey.path;
     this.method = props.routeKey.method;
     this.routeArn = this.produceRouteArn(props.routeKey.method);
@@ -228,7 +228,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
     }
 
     const routeProps: CfnRouteProps = {
-      apiId: props.httpApi.apiId,
+      apiId: props.httpApi.apiRef.apiId,
       routeKey: props.routeKey.key,
       target: `integrations/${config.integrationId}`,
       authorizerId: this.authBindResult?.authorizerId,
@@ -274,5 +274,16 @@ export class HttpRoute extends Resource implements IHttpRoute {
       actions: ['execute-api:Invoke'],
       resourceArns: resourceArns,
     });
+  }
+
+  public get httpApi(): IHttpApi {
+    return toIHttpApi(this._httpApi);
+  }
+
+  public get routeRef(): RouteReference {
+    return {
+      apiId: this._httpApi.apiRef.apiId,
+      routeId: this.routeId,
+    };
   }
 }
