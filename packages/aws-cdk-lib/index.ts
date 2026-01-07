@@ -40,6 +40,7 @@ export * as aws_bedrock from './aws-bedrock';
 export * as aws_bedrockagentcore from './aws-bedrockagentcore';
 export * as aws_billingconductor from './aws-billingconductor';
 export * as aws_budgets from './aws-budgets';
+export * as aws_cases from './aws-cases';
 export * as aws_cassandra from './aws-cassandra';
 export * as aws_ce from './aws-ce';
 export * as aws_certificatemanager from './aws-certificatemanager';
