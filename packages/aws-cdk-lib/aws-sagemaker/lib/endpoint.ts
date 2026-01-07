@@ -21,11 +21,6 @@ export interface IEndpoint extends IResource, IEndpointRef {
   readonly endpointName: string;
 
   /**
-   * A reference to this Endpoint resource.
-   */
-  readonly endpointRef: import('../../interfaces/generated/aws-sagemaker-interfaces.generated').EndpointReference;
-
-  /**
    * Permits an IAM principal to invoke this endpoint
    * @param grantee The principal to grant access to
    */

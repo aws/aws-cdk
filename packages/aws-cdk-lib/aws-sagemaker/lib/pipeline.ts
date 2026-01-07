@@ -21,11 +21,6 @@ export interface IPipeline extends IResource, IPipelineRef {
   readonly pipelineName: string;
 
   /**
-   * A reference to this Pipeline resource.
-   */
-  readonly pipelineRef: import('../../interfaces/generated/aws-sagemaker-interfaces.generated').PipelineReference;
-
-  /**
    * Permits an IAM principal to start this pipeline execution
    * @param grantee The principal to grant access to
    */
