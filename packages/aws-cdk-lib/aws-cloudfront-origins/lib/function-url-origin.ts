@@ -55,7 +55,7 @@ export interface FunctionUrlOriginWithOACProps extends FunctionUrlOriginProps {
    *
    * @default - an Origin Access Control will be created.
    */
-  readonly originAccessControl?: cloudfront.IOriginAccessControl;
+  readonly originAccessControl?: cloudfront.IOriginAccessControlRef;
 
 }
 
@@ -96,7 +96,7 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
  * An Origin for a Lambda Function URL with OAC.
  */
 class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
-  private originAccessControl?: cloudfront.IOriginAccessControl;
+  private originAccessControl?: cloudfront.IOriginAccessControlRef;
   private functionUrl: lambda.IFunctionUrl;
   private readonly props: FunctionUrlOriginWithOACProps;
 
@@ -136,7 +136,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
       ...originBindConfig,
       originProperty: {
         ...originBindConfig.originProperty!,
-        originAccessControlId: this.originAccessControl?.originAccessControlId,
+        originAccessControlId: this.originAccessControl?.originAccessControlRef.originAccessControlId,
       },
     };
   }

@@ -22,7 +22,7 @@
     "strict": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
-    "stripInternal": true,
+    "stripInternal": false,
     "target": "es2022",
     "composite": true,
     "esModuleInterop": false,
@@ -34,8 +34,9 @@
   ],
   "exclude": [
     "node_modules",
-    "scripts",
-    "**/test/**/*.ts",
+    ".types-compat",
+    "**/test/**/docker-*-handler/*",
+    "aws-lambda/test/layer-code/*",
     "**/*.d.ts"
   ],
   "references": [

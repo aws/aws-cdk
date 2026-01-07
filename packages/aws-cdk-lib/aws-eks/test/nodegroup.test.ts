@@ -10,8 +10,6 @@ import * as eks from '../lib';
 import { NodegroupAmiType, TaintEffect } from '../lib';
 import { isGpuInstanceType } from '../lib/private/nodegroup';
 
-/* eslint-disable max-len */
-
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
 
 describe('node group', () => {
@@ -1841,6 +1839,12 @@ describe('isGpuInstanceType', () => {
       ec2.InstanceType.of(ec2.InstanceClass.G3S, ec2.InstanceSize.XLARGE),
       ec2.InstanceType.of(ec2.InstanceClass.G5, ec2.InstanceSize.XLARGE),
       ec2.InstanceType.of(ec2.InstanceClass.G5G, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.TRN1, ec2.InstanceSize.XLARGE2),
+      ec2.InstanceType.of(ec2.InstanceClass.TRN1N, ec2.InstanceSize.XLARGE32),
+      ec2.InstanceType.of(ec2.InstanceClass.TRN2, ec2.InstanceSize.XLARGE48),
+      ec2.InstanceType.of(ec2.InstanceClass.P5, ec2.InstanceSize.XLARGE48),
+      ec2.InstanceType.of(ec2.InstanceClass.P5E, ec2.InstanceSize.XLARGE48),
+      ec2.InstanceType.of(ec2.InstanceClass.P5EN, ec2.InstanceSize.XLARGE48),
     ];
     gpuInstanceTypes.forEach(instanceType => {
       expect(isGpuInstanceType(instanceType)).toBe(true);

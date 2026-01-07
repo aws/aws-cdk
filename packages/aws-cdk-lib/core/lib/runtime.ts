@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { ValidationError } from './errors';
+import { withResolved } from './token';
 
 // ----------------------------------------------------------------------
 // PROPERTY MAPPERS
@@ -429,4 +430,24 @@ export function ensureStringOrUndefined(value: any, propName: string, possibleTy
     throw new TypeError(`Property ${propName} should be one of ${possibleType}`);
   }
   return value;
+}
+
+/**
+ * Map the elements of an array in place, preserving the original array reference.
+ *
+ * If `arr` is defined and resolved, each element is replaced with the result of `mapper`
+ * and the same array is returned, typed as `U[]`.
+ * If `arr` is undefined, returns undefined.
+ *
+ */
+export function mapArrayInPlace<T, U extends T>(arr: T[], mapper: (item: T) => U): U[];
+export function mapArrayInPlace<T, U extends T>(arr: T[] | undefined, mapper: (item: T) => U): U[] | undefined;
+export function mapArrayInPlace<T, U extends T>(arr: T[] | undefined, mapper: (item: T) => U): U[] | undefined {
+  if (!arr) return undefined;
+  withResolved(arr, () => {
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = mapper(arr[i]);
+    }
+  });
+  return arr as unknown as U[];
 }
