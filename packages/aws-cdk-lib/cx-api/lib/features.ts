@@ -1747,22 +1747,23 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [ELB_USE_POST_QUANTUM_TLS_POLICY]: {
     type: FlagType.ApiDefault,
-    summary: 'When enabled, HTTPS listeners use post-quantum TLS policy by default',
+    summary: 'When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default',
     detailsMd: `
-      When this feature flag is enabled, HTTPS listeners will use the post-quantum
-      cryptography policy \`ELBSecurityPolicy-TLS13-1-2-PQ-2025-09\` by default instead of the legacy
-      policy \`ELBSecurityPolicy-TLS13-1-2-2021-06\`.
+      When this feature flag is enabled, HTTPS and TLS listeners that do not have an explicit
+      \`sslPolicy\` will use the post-quantum cryptography policy
+      \`ELBSecurityPolicy-TLS13-1-2-PQ-2025-09\` by default.
 
       This policy uses the non-restricted variant (without -Res-) to maintain AES-CBC cipher support
       for TLS 1.2 clients, ensuring nearly 100% backward compatibility with the previous CDK default.
       Post-quantum policies provide protection against "Harvest Now, Decrypt Later" attacks using
       hybrid ML-KEM key exchange.
 
-      When disabled, listeners continue to use the legacy policy for backward compatibility.
+      When disabled (default), no explicit SSL policy is set, preserving the existing behavior where
+      CloudFormation uses its service default.
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
-    compatibilityWithOldBehaviorMd: 'Use `SslPolicy.RECOMMENDED_TLS` explicitly to maintain the old policy, or disable this feature flag.',
+    compatibilityWithOldBehaviorMd: 'Disable this feature flag to preserve existing behavior where no explicit SSL policy is set.',
   },
 };
 

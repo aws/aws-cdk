@@ -223,9 +223,10 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     }
 
     // Calculate SSL policy before calling super()
-    const sslPolicy = props.sslPolicy ?? (proto === Protocol.TLS ?
-      (FeatureFlags.of(scope).isEnabled(cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY) ? SslPolicy.RECOMMENDED_TLS_PQ : SslPolicy.RECOMMENDED_TLS) :
-      undefined);
+    // Only set explicit policy when feature flag is enabled to avoid BC
+    const sslPolicy = props.sslPolicy ?? (proto === Protocol.TLS &&
+      FeatureFlags.of(scope).isEnabled(cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY) ?
+      SslPolicy.RECOMMENDED_TLS_PQ : undefined);
 
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
