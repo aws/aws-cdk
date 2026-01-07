@@ -641,7 +641,7 @@ describe('tests', () => {
   });
 
   describe('Post-quantum TLS policy feature flag', () => {
-    test('Uses legacy TLS policy when feature flag is disabled', () => {
+    test('Does not set explicit SSL policy when feature flag is disabled', () => {
       // GIVEN
       const app = new cdk.App({
         context: {
@@ -663,9 +663,9 @@ describe('tests', () => {
         defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
       });
 
-      // THEN
+      // THEN - no explicit SslPolicy should be set
       Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
-        SslPolicy: 'ELBSecurityPolicy-TLS13-1-2-2021-06',
+        SslPolicy: Match.absent(),
       });
     });
 
