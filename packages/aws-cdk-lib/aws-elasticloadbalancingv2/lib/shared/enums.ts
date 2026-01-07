@@ -169,14 +169,6 @@ export enum SslPolicy {
   /**
    * TLS 1.2 and 1.3 with post-quantum hybrid key exchange using ML-KEM
    *
-   * This is the non-restricted variant that maintains AES-CBC cipher support
-   * for maximum backward compatibility with TLS 1.2 clients.
-   */
-  TLS13_12_PQ = 'ELBSecurityPolicy-TLS13-1-2-PQ-2025-09',
-
-  /**
-   * TLS 1.2 and 1.3 with post-quantum hybrid key exchange using ML-KEM
-   *
    * Restricted cipher suite for enhanced security with quantum resistance.
    * Removes AES-CBC algorithms. AWS Console default policy for post-quantum cryptography.
    */
