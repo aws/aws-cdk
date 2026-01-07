@@ -1,14 +1,15 @@
 import * as path from 'node:path';
-import { naming, generateAll, topo } from '@aws-cdk/spec2cdk';
 import * as fs from 'fs-extra';
+import writeCloudFormationIncludeMapping from './cloudformation-include';
+import { generateAll } from './index';
 import generateServiceSubmoduleFiles from './submodules';
-import writeCloudFormationIncludeMapping from './submodules/cloudformation-include';
+import { ModuleMap, writeModuleMap, moduleMapPath } from '../module-topology';
+import * as naming from '../naming';
 
-const awsCdkLibDir = path.join(__dirname, '..');
-const atAwsCdkDir = path.join(__dirname, '../../@aws-cdk');
-const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
-const topLevelIndexFilePath = path.join(awsCdkLibDir, 'index.ts');
-const scopeMapPath = path.join(__dirname, 'scope-map.json');
+const libDir = process.cwd();
+const isStable = libDir.endsWith('aws-cdk-lib');
+const pkgJsonPath = path.join(libDir, 'package.json');
+const topLevelIndexFilePath = path.join(libDir, 'index.ts');
 
 const NON_SERVICE_SUBMODULES = ['core', 'interfaces'];
 
@@ -20,19 +21,24 @@ main().catch(e => {
 async function main() {
   // Generate all L1s based on config in scope-map.json
 
-  const generated = (await generateAll(awsCdkLibDir, atAwsCdkDir, {
+  const generated = (await generateAll(libDir, {
     skippedServices: [],
-    scopeMapPath,
+    scopeMapPath: moduleMapPath,
+    isStable,
+    singleModule: isStable ? undefined : path.parse(libDir).name.replace('-alpha', ''),
   }));
 
-  await updateExportsAndEntryPoints(generated);
-  topo.writeModuleMap(generated);
-  await writeCloudFormationIncludeMapping(generated, awsCdkLibDir);
+  if (isStable) {
+    await updateExportsAndEntryPoints(generated);
+    writeModuleMap(generated);
 
-  for (const nss of NON_SERVICE_SUBMODULES) {
-    delete generated[nss];
+    await writeCloudFormationIncludeMapping(generated, libDir);
+
+    for (const nss of NON_SERVICE_SUBMODULES) {
+      delete generated[nss];
+    }
+    await generateServiceSubmoduleFiles(generated, libDir);
   }
-  await generateServiceSubmoduleFiles(generated, awsCdkLibDir);
 }
 
 /**
@@ -41,7 +47,7 @@ async function main() {
  * Read `index.ts` and `package.json#exports`, and add exports for every
  * submodule that's not in there yet.
  */
-async function updateExportsAndEntryPoints(modules: topo.ModuleMap) {
+async function updateExportsAndEntryPoints(modules: ModuleMap) {
   const pkgJson = await fs.readJson(pkgJsonPath);
 
   const indexStatements = new Array<string>();
@@ -55,6 +61,10 @@ async function updateExportsAndEntryPoints(modules: topo.ModuleMap) {
       name: definition?.moduleName ?? moduleName,
       submodule: definition?.submoduleName ?? naming.submoduleSymbolFromName(moduleName),
     };
+
+    if (!pkgJson.exports) {
+      pkgJson.exports = {};
+    }
 
     const exportName = `./${moduleConfig.name}`;
     if (!pkgJson.exports[exportName]) {

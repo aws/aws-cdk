@@ -1,4 +1,3 @@
-
 import { Resource, Service } from '@aws-cdk/service-spec-types';
 import { Module, stmt } from '@cdklabs/typewriter';
 import { AugmentationsModule } from './augmentation-generator';
@@ -6,7 +5,7 @@ import { CannedMetricsModule } from './canned-metrics';
 import { CDK_CORE, CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from './cdk';
 import { AddServiceProps, LibraryBuilder, LibraryBuilderProps } from './library-builder';
 import { ResourceClass } from './resource-class';
-import { LocatedModule, relativeImportPath, BaseServiceSubmodule } from './service-submodule';
+import { BaseServiceSubmodule, LocatedModule, relativeImportPath } from './service-submodule';
 import { submoduleSymbolFromName } from '../naming';
 import { GrantsModule } from './grants-module';
 
@@ -58,7 +57,7 @@ export interface GrantsProps {
    * Whether the generated grants should be considered as stable or experimental.
    * This has implications on where the generated file is placed.
    */
-  stable: boolean;
+  isStable: boolean;
 }
 
 export interface AwsCdkLibFilePatterns {
@@ -172,16 +171,11 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
 
   private createGrantsModule(moduleName: string, service: Service, grantsProps: GrantsProps): LocatedModule<GrantsModule> {
     const filePath = this.pathsFor(moduleName, service).grants;
-    return {
-      module: new GrantsModule(service, this.db, JSON.parse(grantsProps.config), grantsProps.stable),
     const imports = this.resolveImportPaths(filePath);
-
-    const module = {
-      module: new GrantsModule(service, this.db, JSON.parse(grantsConfig), imports.iam),
+    return {
+      module: new GrantsModule(service, this.db, JSON.parse(grantsProps.config), imports.iam, grantsProps.isStable),
       filePath,
     };
-
-    return module;
   }
 
   protected addResourceToSubmodule(submodule: AwsCdkLibServiceSubmodule, resource: Resource, props?: AddServiceProps): void {

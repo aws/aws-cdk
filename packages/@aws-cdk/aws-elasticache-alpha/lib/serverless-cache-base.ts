@@ -174,6 +174,7 @@ export abstract class ServerlessCacheBase extends Resource implements IServerles
   public get serverlessCacheRef(): ServerlessCacheReference {
     return {
       serverlessCacheName: this.serverlessCacheName,
+      serverlessCacheArn: this.serverlessCacheArn,
     };
   }
 

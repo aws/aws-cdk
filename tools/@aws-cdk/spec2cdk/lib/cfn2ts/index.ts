@@ -1,5 +1,5 @@
 import { generate as generateModules, loadPatchedSpec } from '../generate';
-import { ModuleMap, readModuleMap } from '../module-topology';
+import { ModuleMap, ModuleMapScope, readModuleMap } from '../module-topology';
 import * as naming from '../naming';
 import { jsii } from '../util';
 import { getAllScopes } from '../util/db';
@@ -24,6 +24,21 @@ export interface GenerateAllOptions {
    * @default false
    */
   readonly autoGenerateSuffixes?: boolean;
+
+  /**
+   * Whether the modules being generated are considered stable
+   *
+   * @default true
+   */
+  readonly isStable?: boolean;
+
+  /**
+   * If specified, only generate code for the service that corresponds to this module name.
+   * Takes precedence over `skippedServices`.
+   *
+   * @default - generate all modules
+   */
+  readonly singleModule?: string;
 }
 
 /**
@@ -37,18 +52,26 @@ export interface GenerateAllOptions {
  *
  * @param outPath The root directory to generate L1s in
  * @param alphaRootDir The root directory to generate grant modules for grants configured in alpha packages
- * @param param1  Options
  * @returns       A ModuleMap containing the ModuleDefinition and CFN scopes for each generated module.
  */
 export async function generateAll(
   outPath: string,
-  alphaRootDir: string,
-  { scopeMapPath, skippedServices }: GenerateAllOptions,
+  { scopeMapPath, skippedServices, isStable, singleModule }: GenerateAllOptions,
 ): Promise<ModuleMap> {
   const db = await loadPatchedSpec();
   const allScopes = getAllScopes(db, 'cloudFormationNamespace');
-  const scopes = skippedServices ? allScopes.filter((scope) => !skippedServices.includes(scope.namespace)) : allScopes;
-  const moduleMap = readModuleMap(scopeMapPath);
+
+  let scopes: ModuleMapScope[];
+  if (singleModule != null) {
+    scopes = allScopes.filter((scope) => {
+      const moduleName = naming.modulePartsFromNamespace(scope.namespace).moduleName;
+      return moduleName === singleModule;
+    });
+  } else {
+    scopes = skippedServices ? allScopes.filter((scope) => !skippedServices.includes(scope.namespace)) : allScopes;
+  }
+
+  const moduleMap = singleModule == null ? readModuleMap(scopeMapPath): {};
 
   // Make sure all scopes have their own dedicated package/namespace.
   // Adds new submodules for new namespaces.
@@ -82,15 +105,15 @@ export async function generateAll(
     moduleGenerationRequests,
     {
       outputPath: outPath,
-      alphaOutputPath: alphaRootDir,
       clearOutput: false,
+      isStable,
       builderProps: {
         inCdkLib: true,
         filePatterns: {
           resources: '%moduleName%/lib/%serviceShortName%.generated.ts',
           augmentations: '%moduleName%/lib/%serviceShortName%-augmentations.generated.ts',
           cannedMetrics: '%moduleName%/lib/%serviceShortName%-canned-metrics.generated.ts',
-          grants: '%moduleName%/lib/%serviceShortName%-grants.generated.ts',
+          grants: `${isStable ? '%moduleName%/' : ''}lib/%serviceShortName%-grants.generated.ts`,
         },
       },
     },

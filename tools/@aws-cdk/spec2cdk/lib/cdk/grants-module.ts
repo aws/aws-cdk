@@ -26,11 +26,11 @@ const $this = $E(expr.this_());
  */
 export class GrantsModule extends Module {
   public constructor(
-      private readonly service: Service,
-      private readonly db: SpecDatabase,
-      private readonly schema: GrantsFileSchema,
-      private readonly iamModulePath: string,
-      public readonly stable: boolean) {
+    private readonly service: Service,
+    private readonly db: SpecDatabase,
+    private readonly schema: GrantsFileSchema,
+    private readonly iamModulePath: string,
+    public readonly isStable: boolean) {
     super(`${service.shortName}.grants`);
   }
 
@@ -264,13 +264,14 @@ export class GrantsModule extends Module {
     }
 
     if (hasContent) {
-      if (this.stable) {
+      if (this.isStable) {
         new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`)
           .import(this, this.service.shortName, { fromLocation: `./${this.service.shortName}.generated` });
+        new ExternalModule('aws-cdk-lib/aws-iam').import(this, 'iam', { fromLocation: this.iamModulePath });
       } else {
         new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`).import(this, this.service.shortName);
+        new ExternalModule('aws-cdk-lib/aws-iam').import(this, 'iam');
       }
-      new ExternalModule('aws-cdk-lib/aws-iam').import(this, 'iam', { fromLocation: this.iamModulePath });
     }
   }
 }

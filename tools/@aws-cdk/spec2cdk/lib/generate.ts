@@ -58,11 +58,6 @@ export interface GenerateOptions<Builder extends LBC>{
   readonly outputPath: string;
 
   /**
-   * Base path for generated alpha files
-   */
-  readonly alphaOutputPath?: string;
-
-  /**
    * Should the location be deleted before generating new files
    * @default false
    */
@@ -91,6 +86,13 @@ export interface GenerateOptions<Builder extends LBC>{
    * @default - load the patched spec db
    */
   readonly db?: SpecDatabase;
+
+  /**
+   * Whether the modules being generated are considered stable
+   *
+   * @default true
+   */
+  readonly isStable?: boolean;
 }
 
 export interface GenerateModuleMap {
@@ -196,6 +198,8 @@ async function generator<Builder extends LBC = typeof AwsCdkLibBuilder>(
   const servicesPerModule: Record<string, Service[]> = {};
   const resourcesPerModule: Record<string, Record<string, string>> = {};
 
+  const isStable = options.isStable ?? true;
+
   // Go through the module map
   log.info('Generating %i modules...', Object.keys(modules).length);
   for (const [moduleName, moduleOptions] of Object.entries(modules)) {
@@ -204,11 +208,14 @@ async function generator<Builder extends LBC = typeof AwsCdkLibBuilder>(
     for (const [req, s] of services) {
       log.debug(moduleName, s.name, 'ast');
 
+      const grantsConfig = grantsConfigForModule(moduleName, outputPath, isStable);
+      const grantsProps: GrantsProps | undefined = grantsConfig ? { config: grantsConfig, isStable } : undefined;
+
       const submod = ast.addService(s, {
         destinationSubmodule: moduleName,
         nameSuffix: req.suffix,
         deprecated: req.deprecated,
-        grantsProps: grantsPropsForModule(moduleName, outputPath, options.alphaOutputPath),
+        grantsProps,
       });
 
       servicesPerModule[moduleName] ??= [];
@@ -226,15 +233,14 @@ async function generator<Builder extends LBC = typeof AwsCdkLibBuilder>(
   const writer = new TsFileWriter(renderer);
 
   // Write all modules into their respective files
+  const writtenFileNames: string[] = [];
   for (const [fileName, module] of ast.modules.entries()) {
     if (!module.isEmpty()) {
-      // Decide the full path based on whether this is a stable or alpha module
-      // Stable modules go into `outputPath`, alpha modules into `alphaOutputPath` (with the "-alpha" suffix)
-      // At the moment, only GrantsModules can be alpha
-      const isStable = module instanceof GrantsModule ? module.stable : true;
-      const rootDir = isStable ? outputPath : options.alphaOutputPath ?? outputPath;
-      const fullPath = path.join(rootDir, isStable ? fileName : toAlphaPackage(fileName));
-      writer.write(module, fullPath);
+      const fullPath = path.join(outputPath, isStable ? fileName : toAlphaPackage(fileName));
+      if (isStable || module instanceof GrantsModule) {
+        writer.write(module, fullPath);
+        writtenFileNames.push(fileName);
+      }
     }
   }
 
@@ -245,17 +251,23 @@ async function generator<Builder extends LBC = typeof AwsCdkLibBuilder>(
   log.info('  Resources:    %i', Object.keys(allResources).length);
   log.timeEnd(timeLabel);
 
-  return {
-    modules: Object.fromEntries(
-      Object.keys(moduleOutputFiles).map((moduleName) => ([
-        moduleName,
-        {
-          outputFiles: Array.from(moduleOutputFiles[moduleName]).sort(),
-          resources: resourcesPerModule[moduleName],
-        },
-      ]),
-      )),
+  const output: GenerateOutput = {
+    modules: {},
   };
+
+  for (let moduleName of Object.keys(moduleOutputFiles)) {
+    const outputFiles = Array.from(moduleOutputFiles[moduleName])
+      .filter(fileName => writtenFileNames.includes(fileName))
+      .sort();
+    if (outputFiles.length > 0) {
+      output.modules[moduleName] = {
+        outputFiles,
+        resources: resourcesPerModule[moduleName],
+      };
+    }
+  }
+
+  return output;
 }
 
 function mergeObjects<T>(all: T, res: T) {
@@ -265,19 +277,10 @@ function mergeObjects<T>(all: T, res: T) {
   };
 }
 
-function grantsPropsForModule(moduleName: string, stablePath: string, alphaPath?: string): GrantsProps | undefined {
-  let stable = true;
-  let grantsFileLocation = path.join(stablePath, moduleName);
-  if (alphaPath != null) {
-    const alpha = path.join(alphaPath, `${moduleName}-alpha`);
-    if (fs.existsSync(path.join(alpha, 'grants.json'))) {
-      grantsFileLocation = alpha;
-      stable = false;
-    }
-  }
-
+function grantsConfigForModule(moduleName: string, modulePath: string, isStable: boolean): string | undefined {
+  const grantsFileLocation = isStable ? path.join(modulePath, moduleName) : path.join(modulePath, '..', `${moduleName}-alpha`);
   const config = readGrantsConfig(grantsFileLocation);
-  return config == null ? undefined : { stable, config };
+  return config == null ? undefined : config;
 }
 
 function readGrantsConfig(dir: string): string | undefined {
