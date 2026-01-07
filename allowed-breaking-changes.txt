@@ -4009,8 +4009,16 @@ weakened:aws-cdk-lib.aws_dynamodb.SchemaOptions
 # property unconfiguredBehavesLike is deprecated and had its type changed
 strengthened:aws-cdk-lib.cloud_assembly_schema.FeatureFlag
 weakened:aws-cdk-lib.cloud_assembly_schema.FeatureFlag
+
+# These shouldn't have been return values to begin with, but now that they're exposed we need the ability to change them
+weakened:aws-cdk-lib.aws_backup.BackupPlanCopyActionProps
+weakened:aws-cdk-lib.aws_backup.BackupPlanRuleProps
+
 # See https://github.com/aws/aws-cdk/discussions/32609
 removed:aws-cdk-lib.aws_ecs.AsgCapacityProvider.canContainersAccessInstanceRole
 removed:aws-cdk-lib.aws_ecs.AddAutoScalingGroupCapacityOptions.canContainersAccessInstanceRole
 removed:aws-cdk-lib.aws_ecs.AddCapacityOptions.canContainersAccessInstanceRole
 removed:aws-cdk-lib.aws_ecs.AsgCapacityProviderProps.canContainersAccessInstanceRole
+
+# Exposed struct with a ref interface
+weakened:aws-cdk-lib.aws_batch.OrderedComputeEnvironment
