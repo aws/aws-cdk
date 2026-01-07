@@ -1,6 +1,6 @@
 import { Node, Construct } from 'constructs';
 import { EventPattern } from './event-pattern';
-import { CfnEventBusPolicy, CfnRule, IEventBusRef } from './events.generated';
+import { CfnEventBusPolicy, CfnRule, IEventBusRef, RuleReference } from './events.generated';
 import { EventCommonOptions } from './on-event-options';
 import { IRule } from './rule-ref';
 import { Schedule } from './schedule';
@@ -87,7 +87,7 @@ export class Rule extends Resource implements IRule {
       public ruleArn = eventRuleArn;
       public ruleName = parts.resourceName || '';
 
-      public get ruleRef() {
+      public get ruleRef(): RuleReference {
         return {
           ruleArn: this.ruleArn,
         };
@@ -101,7 +101,7 @@ export class Rule extends Resource implements IRule {
   public readonly ruleArn: string;
   public readonly ruleName: string;
 
-  public get ruleRef() {
+  public get ruleRef(): RuleReference {
     return {
       ruleArn: this.ruleArn,
     };

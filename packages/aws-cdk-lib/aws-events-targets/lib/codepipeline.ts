@@ -25,7 +25,7 @@ export class CodePipeline implements events.IRuleTarget {
     private readonly options: CodePipelineTargetOptions = {}) {
   }
 
-  public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(_rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     const role = this.options.eventRole || singletonEventRole(this.pipeline);
     role.addToPrincipalPolicy(new iam.PolicyStatement({
       resources: [this.pipeline.pipelineArn],

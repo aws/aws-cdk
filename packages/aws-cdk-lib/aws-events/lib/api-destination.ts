@@ -5,7 +5,7 @@ import { toIConnection } from './private/ref-utils';
 import { ArnFormat, IResource, Resource, Stack, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IApiDestinationRef } from '../../interfaces/generated/aws-events-interfaces.generated';
+import { ApiDestinationReference, IApiDestinationRef } from '../../interfaces/generated/aws-events-interfaces.generated';
 
 /**
  * The event API Destination properties
@@ -134,7 +134,7 @@ export class ApiDestination extends Resource implements IApiDestination {
         return toIConnection(this._importConnection);
       }
 
-      public get apiDestinationRef() {
+      public get apiDestinationRef(): ApiDestinationReference {
         return {
           apiDestinationName: this.apiDestinationName,
           apiDestinationArn: this.apiDestinationArn,
@@ -174,7 +174,7 @@ export class ApiDestination extends Resource implements IApiDestination {
     return toIConnection(this._connection);
   }
 
-  public get apiDestinationRef() {
+  public get apiDestinationRef(): ApiDestinationReference {
     return {
       apiDestinationName: this.apiDestinationName,
       apiDestinationArn: this.apiDestinationArn,

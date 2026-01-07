@@ -3,7 +3,7 @@ import { CfnConnection } from './events.generated';
 import { IResource, Resource, Stack, SecretValue, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IConnectionRef } from '../../interfaces/generated/aws-events-interfaces.generated';
+import { ConnectionReference, IConnectionRef } from '../../interfaces/generated/aws-events-interfaces.generated';
 
 /**
  * An API Destination Connection
@@ -344,7 +344,7 @@ export class Connection extends Resource implements IConnection {
    */
   public readonly connectionSecretArn: string;
 
-  public get connectionRef() {
+  public get connectionRef(): ConnectionReference {
     return {
       connectionName: this.connectionName,
       connectionArn: this.connectionArn,
@@ -390,7 +390,7 @@ class ImportedConnection extends Resource {
   public readonly connectionName: string;
   public readonly connectionSecretArn: string;
 
-  public get connectionRef() {
+  public get connectionRef(): ConnectionReference {
     return {
       connectionName: this.connectionName,
       connectionArn: this.connectionArn,
