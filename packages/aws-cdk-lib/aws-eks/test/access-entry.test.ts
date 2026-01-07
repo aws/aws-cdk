@@ -1,6 +1,6 @@
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Template } from '../../assertions';
-import { App, Stack } from '../../core';
+import { App, RemovalPolicy, Stack } from '../../core';
 import {
   AccessEntry, AccessEntryProps, AccessEntryType,
   AccessScopeType, IAccessPolicy, Cluster, AccessPolicy, KubernetesVersion, AuthenticationMode,
@@ -135,5 +135,20 @@ describe('AccessEntry', () => {
     expect(importedAccessEntry.accessEntryArn).toEqual(importedAccessEntryArn);
 
     Template.fromStack(stack).resourceCountIs('AWS::EKS::AccessEntry', 0);
+  });
+
+  test('supports custom removal policy', () => {
+    // WHEN
+    new AccessEntry(stack, 'AccessEntry', {
+      cluster,
+      accessPolicies: mockAccessPolicies,
+      principal: 'mock-principal-arn',
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::EKS::AccessEntry', {
+      DeletionPolicy: 'Retain',
+    });
   });
 });
