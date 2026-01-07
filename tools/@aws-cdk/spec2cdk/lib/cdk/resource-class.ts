@@ -478,7 +478,7 @@ export class ResourceClass extends ClassType implements Referenceable {
    * ```
    *    public static arnForRestApi(resource: IRestApiRef): string {
    *       return new cfn_parse.TemplateString("arn:${Partition}:apigateway:${Region}::/restapis/${RestApiId}").interpolate({
-   *         "Partition": Aws.PARTITION, // Always, no point in referencing an ARN outside our own partition
+   *         "Partition": cdk.Stack.of(resource).partition, // Always same partition as our current one, but might be beautified by Stack
    *         "Region": resource.env.region,
    *         "Account": resource.env.account,
    *         "RestApiId": resource.restApiRef.restApiId
