@@ -202,6 +202,13 @@ export abstract class AppSyncBaseDataSource extends Construct {
   protected get api(): IApi {
     return toIApi(this._api);
   }
+
+  /**
+   * Set the API this data source is attached to
+   */
+  protected set api(api: IApi) {
+    this._api = api;
+  }
 }
 
 /**
