@@ -17,7 +17,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { Gateway } from '../../../lib';
+import { Gateway, GatewayInterceptor, InterceptionPoint } from '../../../lib';
 import { GatewayExceptionLevel } from '../../../lib/gateway/gateway-base';
 import { GatewayAuthorizer } from '../../../lib/gateway/inbound-auth/authorizer';
 import { ApiKeyCredentialLocation } from '../../../lib/gateway/outbound-auth/api-key';
@@ -2305,5 +2305,299 @@ describe('MCP Server Target Configuration Tests', () => {
 
     expect(target.targetType).toBe('MCP_SERVER');
     expect(target.credentialProviderConfigurations).toHaveLength(1);
+  });
+});
+
+describe('Gateway Interceptor Tests', () => {
+  let stack: cdk.Stack;
+  let lambdaFunction: lambda.Function;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    lambdaFunction = new lambda.Function(stack, 'InterceptorFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => {}'),
+    });
+  });
+
+  test('Should create Gateway with request interceptor', () => {
+    const requestInterceptor = GatewayInterceptor.lambda({
+      lambdaFunction,
+      interceptionPoints: [InterceptionPoint.REQUEST],
+    });
+
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.usingAwsIam(),
+      interceptorConfigurations: [requestInterceptor],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: [
+        {
+          InterceptionPoints: ['REQUEST'],
+          Interceptor: {
+            Lambda: {
+              Arn: Match.anyValue(),
+            },
+          },
+        },
+      ],
+    });
+  });
+
+  test('Should create Gateway with response interceptor', () => {
+    const responseInterceptor = GatewayInterceptor.lambda({
+      lambdaFunction,
+      interceptionPoints: [InterceptionPoint.RESPONSE],
+    });
+
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.usingAwsIam(),
+      interceptorConfigurations: [responseInterceptor],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: [
+        {
+          InterceptionPoints: ['RESPONSE'],
+          Interceptor: {
+            Lambda: {
+              Arn: Match.anyValue(),
+            },
+          },
+        },
+      ],
+    });
+  });
+
+  test('Should create Gateway with both request and response interceptors', () => {
+    const requestInterceptor = GatewayInterceptor.lambda({
+      lambdaFunction,
+      interceptionPoints: [InterceptionPoint.REQUEST],
+    });
+
+    const anotherLambda = new lambda.Function(stack, 'ResponseInterceptorFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => {}'),
+    });
+
+    const responseInterceptor = GatewayInterceptor.lambda({
+      lambdaFunction: anotherLambda,
+      interceptionPoints: [InterceptionPoint.RESPONSE],
+    });
+
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.usingAwsIam(),
+      interceptorConfigurations: [requestInterceptor, responseInterceptor],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: Match.arrayWith([
+        Match.objectLike({
+          InterceptionPoints: ['REQUEST'],
+        }),
+        Match.objectLike({
+          InterceptionPoints: ['RESPONSE'],
+        }),
+      ]),
+    });
+  });
+
+  test('Should create Gateway with interceptor having both REQUEST and RESPONSE points', () => {
+    const interceptor = GatewayInterceptor.lambda({
+      lambdaFunction,
+      interceptionPoints: [InterceptionPoint.REQUEST, InterceptionPoint.RESPONSE],
+    });
+
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.usingAwsIam(),
+      interceptorConfigurations: [interceptor],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: [
+        {
+          InterceptionPoints: ['REQUEST', 'RESPONSE'],
+          Interceptor: {
+            Lambda: {
+              Arn: Match.anyValue(),
+            },
+          },
+        },
+      ],
+    });
+  });
+
+  test('Should create Gateway with interceptor with passRequestHeaders enabled', () => {
+    const interceptor = GatewayInterceptor.lambda({
+      lambdaFunction,
+      interceptionPoints: [InterceptionPoint.REQUEST],
+      inputConfiguration: {
+        passRequestHeaders: true,
+      },
+    });
+
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.usingAwsIam(),
+      interceptorConfigurations: [interceptor],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: [
+        {
+          InterceptionPoints: ['REQUEST'],
+          Interceptor: {
+            Lambda: {
+              Arn: Match.anyValue(),
+            },
+          },
+          InputConfiguration: {
+            PassRequestHeaders: true,
+          },
+        },
+      ],
+    });
+  });
+
+  test('Should create Gateway with interceptor with passRequestHeaders disabled', () => {
+    const interceptor = GatewayInterceptor.lambda({
+      lambdaFunction,
+      interceptionPoints: [InterceptionPoint.REQUEST],
+      inputConfiguration: {
+        passRequestHeaders: false,
+      },
+    });
+
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.usingAwsIam(),
+      interceptorConfigurations: [interceptor],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: [
+        {
+          InterceptionPoints: ['REQUEST'],
+          Interceptor: {
+            Lambda: {
+              Arn: Match.anyValue(),
+            },
+          },
+          InputConfiguration: {
+            PassRequestHeaders: false,
+          },
+        },
+      ],
+    });
+  });
+
+  test('Should grant Lambda invoke permissions to gateway role', () => {
+    const interceptor = GatewayInterceptor.lambda({
+      lambdaFunction,
+      interceptionPoints: [InterceptionPoint.REQUEST],
+    });
+
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.usingAwsIam(),
+      interceptorConfigurations: [interceptor],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: Match.anyValue(),
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should throw error for duplicate interception points across configurations', () => {
+    const interceptor1 = GatewayInterceptor.lambda({
+      lambdaFunction,
+      interceptionPoints: [InterceptionPoint.REQUEST],
+    });
+
+    const lambda2 = new lambda.Function(stack, 'Lambda2', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => {}'),
+    });
+
+    const interceptor2 = GatewayInterceptor.lambda({
+      lambdaFunction: lambda2,
+      interceptionPoints: [InterceptionPoint.REQUEST],
+    });
+
+    expect(() => {
+      new Gateway(stack, 'TestGateway', {
+        gatewayName: 'test-gateway',
+        authorizerConfiguration: GatewayAuthorizer.usingAwsIam(),
+        interceptorConfigurations: [interceptor1, interceptor2],
+      });
+    }).toThrow(/Duplicate interception point 'REQUEST'/);
+  });
+
+  test('Should throw error for duplicate interception points in single interceptor', () => {
+    expect(() => {
+      GatewayInterceptor.lambda({
+        lambdaFunction,
+        interceptionPoints: [InterceptionPoint.REQUEST, InterceptionPoint.REQUEST],
+      });
+    }).toThrow(/duplicate/i);
+  });
+
+  test('Should not include inputConfiguration when not provided', () => {
+    const interceptor = GatewayInterceptor.lambda({
+      lambdaFunction,
+      interceptionPoints: [InterceptionPoint.REQUEST],
+    });
+
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.usingAwsIam(),
+      interceptorConfigurations: [interceptor],
+    });
+
+    const template = Template.fromStack(stack);
+    const resources = template.findResources('AWS::BedrockAgentCore::Gateway');
+    const gatewayProps = Object.values(resources)[0].Properties;
+    const interceptorConfig = gatewayProps.InterceptorConfigurations[0];
+
+    expect(interceptorConfig.InputConfiguration).toBeUndefined();
+  });
+
+  test('Should create Gateway without interceptors by default', () => {
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      authorizerConfiguration: GatewayAuthorizer.usingAwsIam(),
+    });
+
+    const template = Template.fromStack(stack);
+    const resources = template.findResources('AWS::BedrockAgentCore::Gateway');
+    const gatewayProps = Object.values(resources)[0].Properties;
+
+    expect(gatewayProps.InterceptorConfigurations).toBeUndefined();
   });
 });

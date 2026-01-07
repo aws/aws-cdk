@@ -10,6 +10,7 @@ import { Construct } from 'constructs';
 // Internal imports
 import { GatewayBase, GatewayExceptionLevel, IGateway } from './gateway-base';
 import { GatewayAuthorizer, IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
+import { IGatewayInterceptorConfig, InterceptionPoint } from './interceptor';
 import { ICredentialProviderConfig } from './outbound-auth/credential-provider';
 import { GATEWAY_ASSUME_ROLE, GATEWAY_KMS_KEY_PERMS } from './perms';
 import { IGatewayProtocolConfig, McpGatewaySearchType, McpProtocolConfiguration, MCPProtocolVersion } from './protocol';
@@ -213,6 +214,19 @@ export interface GatewayProps {
    * @default - No tags
    */
   readonly tags?: { [key: string]: string };
+
+  /**
+   * Interceptor configurations for the gateway.
+   *
+   * Interceptors allow custom code execution during each gateway invocation,
+   * useful for access control, request/response transformation, and custom authorization.
+   *
+   * A gateway can have at most 2 interceptor configurations (one for REQUEST and one for RESPONSE).
+   *
+   * @default - No interceptors
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-interceptors.html
+   */
+  readonly interceptorConfigurations?: IGatewayInterceptorConfig[];
 }
 
 /**
@@ -380,6 +394,11 @@ export class Gateway extends GatewayBase {
   public readonly tags?: { [key: string]: string };
 
   /**
+   * The interceptor configurations for the gateway
+   */
+  public readonly interceptorConfigurations?: IGatewayInterceptorConfig[];
+
+  /**
    * The Cognito User Pool created for the gateway (if using default Cognito authorizer)
    */
   public userPool?: cognito.IUserPool;
@@ -418,6 +437,16 @@ export class Gateway extends GatewayBase {
 
     this.tags = props.tags ?? {};
 
+    // Interceptor configurations
+    this.interceptorConfigurations = props.interceptorConfigurations;
+    if (this.interceptorConfigurations) {
+      this.validateInterceptorConfigurations(this.interceptorConfigurations);
+      // Grant Lambda invoke permissions for each interceptor
+      for (const interceptor of this.interceptorConfigurations) {
+        interceptor.lambdaFunction.grantInvoke(this.role);
+      }
+    }
+
     // ------------------------------------------------------
     // L1 Instantiation
     // ------------------------------------------------------
@@ -426,6 +455,7 @@ export class Gateway extends GatewayBase {
       authorizerType: this.authorizerConfiguration.authorizerType,
       description: this.description,
       exceptionLevel: this.exceptionLevel,
+      interceptorConfigurations: this.interceptorConfigurations?.map(ic => ic._render()),
       kmsKeyArn: this.kmsKey?.keyArn,
       name: this.name,
       protocolConfiguration: this.protocolConfiguration._render(),
@@ -664,6 +694,30 @@ export class Gateway extends GatewayBase {
 
     if (errors.length > 0) {
       throw new ValidationError(errors.join('\n'));
+    }
+  }
+
+  /**
+   * Validates the interceptor configurations
+   * @param interceptorConfigurations The interceptor configurations to validate
+   * @throws Error if validation fails
+   * @internal
+   */
+  private validateInterceptorConfigurations(interceptorConfigurations: IGatewayInterceptorConfig[]): void {
+    // Check for duplicate interception points across all configurations
+    // Each interceptor configuration can have multiple interception points,
+    // but each interception point (REQUEST or RESPONSE) should only appear once across all configurations
+    const allInterceptionPoints: InterceptionPoint[] = [];
+    for (const config of interceptorConfigurations) {
+      const rendered = config._render();
+      for (const point of rendered.interceptionPoints as InterceptionPoint[]) {
+        if (allInterceptionPoints.includes(point)) {
+          throw new ValidationError(
+            `Duplicate interception point '${point}' found. Each interception point can only be configured once across all interceptor configurations.`,
+          );
+        }
+        allInterceptionPoints.push(point);
+      }
     }
   }
 

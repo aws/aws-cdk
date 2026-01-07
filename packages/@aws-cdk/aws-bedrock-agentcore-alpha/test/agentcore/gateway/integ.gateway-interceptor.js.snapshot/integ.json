@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "GatewayInterceptorTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-agentcore-gateway-interceptor"
+      ],
+      "assertionStack": "GatewayInterceptorTest/DefaultTest/DeployAssert",
+      "assertionStackName": "GatewayInterceptorTestDefaultTestDeployAssert9F97CEF0"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
