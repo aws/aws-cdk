@@ -141,7 +141,7 @@ describe('arnForResource is generated', () => {
       expect(rendered).toMatchInlineSnapshot(`
 "public static arnForResource(resource: IResourceRef): string {
   return new cfn_parse.TemplateString("arn:\${Partition}:some:\${Region}:\${Account}:resource/\${ResourceId}").interpolate({
-    Partition: cdk.Aws.PARTITION,
+    Partition: cdk.Stack.of(resource).partition,
     Region: resource.env.region,
     Account: resource.env.account,
     ResourceId: resource.resourceRef.resourceId
@@ -169,7 +169,7 @@ describe('arnForResource is generated', () => {
       expect(rendered).toMatchInlineSnapshot(`
 "public static arnForResource(resource: IResourceRef): string {
   return new cfn_parse.TemplateString("arn:\${Partition}:some:\${Region}:\${Account}:resource/\${Team}").interpolate({
-    Partition: cdk.Aws.PARTITION,
+    Partition: cdk.Stack.of(resource).partition,
     Region: resource.env.region,
     Account: resource.env.account,
     Team: resource.resourceRef.team
@@ -206,7 +206,7 @@ describe('arnForResource is generated', () => {
       expect(rendered).toMatchInlineSnapshot(`
 "public static arnForResource(resource: IResourceRef): string {
   return new cfn_parse.TemplateString("arn:\${Partition}:sagemaker:\${Region}:\${Account}:workteam/\${WorkteamName}").interpolate({
-    Partition: cdk.Aws.PARTITION,
+    Partition: cdk.Stack.of(resource).partition,
     Region: resource.env.region,
     Account: resource.env.account,
     WorkteamName: resource.resourceRef.workteamName

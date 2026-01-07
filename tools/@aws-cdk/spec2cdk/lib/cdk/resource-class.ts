@@ -525,7 +525,7 @@ export class ResourceClass extends ClassType implements Referenceable {
       const resourceIdentifier = $E(expr.ident('resource'));
 
       const interpolationVars = {
-        Partition: CDK_CORE.Aws.PARTITION,
+        Partition: $T(CDK_CORE.Stack).of(resourceIdentifier).prop('partition'),
         Region: resourceIdentifier.env.region,
         Account: resourceIdentifier.env.account,
         ...mapValues(this.decider.resourceReference.arnVariables!, (propName) => resourceIdentifier[refAttributeName][propName]),
