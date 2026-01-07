@@ -17,8 +17,8 @@ import { Construct } from 'constructs';
  * To update the snapshots, run `yarn integ aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack --update-on-failed --dry-run`.
  *
  * To deploy this stack manually, you need to do the following:
- * 1. change the account id in stack from '123456789012' to your local account id.
- * 2. update imported SFN account id from '123456789012' to your local account id.
+ * 1. change the account id in stack from '012345678901' to your local account id.
+ * 2. update imported SFN account id from '012345678901' to your local account id.
  * 3. make sure you've bootstrapped 'us-west-2' by running 'cdk bootstrap aws://<your-aws-account-id>/us-west-2'
  * 4. deploy a state machine resource in 'us-west-2' and name the state machine 'MyStateMachine'
  * 5. update GitHub source section to use the valid OAuth token.
@@ -40,7 +40,7 @@ export class PipelineCrossRegionStack extends cdk.NestedStack {
     const machine = cdk.Arn.format({
       service: 'states',
       resource: 'stateMachine',
-      account: cdk.Token.asString('123456789012'),
+      account: cdk.Token.asString('012345678901'),
       resourceName: 'MyStateMachine',
       region: 'us-west-2',
     }, this);
@@ -90,7 +90,7 @@ const app = new cdk.App({
 });
 const testCase = new MainStack(app, 'code-pipeline-nested-stack', {
   env: {
-    account: '123456789012',
+    account: '012345678901',
     region: 'us-east-1',
   },
 });

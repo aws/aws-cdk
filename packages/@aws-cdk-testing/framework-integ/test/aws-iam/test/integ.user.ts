@@ -12,17 +12,17 @@ new User(stack, 'MyUser', {
   passwordResetRequired: true,
 });
 
-const userImportedByArn = User.fromUserArn(stack, 'ImportedUserByArn', 'arn:aws:iam::123456789012:user/rossrhodes');
-const userImportedByArnWithPath = User.fromUserArn(stack, 'ImportedUserByArnPath', 'arn:aws:iam::123456789012:user/path/johndoe');
-const userImportedByArnPathMultiple = User.fromUserArn(stack, 'ImportedUserByArnPathMultiple', 'arn:aws:iam::123456789012:user/p/a/t/h/johndoe');
+const userImportedByArn = User.fromUserArn(stack, 'ImportedUserByArn', 'arn:aws:iam::012345678901:user/rossrhodes');
+const userImportedByArnWithPath = User.fromUserArn(stack, 'ImportedUserByArnPath', 'arn:aws:iam::012345678901:user/path/johndoe');
+const userImportedByArnPathMultiple = User.fromUserArn(stack, 'ImportedUserByArnPathMultiple', 'arn:aws:iam::012345678901:user/p/a/t/h/johndoe');
 const userImportedByAttributes = User.fromUserAttributes(stack, 'ImportedUserByAttributes', {
-  userArn: 'arn:aws:iam::123456789012:user/johndoe',
+  userArn: 'arn:aws:iam::012345678901:user/johndoe',
 });
 const userImportedByAttributesPath = User.fromUserAttributes(stack, 'ImportedUserByAttributesPath', {
-  userArn: 'arn:aws:iam::123456789012:user/path/johndoe',
+  userArn: 'arn:aws:iam::012345678901:user/path/johndoe',
 });
 const userImportedByAttributesPathMultiple = User.fromUserAttributes(stack, 'ImportedUserByAttributesPathMultiple', {
-  userArn: 'arn:aws:iam::123456789012:user/p/a/t/h/johndoe',
+  userArn: 'arn:aws:iam::012345678901:user/p/a/t/h/johndoe',
 });
 const userImportedByName = User.fromUserName(stack, 'ImportedUserByName', 'janedoe');
 

@@ -55,8 +55,8 @@ const stackLookup = new IntegTestCaseStack(app, 'aws-cdk-elbv2-integ-StackUnderT
 
 // Load Balancer
 const lbByHardcodedArn = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stackLookup, 'NlbByHardcodedArn', {
-  loadBalancerArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/network/my-load-balancer/50dc6c495c0c9188',
-  loadBalancerSecurityGroups: ['sg-123456789012'],
+  loadBalancerArn: 'arn:aws:elasticloadbalancing:us-west-2:012345678901:loadbalancer/network/my-load-balancer/50dc6c495c0c9188',
+  loadBalancerSecurityGroups: ['sg-012345678901'],
 });
 lbByHardcodedArn.metrics.activeFlowCount().createAlarm(stackLookup, 'NlbByHardcodedArn_AlarmFlowCount', {
   evaluationPeriods: 1,
@@ -87,8 +87,8 @@ lbByCfnOutputsFromAnotherStackWithinCdk.connections.allowFromAnyIpv4(ec2.Port.tc
 // Target Group
 
 const tgByHardcodedArn = elbv2.NetworkTargetGroup.fromTargetGroupAttributes(stackLookup, 'TgByHardcodedArn', {
-  targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-target-group/50dc6c495c0c9188',
-  loadBalancerArns: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/net/my-load-balancer/50dc6c495c0c9188',
+  targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:012345678901:targetgroup/my-target-group/50dc6c495c0c9188',
+  loadBalancerArns: 'arn:aws:elasticloadbalancing:us-west-2:012345678901:loadbalancer/net/my-load-balancer/50dc6c495c0c9188',
 });
 tgByHardcodedArn.metrics.healthyHostCount().createAlarm(stackLookup, 'TgByHardcodedArn_HealthyHostCount', {
   evaluationPeriods: 1,

@@ -15,7 +15,7 @@ class SearchExpressionStack extends cdk.Stack {
       label: 'Custom Lambda Duration',
       color: '#e377c2',
       period: cdk.Duration.minutes(10),
-      searchAccount: '123456789012',
+      searchAccount: '012345678901',
       searchRegion: 'us-west-2',
     });
 
@@ -24,7 +24,7 @@ class SearchExpressionStack extends cdk.Stack {
       label: 'Cross-Account Cross-Region S3',
       color: '#9467bd',
       period: cdk.Duration.hours(1),
-      searchAccount: '123456789012',
+      searchAccount: '012345678901',
       searchRegion: 'ap-southeast-1',
     });
 

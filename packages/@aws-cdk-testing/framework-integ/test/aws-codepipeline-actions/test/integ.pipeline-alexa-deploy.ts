@@ -37,7 +37,7 @@ const deployStage = {
       clientId: 'clientId',
       clientSecret: SecretValue.unsafePlainText('clientSecret'),
       refreshToken: SecretValue.unsafePlainText('refreshToken'),
-      skillId: 'amzn1.ask.skill.12345678-1234-1234-1234-123456789012',
+      skillId: 'amzn1.ask.skill.12345678-1234-1234-1234-012345678901',
     }),
   ],
 };

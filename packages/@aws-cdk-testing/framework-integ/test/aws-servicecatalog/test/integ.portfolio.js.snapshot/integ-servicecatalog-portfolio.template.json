@@ -38,10 +38,10 @@
   "TestPortfolio4AC794EB": {
    "Type": "AWS::ServiceCatalog::Portfolio",
    "Properties": {
-    "DisplayName": "TestPortfolio",
-    "ProviderName": "TestProvider",
     "AcceptLanguage": "en",
-    "Description": "This is our Service Catalog Portfolio"
+    "Description": "This is our Service Catalog Portfolio",
+    "DisplayName": "TestPortfolio",
+    "ProviderName": "TestProvider"
    }
   },
   "TestPortfolioPortolioPrincipalAssociation20e1afa20ac27E1A060D": {
@@ -107,10 +107,10 @@
     }
    }
   },
-  "TestPortfolioPortfolioSharebf5b82f042508F035880": {
+  "TestPortfolioPortfolioSharec7cf52f26ec98413450D": {
    "Type": "AWS::ServiceCatalog::PortfolioShare",
    "Properties": {
-    "AccountId": "123456789012",
+    "AccountId": "012345678901",
     "PortfolioId": {
      "Ref": "TestPortfolio4AC794EB"
     }
@@ -164,6 +164,8 @@
   "TestPortfolioLaunchNotificationConstrainta9675fc4d6aa995BF1B9": {
    "Type": "AWS::ServiceCatalog::LaunchNotificationConstraint",
    "Properties": {
+    "AcceptLanguage": "en",
+    "Description": "special topic description",
     "NotificationArns": [
      {
       "Ref": "specialTopic7664DE4C"
@@ -174,9 +176,7 @@
     },
     "ProductId": {
      "Ref": "TestProduct7606930B"
-    },
-    "AcceptLanguage": "en",
-    "Description": "special topic description"
+    }
    },
    "DependsOn": [
     "TestPortfolioPortfolioProductAssociationa0185761d231B0D998A7"
@@ -220,25 +220,25 @@
   "TagOptions5f31c54ba705F110F743": {
    "Type": "AWS::ServiceCatalog::TagOption",
    "Properties": {
+    "Active": true,
     "Key": "key1",
-    "Value": "value1",
-    "Active": true
+    "Value": "value1"
    }
   },
   "TagOptions8d263919cebb6764AC10": {
    "Type": "AWS::ServiceCatalog::TagOption",
    "Properties": {
+    "Active": true,
     "Key": "key1",
-    "Value": "value2",
-    "Active": true
+    "Value": "value2"
    }
   },
   "TagOptionsa260cbbd99c416C40F73": {
    "Type": "AWS::ServiceCatalog::TagOption",
    "Properties": {
+    "Active": true,
     "Key": "key2",
-    "Value": "value1",
-    "Active": true
+    "Value": "value1"
    }
   },
   "TestProduct7606930B": {

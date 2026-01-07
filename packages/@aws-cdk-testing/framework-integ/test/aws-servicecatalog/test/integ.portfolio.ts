@@ -30,7 +30,7 @@ const tagOptions = new servicecatalog.TagOptions(stack, 'TagOptions', {
 });
 portfolio.associateTagOptions(tagOptions);
 
-portfolio.shareWithAccount('123456789012');
+portfolio.shareWithAccount('012345678901');
 
 const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
   productName: 'testProduct',

@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "56b431a589b8a74bdc7a2a9975fd68258403568faf1ff6045e975662c8ed9400": {
+      "displayName": "cross-region-support-us-west-2 Template",
+      "source": {
+        "path": "cross-region-stack-012345678901_us-west-2.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "012345678901-us-west-2-693b132b": {
+          "bucketName": "cdk-hnb659fds-assets-012345678901-us-west-2",
+          "objectKey": "56b431a589b8a74bdc7a2a9975fd68258403568faf1ff6045e975662c8ed9400.json",
+          "region": "us-west-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::012345678901:role/cdk-hnb659fds-file-publishing-role-012345678901-us-west-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

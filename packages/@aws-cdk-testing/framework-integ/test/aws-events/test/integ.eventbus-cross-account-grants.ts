@@ -19,7 +19,7 @@ How to run this integ test:
  - before you commit, set both accounts to dummy values, run integ test in dry run mode, and then push the snapshot.
 */
 
-const account = process.env.CDK_INTEG_ACCOUNT || '123456789012';
+const account = process.env.CDK_INTEG_ACCOUNT || '012345678901';
 
 // As the integ-runner doesn't provide a default cross account, we make our own.
 const crossAccount = process.env.CDK_INTEG_CROSS_ACCOUNT || '345678901234';

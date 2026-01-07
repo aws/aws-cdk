@@ -29,7 +29,7 @@ const app = new App();
 
 const stack = new Stack(app, 'aws-cdk-mediaconvert-create-job-test-stack');
 
-const mediaConvertRole = iam.Role.fromRoleArn(stack, 'MediaConvertRole', 'arn:aws:iam::123456789012:role/MediaConvertRole');
+const mediaConvertRole = iam.Role.fromRoleArn(stack, 'MediaConvertRole', 'arn:aws:iam::012345678901:role/MediaConvertRole');
 
 const step = new MediaConvertCreateJob(stack, 'MediaConvertCreateJob', {
   createJobRequest: {

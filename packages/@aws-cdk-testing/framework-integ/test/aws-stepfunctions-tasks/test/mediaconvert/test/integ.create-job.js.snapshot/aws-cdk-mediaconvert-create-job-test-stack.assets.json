@@ -1,15 +1,16 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "files": {
-    "9e07e5cefbcab2a574b61d0f494491605c22eb68b448e7ef08793a25349fd211": {
+    "b7fbec6fd69c3f9e2b37a32fbd5389d78dea34d40456b6ffe52daa4215d4c284": {
+      "displayName": "aws-cdk-mediaconvert-create-job-test-stack Template",
       "source": {
         "path": "aws-cdk-mediaconvert-create-job-test-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-ccffc22f": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9e07e5cefbcab2a574b61d0f494491605c22eb68b448e7ef08793a25349fd211.json",
+          "objectKey": "b7fbec6fd69c3f9e2b37a32fbd5389d78dea34d40456b6ffe52daa4215d4c284.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -459,7 +459,7 @@
    "Type": "AWS::EC2::VPCEndpointServicePermissions",
    "Properties": {
     "AllowedPrincipals": [
-     "arn:aws:iam::123456789012:root",
+     "arn:aws:iam::012345678901:root",
      "ec2.amazonaws.com"
     ],
     "ServiceId": {

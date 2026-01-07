@@ -6,7 +6,7 @@
     "CidrIp": "0.0.0.0/0",
     "Description": "from 0.0.0.0/0:443",
     "FromPort": 443,
-    "GroupId": "sg-123456789012",
+    "GroupId": "sg-012345678901",
     "IpProtocol": "tcp",
     "ToPort": 443
    }

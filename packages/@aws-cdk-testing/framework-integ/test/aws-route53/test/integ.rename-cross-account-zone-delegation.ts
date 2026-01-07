@@ -10,7 +10,7 @@ interface ChildStacksProps extends cdk.StackProps {
 
 const app = new cdk.App();
 
-const account = process.env.CDK_INTEG_ACCOUNT || '123456789012'; // this account should NOT have af-south-1 enabled
+const account = process.env.CDK_INTEG_ACCOUNT || '012345678901'; // this account should NOT have af-south-1 enabled
 
 // As the integ-runner doesnt provide a default cross account, we make our own.
 const crossAccount = process.env.CDK_INTEG_CROSS_ACCOUNT || '234567890123'; // this account MUST have af-south-1 enabled

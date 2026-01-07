@@ -1,6 +1,6 @@
 {
   "enableLookups": true,
-  "version": "36.0.0",
+  "version": "48.0.0",
   "testCases": {
     "elbv2-integ/DefaultTest": {
       "stacks": [],
@@ -18,5 +18,6 @@
       "assertionStack": "aws-cdk-elbv2-integ-StackUnderTest/aws-cdk-elbv2-integ-StackUnderTestTestCase/DeployAssert",
       "assertionStackName": "awscdkelbv2integStackUnderTestawscdkelbv2integStackUnderTestTestCaseDeployAssert8C1D9093"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }
