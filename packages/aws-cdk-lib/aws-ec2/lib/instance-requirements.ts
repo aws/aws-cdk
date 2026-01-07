@@ -47,6 +47,9 @@ export enum AcceleratorManufacturer {
 
   /** Xilinx (e.g., VU9P FPGA). */
   XILINX = 'xilinx',
+
+  /** Habana Labs(e.g, Gaudi accelerator). */
+  HABANA = 'habana',
 }
 
 /**
@@ -76,6 +79,21 @@ export enum AcceleratorName {
 
   /** Xilinx VU9P FPGA. */
   VU9P = 'vu9p',
+
+  /** NVIDIA A10G GPU. */
+  A10G = 'a10g',
+
+  /** NVIDIA H100 GPU. */
+  H100 = 'h100',
+
+  /** AWS Inferentia chips. */
+  INFERENTIA = 'inferentia',
+
+  /** NVIDIA GRID K520 GPU. */
+  K520 = 'k520',
+
+  /** NVIDIA T4G GPUs. */
+  T4G = 't4g',
 }
 
 /**

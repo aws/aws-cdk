@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ImagePipelineTest-AMI-DefaultParameters/DefaultTest": {
+      "stacks": [
+        "aws-cdk-imagebuilder-image-pipeline-ami-required-parameters"
+      ],
+      "assertionStack": "ImagePipelineTest-AMI-DefaultParameters/DefaultTest/DeployAssert",
+      "assertionStackName": "ImagePipelineTestAMIDefaultParametersDefaultTestDeployAssert1F773E9C"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

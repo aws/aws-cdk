@@ -7,7 +7,7 @@ import { App, Stack } from '../../../core';
 import { LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT } from '../../../cx-api';
 import { AwsCustomResource, AwsCustomResourcePolicy, Logging, PhysicalResourceId, PhysicalResourceIdReference } from '../../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 test('aws sdk js custom resource with onCreate and onDelete', () => {
   // GIVEN

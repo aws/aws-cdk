@@ -326,7 +326,7 @@ export class Alarm extends AlarmBase {
     } else {
       const datapoints = props.datapointsToAlarm || props.evaluationPeriods;
       this.annotation = {
-        // eslint-disable-next-line max-len
+
         label: `${props.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${datapoints} datapoints within ${describePeriod(props.evaluationPeriods * metricPeriod(props.metric).toSeconds())}`,
         value: props.threshold,
       };
@@ -599,7 +599,7 @@ export class Alarm extends AlarmBase {
  * of the Alarm. "Modern" metrics are in a `metrics[]` array in the alarm
  * and have more features, like metric math.
  */
-type AlarmMetricFields = Pick<CfnAlarmProps, 'dimensions' | 'namespace' | 'metricName' | 'period' | 'statistic' | 'extendedStatistic' | 'unit' | 'metrics'>
+type AlarmMetricFields = Pick<CfnAlarmProps, 'dimensions' | 'namespace' | 'metricName' | 'period' | 'statistic' | 'extendedStatistic' | 'unit' | 'metrics'>;
 
 /**
  * Check if a metric is already an anomaly detection metric
@@ -642,7 +642,10 @@ export class AnomalyDetectionAlarm extends Alarm {
     super(scope, id, {
       ...props,
       comparisonOperator: props.comparisonOperator ?? ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
-      metric: Metric.anomalyDetectionFor(props),
+      metric: Metric.anomalyDetectionFor({
+        ...props,
+        period: metricPeriod(props.metric), // AnomalyDetectionAlarmProps.period is deprecated - the guidance recommends encoding the period in the metric itself.
+      }),
       threshold: Alarm.ANOMALY_DETECTION_NO_THRESHOLD,
     });
     // Enhanced CDK Analytics Telemetry

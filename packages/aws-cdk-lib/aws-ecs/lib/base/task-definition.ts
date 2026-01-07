@@ -462,7 +462,8 @@ export class TaskDefinition extends TaskDefinitionBase {
       props.volumes.forEach(v => this.addVolume(v));
     }
 
-    this.networkMode = props.networkMode ?? (this.isFargateCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE);
+    this.networkMode = props.networkMode ??
+      (this.isFargateCompatible || this.isManagedInstancesCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE);
     if (this.isFargateCompatible && this.networkMode !== NetworkMode.AWS_VPC) {
       throw new ValidationError(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`, this);
     }
@@ -492,19 +493,29 @@ export class TaskDefinition extends TaskDefinitionBase {
         throw new ValidationError(`Managed Instances tasks can only have AwsVpc or Host network mode, got: ${this.networkMode}`, this);
       }
 
-      // Managed Instances require both CPU and memory specifications
-      if (!props.cpu || !props.memoryMiB) {
-        throw new ValidationError(`Managed Instances-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`, this);
-      }
-
       // Managed Instances don't support inference accelerators
       if (props.inferenceAccelerators && props.inferenceAccelerators.length > 0) {
         throw new ValidationError('Cannot use inference accelerators on tasks that run on Managed Instances', this);
       }
 
-      // Managed Instances don't support placement constraints
-      if (props.placementConstraints && props.placementConstraints.length > 0) {
-        throw new ValidationError('Cannot set placement constraints on tasks that run on Managed Instances', this);
+      // Managed Instances don't support ephemeral storage
+      if (props.ephemeralStorageGiB) {
+        throw new ValidationError('Ephemeral storage is not supported for tasks running on Managed Instances', this);
+      }
+
+      // Managed Instances don't support IPC mode
+      if (props.ipcMode) {
+        throw new ValidationError('IPC mode is not supported for tasks running on Managed Instances', this);
+      }
+
+      // Managed Instances don't support proxy configuration
+      if (props.proxyConfiguration) {
+        throw new ValidationError('Proxy configuration is not supported for tasks running on Managed Instances', this);
+      }
+
+      // Managed Instances only support LINUX operating system family
+      if (props.runtimePlatform?.operatingSystemFamily && !props.runtimePlatform.operatingSystemFamily.isLinux()) {
+        throw new ValidationError(`Managed Instances tasks only support LINUX operating system family, got: ${props.runtimePlatform.operatingSystemFamily._operatingSystemFamily}`, this);
       }
     }
 
@@ -556,7 +567,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       networkMode: this.renderNetworkMode(this.networkMode),
       placementConstraints: Lazy.any({
         produce: () =>
-          !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined,
+          !isFargateCompatible(this.compatibility) && !isManagedInstancesCompatible(this.compatibility) ? this.placementConstraints : undefined,
       }, { omitEmptyArray: true }),
       proxyConfiguration: props.proxyConfiguration ? props.proxyConfiguration.bind(this.stack, this) : undefined,
       cpu: props.cpu,
@@ -566,7 +577,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       ephemeralStorage: this.ephemeralStorageGiB ? {
         sizeInGiB: this.ephemeralStorageGiB,
       } : undefined,
-      runtimePlatform: this.isFargateCompatible && this.runtimePlatform ? {
+      runtimePlatform: (this.isFargateCompatible || this.isManagedInstancesCompatible) && this.runtimePlatform ? {
         cpuArchitecture: this.runtimePlatform?.cpuArchitecture?._cpuArchitecture,
         operatingSystemFamily: this.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily,
       } : undefined,
@@ -656,7 +667,6 @@ export class TaskDefinition extends TaskDefinitionBase {
     const targetContainerPort = options.containerPort || targetContainer.containerPort;
     const portMapping = targetContainer.findPortMapping(targetContainerPort, targetProtocol);
     if (portMapping === undefined) {
-      // eslint-disable-next-line max-len
       throw new ValidationError(`Container '${targetContainer}' has no mapping for port ${options.containerPort} and protocol ${targetProtocol}. Did you call "container.addPortMappings()"?`, this);
     }
     return {
@@ -751,6 +761,10 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private validateVolume(volume: Volume): void {
     if (volume.configuredAtLaunch !== true) {
+      // Validate DockerVolumeConfiguration is not used with Managed Instances
+      if (this.isManagedInstancesCompatible && volume.dockerVolumeConfiguration) {
+        throw new ValidationError(`DockerVolumeConfiguration is not supported for tasks running on Managed Instances. Volume '${volume.name}' cannot use dockerVolumeConfiguration`, this);
+      }
       return;
     }
 

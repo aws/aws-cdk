@@ -2,7 +2,7 @@ import { Match, Template } from '../../assertions';
 import { AnyPrincipal, PolicyStatement } from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
 import { ContextProvider, Fn, Stack } from '../../core';
-// eslint-disable-next-line max-len
+
 import {
   GatewayVpcEndpoint,
   GatewayVpcEndpointAwsService,
@@ -837,6 +837,57 @@ describe('vpc endpoint', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: `cn.com.amazonaws.cn-northwest-1.${name}`,
+      });
+    });
+
+    test('test vpc interface endpoint with eu.amazonaws prefix can be created correctly in eusc-de-east-1', () => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'eusc-de-east-1' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('ECR Endpoint', {
+        service: InterfaceVpcEndpointAwsService.ECR,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'eu.amazonaws.eusc-de-east-1.ecr.api',
+      });
+    });
+
+    test('test vpc interface endpoint without eu.amazonaws prefix can be created correctly in eusc-de-east-1', () => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'eusc-de-east-1' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('ECS Endpoint', {
+        service: InterfaceVpcEndpointAwsService.ECS,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.eusc-de-east-1.ecs',
+      });
+    });
+
+    test.each([
+      ['ecr.api', InterfaceVpcEndpointAwsService.ECR],
+      ['ecr.dkr', InterfaceVpcEndpointAwsService.ECR_DOCKER],
+      ['execute-api', InterfaceVpcEndpointAwsService.APIGATEWAY],
+      ['securityhub', InterfaceVpcEndpointAwsService.SECURITYHUB],
+    ])('test vpc interface endpoint for %s can be created correctly in eusc-de-east-1', (name: string, given: InterfaceVpcEndpointAwsService) => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'eusc-de-east-1' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('Endpoint', { service: given });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: `eu.amazonaws.eusc-de-east-1.${name}`,
       });
     });
 

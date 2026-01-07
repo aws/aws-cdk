@@ -1,7 +1,8 @@
 import { bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
-import * as codepipeline from '../../aws-codepipeline';
+import { CfnPipeline } from '../../aws-codepipeline/lib/codepipeline.generated';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
+import { IPipelineRef } from '../../interfaces/generated/aws-codepipeline-interfaces.generated';
 
 /**
  * Customization options when creating a `CodePipeline` event target.
@@ -21,21 +22,22 @@ export interface CodePipelineTargetOptions extends TargetBaseProps {
  */
 export class CodePipeline implements events.IRuleTarget {
   constructor(
-    private readonly pipeline: codepipeline.IPipeline,
+    private readonly pipeline: IPipelineRef,
     private readonly options: CodePipelineTargetOptions = {}) {
   }
 
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const role = this.options.eventRole || singletonEventRole(this.pipeline);
+    const pipelineArn = CfnPipeline.arnForPipeline(this.pipeline);
     role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: [this.pipeline.pipelineArn],
+      resources: [pipelineArn],
       actions: ['codepipeline:StartPipelineExecution'],
     }));
 
     return {
       ...bindBaseTargetConfig(this.options),
       id: '',
-      arn: this.pipeline.pipelineArn,
+      arn: pipelineArn,
       role,
       targetResource: this.pipeline,
     };

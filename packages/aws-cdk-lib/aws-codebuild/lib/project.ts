@@ -9,6 +9,8 @@ import { ComputeType, DockerServerComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
 import { IFileSystemLocation } from './file-location';
 import { IFleet } from './fleet';
+import { ImagePullPrincipalType } from './image-pull-principal-type';
+import { isLambdaComputeType } from './is-lambda-compute-type';
 import { LinuxArmLambdaBuildImage } from './linux-arm-lambda-build-image';
 import { LinuxLambdaBuildImage } from './linux-lambda-build-image';
 import { NoArtifacts } from './no-artifacts';
@@ -31,6 +33,7 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import { Annotations, ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IProjectRef, ProjectReference } from '../../interfaces/generated/aws-codebuild-interfaces.generated';
 
 const VPC_POLICY_SYM = Symbol.for('@aws-cdk/aws-codebuild.roleVpcPolicy');
 
@@ -69,7 +72,7 @@ export interface ProjectNotifyOnOptions extends notifications.NotificationRuleOp
   readonly events: ProjectNotificationEvents[];
 }
 
-export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, notifications.INotificationRuleSource {
+export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, notifications.INotificationRuleSource, IProjectRef {
   /**
    * The ARN of this Project.
    * @attribute
@@ -262,6 +265,13 @@ abstract class ProjectBase extends Resource implements IProject {
 
   /** The IAM service Role of this Project. */
   public abstract readonly role?: iam.IRole;
+
+  public get projectRef(): ProjectReference {
+    return {
+      projectName: this.projectName,
+      projectArn: this.projectArn,
+    };
+  }
 
   /**
    * Actual connections object for this Project.
@@ -1640,25 +1650,6 @@ export class Project extends ProjectBase {
   }
 }
 
-/**
- * The type of principal CodeBuild will use to pull your build Docker image.
- */
-export enum ImagePullPrincipalType {
-  /**
-   * CODEBUILD specifies that CodeBuild uses its own identity when pulling the image.
-   * This means the resource policy of the ECR repository that hosts the image will be modified to trust
-   * CodeBuild's service principal.
-   * This is the required principal type when using CodeBuild's pre-defined images.
-   */
-  CODEBUILD = 'CODEBUILD',
-
-  /**
-   * SERVICE_ROLE specifies that AWS CodeBuild uses the project's role when pulling the image.
-   * The role will be granted pull permissions on the ECR repository hosting the image.
-   */
-  SERVICE_ROLE = 'SERVICE_ROLE',
-}
-
 export interface BuildEnvironment {
   /**
    * The image used for the builds.
@@ -2346,6 +2337,14 @@ export class MacBuildImage implements IBuildImage {
   });
 
   /**
+   * Corresponds to the CodeBuild image `aws/codebuild/macos-arm-base:15`.
+   */
+  public static readonly BASE_15: IBuildImage = new MacBuildImage({
+    imageId: 'aws/codebuild/macos-arm-base:15',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+  });
+
+  /**
    * Makes an ARM MacOS build image from a Docker Hub image.
    */
   public static fromDockerRegistry(name: string, options: DockerImageOptions = {}): IBuildImage {
@@ -2502,9 +2501,4 @@ export enum ProjectNotificationEvents {
 
 function isBindableBuildImage(x: unknown): x is IBindableBuildImage {
   return typeof x === 'object' && !!x && !!(x as any).bind;
-}
-
-export function isLambdaComputeType(computeType: ComputeType): boolean {
-  const lambdaComputeTypes = Object.values(ComputeType).filter(value => value.startsWith('BUILD_LAMBDA'));
-  return lambdaComputeTypes.includes(computeType);
 }

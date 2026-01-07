@@ -5,6 +5,7 @@ import { IMetric, MathExpression, Metric, MetricOptions, MetricProps } from '../
 import { AddToResourcePolicyResult, Grant, IGrantable, IResourceWithPolicy, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { Resource, ValidationError } from '../../core';
+import { TableReference } from '../../interfaces/generated/aws-dynamodb-interfaces.generated';
 
 /**
  * Represents an instance of a DynamoDB table.
@@ -63,6 +64,16 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   protected abstract readonly region: string;
 
   protected abstract get hasIndex(): boolean;
+
+  /**
+   * A reference to this table.
+   */
+  public get tableRef(): TableReference {
+    return {
+      tableName: this.tableName,
+      tableArn: this.tableArn,
+    };
+  }
 
   /**
    * Adds an IAM policy statement associated with this table to an IAM principal's policy.
@@ -152,8 +163,12 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * @param grantee the principal to grant access to
    */
   public grantReadData(grantee: IGrantable): Grant {
-    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.DESCRIBE_TABLE);
-    return this.combinedGrant(grantee, { keyActions: perms.KEY_READ_ACTIONS, tableActions });
+    const tableActions = perms.RESOURCE_READ_DATA_ACTIONS.concat(perms.DESCRIBE_TABLE);
+    return this.combinedGrant(grantee, {
+      keyActions: perms.KEY_READ_ACTIONS,
+      tableActions,
+      tablePrinicipalExclusiveActions: perms.PRINCIPAL_ONLY_READ_DATA_ACTIONS,
+    });
   }
 
   /**
@@ -184,9 +199,13 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * @param grantee the principal to grant access to
    */
   public grantReadWriteData(grantee: IGrantable): Grant {
-    const tableActions = perms.READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS).concat(perms.DESCRIBE_TABLE);
+    const tableActions = perms.RESOURCE_READ_DATA_ACTIONS.concat(perms.WRITE_DATA_ACTIONS).concat(perms.DESCRIBE_TABLE);
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
-    return this.combinedGrant(grantee, { keyActions, tableActions });
+    return this.combinedGrant(grantee, {
+      keyActions,
+      tableActions,
+      tablePrinicipalExclusiveActions: perms.PRINCIPAL_ONLY_READ_DATA_ACTIONS,
+    });
   }
 
   /**
@@ -423,7 +442,12 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * @param grantee the principal (no-op if undefined)
    * @param options options for keyActions, tableActions, and streamActions
    */
-  private combinedGrant(grantee: IGrantable, options: { keyActions?: string[]; tableActions?: string[]; streamActions?: string[] }) {
+  private combinedGrant(grantee: IGrantable, options: {
+    keyActions?: string[];
+    tableActions?: string[];
+    tablePrinicipalExclusiveActions?: string[];
+    streamActions?: string[];
+  }) {
     if (options.keyActions && this.encryptionKey) {
       this.encryptionKey.grant(grantee, ...options.keyActions);
     }
@@ -431,12 +455,25 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
     if (options.tableActions) {
       const resourceArns = [this.tableArn];
       this.hasIndex && resourceArns.push(`${this.tableArn}/index/*`);
-      return Grant.addToPrincipalOrResource({
+      const result = Grant.addToPrincipalOrResource({
         grantee,
         actions: options.tableActions,
         resourceArns,
+        // Use wildcard for resource policy to avoid circular dependency when grantee is a resource principal
+        // (e.g., AccountRootPrincipal). This follows the same pattern as KMS (aws-kms/lib/key.ts).
+        // resourceArns is used for principal policies, resourceSelfArns is used for resource policies.
+        resourceSelfArns: ['*'],
         resource: this,
       });
+
+      if (options.tablePrinicipalExclusiveActions) {
+        return result.combine(Grant.addToPrincipal({
+          grantee,
+          actions: options.tablePrinicipalExclusiveActions,
+          resourceArns,
+        }));
+      }
+      return result;
     }
 
     if (options.streamActions) {
@@ -448,7 +485,6 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
         grantee,
         actions: options.streamActions,
         resourceArns: [this.tableStreamArn],
-        scope: this,
       });
     }
 
@@ -464,19 +500,12 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   }
 
   /**
-   * Adds a statement to the resource policy associated with this file system.
+   * Adds a statement to the resource policy associated with this table.
    * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
    *
-   * Note that this does not work with imported file systems.
+   * Note that this does not work with imported tables.
    *
    * @param statement The policy statement to add
    */
-  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
-    this.resourcePolicy = this.resourcePolicy ?? new PolicyDocument({ statements: [] });
-    this.resourcePolicy.addStatements(statement);
-    return {
-      statementAdded: true,
-      policyDependable: this,
-    };
-  }
+  public abstract addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult;
 }

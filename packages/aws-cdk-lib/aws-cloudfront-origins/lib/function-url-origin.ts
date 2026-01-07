@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { validateSecondsInRangeOrUndefined } from './private/utils';
 import * as cloudfront from '../../aws-cloudfront';
+import { OriginIpAddressType } from '../../aws-cloudfront';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 
@@ -29,6 +30,15 @@ export interface FunctionUrlOriginProps extends cloudfront.OriginProps {
    * @default Duration.seconds(5)
    */
   readonly keepaliveTimeout?: cdk.Duration;
+
+  /**
+   * Specifies which IP protocol CloudFront uses when connecting to your origin.
+   *
+   * If your origin uses both IPv4 and IPv6 protocols, you can choose dualstack to help optimize reliability.
+   *
+   * @default OriginIpAddressType.IPV4
+   */
+  readonly ipAddressType?: OriginIpAddressType;
 }
 
 /**
@@ -45,7 +55,7 @@ export interface FunctionUrlOriginWithOACProps extends FunctionUrlOriginProps {
    *
    * @default - an Origin Access Control will be created.
    */
-  readonly originAccessControl?: cloudfront.IOriginAccessControl;
+  readonly originAccessControl?: cloudfront.IOriginAccessControlRef;
 
 }
 
@@ -77,6 +87,7 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
       originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
       originReadTimeout: this.props.readTimeout?.toSeconds(),
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
+      ipAddressType: this.props.ipAddressType,
     };
   }
 }
@@ -85,7 +96,7 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
  * An Origin for a Lambda Function URL with OAC.
  */
 class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
-  private originAccessControl?: cloudfront.IOriginAccessControl;
+  private originAccessControl?: cloudfront.IOriginAccessControlRef;
   private functionUrl: lambda.IFunctionUrl;
   private readonly props: FunctionUrlOriginWithOACProps;
 
@@ -107,6 +118,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
       originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
       originReadTimeout: this.props.readTimeout?.toSeconds(),
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
+      ipAddressType: this.props.ipAddressType,
     };
   }
 
@@ -124,7 +136,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
       ...originBindConfig,
       originProperty: {
         ...originBindConfig.originProperty!,
-        originAccessControlId: this.originAccessControl?.originAccessControlId,
+        originAccessControlId: this.originAccessControl?.originAccessControlRef.originAccessControlId,
       },
     };
   }

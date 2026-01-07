@@ -14,6 +14,10 @@ describe('callable expression', () => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-test'));
   });
 
+  afterEach(() => {
+    fs.removeSync(tmpDir);
+  });
+
   test('callable expression toString return expression name', () => {
     // GIVEN
     const expressionName = 'determineRuntime';

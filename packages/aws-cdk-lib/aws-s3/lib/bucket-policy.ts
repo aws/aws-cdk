@@ -19,6 +19,13 @@ export interface BucketPolicyProps {
    * @default - RemovalPolicy.DESTROY.
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Policy document to apply to the bucket.
+   *
+   * @default - A new empty PolicyDocument will be created.
+   */
+  readonly document?: PolicyDocument;
 }
 
 /**
@@ -83,10 +90,9 @@ export class BucketPolicy extends Resource implements IBucketPolicyRef {
       bucket = Bucket.fromBucketName(cfnBucketPolicy, '@FromCfnBucket', cfnBucketPolicy.bucket);
     }
 
-    const ret = new class extends BucketPolicy {
-      public readonly document = PolicyDocument.fromJson(cfnBucketPolicy.policyDocument);
-    }(cfnBucketPolicy, id, {
+    const ret = new BucketPolicy(cfnBucketPolicy, id, {
       bucket,
+      document: PolicyDocument.fromJson(cfnBucketPolicy.policyDocument),
     });
 
     // mark the Bucket as having this Policy
@@ -101,7 +107,7 @@ export class BucketPolicy extends Resource implements IBucketPolicyRef {
    * For more information, see Access Policy Language Overview in the Amazon
    * Simple Storage Service Developer Guide.
    */
-  public readonly document = new PolicyDocument();
+  public readonly document: PolicyDocument;
 
   /** The Bucket this Policy applies to. */
   public readonly bucket: IBucket;
@@ -114,6 +120,7 @@ export class BucketPolicy extends Resource implements IBucketPolicyRef {
     addConstructMetadata(this, props);
 
     this.bucket = props.bucket;
+    this.document = props.document ?? new PolicyDocument();
 
     this.resource = new CfnBucketPolicy(this, 'Resource', {
       bucket: this.bucket.bucketName,
