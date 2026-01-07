@@ -5,7 +5,7 @@ import { CfnCapacityProvider, CfnFunction } from './lambda.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { Annotations, Arn, ArnFormat, IResource, Resource, Stack, ValidationError } from '../../core';
+import { Annotations, Arn, ArnFormat, IResource, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { ICapacityProviderRef } from '../../interfaces/generated/aws-lambda-interfaces.generated';
@@ -452,15 +452,15 @@ export class CapacityProvider extends CapacityProviderBase {
   private validateCapacityProviderProps(props: CapacityProviderProps) {
     const validationErrorCPName = props.capacityProviderName || 'your capacity provider';
 
-    if (props.maxVCpuCount !== undefined && (props.maxVCpuCount < 12 || props.maxVCpuCount > 15000)) {
+    if (props.maxVCpuCount !== undefined && !Token.isUnresolved(props.maxVCpuCount) && (props.maxVCpuCount < 12 || props.maxVCpuCount > 15000)) {
       throw new ValidationError(`maxVCpuCount must be between 12 and 15000, but ${validationErrorCPName} has ${props.maxVCpuCount}.`, this);
     }
 
-    if (props.subnets && (props.subnets.length < 1 || props.subnets.length > 16)) {
+    if (!Token.isUnresolved(props.subnets) && (props.subnets.length < 1 || props.subnets.length > 16)) {
       throw new ValidationError(`subnets must contain between 1 and 16 items but ${validationErrorCPName} has ${props.subnets.length} items.`, this);
     }
 
-    if (props.securityGroups.length < 1 || props.securityGroups.length > 5) {
+    if (!Token.isUnresolved(props.securityGroups) && (props.securityGroups.length < 1 || props.securityGroups.length > 5)) {
       throw new ValidationError(`securityGroups must contain between 1 and 5 items but ${validationErrorCPName} has ${props.securityGroups.length} items.`, this);
     }
 
@@ -478,6 +478,9 @@ export class CapacityProvider extends CapacityProviderBase {
   }
 
   private validateCapacityProviderName(name: string) {
+    if (Token.isUnresolved(name)) {
+      return;
+    }
     if (!/^([a-zA-Z0-9-_]+|arn:aws[a-zA-Z-]*:lambda:capacity-provider:[a-zA-Z0-9-_]+)$/.test(name)) {
       throw new ValidationError(`capacityProviderName must be an arn or have only alphanumeric characters, but did not: ${name}`, this);
     }
@@ -487,12 +490,12 @@ export class CapacityProvider extends CapacityProviderBase {
   }
 
   private validateScalingPolicies(scalingOptions: ScalingOptions, validationErrorCPName: string) {
-    if (scalingOptions?.scalingPolicies) {
-      if (scalingOptions?.scalingPolicies.length < 1) {
+    if (scalingOptions?.scalingPolicies && !Token.isUnresolved(scalingOptions.scalingPolicies)) {
+      if (scalingOptions.scalingPolicies.length < 1) {
         throw new ValidationError(`scalingOptions must have at least one policy when scalingMode is 'Manual', but ${validationErrorCPName} has ${scalingOptions.scalingPolicies.length} items.`, this);
       }
 
-      if (scalingOptions?.scalingPolicies.length > 10) {
+      if (scalingOptions.scalingPolicies.length > 10) {
         throw new ValidationError(`scalingOptions can have at most ten policies when scalingMode is 'Manual', but ${validationErrorCPName} has ${scalingOptions.scalingPolicies.length} items.`, this);
       }
     }
@@ -545,15 +548,18 @@ export class CapacityProvider extends CapacityProviderBase {
   }
 
   private validateFunctionScalingConfig(minExecutionEnvironments?: number, maxExecutionEnvironments?: number) {
-    if (minExecutionEnvironments !== undefined && (minExecutionEnvironments < 0 || minExecutionEnvironments > 15000)) {
+    const minDefined = minExecutionEnvironments !== undefined && !Token.isUnresolved(minExecutionEnvironments);
+    const maxDefined = maxExecutionEnvironments !== undefined && !Token.isUnresolved(maxExecutionEnvironments);
+
+    if (minDefined && (minExecutionEnvironments < 0 || minExecutionEnvironments > 15000)) {
       throw new ValidationError(`minExecutionEnvironments must be between 0 and 15000, but was ${minExecutionEnvironments}.`, this);
     }
 
-    if (maxExecutionEnvironments !== undefined && (maxExecutionEnvironments < 0 || maxExecutionEnvironments > 15000)) {
+    if (maxDefined && (maxExecutionEnvironments < 0 || maxExecutionEnvironments > 15000)) {
       throw new ValidationError(`maxExecutionEnvironments must be between 0 and 15000, but was ${maxExecutionEnvironments}.`, this);
     }
 
-    if (minExecutionEnvironments !== undefined && maxExecutionEnvironments !== undefined && minExecutionEnvironments > maxExecutionEnvironments) {
+    if (minDefined && maxDefined && minExecutionEnvironments > maxExecutionEnvironments) {
       throw new ValidationError('minExecutionEnvironments must be less than or equal to maxExecutionEnvironments.', this);
     }
   }
