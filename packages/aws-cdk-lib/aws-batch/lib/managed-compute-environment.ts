@@ -656,6 +656,12 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       public readonly securityGroups = [];
       public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
 
+      public get computeEnvironmentRef() {
+        return {
+          computeEnvironmentArn: this.computeEnvironmentArn,
+        };
+      }
+
       public addInstanceClass(_instanceClass: ec2.InstanceClass): void {
         throw new ValidationError(`cannot add instance class to imported ComputeEnvironment '${id}'`, this);
       }
@@ -1185,6 +1191,12 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
       public readonly connections = { } as any;
       public readonly securityGroups = [];
       public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
+
+      public get computeEnvironmentRef() {
+        return {
+          computeEnvironmentArn: this.computeEnvironmentArn,
+        };
+      }
     }
 
     return new Import(scope, id);
