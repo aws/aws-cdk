@@ -452,6 +452,9 @@ describe('L1 static factory methods', () => {
     const arn = CfnTable.arnForTable(table);
 
     expect(stack.resolve(arn)).toEqual(stack.resolve(table.tableRef.tableArn));
+    expect(stack.resolve(arn)).toEqual(
+      { 'Fn::Join': ['', ['arn:', { 'Ref': 'AWS::Partition' }, ':dynamodb:us-east-1:23432424:table/MyTable']] },
+    );
   });
 
   test('arnForTable output matches input ARN', () => {

@@ -1,6 +1,6 @@
 import { Template } from '../../assertions';
 import * as cdk from '../../core';
-import { DeploymentStrategy, DeploymentStrategyId, RolloutStrategy } from '../lib';
+import { CfnDeploymentStrategy, DeploymentStrategy, DeploymentStrategyId, RolloutStrategy } from '../lib';
 
 describe('deployment strategy', () => {
   test('default deployment strategy', () => {
@@ -140,13 +140,20 @@ describe('deployment strategy', () => {
   });
 
   test('from deployment strategy arn', () => {
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {
+      env: { account: '11111111111', region: 'us-east-1' },
+    });
     const deploymentStrategy = DeploymentStrategy.fromDeploymentStrategyArn(stack, 'MyDeploymentStrategy',
       'arn:aws:appconfig:us-west-2:123456789012:deploymentstrategy/abc123');
 
     expect(deploymentStrategy.deploymentStrategyId).toEqual('abc123');
     expect(deploymentStrategy.env.account).toEqual('123456789012');
     expect(deploymentStrategy.env.region).toEqual('us-west-2');
+
+    expect(stack.resolve(CfnDeploymentStrategy.arnForDeploymentStrategy(deploymentStrategy))).toEqual(
+      { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':appconfig:us-west-2:123456789012:deploymentstrategy/abc123']] },
+    );
   });
 
   test('from deployment strategy arn with no resource name', () => {

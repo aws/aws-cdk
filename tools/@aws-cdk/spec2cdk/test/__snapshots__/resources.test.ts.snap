@@ -1373,9 +1373,9 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   public static arnForResource(resource: IResourceRef): string {
     return new cfn_parse.TemplateString("arn:\${Partition}:some:\${Region}:\${Account}:resource/\${ResourceId}").interpolate({
-      Partition: cdk.Stack.of(resource).partition,
-      Region: cdk.Stack.of(resource).region,
-      Account: cdk.Stack.of(resource).account,
+      Partition: cdk.Aws.PARTITION,
+      Region: resource.env.region,
+      Account: resource.env.account,
       ResourceId: resource.resourceRef.resourceId
     });
   }
