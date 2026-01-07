@@ -1,9 +1,7 @@
 import { Construct } from 'constructs';
 import { IResource, Resource } from '../../core';
-import { ValidationError } from '../../core/lib/errors';
+import { UnscopedValidationError } from '../../core/lib/errors';
 import { IUserPoolIdentityProviderRef, UserPoolIdentityProviderReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
-
-export type { IUserPoolIdentityProviderRef, UserPoolIdentityProviderReference };
 
 /**
  * Represents a UserPoolIdentityProvider
@@ -28,7 +26,12 @@ export class UserPoolIdentityProvider {
       public readonly providerName: string = providerName;
 
       public get userPoolIdentityProviderRef(): UserPoolIdentityProviderReference {
-        throw new ValidationError('userPoolIdentityProviderRef is not available on imported UserPoolIdentityProvider. Use UserPoolIdentityProvider.fromUserPoolIdentityProviderAttributes() instead.', this);
+        return {
+          providerName: providerName,
+          get userPoolId(): string {
+            throw new UnscopedValidationError('userPoolId is not available on imported UserPoolIdentityProvider.');
+          },
+        };
       }
     }
 

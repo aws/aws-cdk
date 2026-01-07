@@ -2,12 +2,13 @@ import { Construct } from 'constructs';
 import { toASCII as punycodeEncode } from 'punycode/';
 import { CfnUserPool } from './cognito.generated';
 import { StandardAttributeNames } from './private/attr-names';
+import { isIUserPoolIdentityProvider } from './private/ref-utils';
 import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
 import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
 import { UserPoolEmail, UserPoolEmailConfig } from './user-pool-email';
 import { UserPoolGroup, UserPoolGroupOptions } from './user-pool-group';
-import { IUserPoolIdentityProvider, IUserPoolIdentityProviderRef } from './user-pool-idp';
+import { IUserPoolIdentityProvider } from './user-pool-idp';
 import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
 import { Grant, IGrantable, IRoleRef, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import { IKeyRef } from '../../aws-kms';
@@ -16,9 +17,7 @@ import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, S
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IUserPoolRef, UserPoolReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
-
-export type { IUserPoolRef, UserPoolReference };
+import { IUserPoolIdentityProviderRef, IUserPoolRef, UserPoolReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -1051,7 +1050,9 @@ abstract class UserPoolBase extends Resource implements IUserPool {
   }
 
   public registerIdentityProvider(provider: IUserPoolIdentityProviderRef) {
-    this.identityProviders.push(provider as IUserPoolIdentityProvider);
+    if (isIUserPoolIdentityProvider(provider)) {
+      this.identityProviders.push(provider as IUserPoolIdentityProvider);
+    }
   }
 
   public grant(grantee: IGrantable, ...actions: string[]): Grant {

@@ -1,14 +1,10 @@
 import { Construct } from 'constructs';
 import { CfnUserPoolResourceServer } from './cognito.generated';
-import { toIUserPool } from './private/ref-utils';
-import { IUserPool, IUserPoolRef } from './user-pool';
 import { IResource, Resource } from '../../core';
-import { ValidationError } from '../../core/lib/errors';
+import { UnscopedValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IUserPoolResourceServerRef, UserPoolResourceServerReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
-
-export type { IUserPoolResourceServerRef, UserPoolResourceServerReference };
+import { IUserPoolRef, IUserPoolResourceServerRef, UserPoolResourceServerReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * Represents a Cognito user pool resource server
@@ -104,7 +100,12 @@ export class UserPoolResourceServer extends Resource implements IUserPoolResourc
       public readonly userPoolResourceServerId = userPoolResourceServerId;
 
       public get userPoolResourceServerRef(): UserPoolResourceServerReference {
-        throw new ValidationError('userPoolResourceServerRef is not available on imported UserPoolResourceServer. Use UserPoolResourceServer.fromUserPoolResourceServerAttributes() instead.', this);
+        return {
+          identifier: userPoolResourceServerId,
+          get userPoolId(): string {
+            throw new UnscopedValidationError('userPoolId is not available on UserPoolResourceServer.fromUserPoolResourceServiceId().');
+          },
+        };
       }
     }
 
@@ -114,10 +115,6 @@ export class UserPoolResourceServer extends Resource implements IUserPoolResourc
   public readonly userPoolResourceServerId: string;
   private readonly _userPool: IUserPoolRef;
   private readonly identifier: string;
-
-  public get userPool(): IUserPool {
-    return toIUserPool(this._userPool);
-  }
 
   public get userPoolResourceServerRef(): UserPoolResourceServerReference {
     return {

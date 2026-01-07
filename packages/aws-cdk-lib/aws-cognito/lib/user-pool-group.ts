@@ -1,13 +1,11 @@
 import { Construct } from 'constructs';
 import { CfnUserPoolGroup } from './cognito.generated';
-import { IUserPool } from './user-pool';
 import { IRoleRef } from '../../aws-iam';
 import { IResource, Resource, Token } from '../../core';
-import { IUserPoolRef, toIUserPool } from './private/ref-utils';
-import { ValidationError } from '../../core/lib/errors';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IUserPoolGroupRef, UserPoolGroupReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
+import { IUserPoolGroupRef, IUserPoolRef, UserPoolGroupReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * Represents a user pool group.
@@ -89,7 +87,12 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
       public readonly groupName = groupName;
 
       public get userPoolGroupRef(): UserPoolGroupReference {
-        throw new ValidationError('userPoolGroupRef is not available on imported UserPoolGroup. Use UserPoolGroup.fromUserPoolGroupAttributes() instead.', this);
+        return {
+          groupName,
+          get userPoolId(): string {
+            throw new UnscopedValidationError('userPoolId is not available on imported UserPoolGroup.');
+          },
+        };
       }
     }
     return new Import(scope, id);
@@ -97,10 +100,6 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
 
   public readonly groupName: string;
   private readonly _userPool: IUserPoolRef;
-
-  public get userPool(): IUserPool {
-    return toIUserPool(this._userPool);
-  }
 
   public get userPoolGroupRef(): UserPoolGroupReference {
     return {

@@ -1,15 +1,13 @@
 import { Construct } from 'constructs';
 import { CfnUserPoolDomain } from './cognito.generated';
-import { IUserPool, IUserPoolRef } from './user-pool';
 import { UserPoolClient } from './user-pool-client';
 import { ICertificate } from '../../aws-certificatemanager';
 import { IResource, Resource, Stack, Token } from '../../core';
-import { ValidationError } from '../../core/lib/errors';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AwsCustomResource, AwsCustomResourcePolicy, AwsSdkCall, PhysicalResourceId } from '../../custom-resources';
-import { toIUserPool } from './private/ref-utils';
-import { IUserPoolDomainRef, UserPoolDomainReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
+import { IUserPoolDomainRef, IUserPoolRef, UserPoolDomainReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * The branding version of managed login for the domain.
@@ -122,7 +120,12 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
       public readonly domainName = userPoolDomainName;
 
       public get userPoolDomainRef(): UserPoolDomainReference {
-        throw new ValidationError('userPoolDomainRef is not available on imported UserPoolDomain. Use UserPoolDomain.fromUserPoolDomainAttributes() instead.', this);
+        return {
+          domain: userPoolDomainName,
+          get userPoolId(): string {
+            throw new UnscopedValidationError('userPoolDomainRef is not available on imported UserPoolDomain.');
+          },
+        };
       }
     }
 
@@ -135,13 +138,6 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
 
   private cloudFrontCustomResource?: AwsCustomResource;
   private readonly resource: CfnUserPoolDomain;
-
-  /**
-   * The user pool to which this domain is associated
-   */
-  public get userPool(): IUserPool {
-    return toIUserPool(this._userPool);
-  }
 
   public get userPoolDomainRef(): UserPoolDomainReference {
     return {

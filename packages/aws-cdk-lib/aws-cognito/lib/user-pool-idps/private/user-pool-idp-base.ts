@@ -2,7 +2,6 @@ import { Construct } from 'constructs';
 import { Resource } from '../../../../core';
 import { UserPoolIdentityProviderReference } from '../../../../interfaces/generated/aws-cognito-interfaces.generated';
 import { StandardAttributeNames } from '../../private/attr-names';
-import { IUserPool } from '../../user-pool';
 import { IUserPoolIdentityProvider } from '../../user-pool-idp';
 import { UserPoolIdentityProviderProps, AttributeMapping } from '../base';
 
@@ -23,9 +22,7 @@ export abstract class UserPoolIdentityProviderBase extends Resource implements I
 
   public constructor(scope: Construct, id: string, private readonly props: UserPoolIdentityProviderProps) {
     super(scope, id);
-    // Cast to IUserPool to call registerIdentityProvider - this is safe because
-    // registerIdentityProvider accepts IUserPoolIdentityProviderRef
-    (this.props.userPool as any as IUserPool).registerIdentityProvider(this);
+    this.props.userPool.registerIdentityProvider(this);
   }
 
   protected configureAttributeMapping(): any {

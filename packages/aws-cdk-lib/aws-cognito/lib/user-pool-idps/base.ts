@@ -1,4 +1,4 @@
-import { IUserPoolRef } from '../user-pool';
+import { IUserPool } from '../user-pool';
 
 /**
  * An attribute available from a third party identity provider.
@@ -207,7 +207,7 @@ export interface UserPoolIdentityProviderProps {
   /**
    * The user pool to which this construct provides identities.
    */
-  readonly userPool: IUserPoolRef;
+  readonly userPool: IUserPool;
 
   /**
    * Mapping attributes from the identity provider to standard and custom attributes of the user pool.

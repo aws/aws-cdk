@@ -1,20 +1,17 @@
 import { Construct } from 'constructs';
 import { CfnUserPoolClient } from './cognito.generated';
-import { IUserPool, IUserPoolRef } from './user-pool';
 import { ClientAttributes } from './user-pool-attr';
 import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
 import { IRoleRef } from '../../aws-iam';
 import { CfnApp } from '../../aws-pinpoint';
 import { IResource, Resource, Duration, Stack, SecretValue, Token, FeatureFlags } from '../../core';
 import { toIUserPool } from './private/ref-utils';
-import { ValidationError } from '../../core/lib/errors';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AwsCustomResource, AwsCustomResourcePolicy, Logging, PhysicalResourceId } from '../../custom-resources';
 import * as cxapi from '../../cx-api';
-import { IUserPoolClientRef, UserPoolClientReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
-
-export type { IUserPoolClientRef, UserPoolClientReference };
+import { IUserPoolClientRef, IUserPoolRef, UserPoolClientReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * Types of authentication flow
@@ -457,7 +454,12 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
         throw new ValidationError('UserPool Client Secret is not available for imported Clients', this);
       }
       public get userPoolClientRef(): UserPoolClientReference {
-        throw new ValidationError('userPoolClientRef is not available on imported UserPoolClient. Use UserPoolClient.fromUserPoolClientAttributes() instead.', this);
+        return {
+          clientId: userPoolClientId,
+          get userPoolId(): string {
+            throw new UnscopedValidationError('userPoolId is not available on UserPoolClient.fromUserPoolClientId().');
+          },
+        };
       }
     }
 
@@ -467,7 +469,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   public readonly userPoolClientId: string;
 
   private _generateSecret?: boolean;
-  private readonly _userPool: IUserPoolRef;
+  private readonly userPool: IUserPoolRef;
   private _userPoolClientSecret?: SecretValue;
 
   /**
@@ -478,16 +480,9 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
   public get userPoolClientRef(): UserPoolClientReference {
     return {
-      userPoolId: this._userPool.userPoolRef.userPoolId,
+      userPoolId: this.userPool.userPoolRef.userPoolId,
       clientId: this.userPoolClientId,
     };
-  }
-
-  /**
-   * The UserPool resource this client has access to
-   */
-  public get userPool(): IUserPool {
-    return toIUserPool(this._userPool);
   }
 
   /*
@@ -503,7 +498,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._userPool = props.userPool;
+    this.userPool = props.userPool;
 
     if (props.disableOAuth && props.oAuth) {
       throw new ValidationError('OAuth settings cannot be specified when disableOAuth is set.', this);
@@ -539,7 +534,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     }
 
     this._generateSecret = props.generateSecret;
-    this._userPool = props.userPool;
+    this.userPool = props.userPool;
 
     const resource = new CfnUserPoolClient(this, 'Resource', {
       clientName: props.userPoolClientName,
@@ -599,14 +594,14 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
             service: 'CognitoIdentityServiceProvider',
             action: 'describeUserPoolClient',
             parameters: {
-              UserPoolId: this._userPool.userPoolRef.userPoolId,
+              UserPoolId: this.userPool.userPoolRef.userPoolId,
               ClientId: this.userPoolClientId,
             },
             physicalResourceId: PhysicalResourceId.of(this.userPoolClientId),
             logging: isEnableLogUserPoolClientSecret ? undefined : Logging.withDataHidden(),
           },
           policy: AwsCustomResourcePolicy.fromSdkCalls({
-            resources: [this._userPool.userPoolRef.userPoolArn],
+            resources: [this.userPool.userPoolRef.userPoolArn],
           }),
           // APIs are available in 2.1055.0
           installLatestAwsSdk: false,

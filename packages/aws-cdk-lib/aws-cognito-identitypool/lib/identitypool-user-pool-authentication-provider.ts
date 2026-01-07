@@ -1,6 +1,6 @@
 import { Construct, Node } from 'constructs';
 import { IIdentityPool } from './identitypool';
-import { IUserPool, IUserPoolClient, IUserPoolClientRef } from '../../aws-cognito';
+import { IUserPool, IUserPoolClientRef } from '../../aws-cognito';
 import { Stack } from '../../core';
 
 /**
@@ -81,20 +81,16 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
   /**
    * The User Pool Client for the provided User Pool
    */
-  private _userPoolClient: IUserPoolClientRef;
+  private userPoolClient: IUserPoolClientRef;
 
   /**
    * Whether to disable the pool's default server side token check
    */
   private disableServerSideTokenCheck: boolean;
 
-  private get userPoolClient(): IUserPoolClient {
-    return this._userPoolClient as IUserPoolClient;
-  }
-
   constructor(props: UserPoolAuthenticationProviderProps) {
     this.userPool = props.userPool;
-    this._userPoolClient = props.userPoolClient || this.userPool.addClient('UserPoolAuthenticationProviderClient');
+    this.userPoolClient = props.userPoolClient || this.userPool.addClient('UserPoolAuthenticationProviderClient');
     this.disableServerSideTokenCheck = props.disableServerSideTokenCheck ?? false;
   }
 
@@ -109,7 +105,7 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
     const urlSuffix = Stack.of(scope).urlSuffix;
 
     return {
-      clientId: this._userPoolClient.userPoolClientRef.clientId,
+      clientId: this.userPoolClient.userPoolClientRef.clientId,
       providerName: `cognito-idp.${region}.${urlSuffix}/${this.userPool.userPoolId}`,
       serverSideTokenCheck: !this.disableServerSideTokenCheck,
     };
