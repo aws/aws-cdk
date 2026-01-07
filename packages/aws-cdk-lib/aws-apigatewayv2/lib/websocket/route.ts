@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
 import { IWebSocketRouteAuthorizer, WebSocketNoneAuthorizer } from './authorizer';
 import { WebSocketRouteIntegration } from './integration';
-import { CfnRoute, CfnRouteResponse } from '.././index';
+import { CfnRoute, CfnRouteResponse, RouteReference } from '.././index';
 import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
@@ -130,5 +130,12 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
         routeResponseKey: '$default',
       });
     }
+  }
+
+  public get routeRef(): RouteReference {
+    return {
+      apiId: this.webSocketApi.apiRef.apiId,
+      routeId: this.routeId,
+    };
   }
 }
