@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import type { IConstruct } from 'constructs';
@@ -286,16 +287,17 @@ export class Bundling implements cdk.BundlingOptions {
       const isPnpm = this.packageManager.lockFile === LockFile.PNPM;
       const isBun = this.packageManager.lockFile === LockFile.BUN_LOCK || this.packageManager.lockFile === LockFile.BUN;
 
-      // Find .npmrc file for pnpm to inherit registry authentication
-      // Only use it if it's within projectRoot (not outside, which would be inaccessible in Docker)
+      // Copy .npmrc for pnpm to inherit private registry auth. Uses base64 to handle monorepos
+      // where .npmrc is outside projectRoot (inaccessible in Docker) and to avoid shell escaping issues.
       const npmrcFilePath = isPnpm ? findUp('.npmrc', this.projectRoot) : undefined;
-      const relativeNpmrcPath = npmrcFilePath ? path.relative(this.projectRoot, npmrcFilePath) : undefined;
-      const npmrcInProjectRoot = relativeNpmrcPath && !relativeNpmrcPath.startsWith('..');
+      const npmrcBase64 = npmrcFilePath && fs.existsSync(npmrcFilePath)
+        ? Buffer.from(fs.readFileSync(npmrcFilePath, 'utf-8')).toString('base64')
+        : undefined;
 
       // Create dummy package.json, copy lock file if any and then install
       depsCommand = chain([
         isPnpm ? osCommand.write(pathJoin(options.outputDir, 'pnpm-workspace.yaml'), ''): '', // Ensure node_modules directory is installed locally by creating local 'pnpm-workspace.yaml' file
-        npmrcInProjectRoot ? osCommand.copy(pathJoin(options.inputDir, relativeNpmrcPath!), pathJoin(options.outputDir, '.npmrc')) : '', // Copy .npmrc for pnpm to inherit registry authentication
+        npmrcBase64 ? osCommand.writeBase64(pathJoin(options.outputDir, '.npmrc'), npmrcBase64) : '', // Write .npmrc for pnpm to inherit registry authentication
         osCommand.writeJson(pathJoin(options.outputDir, 'package.json'), { dependencies }),
         osCommand.copy(lockFilePath, pathJoin(options.outputDir, this.packageManager.lockFile)),
         osCommand.changeDirectory(options.outputDir),
@@ -391,6 +393,13 @@ class OsCommand {
   public writeJson(filePath: string, data: any): string {
     const stringifiedData = JSON.stringify(data);
     return this.write(filePath, stringifiedData);
+  }
+
+  public writeBase64(filePath: string, base64Data: string): string {
+    if (this.osPlatform === 'win32') {
+      return `powershell -Command "[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${base64Data}')) | Set-Content -Path '${filePath}' -NoNewline"`;
+    }
+    return `echo '${base64Data}' | base64 -d > "${filePath}"`;
   }
 
   public copy(src: string, dest: string): string {

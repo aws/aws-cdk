@@ -605,12 +605,14 @@ test('Detects pnpm-lock.yaml', () => {
   });
 });
 
-test('pnpm with nodeModules copies .npmrc for private registry authentication', () => {
+test('pnpm with nodeModules writes .npmrc using base64 for private registry authentication', () => {
   const pnpmLock = '/project/pnpm-lock.yaml';
-  // Simulate .npmrc existing in project root while allowing real lookups for other files (e.g. package.json)
+  const npmrcFixture = path.join(__dirname, '.testnpmrc');
+  const npmrcBase64 = Buffer.from(fs.readFileSync(npmrcFixture, 'utf-8')).toString('base64');
+
   const originalFindUp = util.findUp;
   jest.spyOn(util, 'findUp').mockImplementation((name, dir) =>
-    name === '.npmrc' ? '/project/.npmrc' : originalFindUp(name, dir),
+    name === '.npmrc' ? npmrcFixture : originalFindUp(name, dir),
   );
 
   Bundling.bundle(stack, {
@@ -627,7 +629,7 @@ test('pnpm with nodeModules copies .npmrc for private registry authentication', 
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
-        expect.stringMatching(/echo '' > "\/asset-output\/pnpm-workspace.yaml" && cp "\/asset-input\/.npmrc" "\/asset-output\/.npmrc"/),
+        expect.stringContaining(`echo '${npmrcBase64}' | base64 -d`),
       ]),
     }),
   });
