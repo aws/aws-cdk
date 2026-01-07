@@ -7,7 +7,7 @@ import {
   PipelineNotificationEvents,
   PipelineNotifyOnOptions,
 } from './action';
-import { CfnPipeline } from './codepipeline.generated';
+import { CfnPipeline, PipelineReference } from './codepipeline.generated';
 import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './private/cross-region-support-stack';
 import { FullActionDescriptor } from './private/full-action-descriptor';
 import { RichAction } from './private/rich-action';
@@ -388,6 +388,12 @@ export interface PipelineProps {
 abstract class PipelineBase extends Resource implements IPipeline {
   public abstract readonly pipelineName: string;
   public abstract readonly pipelineArn: string;
+
+  public get pipelineRef(): PipelineReference {
+    return {
+      pipelineName: this.pipelineName,
+    };
+  }
 
   /**
    * Defines an event rule triggered by this CodePipeline.
