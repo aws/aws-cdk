@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
-import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScalingPolicy } from './autoscaling.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { Duration, ValidationError } from '../../core';
+import { IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
 
 /**
  * Base interface for target tracking props
@@ -95,7 +95,7 @@ export interface TargetTrackingScalingPolicyProps extends BasicTargetTrackingSca
   /*
    * The auto scaling group
    */
-  readonly autoScalingGroup: IAutoScalingGroup;
+  readonly autoScalingGroup: IAutoScalingGroupRef;
 }
 
 export class TargetTrackingScalingPolicy extends Construct {
@@ -126,7 +126,7 @@ export class TargetTrackingScalingPolicy extends Construct {
 
     this.resource = new CfnScalingPolicy(this, 'Resource', {
       policyType: 'TargetTrackingScaling',
-      autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
+      autoScalingGroupName: props.autoScalingGroup.autoScalingGroupRef.autoScalingGroupName,
       cooldown: props.cooldown && props.cooldown.toSeconds().toString(),
       estimatedInstanceWarmup: props.estimatedInstanceWarmup && props.estimatedInstanceWarmup.toSeconds(),
       targetTrackingConfiguration: {
