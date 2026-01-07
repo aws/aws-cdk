@@ -2,11 +2,11 @@ import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { EcsEc2ContainerDefinition, IEcsContainerDefinition } from './ecs-container-definition';
 import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
-import { IJobQueue } from './job-queue';
 import * as iam from '../../aws-iam';
 import { ArnFormat, Stack } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IJobQueueRef } from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
  * A JobDefinition that uses ECS orchestration
@@ -116,11 +116,11 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
    * Grants the `batch:submitJob` permission to the identity on both this job definition and the `queue`
    */
   @MethodMetadata()
-  public grantSubmitJob(identity: iam.IGrantable, queue: IJobQueue) {
+  public grantSubmitJob(identity: iam.IGrantable, queue: IJobQueueRef) {
     iam.Grant.addToPrincipal({
       actions: ['batch:SubmitJob'],
       grantee: identity,
-      resourceArns: [this.jobDefinitionArn, queue.jobQueueArn],
+      resourceArns: [this.jobDefinitionArn, queue.jobQueueRef.jobQueueArn],
     });
   }
 
