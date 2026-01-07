@@ -923,7 +923,7 @@ export class ParserProcessor implements IProcessor {
           eventSource: this.parseToOCSFOptions?.eventSource,
           ocsfVersion: this.parseToOCSFOptions?.ocsfVersion,
         };
-        // Add mappingVersion if defined - this property may not be in the L1 construct yet
+        // Add mappingVersion if defined
         if (this.parseToOCSFOptions?.mappingVersion !== undefined) {
           ocsfConfig.mappingVersion = this.parseToOCSFOptions.mappingVersion;
         }
