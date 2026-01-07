@@ -20,6 +20,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Gateway } from '../../../lib';
 import { GatewayExceptionLevel } from '../../../lib/gateway/gateway-base';
 import { GatewayAuthorizer } from '../../../lib/gateway/inbound-auth/authorizer';
+import { LambdaInterceptor, InterceptionPoint } from '../../../lib/gateway/interceptor';
 import { ApiKeyCredentialLocation } from '../../../lib/gateway/outbound-auth/api-key';
 import { GatewayCredentialProvider } from '../../../lib/gateway/outbound-auth/credential-provider';
 import { McpProtocolConfiguration, MCPProtocolVersion, McpGatewaySearchType } from '../../../lib/gateway/protocol';
@@ -2305,5 +2306,787 @@ describe('MCP Server Target Configuration Tests', () => {
 
     expect(target.targetType).toBe('MCP_SERVER');
     expect(target.credentialProviderConfigurations).toHaveLength(1);
+  });
+});
+
+describe('Gateway Interceptor Tests', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  test('Should create Gateway with REQUEST interceptor via constructor', () => {
+    const requestLambda = new lambda.Function(stack, 'RequestLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      interceptorConfigurations: [
+        LambdaInterceptor.forRequest(requestLambda),
+      ],
+    });
+
+    expect(gateway.name).toBe('test-gateway');
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: [
+        {
+          InterceptionPoints: ['REQUEST'],
+          Interceptor: {
+            Lambda: {
+              Arn: Match.anyValue(),
+            },
+          },
+          InputConfiguration: {
+            PassRequestHeaders: false,
+          },
+        },
+      ],
+    });
+  });
+
+  test('Should create Gateway with RESPONSE interceptor via constructor', () => {
+    const responseLambda = new lambda.Function(stack, 'ResponseLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      interceptorConfigurations: [
+        LambdaInterceptor.forResponse(responseLambda),
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: [
+        {
+          InterceptionPoints: ['RESPONSE'],
+          Interceptor: {
+            Lambda: {
+              Arn: Match.anyValue(),
+            },
+          },
+          InputConfiguration: {
+            PassRequestHeaders: false,
+          },
+        },
+      ],
+    });
+  });
+
+  test('Should create Gateway with both REQUEST and RESPONSE interceptors', () => {
+    const requestLambda = new lambda.Function(stack, 'RequestLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const responseLambda = new lambda.Function(stack, 'ResponseLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      interceptorConfigurations: [
+        LambdaInterceptor.forRequest(requestLambda, { passRequestHeaders: true }),
+        LambdaInterceptor.forResponse(responseLambda),
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: Match.arrayWith([
+        Match.objectLike({
+          InterceptionPoints: ['REQUEST'],
+          InputConfiguration: {
+            PassRequestHeaders: true,
+          },
+        }),
+        Match.objectLike({
+          InterceptionPoints: ['RESPONSE'],
+          InputConfiguration: {
+            PassRequestHeaders: false,
+          },
+        }),
+      ]),
+    });
+  });
+
+  test('Should add REQUEST interceptor using addRequestInterceptor method', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    const requestLambda = new lambda.Function(stack, 'RequestLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    gateway.addRequestInterceptor(requestLambda, { passRequestHeaders: true });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: [
+        {
+          InterceptionPoints: ['REQUEST'],
+          Interceptor: {
+            Lambda: {
+              Arn: Match.anyValue(),
+            },
+          },
+          InputConfiguration: {
+            PassRequestHeaders: true,
+          },
+        },
+      ],
+    });
+  });
+
+  test('Should add RESPONSE interceptor using addResponseInterceptor method', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    const responseLambda = new lambda.Function(stack, 'ResponseLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    gateway.addResponseInterceptor(responseLambda);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: [
+        {
+          InterceptionPoints: ['RESPONSE'],
+          InputConfiguration: {
+            PassRequestHeaders: false,
+          },
+        },
+      ],
+    });
+  });
+
+  test('Should add both interceptors using convenience methods', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    const requestLambda = new lambda.Function(stack, 'RequestLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const responseLambda = new lambda.Function(stack, 'ResponseLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    gateway.addRequestInterceptor(requestLambda);
+    gateway.addResponseInterceptor(responseLambda, { passRequestHeaders: false });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: Match.arrayWith([
+        Match.objectLike({
+          InterceptionPoints: ['REQUEST'],
+        }),
+        Match.objectLike({
+          InterceptionPoints: ['RESPONSE'],
+        }),
+      ]),
+    });
+  });
+
+  test('Should throw error when adding duplicate REQUEST interceptor in constructor', () => {
+    const lambda1 = new lambda.Function(stack, 'Lambda1', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const lambda2 = new lambda.Function(stack, 'Lambda2', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    expect(() => {
+      new Gateway(stack, 'TestGateway', {
+        gatewayName: 'test-gateway',
+        interceptorConfigurations: [
+          LambdaInterceptor.forRequest(lambda1),
+          LambdaInterceptor.forRequest(lambda2),
+        ],
+      });
+    }).toThrow(/Gateway can have at most one REQUEST interceptor/);
+  });
+
+  test('Should throw error when adding duplicate RESPONSE interceptor in constructor', () => {
+    const lambda1 = new lambda.Function(stack, 'Lambda1', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const lambda2 = new lambda.Function(stack, 'Lambda2', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    expect(() => {
+      new Gateway(stack, 'TestGateway', {
+        gatewayName: 'test-gateway',
+        interceptorConfigurations: [
+          LambdaInterceptor.forResponse(lambda1),
+          LambdaInterceptor.forResponse(lambda2),
+        ],
+      });
+    }).toThrow(/Gateway can have at most one RESPONSE interceptor/);
+  });
+
+  test('Should throw error when calling addRequestInterceptor twice', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    const lambda1 = new lambda.Function(stack, 'Lambda1', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const lambda2 = new lambda.Function(stack, 'Lambda2', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    gateway.addRequestInterceptor(lambda1);
+
+    expect(() => {
+      gateway.addRequestInterceptor(lambda2);
+    }).toThrow(/Gateway already has a REQUEST interceptor configured/);
+  });
+
+  test('Should throw error when calling addResponseInterceptor twice', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    const lambda1 = new lambda.Function(stack, 'Lambda1', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const lambda2 = new lambda.Function(stack, 'Lambda2', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    gateway.addResponseInterceptor(lambda1);
+
+    expect(() => {
+      gateway.addResponseInterceptor(lambda2);
+    }).toThrow(/Gateway already has a RESPONSE interceptor configured/);
+  });
+
+  test('Should throw error when providing more than 2 interceptors in constructor', () => {
+    const lambda1 = new lambda.Function(stack, 'Lambda1', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const lambda2 = new lambda.Function(stack, 'Lambda2', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const lambda3 = new lambda.Function(stack, 'Lambda3', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    expect(() => {
+      new Gateway(stack, 'TestGateway', {
+        gatewayName: 'test-gateway',
+        interceptorConfigurations: [
+          LambdaInterceptor.forRequest(lambda1),
+          LambdaInterceptor.forResponse(lambda2),
+          LambdaInterceptor.forResponse(lambda3),
+        ],
+      });
+    }).toThrow(/Gateway can have at most 2 interceptors/);
+  });
+
+  test('Should support mixed mode: constructor interceptor + convenience method', () => {
+    const requestLambda = new lambda.Function(stack, 'RequestLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const responseLambda = new lambda.Function(stack, 'ResponseLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      interceptorConfigurations: [
+        LambdaInterceptor.forRequest(requestLambda),
+      ],
+    });
+
+    gateway.addResponseInterceptor(responseLambda);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: Match.arrayWith([
+        Match.objectLike({
+          InterceptionPoints: ['REQUEST'],
+        }),
+        Match.objectLike({
+          InterceptionPoints: ['RESPONSE'],
+        }),
+      ]),
+    });
+  });
+
+  test('Should grant Lambda invoke permissions for constructor interceptors', () => {
+    const requestLambda = new lambda.Function(stack, 'RequestLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      interceptorConfigurations: [
+        LambdaInterceptor.forRequest(requestLambda),
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: Match.anyValue(),
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should grant Lambda invoke permissions for convenience method interceptors', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    const requestLambda = new lambda.Function(stack, 'RequestLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    gateway.addRequestInterceptor(requestLambda);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should set passRequestHeaders to true when specified', () => {
+    const requestLambda = new lambda.Function(stack, 'RequestLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      interceptorConfigurations: [
+        LambdaInterceptor.forRequest(requestLambda, { passRequestHeaders: true }),
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: [
+        {
+          InputConfiguration: {
+            PassRequestHeaders: true,
+          },
+        },
+      ],
+    });
+  });
+
+  test('Should default passRequestHeaders to false for security', () => {
+    const requestLambda = new lambda.Function(stack, 'RequestLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      interceptorConfigurations: [
+        LambdaInterceptor.forRequest(requestLambda),
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: [
+        {
+          InputConfiguration: {
+            PassRequestHeaders: false,
+          },
+        },
+      ],
+    });
+  });
+
+  test('Should not include InterceptorConfigurations when no interceptors configured', () => {
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    const template = Template.fromStack(stack);
+    const resources = template.findResources('AWS::BedrockAgentCore::Gateway');
+    const resourceProps = Object.values(resources)[0].Properties;
+
+    expect(resourceProps.InterceptorConfigurations).toBeUndefined();
+  });
+
+  test('Should verify InterceptionPoint enum values', () => {
+    expect(InterceptionPoint.REQUEST).toBe('REQUEST');
+    expect(InterceptionPoint.RESPONSE).toBe('RESPONSE');
+  });
+
+  test('Should create LambdaInterceptor with forRequest factory', () => {
+    const requestLambda = new lambda.Function(stack, 'RequestLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const interceptor = LambdaInterceptor.forRequest(requestLambda, {
+      passRequestHeaders: true,
+    });
+
+    expect(interceptor.interceptionPoint).toBe(InterceptionPoint.REQUEST);
+    expect(interceptor.lambdaFunction).toBe(requestLambda);
+    expect(interceptor.passRequestHeaders).toBe(true);
+  });
+
+  test('Should create LambdaInterceptor with forResponse factory', () => {
+    const responseLambda = new lambda.Function(stack, 'ResponseLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const interceptor = LambdaInterceptor.forResponse(responseLambda);
+
+    expect(interceptor.interceptionPoint).toBe(InterceptionPoint.RESPONSE);
+    expect(interceptor.lambdaFunction).toBe(responseLambda);
+    expect(interceptor.passRequestHeaders).toBe(false); // default
+  });
+
+  test('Should grant permissions for both constructor and method-added interceptors', () => {
+    const lambda1 = new lambda.Function(stack, 'Lambda1', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const lambda2 = new lambda.Function(stack, 'Lambda2', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      interceptorConfigurations: [
+        LambdaInterceptor.forRequest(lambda1),
+      ],
+    });
+
+    gateway.addResponseInterceptor(lambda2);
+
+    const template = Template.fromStack(stack);
+    // Both Lambda functions should have invoke permissions
+    const policies = template.findResources('AWS::IAM::Policy');
+    const policyStatements = Object.values(policies).flatMap((policy: any) =>
+      policy.Properties.PolicyDocument.Statement,
+    );
+
+    const lambdaInvokeStatements = policyStatements.filter((stmt: any) =>
+      stmt.Action === 'lambda:InvokeFunction',
+    );
+
+    // Should have at least 2 Lambda invoke permissions (one for each interceptor)
+    expect(lambdaInvokeStatements.length).toBeGreaterThanOrEqual(2);
+  });
+
+  test('Should handle Token.isUnresolved for interceptor Lambda ARN', () => {
+    const requestLambda = new lambda.Function(stack, 'RequestLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      interceptorConfigurations: [
+        LambdaInterceptor.forRequest(requestLambda),
+      ],
+    });
+
+    // Should not throw - tokens are handled properly
+    expect(gateway.name).toBe('test-gateway');
+  });
+
+  test('Should create gateway with interceptor and target', () => {
+    const requestLambda = new lambda.Function(stack, 'RequestLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const targetLambda = new lambda.Function(stack, 'TargetLambda', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
+    });
+
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      interceptorConfigurations: [
+        LambdaInterceptor.forRequest(requestLambda, { passRequestHeaders: true }),
+      ],
+    });
+
+    const toolSchema = ToolSchema.fromInline([{
+      name: 'test_tool',
+      description: 'A test tool',
+      inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
+    }]);
+
+    gateway.addLambdaTarget('TestTarget', {
+      gatewayTargetName: 'test-target',
+      lambdaFunction: targetLambda,
+      toolSchema: toolSchema,
+    });
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::BedrockAgentCore::Gateway', 1);
+    template.resourceCountIs('AWS::BedrockAgentCore::GatewayTarget', 1);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: Match.arrayWith([
+        Match.objectLike({
+          InterceptionPoints: ['REQUEST'],
+        }),
+      ]),
+    });
+  });
+
+  test('Should create gateway with custom role and interceptors', () => {
+    const customRole = new iam.Role(stack, 'CustomRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+    });
+
+    const requestLambda = new lambda.Function(stack, 'RequestLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      role: customRole,
+      interceptorConfigurations: [
+        LambdaInterceptor.forRequest(requestLambda),
+      ],
+    });
+
+    expect(gateway.role).toBe(customRole);
+
+    const template = Template.fromStack(stack);
+    // Verify the custom role is used and has Lambda invoke permissions
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+          }),
+        ]),
+      },
+      Roles: [{ Ref: Match.stringLikeRegexp('CustomRole.*') }],
+    });
+  });
+
+  test('Should render undefined when no interceptors are configured', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    // Access private method for testing
+    const rendered = (gateway as any).renderInterceptorConfigurations();
+
+    expect(rendered).toBeUndefined();
+  });
+
+  test('Should render interceptor array when interceptors are added via method', () => {
+    const gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+
+    const requestLambda = new lambda.Function(stack, 'RequestLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    gateway.addRequestInterceptor(requestLambda);
+
+    // Access private method for testing
+    const rendered = (gateway as any).renderInterceptorConfigurations();
+
+    expect(rendered).toHaveLength(1);
+    expect(rendered[0].interceptionPoints).toEqual(['REQUEST']);
+  });
+
+  test('Should preserve interceptor configuration with passRequestHeaders explicit false', () => {
+    const requestLambda = new lambda.Function(stack, 'RequestLambda', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+      interceptorConfigurations: [
+        LambdaInterceptor.forRequest(requestLambda, { passRequestHeaders: false }),
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: [
+        {
+          InputConfiguration: {
+            PassRequestHeaders: false,
+          },
+        },
+      ],
+    });
+  });
+});
+
+describe('Gateway Interceptor Builder Pattern Tests', () => {
+  test('Should create REQUEST interceptor with default options', () => {
+    const fn = new lambda.Function(new cdk.Stack(), 'Fn', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const interceptor = LambdaInterceptor.forRequest(fn);
+
+    expect(interceptor.interceptionPoint).toBe(InterceptionPoint.REQUEST);
+    expect(interceptor.passRequestHeaders).toBe(false);
+  });
+
+  test('Should create RESPONSE interceptor with default options', () => {
+    const fn = new lambda.Function(new cdk.Stack(), 'Fn', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const interceptor = LambdaInterceptor.forResponse(fn);
+
+    expect(interceptor.interceptionPoint).toBe(InterceptionPoint.RESPONSE);
+    expect(interceptor.passRequestHeaders).toBe(false);
+  });
+
+  test('Should create interceptor with passRequestHeaders option', () => {
+    const fn = new lambda.Function(new cdk.Stack(), 'Fn', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const interceptor = LambdaInterceptor.forRequest(fn, {
+      passRequestHeaders: true,
+    });
+
+    expect(interceptor.passRequestHeaders).toBe(true);
+  });
+
+  test('Should render interceptor configuration correctly', () => {
+    const fn = new lambda.Function(new cdk.Stack(), 'Fn', {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('def handler(event, context): return event'),
+    });
+
+    const interceptor = LambdaInterceptor.forRequest(fn, {
+      passRequestHeaders: true,
+    });
+
+    const rendered = interceptor._render();
+
+    expect(rendered).toEqual({
+      interceptionPoints: ['REQUEST'],
+      interceptor: {
+        lambda: {
+          arn: fn.functionArn,
+        },
+      },
+      inputConfiguration: {
+        passRequestHeaders: true,
+      },
+    });
   });
 });
