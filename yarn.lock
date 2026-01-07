@@ -75,12 +75,12 @@
     semver "^7.7.2"
 
 "@aws-cdk/integ-runner@^2.192.2":
-  version "2.193.4"
-  resolved "https://registry.npmjs.org/@aws-cdk/integ-runner/-/integ-runner-2.193.4.tgz#a7650e7ee4b69f46ab20e80739f4672373bdad3f"
-  integrity sha512-PiCIC2r8HFVkomIIxODk9IYcPyiohtnp0b1h6H2GDiPTIjGeJjcFfv79iaEj9RH79pWRZ0ZTyYzgM/DdDCUaNg==
+  version "2.192.2"
+  resolved "https://registry.npmjs.org/@aws-cdk/integ-runner/-/integ-runner-2.192.2.tgz#831ea8c2cf88a419914fea820a4a5ae6ee18d40e"
+  integrity sha512-bGp+2MglDLOHTP2skCnUKUfLunnDQ4vlhgmf3k815lBdrRT/jxIgEM71NWyOdPqTu6EqgALJavznS6QKZfF4ow==
   dependencies:
-    "@aws-cdk/aws-service-spec" "0.1.132"
-    aws-cdk "2.1100.3"
+    "@aws-cdk/aws-service-spec" "0.1.98"
+    aws-cdk "2.1033.0"
   optionalDependencies:
     fsevents "2.3.2"
 
