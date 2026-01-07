@@ -1,5 +1,5 @@
 
-import { Duration, Stack, Annotations, Token, Arn, ArnFormat, Lazy } from 'aws-cdk-lib';
+import { Duration, Stack, Annotations, Token, Arn, ArnFormat, Lazy, Names } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -51,8 +51,9 @@ export interface RuntimeProps {
    * Valid characters are a-z, A-Z, 0-9, _ (underscore)
    * Must start with a letter and can be up to 48 characters long
    * Pattern: ^[a-zA-Z][a-zA-Z0-9_]{0,47}$
+   * @default - auto generate
    */
-  readonly runtimeName: string;
+  readonly runtimeName?: string;
 
   /**
    * The artifact configuration for the agent runtime
@@ -256,12 +257,17 @@ export class Runtime extends RuntimeBase {
   private readonly lifecycleConfiguration?: LifecycleConfiguration;
 
   constructor(scope: Construct, id: string, props: RuntimeProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.runtimeName ??
+        Lazy.string({
+          produce: () => Names.uniqueResourceName(this, { maxLength: 48 }).toLowerCase(),
+        }),
+    });
 
     // CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.agentRuntimeName = props.runtimeName;
+    this.agentRuntimeName = this.physicalName;
     this.validateRuntimeName();
 
     this.description = props.description;

@@ -1,4 +1,4 @@
-import { Lazy, Token } from 'aws-cdk-lib';
+import { Lazy, Token, Names } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
@@ -26,8 +26,9 @@ export interface GatewayTargetCommonProps {
    * The name of the gateway target
    * The name must be unique within the gateway
    * Pattern: ^([0-9a-zA-Z][-]?){1,100}$
+   * @default - auto generate
    */
-  readonly gatewayTargetName: string;
+  readonly gatewayTargetName?: string;
 
   /**
    * Optional description for the gateway target
@@ -429,12 +430,17 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
   private readonly targetConfiguration: ITargetConfiguration;
 
   constructor(scope: Construct, id: string, props: GatewayTargetProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.gatewayTargetName ??
+        Lazy.string({
+          produce: () => Names.uniqueResourceName(this, { maxLength: 100 }).toLowerCase(),
+        }),
+    });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
     // Validate and assign properties
-    this.name = props.gatewayTargetName;
+    this.name = this.physicalName;
     this.validateGatewayTargetName(this.name);
 
     this.description = props.description;
