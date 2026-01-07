@@ -109,7 +109,7 @@ Flags come in three types:
 | [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | 2.221.0 | fix |
 | [@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault](#aws-cdkaws-elasticloadbalancingv2networkloadbalancerwithsecuritygroupbydefault) | When enabled, Network Load Balancer will be created with a security group by default. | 2.222.0 | new default |
 | [@aws-cdk/aws-route53-patterns:useDistribution](#aws-cdkaws-route53-patternsusedistribution) | Use the `Distribution` resource instead of `CloudFrontWebDistribution` | 2.233.0 | new default |
-| [@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy](#aws-cdkaws-elasticloadbalancingv2usepostquantumtlspolicy) | When enabled, SslPolicy.RECOMMENDED_TLS uses post-quantum cryptography policy | V2NEXT | new default |
+| [@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy](#aws-cdkaws-elasticloadbalancingv2usepostquantumtlspolicy) | When enabled, HTTPS listeners use post-quantum TLS policy by default | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -2315,20 +2315,20 @@ of the deprecated `CloudFrontWebDistribution` construct.
 
 ### @aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy
 
-*When enabled, SslPolicy.RECOMMENDED_TLS uses post-quantum cryptography policy*
+*When enabled, HTTPS listeners use post-quantum TLS policy by default*
 
 Flag type: New default behavior
 
-When this feature flag is enabled, `SslPolicy.RECOMMENDED_TLS` will use the post-quantum
-cryptography policy `ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09` instead of the legacy
+When this feature flag is enabled, HTTPS listeners will use the post-quantum
+cryptography policy `ELBSecurityPolicy-TLS13-1-2-PQ-2025-09` by default instead of the legacy
 policy `ELBSecurityPolicy-TLS13-1-2-2021-06`.
 
-This aligns CDK with AWS Console behavior, which already defaults to post-quantum security
-policies for new load balancers. Post-quantum policies provide protection against
-"Harvest Now, Decrypt Later" attacks using hybrid ML-KEM key exchange.
+This policy uses the non-restricted variant (without -Res-) to maintain AES-CBC cipher support
+for TLS 1.2 clients, ensuring nearly 100% backward compatibility with the previous CDK default.
+Post-quantum policies provide protection against "Harvest Now, Decrypt Later" attacks using
+hybrid ML-KEM key exchange.
 
-When disabled, `SslPolicy.RECOMMENDED_TLS` continues to use the legacy policy for
-backward compatibility.
+When disabled, listeners continue to use the legacy policy for backward compatibility.
 
 
 | Since | Unset behaves like | Recommended value |
@@ -2336,7 +2336,7 @@ backward compatibility.
 | (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
 
-**Compatibility with old behavior:** Use `SslPolicy.TLS13_12_RES` explicitly to maintain the old policy, or disable this feature flag.
+**Compatibility with old behavior:** Use `SslPolicy.RECOMMENDED_TLS` explicitly to maintain the old policy, or disable this feature flag.
 
 
 <!-- END details -->
