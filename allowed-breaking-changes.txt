@@ -4020,3 +4020,5 @@ removed:aws-cdk-lib.aws_ecs.AddAutoScalingGroupCapacityOptions.canContainersAcce
 removed:aws-cdk-lib.aws_ecs.AddCapacityOptions.canContainersAccessInstanceRole
 removed:aws-cdk-lib.aws_ecs.AsgCapacityProviderProps.canContainersAccessInstanceRole
 
+# Exposed struct with a ref interface
+weakened:aws-cdk-lib.aws_batch.OrderedComputeEnvironment
