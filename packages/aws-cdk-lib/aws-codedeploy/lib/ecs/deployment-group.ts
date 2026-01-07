@@ -1,7 +1,6 @@
 import { Construct } from 'constructs';
 import { IEcsApplication, EcsApplication } from './application';
 import { EcsDeploymentConfig, IEcsDeploymentConfig } from './deployment-config';
-import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ecs from '../../../aws-ecs';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
@@ -10,6 +9,7 @@ import { ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
+import { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
 import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
@@ -63,7 +63,7 @@ export interface EcsBlueGreenDeploymentConfig {
    * The load balancer listener used to serve production traffic and to shift production traffic from the
    * 'blue' ECS task set to the 'green' ECS task set during a blue-green deployment.
    */
-  readonly listener: elbv2.IListener;
+  readonly listener: elbv2.IListenerRef;
 
   /**
    * The load balancer listener used to route test traffic to the 'green' ECS task set during a blue-green deployment.
@@ -79,7 +79,7 @@ export interface EcsBlueGreenDeploymentConfig {
    *
    * @default No test listener will be added
    */
-  readonly testListener?: elbv2.IListener;
+  readonly testListener?: elbv2.IListenerRef;
 
   /**
    * Specify how long CodeDeploy waits for approval to continue a blue-green deployment before it stops the deployment.
@@ -149,7 +149,7 @@ export interface EcsDeploymentGroupProps {
    * @default []
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-create-alarms.html
    */
-  readonly alarms?: cloudwatch.IAlarm[];
+  readonly alarms?: IAlarmRef[];
 
   /**
    * The service Role of this Deployment Group.
@@ -223,7 +223,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
    */
   public readonly role: iam.IRole;
 
-  private readonly alarms: cloudwatch.IAlarm[];
+  private readonly alarms: IAlarmRef[];
 
   constructor(scope: Construct, id: string, props: EcsDeploymentGroupProps) {
     super(scope, id, {
@@ -298,7 +298,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
    * @param alarm the alarm to associate with this Deployment Group
    */
   @MethodMetadata()
-  public addAlarm(alarm: cloudwatch.IAlarm): void {
+  public addAlarm(alarm: IAlarmRef): void {
     this.alarms.push(alarm);
   }
 
@@ -330,12 +330,12 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
           ],
           prodTrafficRoute: {
             listenerArns: [
-              options.listener.listenerArn,
+              options.listener.listenerRef.listenerArn,
             ],
           },
           testTrafficRoute: options.testListener ? {
             listenerArns: [
-              options.testListener.listenerArn,
+              options.testListener.listenerRef.listenerArn,
             ],
           } : undefined,
         },
