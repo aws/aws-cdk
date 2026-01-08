@@ -1235,4 +1235,35 @@ describe('virtual node', () => {
       });
     });
   });
+
+  test('imported virtual node has grants property', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const user = new iam.User(stack, 'test');
+
+    // WHEN
+    const imported: appmesh.IVirtualNode = appmesh.VirtualNode.fromVirtualNodeArn(
+      stack,
+      'importedNode',
+      'arn:aws:appmesh:us-east-1:123456789012:mesh/test-mesh/virtualNode/test-node',
+    );
+
+    // THEN - grants property is accessible on IVirtualNode
+    expect(imported.grants).toBeDefined();
+
+    // Verify grants.streamAggregatedResources works
+    imported.grants.streamAggregatedResources(user);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appmesh:StreamAggregatedResources',
+            Effect: 'Allow',
+            Resource: 'arn:aws:appmesh:us-east-1:123456789012:mesh/test-mesh/virtualNode/test-node',
+          },
+        ],
+      },
+    });
+  });
 });

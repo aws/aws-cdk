@@ -71,6 +71,19 @@ const myTopic = new sns.Topic(this, 'MyTopic');
 myTopic.grantSubscribe(accountPrincipal);
 ```
 
+Alternatively, you can use the `grants` property to access all grant methods:
+
+```ts
+declare const role: iam.IRole;
+declare const topic: sns.ITopic;
+
+// Using the grants property
+topic.grants.publish(role);
+topic.grants.subscribe(role);
+```
+
+The `grants` property is available on both `Topic` instances and imported topics (via `Topic.fromTopicArn()`), providing a consistent API for granting permissions.
+
 ### Filter policy
 
 A filter policy can be specified when subscribing an endpoint to a topic.

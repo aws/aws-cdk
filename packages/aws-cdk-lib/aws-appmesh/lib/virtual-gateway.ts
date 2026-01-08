@@ -35,6 +35,11 @@ export interface IVirtualGateway extends cdk.IResource, IVirtualGatewayRef {
   readonly mesh: IMesh;
 
   /**
+   * Collection of grant methods for this VirtualGateway
+   */
+  readonly grants: VirtualGatewayGrants;
+
+  /**
    * Utility method to add a new GatewayRoute to the VirtualGateway
    */
   addGatewayRoute(id: string, route: GatewayRouteBaseProps): GatewayRoute;
