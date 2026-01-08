@@ -4022,3 +4022,6 @@ removed:aws-cdk-lib.aws_ecs.AsgCapacityProviderProps.canContainersAccessInstance
 
 # Exposed struct with a ref interface
 weakened:aws-cdk-lib.aws_batch.OrderedComputeEnvironment
+
+# This should always have been an interface
+change-return-type:aws-cdk-lib.aws_events.ApiDestination.fromApiDestinationAttributes
