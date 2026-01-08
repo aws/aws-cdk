@@ -1,11 +1,11 @@
 import { Construct } from 'constructs';
 import { UserPoolIdentityProviderProps } from './base';
-import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { SecretValue } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 
 /**
  * Properties to initialize UserPoolAppleIdentityProvider
@@ -82,5 +82,6 @@ export class UserPoolIdentityProviderApple extends UserPoolIdentityProviderBase 
     });
 
     this.providerName = super.getResourceNameAttribute(resource.ref);
+    props.userPool.registerIdentityProvider(this);
   }
 }

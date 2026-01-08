@@ -153,6 +153,7 @@ export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
     });
 
     this.providerName = super.getResourceNameAttribute(resource.ref);
+    props.userPool.registerIdentityProvider(this);
   }
 
   private getProviderName(name?: string): string {

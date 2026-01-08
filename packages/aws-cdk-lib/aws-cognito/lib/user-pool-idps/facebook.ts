@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
 import { UserPoolIdentityProviderProps } from './base';
-import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 
 /**
  * Properties to initialize UserPoolFacebookIdentityProvider
@@ -62,5 +62,6 @@ export class UserPoolIdentityProviderFacebook extends UserPoolIdentityProviderBa
     });
 
     this.providerName = super.getResourceNameAttribute(resource.ref);
+    props.userPool.registerIdentityProvider(this);
   }
 }

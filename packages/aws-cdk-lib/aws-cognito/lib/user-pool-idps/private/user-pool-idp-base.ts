@@ -22,7 +22,6 @@ export abstract class UserPoolIdentityProviderBase extends Resource implements I
 
   public constructor(scope: Construct, id: string, private readonly props: UserPoolIdentityProviderProps) {
     super(scope, id);
-    this.props.userPool.registerIdentityProvider(this);
   }
 
   protected configureAttributeMapping(): any {

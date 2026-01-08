@@ -73,5 +73,6 @@ export class UserPoolIdentityProviderGoogle extends UserPoolIdentityProviderBase
     });
 
     this.providerName = super.getResourceNameAttribute(resource.ref);
+    props.userPool.registerIdentityProvider(this);
   }
 }
