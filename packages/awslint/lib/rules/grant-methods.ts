@@ -2,6 +2,18 @@ import { Linter } from '../linter';
 
 // List of grant methods that already existed prior to this lint rule being created
 const exemptions: Record<string, Array<string>> = {
+  '@aws-cdk/aws-bedrock-alpha.AgentAliasBase': ['grantGet', 'grantInvoke'],
+  '@aws-cdk/aws-bedrock-alpha.AgentBase': ['grantInvoke'],
+  '@aws-cdk/aws-bedrock-alpha.AgentCollaborator': ['grant'],
+  '@aws-cdk/aws-bedrock-alpha.ApplicationInferenceProfile': ['grantInvoke', 'grantProfileUsage'],
+  '@aws-cdk/aws-bedrock-alpha.BedrockFoundationModel': ['grantInvoke', 'grantInvokeAllRegions'],
+  '@aws-cdk/aws-bedrock-alpha.CrossRegionInferenceProfile': ['grantInvoke', 'grantProfileUsage'],
+  '@aws-cdk/aws-bedrock-alpha.GuardrailBase': ['grantApply'],
+  '@aws-cdk/aws-bedrock-alpha.InferenceProfileBase': ['grantProfileUsage'],
+  '@aws-cdk/aws-bedrock-alpha.PromptBase': ['grantGet'],
+  '@aws-cdk/aws-bedrock-alpha.PromptRouter': ['grantInvoke'],
+  '@aws-cdk/aws-iotevents-alpha.Input': ['grantWrite'],
+  '@aws-cdk/aws-s3tables-alpha.Table': ['grantRead', 'grantReadWrite', 'grantWrite'],
   'aws-cdk-lib.aws_apigateway.ApiKey': ['grantRead', 'grantReadWrite', 'grantWrite'],
   'aws-cdk-lib.aws_apigateway.Method': ['grantExecute'],
   'aws-cdk-lib.aws_apigateway.RateLimitedApiKey': ['grantRead', 'grantReadWrite', 'grantWrite'],
