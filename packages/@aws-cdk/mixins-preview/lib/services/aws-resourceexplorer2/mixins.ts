@@ -1,1 +1,1 @@
-export * from './resourceexplorer2.generated';
+export * from './cfn-props-mixins.generated';

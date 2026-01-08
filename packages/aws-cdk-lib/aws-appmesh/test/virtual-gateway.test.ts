@@ -968,7 +968,7 @@ describe('virtual gateway', () => {
 
     // WHEN
     const user = new iam.User(stack, 'test');
-    VirtualGatewayGrants._fromVirtualGateway(gateway).streamAggregatedResources(user);
+    VirtualGatewayGrants.fromVirtualGateway(gateway).streamAggregatedResources(user);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -977,12 +977,7 @@ describe('virtual gateway', () => {
           {
             Action: 'appmesh:StreamAggregatedResources',
             Effect: 'Allow',
-            Resource: {
-              'Fn::GetAtt': [
-                'testGateway',
-                'Arn',
-              ],
-            },
+            Resource: { Ref: 'testGateway' },
           },
         ],
       },

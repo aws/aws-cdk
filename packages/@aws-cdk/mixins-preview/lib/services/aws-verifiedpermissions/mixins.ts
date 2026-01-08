@@ -1,1 +1,1 @@
-export * from './verifiedpermissions.generated';
+export * from './cfn-props-mixins.generated';
