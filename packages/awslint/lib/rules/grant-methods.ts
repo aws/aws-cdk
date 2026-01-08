@@ -54,6 +54,7 @@ const exemptions: Record<string, Array<string>> = {
   'aws-cdk-lib.aws_ssm.StringListParameter': ['grantRead', 'grantWrite'],
   'aws-cdk-lib.aws_ssm.StringParameter': ['grantRead', 'grantWrite'],
   'aws-cdk-lib.aws_stepfunctions.StateMachine': ['grantRead', 'grantRedriveExecution', 'grantStartExecution', 'grantStartSyncExecution', 'grantTaskResponse'],
+  '@aws-cdk/example-construct-library.ExampleResource': ['grantRead'],
   'aws-cdk-lib.custom_resources.WaiterStateMachine': ['grantStartExecution'],
 };
 
