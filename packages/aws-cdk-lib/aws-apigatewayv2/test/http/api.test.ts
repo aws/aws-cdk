@@ -40,6 +40,15 @@ describe('HttpApi', () => {
     expect(imported.apiEndpoint).toEqual('api-endpoint');
   });
 
+  test('import without apiEndpoint', () => {
+    // Verifies that an HttpApi can be imported with only httpApiId and that accessing apiEndpoint correctly throws a descriptive error, but the import itself succeeds.
+    const stack = new Stack();
+    const imported = HttpApi.fromHttpApiAttributes(stack, 'imported', { httpApiId: 'http-1234' });
+
+    expect(imported.apiId).toEqual('http-1234');
+    expect(() => imported.apiEndpoint).toThrow('apiEndpoint is not configured on the imported HttpApi.');
+  });
+
   test('unsetting createDefaultStage', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'api', {
