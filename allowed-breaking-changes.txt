@@ -4022,3 +4022,7 @@ removed:aws-cdk-lib.aws_ecs.AsgCapacityProviderProps.canContainersAccessInstance
 
 # Exposed struct with a ref interface
 weakened:aws-cdk-lib.aws_batch.OrderedComputeEnvironment
+
+# Weakened guarantees of a data structure that's intended for internal construct usage
+weakened:aws-cdk-lib.aws_ec2.FlowLogDestinationConfig
+weakened:aws-cdk-lib.aws_ecs.ExecuteCommandLogConfiguration

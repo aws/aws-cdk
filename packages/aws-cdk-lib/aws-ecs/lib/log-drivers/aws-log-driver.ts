@@ -3,6 +3,7 @@ import { LogDriver, LogDriverConfig } from './log-driver';
 import { removeEmpty } from './utils';
 import * as iam from '../../../aws-iam';
 import * as logs from '../../../aws-logs';
+import { toILogGroup } from '../../../aws-logs/lib/private/ref-utils';
 import { Size, SizeRoundingBehavior, UnscopedValidationError } from '../../../core';
 import { ContainerDefinition } from '../container-definition';
 
@@ -105,7 +106,7 @@ export class AwsLogDriver extends LogDriver {
    *
    * Only available after the LogDriver has been bound to a ContainerDefinition.
    */
-  public logGroup?: logs.ILogGroupRef;
+  private _logGroup?: logs.ILogGroupRef;
 
   /**
    * Constructs a new instance of the AwsLogDriver class.
@@ -128,7 +129,7 @@ export class AwsLogDriver extends LogDriver {
    * Called when the log driver is configured on a container
    */
   public bind(scope: Construct, containerDefinition: ContainerDefinition): LogDriverConfig {
-    this.logGroup = this.props.logGroup || new logs.LogGroup(scope, 'LogGroup', {
+    this._logGroup = this.props.logGroup || new logs.LogGroup(scope, 'LogGroup', {
       retention: this.props.logRetention || Infinity,
     });
 
@@ -144,20 +145,38 @@ export class AwsLogDriver extends LogDriver {
     const execRole = containerDefinition.taskDefinition.obtainExecutionRole();
     execRole.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
-      resources: [this.logGroup.logGroupRef.logGroupArn],
+      resources: [this._logGroup.logGroupRef.logGroupArn],
     }));
 
     return {
       logDriver: 'awslogs',
       options: removeEmpty({
-        'awslogs-group': this.logGroup.logGroupRef.logGroupName,
+        'awslogs-group': this._logGroup.logGroupRef.logGroupName,
         'awslogs-stream-prefix': this.props.streamPrefix,
-        'awslogs-region': this.logGroup.env.region,
+        'awslogs-region': this._logGroup.env.region,
         'awslogs-datetime-format': this.props.datetimeFormat,
         'awslogs-multiline-pattern': this.props.multilinePattern,
         'mode': this.props.mode,
         'max-buffer-size': maxBufferSize,
       }),
     };
+  }
+
+  /**
+   * The log group to send log streams to.
+   *
+   * Only available after the LogDriver has been bound to a ContainerDefinition.
+   */
+  public get logGroup(): logs.ILogGroup | undefined {
+    return this._logGroup && toILogGroup(this._logGroup);
+  }
+
+  /**
+   * The log group to send log streams to.
+   *
+   * Only available after the LogDriver has been bound to a ContainerDefinition.
+   */
+  public set logGroup(logGroup: logs.ILogGroup | undefined) {
+    this._logGroup = logGroup;
   }
 }
