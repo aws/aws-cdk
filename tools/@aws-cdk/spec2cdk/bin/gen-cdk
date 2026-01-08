@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../lib/cfn2ts/gen-cdk.js');
+require('./gen-cdk.js');

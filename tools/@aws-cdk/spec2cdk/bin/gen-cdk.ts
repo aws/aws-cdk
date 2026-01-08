@@ -1,10 +1,10 @@
 import * as path from 'node:path';
 import * as fs from 'fs-extra';
-import writeCloudFormationIncludeMapping from './cloudformation-include';
-import { generateAll } from './index';
-import generateServiceSubmoduleFiles from './submodules';
-import { ModuleMap, writeModuleMap, moduleMapPath } from '../module-topology';
-import * as naming from '../naming';
+import writeCloudFormationIncludeMapping from '../lib/cfn2ts/cloudformation-include';
+import { generateAll } from '../lib/cfn2ts/index';
+import generateServiceSubmoduleFiles from '../lib/cfn2ts/submodules';
+import { ModuleMap, writeModuleMap, moduleMapPath } from '../lib/module-topology';
+import * as naming from '../lib/naming/index';
 
 const libDir = process.cwd();
 const isStable = libDir.endsWith('aws-cdk-lib');
