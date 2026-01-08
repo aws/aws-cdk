@@ -88,6 +88,98 @@ describe('Guard Rules Validation', () => {
     });
   });
 
+  describe('World Accessible Trust Policy Rules (IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY)', () => {
+    const worldAccessibleTemplate = path.join(templatesDir, 'world-accessible-trust-policy.template.json');
+
+    test('Static: should detect Principal: "*" in trust policies', async () => {
+      // Run validation directly on static template (no preprocessing)
+      const success = await runCfnGuardValidation(
+        worldAccessibleTemplate,
+        path.join(rulesDir, 'iam/iam-no-world-accessible-trust-policy.guard'),
+        path.join(outputDir, 'world-accessible-static-test.xml'),
+        'World Accessible Static',
+        new Map(),
+        true
+      );
+      
+      // Should detect world-accessible trust policies (validation should fail)
+      expect(success).toBe(false);
+    });
+
+    test('Resolved: should detect Principal: "*" after intrinsic resolution', async () => {
+      // Process templates to resolve intrinsic functions
+      preprocessTemplates(templatesDir, outputDir);
+      
+      // Run validation on resolved template
+      const success = await runCfnGuardValidation(
+        path.join(outputDir, 'world-accessible-trust-policy.template.json'),
+        path.join(rulesDir, 'iam/iam-no-world-accessible-trust-policy.guard'),
+        path.join(outputDir, 'world-accessible-resolved-test.xml'),
+        'World Accessible Resolved',
+        new Map(),
+        true
+      );
+      
+      // Should detect world-accessible trust policies (validation should fail)
+      expect(success).toBe(false);
+    });
+
+    test('Static: should not flag intrinsic functions as world-accessible', async () => {
+      // Create a template with only intrinsic functions (no wildcards)
+      const compliantIntrinsicTemplate = {
+        Resources: {
+          CompliantRole: {
+            Type: 'AWS::IAM::Role',
+            Properties: {
+              AssumeRolePolicyDocument: {
+                Version: '2012-10-17',
+                Statement: [{
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: [
+                      { 'Fn::GetAtt': ['OtherRole', 'Arn'] },
+                      { 'Ref': 'AWS::AccountId' }
+                    ]
+                  },
+                  Action: 'sts:AssumeRole'
+                }]
+              }
+            }
+          },
+          OtherRole: {
+            Type: 'AWS::IAM::Role',
+            Properties: {
+              AssumeRolePolicyDocument: {
+                Version: '2012-10-17',
+                Statement: [{
+                  Effect: 'Allow',
+                  Principal: { Service: 'lambda.amazonaws.com' },
+                  Action: 'sts:AssumeRole'
+                }]
+              }
+            }
+          }
+        }
+      };
+      
+      const tempFile = path.join(outputDir, 'compliant-intrinsic-only.template.json');
+      fs.writeFileSync(tempFile, JSON.stringify(compliantIntrinsicTemplate, null, 2));
+      
+      // Run validation on static template with intrinsic functions
+      const success = await runCfnGuardValidation(
+        tempFile,
+        path.join(rulesDir, 'iam/iam-no-world-accessible-trust-policy.guard'),
+        path.join(outputDir, 'compliant-intrinsic-static-test.xml'),
+        'Compliant Intrinsic Static',
+        new Map(),
+        true
+      );
+      
+      // Should pass - intrinsic functions are not "*"
+      expect(success).toBe(true);
+    });
+  });
+
 
   describe('Template Processing', () => {
     test('should successfully process all existing templates', () => {
