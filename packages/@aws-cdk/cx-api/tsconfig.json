@@ -33,8 +33,7 @@
     "**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "**/test/**/*.ts"
+    "node_modules"
   ],
   "references": [
     {
