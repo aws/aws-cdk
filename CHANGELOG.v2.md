@@ -37,7 +37,6 @@ aws-ssm: AWS::SSM::MaintenanceWindowTarget: Id attribute removed.
 * **core:** `arnForXxxx()` helpers ignore environments from referenced resources ([#36599](https://github.com/aws/aws-cdk/issues/36599)) ([4744c59](https://github.com/aws/aws-cdk/commit/4744c5919b85a9943d704379a0413ddf242f97c0))
 * **core:** account for `{ Ref }` incompatibility between schema and CFN ([#36493](https://github.com/aws/aws-cdk/issues/36493)) ([3b06942](https://github.com/aws/aws-cdk/commit/3b069427f1e912b9deb8c237706c24833fd6fc04))
 * **ec2:** add proper handling for VPC endpoint service name prefix eu.amazonaws for new region eusc-de-east-1 for ECR & API Gateway services ([#36471](https://github.com/aws/aws-cdk/issues/36471)) ([d5561e0](https://github.com/aws/aws-cdk/commit/d5561e0a3f42e4e0c7ea49e2497bc3c5ced8355f))
-* **elasticache:** security group for `ServerlessCache` does not use default endpoint port ([#35738](https://github.com/aws/aws-cdk/issues/35738)) ([79d91ad](https://github.com/aws/aws-cdk/commit/79d91ad156452540525710b1c5049904bcbfc053))
 * **lambda:** add token resolution validation to capacity providers ([#36275](https://github.com/aws/aws-cdk/issues/36275)) ([c5fbd97](https://github.com/aws/aws-cdk/commit/c5fbd97c1496d1e4c1c8585cdf720bac2937e95c))
 
 
