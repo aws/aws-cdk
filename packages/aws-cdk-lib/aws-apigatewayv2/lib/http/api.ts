@@ -4,34 +4,20 @@ import { HttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { IHttpStage, HttpStage, HttpStageOptions } from './stage';
 import { VpcLink, VpcLinkProps } from './vpc-link';
-import { CfnApi, CfnApiProps, HttpApiHelper } from '.././index';
+import { CfnApi, CfnApiProps } from '.././index';
 import { Metric, MetricOptions } from '../../../aws-cloudwatch';
-import { Duration } from '../../../core';
-import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
+import { ArnFormat, Duration, Stack, Token } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { ApiReference, IApiRef } from '../apigatewayv2.generated';
 import { IApi, IpAddressType } from '../common/api';
 import { ApiBase } from '../common/base';
 import { DomainMappingOptions } from '../common/stage';
 
 /**
- * Represents a reference to an HTTP API
- */
-export interface IHttpApiRef extends IApiRef {
-  /**
-   * Indicates that this is an HTTP API
-   *
-   * Will always return true, but is necessary to prevent accidental structural
-   * equality in TypeScript.
-   */
-  readonly isHttpApi: boolean;
-}
-
-/**
  * Represents an HTTP API
  */
-export interface IHttpApi extends IApi, IHttpApiRef {
+export interface IHttpApi extends IApi {
   /**
    * Default Authorizer applied to all routes in the gateway.
    *
@@ -307,7 +293,6 @@ abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that th
   public abstract override readonly apiId: string;
   public abstract readonly httpApiId: string;
   public abstract override readonly apiEndpoint: string;
-  public readonly isHttpApi = true;
   private vpcLinks: Record<string, VpcLink> = {};
 
   public metricClientError(props?: MetricOptions): Metric {
@@ -348,11 +333,20 @@ abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that th
   }
 
   public arnForExecuteApi(method?: string, path?: string, stage?: string): string {
-    return HttpApiHelper.fromHttpApi(this).arnForExecuteApi(method, path, stage);
-  }
+    if (path && !Token.isUnresolved(path) && !path.startsWith('/')) {
+      throw new ValidationError(`Path must start with '/': ${path}`, this);
+    }
 
-  public get apiRef(): ApiReference {
-    return { apiId: this.apiId };
+    if (method && method.toUpperCase() === 'ANY') {
+      method = '*';
+    }
+
+    return Stack.of(this).formatArn({
+      service: 'execute-api',
+      resource: this.httpApiId,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+      resourceName: `${stage ?? '*'}/${method ?? '*'}${path ?? '/*'}`,
+    });
   }
 }
 
@@ -564,12 +558,4 @@ export class HttpApi extends HttpApiBase {
       });
     });
   }
-}
-
-export function toIHttpApi(x: IHttpApiRef): IHttpApi {
-  const ret = x as IHttpApi;
-  if (!!ret.addVpcLink && !!ret.apiEndpoint && !!ret.apiId && !!ret.arnForExecuteApi && !!ret.metricClientError) {
-    return ret;
-  }
-  throw new UnscopedValidationError(`Input HttpApi ${x.constructor.name} does not implement IHttpApi`);
 }
