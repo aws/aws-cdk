@@ -25,7 +25,7 @@ import {
   ValidationError,
 } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { IServiceRef } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
+import { IServiceRef, ServiceReference } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
 import { RegionInfo } from '../../../region-info';
 import { IAlternateTarget } from '../alternate-target-configuration';
 import {
@@ -605,7 +605,7 @@ export abstract class BaseService extends Resource
       public readonly serviceName = serviceName;
       public readonly cluster = cluster;
 
-      public get serviceRef() {
+      public get serviceRef(): ServiceReference {
         return {
           serviceArn: this.serviceArn,
         };
@@ -640,7 +640,7 @@ export abstract class BaseService extends Resource
   /**
    * A reference to this service.
    */
-  public get serviceRef() {
+  public get serviceRef(): ServiceReference {
     return {
       serviceArn: this.serviceArn,
     };

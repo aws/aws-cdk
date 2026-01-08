@@ -5,7 +5,7 @@ import * as iam from '../../../aws-iam';
 import { IResource, Lazy, Names, PhysicalName, Resource, UnscopedValidationError, ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { ITaskDefinitionRef } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
+import { ITaskDefinitionRef, TaskDefinitionReference } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
 import { IAlternateTarget } from '../alternate-target-configuration';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition, CfnTaskDefinitionProps } from '../ecs.generated';
@@ -306,7 +306,7 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
   /**
    * A reference to this task definition.
    */
-  public get taskDefinitionRef() {
+  public get taskDefinitionRef(): TaskDefinitionReference {
     return {
       taskDefinitionArn: this.taskDefinitionArn,
     };

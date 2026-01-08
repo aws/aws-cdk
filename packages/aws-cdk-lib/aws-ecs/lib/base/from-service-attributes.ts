@@ -3,6 +3,7 @@ import { ArnFormat, FeatureFlags, Fn, Resource, Stack, Token, ValidationError } 
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '../../../cx-api';
 import { IBaseService } from '../base/base-service';
 import { ICluster } from '../cluster';
+import { ServiceReference } from '../ecs.generated';
 
 /**
  * The properties to import from the service.
@@ -58,7 +59,7 @@ export function fromServiceAttributes(scope: Construct, id: string, attrs: Servi
     public readonly serviceName = name;
     public readonly cluster = attrs.cluster;
 
-    public get serviceRef() {
+    public get serviceRef(): ServiceReference {
       return {
         serviceArn: this.serviceArn,
       };
