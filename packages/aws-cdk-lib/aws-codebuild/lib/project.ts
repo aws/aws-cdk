@@ -1545,6 +1545,7 @@ export class Project extends ProjectBase {
       if (status === 'ENABLED' && !(cloudWatchLogs.logGroup)) {
         throw new ValidationError('Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled', this);
       }
+      cloudWatchLogs.logGroup?.grantWrite(this);
 
       cloudwatchConfig = {
         status,

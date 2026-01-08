@@ -41,7 +41,7 @@ export interface CloudWatchLoggingOptions {
    *
    * @default - no log group specified
    */
-  readonly logGroup?: logs.ILogGroupRef;
+  readonly logGroup?: logs.ILogGroup;
 
   /**
    * The prefix of the stream name of the Amazon CloudWatch Logs
