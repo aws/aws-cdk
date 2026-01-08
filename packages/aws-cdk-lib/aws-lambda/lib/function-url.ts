@@ -8,7 +8,7 @@ import { Duration, IResource, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IUrlRef } from '../../interfaces/generated/aws-lambda-interfaces.generated';
+import { IUrlRef, UrlReference } from '../../interfaces/generated/aws-lambda-interfaces.generated';
 
 /**
  * The auth types for a function url
@@ -279,7 +279,7 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
     }
   }
 
-  public get urlRef() {
+  public get urlRef(): UrlReference {
     return {
       functionArn: this.functionArn,
     };
