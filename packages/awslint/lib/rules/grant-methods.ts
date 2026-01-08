@@ -2,6 +2,7 @@ import { Linter } from '../linter';
 
 // List of grant methods that already existed prior to this lint rule being created
 const exemptions: Record<string, Array<string>> = {
+  '@aws-cdk/aws-apprunner-alpha.Secret': ['grantRead'],
   '@aws-cdk/aws-bedrock-agentcore-alpha.BrowserCustomBase': ['grantRead', 'grantUse'],
   '@aws-cdk/aws-bedrock-agentcore-alpha.CodeInterpreterCustomBase': ['grantInvoke', 'grantRead', 'grantUse'],
   '@aws-cdk/aws-bedrock-agentcore-alpha.GatewayBase': ['grantInvoke', 'grantManage', 'grantRead'],
@@ -21,6 +22,11 @@ const exemptions: Record<string, Array<string>> = {
   '@aws-cdk/aws-bedrock-alpha.InferenceProfileBase': ['grantProfileUsage'],
   '@aws-cdk/aws-bedrock-alpha.PromptBase': ['grantGet'],
   '@aws-cdk/aws-bedrock-alpha.PromptRouter': ['grantInvoke'],
+  '@aws-cdk/aws-elasticache-alpha.IamUser': ['grantConnect'],
+  '@aws-cdk/aws-elasticache-alpha.ServerlessCacheBase': ['grantConnect'],
+  '@aws-cdk/aws-glue-alpha.ExternalTable': ['grantRead', 'grantReadWrite', 'grantWrite'],
+  '@aws-cdk/aws-glue-alpha.S3Table': ['grantRead', 'grantReadWrite', 'grantWrite'],
+  '@aws-cdk/aws-glue-alpha.TableBase': ['grantRead', 'grantReadWrite', 'grantWrite'],
   '@aws-cdk/aws-imagebuilder-alpha.Component': ['grantRead'],
   '@aws-cdk/aws-imagebuilder-alpha.ContainerRecipeBase': ['grantRead'],
   '@aws-cdk/aws-imagebuilder-alpha.DistributionConfiguration': ['grantRead'],
@@ -33,10 +39,16 @@ const exemptions: Record<string, Array<string>> = {
   '@aws-cdk/aws-imagebuilder-alpha.S3DockerfileData': ['grantPut', 'grantRead'],
   '@aws-cdk/aws-imagebuilder-alpha.S3WorkflowData': ['grantPut', 'grantRead'],
   '@aws-cdk/aws-imagebuilder-alpha.Workflow': ['grantRead'],
-  '@aws-cdk/aws-neptune-alpha.DatabaseClusterBase': ['grantConnect'],
   '@aws-cdk/aws-iotevents-alpha.Input': ['grantWrite'],
+  '@aws-cdk/aws-location-alpha.GeofenceCollection': ['grantRead'],
+  '@aws-cdk/aws-location-alpha.Map': ['grantRendering'],
+  '@aws-cdk/aws-location-alpha.PlaceIndex': ['grantSearch'],
+  '@aws-cdk/aws-location-alpha.RouteCalculator': ['grantRead'],
+  '@aws-cdk/aws-location-alpha.Tracker': ['grantRead', 'grantUpdateDevicePositions'],
+  '@aws-cdk/aws-neptune-alpha.DatabaseClusterBase': ['grantConnect'],
   '@aws-cdk/aws-sagemaker-alpha.Endpoint': ['grantInvoke'],
   '@aws-cdk/aws-s3tables-alpha.Table': ['grantRead', 'grantReadWrite', 'grantWrite'],
+  '@aws-cdk/example-construct-library.ExampleResource': ['grantRead'],
   'aws-cdk-lib.aws_apigateway.ApiKey': ['grantRead', 'grantReadWrite', 'grantWrite'],
   'aws-cdk-lib.aws_apigateway.Method': ['grantExecute'],
   'aws-cdk-lib.aws_apigateway.RateLimitedApiKey': ['grantRead', 'grantReadWrite', 'grantWrite'],
@@ -89,7 +101,6 @@ const exemptions: Record<string, Array<string>> = {
   'aws-cdk-lib.aws_ssm.StringListParameter': ['grantRead', 'grantWrite'],
   'aws-cdk-lib.aws_ssm.StringParameter': ['grantRead', 'grantWrite'],
   'aws-cdk-lib.aws_stepfunctions.StateMachine': ['grantRead', 'grantRedriveExecution', 'grantStartExecution', 'grantStartSyncExecution', 'grantTaskResponse'],
-  '@aws-cdk/example-construct-library.ExampleResource': ['grantRead'],
   'aws-cdk-lib.custom_resources.WaiterStateMachine': ['grantStartExecution'],
 };
 
