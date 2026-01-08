@@ -1,0 +1,81 @@
+import { Linter } from '../linter';
+
+// List of grant methods that already existed prior to this lint rule being created
+const exemptions: Record<string, Array<string>> = {
+  'aws-cdk-lib.aws_apigateway.ApiKey': ['grantRead', 'grantReadWrite', 'grantWrite'],
+  'aws-cdk-lib.aws_apigateway.Method': ['grantExecute'],
+  'aws-cdk-lib.aws_apigateway.RateLimitedApiKey': ['grantRead', 'grantReadWrite', 'grantWrite'],
+  'aws-cdk-lib.aws_apigatewayv2.ApiKey': ['grantRead', 'grantReadWrite', 'grantWrite'],
+  'aws-cdk-lib.aws_apigatewayv2.RateLimitedApiKey': ['grantRead', 'grantReadWrite', 'grantWrite'],
+  'aws-cdk-lib.aws_apigatewayv2.WebSocketApi': ['grantManageConnections'],
+  'aws-cdk-lib.aws_apigatewayv2.WebSocketStage': ['grantManagementApiAccess'],
+  'aws-cdk-lib.aws_appconfig.Environment': ['grantReadConfig'],
+  'aws-cdk-lib.aws_appmesh.VirtualGateway': ['grantStreamAggregatedResources'],
+  'aws-cdk-lib.aws_appmesh.VirtualNode': ['grantStreamAggregatedResources'],
+  'aws-cdk-lib.aws_appsync.ChannelNamespace': ['grantPublish', 'grantPublishAndSubscribe', 'grantSubscribe'],
+  'aws-cdk-lib.aws_appsync.EventApiBase': ['grantConnect', 'grantPublish', 'grantPublishAndSubscribe', 'grantSubscribe'],
+  'aws-cdk-lib.aws_batch.Secret': ['grantRead'],
+  'aws-cdk-lib.aws_cloudfront.CloudFrontWebDistribution': ['grantCreateInvalidation'],
+  'aws-cdk-lib.aws_cloudfront.Distribution': ['grantCreateInvalidation'],
+  'aws-cdk-lib.aws_cloudfront.experimental.EdgeFunction': ['grantInvoke', 'grantInvokeLatestVersion', 'grantInvokeUrl'],
+  'aws-cdk-lib.aws_codebuild.ReportGroup': ['grantWrite'],
+  'aws-cdk-lib.aws_codecommit.Repository': ['grantPull', 'grantPullPush', 'grantRead'],
+  'aws-cdk-lib.aws_codedeploy.LambdaDeploymentGroup': ['grantPutLifecycleEventHookExecutionStatus'],
+  'aws-cdk-lib.aws_codeguruprofiler.ProfilingGroup': ['grantPublish', 'grantRead'],
+  'aws-cdk-lib.aws_codepipeline_actions.ManualApprovalAction': ['grantManualApproval'],
+  'aws-cdk-lib.aws_dynamodb.TableBase': ['grantFullAccess', 'grantReadData', 'grantReadWriteData', 'grantStreamRead', 'grantTableListStreams', 'grantWriteData'],
+  'aws-cdk-lib.aws_dynamodb.TableBaseV2': ['grantFullAccess', 'grantReadData', 'grantReadWriteData', 'grantStreamRead', 'grantTableListStreams', 'grantWriteData'],
+  'aws-cdk-lib.aws_ecr.RepositoryBase': ['grantPull', 'grantPullPush', 'grantPush', 'grantRead'],
+  'aws-cdk-lib.aws_ecs.Cluster': ['grantTaskProtection'],
+  'aws-cdk-lib.aws_ecs.Secret': ['grantRead'],
+  'aws-cdk-lib.aws_ecs.TaskDefinition': ['grantRun'],
+  'aws-cdk-lib.aws_efs.FileSystem': ['grantRead', 'grantReadWrite', 'grantRootAccess'],
+  'aws-cdk-lib.aws_elasticsearch.Domain': ['grantRead', 'grantReadWrite', 'grantWrite'],
+  'aws-cdk-lib.aws_kinesis.Stream': ['grantRead', 'grantReadWrite', 'grantWrite'],
+  'aws-cdk-lib.aws_kinesis.StreamConsumer': ['grantRead'],
+  'aws-cdk-lib.aws_kinesisfirehose.DeliveryStream': ['grantPutRecords'],
+  'aws-cdk-lib.aws_kinesisfirehose.KinesisStreamSource': ['grantRead'],
+  'aws-cdk-lib.aws_kms.Alias': ['grantDecrypt', 'grantEncrypt', 'grantEncryptDecrypt', 'grantGenerateMac', 'grantSign', 'grantSignVerify', 'grantVerify', 'grantVerifyMac'],
+  'aws-cdk-lib.aws_kms.Key': ['grantAdmin', 'grantDecrypt', 'grantEncrypt', 'grantEncryptDecrypt', 'grantGenerateMac', 'grantSign', 'grantSignVerify', 'grantVerify', 'grantVerifyMac'],
+  'aws-cdk-lib.aws_lambda.FunctionBase': ['grantInvoke', 'grantInvokeLatestVersion', 'grantInvokeUrl'],
+  'aws-cdk-lib.aws_lambda.FunctionUrl': ['grantInvokeUrl'],
+  'aws-cdk-lib.aws_logs.LogGroup': ['grantRead', 'grantWrite'],
+  'aws-cdk-lib.aws_opensearchservice.Domain': ['grantRead', 'grantReadWrite', 'grantWrite'],
+  'aws-cdk-lib.aws_rds.DatabaseClusterBase': ['grantDataApiAccess'],
+  'aws-cdk-lib.aws_rds.ServerlessCluster': ['grantDataApiAccess'],
+  'aws-cdk-lib.aws_rds.ServerlessClusterFromSnapshot': ['grantDataApiAccess'],
+  'aws-cdk-lib.aws_s3_assets.Asset': ['grantRead'],
+  'aws-cdk-lib.aws_scheduler.ScheduleGroup': ['grantDeleteSchedules', 'grantReadSchedules', 'grantWriteSchedules'],
+  'aws-cdk-lib.aws_secretsmanager.Secret': ['grantWrite'],
+  'aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment': ['grantWrite'],
+  'aws-cdk-lib.aws_ses.EmailIdentity': ['grantSendEmail'],
+  'aws-cdk-lib.aws_sns.TopicBase': ['grantPublish', 'grantSubscribe'],
+  'aws-cdk-lib.aws_sqs.QueueBase': ['grantConsumeMessages', 'grantPurge', 'grantSendMessages'],
+  'aws-cdk-lib.aws_ssm.StringListParameter': ['grantRead', 'grantWrite'],
+  'aws-cdk-lib.aws_ssm.StringParameter': ['grantRead', 'grantWrite'],
+  'aws-cdk-lib.aws_stepfunctions.StateMachine': ['grantRead', 'grantRedriveExecution', 'grantStartExecution', 'grantStartSyncExecution', 'grantTaskResponse'],
+  'aws-cdk-lib.custom_resources.WaiterStateMachine': ['grantStartExecution'],
+};
+
+export const grantsMethodsLinter = new Linter(assembly => assembly.allClasses);
+
+grantsMethodsLinter.add({
+  code: 'no-grants',
+  message: 'L2 constructs are not allowed to have new "grantXxx()" methods. Create or re-use a companion <Contruct>Grants class instead.',
+  eval: e => {
+    const grants = Object.values(e.ctx.getMethods())
+      .filter(m => !m.static)
+      .filter(m => m.name.startsWith('grant'))
+      .filter(m => m.parameters.length === 1 && m.parameters[0].type.fqn === 'aws-cdk-lib.aws_iam.IGrantable')
+      .map(m => m.name);
+
+    grants.forEach((grant) => {
+      e.assert(isExempted(e.ctx.fqn, grant), `${e.ctx.fqn}.${grant}`);
+    });
+  },
+});
+
+function isExempted(classFqn: string, methodName: string): boolean {
+  const exemptedMethods = exemptions[classFqn];
+  return exemptedMethods ? exemptedMethods.includes(methodName) : false;
+}
