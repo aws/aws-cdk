@@ -45,7 +45,7 @@ export class S3 implements ses.IReceiptRuleAction {
   constructor(private readonly props: S3Props) {
   }
 
-  public bind(rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {
+  public bind(rule: ses.IReceiptRuleRef): ses.ReceiptRuleActionConfig {
     // Allow SES to write to S3 bucket
     // See https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-permissions.html#receiving-email-permissions-s3
     const keyPattern = this.props.objectKeyPrefix || '';
