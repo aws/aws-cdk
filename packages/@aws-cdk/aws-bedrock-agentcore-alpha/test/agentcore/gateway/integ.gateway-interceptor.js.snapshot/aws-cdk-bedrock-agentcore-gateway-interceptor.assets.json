@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "a8a3fe5fa891edb919fa22779503953d71ebee54e7a99cf528dba76e4ec589ba": {
+      "displayName": "aws-cdk-bedrock-agentcore-gateway-interceptor Template",
+      "source": {
+        "path": "aws-cdk-bedrock-agentcore-gateway-interceptor.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-12283e99": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a8a3fe5fa891edb919fa22779503953d71ebee54e7a99cf528dba76e4ec589ba.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

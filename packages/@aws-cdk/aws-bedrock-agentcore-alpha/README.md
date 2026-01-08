@@ -1091,6 +1091,7 @@ The Gateway construct provides a way to create Amazon Bedrock Agent Core Gateway
 | `exceptionLevel` | `GatewayExceptionLevel` | No | The verbosity of exception messages. Use DEBUG mode to see granular exception messages |
 | `kmsKey` | `kms.IKey` | No | The AWS KMS key used to encrypt data associated with the gateway |
 | `role` | `iam.IRole` | No | The IAM role that provides permissions for the gateway to access AWS services. A new role will be created if not provided |
+| `interceptorConfigurations` | `IGatewayInterceptorConfig[]` | No | Interceptor configurations for custom code execution during gateway invocations. Maximum 2 interceptors (one for REQUEST, one for RESPONSE) |
 | `tags` | `{ [key: string]: string }` | No | Tags for the gateway. A list of key:value pairs of tags to apply to this Gateway resource |
 
 ### Basic Gateway Creation
@@ -1262,6 +1263,79 @@ gateway.grantManage(userRole);
 // Grant specific custom permissions
 gateway.grant(userRole, "bedrock-agentcore:GetGateway");
 ```
+
+### Gateway Interceptors
+
+Interceptors allow custom code execution during gateway invocations. They are useful for access control, request/response transformation, and custom authorization. There are two types of interceptors:
+
+- **REQUEST**: Invoked before the gateway makes a call to the target. Use for custom validations or authorizations.
+- **RESPONSE**: Invoked before the gateway responds to the caller. Use for custom redactions or additions to the response.
+
+A gateway can have at most one interceptor of each type (maximum 2 interceptors total).
+
+```typescript fixture=default
+// Create Lambda functions for interceptors
+const requestInterceptor = new lambda.Function(this, "RequestInterceptor", {
+  runtime: lambda.Runtime.NODEJS_22_X,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+exports.handler = async (event) => {
+  console.log('Request intercepted:', JSON.stringify(event));
+  return {
+    interceptorOutputVersion: '1.0',
+    mcp: {
+      transformedGatewayRequest: {
+        body: event.mcp.gatewayRequest.body,
+      },
+    },
+  };
+};
+  `),
+});
+
+const responseInterceptor = new lambda.Function(this, "ResponseInterceptor", {
+  runtime: lambda.Runtime.NODEJS_22_X,
+  handler: "index.handler",
+  code: lambda.Code.fromInline(`
+exports.handler = async (event) => {
+  console.log('Response intercepted:', JSON.stringify(event));
+  return {
+    interceptorOutputVersion: '1.0',
+    mcp: {
+      transformedGatewayRequest: {
+        body: event.mcp.gatewayRequest.body,
+      },
+      transformedGatewayResponse: {
+        statusCode: event.mcp.gatewayResponse?.statusCode || 200,
+        body: event.mcp.gatewayResponse?.body,
+      },
+    },
+  };
+};
+  `),
+});
+
+// Create gateway with interceptors
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+  authorizerConfiguration: agentcore.GatewayAuthorizer.usingAwsIam(),
+  interceptorConfigurations: [
+    agentcore.GatewayInterceptor.lambda({
+      lambdaFunction: requestInterceptor,
+      interceptionPoints: [agentcore.InterceptionPoint.REQUEST],
+      inputConfiguration: { passRequestHeaders: true },
+    }),
+    agentcore.GatewayInterceptor.lambda({
+      lambdaFunction: responseInterceptor,
+      interceptionPoints: [agentcore.InterceptionPoint.RESPONSE],
+    }),
+  ],
+});
+```
+
+The `passRequestHeaders` option allows request headers to be passed to the interceptor Lambda function. Use with caution as headers may contain sensitive information such as authentication tokens.
+
+For more information, see [Using interceptors with Gateway](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-interceptors.html).
 
 ## Gateway Target
 
