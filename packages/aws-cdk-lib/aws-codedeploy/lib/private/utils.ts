@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IPredefinedDeploymentConfig } from './predefined-deployment-config';
-import * as cloudwatch from '../../../aws-cloudwatch';
 import { Token, Stack, ArnFormat, Arn, Fn, Aws, IResource, ValidationError } from '../../../core';
+import { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 import { IBaseDeploymentConfig } from '../base-deployment-config';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
@@ -36,7 +36,7 @@ export interface renderAlarmConfigProps {
   /**
    * Array of Cloudwatch alarms
    */
-  readonly alarms: cloudwatch.IAlarm[];
+  readonly alarms: IAlarmRef[];
 
   /**
    * Whether to ignore failure to fetch the status of alarms from CloudWatch
@@ -64,7 +64,7 @@ export function renderAlarmConfiguration(props: renderAlarmConfigProps): CfnDepl
   const removeAlarms = props.removeAlarms ?? true;
   if (removeAlarms) {
     return {
-      alarms: props.alarms.length > 0 ? props.alarms.map(a => ({ name: a.alarmName })) : undefined,
+      alarms: props.alarms.length > 0 ? props.alarms.map(a => ({ name: a.alarmRef.alarmName })) : undefined,
       enabled: !ignoreAlarmConfiguration && props.alarms.length > 0,
       ignorePollAlarmFailure: props.ignorePollAlarmFailure,
     };
@@ -73,7 +73,7 @@ export function renderAlarmConfiguration(props: renderAlarmConfigProps): CfnDepl
   return props.alarms.length === 0
     ? undefined
     : {
-      alarms: props.alarms.map(a => ({ name: a.alarmName })),
+      alarms: props.alarms.map(a => ({ name: a.alarmRef.alarmName })),
       enabled: !ignoreAlarmConfiguration,
       ignorePollAlarmFailure: props.ignorePollAlarmFailure,
     };
@@ -96,7 +96,7 @@ enum AutoRollbackEvent {
   DEPLOYMENT_STOP_ON_REQUEST = 'DEPLOYMENT_STOP_ON_REQUEST',
 }
 
-export function renderAutoRollbackConfiguration(scope: Construct, alarms: cloudwatch.IAlarm[], autoRollbackConfig: AutoRollbackConfig = {}):
+export function renderAutoRollbackConfiguration(scope: Construct, alarms: IAlarmRef[], autoRollbackConfig: AutoRollbackConfig = {}):
 CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
   const events = new Array<string>();
 
