@@ -371,6 +371,15 @@ export interface NodegroupOptions {
    * @default - disabled
    */
   readonly enableNodeAutoRepair?: boolean;
+
+  /**
+   * Specifies the roles that will be added to the node role mapping in aws-auth configmap.
+   * If not specified, the default roles `system:bootstrappers` and `system:nodes` will be added.
+   * If the AMI type is Windows, `eks:kube-proxy-windows` will also be added to support Windows nodes.
+   *
+   * @default - `system:bootstrappers` and `system:nodes` will be added, and `eks:kube-proxy-windows` if AMI type is Windows.
+   */
+  readonly nodeRoleGroups?: string[];
 }
 
 /**
@@ -576,12 +585,20 @@ export class Nodegroup extends Resource implements INodegroup {
       // only when ConfigMap is supported
       const supportConfigMap = props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
       if (supportConfigMap) {
-        this.cluster.awsAuth.addRoleMapping(this.role, {
-          username: 'system:node:{{EC2PrivateDNSName}}',
-          groups: [
+        let groups: string[] | undefined = props.nodeRoleGroups;
+        if (!groups) {
+          groups = [
             'system:bootstrappers',
             'system:nodes',
-          ],
+          ];
+          if (props.amiType && windowsAmiTypes.includes(props.amiType)) {
+            groups.push('eks:kube-proxy-windows');
+          }
+        }
+
+        this.cluster.awsAuth.addRoleMapping(this.role, {
+          username: 'system:node:{{EC2PrivateDNSName}}',
+          groups,
         });
       }
       // the controller runs on the worker nodes so they cannot
