@@ -1,5 +1,5 @@
 import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
-import { IProject } from '../../aws-codebuild';
+import { IProjectRef } from '../../aws-codebuild';
 import { IRole, PolicyStatement } from '../../aws-iam';
 import { IScheduleTarget } from '../../aws-scheduler';
 
@@ -8,16 +8,16 @@ import { IScheduleTarget } from '../../aws-scheduler';
  */
 export class CodeBuildStartBuild extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
-    private readonly project: IProject,
+    private readonly project: IProjectRef,
     props: ScheduleTargetBaseProps = {},
   ) {
-    super(props, project.projectArn);
+    super(props, project.projectRef.projectArn);
   }
 
   protected addTargetActionToRole(role: IRole): void {
     role.addToPrincipalPolicy(new PolicyStatement({
       actions: ['codebuild:StartBuild'],
-      resources: [this.project.projectArn],
+      resources: [this.project.projectRef.projectArn],
     }));
   }
 }

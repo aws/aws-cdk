@@ -6,11 +6,12 @@ import * as sns from '../../aws-sns';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { BackupVaultReference, IBackupVaultRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
 
 /**
  * A backup vault
  */
-export interface IBackupVault extends IResource {
+export interface IBackupVault extends IResource, IBackupVaultRef {
   /**
    * The name of a logical container where backups are stored.
    *
@@ -199,6 +200,13 @@ export interface LockConfiguration {
 abstract class BackupVaultBase extends Resource implements IBackupVault {
   public abstract readonly backupVaultName: string;
   public abstract readonly backupVaultArn: string;
+
+  public get backupVaultRef(): BackupVaultReference {
+    return {
+      backupVaultName: this.backupVaultName,
+      backupVaultArn: this.backupVaultArn,
+    };
+  }
 
   /**
    * Grant the actions defined in actions to the given grantee

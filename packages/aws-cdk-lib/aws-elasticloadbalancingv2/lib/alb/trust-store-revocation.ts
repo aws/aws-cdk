@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
-import { ITrustStore } from './trust-store';
 import { IBucketRef } from '../../../aws-s3';
 import { Resource } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { CfnTrustStoreRevocation } from '../elasticloadbalancingv2.generated';
 
 /**
@@ -14,7 +14,7 @@ export interface TrustStoreRevocationProps {
   /**
    * The trust store
    */
-  readonly trustStore: ITrustStore;
+  readonly trustStore: aws_elasticloadbalancingv2.ITrustStoreRef;
 
   /**
    * The revocation file to add
@@ -75,7 +75,7 @@ export class TrustStoreRevocation extends Resource {
     addConstructMetadata(this, props);
 
     new CfnTrustStoreRevocation(this, 'Resource', {
-      trustStoreArn: props.trustStore.trustStoreArn,
+      trustStoreArn: props.trustStore.trustStoreRef.trustStoreArn,
       revocationContents: props.revocationContents?.map(content => ({
         revocationType: content.revocationType,
         s3Bucket: content.bucket.bucketRef.bucketName,

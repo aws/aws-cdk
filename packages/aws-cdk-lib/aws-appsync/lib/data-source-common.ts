@@ -16,6 +16,8 @@ import { IDomain } from '../../aws-opensearchservice';
 import { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
 import { IResolvable, Token, Lazy, Stack } from '../../core';
+import { extractApiIdFromApiRef, toIApi } from './private/ref-utils';
+import { IApiRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * Valid data source types for AppSync
@@ -83,7 +85,7 @@ export interface AppSyncBaseDataSourceProps {
   /**
    * The API to attach this data source to
    */
-  readonly api: IApi;
+  readonly api: IApiRef;
   /**
    * The name of the data source. The only allowed pattern is: {[_A-Za-z][_0-9A-Za-z]*}.
    * Any invalid characters will be automatically removed.
@@ -171,7 +173,7 @@ export abstract class AppSyncBaseDataSource extends Construct {
    */
   public readonly resource: CfnDataSource;
 
-  protected api: IApi;
+  private _api: IApiRef;
   protected serviceRole?: IRole;
 
   constructor(scope: Construct, id: string, props: AppSyncBackedDataSourceProps, extended: AppSyncExtendedDataSourceProps) {
@@ -182,15 +184,30 @@ export abstract class AppSyncBaseDataSource extends Construct {
     // Replace unsupported characters from DataSource name. The only allowed pattern is: {[_A-Za-z][_0-9A-Za-z]*}
     const name = (props.name ?? id);
     const supportedName = Token.isUnresolved(name) ? name : name.replace(/[\W]+/g, '');
+    const apiId = extractApiIdFromApiRef(props.api);
     this.resource = new CfnDataSource(this, 'Resource', {
-      apiId: props.api.apiId,
+      apiId: apiId,
       name: supportedName,
       description: props.description,
       serviceRoleArn: this.serviceRole?.roleArn,
       ...extended,
     });
     this.name = supportedName;
-    this.api = props.api;
+    this._api = props.api;
+  }
+
+  /**
+   * The API this data source is attached to
+   */
+  protected get api(): IApi {
+    return toIApi(this._api);
+  }
+
+  /**
+   * Set the API this data source is attached to
+   */
+  protected set api(api: IApi) {
+    this._api = api;
   }
 }
 

@@ -10,7 +10,7 @@ interface DynamoGetItemOptions {
   /**
    * The name of the table containing the requested item.
    */
-  readonly table: ddb.ITable;
+  readonly table: ddb.ITableRef;
 
   /**
    * Primary key of the item to retrieve.
@@ -106,7 +106,7 @@ export class DynamoGetItem extends sfn.TaskStateBase {
           Stack.of(this).formatArn({
             service: 'dynamodb',
             resource: 'table',
-            resourceName: props.table.tableName,
+            resourceName: props.table.tableRef.tableName,
           }),
         ],
         actions: [`dynamodb:${DynamoMethod.GET}Item`],
@@ -123,7 +123,7 @@ export class DynamoGetItem extends sfn.TaskStateBase {
       Resource: getDynamoResourceArn(DynamoMethod.GET),
       ...this._renderParametersOrArguments({
         Key: transformAttributeValueMap(this.props.key),
-        TableName: this.props.table.tableName,
+        TableName: this.props.table.tableRef.tableName,
         ConsistentRead: this.props.consistentRead ?? false,
         ExpressionAttributeNames: this.props.expressionAttributeNames,
         ProjectionExpression: this.configureProjectionExpression(this.props.projectionExpression),

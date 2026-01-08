@@ -1,5 +1,4 @@
 import { Construct } from 'constructs';
-import { IApi } from './api';
 import { IDomainName } from './domain-name';
 import { IStage } from './stage';
 import { CfnApiMapping, CfnApiMappingProps } from '.././index';
@@ -7,12 +6,13 @@ import { IResource, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { ApiMappingReference, IApiMappingRef, IApiRef, IDomainNameRef } from '../../../interfaces/generated/aws-apigatewayv2-interfaces.generated';
 
 /**
  * Represents an ApiGatewayV2 ApiMapping resource
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-apimapping.html
  */
-export interface IApiMapping extends IResource {
+export interface IApiMapping extends IResource, IApiMappingRef {
   /**
    * ID of the api mapping
    * @attribute
@@ -33,12 +33,12 @@ export interface ApiMappingProps {
   /**
    * The Api to which this mapping is applied
    */
-  readonly api: IApi;
+  readonly api: IApiRef;
 
   /**
    * custom domain name of the mapping target
    */
-  readonly domainName: IDomainName;
+  readonly domainName: IDomainNameRef;
 
   /**
    * stage for the ApiMapping resource
@@ -58,6 +58,13 @@ export interface ApiMappingAttributes {
    * The API mapping ID
    */
   readonly apiMappingId: string;
+
+  /**
+   * Domain name
+   *
+   * @default - Certain operations on the referenced object may fail if not supplied
+   */
+  readonly domainName?: string;
 }
 
 /**
@@ -75,6 +82,15 @@ export class ApiMapping extends Resource implements IApiMapping {
   public static fromApiMappingAttributes(scope: Construct, id: string, attrs: ApiMappingAttributes): IApiMapping {
     class Import extends Resource implements IApiMapping {
       public readonly apiMappingId = attrs.apiMappingId;
+      public get apiMappingRef(): ApiMappingReference {
+        if (!attrs.domainName) {
+          throw new ValidationError('domainName was not supplied when calling ApiMapping.fromApiMappingAttributes()', this);
+        }
+        return {
+          apiMappingId: this.apiMappingId,
+          domainName: attrs.domainName,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -91,7 +107,7 @@ export class ApiMapping extends Resource implements IApiMapping {
   /**
    * API domain name
    */
-  public readonly domainName: IDomainName;
+  private readonly _domainName: IDomainNameRef;
 
   constructor(scope: Construct, id: string, props: ApiMappingProps) {
     super(scope, id);
@@ -112,8 +128,8 @@ export class ApiMapping extends Resource implements IApiMapping {
     }
 
     const apiMappingProps: CfnApiMappingProps = {
-      apiId: props.api.apiId,
-      domainName: props.domainName.name,
+      apiId: props.api.apiRef.apiId,
+      domainName: props.domainName.domainNameRef.domainName,
       stage: stage.stageName,
       apiMappingKey: props.apiMappingKey,
     };
@@ -125,6 +141,31 @@ export class ApiMapping extends Resource implements IApiMapping {
 
     this.apiMappingId = resource.ref;
     this.mappingKey = props.apiMappingKey;
-    this.domainName = props.domainName;
+    this._domainName = props.domainName;
+  }
+
+  /**
+   * API domain name
+   */
+  public get domainName(): IDomainName {
+    const ret = this._domainName as IDomainName;
+    if (!!ret.regionalDomainName && !!ret.regionalHostedZoneId) {
+      return ret;
+    }
+    throw new ValidationError(`Supplied domainName (${this._domainName.constructor.name}) does not implement IDomainName`, this);
+  }
+
+  public get apiMappingRef(): ApiMappingReference {
+    return {
+      apiMappingId: this.apiMappingId,
+      domainName: this._domainName.domainNameRef.domainName,
+    };
+  }
+
+  /**
+   * Return the domain for this API Mapping
+   */
+  public get domainUrl() {
+    return `https://${this._domainName.domainNameRef.domainName}/${this.mappingKey ?? ''}`;
   }
 }

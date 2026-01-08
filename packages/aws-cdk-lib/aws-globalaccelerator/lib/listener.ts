@@ -1,15 +1,15 @@
 import { Construct } from 'constructs';
-import { IAccelerator } from './accelerator';
 import { EndpointGroup, EndpointGroupOptions } from './endpoint-group';
 import * as ga from './globalaccelerator.generated';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IAcceleratorRef, IListenerRef } from '../../interfaces/generated/aws-globalaccelerator-interfaces.generated';
 
 /**
  * Interface of the Listener
  */
-export interface IListener extends cdk.IResource {
+export interface IListener extends cdk.IResource, IListenerRef {
   /**
    * The ARN of the listener
    *
@@ -63,7 +63,7 @@ export interface ListenerProps extends ListenerOptions {
   /**
    * The accelerator for this listener
    */
-  readonly accelerator: IAccelerator;
+  readonly accelerator: IAcceleratorRef;
 }
 
 /**
@@ -130,6 +130,12 @@ export class Listener extends cdk.Resource implements IListener {
   public static fromListenerArn(scope: Construct, id: string, listenerArn: string): IListener {
     class Import extends cdk.Resource implements IListener {
       public readonly listenerArn = listenerArn;
+
+      public get listenerRef(): ga.ListenerReference {
+        return {
+          listenerArn: this.listenerArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -142,13 +148,19 @@ export class Listener extends cdk.Resource implements IListener {
    */
   public readonly listenerName: string;
 
+  public get listenerRef(): ga.ListenerReference {
+    return {
+      listenerArn: this.listenerArn,
+    };
+  }
+
   constructor(scope: Construct, id: string, props: ListenerProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
     const resource = new ga.CfnListener(this, 'Resource', {
-      acceleratorArn: props.accelerator.acceleratorArn,
+      acceleratorArn: props.accelerator.acceleratorRef.acceleratorArn,
       portRanges: props.portRanges.map(m => ({
         fromPort: m.fromPort,
         toPort: m.toPort ?? m.fromPort,

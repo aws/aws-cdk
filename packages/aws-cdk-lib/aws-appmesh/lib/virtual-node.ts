@@ -125,7 +125,6 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   public get virtualNodeRef(): VirtualNodeReference {
     return {
       virtualNodeArn: this.virtualNodeArn,
-      virtualNodeId: this.virtualNodeName,
     };
   }
 

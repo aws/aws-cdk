@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
-import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnWarmPool } from './autoscaling.generated';
 import { Lazy, Names, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
 
 /**
  * Options for a warm pool
@@ -50,7 +50,7 @@ export interface WarmPoolProps extends WarmPoolOptions {
   /**
    * The Auto Scaling group to add the warm pool to.
    */
-  readonly autoScalingGroup: IAutoScalingGroup;
+  readonly autoScalingGroup: IAutoScalingGroupRef;
 }
 
 /**
@@ -77,7 +77,7 @@ export class WarmPool extends Resource {
     }
 
     new CfnWarmPool(this, 'Resource', {
-      autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
+      autoScalingGroupName: props.autoScalingGroup.autoScalingGroupRef.autoScalingGroupName,
       instanceReusePolicy: props.reuseOnScaleIn !== undefined ? {
         reuseOnScaleIn: props.reuseOnScaleIn,
       } : undefined,

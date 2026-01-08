@@ -3,10 +3,11 @@ import { IpAddressType } from './api';
 import { CfnDomainName, CfnDomainNameProps } from '.././index';
 import { ICertificate } from '../../../aws-certificatemanager';
 import { IBucket } from '../../../aws-s3';
-import { IResource, Lazy, Resource, Token } from '../../../core';
+import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { DomainNameReference, IDomainNameRef } from '../apigatewayv2.generated';
 
 /**
  * The minimum version of the SSL protocol that you want API Gateway to use for HTTPS connections.
@@ -37,7 +38,7 @@ export enum EndpointType {
  * Represents an APIGatewayV2 DomainName
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-domainname.html
  */
-export interface IDomainName extends IResource {
+export interface IDomainName extends IResource, IDomainNameRef {
   /**
    * The custom domain name
    * @attribute
@@ -178,6 +179,15 @@ export class DomainName extends Resource implements IDomainName {
       public readonly regionalDomainName = attrs.regionalDomainName;
       public readonly regionalHostedZoneId = attrs.regionalHostedZoneId;
       public readonly name = attrs.name;
+      public readonly domainNameRef: DomainNameReference = {
+        domainName: attrs.regionalDomainName,
+        domainNameArn: Stack.of(this).formatArn({
+          service: 'apigateway',
+          arnFormat: ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME,
+          resource: 'domainnames',
+          resourceName: attrs.regionalDomainName,
+        }),
+      };
     }
     return new Import(scope, id);
   }
@@ -185,6 +195,7 @@ export class DomainName extends Resource implements IDomainName {
   public readonly name: string;
   public readonly regionalDomainName: string;
   public readonly regionalHostedZoneId: string;
+  private readonly domainNameArn: string;
   private readonly domainNameConfigurations: CfnDomainName.DomainNameConfigurationProperty[] = [];
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
@@ -211,6 +222,7 @@ export class DomainName extends Resource implements IDomainName {
     this.name = resource.ref;
     this.regionalDomainName = Token.asString(resource.getAtt('RegionalDomainName'));
     this.regionalHostedZoneId = Token.asString(resource.getAtt('RegionalHostedZoneId'));
+    this.domainNameArn = Token.asString(resource.getAtt('DomainNameArn'));
 
     if (props.certificate) {
       this.addEndpoint(props);
@@ -251,5 +263,12 @@ export class DomainName extends Resource implements IDomainName {
         throw new ValidationError(`an endpoint with type ${endpointType} already exists`, this);
       }
     }
+  }
+
+  public get domainNameRef(): DomainNameReference {
+    return {
+      domainName: this.name,
+      domainNameArn: this.domainNameArn,
+    };
   }
 }

@@ -5,12 +5,12 @@ import { IConfiguration } from './configuration';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
 import { getHash } from './private/hash';
 import { DeletionProtectionCheck } from './util';
-import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { Resource, IResource, Stack, ArnFormat, PhysicalName, Names, ValidationError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { IEnvironmentRef, EnvironmentReference } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
+import { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
 /**
  * Attributes of an existing AWS AppConfig environment to import it.
@@ -411,9 +411,9 @@ export abstract class Monitor {
    * @param alarm The Amazon CloudWatch alarm.
    * @param alarmRole The IAM role for AWS AppConfig to view the alarm state.
    */
-  public static fromCloudWatchAlarm(alarm: cloudwatch.IAlarm, alarmRole?: iam.IRoleRef): Monitor {
+  public static fromCloudWatchAlarm(alarm: IAlarmRef, alarmRole?: iam.IRoleRef): Monitor {
     return {
-      alarmArn: alarm.alarmArn,
+      alarmArn: alarm.alarmRef.alarmArn,
       alarmRoleArn: alarmRole?.roleRef.roleArn,
       monitorType: MonitorType.CLOUDWATCH,
     };

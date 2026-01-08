@@ -17,21 +17,21 @@ export interface LocationCapacity {
    * The number of Amazon EC2 instances you want to maintain in the specified fleet location.
    * This value must fall between the minimum and maximum size limits.
    *
-   * @default the default value is 0
+   * @default 0
    */
   readonly desiredCapacity?: number;
 
   /**
    * The maximum number of instances that are allowed in the specified fleet location.
    *
-   * @default the default value is 1
+   * @default 1
    */
   readonly maxSize?: number;
 
   /**
    * The minimum number of instances that are allowed in the specified fleet location.
    *
-   * @default the default value is 0
+   * @default 0
    */
   readonly minSize?: number;
 }
@@ -49,7 +49,7 @@ export interface Location {
    * Current resource capacity settings in a specified fleet or location.
    * The location value might refer to a fleet's remote location or its home Region.
    *
-   * @default no capacity settings on the specified location
+   * @default - no capacity settings on the specified location
    */
   readonly capacity?: LocationCapacity;
 }
@@ -76,7 +76,7 @@ export interface ServerProcess {
   /**
    * An optional list of parameters to pass to the server executable or Realtime script on launch.
    *
-   * @default no parameters
+   * @default - no parameters
    */
   readonly parameters?: string;
 }
@@ -99,7 +99,7 @@ export interface RuntimeConfiguration {
    *
    * If the game session does not become active before the timeout, it is ended and the game session status is changed to `TERMINATED`.
    *
-   * @default by default game session activation timeout is 300 seconds
+   * @default Duration.seconds(300)
    */
   readonly gameSessionActivationTimeout?: cdk.Duration;
 
@@ -108,7 +108,7 @@ export interface RuntimeConfiguration {
    *
    * This setting limits the instance resources that can be used for new game activations at any one time.
    *
-   * @default no limit
+   * @default - no limit
    */
   readonly maxConcurrentGameSessionActivations?: number;
 
@@ -131,14 +131,14 @@ export interface ResourceCreationLimitPolicy {
   /**
    * The maximum number of game sessions that an individual can create during the policy period.
    *
-   * @default no limit on the number of game sessions that an individual can create during the policy period
+   * @default - no limit on the number of game sessions that an individual can create during the policy period
    */
   readonly newGameSessionsPerCreator?: number;
 
   /**
    * The time span used in evaluating the resource creation limit policy.
    *
-   * @default no policy period
+   * @default - no policy period
    */
   readonly policyPeriod?: cdk.Duration;
 }
@@ -233,7 +233,7 @@ export interface FleetProps {
   /**
    * A human-readable description of the fleet.
    *
-   * @default no description is provided
+   * @default - no description is provided
    */
   readonly description?: string;
 
@@ -245,7 +245,7 @@ export interface FleetProps {
    *
    * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-ec2-instances.html#gamelift-ec2-instances-spot
    *
-   * @default Gamelift fleet use on demand capacity
+   * @default - Gamelift fleet use on demand capacity
    */
   readonly useSpot?: boolean;
 
@@ -260,7 +260,7 @@ export interface FleetProps {
    * Certificate expiration can cause fleets to fail, preventing players from connecting to instances in the fleet.
    * We recommend you replace fleets before 13 months, consider using fleet aliases for a smooth transition.
    *
-   * @default TLS/SSL certificate are generated for the fleet
+   * @default - TLS/SSL certificate are generated for the fleet
    */
   readonly useCertificate?: boolean;
 
@@ -289,7 +289,7 @@ export interface FleetProps {
    *
    * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/vpc-peering.html
    *
-   * @default no vpc peering
+   * @default - no vpc peering
    */
   readonly peerVpc?: ec2.IVpc;
 
@@ -299,7 +299,7 @@ export interface FleetProps {
    * You can specify an existing metric group name or set a new name to create a new metric group.
    * A fleet can be included in only one metric group at a time.
    *
-   * @default Fleet metrics are aggregated with other fleets in the default metric group
+   * @default - Fleet metrics are aggregated with other fleets in the default metric group
    */
   readonly metricGroup?: string;
 
@@ -316,21 +316,21 @@ export interface FleetProps {
    * When creating a new fleet, GameLift automatically sets this value to "1" and initiates a single instance.
    * Once the fleet is active, update this value to trigger GameLift to add or remove instances from the fleet.
    *
-   * @default Default capacity is 0
+   * @default - Default capacity is 0
    */
   readonly desiredCapacity?: number;
 
   /**
    * The minimum number of instances that are allowed in the specified fleet location.
    *
-   * @default the default is 0
+   * @default 0
    */
   readonly minSize?: number;
 
   /**
    * The maximum number of instances that are allowed in the specified fleet location.
    *
-   * @default the default is 1
+   * @default 1
    */
   readonly maxSize?: number;
 
@@ -361,14 +361,14 @@ export interface FleetProps {
    * You can add any GameLift-supported AWS Region as a remote location, in the form of an AWS Region code such as `us-west-2`.
    * To create a fleet with instances in the home region only, omit this parameter.
    *
-   * @default Create a fleet with instances in the home region only
+   * @default - Create a fleet with instances in the home region only
    */
   readonly locations?: Location[];
 
   /**
    * A policy that limits the number of game sessions that an individual player can create on instances in this fleet within a specified span of time.
    *
-   * @default No resource creation limit policy
+   * @default - No resource creation limit policy
    */
   readonly resourceCreationLimitPolicy?: ResourceCreationLimitPolicy;
 }
@@ -382,7 +382,7 @@ export interface FleetAttributes {
    *
    * At least one of `fleetArn` and `fleetId` must be provided.
    *
-   * @default derived from `fleetId`.
+   * @default - derived from `fleetId`.
    */
   readonly fleetArn?: string;
 
@@ -391,14 +391,14 @@ export interface FleetAttributes {
    *
    * At least one of `fleetId` and `fleetArn`  must be provided.
    *
-   * @default derived from `fleetArn`.
+   * @default - derived from `fleetArn`.
    */
   readonly fleetId?: string;
 
   /**
    * The IAM role assumed by GameLift fleet instances to access AWS ressources.
    *
-   * @default the imported fleet cannot be granted access to other resources as an `iam.IGrantable`.
+   * @default - the imported fleet cannot be granted access to other resources as an `iam.IGrantable`.
    */
   readonly role?: iam.IRole;
 }

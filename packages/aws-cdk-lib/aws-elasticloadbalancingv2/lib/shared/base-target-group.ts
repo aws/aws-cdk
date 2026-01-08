@@ -4,6 +4,7 @@ import { Attributes, renderAttributes } from './util';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 
 /**
@@ -235,6 +236,22 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
    * The ARN of the target group
    */
   public readonly targetGroupArn: string;
+
+  /**
+   * A reference to this target group
+   */
+  public get targetGroupRef(): aws_elasticloadbalancingv2.TargetGroupReference {
+    return {
+      targetGroupArn: this.targetGroupArn,
+    };
+  }
+
+  /**
+   * The environment this resource belongs to
+   */
+  public get env(): cdk.ResourceEnvironment {
+    return cdk.Stack.of(this).env;
+  }
 
   /**
    * The full name of the target group
@@ -541,7 +558,7 @@ export interface TargetGroupImportProps extends TargetGroupAttributes {
 /**
  * A target group
  */
-export interface ITargetGroup extends IConstruct {
+export interface ITargetGroup extends IConstruct, aws_elasticloadbalancingv2.ITargetGroupRef {
   /**
    * The name of the target group
    */

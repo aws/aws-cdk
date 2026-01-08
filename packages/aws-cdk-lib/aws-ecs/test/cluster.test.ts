@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/unbound-method */
+
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as autoscaling from '../../aws-autoscaling';
@@ -95,7 +95,7 @@ describe('cluster', () => {
                 {
                   Ref: 'EcsCluster97242B84',
                 },
-                // eslint-disable-next-line max-len
+
                 ' >> /etc/ecs/ecs.config',
               ],
             ],
@@ -264,7 +264,7 @@ describe('cluster', () => {
                 {
                   Ref: 'EcsCluster97242B84',
                 },
-                // eslint-disable-next-line max-len
+
                 ' >> /etc/ecs/ecs.config',
               ],
             ],
@@ -790,7 +790,7 @@ describe('cluster', () => {
                 {
                   Ref: 'EcsCluster97242B84',
                 },
-                // eslint-disable-next-line max-len
+
                 ' >> /etc/ecs/ecs.config',
               ],
             ],
@@ -1783,7 +1783,7 @@ describe('cluster', () => {
               {
                 Ref: 'EcsCluster97242B84',
               },
-              // eslint-disable-next-line max-len
+
               ' >> /etc/ecs/ecs.config',
             ],
           ],
@@ -3312,6 +3312,360 @@ describe('cluster', () => {
             CidrIp: '0.0.0.0/0',
           },
         ],
+      });
+    });
+
+    test('creates default instance profile when ec2InstanceProfile is not provided', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      // WHEN
+      const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        subnets: vpc.privateSubnets,
+      });
+
+      cluster.addManagedInstancesCapacityProvider(capacityProvider);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        ManagedInstancesProvider: {
+          InfrastructureRoleArn: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('provider.*Role.*'),
+              'Arn',
+            ],
+          },
+          InstanceLaunchTemplate: {
+            Ec2InstanceProfileArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('provider.*InstanceProfile.*'),
+                'Arn',
+              ],
+            },
+            NetworkConfiguration: {
+              Subnets: [
+                { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+                { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+              ],
+            },
+          },
+        },
+      });
+
+      // Verify default infrastructure role is created
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'ecs.amazonaws.com',
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        ManagedPolicyArns: [
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':iam::aws:policy/AmazonECSInfrastructureRolePolicyForManagedInstances',
+              ],
+            ],
+          },
+        ],
+      });
+
+      // Verify default instance profile is created with ecsInstanceRole prefix
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::InstanceProfile', {
+        InstanceProfileName: Match.stringLikeRegexp('^ecsInstanceRole.*'),
+        Roles: [
+          { Ref: Match.stringLikeRegexp('provider.*InstanceRole.*') },
+        ],
+      });
+
+      // Verify default instance role is created
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'ec2.amazonaws.com',
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        Policies: [
+          {
+            PolicyName: 'ECSInstancePolicy',
+            PolicyDocument: {
+              Statement: [
+                {
+                  Sid: 'ECSAgentDiscoverPollEndpointPermissions',
+                  Effect: 'Allow',
+                  Action: 'ecs:DiscoverPollEndpoint',
+                  Resource: '*',
+                },
+                {
+                  Sid: 'ECSAgentRegisterPermissions',
+                  Effect: 'Allow',
+                  Action: 'ecs:RegisterContainerInstance',
+                  Resource: {
+                    'Fn::GetAtt': [
+                      'EcsCluster97242B84',
+                      'Arn',
+                    ],
+                  },
+                },
+                {
+                  Sid: 'ECSAgentPollPermissions',
+                  Effect: 'Allow',
+                  Action: 'ecs:Poll',
+                  Resource: {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        { Ref: 'AWS::Partition' },
+                        ':ecs:',
+                        { Ref: 'AWS::Region' },
+                        ':',
+                        { Ref: 'AWS::AccountId' },
+                        ':container-instance/*',
+                      ],
+                    ],
+                  },
+                },
+                {
+                  Sid: 'ECSAgentTelemetryPermissions',
+                  Effect: 'Allow',
+                  Action: ['ecs:StartTelemetrySession', 'ecs:PutSystemLogEvents'],
+                  Resource: {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        { Ref: 'AWS::Partition' },
+                        ':ecs:',
+                        { Ref: 'AWS::Region' },
+                        ':',
+                        { Ref: 'AWS::AccountId' },
+                        ':container-instance/*',
+                      ],
+                    ],
+                  },
+                },
+                {
+                  Sid: 'ECSAgentStateChangePermissions',
+                  Effect: 'Allow',
+                  Action: ['ecs:SubmitAttachmentStateChanges', 'ecs:SubmitTaskStateChange'],
+                  Resource: {
+                    'Fn::GetAtt': [
+                      'EcsCluster97242B84',
+                      'Arn',
+                    ],
+                  },
+                },
+              ],
+              Version: '2012-10-17',
+            },
+          },
+        ],
+      });
+
+      // Verify public properties are accessible
+      expect(capacityProvider.infrastructureRole).toBeDefined();
+      expect(capacityProvider.ec2InstanceProfile).toBeDefined();
+    });
+
+    test('uses provided instance profile when ec2InstanceProfile is specified', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const instanceRole = new iam.Role(stack, 'CustomInstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonECSInstanceRolePolicyForManagedInstances'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'CustomInstanceProfile', {
+        role: instanceRole,
+        instanceProfileName: 'customInstanceProfile',
+      });
+
+      // WHEN
+      const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        ec2InstanceProfile: instanceProfile,
+        subnets: vpc.privateSubnets,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        ManagedInstancesProvider: {
+          InstanceLaunchTemplate: {
+            Ec2InstanceProfileArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('CustomInstanceProfile.*'),
+                'Arn',
+              ],
+            },
+          },
+        },
+      });
+
+      // Verify the provided instance profile is used
+      expect(capacityProvider.ec2InstanceProfile).toBe(instanceProfile);
+    });
+
+    test('creates default infrastructure role when not provided', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      // WHEN
+      const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        subnets: vpc.privateSubnets,
+      });
+
+      cluster.addManagedInstancesCapacityProvider(capacityProvider);
+
+      // THEN
+      // Verify default infrastructure role is created with correct managed policy
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'ecs.amazonaws.com',
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        ManagedPolicyArns: [
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':iam::aws:policy/AmazonECSInfrastructureRolePolicyForManagedInstances',
+              ],
+            ],
+          },
+        ],
+      });
+
+      // Verify the infrastructure role is accessible
+      expect(capacityProvider.infrastructureRole).toBeDefined();
+    });
+
+    test('uses provided infrastructure role when specified', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      const customInfrastructureRole = new iam.Role(stack, 'CustomInfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonECSInfrastructureRolePolicyForManagedInstances'),
+        ],
+      });
+
+      // WHEN
+      const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        infrastructureRole: customInfrastructureRole,
+        subnets: vpc.privateSubnets,
+      });
+
+      cluster.addManagedInstancesCapacityProvider(capacityProvider);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        ManagedInstancesProvider: {
+          InfrastructureRoleArn: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('CustomInfrastructureRole.*'),
+              'Arn',
+            ],
+          },
+        },
+      });
+
+      // Verify the provided infrastructure role is used
+      expect(capacityProvider.infrastructureRole).toBe(customInfrastructureRole);
+    });
+
+    test('default instance profile name has ecsInstanceRole prefix', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      // WHEN
+      const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        subnets: vpc.privateSubnets,
+      });
+
+      cluster.addManagedInstancesCapacityProvider(capacityProvider);
+
+      // THEN
+      // Verify the instance profile name starts with 'ecsInstanceRole'
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::InstanceProfile', {
+        InstanceProfileName: Match.stringLikeRegexp('^ecsInstanceRole.*'),
+      });
+    });
+
+    test('default instance role name has ecsInstanceRole prefix', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      // WHEN
+      const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        subnets: vpc.privateSubnets,
+      });
+
+      cluster.addManagedInstancesCapacityProvider(capacityProvider);
+
+      // THEN
+      // Verify the instance role name starts with 'ecsInstanceRole'
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'ec2.amazonaws.com',
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        RoleName: Match.stringLikeRegexp('^ecsInstanceRole.*'),
       });
     });
 

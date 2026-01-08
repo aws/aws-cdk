@@ -27,6 +27,7 @@ import {
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
+import { IRepositoryRef, RepositoryReference } from '../../interfaces/generated/aws-ecr-interfaces.generated';
 
 const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
 const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
@@ -34,7 +35,7 @@ const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
 /**
  * Represents an ECR repository.
  */
-export interface IRepository extends IResource {
+export interface IRepository extends IResource, IRepositoryRef {
   /**
    * The name of the repository
    * @attribute
@@ -190,6 +191,16 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * The ARN of the repository
    */
   public abstract readonly repositoryArn: string;
+
+  /**
+   * A reference to this repository
+   */
+  public get repositoryRef(): RepositoryReference {
+    return {
+      repositoryName: this.repositoryName,
+      repositoryArn: this.repositoryArn,
+    };
+  }
 
   /**
    * Add a policy statement to the repository's resource policy

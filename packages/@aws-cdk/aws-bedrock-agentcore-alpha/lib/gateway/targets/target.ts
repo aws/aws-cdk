@@ -115,7 +115,7 @@ export interface GatewayTargetOpenApiProps extends GatewayTargetCommonProps {
   /**
    * Credential providers for authentication
    * OpenAPI targets support API key and OAuth authentication (not IAM)
-   * @default: If not provided, defaults to IAM role which will fail at runtime
+   * @default - If not provided, defaults to IAM role which will fail at runtime
    */
   readonly credentialProviderConfigurations?: ICredentialProviderConfig[];
 }

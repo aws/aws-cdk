@@ -115,7 +115,7 @@ export interface NatGatewayOptions {
    * The maximum amount of time to wait before forcibly releasing the
    * IP addresses if connections are still in progress.
    *
-   * @default 350seconds
+   * @default Duration.seconds(350)
    */
   readonly maxDrainDuration?: Duration;
 

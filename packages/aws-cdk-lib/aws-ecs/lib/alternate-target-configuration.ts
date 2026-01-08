@@ -1,6 +1,7 @@
 import { IConstruct } from 'constructs';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
+import { aws_elasticloadbalancingv2 } from '../../interfaces';
 
 /**
  * Represents a listener configuration for advanced load balancer settings
@@ -111,7 +112,7 @@ export interface AlternateTargetProps extends AlternateTargetOptions {
   /**
    * The alternate target group
    */
-  readonly alternateTargetGroup: elbv2.ITargetGroup;
+  readonly alternateTargetGroup: aws_elasticloadbalancingv2.ITargetGroupRef;
 
   /**
    * The production listener rule ARN (ALB) or listener ARN (NLB)
@@ -138,7 +139,7 @@ export class AlternateTarget implements IAlternateTarget {
     });
 
     const config: AlternateTargetConfig = {
-      alternateTargetGroupArn: this.props.alternateTargetGroup.targetGroupArn,
+      alternateTargetGroupArn: this.props.alternateTargetGroup.targetGroupRef.targetGroupArn,
       roleArn: role.roleArn,
       productionListenerRule: this.props.productionListener._listenerArn,
       testListenerRule: this.props.testListener?._listenerArn,

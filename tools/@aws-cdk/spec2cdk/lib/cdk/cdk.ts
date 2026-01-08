@@ -14,6 +14,7 @@ export class CdkCore extends ExternalModule {
   public readonly TagManager = $T(Type.fromName(this, 'TagManager'));
   public readonly TagType = $T(Type.fromName(this, 'TagType'));
   public readonly Fn = $T(Type.fromName(this, 'Fn'));
+  public readonly Aws = $T(Type.fromName(this, 'Aws'));
   public readonly ITaggable = Type.fromName(this, 'ITaggable');
   public readonly ITaggableV2 = Type.fromName(this, 'ITaggableV2');
   public readonly IResolvable = Type.fromName(this, 'IResolvable');

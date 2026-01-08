@@ -11,7 +11,7 @@ import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
 import { ContextProvider } from './context-provider';
-import { Environment } from './environment';
+import { Environment, ResourceEnvironment } from './environment';
 import { FeatureFlags } from './feature-flags';
 import { PermissionsBoundary, PERMISSIONS_BOUNDARY_CONTEXT_KEY } from './permissions-boundary';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
@@ -1632,6 +1632,16 @@ export class Stack extends Construct implements ITaggable {
    */
   public removeStackTag(tagName: string) {
     this.tags.removeTag(tagName, 0);
+  }
+
+  /**
+   * The environment this Stack deploys to
+   */
+  public get env(): ResourceEnvironment {
+    return {
+      account: this.account,
+      region: this.region,
+    };
   }
 }
 

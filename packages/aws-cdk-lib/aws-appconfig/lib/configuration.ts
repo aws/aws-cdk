@@ -1027,9 +1027,9 @@ export abstract class ConfigurationSource {
    *
    * @param pipeline The pipeline where the configuration is stored
    */
-  public static fromPipeline(pipeline: cp.IPipeline): ConfigurationSource {
+  public static fromPipeline(pipeline: cp.IPipelineRef): ConfigurationSource {
     return {
-      locationUri: `codepipeline://${pipeline.pipelineName}`,
+      locationUri: `codepipeline://${pipeline.pipelineRef.pipelineName}`,
       type: ConfigurationSourceType.CODE_PIPELINE,
     };
   }

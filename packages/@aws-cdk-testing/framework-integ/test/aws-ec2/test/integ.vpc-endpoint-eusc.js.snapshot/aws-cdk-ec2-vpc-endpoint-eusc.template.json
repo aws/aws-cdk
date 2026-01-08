@@ -1,0 +1,761 @@
+{
+ "Resources": {
+  "EuscVpc3A33AC72": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc"
+     }
+    ]
+   }
+  },
+  "EuscVpcPublicSubnet1SubnetEC64415A": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "EuscVpc3A33AC72"
+    }
+   }
+  },
+  "EuscVpcPublicSubnet1RouteTable99E795D8": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "EuscVpc3A33AC72"
+    }
+   }
+  },
+  "EuscVpcPublicSubnet1RouteTableAssociationA1C04739": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "EuscVpcPublicSubnet1RouteTable99E795D8"
+    },
+    "SubnetId": {
+     "Ref": "EuscVpcPublicSubnet1SubnetEC64415A"
+    }
+   }
+  },
+  "EuscVpcPublicSubnet1DefaultRoute993665D9": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "EuscVpcIGWA0ED82C6"
+    },
+    "RouteTableId": {
+     "Ref": "EuscVpcPublicSubnet1RouteTable99E795D8"
+    }
+   },
+   "DependsOn": [
+    "EuscVpcVPCGW6C7049E3"
+   ]
+  },
+  "EuscVpcPublicSubnet1EIPE5FB38EC": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "EuscVpcPublicSubnet1NATGateway4E58DBE6": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "EuscVpcPublicSubnet1EIPE5FB38EC",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "EuscVpcPublicSubnet1SubnetEC64415A"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "EuscVpcPublicSubnet1DefaultRoute993665D9",
+    "EuscVpcPublicSubnet1RouteTableAssociationA1C04739"
+   ]
+  },
+  "EuscVpcPublicSubnet2Subnet29323D2A": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "EuscVpc3A33AC72"
+    }
+   }
+  },
+  "EuscVpcPublicSubnet2RouteTable4181FE57": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "EuscVpc3A33AC72"
+    }
+   }
+  },
+  "EuscVpcPublicSubnet2RouteTableAssociation8712A50A": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "EuscVpcPublicSubnet2RouteTable4181FE57"
+    },
+    "SubnetId": {
+     "Ref": "EuscVpcPublicSubnet2Subnet29323D2A"
+    }
+   }
+  },
+  "EuscVpcPublicSubnet2DefaultRoute46F5437F": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "EuscVpcIGWA0ED82C6"
+    },
+    "RouteTableId": {
+     "Ref": "EuscVpcPublicSubnet2RouteTable4181FE57"
+    }
+   },
+   "DependsOn": [
+    "EuscVpcVPCGW6C7049E3"
+   ]
+  },
+  "EuscVpcPublicSubnet2EIP9CD23FF6": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "EuscVpcPublicSubnet2NATGatewayE13F1AD0": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "EuscVpcPublicSubnet2EIP9CD23FF6",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "EuscVpcPublicSubnet2Subnet29323D2A"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc/PublicSubnet2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "EuscVpcPublicSubnet2DefaultRoute46F5437F",
+    "EuscVpcPublicSubnet2RouteTableAssociation8712A50A"
+   ]
+  },
+  "EuscVpcPrivateSubnet1Subnet51FC9BA1": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "EuscVpc3A33AC72"
+    }
+   }
+  },
+  "EuscVpcPrivateSubnet1RouteTableEA932BB6": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "EuscVpc3A33AC72"
+    }
+   }
+  },
+  "EuscVpcPrivateSubnet1RouteTableAssociationC359C2BE": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "EuscVpcPrivateSubnet1RouteTableEA932BB6"
+    },
+    "SubnetId": {
+     "Ref": "EuscVpcPrivateSubnet1Subnet51FC9BA1"
+    }
+   }
+  },
+  "EuscVpcPrivateSubnet1DefaultRoute6501583F": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "EuscVpcPublicSubnet1NATGateway4E58DBE6"
+    },
+    "RouteTableId": {
+     "Ref": "EuscVpcPrivateSubnet1RouteTableEA932BB6"
+    }
+   }
+  },
+  "EuscVpcPrivateSubnet2Subnet8CF4EF51": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "EuscVpc3A33AC72"
+    }
+   }
+  },
+  "EuscVpcPrivateSubnet2RouteTable711E8DF0": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "EuscVpc3A33AC72"
+    }
+   }
+  },
+  "EuscVpcPrivateSubnet2RouteTableAssociationEB2DCC81": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "EuscVpcPrivateSubnet2RouteTable711E8DF0"
+    },
+    "SubnetId": {
+     "Ref": "EuscVpcPrivateSubnet2Subnet8CF4EF51"
+    }
+   }
+  },
+  "EuscVpcPrivateSubnet2DefaultRoute062F625F": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "EuscVpcPublicSubnet2NATGatewayE13F1AD0"
+    },
+    "RouteTableId": {
+     "Ref": "EuscVpcPrivateSubnet2RouteTable711E8DF0"
+    }
+   }
+  },
+  "EuscVpcIGWA0ED82C6": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc"
+     }
+    ]
+   }
+  },
+  "EuscVpcVPCGW6C7049E3": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "EuscVpcIGWA0ED82C6"
+    },
+    "VpcId": {
+     "Ref": "EuscVpc3A33AC72"
+    }
+   }
+  },
+  "EuscVpcEcrDkrEndpointSecurityGroupD817215F": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc/EcrDkrEndpoint/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Fn::GetAtt": [
+        "EuscVpc3A33AC72",
+        "CidrBlock"
+       ]
+      },
+      "Description": {
+       "Fn::Join": [
+        "",
+        [
+         "from ",
+         {
+          "Fn::GetAtt": [
+           "EuscVpc3A33AC72",
+           "CidrBlock"
+          ]
+         },
+         ":443"
+        ]
+       ]
+      },
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc"
+     }
+    ],
+    "VpcId": {
+     "Ref": "EuscVpc3A33AC72"
+    }
+   }
+  },
+  "EuscVpcEcrDkrEndpoint46888F6B": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "EuscVpcEcrDkrEndpointSecurityGroupD817215F",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceName": "eu.amazonaws.eusc-de-east-1.ecr.dkr",
+    "SubnetIds": [
+     {
+      "Ref": "EuscVpcPrivateSubnet1Subnet51FC9BA1"
+     },
+     {
+      "Ref": "EuscVpcPrivateSubnet2Subnet8CF4EF51"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "EuscVpc3A33AC72"
+    }
+   }
+  },
+  "EuscVpcEcrApiEndpointSecurityGroup2E7EB95A": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc/EcrApiEndpoint/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Fn::GetAtt": [
+        "EuscVpc3A33AC72",
+        "CidrBlock"
+       ]
+      },
+      "Description": {
+       "Fn::Join": [
+        "",
+        [
+         "from ",
+         {
+          "Fn::GetAtt": [
+           "EuscVpc3A33AC72",
+           "CidrBlock"
+          ]
+         },
+         ":443"
+        ]
+       ]
+      },
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc"
+     }
+    ],
+    "VpcId": {
+     "Ref": "EuscVpc3A33AC72"
+    }
+   }
+  },
+  "EuscVpcEcrApiEndpoint5EBBE794": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "EuscVpcEcrApiEndpointSecurityGroup2E7EB95A",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceName": "eu.amazonaws.eusc-de-east-1.ecr.api",
+    "SubnetIds": [
+     {
+      "Ref": "EuscVpcPrivateSubnet1Subnet51FC9BA1"
+     },
+     {
+      "Ref": "EuscVpcPrivateSubnet2Subnet8CF4EF51"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "EuscVpc3A33AC72"
+    }
+   }
+  },
+  "EuscVpcApiGatewayEndpointSecurityGroupC1504573": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc/ApiGatewayEndpoint/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Fn::GetAtt": [
+        "EuscVpc3A33AC72",
+        "CidrBlock"
+       ]
+      },
+      "Description": {
+       "Fn::Join": [
+        "",
+        [
+         "from ",
+         {
+          "Fn::GetAtt": [
+           "EuscVpc3A33AC72",
+           "CidrBlock"
+          ]
+         },
+         ":443"
+        ]
+       ]
+      },
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc"
+     }
+    ],
+    "VpcId": {
+     "Ref": "EuscVpc3A33AC72"
+    }
+   }
+  },
+  "EuscVpcApiGatewayEndpointF299370E": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "EuscVpcApiGatewayEndpointSecurityGroupC1504573",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceName": "eu.amazonaws.eusc-de-east-1.execute-api",
+    "SubnetIds": [
+     {
+      "Ref": "EuscVpcPrivateSubnet1Subnet51FC9BA1"
+     },
+     {
+      "Ref": "EuscVpcPrivateSubnet2Subnet8CF4EF51"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "EuscVpc3A33AC72"
+    }
+   }
+  },
+  "EuscVpcSecurityHubEndpointSecurityGroup25CED636": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc/SecurityHubEndpoint/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Fn::GetAtt": [
+        "EuscVpc3A33AC72",
+        "CidrBlock"
+       ]
+      },
+      "Description": {
+       "Fn::Join": [
+        "",
+        [
+         "from ",
+         {
+          "Fn::GetAtt": [
+           "EuscVpc3A33AC72",
+           "CidrBlock"
+          ]
+         },
+         ":443"
+        ]
+       ]
+      },
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc"
+     }
+    ],
+    "VpcId": {
+     "Ref": "EuscVpc3A33AC72"
+    }
+   }
+  },
+  "EuscVpcSecurityHubEndpoint792A0F12": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "EuscVpcSecurityHubEndpointSecurityGroup25CED636",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceName": "eu.amazonaws.eusc-de-east-1.securityhub",
+    "SubnetIds": [
+     {
+      "Ref": "EuscVpcPrivateSubnet1Subnet51FC9BA1"
+     },
+     {
+      "Ref": "EuscVpcPrivateSubnet2Subnet8CF4EF51"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint-eusc/EuscVpc"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "EuscVpc3A33AC72"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
