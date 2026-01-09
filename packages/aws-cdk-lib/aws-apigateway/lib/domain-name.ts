@@ -39,15 +39,15 @@ export enum SecurityPolicy {
   TLS_1_2 = 'TLS_1_2',
 
   /** Cipher suite TLS 1.3 2025 for EDGE endpoint */
-  SecurityPolicy_TLS13_2025_EDGE = 'SecurityPolicy_TLS13_2025_EDGE',
-  SecurityPolicy_TLS12_PFS_2025_EDGE = 'SecurityPolicy_TLS12_PFS_2025_EDGE',
-  SecurityPolicy_TLS12_2018_EDGE = 'SecurityPolicy_TLS12_2018_EDGE',
+  TLS13_2025_EDGE = 'SecurityPolicy_TLS13_2025_EDGE',
+  TLS12_PFS_2025_EDGE = 'SecurityPolicy_TLS12_PFS_2025_EDGE',
+  TLS12_2018_EDGE = 'SecurityPolicy_TLS12_2018_EDGE',
 
   /** Cipher suite TLS 1.3 2025 for REGIONAL endpoint */
-  SecurityPolicy_TLS13_1_3_2025_09 = 'SecurityPolicy_TLS13_1_3_2025_09',
-  SecurityPolicy_TLS13_1_3_FIPS_2025_09 = 'SecurityPolicy_TLS13_1_3_FIPS_2025_09',
-  SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09 = 'SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09',
-  SecurityPolicy_TLS13_1_2_PQ_2025_09 = 'SecurityPolicy_TLS13_1_2_PQ_2025_09',
+  TLS13_1_3_2025_09 = 'SecurityPolicy_TLS13_1_3_2025_09',
+  TLS13_1_3_FIPS_2025_09 = 'SecurityPolicy_TLS13_1_3_FIPS_2025_09',
+  TLS13_1_2_PFS_PQ_2025_09 = 'SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09',
+  TLS13_1_2_PQ_2025_09 = 'SecurityPolicy_TLS13_1_2_PQ_2025_09',
 }
 
 export interface DomainNameOptions {

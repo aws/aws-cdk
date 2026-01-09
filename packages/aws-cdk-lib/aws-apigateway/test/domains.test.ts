@@ -78,7 +78,7 @@ describe('domains', () => {
     new apigw.DomainName(stack, 'your-domain', {
       domainName: 'new.example.com',
       certificate: cert,
-      securityPolicy: apigw.SecurityPolicy.SecurityPolicy_TLS13_1_3_2025_09,
+      securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
       endpointAccessMode: EndpointAccessMode.STRICT
     });
 
