@@ -577,6 +577,8 @@
     "./aws-xray": "./lib/services/aws-xray/index.js",
     "./aws-xray/mixins": "./lib/services/aws-xray/mixins.js",
     "./core": "./lib/core/index.js",
+    "./dev-servicecatalog": "./lib/services/dev-servicecatalog/index.js",
+    "./dev-servicecatalog/mixins": "./lib/services/dev-servicecatalog/mixins.js",
     "./mixins": "./lib/mixins/index.js",
     "./with": "./lib/with.js"
   },
