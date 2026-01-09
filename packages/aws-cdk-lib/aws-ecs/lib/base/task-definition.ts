@@ -5,6 +5,7 @@ import * as iam from '../../../aws-iam';
 import { IResource, Lazy, Names, PhysicalName, Resource, UnscopedValidationError, ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { ITaskDefinitionRef, TaskDefinitionReference } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
 import { IAlternateTarget } from '../alternate-target-configuration';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition, CfnTaskDefinitionProps } from '../ecs.generated';
@@ -17,7 +18,7 @@ import { RuntimePlatform } from '../runtime-platform';
 /**
  * The interface for all task definitions.
  */
-export interface ITaskDefinition extends IResource {
+export interface ITaskDefinition extends IResource, ITaskDefinitionRef {
   /**
    * ARN of this task definition
    * @attribute
@@ -301,6 +302,15 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
   public abstract readonly taskDefinitionArn: string;
   public abstract readonly taskRole: iam.IRole;
   public abstract readonly executionRole?: iam.IRole;
+
+  /**
+   * A reference to this task definition.
+   */
+  public get taskDefinitionRef(): TaskDefinitionReference {
+    return {
+      taskDefinitionArn: this.taskDefinitionArn,
+    };
+  }
 
   /**
    * Return true if the task definition can be run on an EC2 cluster

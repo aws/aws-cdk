@@ -7,6 +7,7 @@ import * as route53 from '../../aws-route53';
 import { IResource, Token, Tags, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Name tag constant
@@ -16,7 +17,7 @@ const NAME_TAG: string = 'Name';
 /**
  * Represents a certificate in AWS Certificate Manager
  */
-export interface ICertificate extends IResource {
+export interface ICertificate extends IResource, ICertificateRef {
   /**
    * The certificate's ARN
    *

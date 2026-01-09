@@ -305,6 +305,12 @@ abstract class EndpointBase extends cdk.Resource implements IEndpoint {
       resourceArns: [this.endpointArn],
     });
   }
+
+  public get endpointRef(): sagemaker.EndpointReference {
+    return {
+      endpointArn: this.endpointArn,
+    };
+  }
 }
 
 /**
