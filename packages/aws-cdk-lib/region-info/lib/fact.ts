@@ -262,6 +262,17 @@ export class FactName {
   }
 
   /**
+   * The ARN of Application Signals Lambda layer for a given Lambda runtime.
+   *
+   * Application Signals layers are architecture-agnostic and use build numbers that vary by region.
+   *
+   * @param runtime the Lambda runtime (e.g. 'python', 'nodejs', 'java', 'dotnet')
+   */
+  public static applicationSignalsLambdaLayer(runtime: string): string {
+    return `application-signals-lambda-layer:${runtime}`;
+  }
+
+  /**
    * The ARN of Parameters and Secrets Lambda layer for a given lambda architecture.
    *
    * @param version the layer version
