@@ -9,10 +9,10 @@ import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 
 /**
  * Notes on how to run this integ test
- * Replace 123456789012 and 234567890123 with your own account numbers
+ * Replace 012345678901 and 234567890123 with your own account numbers
  *
  * 1. Configure Accounts
- *   a. Account A (123456789012) should be bootstrapped for us-east-1
+ *   a. Account A (012345678901) should be bootstrapped for us-east-1
  *      and needs to set trust permissions for account B (234567890123)
  *      - `cdk bootstrap --trust 234567890123 --cloudformation-execution-policies 'arn:aws:iam::aws:policy/AdministratorAccess'`
  *      - assuming this is the default profile for aws credentials
@@ -20,7 +20,7 @@ import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
  *     - assuming this account is configured with the profile 'cross-account' for aws credentials
  *
  * 2. Set environment variables
- *   a. `export CDK_INTEG_ACCOUNT=123456789012`
+ *   a. `export CDK_INTEG_ACCOUNT=012345678901`
  *   b. `export CDK_INTEG_CROSS_ACCOUNT=234567890123`
  *
  * 3. Run the integ test (from the @aws-cdk-testing/framework-integ/test directory)
@@ -32,7 +32,7 @@ import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
  * 4. Before you commit, set both accounts to dummy values, run integ test in dry run mode, and then push the snapshot.
  */
 
-const account = process.env.CDK_INTEG_ACCOUNT || '123456789012';
+const account = process.env.CDK_INTEG_ACCOUNT || '012345678901';
 const crossAccount = process.env.CDK_INTEG_CROSS_ACCOUNT || '234567890123';
 const region = process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION;
 

@@ -1,15 +1,16 @@
 {
-  "version": "20.0.0",
+  "version": "48.0.0",
   "files": {
-    "aec5969a8ae7ffe27e4d3f7f7f9f0fad4baa0280adb9b158a1380c461a960902": {
+    "f06c204d554422140116cdbd5c76edc95e333a9235cef41b313a40dc01e4b020": {
+      "displayName": "aws-cdk-codepipeline-alexa-deploy Template",
       "source": {
         "path": "aws-cdk-codepipeline-alexa-deploy.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-13451870": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "aec5969a8ae7ffe27e4d3f7f7f9f0fad4baa0280adb9b158a1380c461a960902.json",
+          "objectKey": "f06c204d554422140116cdbd5c76edc95e333a9235cef41b313a40dc01e4b020.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

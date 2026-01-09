@@ -19,24 +19,24 @@ new InstanceProfile(stack, 'MyInstanceProfile', {
 const instanceProfileImportedByArn = InstanceProfile.fromInstanceProfileArn(
   stack,
   'ImportedProfileByArn',
-  'arn:aws:iam::123456789012:instance-profile/MyInstanceProfile',
+  'arn:aws:iam::012345678901:instance-profile/MyInstanceProfile',
 );
 const instanceProfileImportedByArnWithPath = InstanceProfile.fromInstanceProfileArn(
   stack,
   'ImportedProfileByArnWithPath',
-  'arn:aws:iam::123456789012:instance-profile/path/MyInstanceProfile',
+  'arn:aws:iam::012345678901:instance-profile/path/MyInstanceProfile',
 );
 const instanceProfileImportedByArnPathMultiple = InstanceProfile.fromInstanceProfileArn(
   stack,
   'ImportedProfileByArnWithPathMultiple',
-  'arn:aws:iam::123456789012:instance-profile/p/a/t/h/MyInstanceProfile',
+  'arn:aws:iam::012345678901:instance-profile/p/a/t/h/MyInstanceProfile',
 );
 const instanceProfileImportedByAttributesWithRole = InstanceProfile.fromInstanceProfileAttributes(stack, 'AttributesWithRole', {
-  instanceProfileArn: 'arn:aws:iam::123456789012:instance-profile/MyInstanceProfile',
+  instanceProfileArn: 'arn:aws:iam::012345678901:instance-profile/MyInstanceProfile',
   role,
 });
 const instanceProfileImportedByAttributesPathMultiple = InstanceProfile.fromInstanceProfileAttributes(stack, 'AttributesPathMultiple', {
-  instanceProfileArn: 'arn:aws:iam::123456789012:instance-profile/p/a/t/h/MyInstanceProfile',
+  instanceProfileArn: 'arn:aws:iam::012345678901:instance-profile/p/a/t/h/MyInstanceProfile',
 });
 const instanceProfileImportedByName = InstanceProfile.fromInstanceProfileName(stack, 'ImportedProfileBy', 'MyInstanceProfile');
 

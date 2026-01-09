@@ -38,8 +38,8 @@
        ],
        "Effect": "Allow",
        "Resource": [
-        "arn:aws:s3:::cross-region-support-us-weplicationbucket8a287d3945436008ebfd",
-        "arn:aws:s3:::cross-region-support-us-weplicationbucket8a287d3945436008ebfd/*",
+        "arn:aws:s3:::cross-region-support-us-weplicationbucketdfdba66911bfd3691b93",
+        "arn:aws:s3:::cross-region-support-us-weplicationbucketdfdba66911bfd3691b93/*",
         {
          "Fn::GetAtt": [
           "PipelineArtifactsBucket22248F97",
@@ -111,7 +111,7 @@
        "Action": "kms:*",
        "Effect": "Allow",
        "Principal": {
-        "AWS": "arn:aws:iam::123456789012:root"
+        "AWS": "arn:aws:iam::012345678901:root"
        },
        "Resource": "*"
       }
@@ -218,10 +218,10 @@
      {
       "ArtifactStore": {
        "EncryptionKey": {
-        "Id": "arn:aws:kms:us-west-2:123456789012:alias/ort-us-wtencryptionalias8f9701ce6a32f909886f",
+        "Id": "arn:aws:kms:us-west-2:012345678901:alias/ort-us-wtencryptionalias22829d5640802137de0d",
         "Type": "KMS"
        },
-       "Location": "cross-region-support-us-weplicationbucket8a287d3945436008ebfd",
+       "Location": "cross-region-support-us-weplicationbucketdfdba66911bfd3691b93",
        "Type": "S3"
       },
       "Region": "us-west-2"
@@ -289,7 +289,7 @@
          "Version": "1"
         },
         "Configuration": {
-         "StateMachineArn": "arn:aws:states:us-west-2:123456789012:stateMachine/MyStateMachine",
+         "StateMachineArn": "arn:aws:states:us-west-2:012345678901:stateMachine/MyStateMachine",
          "Input": "{}",
          "InputType": "Literal"
         },
@@ -343,7 +343,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "AWS": "arn:aws:iam::123456789012:root"
+        "AWS": "arn:aws:iam::012345678901:root"
        }
       }
      ],
@@ -362,12 +362,12 @@
         "states:StartExecution"
        ],
        "Effect": "Allow",
-       "Resource": "arn:aws:states:us-west-2:123456789012:stateMachine/MyStateMachine"
+       "Resource": "arn:aws:states:us-west-2:012345678901:stateMachine/MyStateMachine"
       },
       {
        "Action": "states:DescribeExecution",
        "Effect": "Allow",
-       "Resource": "arn:aws:states:us-west-2:123456789012:execution:MyStateMachine:*"
+       "Resource": "arn:aws:states:us-west-2:012345678901:execution:MyStateMachine:*"
       }
      ],
      "Version": "2012-10-17"

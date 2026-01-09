@@ -30,7 +30,7 @@
         }
        },
        "Effect": "Allow",
-       "Resource": "arn:aws:iam::123456789012:role/MediaConvertRole"
+       "Resource": "arn:aws:iam::012345678901:role/MediaConvertRole"
       },
       {
        "Action": "mediaconvert:CreateJob",
@@ -59,7 +59,7 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::mediaconvert:createJob\",\"Parameters\":{\"Role\":\"arn:aws:iam::123456789012:role/MediaConvertRole\",\"Settings\":{\"OutputGroups\":[{\"Outputs\":[{\"ContainerSettings\":{\"Container\":\"MP4\"},\"VideoDescription\":{\"CodecSettings\":{\"Codec\":\"H_264\",\"H264Settings\":{\"MaxBitrate\":1000,\"RateControlMode\":\"QVBR\",\"SceneChangeDetect\":\"TRANSITION_DETECTION\"}}},\"AudioDescriptions\":[{\"CodecSettings\":{\"Codec\":\"AAC\",\"AacSettings\":{\"Bitrate\":96000,\"CodingMode\":\"CODING_MODE_2_0\",\"SampleRate\":48000}}}]}],\"OutputGroupSettings\":{\"Type\":\"FILE_GROUP_SETTINGS\",\"FileGroupSettings\":{\"Destination\":\"s3://EXAMPLE-DESTINATION-BUCKET/\"}}}],\"Inputs\":[{\"AudioSelectors\":{\"Audio Selector 1\":{\"DefaultSelection\":\"DEFAULT\"}},\"FileInput\":\"s3://EXAMPLE-SOURCE-BUCKET/EXAMPLE-SOURCE_FILE\"}]}}}}}"
+       ":states:::mediaconvert:createJob\",\"Parameters\":{\"Role\":\"arn:aws:iam::012345678901:role/MediaConvertRole\",\"Settings\":{\"OutputGroups\":[{\"Outputs\":[{\"ContainerSettings\":{\"Container\":\"MP4\"},\"VideoDescription\":{\"CodecSettings\":{\"Codec\":\"H_264\",\"H264Settings\":{\"MaxBitrate\":1000,\"RateControlMode\":\"QVBR\",\"SceneChangeDetect\":\"TRANSITION_DETECTION\"}}},\"AudioDescriptions\":[{\"CodecSettings\":{\"Codec\":\"AAC\",\"AacSettings\":{\"Bitrate\":96000,\"CodingMode\":\"CODING_MODE_2_0\",\"SampleRate\":48000}}}]}],\"OutputGroupSettings\":{\"Type\":\"FILE_GROUP_SETTINGS\",\"FileGroupSettings\":{\"Destination\":\"s3://EXAMPLE-DESTINATION-BUCKET/\"}}}],\"Inputs\":[{\"AudioSelectors\":{\"Audio Selector 1\":{\"DefaultSelection\":\"DEFAULT\"}},\"FileInput\":\"s3://EXAMPLE-SOURCE-BUCKET/EXAMPLE-SOURCE_FILE\"}]}}}}}"
       ]
      ]
     },

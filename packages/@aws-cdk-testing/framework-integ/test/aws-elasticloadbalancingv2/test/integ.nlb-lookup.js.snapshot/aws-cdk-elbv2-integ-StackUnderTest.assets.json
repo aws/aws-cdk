@@ -1,15 +1,16 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "files": {
-    "c3565e1b0b0473ea6a48a3f26f392eeca391548afd1bf7b8b0a7b0e2b2c0e6b7": {
+    "c3816bed4f968252a53eb40c9c2b82f1210f30793942839016f63e5a7cb3f47d": {
+      "displayName": "aws-cdk-elbv2-integ-StackUnderTest Template",
       "source": {
         "path": "aws-cdk-elbv2-integ-StackUnderTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "12345678-test-region": {
+        "12345678-test-region-9afa45f7": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "c3565e1b0b0473ea6a48a3f26f392eeca391548afd1bf7b8b0a7b0e2b2c0e6b7.json",
+          "objectKey": "c3816bed4f968252a53eb40c9c2b82f1210f30793942839016f63e5a7cb3f47d.json",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
         }

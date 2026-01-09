@@ -92,7 +92,7 @@ dashboard.addWidgets(new cloudwatch.LogQueryWidget({
   logGroupNames: ['my-log-group'],
   queryString: `fields @message
                 | filter @message like /Error/`,
-  accountId: '123456789012',
+  accountId: '012345678901',
 }));
 dashboard.addWidgets(new cloudwatch.LogQueryWidget({
   title: 'Errors in my log group - SQL',
@@ -118,7 +118,7 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
 }));
 dashboard.addWidgets(new cloudwatch.CustomWidget({
   title: 'My custom alarm',
-  functionArn: 'arn:aws:lambda:us-west-2:123456789012:function:my-function',
+  functionArn: 'arn:aws:lambda:us-west-2:012345678901:function:my-function',
 }));
 
 new IntegTest(app, 'cdk-cloudwatch-alarms-integ-test', {

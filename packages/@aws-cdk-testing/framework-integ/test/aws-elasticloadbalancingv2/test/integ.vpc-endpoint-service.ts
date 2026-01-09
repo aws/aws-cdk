@@ -23,7 +23,7 @@ class VpcEndpointServiceStack extends cdk.Stack {
     const nlbWithPrincipals = new elbv2.NetworkLoadBalancer(this, 'NLBWithPrincipals', {
       vpc,
     });
-    const principalArn = new ArnPrincipal('arn:aws:iam::123456789012:root');
+    const principalArn = new ArnPrincipal('arn:aws:iam::012345678901:root');
     const servicePrincipal = new ArnPrincipal('ec2.amazonaws.com');
 
     const service2 = new ec2.VpcEndpointService(this, 'MyVpcEndpointServiceWithPrincipals', {
