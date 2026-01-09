@@ -624,6 +624,13 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    * @default - no placement group
    */
   readonly placementGroup?: ec2.IPlacementGroupRef;
+
+  /**
+   * Key-value pairs to associate with the compute environment.
+   *
+   * @default - no tags
+   */
+  readonly tags?: { [key: string]: string };
 }
 
 /**
@@ -731,6 +738,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     const resource = new CfnComputeEnvironment(this, 'Resource', {
       ...baseManagedResourceProperties(this, subnetIds),
       computeEnvironmentName: props.computeEnvironmentName,
+      tags: props.tags as any,
       computeResources: {
         ...baseManagedResourceProperties(this, subnetIds).computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
         minvCpus: this.minvCpus,
@@ -752,7 +760,6 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
           };
         }),
         placementGroup: props.placementGroup?.placementGroupRef.groupName,
-        tags: this.tags.renderedTags as any,
       },
     });
 
