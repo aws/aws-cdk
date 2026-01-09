@@ -174,6 +174,29 @@ thirdDomain.addBasePathMapping(api2.restApi, {
 });
 
 /**
+ * Test 4
+ *
+ * Test that you can create a domain with the new SecurityPolicies and an initial BasePathMapping (none)
+ */
+const fourthDomain = new apigw.DomainName(testCase, 'Integ4Domain', {
+  domainName: `another-secure-${domainName}`,
+  securityPolicy: apigw.SecurityPolicy.SecurityPolicy_TLS13_1_3_2025_09,
+  endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+  certificate,
+  mapping: api1.restApi,
+});
+new CfnRecordSet(testCase, 'Integ4DomainRecord', {
+  name: `another-secure--${domainName}`,
+  type: 'A',
+  hostedZoneId,
+  aliasTarget: {
+    hostedZoneId: fourthDomain.domainNameAliasHostedZoneId,
+    dnsName: fourthDomain.domainNameAliasDomainName,
+  },
+});
+
+
+/**
  * -------------------------------------------------------
  * ------------------------- THEN ------------------------
  * -------------------------------------------------------

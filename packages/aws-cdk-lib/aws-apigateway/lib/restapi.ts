@@ -196,6 +196,11 @@ export interface RestApiBaseProps {
   readonly endpointExportName?: string;
 
   /**
+   * The Endpoint Access Mode needs to be set when using the enhanced security policies with SecurityPolicy_
+   */
+  readonly endpointAccessMode?: EndpointAccessMode
+
+  /**
    * A list of the endpoint types of the API. Use this property when creating
    * an API.
    *
@@ -1132,6 +1137,11 @@ export enum ApiKeySourceType {
    * To read the API key from the `UsageIdentifierKey` from a custom authorizer.
    */
   AUTHORIZER = 'AUTHORIZER',
+}
+
+export enum EndpointAccessMode {
+  BASIC = 'BASIC',
+  STRICT = 'STRICT',
 }
 
 export enum EndpointType {
