@@ -1031,6 +1031,42 @@ distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
   });
   distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
   ```
+  * When the JSON file contains a nested structure and the array to iterate over is not at the root level, use `itemsPointer` to specify a JSONPath expression that points to the array:
+  ```ts
+  import * as s3 from 'aws-cdk-lib/aws-s3';
+
+  /**
+   * Tree view of bucket:
+   *  my-bucket
+   *  |
+   *  +--input.json
+   *  |
+   *  ...
+   *
+   * File content of input.json:
+   *  {
+   *    "metadata": {
+   *      "version": "1.0"
+   *    },
+   *    "items": [
+   *      {"id": 1, "name": "item1"},
+   *      {"id": 2, "name": "item2"}
+   *    ]
+   *  }
+   */
+  const bucket = new s3.Bucket(this, 'Bucket', {
+    bucketName: 'my-bucket',
+  });
+
+  const distributedMap = new sfn.DistributedMap(this, 'DistributedMap', {
+    itemReader: new sfn.S3JsonItemReader({
+      bucket,
+      key: 'input.json',
+      itemsPointer: '$.items',
+    }),
+  });
+  distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
+  ```
 * CSV file stored in S3
 * S3 inventory manifest stored in S3
 
