@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.234.0](https://github.com/aws/aws-cdk/compare/v2.233.0...v2.234.0) (2026-01-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* **batch:** unfortunately `JobQueue` exposes `public readonly computeEnvironments: OrderedComputeEnvironment[]`. The `computeEnvironment` member of that structure now fewer guarantees, and needs casting. This should not have been exposed, and we assume the use of the exposed property here is rare.
+* **backup:** unfortunately `BackupPlanRule` exposes `public readonly props: BackupPlanRuleProps`. The `backupVault` member of that structure now guarantees less, and needs casting. This should never have been exposed, and we assume the use of the exposed property here is rare.
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-securityhub: AWS::SecurityHub::ConnectorV2: Provider.JiraCloud.AuthStatus attribute removed.  
+aws-securityhub: AWS::SecurityHub::ConnectorV2: Provider.JiraCloud.AuthUrl attribute removed.  
+aws-securityhub: AWS::SecurityHub::ConnectorV2: Provider.JiraCloud.CloudId attribute removed.  
+aws-securityhub: AWS::SecurityHub::ConnectorV2: Provider.JiraCloud.Domain attribute removed.  
+aws-securityhub: AWS::SecurityHub::ConnectorV2: Provider.ServiceNow.AuthStatus attribute removed.  
+aws-securityhub: AWS::SecurityHub::ConnectorV2: JiraCloud type removed, replaced by JiraCloudProviderConfiguration.  
+aws-securityhub: AWS::SecurityHub::ConnectorV2: ServiceNow type removed, replaced by ServiceNowProviderConfiguration.  
+aws-ssm: AWS::SSM::MaintenanceWindowTarget: Id attribute removed.
+
+### Features
+
+* **ecs:** automatically create ec2InstanceProfile for ManagedInstancesCapacityProvider ([#35796](https://github.com/aws/aws-cdk/issues/35796)) ([9218ea8](https://github.com/aws/aws-cdk/commit/9218ea8356f43dacab177e1ae74c7bb7c4aceedd))
+* **rds:** add name property to option group ([#36319](https://github.com/aws/aws-cdk/issues/36319)) ([708d0ac](https://github.com/aws/aws-cdk/commit/708d0acce8e5c9339a9c8b2574d8b6e2556eebd8)), closes [#35720](https://github.com/aws/aws-cdk/issues/35720)
+* **stepfunctions-tasks:** allow EcsRunTask on fargate and ec2 to set capacity provider strategy ([#35465](https://github.com/aws/aws-cdk/issues/35465)) ([63ca2ae](https://github.com/aws/aws-cdk/commit/63ca2ae07507c0726c28c990931cca748eb0dcda)), closes [#20013](https://github.com/aws/aws-cdk/issues/20013) [#30171](https://github.com/aws/aws-cdk/issues/30171) [#7967](https://github.com/aws/aws-cdk/issues/7967)
+* **synthetics:** add puppeteer 12.0/13.0 runtime ([#36562](https://github.com/aws/aws-cdk/issues/36562)) ([5b74dd4](https://github.com/aws/aws-cdk/commit/5b74dd45abb700cebc33c811114c95f0b098aa6a)), closes [#36501](https://github.com/aws/aws-cdk/issues/36501)
+
+
+### Bug Fixes
+
+* **cloudwatch:** skip MathExpression validation when prop is a token ([#36487](https://github.com/aws/aws-cdk/issues/36487)) ([2845d47](https://github.com/aws/aws-cdk/commit/2845d47e074e3bf7e8d36bf655822c70ae53f094))
+* **core:** `App.of()` returns incorrect values ([#36475](https://github.com/aws/aws-cdk/issues/36475)) ([78034d3](https://github.com/aws/aws-cdk/commit/78034d32d0b120a4eabaf58d7a87a1c6649d1a8e))
+* **core:** `arnForXxxx()` helpers ignore environments from referenced resources ([#36599](https://github.com/aws/aws-cdk/issues/36599)) ([4744c59](https://github.com/aws/aws-cdk/commit/4744c5919b85a9943d704379a0413ddf242f97c0))
+* **core:** account for `{ Ref }` incompatibility between schema and CFN ([#36493](https://github.com/aws/aws-cdk/issues/36493)) ([3b06942](https://github.com/aws/aws-cdk/commit/3b069427f1e912b9deb8c237706c24833fd6fc04))
+* **ec2:** add proper handling for VPC endpoint service name prefix eu.amazonaws for new region eusc-de-east-1 for ECR & API Gateway services ([#36471](https://github.com/aws/aws-cdk/issues/36471)) ([d5561e0](https://github.com/aws/aws-cdk/commit/d5561e0a3f42e4e0c7ea49e2497bc3c5ced8355f))
+* **lambda:** add token resolution validation to capacity providers ([#36275](https://github.com/aws/aws-cdk/issues/36275)) ([c5fbd97](https://github.com/aws/aws-cdk/commit/c5fbd97c1496d1e4c1c8585cdf720bac2937e95c))
+
+
+### Miscellaneous Chores
+
+* **backup:** reference interfaces ([#36415](https://github.com/aws/aws-cdk/issues/36415)) ([4418612](https://github.com/aws/aws-cdk/commit/4418612ab36184bce45b827e8e5955dc00396853))
+* **batch:** reference interfaces ([#36522](https://github.com/aws/aws-cdk/issues/36522)) ([fefc7be](https://github.com/aws/aws-cdk/commit/fefc7be8f415edf3ee24e0f75768a6acdb12d391))
+
 ## [2.233.0](https://github.com/aws/aws-cdk/compare/v2.232.2...v2.233.0) (2025-12-18)
 
 ### ⚠ BREAKING CHANGES

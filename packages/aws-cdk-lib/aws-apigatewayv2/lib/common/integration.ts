@@ -1,10 +1,9 @@
 import { IResource } from '../../../core';
-import { IIntegrationRef } from '../apigatewayv2.generated';
 
 /**
  * Represents an integration to an API Route.
  */
-export interface IIntegration extends IResource, IIntegrationRef {
+export interface IIntegration extends IResource {
   /**
    * Id of the integration.
    * @attribute
