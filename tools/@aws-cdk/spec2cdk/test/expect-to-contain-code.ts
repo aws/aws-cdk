@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 import { ChangeObject, diffLines } from 'diff';
 
 expect.extend({

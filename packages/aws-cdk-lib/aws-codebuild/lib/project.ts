@@ -33,6 +33,7 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import { Annotations, ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IProjectRef, ProjectReference } from '../../interfaces/generated/aws-codebuild-interfaces.generated';
 
 const VPC_POLICY_SYM = Symbol.for('@aws-cdk/aws-codebuild.roleVpcPolicy');
 
@@ -71,7 +72,7 @@ export interface ProjectNotifyOnOptions extends notifications.NotificationRuleOp
   readonly events: ProjectNotificationEvents[];
 }
 
-export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, notifications.INotificationRuleSource {
+export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, notifications.INotificationRuleSource, IProjectRef {
   /**
    * The ARN of this Project.
    * @attribute
@@ -264,6 +265,13 @@ abstract class ProjectBase extends Resource implements IProject {
 
   /** The IAM service Role of this Project. */
   public abstract readonly role?: iam.IRole;
+
+  public get projectRef(): ProjectReference {
+    return {
+      projectName: this.projectName,
+      projectArn: this.projectArn,
+    };
+  }
 
   /**
    * Actual connections object for this Project.
