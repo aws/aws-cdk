@@ -1549,7 +1549,7 @@ export class Project extends ProjectBase {
 
       cloudwatchConfig = {
         status,
-        groupName: cloudWatchLogs.logGroup?.logGroupName,
+        groupName: cloudWatchLogs.logGroup?.logGroupRef.logGroupName,
         streamName: cloudWatchLogs.prefix,
       };
     }
