@@ -241,6 +241,20 @@ const tagCE = new batch.ManagedEc2EcsComputeEnvironment(this, 'CEThatMakesTagged
 Tags.of(tagCE).add('super', 'salamander');
 ```
 
+You can also tag the ComputeEnvironment resource directly:
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new batch.ManagedEc2EcsComputeEnvironment(this, 'myTaggedComputeEnv', {
+  vpc,
+  tags: {
+    Environment: 'production',
+    Application: 'my-app',
+  },
+});
+```
+
 Unmanaged `ComputeEnvironment`s do not support `maxvCpus` or `minvCpus` because you must provision and manage the instances yourself;
 that is, Batch will not scale them up and down as needed.
 
