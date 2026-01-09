@@ -535,8 +535,10 @@ The `uniqueResourceName()` method generates CloudFormation-compatible unique ide
 #### Basic Usage
 
 ```ts
-import { Names, Stack, Construct } from 'aws-cdk-lib';
+import { App, Stack, Names } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 
+const app = new App();
 const stack = new Stack(app, 'MyStack');
 const construct = new Construct(stack, 'MyConstruct');
 
@@ -549,9 +551,11 @@ const name = Names.uniqueResourceName(construct);
 When you need to generate multiple unique names from the same construct (for example, when creating multiple child resources that require unique physical names before the child constructs are initialized), use the `discriminator` option:
 
 ```ts
-import { Names, Stack, Construct } from 'aws-cdk-lib';
+import { App, Stack, Names } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 
+const app = new App();
 const stack = new Stack(app, 'MyStack');
 const parentConstruct = new Construct(stack, 'ParentConstruct');
 
@@ -580,6 +584,8 @@ The discriminator is included in the hash calculation but not in the human-reada
 You can customize the generated name using options:
 
 ```ts
+import { Names } from 'aws-cdk-lib';
+
 // Set maximum length
 const shortName = Names.uniqueResourceName(construct, {
   maxLength: 50,
