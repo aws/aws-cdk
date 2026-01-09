@@ -1009,6 +1009,33 @@ const proxy = new rds.DatabaseProxy(this, 'Proxy', {
 });
 ```
 
+### Default Authentication Scheme
+
+RDS Proxy supports different authentication schemes to connect to your database. You can configure the default authentication scheme using the `defaultAuthScheme` property.
+
+When using `DefaultAuthScheme.IAM_AUTH`, the proxy uses end-to-end IAM authentication to connect to the database, eliminating the need for secrets stored in AWS Secrets Manager:
+
+```ts
+declare const vpc: ec2.Vpc;
+const instance = new rds.DatabaseInstance(this, 'Database', {
+  engine: rds.DatabaseInstanceEngine.postgres({
+    version: rds.PostgresEngineVersion.VER_17_7,
+  }),
+  vpc,
+  iamAuthentication: true,
+});
+
+const proxy = new rds.DatabaseProxy(this, 'Proxy', {
+  proxyTarget: rds.ProxyTarget.fromInstance(instance),
+  vpc,
+  defaultAuthScheme: rds.DefaultAuthScheme.IAM_AUTH, // No secrets required
+});
+
+// Grant IAM permissions for database connection
+const role = new iam.Role(this, 'DBRole', { assumedBy: new iam.AccountPrincipal(this.account) });
+proxy.grantConnect(role, 'database-user'); // Database user must be specified when using IAM auth
+```
+
 ### Cluster
 
 The following example shows granting connection access for an IAM role to an Aurora Cluster.
