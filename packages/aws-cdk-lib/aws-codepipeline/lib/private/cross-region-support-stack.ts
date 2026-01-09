@@ -82,6 +82,7 @@ export class CrossRegionSupportConstruct extends Construct {
       encryptionKey: encryptionAlias,
       enforceSSL: true,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
   }
 }
