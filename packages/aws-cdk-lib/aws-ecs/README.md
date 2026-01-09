@@ -1291,6 +1291,7 @@ Currently Supported Log Drivers:
 - syslog
 - awsfirelens
 - Generic
+- none
 
 ### awslogs Log Driver
 
@@ -1466,6 +1467,20 @@ taskDefinition.addContainer('TheContainer', {
       tag: 'example-tag',
     },
   }),
+});
+```
+
+### none Log Driver
+
+The none log driver disables logging for the container (Docker `none` driver).
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: ecs.LogDrivers.none(),
 });
 ```
 
